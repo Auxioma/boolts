@@ -1,3 +1,223 @@
+@font-face {
+    font-family: 'Eudoxus Sans';
+    src: url('../fonts/eudoxus/eudoxus/EudoxusSans-Light.woff2') format('woff2'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Light.woff') format('woff'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Eudoxus Sans';
+    src: url('../fonts/eudoxus/eudoxus/EudoxusSans-Regular.woff2') format('woff2'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Regular.woff') format('woff'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Eudoxus Sans';
+    src: url('../fonts/eudoxus/eudoxus/EudoxusSans-Medium.woff2') format('woff2'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Medium.woff') format('woff'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Eudoxus Sans';
+    src: url('../fonts/eudoxus/eudoxus/EudoxusSans-Bold.woff2') format('woff2'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Bold.woff') format('woff'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Eudoxus Sans';
+    src: url('../fonts/eudoxus/eudoxus/EudoxusSans-ExtraBold.woff2') format('woff2'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-ExtraBold.woff') format('woff'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Eudoxus Sans';
+    src: url('../fonts/eudoxus/eudoxus/EudoxusSans-ExtraLight.woff2') format('woff2'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-ExtraLight.woff') format('woff'),
+    url('../fonts/eudoxus/eudoxus/EudoxusSans-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
 body {
-    background-color: skyblue;
+    font-family: 'Eudoxus Sans', sans-serif !important;
+}
+
+* {
+    font-family: 'Eudoxus Sans', sans-serif;
+}
+
+
+
+/**
+ * Marge par default
+ */
+.text-blue {
+    color: #5D00FF;
+}
+
+.mt-12 {
+    margin-top: 12px;
+}
+.mb-12 {
+    margin-bottom: 12px;
+}
+.mt-24 {
+    margin-top: 24px;
+}
+.mb-24 {
+    margin-bottom: 24px;
+}
+.my-24 {
+    margin: 24px 0;
+}
+.mt-32 {
+    margin-top: 32px;
+}
+.mb-32 {
+    margin-bottom: 32px;
+}
+.my-32 {
+    margin: 32px 0;
+}
+.mt-34 {
+    margin-top: 34px;
+}
+.mb-34 {
+    margin-bottom: 34px;
+}
+.my-34 {
+    margin: 34px 0;
+}
+.mt-60 {
+    margin-top: 60px;
+}
+.mb-60 {
+    margin-bottom: 60px;
+}
+.my-60 {
+    margin: 60px 0;
+}
+
+
+.topbar {
+    padding: 0;
+}
+
+.topbar-nav {
+    height: 70px;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin-right: 30px;
+}
+
+.topbar-logo {
+    height: 42px;
+    width: auto;
+    display: block;
+}
+
+.topbar-menu {
+    gap: 8px;
+}
+
+.topbar-menu .nav-link {
+    color: #1f1728;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.topbar-menu .nav-link:hover {
+    color: #7c3aed;
+    background: rgba(124, 58, 237, 0.06);
+}
+
+.topbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    color: #7c3aed;
+    border: 2px solid #7c3aed;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.topbar-btn:hover {
+    background: #7c3aed;
+    color: #fff;
+}
+
+.topbar-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.topbar-avatar-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.topbar-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 991.98px) {
+    .topbar {
+        padding: 12px 16px;
+    }
+
+    .topbar-menu {
+        align-items: flex-start !important;
+        gap: 4px;
+        padding-top: 16px;
+    }
+
+    .topbar-menu .nav-link {
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .topbar-btn {
+        margin-top: 10px;
+    }
+
+    .topbar-avatar-link {
+        margin-top: 12px;
+    }
 }

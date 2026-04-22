@@ -5,6 +5,13 @@ import './stimulus_bootstrap.js';
  * This file will be included onto the page via the importmap() Twig function,
  * which should already be in your base.html.twig.
  */
+
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+@import "./styles/root/root.css";
+@import "./styles/login/auth.css";
+
 import './styles/app.css';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+
