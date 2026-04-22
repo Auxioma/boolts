@@ -1,0 +1,12 @@
+.login h1 {
+    color: #000;
+    font-size: var(--Typography-H2, 30px);
+    font-style: normal;
+    font-weight: 700;
+    line-height: 34px;
+}
+.media-social .google {
+    border-radius: 50px;
+    border: 2px solid var(--10, #EBECEC);
+    background: var(--White, #FFF);
+}
