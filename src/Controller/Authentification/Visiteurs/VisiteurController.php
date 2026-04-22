@@ -8,11 +8,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class VisiteurController extends AbstractController
 {
-    #[Route('/login', name: 'app_make_controller')]
+    #[Route('/connexion-utilisateur', name: 'app_visiteur_connexion')]
     public function index(): Response
     {
-        return $this->render('authentification/visiteurs/index.html.twig', [
-            'controller_name' => 'MakeControllerController',
-        ]);
+        return $this->render('authentification/visiteurs/index.html.twig');
     }
 }
