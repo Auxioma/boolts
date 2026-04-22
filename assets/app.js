@@ -9,8 +9,7 @@ import './stimulus_bootstrap.js';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-@import "./styles/root/root.css";
-@import "./styles/login/auth.css";
+
 
 import './styles/app.css';
 

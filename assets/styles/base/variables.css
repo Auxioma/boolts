@@ -1,0 +1,27 @@
+:root {
+    --color-primary: #5D00FF;
+    --color-primary-hover: #4A00CC;
+    --color-white: #FFFFFF;
+    --color-black: #000000;
+    --color-text: #0B0F14;
+    --color-gray: #858789;
+    --color-gray-light: #EBECEC;
+    --color-link-hover: #7c3aed;
+    --color-link-hover-bg: rgba(124, 58, 237, 0.06);
+
+    --font-family-base: 'Eudoxus Sans', sans-serif;
+
+    --font-size-h2: 30px;
+    --line-height-h2: 34px;
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-pill: 50px;
+    --radius-round: 999px;
+
+    --topbar-height: 70px;
+    --topbar-logo-height: 42px;
+    --avatar-size: 42px;
+
+    --transition-fast: 0.2s ease;
+}

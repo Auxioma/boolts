@@ -1,0 +1,10 @@
+.text-blue {
+    color: var(--color-primary);
+}
+
+.link-blue {
+    color: var(--color-primary);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}

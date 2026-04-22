@@ -1,0 +1,110 @@
+.topbar {
+    padding: 0;
+}
+
+.topbar-nav {
+    height: var(--topbar-height);
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin-right: 30px;
+}
+
+.topbar-logo {
+    width: auto;
+    height: var(--topbar-logo-height);
+}
+
+.topbar-menu {
+    gap: 8px;
+}
+
+.topbar-menu .nav-link {
+    display: inline-flex;
+    align-items: center;
+    color: #1f1728;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.topbar-menu .nav-link:hover {
+    color: var(--color-link-hover);
+    background: var(--color-link-hover-bg);
+}
+
+.topbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border: 2px solid var(--color-link-hover);
+    border-radius: var(--radius-round);
+    background: var(--color-white);
+    color: var(--color-link-hover);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.topbar-btn:hover {
+    background: var(--color-link-hover);
+    color: var(--color-white);
+}
+
+.topbar-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.topbar-avatar-link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.topbar-avatar {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+    border: 2px solid var(--color-white);
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 991.98px) {
+    .topbar {
+        padding: 12px 16px;
+    }
+
+    .topbar-menu {
+        align-items: flex-start !important;
+        gap: 4px;
+        padding-top: 16px;
+    }
+
+    .topbar-menu .nav-link {
+        width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .topbar-btn {
+        margin-top: 10px;
+    }
+
+    .topbar-avatar-link {
+        margin-top: 12px;
+    }
+}

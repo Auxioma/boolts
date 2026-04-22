@@ -1,0 +1,25 @@
+.formulaire label {
+    display: inline-block;
+    margin-bottom: 6px;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.formulaire input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--color-gray-light);
+    border-radius: var(--radius-sm);
+    font: inherit;
+    color: var(--color-text);
+    background: var(--color-white);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.formulaire input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: none;
+}
