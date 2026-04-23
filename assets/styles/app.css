@@ -14,3 +14,16 @@
 
 @import './layouts/topbar.css';
 @import './layouts/login.css';
+
+/**
+  * responsive design
+ */
+@import "./components/responsive/buttons.css";
+@import "./components/responsive/divider.css";
+@import "./components/responsive/forms.css";
+@import "./components/responsive/messages.css";
+@import "./components/responsive/input.css";
+
+@import "./utilities/responsive/text.css";
+
+@import "./layouts/responsive/login/911.css";

@@ -15,6 +15,10 @@
     color: var(--color-text);
     background: var(--color-white);
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    font-size: 14px;
+}
+.formulaire input::placeholder {
+    color: #858789;
 }
 
 .formulaire input:focus {

@@ -1,0 +1,5 @@
+@media screen and (min-width: 767px) and (max-width: 991px) {
+    .formulaire input {
+        font-size: 13px;
+    }
+}

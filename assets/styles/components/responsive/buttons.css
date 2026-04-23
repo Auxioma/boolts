@@ -1,0 +1,8 @@
+@media screen and (min-width: 767px) and (max-width: 991px) {
+    .btn-bg-noir,
+    .btn-bg-border-gris,
+    .btn-submit,
+    .btn-bg-border-blue{
+        font-size: 15px;
+    }
+}
