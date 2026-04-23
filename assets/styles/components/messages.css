@@ -1,0 +1,18 @@
+.flash-message-error {
+    color: var(--colors-red-red-500);
+    font-family: Inter;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.flash-input-error {
+    border: 2px solid var(--colors-red-red-300)!important;
+    background: rgba(248, 215, 218, 0.40)!important;
+    color: var(--colors-red-red-500)!important;
+}
+.flash-input-error::placeholder {
+    color: var(--colors-red-red-500);
+    opacity: 1; /* important pour éviter le gris transparent */
+}

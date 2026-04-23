@@ -1,16 +1,11 @@
 .btn-bg-noir {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     padding: 10px 16px;
     border: 0;
     border-radius: var(--radius-pill);
     background: var(--color-text);
     color: var(--color-white);
     font-weight: 700;
-    cursor: pointer;
-    transition: background var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast);
-}
+    cursor: pointer;}
 
 .btn-bg-noir:hover {
     background: #1a2027;

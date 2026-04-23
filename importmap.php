@@ -35,4 +35,11 @@ return [
         'version' => '5.3.8',
         'type' => 'css',
     ],
+    'inter-ui' => [
+        'version' => '4.1.1',
+    ],
+    'inter-ui/inter.min.css' => [
+        'version' => '4.1.1',
+        'type' => 'css',
+    ],
 ];

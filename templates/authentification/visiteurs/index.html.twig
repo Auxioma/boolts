@@ -3,7 +3,7 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-<header class="topbar">
+<header class="topbar position-relative">
     <div class="container-fluid g-0">
         <nav class="navbar navbar-expand-lg topbar-nav">
 
@@ -74,11 +74,11 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-8 mx-auto">
-                                    <div class="login mt-60">
-                                        <h1>Connexion</h1>
+                                    <div class="login mt-48">
+                                        <h1 class="mb-0">Connexion</h1>
                                         <div class="media-social mt-32">
                                             <a href="" class="btn-bg-noir d-block w-100 text-center">Connexion via Apple</a>
-                                            <a href="" class="btn-bg-border-gris mt-12 d-block w-100 text-center">Connexion via Google</a>
+                                            <a href="" class="btn-bg-border-gris mt-16 d-block w-100 text-center">Connexion via Google</a>
                                         </div>
                                         <div class="divider my-32">
                                             <span>OU</span>
@@ -86,14 +86,17 @@
                                         <div class="formulaire">
                                             <form action="">
                                                 <div class="">
-                                                    <label for="email" class="form-label mb-12">Adresse e-mail</label>
-                                                    <input type="email" class="form-control mb-12" id="email" placeholder="Veuillez entrer votre adresse e-mail">
-                                                </div>
-                                                <div class="">
-                                                    <label for="pwd" class="form-label mb-12">Mot de passe</label>
-                                                    <input type="email" class="form-control mb-12" id="pwd" placeholder="Veuillez entrer votre mot de passe">
-                                                </div>
-                                                <button class="mt-32 btn-submit w-100 text-white" type="submit">Se connecter</button>
+                                                    <label for="email" class="form-label mb-16">Adresse e-mail</label>
+                                                    <input type="email" class="form-control mb-16" id="email" placeholder="Veuillez entrer votre adresse e-mail">
+                                   
+                                                    <label for="pwd" class="form-label mb-16">Mot de passe</label>
+                                                    <input type="email" class="form-control flash-input-error" id="pwd" placeholder="Veuillez entrer votre mot de passe">
+
+                                                    {# message flash #}
+                                                    <span class="flash-message-error mt-24 d-block">Adresse e-mail ou mot de passe incorrect</span>              
+
+                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">Se connecter</button>
+                                            </div>
                                             </form>
                                         </div>
                                         <a href="" class="my-24 d-block w-100 text-center text-blue link-blue">Mot de passe oublié ?</a>
@@ -109,9 +112,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 d-none d-lg-block">
+                <div class="col-lg-6 d-none d-lg-block pe-0">
                     <div class="bg-login">
-                        <img src="{{ asset('images/authentification/mon-compte.png') }}" alt="">
+                        <img src="{{ asset('images/authentification/mon-compte.png') }}" alt="" class="w-100">
                     </div>
                 </div>
             </div>

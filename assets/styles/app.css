@@ -8,6 +8,7 @@
 @import './components/buttons.css';
 @import './components/forms.css';
 @import './components/divider.css';
+@import './components/messages.css';
 
 @import './layouts/topbar.css';
 @import './layouts/login.css';
