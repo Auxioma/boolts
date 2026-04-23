@@ -1,9 +1,11 @@
 .topbar {
     padding: 0;
+    padding-inline: clamp(10px, calc(6.71vw - 56.63px), 40px)
 }
 
 .topbar-nav {
     height: var(--topbar-height);
+    padding: 14px 0;
 }
 
 .topbar-brand {
@@ -25,8 +27,8 @@
 .topbar-menu .nav-link {
     display: inline-flex;
     align-items: center;
-    color: #1f1728;
-    font-size: 15px;
+    color: var(--color-black);
+    font-size: var(--16);
     font-weight: 500;
     padding: 10px 14px;
     border-radius: var(--radius-md);

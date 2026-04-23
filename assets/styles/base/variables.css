@@ -19,9 +19,10 @@
     --radius-pill: 50px;
     --radius-round: 999px;
 
-    --topbar-height: 70px;
+    --topbar-height: 72px;
     --topbar-logo-height: 42px;
     --avatar-size: 42px;
 
     --transition-fast: 0.2s ease;
+    --16: 16px;
 }
