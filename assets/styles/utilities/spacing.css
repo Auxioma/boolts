@@ -9,7 +9,10 @@
 
 .mt-14 { margin-top: 14px; }
 .mb-14 { margin-bottom: 14px; }
+.mr-14 { margin-right: 14px; }
+.ml-14 { margin-left: 14px; }
 .my-14 { margin-top: 14px; margin-bottom: 14px; }
+.mx-14 { margin-left: 14px; margin-right: 14px; }
 
 .mt-16 { margin-top: 16px; }
 .mb-16 { margin-bottom: 16px; }
