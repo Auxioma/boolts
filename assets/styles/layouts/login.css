@@ -9,14 +9,34 @@
 }
 
 .bg-login {
-    height: 100%;
-    background: url("../../images/authentification/mon-compte.webp") no-repeat center center;
-    background-size: cover;
-    background-position: center center;
+    position: fixed;
+    width: 50%;
+    height: 100dvh;
+    background-image: url("../../images/authentification/mon-compte.webp");
     background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
     will-change: transform;
+    right: 0;
 }
 
 .adaptation-image-login {
     height: calc(100dvh - 72px);
+}
+
+.otp-container-recu-par-mail {
+    display: flex;
+}
+
+.otp-input-recu-par-mail {
+    width: 48px !important;
+    height: 64px !important;
+    text-align: center !important;
+    color: #858789 !important;
+    font-size: 14px !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    line-height: 20px !important;
+    
+    
 }

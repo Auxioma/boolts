@@ -26,3 +26,19 @@
     border-color: var(--color-primary);
     box-shadow: none;
 }
+
+.form-check-therms input[type="checkbox"] {
+    height:24px;
+    width:24px;
+    margin: 0; /* Supprime les marges par défaut */
+}
+.form-check-therms label {
+    display: flex;
+    align-items: center; /* centre verticalement */
+    gap: 12px; /* espace entre checkbox et texte */
+
+    color: #858789;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
