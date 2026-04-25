@@ -1,115 +1,116 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil
-{% endblock %}
+{% block title %}Vérification du code{% endblock %}
 
 {% block body %}
-	<header class="topbar position-relative">
-		<div class="container-fluid g-0">
-			<nav class="navbar navbar-expand-lg topbar-nav">
+    <header class="topbar position-relative">
+        {# ton header inchangé #}
+    </header>
 
-				<a class="navbar-brand topbar-brand" href="#">
-					<img src="{{ asset('images/logo/logo-blanc.svg') }}" alt="Boolts" class="topbar-logo">
-				</a>
+    <main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-md-11 col-lg-8 mx-auto">
+                            <div class="login my-48">
+                                <h1 class="mb-0">Vous avez reçu un code de validation par mail</h1>
 
-				<div class="topbar-mobile-actions d-flex align-items-center ms-auto">
-					<a href="#" class="topbar-avatar-link">
-						<img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
-					</a>
+                                <div class="opt-code-recu-mail mt-32">
+                                    <div class="formulaire">
 
-					<button class="navbar-toggler topbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Ouvrir le menu">
-						<span class="navbar-toggler-icon"></span>
-					</button>
-				</div>
+                                        {{ form_start(codeForm, {
+                                            attr: stimulus_controller('otp')|merge(
+                                                stimulus_action('otp', 'submit', 'submit')
+                                            )|merge({
+                                                novalidate: 'novalidate',
+                                                id: 'otp-form',
+                                                'data-turbo': 'false'
+                                            })
+                                        }) }}
 
-				<div class="collapse navbar-collapse" id="mainNavbar">
-					<ul class="navbar-nav ms-lg-auto align-items-lg-center topbar-menu">
-						<li class="nav-item">
-							<a class="nav-link" href="#">Acheter</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">Louer</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">Vendre</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">Trouver un pro</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="#">Exclusivités</a>
-						</li>
+                                        {{ form_widget(codeForm.code, {
+                                            attr: stimulus_target('otp', 'hiddenInput')|merge({
+                                                class: 'otp-hidden-input',
+                                                autocomplete: 'one-time-code',
+                                                inputmode: 'numeric'
+                                            })
+                                        }) }}
 
-						<li class="nav-item ms-lg-3">
-							<a href="#" class="btn topbar-btn">
-								<span class="topbar-btn-icon">+</span>
-								Déposer une annonce
-							</a>
-						</li>
+                                        <div class="otp-container-recu-par-mail" id="otp-container-recu-par-mail">
+                                            {% for i in 1..6 %}
+                                                <input
+                                                    class="otp-input-recu-par-mail{% if not loop.last %} mr-14{% endif %}"
+                                                    type="text"
+                                                    maxlength="1"
+                                                    inputmode="numeric"
+                                                    pattern="[0-9]*"
+                                                    autocomplete="{{ loop.first ? 'one-time-code' : 'off' }}"
+                                                    {{ stimulus_target('otp', 'digit') }}
+                                                    {{ stimulus_action('otp', 'input', 'input') }}
+                                                    {{ stimulus_action('otp', 'keydown', 'keydown') }}
+                                                    {{ stimulus_action('otp', 'paste', 'paste') }}
+                                                >
+                                            {% endfor %}
+                                        </div>
 
-						<li class="nav-item ms-lg-3 d-none d-lg-block">
-							<a href="#" class="topbar-avatar-link">
-								<img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
-							</a>
-						</li>
-					</ul>
-				</div>
+                                        {% for label, messages in app.flashes %}
+                                            {% if label in ['danger', 'error', 'warning', 'success'] %}
+                                                {% for message in messages %}
+                                                    <span class="
+                                                        flash-message mt-24 d-block
+                                                        {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
+                                                        {% if label == 'warning' %}flash-message-error{% endif %}
+                                                        {% if label == 'error' %}flash-message-error{% endif %}
+                                                        {% if label == 'success' %}flash-message-success{% endif %}
+                                                    ">
+                                                        {{ message }}
+                                                    </span>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endfor %}
 
-			</nav>
-		</div>
-	</header>
+                                        {% form_theme codeForm _self %}
 
-	<main>
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-12 col-lg-6">
-					<div class="row">
-						<div class="col-12">
-							<div class="row">
-								<div class="col-md-11 col-lg-8 mx-auto">
-									<div class="login my-48">
-										<h1 class="mb-0">Vous avez reçu un code de validation par mail</h1>
-										<div class="opt-code-recu-mail mt-32">
-											<div class="formulaire">
-												<form action="#">
-													<div class="">
-														<div class="otp-container-recu-par-mail" id="otp-container-recu-par-mail">
-															<input class="otp-input-recu-par-mail mr-14" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
-															<input class="otp-input-recu-par-mail mr-14" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-															<input class="otp-input-recu-par-mail mr-14" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-															<input class="otp-input-recu-par-mail mr-14" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-															<input class="otp-input-recu-par-mail mr-14" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-															<input class="otp-input-recu-par-mail" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*">
-														</div>
-														{# message flash #}
-														<span class="flash-message-error mt-24 d-block">Adresse e-mail ou mot de passe incorrect</span>
+                                        {% if codeForm.vars.errors|length > 0 %}
+                                            {% for error in codeForm.vars.errors %}
+                                                <div class="flash-message flash-message-error mt-24 d-block">
+                                                    {{ error.message }}
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
 
-														<button class="mt-32 btn-submit w-100 text-white" type="submit">Se connecter</button>
-													</div>
-												</form>
-											</div>
+                                        <button class="mt-32 btn-submit w-100 text-white" type="submit">
+                                            Se connecter
+                                        </button>
 
-										</div>
-										<div class="divider my-32">
-											<span>OU</span>
-										</div>
+                                        {{ form_end(codeForm) }}
 
-										<buttom type="submit" class="btn-bg-border-blue d-block w-100 text-center">
-											Renvoyer le code
-										</buttom>
-										<a href="" class="mt-34 d-block w-100 text-center text-blue link-blue">
-											Changer d’adresse mail
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-6 d-none d-lg-block pe-0 adaptation-image-login">
-					<div class="bg-login"></div>
-				</div>
-			</div>
-		</div>
-	</main>
+                                    </div>
+                                </div>
+
+                                <div class="divider my-32">
+                                    <span>OU</span>
+                                </div>
+
+                                <form method="post" action="{{ path('app_auth_resend_code') }}">
+                                    <button type="submit" class="btn-bg-border-blue d-block w-100 text-center">
+                                        Renvoyer le code
+                                    </button>
+                                </form>
+
+                                <a href="{{ path('app_visiteur_inscription') }}" class="mt-34 d-block w-100 text-center text-blue link-blue">
+                                    Changer d’adresse mail
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 d-none d-lg-block pe-0 adaptation-image-login">
+                    <div class="bg-login"></div>
+                </div>
+            </div>
+        </div>
+    </main>
 {% endblock %}

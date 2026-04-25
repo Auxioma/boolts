@@ -77,36 +77,42 @@
                                     <div class="login my-48">
                                         <h1 class="mb-0">Connexion</h1>
                                         <div class="formulaire mt-32">
-                                            <form action="">
+                                            {{ form_start(form) }}
                                                 <div class="">
                                                     <label for="email" class="form-label mb-16">Nom*</label>
-                                                    <input type="email" class="form-control mb-16" id="email" placeholder="Veuillez entrer votre nom">
+                                                    {{ form_widget(form.nom) }}
 
                                                     <label for="pwd" class="form-label mb-16">Prénom*</label>
-                                                    <input type="email" class="form-control mb-16" id="pwd" placeholder="Veuillez entrer votre prénom">
+                                                    {{ form_widget(form.prenom) }}
 
                                                     <label for="pwd" class="form-label mb-16">Mot de passe*</label>
-                                                    <input type="email" class="form-control  mb-16 flash-input-error" id="pwd" placeholder="Veuillez entrer votre mot de passe">
+                                                    {{ form_widget(form.plainPassword.first) }}
 
                                                     <label for="pwd" class="form-label mb-16">Confirmer le mot de passe*</label>
-                                                    <input type="email" class="form-control mb-32 flash-input-error" id="pwd" placeholder="Veuillez confirmer votre mot de passe">
-
-                                                    <div class="form-check-therms mb-32"> 
+                                                    {{ form_widget(form.plainPassword.second) }}
+                                                    <div class="form-check-therms mb-32">
                                                         <label class="form-check-label" for="terms">
-                                                            <input 
-                                                                class="form-check-input" 
-                                                                type="checkbox" 
-                                                                id="terms" 
-                                                                required
-                                                            >J’accepte les conditions d’utilisation de Boolts.*
+                                                            {{ form_widget(form.agreeTerms) }}
+                                                            ’accepte les conditions d’utilisation de Boolts.*
                                                             </label>
                                                     </div>
                                                     {# message flash #}
-                                                    <span class="flash-message-error d-block mb-32">Veuillez remplir les champs obligatoires.</span>
-
+                                                    {% for label, messages in app.flashes %}
+                                                        {% if label in ['danger', 'error', 'warning'] %}
+                                                            {% for message in messages %}
+                                                                <span class="
+                                                                    flash-message mt-32 d-block
+                                                                    {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
+                                                                    {% if label == 'warning' %}flash-message-error{% endif %}
+                                                                ">
+                                                                    {{ message }}
+                                                                </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
                                                     <button class=" btn-submit w-100 text-white" type="submit">Se connecter</button>
                                                 </div>
-                                            </form>
+                                            {{ form_end(form) }}
                                         </div>
                                     </div>
                                 </div>
