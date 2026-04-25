@@ -1,10 +1,121 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Accueil{% endblock %}
+
 {% block body %}
+    <header class="topbar position-relative">
+        <div class="container-fluid g-0">
+            <nav class="navbar navbar-expand-lg topbar-nav">
 
+                <a class="navbar-brand topbar-brand" href="#">
+                    <img src="{{ asset('images/logo/logo-blanc.svg') }}" alt="Boolts" class="topbar-logo">
+                </a>
+
+                <div class="topbar-mobile-actions d-flex align-items-center ms-auto">
+                    <a href="#" class="topbar-avatar-link">
+                        <img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
+                    </a>
+
+                    <button
+                        class="navbar-toggler topbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Ouvrir le menu"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav ms-lg-auto align-items-lg-center topbar-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Acheter</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Louer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Vendre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Trouver un pro</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Exclusivités</a>
+                        </li>
+
+                        <li class="nav-item ms-lg-3">
+                            <a href="#" class="btn topbar-btn">
+                                <span class="topbar-btn-icon">+</span>
+                                Déposer une annonce
+                            </a>
+                        </li>
+
+                        <li class="nav-item ms-lg-3 d-none d-lg-block">
+                            <a href="#" class="topbar-avatar-link">
+                                <img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-md-11 col-md-10 col-lg-4 mx-auto ">
+                                    <div class="login my-48 px-48 py-48 bg-white rounded-24">
+                                        <h1 class="mb-0">Inscription à votre espace pro</h1>
+                                        <div class="media-social mt-32">
+                                            <a href="" class="btn-bg-noir d-block w-100 text-center">Connexion via Apple</a>
+                                            <a href="" class="btn-bg-border-gris mt-16 d-block w-100 text-center">Connexion via Google</a>
+                                        </div>
+                                        <div class="divider my-32">
+                                            <span>OU</span>
+                                        </div>
+                                        <div class="formulaire">
+                                            <form action="">
+                                                <div class="">
+
+                                                    <label for="pwd" class="form-label mb-16">Inscription via adresse e-mail*</label>
+                                                    <input type="email" class="form-control flash-input-error" id="pwd" placeholder="Veuillez entrer votre adresse e-mail">
+
+                                                    {# message flash #}
+                                                    <span class="flash-message-error mt-24 d-block">Adresse e-mail ou mot de passe incorrect</span>
+
+                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">Se connecter</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <a href="" class="mt-34 d-block w-100 text-center text-blue link-blue">
+                                            Vous êtes un professionnel ?
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 {% endblock %}
-
-{% block title %}
-
+{% block stylesheets %}
+    <style>
+        body {
+            background: url("{{ asset('images/authentification/immobilier.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+    </style>
 {% endblock %}
-

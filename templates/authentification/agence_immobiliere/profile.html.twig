@@ -1,10 +1,131 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Accueil{% endblock %}
+
 {% block body %}
+    <header class="topbar position-relative">
+        <div class="container-fluid g-0">
+            <nav class="navbar navbar-expand-lg topbar-nav">
+
+                <a class="navbar-brand topbar-brand" href="#">
+                    <img src="{{ asset('images/logo/logo-blanc.svg') }}" alt="Boolts" class="topbar-logo">
+                </a>
+
+                <div class="topbar-mobile-actions d-flex align-items-center ms-auto">
+                    <a href="#" class="topbar-avatar-link">
+                        <img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
+                    </a>
+
+                    <button
+                        class="navbar-toggler topbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Ouvrir le menu"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav ms-lg-auto align-items-lg-center topbar-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Acheter</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Louer</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Vendre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Trouver un pro</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Exclusivités</a>
+                        </li>
+
+                        <li class="nav-item ms-lg-3">
+                            <a href="#" class="btn topbar-btn">
+                                <span class="topbar-btn-icon">+</span>
+                                Déposer une annonce
+                            </a>
+                        </li>
+
+                        <li class="nav-item ms-lg-3 d-none d-lg-block">
+                            <a href="#" class="topbar-avatar-link">
+                                <img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-md-11 col-md-10 col-lg-4 mx-auto ">
+                                    <div class="login my-48 px-48 py-48 bg-white rounded-24">
+                                        <h1 class="mb-0">Inscrivez-votre agence dès maintenant</h1>
+                                        <div class="formulaire mt-32">
+                                            <form action="">
+                                                <div class="">
+                                                    <label for="email" class="form-label mb-16">Nom*</label>
+                                                    <input type="email" class="form-control mb-16" id="email" placeholder="Veuillez entrer votre nom">
+
+                                                    <label for="pwd" class="form-label mb-16">Prénom*</label>
+                                                    <input type="email" class="form-control mb-16" id="pwd" placeholder="Veuillez entrer votre prénom">
+
+                                                    <label for="pwd" class="form-label mb-16">Mot de passe*</label>
+                                                    <input type="email" class="form-control  mb-16 flash-input-error" id="pwd" placeholder="Veuillez entrer votre mot de passe">
+
+                                                    <label for="pwd" class="form-label mb-16">Confirmer le mot de passe*</label>
+                                                    <input type="email" class="form-control mb-32 flash-input-error" id="pwd" placeholder="Veuillez confirmer votre mot de passe">
+
+                                                    <div class="form-check-therms mb-32">
+                                                        <label class="form-check-label" for="terms">
+                                                            <input
+                                                                class="form-check-input"
+                                                                type="checkbox"
+                                                                id="terms"
+                                                                required
+                                                            >J’accepte les conditions d’utilisation de Boolts.*
+                                                        </label>
+                                                    </div>
+                                                    {# message flash #}
+                                                    <span class="flash-message-error d-block mb-32">Veuillez remplir les champs obligatoires.</span>
+
+                                                    <button class=" btn-submit w-100 text-white" type="submit">Se connecter</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
 
 {% endblock %}
-
-{% block title %}
-
+{% block stylesheets %}
+    <style>
+        body {
+            background: url("{{ asset('images/authentification/immobilier.png') }}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+    </style>
 {% endblock %}
-

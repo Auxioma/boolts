@@ -76,15 +76,11 @@
 }
 
 .topbar-avatar-link {
-    display: inline-flex;
-    align-items: center;
     text-decoration: none;
     margin-right: 22px;
 }
 
 .topbar-avatar {
-    width: var(--avatar-size);
-    height: var(--avatar-size);
     border: 2px solid var(--color-white);
     border-radius: 50%;
     object-fit: cover;
@@ -130,8 +126,8 @@
 }
 
 .topbar-avatar {
-    width: 44px;
-    height: 44px;
+    width: 30x;
+    height: 30px;
     border-radius: 50%;
     object-fit: cover;
 }

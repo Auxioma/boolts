@@ -134,5 +134,13 @@
 .pb-30 { padding-bottom: 30px; }
 .py-30 { padding-top: 30px; padding-bottom: 30px; }
 
+.pt-48 { padding-top: 48px; }
+.pb-48 { padding-bottom: 48px; }
+.py-48 { padding-top: 48px; padding-bottom: 48px; }
+.px-48 { padding-left: 48px; padding-right: 48px}
 
 .fz-16 { font-size: 16px; }
+
+.rounded-24 {
+    border-radius: 24px;
+}
