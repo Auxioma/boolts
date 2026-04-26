@@ -19,7 +19,7 @@
                 <button
                     class="navbar-toggler topbar-toggler"
                     type="button"
-                    
+
                     {# data-bs-toggle="collapse"
                     data-bs-target="#mainNavbar" #}
                     aria-controls="mainNavbar"
@@ -66,6 +66,7 @@
         </nav>
     </div>
 </header>
+    {#
 <nav id="mobile-menu">
     <ul>
         <li><a href="#">Acheter</a></li>
@@ -76,6 +77,7 @@
         <li><a href="#">Déposer une annonce</a></li>
     </ul>
 </nav>
+    #}
     <main>
         <div class="container-fluid">
             <div class="row">
@@ -94,26 +96,50 @@
                                             <span>OU</span>
                                         </div>
                                         <div class="formulaire">
-                                            <form action="">
+                                            <form method="post">
                                                 <div class="">
                                                     <label for="email" class="form-label mb-16">Adresse e-mail</label>
-                                                    <input type="email" class="form-control mb-16" id="email" placeholder="Veuillez entrer votre adresse e-mail">
+                                                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control mb-16 {% if error %}flash-input-error{% endif %}" autocomplete="email" required autofocus>
 
                                                     <label for="pwd" class="form-label mb-16">Mot de passe</label>
-                                                    <input type="email" class="form-control flash-input-error" id="pwd" placeholder="Veuillez entrer votre mot de passe">
+                                                    <input type="password" name="password" id="inputPassword" class="form-control {% if error %}flash-input-error{% endif %}" autocomplete="current-password" required>
+
+                                                    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 
                                                     {# message flash #}
-                                                    <span class="flash-message-error mt-24 d-block">Adresse e-mail ou mot de passe incorrect</span>
+                                                    {% for label, messages in app.flashes %}
+                                                        {% if label in ['danger', 'error', 'warning', 'success'] %}
+                                                            {% for message in messages %}
+                                                                <span class="
+                                                        flash-message mt-24 d-block
+                                                        {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
+                                                        {% if label == 'warning' %}flash-message-error{% endif %}
+                                                        {% if label == 'error' %}flash-message-error{% endif %}
+                                                        {% if label == 'success' %}flash-message-success{% endif %}
+                                                    ">
+                                                        {{ message }}
+                                                    </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if error %}
+                                                        <div class="flash-message flash-message-error mt-24 d-block">
+                                                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                                                        </div>
+                                                    {% endif %}
 
                                                     <button class="mt-32 btn-submit w-100 text-white" type="submit">Se connecter</button>
                                                 </div>
                                             </form>
                                         </div>
-                                        <a href="" class="my-24 d-block w-100 text-center text-blue link-blue">Mot de passe oublié ?</a>
-                                        <buttom type="submit" class="btn-bg-border-blue d-block w-100 text-center">
+                                        <a href="{{ path('app_forgot_password_request') }}" class="my-24 d-block w-100 text-center text-blue link-blue">Mot de passe oublié ?</a>
+
+                                        <a href="{{ path('app_visiteur_inscription') }}" class="btn-bg-border-blue d-block w-100 text-center">
                                             Inscription
-                                        </buttom>
-                                        <a href="" class="mt-34 d-block w-100 text-center text-blue link-blue">
+                                        </a>
+
+                                        <a href="{{ path('app_professionnelle_connexion') }}" class="mt-34 d-block w-100 text-center text-blue link-blue">
                                             Vous êtes un professionnel ?
                                         </a>
                                     </div>

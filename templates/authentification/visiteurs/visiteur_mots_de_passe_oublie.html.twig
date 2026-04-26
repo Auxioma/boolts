@@ -77,14 +77,38 @@
                                     <div class="login my-48">
                                         <h1 class="mb-0">Saisissez votre adresse mail</h1>
                                         <div class="formulaire mt-32">
-                                            <form action="">
-                                                <div class="">
+
+                                            {{ form_start(requestForm, {
+                                                attr: {
+                                                    'data-turbo': 'false'
+                                                }
+                                            }) }}
+
+                                            <div class="">
                                                     <label for="email" class="form-label mb-16">Adresse e-mail</label>
-                                                    <input type="email" class="form-control" id="email" placeholder="Veuillez entrer votre adresse e-mail">
+                                                    {{ form_widget(requestForm.email) }}
+
+                                                    {% for label, messages in app.flashes %}
+                                                        {% if label in ['danger', 'error', 'warning', 'success'] %}
+                                                            {% for message in messages %}
+                                                                <span class="
+                                                        flash-message mt-24 d-block
+                                                        {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
+                                                        {% if label == 'warning' %}flash-message-error{% endif %}
+                                                        {% if label == 'error' %}flash-message-error{% endif %}
+                                                        {% if label == 'success' %}flash-message-success{% endif %}
+                                                    ">
+                                                        {{ message }}
+                                                    </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+
 
                                                     <button class="mt-32 btn-submit w-100 text-white" type="submit">Envoyer le lien de modification</button>
                                                 </div>
-                                            </form>
+                                            {{ form_end(requestForm) }}
                                         </div>
                                     </div>
                                 </div>
