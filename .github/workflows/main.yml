@@ -4,7 +4,7 @@ name: CD
 on:
   # L'action se déclenche uniquement lors d'un 'push' sur la branche 'main'.
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   deploy:
