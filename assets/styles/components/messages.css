@@ -23,6 +23,6 @@
     color: var(--colors-red-red-500)!important;
 }
 .flash-input-error::placeholder {
-    color: var(--colors-red-red-500);
-    opacity: 1; /* important pour éviter le gris transparent */
+    color: var(--colors-red-red-500)!important;
+    opacity: 1!important; /* important pour éviter le gris transparent */
 }

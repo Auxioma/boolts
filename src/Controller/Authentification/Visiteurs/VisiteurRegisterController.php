@@ -21,7 +21,7 @@ final class VisiteurRegisterController extends AbstractController
         ],
         name: 'app_visiteur_inscription'
     )]
-    public function index(Request $request, UserRepository $userRepository, EntityManagerInterface $em, EmailVerificationService $emailVerificationService,): Response
+    public function index(Request $request, UserRepository $userRepository, EntityManagerInterface $em, EmailVerificationService $emailVerificationService): Response
     {
         /* si utilisateur deja en session, je redirige vers l'admin visiteur */
         if ($this->getUser()) {
@@ -31,7 +31,6 @@ final class VisiteurRegisterController extends AbstractController
         $session = $request->getSession();
         $authStep = $session->get('auth_step', 'email');
         $authUserId = $session->get('auth_user_id');
-
 
         /* creation du formulaire */
         $emailForm = $this->createForm(AuthEmailType::class);

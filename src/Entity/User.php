@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\Index(name: 'IDX_USER_VERIFIED', columns: ['is_verified'])]
 #[ORM\Table(name: '`utilisateur`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -65,7 +66,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->email = mb_strtolower(trim($email));
 
         return $this;
     }
