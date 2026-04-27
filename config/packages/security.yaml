@@ -19,7 +19,13 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\VisiteurAuthenticator
+
+            entry_point: App\Security\VisiteurAuthenticator
+
+            custom_authenticators:
+                - App\Security\GoogleAuthenticator
+                - App\Security\VisiteurAuthenticator
+                - App\Security\AgenceImmobiliereAuthenticator
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -43,6 +49,7 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/, roles: PUBLIC_ACCESS, requires_channel: https }
 
 when@test:
     security:
