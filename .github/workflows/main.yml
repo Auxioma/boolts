@@ -39,7 +39,10 @@ jobs:
           php composer.phar dump-env dev
           php composer.phar install  # Installe les dépendances PHP définies dans le projet
           php bin/console d:s:u --force  # Met à jour la base de données
-          php bin/console cache:clear  # Vide le cache de l'application
+          php composer.phar dump-env prod
           php bin/console cache:warmup  # Préchauffe le cache pour de meilleures performances
           php bin/console assets:install public  # Installe les assets dans le répertoire public
+          php bin/console asset-map:compile  # Compile les assets pour une meilleure performance
+          php bin/console cache:clear --env=prod  # Vide le cache en mode production
+
           "
