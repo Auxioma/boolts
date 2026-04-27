@@ -15,7 +15,9 @@
                                         <h1 class="mb-0 text-center w-xl-70 mx-auto">Inscription à votre espace pro</h1>
                                         <div class="media-social mt-32">
                                             <a href="" class="btn-bg-noir d-block w-100 text-center">Connexion via Apple</a>
-                                            <a href="" class="btn-bg-border-gris mt-16 d-block w-100 text-center">Connexion via Google</a>
+                                            {{ include('composant/_authentification/_google_login.html.twig', {
+                                                type: 'professionnel'
+                                            }) }}
                                         </div>
                                         <div class="divider my-32">
                                             <span>OU</span>

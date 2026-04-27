@@ -1,0 +1,43 @@
+name: PHP CS Fixer
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  php-cs-fixer:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer
+          coverage: none
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.composer/cache/files
+            vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Installer les dépendances (sans scripts Symfony)
+        env:
+          APP_ENV: test
+          DEFAULT_URI: "http://localhost"
+        run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
+
+      - name: Lancer PHP CS Fixer (check)
+        run: vendor/bin/php-cs-fixer fix
