@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}{{ 'professionnel.reset_password.check_email.meta.title'|trans }}{% endblock %}
 
 {% block body %}
     <main>
@@ -11,10 +11,13 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-md-11 col-md-10 col-lg-4 mx-auto ">
-                                    <div class="login my-48 px-48 py-48 bg-white rounded-24">
-                                        <h1 class="mb-0">Le lien de modification est envoyé par mail !</h1>
+                                    <div class="login my-48 px-48 py-48 bg-white rounded-24 text-center">
+                                        <h1 class="mb-0">
+                                            {{ 'professionnel.reset_password.check_email.title'|trans }}
+                                        </h1>
+
                                         <a href="{{ path('agence_immobiliereforgot_password_request') }}" class="mt-32 d-block w-100 text-blue link-blue fz-16">
-                                            Vous n’avez rien reçu ? Recevoir un nouvel e-mail
+                                            {{ 'professionnel.reset_password.check_email.resend_link'|trans }}
                                         </a>
                                     </div>
                                 </div>

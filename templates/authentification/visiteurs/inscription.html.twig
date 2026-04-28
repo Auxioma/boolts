@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}{{ 'visiteur.register.email.meta.title'|trans }}{% endblock %}
 
 {% block body %}
     <main>
@@ -12,51 +12,63 @@
                             <div class="row">
                                 <div class="col-md-11 col-lg-8 mx-auto">
                                     <div class="login my-48">
-                                        <h1 class="mb-0">Inscription</h1>
+                                        <h1 class="mb-0">
+                                            {{ 'visiteur.register.email.title'|trans }}
+                                        </h1>
+
                                         <div class="media-social mt-32">
-                                            <a href="" class="btn-bg-noir d-block w-100 text-center">Inscription via Apple</a>
-                                            <a href="" class="btn-bg-border-gris mt-16 d-block w-100 text-center">Inscription via Google</a>
+                                            <a href="" class="btn-bg-noir d-block w-100 text-center">
+                                                {{ 'visiteur.register.email.apple'|trans }}
+                                            </a>
+
+                                            <a href="" class="btn-bg-border-gris mt-16 d-block w-100 text-center">
+                                                {{ 'visiteur.register.email.google'|trans }}
+                                            </a>
                                         </div>
+
                                         <div class="divider my-32">
-                                            <span>OU</span>
+                                            <span>{{ 'visiteur.register.email.or'|trans }}</span>
                                         </div>
+
                                         <div class="formulaire">
                                             {{ form_start(emailForm, {
                                                 attr: {
                                                     class: 'formulaire',
                                                 }
                                             }) }}
-                                                <div class="">
 
-                                                    <label for="pwd" class="form-label mb-16">Inscription via adresse e-mail*</label>
-                                                    {# class dans le input pour les erreurs et input en rouge : flash-input-error #}
-                                                    {{ form_widget(emailForm.email, {
-                                                        attr: {
-                                                            class: 'form-control',
-                                                        },
-                                                    }) }}
-                                                    {# message flash #}
-                                                    {% for label, messages in app.flashes %}
-                                                        {% if label in ['danger', 'error', 'warning'] %}
-                                                            {% for message in messages %}
-                                                                <span class="
-                                                                    flash-message mt-24 d-block
-                                                                    {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
-                                                                    {% if label == 'warning' %}flash-message-error{% endif %}
-                                                                ">
-                                                                    {{ message }}
-                                                                </span>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">Continuer</button>
-                                                </div>
+                                            <div>
+                                                <label for="{{ emailForm.email.vars.id }}" class="form-label mb-16">
+                                                    {{ 'visiteur.register.email.email.label'|trans }}
+                                                </label>
+
+                                                {{ form_widget(emailForm.email, {
+                                                    attr: {
+                                                        class: 'form-control',
+                                                        placeholder: 'visiteur.register.email.email.placeholder'|trans
+                                                    }
+                                                }) }}
+
+                                                {% for label, messages in app.flashes %}
+                                                    {% if label in ['danger', 'error', 'warning'] %}
+                                                        {% for message in messages %}
+                                                            <span class="flash-message flash-message-error mt-24 d-block">
+                                                                {{ message|trans }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                                <button class="mt-32 btn-submit w-100 text-white" type="submit">
+                                                    {{ 'visiteur.register.email.submit'|trans }}
+                                                </button>
+                                            </div>
 
                                             {{ form_end(emailForm) }}
-
                                         </div>
+
                                         <a href="{{ path('app_professionnelle_register') }}" class="mt-34 d-block w-100 text-center text-blue link-blue">
-                                            Vous êtes un professionnel ?
+                                            {{ 'visiteur.register.email.professional_link'|trans }}
                                         </a>
                                     </div>
                                 </div>
@@ -64,12 +76,11 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-lg-6 d-none d-lg-block pe-0 adaptation-image-login">
                     <div class="bg-login"></div>
                 </div>
             </div>
-
         </div>
     </main>
-
 {% endblock %}

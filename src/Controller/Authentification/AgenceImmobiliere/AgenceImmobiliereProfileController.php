@@ -16,8 +16,8 @@ final class AgenceImmobiliereProfileController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/register-professionnelle-profile',
-            'en' => '/professional-login'
+            'fr' => '/fr/pro/signup/profile',
+            'en' => '/pro/signup/profile'
         ],
         name: 'app_professionnelle_profile'
     )]

@@ -16,8 +16,8 @@ final class VisiteurRegisterController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/inscription-utilisateur',
-            'en' => '/user-register'
+            'fr' => '/fr/signup',
+            'en' => '/signup'
         ],
         name: 'app_visiteur_inscription'
     )]

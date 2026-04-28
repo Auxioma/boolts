@@ -34,5 +34,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Utilisateurs & Accès', 'fas fa-users');
         yield MenuItem::linkTo(UserCrudController::class, 'Utilisateurs', 'fas fa-user')
             ->setAction(Action::INDEX);
+        yield MenuItem::linkTo(TranslationCrudController::class, 'Traductions', 'fas fa-language')
+            ->setAction(Action::INDEX);
     }
 }

@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}{{ 'visiteur.forgot_password.meta.title'|trans }}{% endblock %}
 
 {% block body %}
-     <main>
+    <main>
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12 col-lg-6">
@@ -12,7 +12,11 @@
                             <div class="row">
                                 <div class="col-md-11 col-lg-8 mx-auto">
                                     <div class="login my-48">
-                                        <h1 class="mb-0">Saisissez votre adresse mail</h1>
+
+                                        <h1 class="mb-0">
+                                            {{ 'visiteur.forgot_password.title'|trans }}
+                                        </h1>
+
                                         <div class="formulaire mt-32">
 
                                             {{ form_start(requestForm, {
@@ -21,32 +25,39 @@
                                                 }
                                             }) }}
 
-                                            <div class="">
-                                                    <label for="email" class="form-label mb-16">Adresse e-mail</label>
-                                                    {{ form_widget(requestForm.email) }}
+                                            <div>
 
-                                                    {% for label, messages in app.flashes %}
-                                                        {% if label in ['danger', 'error', 'warning', 'success'] %}
-                                                            {% for message in messages %}
-                                                                <span class="
-                                                        flash-message mt-24 d-block
-                                                        {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
-                                                        {% if label == 'warning' %}flash-message-error{% endif %}
-                                                        {% if label == 'error' %}flash-message-error{% endif %}
-                                                        {% if label == 'success' %}flash-message-success{% endif %}
-                                                    ">
-                                                        {{ message }}
-                                                    </span>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
+                                                <label for="request_form_email" class="form-label mb-16">
+                                                    {{ 'visiteur.forgot_password.email.label'|trans }}
+                                                </label>
 
+                                                {{ form_widget(requestForm.email, {
+                                                    attr: {
+                                                        class: 'form-control mb-16',
+                                                        placeholder: 'visiteur.forgot_password.email.placeholder'|trans
+                                                    }
+                                                }) }}
 
+                                                {% for label, messages in app.flashes %}
+                                                    {% if label in ['danger', 'error', 'warning'] %}
+                                                        {% for message in messages %}
+                                                            <span class="flash-message flash-message-error mt-24 d-block">
+                                                            {{ message|trans }}
+                                                        </span>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
 
-                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">Envoyer le lien de modification</button>
-                                                </div>
+                                                <button class="mt-32 btn-submit w-100 text-white" type="submit">
+                                                    {{ 'visiteur.forgot_password.submit'|trans }}
+                                                </button>
+
+                                            </div>
+
                                             {{ form_end(requestForm) }}
+
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -57,8 +68,6 @@
                     <div class="bg-login"></div>
                 </div>
             </div>
-
         </div>
     </main>
-
 {% endblock %}

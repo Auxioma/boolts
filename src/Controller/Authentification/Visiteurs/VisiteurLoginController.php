@@ -11,8 +11,8 @@ final class VisiteurLoginController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/connexion-utilisateur',
-            'en' => '/user-login'
+            'fr' => '/fr/login',
+            'en' => '/login',
         ],
         name: 'app_login'
     )]

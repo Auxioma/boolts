@@ -16,8 +16,8 @@ final class AgenceImmobiliereRegisterController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/register-professionnelle',
-            'en' => '/professional-login'
+            'fr' => '/fr/pro/signup',
+            'en' => '/pro/signup'
         ],
         name: 'app_professionnelle_register'
     )]

@@ -16,8 +16,8 @@ final class AgenceImmobiliereOptController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/opt',
-            'en' => '/professional-login'
+            'fr' => '/fr/pro/signup/verify',
+            'en' => '/pro/signup/verify'
         ],
         name: 'app_professionnelle_otp'
     )]

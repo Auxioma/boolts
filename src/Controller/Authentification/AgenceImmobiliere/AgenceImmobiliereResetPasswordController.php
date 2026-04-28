@@ -20,7 +20,12 @@ use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
-#[Route('/renew-password')]
+#[Route(
+    path: [
+        'fr' => '/fr/pro/reset-password',
+        'en' => '/pro/reset-password',
+    ],
+)]
 class AgenceImmobiliereResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;

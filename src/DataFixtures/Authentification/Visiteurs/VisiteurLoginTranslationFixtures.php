@@ -1,12 +1,12 @@
 <?php
 
-namespace App\DataFixtures\Authentification\AgenceImmobiliere;
+namespace App\DataFixtures\Authentification\Visiteurs;
 
 use App\Entity\Translation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-final class TranslationFixtures extends Fixture
+final class VisiteurLoginTranslationFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {

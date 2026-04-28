@@ -16,8 +16,8 @@ final class VisiteurProfileCompleteController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/completez-votre-profil-utilisateur',
-            'en' => '/user-profile-complete'
+            'fr' => '/fr/signup/profile',
+            'en' => '/signup/profile'
         ],
         name: 'app_visiteur_profile_complete'
     )]

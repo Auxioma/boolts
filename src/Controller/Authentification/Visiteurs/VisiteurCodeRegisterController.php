@@ -16,8 +16,8 @@ final class VisiteurCodeRegisterController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/verification-code',
-            'en' => '/verify-code',
+            'fr' => '/fr/signup/verify',
+            'en' => '/signup/verify',
         ],
         name: 'app_visiteur_verification_code'
     )]

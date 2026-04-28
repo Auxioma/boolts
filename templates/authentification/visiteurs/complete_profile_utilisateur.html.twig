@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}{{ 'visiteur.register.profile.meta.title'|trans }}{% endblock %}
 
 {% block body %}
     <main>
@@ -12,43 +12,59 @@
                             <div class="row">
                                 <div class="col-md-11 col-lg-8 mx-auto">
                                     <div class="login my-48">
-                                        <h1 class="mb-0">Connexion</h1>
+                                        <h1 class="mb-0">{{ 'visiteur.register.profile.title'|trans }}</h1>
                                         <div class="formulaire mt-32">
                                             {{ form_start(form) }}
-                                                <div class="">
-                                                    <label for="email" class="form-label mb-16">Nom*</label>
-                                                    {{ form_widget(form.nom) }}
+                                            <div class="">
+                                                <label for="email" class="form-label mb-16">
+                                                    {{ 'visiteur.register.profile.lastname.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.nom) }}
 
-                                                    <label for="pwd" class="form-label mb-16">Prénom*</label>
-                                                    {{ form_widget(form.prenom) }}
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'visiteur.register.profile.firstname.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.prenom) }}
 
-                                                    <label for="pwd" class="form-label mb-16">Mot de passe*</label>
-                                                    {{ form_widget(form.plainPassword.first) }}
+                                                <small class="d-block mb-16">
+                                                    {{ 'visiteur.register.profile.password.help'|trans }}
+                                                </small>
 
-                                                    <label for="pwd" class="form-label mb-16">Confirmer le mot de passe*</label>
-                                                    {{ form_widget(form.plainPassword.second) }}
-                                                    <div class="form-check-therms mb-32">
-                                                        <label class="form-check-label" for="terms">
-                                                            {{ form_widget(form.agreeTerms) }}
-                                                            ’accepte les conditions d’utilisation de Boolts.*
-                                                            </label>
-                                                    </div>
-                                                    {# message flash #}
-                                                    {% for label, messages in app.flashes %}
-                                                        {% if label in ['danger', 'error', 'warning'] %}
-                                                            {% for message in messages %}
-                                                                <span class="
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'visiteur.register.profile.password.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.plainPassword.first) }}
+
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'visiteur.register.profile.password_confirm.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.plainPassword.second) }}
+
+                                                <div class="form-check-therms mb-32">
+                                                    <label class="form-check-label" for="terms">
+                                                        {{ form_widget(form.agreeTerms) }}
+                                                        {{ 'visiteur.register.profile.terms.label'|trans }}
+                                                    </label>
+                                                </div>
+
+                                                {% for label, messages in app.flashes %}
+                                                    {% if label in ['danger', 'error', 'warning'] %}
+                                                        {% for message in messages %}
+                                                            <span class="
                                                                     flash-message mt-32 d-block
                                                                     {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
                                                                     {% if label == 'warning' %}flash-message-error{% endif %}
                                                                 ">
-                                                                    {{ message }}
+                                                                    {{ message|trans }}
                                                                 </span>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                    <button class=" btn-submit w-100 text-white" type="submit">Se connecter</button>
-                                                </div>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                                <button class=" btn-submit w-100 text-white" type="submit">
+                                                    {{ 'visiteur.register.profile.submit'|trans }}
+                                                </button>
+                                            </div>
                                             {{ form_end(form) }}
                                         </div>
                                     </div>
@@ -61,8 +77,6 @@
                     <div class="bg-login"></div>
                 </div>
             </div>
-
         </div>
     </main>
-
 {% endblock %}

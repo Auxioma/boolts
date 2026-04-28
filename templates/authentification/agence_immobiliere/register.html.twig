@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}{{ 'professionnel.register.email.meta.title'|trans }}{% endblock %}
 
 {% block body %}
     <main>
@@ -12,16 +12,24 @@
                             <div class="row">
                                 <div class="col-md-11 col-md-10 col-lg-4 mx-auto ">
                                     <div class="login my-48 px-48 py-48 bg-white rounded-24">
-                                        <h1 class="mb-0 text-center w-xl-70 mx-auto">Inscription à votre espace pro</h1>
+                                        <h1 class="mb-0 text-center w-xl-70 mx-auto">
+                                            {{ 'professionnel.register.email.title'|trans }}
+                                        </h1>
+
                                         <div class="media-social mt-32">
-                                            <a href="" class="btn-bg-noir d-block w-100 text-center">Connexion via Apple</a>
+                                            <a href="" class="btn-bg-noir d-block w-100 text-center">
+                                                {{ 'professionnel.register.email.apple'|trans }}
+                                            </a>
+
                                             {{ include('composant/_authentification/_google_login.html.twig', {
                                                 type: 'professionnel'
                                             }) }}
                                         </div>
+
                                         <div class="divider my-32">
-                                            <span>OU</span>
+                                            <span>{{ 'professionnel.register.email.or'|trans }}</span>
                                         </div>
+
                                         <div class="formulaire">
 
                                             {{ form_start(emailForm, {
@@ -32,14 +40,16 @@
 
                                                 <div class="">
 
-                                                    <label for="pwd" class="form-label mb-16">Inscription via adresse e-mail*</label>
+                                                    <label for="pwd" class="form-label mb-16">
+                                                        {{ 'professionnel.register.email.email.label'|trans }}
+                                                    </label>
+
                                                     {{ form_widget(emailForm.email, {
                                                         attr: {
                                                             class: 'form-control',
                                                         },
                                                     }) }}
 
-                                                    {# message flash #}
                                                     {% for label, messages in app.flashes %}
                                                         {% if label in ['danger', 'error', 'warning'] %}
                                                             {% for message in messages %}
@@ -48,20 +58,23 @@
                                                                     {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
                                                                     {% if label == 'warning' %}flash-message-error{% endif %}
                                                                 ">
-                                                                    {{ message }}
+                                                                    {{ message|trans }}
                                                                 </span>
                                                             {% endfor %}
                                                         {% endif %}
                                                     {% endfor %}
 
-                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">Se connecter</button>
+                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">
+                                                        {{ 'professionnel.register.email.submit'|trans }}
+                                                    </button>
                                                 </div>
 
                                             {{ form_end(emailForm) }}
 
                                         </div>
+
                                         <a href="" class="mt-34 d-block w-100 text-center text-blue link-blue">
-                                            Vous êtes un professionnel ?
+                                            {{ 'professionnel.register.email.link'|trans }}
                                         </a>
                                     </div>
                                 </div>

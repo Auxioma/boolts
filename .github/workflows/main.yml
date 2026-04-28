@@ -39,6 +39,7 @@ jobs:
           php composer.phar dump-env dev &&
           php composer.phar install  &&
           php bin/console d:s:u --force  &&
+          php bin/console d:f:l -n  &&
           php composer.phar dump-env prod &&
           php bin/console cache:warmup  &&
           php bin/console assets:install public  &&

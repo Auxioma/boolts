@@ -11,8 +11,8 @@ final class AgenceImmobiliereLoginController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/connexion-professionnelle',
-            'en' => '/professional-login'
+            'fr' => '/fr/pro/login',
+            'en' => '/pro/login'
         ],
         name: 'app_professionnelle_connexion'
     )]

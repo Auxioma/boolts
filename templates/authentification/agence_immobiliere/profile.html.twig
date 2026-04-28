@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}{{ 'professionnel.register.agency.meta.title'|trans }}{% endblock %}
 
 {% block body %}
      <main>
@@ -12,28 +12,40 @@
                             <div class="row">
                                 <div class="col-md-11 col-md-10 col-lg-4 mx-auto ">
                                     <div class="login my-48 px-48 py-48 bg-white rounded-24">
-                                        <h1 class="mb-0 text-center">Inscrivez-votre agence dès maintenant</h1>
+                                        <h1 class="mb-0 text-center">
+                                            {{ 'professionnel.register.agency.title'|trans }}
+                                        </h1>
+
                                         <div class="formulaire mt-32">
                                             {{ form_start(form) }}
                                             <div class="">
-                                                <label for="email" class="form-label mb-16">Nom*</label>
+                                                <label for="email" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.lastname.label'|trans }}
+                                                </label>
                                                 {{ form_widget(form.nom) }}
 
-                                                <label for="pwd" class="form-label mb-16">Prénom*</label>
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.firstname.label'|trans }}
+                                                </label>
                                                 {{ form_widget(form.prenom) }}
 
-                                                <label for="pwd" class="form-label mb-16">Mot de passe*</label>
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.password.label'|trans }}
+                                                </label>
                                                 {{ form_widget(form.plainPassword.first) }}
 
-                                                <label for="pwd" class="form-label mb-16">Confirmer le mot de passe*</label>
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.password_confirm.label'|trans }}
+                                                </label>
                                                 {{ form_widget(form.plainPassword.second) }}
+
                                                 <div class="form-check-therms mb-32">
                                                     <label class="form-check-label" for="terms">
                                                         {{ form_widget(form.agreeTerms) }}
-                                                        ’accepte les conditions d’utilisation de Boolts.*
+                                                        {{ 'professionnel.register.agency.terms.label'|trans }}
                                                     </label>
                                                 </div>
-                                                {# message flash #}
+
                                                 {% for label, messages in app.flashes %}
                                                     {% if label in ['danger', 'error', 'warning'] %}
                                                         {% for message in messages %}
@@ -42,12 +54,15 @@
                                                                     {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
                                                                     {% if label == 'warning' %}flash-message-error{% endif %}
                                                                 ">
-                                                                    {{ message }}
+                                                                    {{ message|trans }}
                                                                 </span>
                                                         {% endfor %}
                                                     {% endif %}
                                                 {% endfor %}
-                                                <button class=" btn-submit w-100 text-white" type="submit">Se connecter</button>
+
+                                                <button class=" btn-submit w-100 text-white" type="submit">
+                                                    {{ 'professionnel.register.agency.submit'|trans }}
+                                                </button>
                                             </div>
                                             {{ form_end(form) }}
                                         </div>
