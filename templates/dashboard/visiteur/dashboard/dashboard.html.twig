@@ -1,1 +1,26 @@
-dashboard
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Visiteur{% endblock %}
+
+{% block body %}
+    <main id=dashboard" class="dashboard">
+        <div class="container-fluid">
+            <div class="row">
+                {# div 4 pour le menu du dashboard #}
+                {% include 'composant/__agence_immobiliere/_tableau_de_bord.html.twig' %}
+
+                {# contenu du dashboard #}
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-4">menu profile</div>
+                                <div class="col-8">Contenue profile</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
