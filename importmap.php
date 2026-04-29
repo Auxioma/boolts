@@ -35,11 +35,11 @@ return [
         'version' => '5.3.8',
         'type' => 'css',
     ],
-    'inter-ui' => [
-        'version' => '4.1.1',
+    'mmenu-js' => [
+        'version' => '9.3.0',
     ],
-    'inter-ui/inter.min.css' => [
-        'version' => '4.1.1',
+    'mmenu-js/dist/mmenu.css' => [
+        'version' => '9.3.0',
         'type' => 'css',
     ],
 ];

@@ -42,7 +42,7 @@ final readonly class EmailVerificationService
             ->from('support@boolts.com')
             ->to((string) $user->getEmail())
             ->subject('Votre code de connexion Boolts')
-            ->htmlTemplate('email/auth_code.html.twig')
+            ->htmlTemplate('email/authentification/agence_immobiliere/opt.html.twig')
             ->context([
                 'user' => $user,
                 'code' => $user->getEmailAuthCode(),

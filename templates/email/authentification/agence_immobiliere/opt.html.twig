@@ -1,4 +1,4 @@
-{% apply inline_css(source('email/email.css')) %}
+{% apply inline_css(source('email/authentification/agence_immobiliere/otp.css')) %}
 <!DOCTYPE html>
 <html lang="{{ app.request.locale|default('fr') }}">
     <head>
@@ -28,7 +28,6 @@
                                 </table>
                             </td>
                         </tr>
-
                         <tr>
                             <td class="mail-main">
                                 <h1 class="mail-title">
@@ -41,14 +40,17 @@
                                 </div>
                                 <p class="validity-text">
                                     Prenez en compte que ce code n’est valable que jusqu’au
-                                    {{ expirationDate|default('Lundi 12 Mars à 17:20') }}
+                                    {{ 'now'|date_modify('+1 hour')|format_datetime(
+                                        pattern="EEEE d MMMM 'à' HH:mm",
+                                        locale=app.request.locale
+                                    ) }}
                                 </p>
                                 <div class="support-block">
                                     <p>
                                         Vous avez des soucis pour vous connecter ?<br>
                                         Essayez de contacter notre support :
-                                        <a href="mailto:{{ supportEmail|default('contact@boolts.com') }}">
-                                            {{ supportEmail|default('contact@boolts.com') }}
+                                        <a href="mailto:contact@boolts.com">
+                                            contact@boolts.com
                                         </a>
                                     </p>
                                 </div>
@@ -60,7 +62,6 @@
                                     <tr>
                                         <td class="footer-column" width="50%" valign="top">
                                             <p class="footer-brand">boolts</p>
-
                                             <div class="footer-address">
                                                 <p>©{{ year|default('2026') }} Boolts</p>
                                                 <p>
