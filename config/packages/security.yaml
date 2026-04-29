@@ -33,11 +33,13 @@ security:
 
             remember_me:
                 secret: '%kernel.secret%'
-                lifetime: 604800
+                lifetime: 2592000
                 path: /
-                # by default, the feature is enabled by checking a checkbox in the
-                # login form, uncomment the following line to always enable it.
-                #always_remember_me: true
+                always_remember_me: true
+                secure: true
+                httponly: true
+                samesite: lax
+                signature_properties: ['password']
 
             # Activate different ways to authenticate:
             # https://symfony.com/doc/current/security.html#the-firewall
