@@ -124,7 +124,7 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
             // The session is cleaned up after the password has been changed.
             $this->cleanSessionAfterReset();
 
-            return $this->redirectToRoute('agence_immobilierelogin');
+            return $this->redirectToRoute('app_professionnelle_connexion');
         }
 
         $statusCode = $form->isSubmitted()
@@ -168,7 +168,7 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
             ->from(new Address('support@boolts.com', 'Boolts'))
             ->to((string) $user->getEmail())
             ->subject('Your password reset request')
-            ->htmlTemplate('email/authentification/agence_immobiliere/renew_password.html.twig')
+            ->htmlTemplate('email/authentification/forgot_password/password_reset_agence_immobiliere.html.twig')
             ->context([
                 'resetToken' => $resetToken,
             ])

@@ -5,15 +5,22 @@ namespace App\Controller\Authentification\AgenceImmobiliere;
 use App\Form\Authentification\CompleteProfileType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class AgenceImmobiliereProfileController extends AbstractController
 {
+    public function __construct(
+        private MailerInterface        $mailer,
+    ) {
+    }
+
     #[Route(
         path: [
             'fr' => '/fr/pro/signup/profile',
@@ -46,6 +53,19 @@ final class AgenceImmobiliereProfileController extends AbstractController
 
             $user->setIsVerified(true);
             $em->flush();
+
+            /** Send confirmation email */
+            $email = (new TemplatedEmail())
+                ->from('support@boolts.com')
+                ->to((string) $user->getEmail())
+                ->subject('Votre code de connexion Boolts')
+                ->htmlTemplate('email/authentification/confirmation_inscription/agence_immobiliere.html.twig')
+                ->context([
+                    'user' => $user,
+                ])
+            ;
+
+            $this->mailer->send($email);
 
             $security->login($user, 'App\Security\VisiteurAuthenticator', 'main');
 
