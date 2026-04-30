@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Authentification\Visiteurs;
 
 use App\Entity\User;
@@ -15,16 +25,15 @@ final class VisiteurRequestNewCode extends AbstractController
     #[Route(
         path: [
             'fr' => '/fr/request-new-code',
-            'en' => '/request-new-code'
+            'en' => '/request-new-code',
         ],
         name: 'app_auth_resend_code'
     )]
     public function index(
         Request $request,
         UserRepository $userRepository,
-        EmailVerificationService $emailVerificationService
-    ): Response
-    {
+        EmailVerificationService $emailVerificationService,
+    ): Response {
         $session = $request->getSession();
         $authUserId = $session->get('auth_user_id');
 
@@ -62,6 +71,5 @@ final class VisiteurRequestNewCode extends AbstractController
         $this->addFlash('success', 'Un nouveau code vous a été envoyé.');
 
         return $this->redirectToRoute('app_visiteur_verification_code');
-
     }
 }

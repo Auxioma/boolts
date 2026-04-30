@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\DataFixtures\Authentification\Visiteurs;
 
 use App\Entity\Translation;
@@ -20,7 +30,6 @@ final class ResetPasswordCheckEmailTranslationFixtures extends Fixture
 
         foreach ($translations as $locale => $items) {
             foreach ($items as $key => $value) {
-
                 // 🔒 Optionnel mais PRO : éviter les doublons si tu relances les fixtures
                 $translation = new Translation();
                 $translation->setTranslationKey($key);

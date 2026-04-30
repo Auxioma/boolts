@@ -44,7 +44,6 @@ class DatabaseTranslator implements TranslatorInterface, TranslatorBagInterface,
      */
     public function __construct(TranslatorInterface $translator, TranslationRepository $translationRepository)
     {
-
         $this->translator = $translator;
         $this->translationRepository = $translationRepository;
         $this->locale = $translator->getLocale(); // Initialise avec la locale par défaut
@@ -54,7 +53,7 @@ class DatabaseTranslator implements TranslatorInterface, TranslatorBagInterface,
      * Charge toutes les traductions depuis la base de données.
      * Les stocke dans le tableau $translations par locale et clé.
      */
-    public function loadTranslations()
+    public function loadTranslations(): void
     {
         $translations = $this->translationRepository->findAll();
 

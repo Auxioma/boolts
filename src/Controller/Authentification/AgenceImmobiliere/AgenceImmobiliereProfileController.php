@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Authentification\AgenceImmobiliere;
 
 use App\Form\Authentification\CompleteProfileType;
@@ -17,18 +27,18 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AgenceImmobiliereProfileController extends AbstractController
 {
     public function __construct(
-        private MailerInterface        $mailer,
+        private MailerInterface $mailer,
     ) {
     }
 
     #[Route(
         path: [
             'fr' => '/fr/pro/signup/profile',
-            'en' => '/pro/signup/profile'
+            'en' => '/pro/signup/profile',
         ],
         name: 'app_professionnelle_profile'
     )]
-    public function completeProfile(Request $request,UserRepository $userRepository, EntityManagerInterface $em, Security $security, UserPasswordHasherInterface $userPasswordHasher): Response
+    public function completeProfile(Request $request, UserRepository $userRepository, EntityManagerInterface $em, Security $security, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $session = $request->getSession();
         $authUserId = $session->get('auth_user_id');

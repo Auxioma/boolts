@@ -1,20 +1,13 @@
 <?php
 
 /**
- * Copyright (c) 2026 Auxioma Web Agency
- * https://trouvemoi.eu
+ * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie du projet Trouvemoi.eu développé par Auxioma Web Agency.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
- * Ce code source, son architecture, sa structure, ses scripts et ses composants
- * sont la propriété exclusive de Auxioma Web Agency et de ses partenaires.
- *
- * Toute reproduction, modification, distribution, publication ou utilisation,
- * totale ou partielle, sans autorisation écrite préalable est strictement interdite.
- *
- * Ce code est confidentiel et propriétaire.
- * Droit applicable : Monde.
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
 namespace App\Vich;

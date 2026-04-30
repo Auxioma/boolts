@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Authentification\AgenceImmobiliere;
 
 use App\Entity\User;
@@ -17,7 +27,7 @@ final class AgenceImmobiliereOptController extends AbstractController
     #[Route(
         path: [
             'fr' => '/fr/pro/signup/verify',
-            'en' => '/pro/signup/verify'
+            'en' => '/pro/signup/verify',
         ],
         name: 'app_professionnelle_otp'
     )]

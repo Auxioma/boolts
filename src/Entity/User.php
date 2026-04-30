@@ -1,16 +1,26 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Entity;
 
-use App\Entity\Traits\LastLoginAtTraits;
-use App\Entity\Traits\DeletedAtTraits;
-use App\Entity\Traits\UpdatedAtTraits;
 use App\Entity\Traits\CreatedAtTraits;
+use App\Entity\Traits\DeletedAtTraits;
+use App\Entity\Traits\LastLoginAtTraits;
+use App\Entity\Traits\UpdatedAtTraits;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -22,9 +32,9 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use CreatedAtTraits;
-    use UpdatedAtTraits;
     use DeletedAtTraits;
     use LastLoginAtTraits;
+    use UpdatedAtTraits;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -91,7 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = mb_strtolower(trim($email));
+        $this->email = mb_strtolower(mb_trim($email));
 
         return $this;
     }
@@ -302,6 +312,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-
 }

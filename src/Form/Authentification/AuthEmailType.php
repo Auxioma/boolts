@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
@@ -36,6 +34,7 @@ final class AuthEmailType extends AbstractType
             ],
         ]);
     }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([]);

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Authentification;
 
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
@@ -14,7 +24,7 @@ final class GoogleController extends AbstractController
     #[Route('/connect/google/{type}', name: 'app_google_connect')]
     public function connect(string $type, Request $request, ClientRegistry $clientRegistry): RedirectResponse
     {
-        if (!in_array($type, ['particulier', 'professionnel'], true)) {
+        if (!\in_array($type, ['particulier', 'professionnel'], true)) {
             throw $this->createNotFoundException();
         }
         $request->getSession()->set('google_register_type', $type);
