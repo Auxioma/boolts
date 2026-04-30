@@ -155,3 +155,14 @@
         display: none !important;
     }
 }
+.avatar-letter {
+    color: #5D00FF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    background: #CFB3FF;
+    width: 30px;
+    height: 30px;
+    padding: 2px 7px 5px 8px;
+}

@@ -43,7 +43,7 @@ class CompleteProfileType extends AbstractType
                 'first_options' => [
                     'label' => 'form.password.new',
                     'attr' => [
-                        'class' => 'form-control mb-16',
+                        'class' => 'form-control',
                         'placeholder' => 'Veuillez entrer votre mot de passe',
                     ],
                     'constraints' => [

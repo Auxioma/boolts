@@ -51,9 +51,51 @@
                     </li>
 
                     <li class="nav-item ms-lg-3 d-none d-lg-block">
-                        <a href="#" class="topbar-avatar-link">
-                            <img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
-                        </a>
+                        {# je vais faire des redirection si utilisateur est connecté et en fonction du role #}
+                        {% if not app.user %}
+                            <a href="{{ path('app_login') }}" class="topbar-avatar-link">
+                                <span class="icon-menu"></span>
+
+                            </a>
+                        {% else %}
+                            {# Utilisateur connecté : redirection selon rôle #}
+
+                            {% if is_granted('ROLE_ADMIN') %}
+                                {% set dashboardPath = path('admin') %}
+                            {% elseif is_granted('ROLE_AGENCE') %}
+                                {% set dashboardPath = path('app_dashboard_agence_immobiliere_dashboard') %}
+                            {% else %}
+                                {% set dashboardPath = path('app_visiteur_dashboard') %}
+                            {% endif %}
+
+                            {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'avatarFile') : null %}
+                            {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
+
+
+                                {% if avatar %}
+                                    <a href="#" class="topbar-avatar-link">
+                                        <img
+                                            src="{{ avatar }}"
+                                            alt="Profil utilisateur"
+                                            class="topbar-avatar"
+                                        >
+                                   </a>
+                                {% elseif firstLetter %}
+                                    <a href="#" class="topbar-avatar-link me-0">
+                                        <div class="topbar-avatar avatar-letter">
+                                            {{ firstLetter }}
+                                        </div>
+                                    </a>
+                                {% else %}
+                                    <a href="#" class="topbar-avatar-link">
+                                        <img
+                                            src="{{ asset('images/authentification/auxioma.png') }}"
+                                            alt="Profil utilisateur"
+                                            class="topbar-avatar"
+                                        >
+                                    </a>
+                                {% endif %}
+                        {% endif %}
                     </li>
                 </ul>
             </div>
