@@ -166,3 +166,11 @@
     height: 30px;
     padding: 2px 7px 5px 8px;
 }
+.icon-menu {
+    font-size:24px;
+}
+.icon-user {
+    font-size: 24px;
+    border: 2px solid #000;
+    border-radius: 99999px;
+}

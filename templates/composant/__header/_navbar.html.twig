@@ -21,7 +21,7 @@
                     aria-expanded="false"
                     aria-label="Ouvrir le menu"
                 >
-                    <span class="lucide icon-menu"></span>
+                    <span class="icon-menu"></span>
                 </button>
             </div>
 
@@ -54,7 +54,7 @@
                         {# je vais faire des redirection si utilisateur est connecté et en fonction du role #}
                         {% if not app.user %}
                             <a href="{{ path('app_login') }}" class="topbar-avatar-link">
-                                <span class="icon-menu"></span>
+                                <i data-lucide="circle-user" class="icon-user"></i>
 
                             </a>
                         {% else %}
@@ -81,13 +81,13 @@
                                         >
                                    </a>
                                 {% elseif firstLetter %}
-                                    <a href="#" class="topbar-avatar-link me-0">
+                                    <a href="{{ dashboardPath }}" class="topbar-avatar-link me-0">
                                         <div class="topbar-avatar avatar-letter">
                                             {{ firstLetter }}
                                         </div>
                                     </a>
                                 {% else %}
-                                    <a href="#" class="topbar-avatar-link">
+                                    <a href="{{ dashboardPath }}" class="topbar-avatar-link">
                                         <img
                                             src="{{ asset('images/authentification/auxioma.png') }}"
                                             alt="Profil utilisateur"

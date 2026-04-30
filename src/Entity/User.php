@@ -76,6 +76,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $pays = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -286,6 +289,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getImageSize(): ?int
     {
         return $this->imageSize;
+    }
+
+    public function getPays(): ?string
+    {
+        return $this->pays;
+    }
+
+    public function setPays(string $pays): static
+    {
+        $this->pays = $pays;
+
+        return $this;
     }
 
 
