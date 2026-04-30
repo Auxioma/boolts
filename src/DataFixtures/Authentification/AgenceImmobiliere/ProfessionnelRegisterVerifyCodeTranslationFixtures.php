@@ -14,18 +14,10 @@ final class ProfessionnelRegisterVerifyCodeTranslationFixtures extends Fixture
             'fr' => [
                 'professionnel.register.verify_code.meta.title' => 'Vérification du code',
                 'professionnel.register.verify_code.title' => 'Vous avez reçu un code de validation par e-mail',
-                'professionnel.register.verify_code.submit' => 'Se connecter',
+                'professionnel.register.verify_code.submit' => 'Continuer',
                 'professionnel.register.verify_code.or' => 'OU',
                 'professionnel.register.verify_code.resend_code' => 'Renvoyer le code',
                 'professionnel.register.verify_code.change_email' => 'Changer d’adresse e-mail',
-            ],
-            'en' => [
-                'professionnel.register.verify_code.meta.title' => 'Code verification',
-                'professionnel.register.verify_code.title' => 'You have received a validation code by email',
-                'professionnel.register.verify_code.submit' => 'Sign in',
-                'professionnel.register.verify_code.or' => 'OR',
-                'professionnel.register.verify_code.resend_code' => 'Resend code',
-                'professionnel.register.verify_code.change_email' => 'Change email address',
             ],
         ];
 

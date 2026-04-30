@@ -30,20 +30,35 @@
                                             <span>{{ 'professionnel.login.or'|trans }}</span>
                                         </div>
 
-                                        <div class="formulaire">                                            
+                                        <div class="formulaire">
                                             <form method="post">
                                                 <div class="">
                                                     <label for="email" class="form-label mb-16">
                                                         {{ 'professionnel.login.email.label'|trans }}
                                                     </label>
 
-                                                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control mb-16 {% if error %}flash-input-error{% endif %}" autocomplete="email" required autofocus>
+                                                    <input
+                                                        type="email"
+                                                        value="{{ last_username }}"
+                                                        name="email" id="inputEmail"
+                                                        class="form-control mb-16 {% if error %}flash-input-error{% endif %}"
+                                                        autocomplete="email"
+                                                        placeholder="{{ 'visiteur.login.email.placeholder'|trans }}"
+                                                        required autofocus>
 
                                                     <label for="pwd" class="form-label mb-16">
                                                         {{ 'professionnel.login.password.label'|trans }}
                                                     </label>
 
-                                                    <input type="password" name="password" id="inputPassword" class="form-control {% if error %}flash-input-error{% endif %}" autocomplete="current-password" required>
+                                                    <input
+                                                        type="password"
+                                                        name="password"
+                                                        id="inputPassword"
+                                                        class="form-control {% if error %}flash-input-error{% endif %}"
+                                                        autocomplete="current-password"
+                                                        placeholder="{{ 'visiteur.login.password.placeholder'|trans }}"
+                                                        required
+                                                    >
 
                                                     <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
 

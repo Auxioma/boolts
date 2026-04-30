@@ -22,18 +22,6 @@ final class VisiteurRegisterEmailTranslationFixtures extends Fixture
                 'visiteur.register.email.submit' => 'Continuer',
                 'visiteur.register.email.professional_link' => 'Vous êtes un professionnel ?',
             ],
-
-            'en' => [
-                'visiteur.register.email.meta.title' => 'Registration',
-                'visiteur.register.email.title' => 'Registration',
-                'visiteur.register.email.apple' => 'Sign up with Apple',
-                'visiteur.register.email.google' => 'Sign up with Google',
-                'visiteur.register.email.or' => 'OR',
-                'visiteur.register.email.email.label' => 'Sign up with email address*',
-                'visiteur.register.email.email.placeholder' => 'Enter your email address',
-                'visiteur.register.email.submit' => 'Continue',
-                'visiteur.register.email.professional_link' => 'Are you a professional?',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

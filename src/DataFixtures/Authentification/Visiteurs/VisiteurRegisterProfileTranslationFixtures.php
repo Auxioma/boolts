@@ -22,18 +22,6 @@ final class VisiteurRegisterProfileTranslationFixtures extends Fixture
                 'visiteur.register.profile.terms.label' => 'J’accepte les conditions d’utilisation de Boolts.*',
                 'visiteur.register.profile.submit' => 'S’inscrire',
             ],
-
-            'en' => [
-                'visiteur.register.profile.meta.title' => 'Login',
-                'visiteur.register.profile.title' => 'Login',
-                'visiteur.register.profile.lastname.label' => 'Last name*',
-                'visiteur.register.profile.firstname.label' => 'First name*',
-                'visiteur.register.profile.password.label' => 'Password*',
-                'visiteur.register.profile.password.help' => 'Minimum 12 characters. We recommend combining letters, numbers and special characters for optimal security.',
-                'visiteur.register.profile.password_confirm.label' => 'Confirm password*',
-                'visiteur.register.profile.terms.label' => 'I accept Boolts terms of use.*',
-                'visiteur.register.profile.submit' => 'Sign in',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

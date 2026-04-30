@@ -1,133 +1,128 @@
-{% apply inline_css(source('email/authentification/opt/otp.css')) %}  
-<!DOCTYPE html>
-<html lang="{{ app.request.locale|default('fr') }}">
+{% apply inline_css(source('email/authentification/opt/otp.css')) %}
+    <!DOCTYPE html>
+    <html lang="{{ app.request.locale|default('fr') }}">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>{% block email_title %}BOOLTS{% endblock %}</title>
+        <title>{% block email_title %}{{ 'email.otp.meta.title'|trans }}{% endblock %}</title>
     </head>
     <body>
-        <table role="presentation" class="mail-wrapper" width="100%">
-            <tr>
-                <td align="center">
-                    <table role="presentation" class="mail-container" width="600">
-                        <tr>
-                            <td class="mail-header">
-                                <table role="presentation" class="brand-table">
-                                    <tr>
-                                        <td>
-                                            <img
-                                                src="{{ absolute_url(asset('images/logo/mail.svg')) }}"
-                                                alt="Boolts"
-                                                class="brand-logo"
-                                                width="134"
-                                            >
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="mail-main">
-                                <h1 class="mail-title">
-                                    Bonjour, voici votre code de validation à 6 chiffres
-                                </h1>
-                                <div class="code-box">
+    <table role="presentation" class="mail-wrapper" width="100%">
+        <tr>
+            <td align="center">
+                <table role="presentation" class="mail-container" width="600">
+                    <tr>
+                        <td class="mail-header">
+                            <table role="presentation" class="brand-table">
+                                <tr>
+                                    <td>
+                                        <img src="{{ absolute_url(asset('images/logo/mail.svg')) }}" alt="Boolts" class="brand-logo" width="134">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="mail-main">
+                            <h1 class="mail-title">
+                                {{ 'email.otp.title'|trans }}
+                            </h1>
+
+                            <div class="code-box">
                                     <span class="code-number">
                                         {{ code }}
                                     </span>
-                                </div>
-                                <p class="validity-text">
-                                    Prenez en compte que ce code n’est valable que jusqu’au
-                                    {{ 'now'|date_modify('+1 hour')|format_datetime(
+                            </div>
+
+                            <p class="validity-text">
+                                {{ 'email.otp.validity'|trans({
+                                    '%expiration%': 'now'|date_modify('+1 hour')|format_datetime(
                                         pattern="EEEE d MMMM 'à' HH:mm",
                                         locale=app.request.locale
-                                    ) }}
-                                </p>
-                                <div class="support-block">
-                                    <p>
-                                        Vous avez des soucis pour vous connecter ?<br>
-                                        Essayez de contacter notre support :
-                                        <a href="mailto:contact@boolts.com">
-                                            contact@boolts.com
-                                        </a>
-                                    </p>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="footer-top">
-                                <table role="presentation" width="100%">
-                                    <tr>
-                                        <td class="footer-column" width="50%" valign="top">
-                                            <p class="footer-brand">boolts</p>
-                                            <div class="footer-address">
-                                                <p>©{{ year|default('2026') }} Boolts</p>
-                                                <p>
-                                                    <a>675 Ponce De Leon Ave NE</a>
-                                                </p>
-                                                <p>
-                                                    <a>Suite 5000</a>
-                                                </p>
-                                                <p>
-                                                    <a>Atlanta, GA 30308</a>
-                                                </p>
-                                            </div>
-                                        </td>
-                                        <td class="footer-column-right" width="50%" valign="bottom" align="right">
-                                            <div class="social-icons">
-                                                <a href="{{ instagramUrl|default('#') }}">
-                                                    <img
-                                                        src="{{ absolute_url(asset('images/logo/instagram.svg')) }}"
-                                                        alt="Instagram"
-                                                        width="20"
-                                                        height="20"
-                                                    >
-                                                </a>
-                                                <a href="{{ facebookUrl|default('#') }}">
-                                                    <img
-                                                        src="{{ absolute_url(asset('images/logo/facebook.svg')) }}"
-                                                        alt="Facebook"
-                                                        width="20"
-                                                        height="20"
-                                                    >
-                                                </a>
-                                            </div>
-                                            <div class="footer-links">
-                                                <p>
-                                                    <a href="{{ privacyUrl|default('#') }}">Privacy Policy</a>
-                                                </p>
-                                                <p>
-                                                    <a href="{{ termsUrl|default('#') }}">Terms &amp; Conditions</a>
-                                                </p>
-                                                <p>
-                                                    <a href="{{ contactUrl|default('#') }}">Contact Us</a>
-                                                </p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="footer-legal">
+                                    )
+                                }) }}
+                            </p>
+
+                            <div class="support-block">
                                 <p>
-                                    Boolts is a registered trademark. Instagram and Facebook are trademarks of Meta Inc.,
-                                    registered in the U.S. and other countries.<br>
-                                    Vous avez reçu ce message parce que vous vous êtes inscrit sur notre site le
-                                    {{ registrationDate|default('26/02/2026') }}.
+                                    {{ 'email.otp.support.text'|trans }}<br>
+                                    {{ 'email.otp.support.contact'|trans }}
+                                    <a href="mailto:contact@boolts.com">contact@boolts.com</a>
                                 </p>
-                                <p>
-                                    Vous ne reconnaissez pas cette activité ?
-                                    <a href="{{ securityUrl|default('#') }}">Cliquez ici.</a>
-                                    Nous allons vous aider à sécuriser votre compte. Sinon, aucune action n'est requise de votre part.
-                                </p>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="footer-top">
+                            <table role="presentation" width="100%">
+                                <tr>
+                                    <td class="footer-column" width="50%" valign="top">
+                                        <p class="footer-brand">boolts</p>
+                                        <div class="footer-address">
+                                            <p>©{{ year|default('2026') }} Boolts</p>
+                                            <p><a>675 Ponce De Leon Ave NE</a></p>
+                                            <p><a>Suite 5000</a></p>
+                                            <p><a>Atlanta, GA 30308</a></p>
+                                        </div>
+                                    </td>
+
+                                    <td class="footer-column-right" width="50%" valign="bottom" align="right">
+                                        <div class="social-icons">
+                                            <a href="{{ instagramUrl|default('#') }}">
+                                                <img src="{{ absolute_url(asset('images/logo/instagram.svg')) }}" alt="Instagram" width="20" height="20">
+                                            </a>
+                                            <a href="{{ facebookUrl|default('#') }}">
+                                                <img src="{{ absolute_url(asset('images/logo/facebook.svg')) }}" alt="Facebook" width="20" height="20">
+                                            </a>
+                                        </div>
+
+                                        <div class="footer-links">
+                                            <p>
+                                                <a href="{{ privacyUrl|default('#') }}">
+                                                    {{ 'email.otp.privacy'|trans }}
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a href="{{ termsUrl|default('#') }}">
+                                                    {{ 'email.otp.terms'|trans }}
+                                                </a>
+                                            </p>
+                                            <p>
+                                                <a href="{{ contactUrl|default('#') }}">
+                                                    {{ 'email.otp.contact'|trans }}
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="footer-legal">
+                            <p>
+                                {{ 'email.otp.legal'|trans }}
+                                <br>
+                                {{ 'email.otp.received'|trans({
+                                    '%date%': registrationDate|default('26/02/2026')
+                                }) }}
+                            </p>
+                            <p>
+                                {{ 'email.otp.security_text'|trans }}
+                                <a href="{{ securityUrl|default('#') }}">
+                                    {{ 'email.otp.security_link'|trans }}
+                                </a>
+                                {{ 'email.otp.security_end'|trans }}
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
     </body>
-</html>
+    </html>
 {% endapply %}

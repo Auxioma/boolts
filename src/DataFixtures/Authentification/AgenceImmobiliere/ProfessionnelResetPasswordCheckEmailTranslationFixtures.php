@@ -16,11 +16,6 @@ final class ProfessionnelResetPasswordCheckEmailTranslationFixtures extends Fixt
                 'professionnel.reset_password.check_email.title' => 'Le lien de modification a été envoyé par e-mail !',
                 'professionnel.reset_password.check_email.resend_link' => 'Vous n’avez rien reçu ? Recevoir un nouvel e-mail',
             ],
-            'en' => [
-                'professionnel.reset_password.check_email.meta.title' => 'Email sent',
-                'professionnel.reset_password.check_email.title' => 'The reset link has been sent by email!',
-                'professionnel.reset_password.check_email.resend_link' => 'Didn’t receive anything? Send a new email',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

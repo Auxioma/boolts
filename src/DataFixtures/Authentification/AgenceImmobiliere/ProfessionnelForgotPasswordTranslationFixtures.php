@@ -17,12 +17,6 @@ final class ProfessionnelForgotPasswordTranslationFixtures extends Fixture
                 'professionnel.forgot_password.email.label' => 'Adresse e-mail',
                 'professionnel.forgot_password.submit' => 'Envoyer le lien de modification',
             ],
-            'en' => [
-                'professionnel.forgot_password.meta.title' => 'Forgot password',
-                'professionnel.forgot_password.title' => 'Enter your email address',
-                'professionnel.forgot_password.email.label' => 'Email address',
-                'professionnel.forgot_password.submit' => 'Send reset link',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

@@ -21,17 +21,6 @@ final class ProfessionnelRegisterAgencyTranslationFixtures extends Fixture
                 'professionnel.register.agency.terms.label' => 'J’accepte les conditions d’utilisation de Boolts.*',
                 'professionnel.register.agency.submit' => 'Se connecter',
             ],
-
-            'en' => [
-                'professionnel.register.agency.meta.title' => 'Agency registration',
-                'professionnel.register.agency.title' => 'Register your agency now',
-                'professionnel.register.agency.lastname.label' => 'Last name*',
-                'professionnel.register.agency.firstname.label' => 'First name*',
-                'professionnel.register.agency.password.label' => 'Password*',
-                'professionnel.register.agency.password_confirm.label' => 'Confirm password*',
-                'professionnel.register.agency.terms.label' => 'I accept Boolts terms of use.*',
-                'professionnel.register.agency.submit' => 'Sign in',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

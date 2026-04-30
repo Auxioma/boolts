@@ -22,18 +22,6 @@ final class ProfessionnelLoginTranslationFixtures extends Fixture
                 'professionnel.login.forgot_password' => 'Mot de passe oublié ?',
                 'professionnel.login.register' => 'Inscription',
             ],
-
-            'en' => [
-                'professionnel.login.meta.title' => 'Login',
-                'professionnel.login.title' => 'Login to your professional account',
-                'professionnel.login.apple' => 'Sign in with Apple',
-                'professionnel.login.or' => 'OR',
-                'professionnel.login.email.label' => 'Email address',
-                'professionnel.login.password.label' => 'Password',
-                'professionnel.login.submit' => 'Sign in',
-                'professionnel.login.forgot_password' => 'Forgot password?',
-                'professionnel.login.register' => 'Sign up',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

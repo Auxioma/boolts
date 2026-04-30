@@ -18,13 +18,6 @@ final class ForgotPasswordTranslationFixtures extends Fixture
                 'visiteur.forgot_password.email.placeholder' => 'Veuillez entrer votre adresse e-mail',
                 'visiteur.forgot_password.submit' => 'Envoyer le lien de modification',
             ],
-            'en' => [
-                'visiteur.forgot_password.meta.title' => 'Forgot password',
-                'visiteur.forgot_password.title' => 'Enter your email address',
-                'visiteur.forgot_password.email.label' => 'Email address',
-                'visiteur.forgot_password.email.placeholder' => 'Enter your email address',
-                'visiteur.forgot_password.submit' => 'Send reset link',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

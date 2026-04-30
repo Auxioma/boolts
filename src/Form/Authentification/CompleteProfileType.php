@@ -68,7 +68,7 @@ class CompleteProfileType extends AbstractType
                 'second_options' => [
                     'label' => 'form.password.repeat',
                     'attr' => [
-                        'placeholder' => 'form.password.placeholder.repeat',
+                        'placeholder' => 'Veuillez confirmer votre mot de passe',
                         'class' => 'form-control mb-32',
                     ],
                 ],

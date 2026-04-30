@@ -27,22 +27,6 @@ final class VisiteurLoginTranslationFixtures extends Fixture
                 'visiteur.login.register' => 'Inscription',
                 'visiteur.login.professional_link' => 'Vous êtes un professionnel ?',
             ],
-            'en' => [
-                'visiteur.login.meta.title' => 'Login',
-                'visiteur.login.title' => 'Login',
-                'visiteur.login.apple' => 'Sign in with Apple',
-                'visiteur.login.google' => 'Sign in with Google',
-                'visiteur.login.or' => 'OR',
-                'visiteur.login.email.label' => 'Email address',
-                'visiteur.login.email.placeholder' => 'Enter your email address',
-                'visiteur.login.password.label' => 'Password',
-                'visiteur.login.password.placeholder' => 'Enter your password',
-                'visiteur.login.error.invalid_credentials' => 'Invalid email address or password',
-                'visiteur.login.submit' => 'Sign in',
-                'visiteur.login.forgot_password' => 'Forgot password?',
-                'visiteur.login.register' => 'Create an account',
-                'visiteur.login.professional_link' => 'Are you a professional?',
-            ],
         ];
 
         foreach ($translations as $locale => $items) {

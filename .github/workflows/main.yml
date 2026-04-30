@@ -34,15 +34,13 @@ jobs:
         # Cette commande utilise sshpass pour se connecter en SSH au serveur et déployer les fichiers.
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} -p 5022 "
-          cd preprod/ &&  
-          git pull &&  
+          cd preprod/ &&
+          git pull &&
           php composer.phar dump-env dev &&
           php composer.phar install  &&
           php bin/console d:s:u --force  &&
           php bin/console d:f:l -n  &&
-          php composer.phar dump-env prod &&
           php bin/console cache:warmup  &&
           php bin/console assets:install public  &&
           php bin/console asset-map:compile  &&
-          php bin/console cache:clear --env=prod 
           "

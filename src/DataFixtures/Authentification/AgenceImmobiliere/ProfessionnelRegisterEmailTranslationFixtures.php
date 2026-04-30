@@ -17,18 +17,8 @@ final class ProfessionnelRegisterEmailTranslationFixtures extends Fixture
                 'professionnel.register.email.apple' => 'Connexion via Apple',
                 'professionnel.register.email.or' => 'OU',
                 'professionnel.register.email.email.label' => 'Inscription via adresse e-mail*',
-                'professionnel.register.email.submit' => 'Se connecter',
+                'professionnel.register.email.submit' => 'Continuer',
                 'professionnel.register.email.link' => 'Vous êtes un professionnel ?',
-            ],
-
-            'en' => [
-                'professionnel.register.email.meta.title' => 'Registration',
-                'professionnel.register.email.title' => 'Sign up to your professional account',
-                'professionnel.register.email.apple' => 'Sign in with Apple',
-                'professionnel.register.email.or' => 'OR',
-                'professionnel.register.email.email.label' => 'Sign up with email address*',
-                'professionnel.register.email.submit' => 'Sign in',
-                'professionnel.register.email.link' => 'Are you a professional?',
             ],
         ];
 

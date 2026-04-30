@@ -15,20 +15,10 @@ final class ResetPasswordTranslationFixtures extends Fixture
                 'visiteur.reset_password.reset.meta.title' => 'Nouveau mot de passe',
                 'visiteur.reset_password.reset.title' => 'Modifiez votre mot de passe',
                 'visiteur.reset_password.reset.password.label' => 'Nouveau mot de passe',
-                'visiteur.reset_password.reset.password.placeholder' => 'Entrez votre nouveau mot de passe',
-                'visiteur.reset_password.reset.password_confirm.label' => 'Confirmez votre mot de passe',
-                'visiteur.reset_password.reset.password_confirm.placeholder' => 'Confirmez votre mot de passe',
-                'visiteur.reset_password.reset.submit' => 'Modifier le mot de passe',
-            ],
-
-            'en' => [
-                'visiteur.reset_password.reset.meta.title' => 'New password',
-                'visiteur.reset_password.reset.title' => 'Change your password',
-                'visiteur.reset_password.reset.password.label' => 'New password',
-                'visiteur.reset_password.reset.password.placeholder' => 'Enter your new password',
-                'visiteur.reset_password.reset.password_confirm.label' => 'Confirm password',
-                'visiteur.reset_password.reset.password_confirm.placeholder' => 'Confirm your password',
-                'visiteur.reset_password.reset.submit' => 'Update password',
+                'visiteur.reset_password.reset.password.placeholder' => 'Veuillez entrer votre mot de passe',
+                'visiteur.reset_password.reset.password_confirm.label' => 'Confirmer le mot de passe',
+                'visiteur.reset_password.reset.password_confirm.placeholder' => 'Veuillez confirmer votre mot de passe',
+                'visiteur.reset_password.reset.submit' => 'Modifier mon mot de passe',
             ],
         ];
 
