@@ -19,19 +19,17 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.4'
           tools: composer
           coverage: none
 
       - name: Cache Composer
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.composer/cache/files
-            vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          path: ~/.composer/cache/files
+          key: ${{ runner.os }}-composer-php-8.4-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php-
+            ${{ runner.os }}-composer-php-8.4-
 
       - name: Installer les dépendances
         env:
