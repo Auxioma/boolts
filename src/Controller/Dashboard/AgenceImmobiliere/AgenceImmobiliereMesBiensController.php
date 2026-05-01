@@ -16,14 +16,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/dashboard', name: 'agence_immobiliere_')]
-final class DashboardController extends AbstractController
+#[Route('/mes/biens', name: 'agence_immobiliere_')]
+final class AgenceImmobiliereMesBiensController extends AbstractController
 {
-    #[Route('/', name: 'dashboard')]
+    #[Route('/', name: 'mes_biens')]
     public function index(): Response
     {
-        return $this->render('dashboard/agence_immobiliere/dashboard/index.html.twig', [
-            'controller_name' => 'DashboardController',
+        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig', [
+            'controller_name' => 'AgenceImmobiliereMesBiensController',
         ]);
     }
 }
