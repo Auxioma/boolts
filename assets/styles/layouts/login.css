@@ -9,15 +9,17 @@
 }
 
 .bg-login {
-    position: fixed;
-    width: 50%;
-    height: 100dvh;
+    /*position: fixed;*/
+    /*width: 50%;*/
+    /*height: 100dvh;*/
     background-image: url("../../images/authentification/mon-compte.webp");
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
     will-change: transform;
-    right: 0;
+    min-height: 900px;
+    width: 100%;
+    /*right: 0;*/
 }
 
 .adaptation-image-login {
@@ -37,6 +39,6 @@
     font-style: normal !important;
     font-weight: 500 !important;
     line-height: 20px !important;
-    
-    
+
+
 }

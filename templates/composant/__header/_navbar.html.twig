@@ -53,7 +53,7 @@
                     <li class="nav-item ms-lg-3 d-none d-lg-block">
                         {# je vais faire des redirection si utilisateur est connecté et en fonction du role #}
                         {% if not app.user %}
-                            <a href="{{ path('app_login') }}" class="topbar-avatar-link">
+                            <a href="{{ path('app_login') }}" class="topbar-avatar-link me-0">
                                 <i data-lucide="circle-user" class="icon-user"></i>
 
                             </a>
