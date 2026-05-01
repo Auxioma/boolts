@@ -43,13 +43,9 @@
 }
 
 .topbar-menu .nav-link:hover {
-    color: var(--color-link-hover);
+    color: #5D00FF;
     background: var(--color-link-hover-bg);
-    /*
-        color: #5D00FF; 
-        border-radius: 50px;
-        background: #DFCBFF
-    */
+}
 
 .topbar-btn {
     display: inline-flex;
