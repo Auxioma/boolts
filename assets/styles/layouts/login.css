@@ -39,6 +39,30 @@
     font-style: normal !important;
     font-weight: 500 !important;
     line-height: 20px !important;
+}
+.margin-footer-reset-password {
+    margin-bottom: calc(
+        350px + (450 - 350) * ((100vw - 375px) / (1920 - 375))
+    );
+}
 
-
+.margin-footer-link {
+    margin-bottom: calc(
+        435px + (560 - 435) * ((100vw - 375px) / (1920 - 375))
+    );
+}
+.margin-footer-forumaire-password {
+    margin-bottom: calc(
+        273px + (340 - 273) * ((100vw - 375px) / (1920 - 375))
+    );
+}
+.margin-footer-register {
+    margin-bottom: calc(
+        160px + (225 - 160) * ((100vw - 375px) / (1920 - 375))
+    );
+}
+.margin-footer-opt {
+    margin-bottom: calc(
+        220px + (220 - 220) * ((100vw - 375px) / (1920 - 375))
+    );
 }

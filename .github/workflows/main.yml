@@ -34,6 +34,7 @@ jobs:
             php composer.phar dump-env dev
             php bin/console doctrine:schema:drop --full-database --force
             php bin/console doctrine:migrations:migrate --no-interaction
+            php bin/console doctrine:fixtures:load --n
             php bin/console cache:clear --no-interaction
             php bin/console cache:warmup --no-interaction
             php bin/console assets:install public --no-interaction
