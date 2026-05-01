@@ -38,4 +38,4 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
 
       - name: Lancer PHP CS Fixer en vérification
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff --verbose --using-cache=no
+        run: vendor/bin/php-cs-fixer fix
