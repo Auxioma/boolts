@@ -14,6 +14,7 @@
 
 @import './layouts/topbar.css';
 @import './layouts/login.css';
+@import "./layouts/homepage.css";
 
 /**
   * responsive design
@@ -28,5 +29,5 @@
 @import "./utilities/responsive/text.css";
 
 @import "./layouts/responsive/login/911.css";
-@import "./layouts/responsive/topbar.css";  
+@import "./layouts/responsive/topbar.css";
 

@@ -4,135 +4,107 @@
 
 {% block body %}
 
-{% set languages = {
-    fr: { label: 'Français', flag: 'fr.png', emoji: '🇫🇷' },
-    en: { label: 'English', flag: 'en.png', emoji: '🇬🇧' },
-    es: { label: 'Español', flag: 'es.png', emoji: '🇪🇸' }
-} %}
+    <main>
+        {# hero #}
+        <div class="container mt-64" id="home-hero">
+            <div class="row">
+                <div class="col-12">
+                    <div
+                        class="home-hero position-relative overflow-hidden d-flex align-items-center justify-content-center"
+                        data-controller="media-hero"
+                        data-media-hero-type-value="video"
+                        data-media-hero-src-value="{{ asset('images/home/hero/01.mov') }}"
+                        data-media-hero-poster-value="{{ asset('images/home/hero/01.jpg') }}"
+                    >
+                        <div class="home-hero-content w-100">
+                            <div class="row mx-0">
+                                <div class="col-12 col-lg-8 mx-auto">
+                                    <h1 class="home-hero-title">
+                                        L’immobilier,<br>
+                                        réinventé.
+                                    </h1>
 
-<section class="country-selection-bar">
-    <div class="container-fluid px-0">
-        <div class="country-selection-bar__inner d-flex align-items-center justify-content-center">
-            <p class="country-selection-bar__text mb-0">
-                {{ 'country_selector.description'|trans }}
-            </p>
-
-            <div class="country-selection-bar__select-wrap">
-                <select
-                    class="form-select country-selection-bar__form-select"
-                    name="_locale"
-                    aria-label="{{ 'country_selector.aria'|trans }}"
-                    onchange="window.location.href='{{ path('app_home', {'_locale': 'LOCALE'}) }}'.replace('LOCALE', this.value)"
-                >
-                    {% for locale in locales %}
-                        {% if languages[locale] is defined %}
-                            <option value="{{ locale }}" {% if locale == app.request.locale %}selected{% endif %}>
-                                {{ languages[locale].emoji }} {{ languages[locale].label }}
-                            </option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
+                                    <div class="home-hero-search-card">
+                                        champs de recherche
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <a href="{{ path('app_home', {'_locale': app.request.locale}) }}" class="btn country-selection-bar__btn">
-                {{ 'country_selector.continue'|trans }}
-            </a>
         </div>
-    </div>
-</section>
 
-{{ lang }}
+        {# cookies de recherche #}
+        <div class="container">
+            <div class="row">
+                continue ta recheche
+            </div>
+        </div>
 
-<style>.country-selection-bar {
-    width: 100%;
-    background: #ffffff;
-    border-bottom: 1px solid #ebecec;
-}
+        {# exploration #}
+        <div class="container">
+            <div class="row">
+                <div class="col-6 mx-auto">Explorez toutes les propritétés</div>
+            </div>
+        </div>
 
-.country-selection-bar__inner {
-    gap: 24px;
-    min-height: 56px;
-    padding: 8px 24px;
-    max-width: 1440px;
-    margin: 0 auto;
-}
+        {# Card des bien immobilier #}
+        <div class="container">
+            <div class="row">
+                slide 01
+            </div>
+        </div>
 
-.country-selection-bar__text {
-    width: 340px;
-    color: #858789;
-    font-family: "Eudoxus Sans", Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-}
+        {# Card des bien immobilier #}
+        <div class="container">
+            <div class="row">
+                slide 01
+            </div>
+        </div>
 
-.country-selection-bar__select-wrap {
-    width: 361px;
-    flex: 0 0 361px;
-}
+        {# Card des bien immobilier #}
+        <div class="container">
+            <div class="row">
+                slide 01
+            </div>
+        </div>
 
-.country-selection-bar__form-select {
-    height: 48px;
-    padding: 12px 44px 12px 14px;
-    border: 2px solid #ebecec;
-    border-radius: 8px;
-    background-color: #ffffff;
-    color: #858789;
-    font-family: "Eudoxus Sans", Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    box-shadow: none !important;
-    background-position: right 14px center;
-    background-size: 24px 24px;
-}
+        {# pensil a droite #}
+        <div class="container">
+            <div class="row">
+                <div class="col-6">sdsdsd</div>
+                <div class="col-6">sdsdsd</div>
+            </div>
+        </div>
 
-.country-selection-bar__form-select:focus {
-    border-color: #5d00ff;
-    box-shadow: 0 0 0 0.15rem rgba(93, 0, 255, 0.12) !important;
-}
+        {# pensil a gauche #}
+        <div class="container">
+            <div class="row">
+                <div class="col-6">sdsdsd</div>
+                <div class="col-6">sdsdsd</div>
+            </div>
+        </div>
 
-.country-selection-bar__btn {
-    height: 44px;
-    padding: 10px 16px;
-    border: 0;
-    border-radius: 50px;
-    background: #5d00ff;
-    color: #ffffff;
-    font-family: "Eudoxus Sans", Arial, Helvetica, sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    white-space: nowrap;
-}
+        {# reassurance #}
+        <div class="container">
+            <diw class="row">
+                <div class="col-3">SQD</div>
+                <div class="col-3">DSQ</div>
+                <div class="col-3">DSQ</div>
+                <div class="col-3">DSQ</div>
+            </diw>
+        </div>
 
-.country-selection-bar__btn:hover,
-.country-selection-bar__btn:focus,
-.country-selection-bar__btn:active {
-    background: #5d00ff !important;
-    color: #ffffff !important;
-    box-shadow: none !important;
-}
+        {# Image bas #}
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    img
+                </div>
+            </div>
+        </div>
 
-@media (max-width: 991.98px) {
-    .country-selection-bar__inner {
-        flex-direction: column;
-        align-items: stretch !important;
-        gap: 16px;
-        padding: 16px;
-    }
-
-    .country-selection-bar__text,
-    .country-selection-bar__select-wrap {
-        width: 100%;
-        flex: 0 0 auto;
-    }
-
-    .country-selection-bar__btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-</style>
+    </main>
 
 {% endblock %}
