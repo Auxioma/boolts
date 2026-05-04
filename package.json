@@ -1,0 +1,26 @@
+{
+  "name": "boolts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "css:prefix": "postcss \"assets/styles/**/*.css\" --replace --use autoprefixer",
+    "watch:css": "postcss assets/styles/app.css --watch --replace",
+    "build": "npm run css:prefix && php bin/console asset-map:compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Auxioma/boolts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Auxioma/boolts/issues"
+  },
+  "homepage": "https://github.com/Auxioma/boolts#readme"
+}
