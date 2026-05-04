@@ -50,3 +50,39 @@
     font-weight: 500;
     line-height: 20px;
 }
+
+.form-check-therms #complete_profile_agreeTerms {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px;
+
+    padding: 0 !important;
+    margin: 0;
+
+    border-radius: 5px !important;
+    border: 2px solid #EBECEC !important;
+    background-color: #FFF !important;
+
+    cursor: pointer;
+    position: relative;
+}
+.form-check-therms #complete_profile_agreeTerms:checked {
+    background-color: #FFF !important;
+    border-color: #5D00FF !important;
+}
+
+/* Icône check */
+.form-check-therms #complete_profile_agreeTerms:checked::after {
+    content: "✓";
+    color: #5D00FF;
+    font-size: 16px;
+    font-weight: 700;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+}
+

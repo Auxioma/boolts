@@ -145,6 +145,6 @@
 
 .fz-16 { font-size: 16px; }
 
-.rounded-24 {
-    border-radius: 24px;
-}
+.rounded-24 { border-radius: 24px; }
+
+.wh-75 { height: calc(100dvh - 72px) }
