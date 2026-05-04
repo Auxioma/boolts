@@ -33,7 +33,7 @@
                         <td class="mail-main">
                             <h1 class="mail-title">
                                 {{ 'email.register_confirmation.title'|trans({
-                                    '%site%': 'boolts.com'
+                                    '%site%': 'boolts.com',
                                 })|raw }}
                             </h1>
 
@@ -60,7 +60,7 @@
                                     <td class="footer-column" valign="top">
                                         <p class="footer-brand">boolts</p>
                                         <div class="footer-address">
-                                            <p>©{{ "now"|date("Y") }} Boolts</p>
+                                            <p>©{{ 'now'|date('Y') }} Boolts</p>
                                         </div>
                                     </td>
 
@@ -98,7 +98,7 @@
                                 {{ 'email.register_confirmation.legal'|trans }}
                                 <br>
                                 {{ 'email.register_confirmation.received'|trans({
-                                    '%date%': "now"|date("d/m/Y")
+                                    '%date%': 'now'|date('d/m/Y'),
                                 }) }}
                             </p>
                             <p>

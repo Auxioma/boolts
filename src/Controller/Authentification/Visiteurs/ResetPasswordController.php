@@ -64,9 +64,10 @@ class ResetPasswordController extends AbstractController
             /** je vais vérifie que le mail est bien présent en basse de donnée */
             $verifivationMail = $this->userRepository->findOneBy(['email' => $email]);
 
-            /** si le mail est pas présent, je met un message flash et reirection sur la meme page */
-            if(!$verifivationMail){
+            /* si le mail est pas présent, je met un message flash et reirection sur la meme page */
+            if (!$verifivationMail) {
                 $this->addFlash('error', 'Aucun compte trouvé avec cette adresse e-mail.');
+
                 return $this->redirectToRoute('app_forgot_password_request');
             }
 

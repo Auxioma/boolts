@@ -34,7 +34,7 @@
                                             {{ form_start(emailForm, {
                                                 attr: {
                                                     class: 'formulaire',
-                                                }
+                                                },
                                             }) }}
 
                                             <div>
@@ -45,8 +45,8 @@
                                                 {{ form_widget(emailForm.email, {
                                                     attr: {
                                                         class: 'form-control',
-                                                        placeholder: 'visiteur.register.email.email.placeholder'|trans
-                                                    }
+                                                        placeholder: 'visiteur.register.email.email.placeholder'|trans,
+                                                    },
                                                 }) }}
 
                                                 {% for label, messages in app.flashes %}

@@ -20,20 +20,20 @@
                                             <div class="formulaire">
                                                 {{ form_start(codeForm, {
                                                     attr: stimulus_controller('otp')|merge(
-                                                        stimulus_action('otp', 'submit', 'submit')
+                                                        stimulus_action('otp', 'submit', 'submit'),
                                                     )|merge({
                                                         novalidate: 'novalidate',
                                                         id: 'otp-form',
-                                                        'data-turbo': 'false'
-                                                    })
+                                                        'data-turbo': 'false',
+                                                    }),
                                                 }) }}
 
                                                 {{ form_widget(codeForm.code, {
                                                     attr: stimulus_target('otp', 'hiddenInput')|merge({
                                                         class: 'otp-hidden-input',
                                                         autocomplete: 'one-time-code',
-                                                        inputmode: 'numeric'
-                                                    })
+                                                        inputmode: 'numeric',
+                                                    }),
                                                 }) }}
 
                                                 <div>
@@ -100,7 +100,7 @@
                                         <div class="d-none d-lg-block py-5 my-5"></div>
                                         <div class="d-none d-lg-block py-3 my-3"></div>
                                         <div class="d-none d-lg-block py-3 my-5"></div>
-                                   
+
                                 </div>
                             </div>
                         </div>

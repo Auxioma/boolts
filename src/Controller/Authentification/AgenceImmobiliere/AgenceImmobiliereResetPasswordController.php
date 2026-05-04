@@ -15,6 +15,7 @@ namespace App\Controller\Authentification\AgenceImmobiliere;
 use App\Entity\User;
 use App\Form\Authentification\ChangePasswordFormType;
 use App\Form\Authentification\ResetPasswordRequestFormType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,6 +44,7 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
         private EntityManagerInterface $entityManager,
+        private UserRepository $userRepository,
     ) {
     }
 
@@ -58,6 +60,16 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $email */
             $email = $form->get('email')->getData();
+
+            /** je vais vérifie que le mail est bien présent en basse de donnée */
+            $verifivationMail = $this->userRepository->findOneBy(['email' => $email]);
+
+            /* si le mail est pas présent, je met un message flash et reirection sur la meme page */
+            if (!$verifivationMail) {
+                $this->addFlash('error', 'Aucun compte trouvé avec cette adresse e-mail.');
+
+                return $this->redirectToRoute('app_forgot_password_request');
+            }
 
             return $this->processSendingPasswordResetEmail($email, $mailer, $translator
             );

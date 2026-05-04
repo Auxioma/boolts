@@ -63,7 +63,7 @@ class UserFixtures extends Fixture
                 $agence = new User();
 
                 $agence
-                    ->setEmail(sprintf('agence%d.%s@boolts.test', $i, mb_strtolower($countryCode)))
+                    ->setEmail(\sprintf('agence%d.%s@boolts.test', $i, mb_strtolower($countryCode)))
                     ->setRoles(['ROLE_AGENCE']) // ou ['ROLE_USER'] si tu n'as pas encore ROLE_AGENCE
                     ->setIsVerified(true)
                     ->setNom($faker->lastName())
@@ -76,8 +76,6 @@ class UserFixtures extends Fixture
                 $manager->persist($agence);
             }
         }
-
-        
 
         $manager->flush();
     }

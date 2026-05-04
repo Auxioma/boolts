@@ -71,7 +71,6 @@
                             {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'avatarFile') : null %}
                             {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
 
-
                                 {% if avatar %}
                                     <a href="#" class="topbar-avatar-link">
                                         <img

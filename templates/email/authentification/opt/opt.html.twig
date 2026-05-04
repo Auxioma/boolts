@@ -38,9 +38,9 @@
                             <p class="validity-text">
                                 {{ 'email.otp.validity'|trans({
                                     '%expiration%': 'now'|date_modify('+1 hour')|format_datetime(
-                                        pattern="EEEE d MMMM 'à' HH:mm",
-                                        locale=app.request.locale
-                                    )
+                                        pattern: "EEEE d MMMM 'à' HH:mm",
+                                        locale: app.request.locale,
+                                    ),
                                 }) }}
                             </p>
 
@@ -107,7 +107,7 @@
                                 {{ 'email.otp.legal'|trans }}
                                 <br>
                                 {{ 'email.otp.received'|trans({
-                                    '%date%': registrationDate|default('26/02/2026')
+                                    '%date%': registrationDate|default('26/02/2026'),
                                 }) }}
                             </p>
                             <p>
