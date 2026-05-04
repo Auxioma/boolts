@@ -5,7 +5,7 @@
 {% block body %}
     <main>
         <div class="container-fluid">
-            <div class="row bg-white wh-75">
+            <div class="row bg-white">
                 <div class="col-12 col-lg-6">
                     <div class="row">
                         <div class="col-12">
@@ -26,7 +26,6 @@
                                             }) }}
 
                                             <div>
-
                                                 <label for="request_form_email" class="form-label mb-16">
                                                     {{ 'visiteur.forgot_password.email.label'|trans }}
                                                 </label>
@@ -42,8 +41,8 @@
                                                     {% if label in ['danger', 'error', 'warning'] %}
                                                         {% for message in messages %}
                                                             <span class="flash-message flash-message-error mt-24 d-block">
-                                                            {{ message|trans }}
-                                                        </span>
+                                                                {{ message|trans }}
+                                                            </span>
                                                         {% endfor %}
                                                     {% endif %}
                                                 {% endfor %}
@@ -51,12 +50,16 @@
                                                 <button class="mt-32 btn-submit w-100 text-white" type="submit">
                                                     {{ 'visiteur.forgot_password.submit'|trans }}
                                                 </button>
-
-                                            </div>z
+                                            </div>
 
                                             {{ form_end(requestForm) }}
 
                                         </div>
+
+                                        <div class="d-none d-lg-block py-5 my-5"></div>
+                                        <div class="d-none d-lg-block py-5 my-5"></div>
+                                        <div class="d-none d-lg-block py-5 my-5"></div>
+                                        <div class="d-none d-lg-block py-3 my-5"></div>
 
                                     </div>
                                 </div>
@@ -64,6 +67,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-lg-6 d-none d-lg-block pe-0 adaptation-image-login" data-turbo="false">
                     <div class="bg-login"></div>
                 </div>

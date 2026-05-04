@@ -10,8 +10,9 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-md-11 col-md-10 col-lg-4 mx-auto ">
-                                    <div class="login mt-48 px-48 py-48 bg-white rounded-24 margin-footer-register ">
+                                <div class="col-md-11 col-md-10 col-lg-4 mx-auto">
+                                    <div class="login mt-48 px-48 py-48 bg-white rounded-24 margin-footer-register">
+
                                         <h1 class="mb-0 text-center w-xl-70 mx-auto">
                                             {{ 'professionnel.register.email.title'|trans }}
                                         </h1>
@@ -31,48 +32,51 @@
                                         </div>
 
                                         <div class="formulaire">
-
                                             {{ form_start(emailForm, {
                                                 attr: {
                                                     class: 'formulaire',
                                                 }
                                             }) }}
 
-                                                <div class="">
+                                            <div>
 
-                                                    <label for="pwd" class="form-label mb-16">
-                                                        {{ 'professionnel.register.email.email.label'|trans }}
-                                                    </label>
+                                                <label class="form-label mb-16">
+                                                    {{ 'professionnel.register.email.email.label'|trans }}
+                                                </label>
 
-                                                    {{ form_widget(emailForm.email, {
-                                                        attr: {
-                                                            class: 'form-control',
-                                                        },
-                                                    }) }}
+                                                {{ form_widget(emailForm.email, {
+                                                    attr: {
+                                                        class: 'form-control',
+                                                    },
+                                                }) }}
 
-                                                    {% for label, messages in app.flashes %}
-                                                        {% if label in ['danger', 'error', 'warning'] %}
-                                                            {% for message in messages %}
-                                                                <span class="
-                                                                    flash-message mt-24 d-block
-                                                                    {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
-                                                                    {% if label == 'warning' %}flash-message-error{% endif %}
-                                                                ">
-                                                                    {{ message|trans }}
-                                                                </span>
-                                                            {% endfor %}
-                                                        {% endif %}
-                                                    {% endfor %}
+                                                {% for label, messages in app.flashes %}
+                                                    {% if label in ['danger', 'error', 'warning'] %}
+                                                        {% for message in messages %}
+                                                            <span class="
+                                                                flash-message mt-24 d-block
+                                                                {% if label in ['danger', 'error', 'warning'] %}flash-message-error{% endif %}
+                                                            ">
+                                                                {{ message|trans }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
 
-                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">
-                                                        {{ 'professionnel.register.email.submit'|trans }}
-                                                    </button>
-                                                </div>
+                                                <button class="mt-32 btn-submit w-100 text-white" type="submit">
+                                                    {{ 'professionnel.register.email.submit'|trans }}
+                                                </button>
+                                            </div>
 
                                             {{ form_end(emailForm) }}
-
                                         </div>
-                                    </div>
+  </div>
+
+                                        <div class="d-none d-lg-block py-5 my-5"></div>
+                                        <div class="d-none d-lg-block py-3 my-3"></div>
+                                        <div class="d-none d-lg-block py-3 my-3"></div>
+
+                                  
                                 </div>
                             </div>
                         </div>
@@ -82,6 +86,7 @@
         </div>
     </main>
 {% endblock %}
+
 {% block stylesheets %}
     <style>
         body {

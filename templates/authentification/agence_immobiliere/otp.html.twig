@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'professionnel.register.verify_code.meta.title'|trans }}
-{% endblock %}
+{% block title %}{{ 'professionnel.register.verify_code.meta.title'|trans }}{% endblock %}
 
 {% block body %}
     <main>
@@ -11,9 +10,12 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="row">
-                                <div class="col-md-11 col-md-10 col-lg-4 mx-auto ">
+                                <div class="col-md-11 col-md-10 col-lg-4 mx-auto">
                                     <div class="login my-48 px-48 py-48 bg-white rounded-24 margin-footer-opt">
-                                        <h1 class="mb-0 text-center">{{ 'professionnel.register.verify_code.title'|trans }}</h1>
+                                        <h1 class="mb-0 text-center">
+                                            {{ 'professionnel.register.verify_code.title'|trans }}
+                                        </h1>
+
                                         <div class="opt-code-recu-mail mt-32">
                                             <div class="formulaire">
                                                 {{ form_start(codeForm, {
@@ -34,69 +36,71 @@
                                                     })
                                                 }) }}
 
-                                                    <div class="">
-                                                        <div class="otp-container-recu-par-mail" id="otp-container-recu-par-mail">
-                                                            {% for i in 1..6 %}
-                                                                <input
-                                                                    class="otp-input-recu-par-mail{% if not loop.last %} mr-14{% endif %}"
-                                                                    type="text"
-                                                                    maxlength="1"
-                                                                    inputmode="numeric"
-                                                                    pattern="[0-9]*"
-                                                                    autocomplete="{{ loop.first ? 'one-time-code' : 'off' }}"
-                                                                    {{ stimulus_target('otp', 'digit') }}
-                                                                    {{ stimulus_action('otp', 'input', 'input') }}
-                                                                    {{ stimulus_action('otp', 'keydown', 'keydown') }}
-                                                                    {{ stimulus_action('otp', 'paste', 'paste') }}
-                                                                >
-                                                            {% endfor %}
-                                                        </div>
-
-                                                        {% for label, messages in app.flashes %}
-                                                            {% if label in ['danger', 'error', 'warning', 'success'] %}
-                                                                {% for message in messages %}
-                                                                    <span class="
-                                                        flash-message mt-24 d-block
-                                                        {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
-                                                        {% if label == 'warning' %}flash-message-error{% endif %}
-                                                        {% if label == 'error' %}flash-message-error{% endif %}
-                                                        {% if label == 'success' %}flash-message-success{% endif %}
-                                                    ">
-                                                        {{ message|trans }}
-                                                    </span>
-                                                                {% endfor %}
-                                                            {% endif %}
+                                                <div>
+                                                    <div class="otp-container-recu-par-mail" id="otp-container-recu-par-mail">
+                                                        {% for i in 1..6 %}
+                                                            <input
+                                                                class="otp-input-recu-par-mail{% if not loop.last %} mr-14{% endif %}"
+                                                                type="text"
+                                                                maxlength="1"
+                                                                inputmode="numeric"
+                                                                pattern="[0-9]*"
+                                                                autocomplete="{{ loop.first ? 'one-time-code' : 'off' }}"
+                                                                {{ stimulus_target('otp', 'digit') }}
+                                                                {{ stimulus_action('otp', 'input', 'input') }}
+                                                                {{ stimulus_action('otp', 'keydown', 'keydown') }}
+                                                                {{ stimulus_action('otp', 'paste', 'paste') }}
+                                                            >
                                                         {% endfor %}
-
-                                                        {% form_theme codeForm _self %}
-
-                                                        {% if codeForm.vars.errors|length > 0 %}
-                                                            {% for error in codeForm.vars.errors %}
-                                                                <div class="flash-message flash-message-error mt-24 d-block">
-                                                                    {{ error.message|trans }}
-                                                                </div>
-                                                            {% endfor %}
-                                                        {% endif %}
-
-                                                        <button class="mt-32 btn-submit w-100 text-white" type="submit">{{ 'professionnel.register.verify_code.submit'|trans }}</button>
                                                     </div>
 
+                                                    {% for label, messages in app.flashes %}
+                                                        {% if label in ['danger', 'error', 'warning', 'success'] %}
+                                                            {% for message in messages %}
+                                                                <span class="
+                                                                    flash-message mt-24 d-block
+                                                                    {% if label in ['danger', 'error', 'warning'] %}flash-message-error{% endif %}
+                                                                    {% if label == 'success' %}flash-message-success{% endif %}
+                                                                ">
+                                                                    {{ message|trans }}
+                                                                </span>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    {% endfor %}
+
+                                                    {% if codeForm.vars.errors|length > 0 %}
+                                                        {% for error in codeForm.vars.errors %}
+                                                            <div class="flash-message flash-message-error mt-24 d-block">
+                                                                {{ error.message|trans }}
+                                                            </div>
+                                                        {% endfor %}
+                                                    {% endif %}
+
+                                                    <button class="mt-32 btn-submit w-100 text-white" type="submit">
+                                                        {{ 'professionnel.register.verify_code.submit'|trans }}
+                                                    </button>
+                                                </div>
+
                                                 {{ form_end(codeForm) }}
-
                                             </div>
-
                                         </div>
+
                                         <div class="divider my-32">
                                             <span>{{ 'professionnel.register.verify_code.or'|trans }}</span>
                                         </div>
 
-                                        <buttom type="submit" class="btn-bg-border-blue d-block w-100 text-center">
+                                        <button type="submit" class="btn-bg-border-blue d-block w-100 text-center">
                                             {{ 'professionnel.register.verify_code.resend_code'|trans }}
-                                        </buttom>
+                                        </button>
+
                                         <a href="" class="mt-34 d-block w-100 text-center text-blue link-blue">
                                             {{ 'professionnel.register.verify_code.change_email'|trans }}
                                         </a>
-                                    </div>
+ </div>
+                                        <div class="d-none d-lg-block py-5 my-5"></div>
+                                        <div class="d-none d-lg-block py-3 my-3"></div>
+                                        <div class="d-none d-lg-block py-3 my-5"></div>
+                                   
                                 </div>
                             </div>
                         </div>
@@ -106,6 +110,7 @@
         </div>
     </main>
 {% endblock %}
+
 {% block stylesheets %}
     <style>
         body {
