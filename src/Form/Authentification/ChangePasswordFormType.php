@@ -57,6 +57,7 @@ class ChangePasswordFormType extends AbstractType
                 // Au lieu d’être directement assigné à l’objet,
                 // ce champ est traité et encodé dans le contrôleur
                 'mapped' => false,
+                'toggle' => true
             ])
         ;
     }

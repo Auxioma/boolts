@@ -41,50 +41,71 @@ class CompleteProfileType extends AbstractType
                     'placeholder' => 'Veuillez entrer votre prénom',
                 ],
             ])
-            ->add('plainPassword', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'options' => [
-                    'attr' => [
-                        'autocomplete' => 'new-password',
-                    ],
-                ],
+->add('plainPassword', RepeatedType::class, [
+    'type' => PasswordType::class,
 
-                'first_options' => [
-                    'label' => 'form.password.new',
-                    'attr' => [
-                        'class' => 'form-control',
-                        'placeholder' => 'Veuillez entrer votre mot de passe',
-                    ],
-                    'constraints' => [
-                        new NotBlank(
-                            message: 'form.password.error.blank'
-                        ),
-                        new Length(
-                            min: 8,
-                            max: 4096,
-                            minMessage: 'form.password.error.min',
-                            maxMessage: 'form.password.error.max',
-                        ),
-                        /*new PasswordStrength(
-                            message: 'form.password.error.weak'
-                        ),
-                        new NotCompromisedPassword(
-                            message: 'form.password.error.compromised'
-                        ),*/
-                    ],
-                ],
+    'options' => [
+        'attr' => [
+            'autocomplete' => 'new-password',
+        ],
+    ],
 
-                'second_options' => [
-                    'label' => 'form.password.repeat',
-                    'attr' => [
-                        'placeholder' => 'Veuillez confirmer votre mot de passe',
-                        'class' => 'form-control mb-32',
-                    ],
-                ],
+    'first_options' => [
+        'toggle' => true,
 
-                'invalid_message' => 'form.password.error.mismatch',
-                'mapped' => false,
-            ])
+        // ⚠️ DOIT être string (pas bool)
+        'visible_label' => '',
+        'hidden_label' => '',
+
+        // icônes
+        'visible_icon' => 'eye',
+        'hidden_icon' => 'eye-slash',
+
+        // ⚠️ DOIT être tableau
+        'button_classes' => ['password-toggle-button'],
+        'toggle_container_classes' => ['password-toggle'],
+
+        'label' => 'form.password.new',
+        'attr' => [
+            'class' => 'form-control password-input',
+            'placeholder' => 'Veuillez entrer votre mot de passe',
+        ],
+
+        'constraints' => [
+            new NotBlank(
+                message: 'form.password.error.blank'
+            ),
+            new Length(
+                min: 8,
+                max: 4096,
+                minMessage: 'form.password.error.min',
+                maxMessage: 'form.password.error.max',
+            ),
+        ],
+    ],
+
+    'second_options' => [
+        'toggle' => true,
+
+        'visible_label' => '',
+        'hidden_label' => '',
+
+        'visible_icon' => 'eye',
+        'hidden_icon' => 'eye-slash',
+
+        'button_classes' => ['password-toggle-button'],
+        'toggle_container_classes' => ['password-toggle'],
+
+        'label' => 'form.password.repeat',
+        'attr' => [
+            'placeholder' => 'Veuillez confirmer votre mot de passe',
+            'class' => 'form-control password-input mb-32',
+        ],
+    ],
+
+    'invalid_message' => 'form.password.error.mismatch',
+    'mapped' => false,
+])
 
             ->add('agreeTerms', CheckboxType::class, [
                 'attr' => [

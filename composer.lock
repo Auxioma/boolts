@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e881197fd03bb66f3540b7a38b5494bd",
+    "content-hash": "80823504cddfe1a69f64fa1197daaa05",
     "packages": [
         {
             "name": "composer/semver",
@@ -7950,6 +7950,90 @@
                 }
             ],
             "time": "2026-03-30T15:14:47+00:00"
+        },
+        {
+            "name": "symfony/ux-toggle-password",
+            "version": "v2.35.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/ux-toggle-password.git",
+                "reference": "085c1985d8b137cabfce9a25ce234258a80395cb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/ux-toggle-password/zipball/085c1985d8b137cabfce9a25ce234258a80395cb",
+                "reference": "085c1985d8b137cabfce9a25ce234258a80395cb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/config": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/dependency-injection": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/form": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/http-kernel": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/options-resolver": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/translation": "^5.4|^6.0|^7.0|^8.0"
+            },
+            "require-dev": {
+                "symfony/framework-bundle": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/phpunit-bridge": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/twig-bundle": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/var-dumper": "^5.4|^6.0|^7.0|^8.0",
+                "twig/twig": "^2.14.7|^3.0.4"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/ux",
+                    "name": "symfony/ux"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\UX\\TogglePassword\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Félix Eymonot",
+                    "email": "felix.eymonot@alximy.io"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Toggle visibility of password inputs for Symfony Forms",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "symfony-ux"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/ux-toggle-password/tree/v2.35.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-03-22T22:21:50+00:00"
         },
         {
             "name": "symfony/ux-turbo",

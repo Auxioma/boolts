@@ -40,3 +40,42 @@
     font-weight: 500 !important;
     line-height: 20px !important;
 }
+.password-toggle {
+    position: relative;
+}
+
+.password-input {
+    padding-right: 48px;
+}
+
+.password-toggle-button {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 0;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.password-toggle-button::before {
+    content: "";
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: #6c757d;
+
+    mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center / contain;
+    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center / contain;
+}
+
+/* Quand le mot de passe est visible */
+.password-toggle:has(input[type="text"]) .password-toggle-button::before {
+    mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center / contain;
+    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center / contain;
+}
