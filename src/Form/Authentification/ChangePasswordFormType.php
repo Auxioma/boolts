@@ -27,38 +27,71 @@ class ChangePasswordFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('plainPassword', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'options' => [
-                    'attr' => [
-                        'autocomplete' => 'new-password',
-                    ],
-                ],
-                'first_options' => [
-                    'constraints' => [
-                        new NotBlank(
-                            message: 'Veuillez saisir un mot de passe',
-                        ),
-                        new Length(
-                            min: 12,
-                            minMessage: 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
-                            // longueur maximale autorisée par Symfony pour des raisons de sécurité
-                            max: 4096,
-                        ),
-                        new PasswordStrength(),
-                        /* new NotCompromisedPassword(), */
-                    ],
-                    'label' => 'Nouveau mot de passe',
-                ],
-                'second_options' => [
-                    'label' => 'Confirmer le mot de passe',
-                ],
-                'invalid_message' => 'Les mots de passe ne correspondent pas.',
-                // Au lieu d’être directement assigné à l’objet,
-                // ce champ est traité et encodé dans le contrôleur
-                'mapped' => false,
-                'toggle' => true
-            ])
+->add('plainPassword', RepeatedType::class, [
+    'type' => PasswordType::class,
+
+    'options' => [
+        'attr' => [
+            'autocomplete' => 'new-password',
+        ],
+    ],
+
+    'first_options' => [
+        'toggle' => true,
+
+        // ⚠️ DOIT être string (pas bool)
+        'visible_label' => '',
+        'hidden_label' => '',
+
+        // icônes
+        'visible_icon' => 'eye',
+        'hidden_icon' => 'eye-slash',
+
+        // ⚠️ DOIT être tableau
+        'button_classes' => ['password-toggle-button'],
+        'toggle_container_classes' => ['password-toggle'],
+
+        'label' => 'form.password.new',
+        'attr' => [
+            'class' => 'form-control password-input',
+            'placeholder' => 'Veuillez entrer votre mot de passe',
+        ],
+
+        'constraints' => [
+            new NotBlank(
+                message: 'form.password.error.blank'
+            ),
+            new Length(
+                min: 8,
+                max: 4096,
+                minMessage: 'form.password.error.min',
+                maxMessage: 'form.password.error.max',
+            ),
+        ],
+    ],
+
+    'second_options' => [
+        'toggle' => true,
+
+        'visible_label' => '',
+        'hidden_label' => '',
+
+        'visible_icon' => 'eye',
+        'hidden_icon' => 'eye-slash',
+
+        'button_classes' => ['password-toggle-button'],
+        'toggle_container_classes' => ['password-toggle'],
+
+        'label' => 'form.password.repeat',
+        'attr' => [
+            'placeholder' => 'Veuillez confirmer votre mot de passe',
+            'class' => 'form-control password-input mb-32',
+        ],
+    ],
+
+    'invalid_message' => 'form.password.error.mismatch',
+    'mapped' => false,
+])
         ;
     }
 
