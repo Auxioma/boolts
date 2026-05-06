@@ -1,4 +1,4 @@
-#dashboard h2 {
+.menu-parametres h2 {
     color: #0B0F14;
     font-size: 20px;
     font-style: normal;
@@ -39,4 +39,12 @@
 .moyen-de-paiement:has(.active) a,
 .langue-et-devise:has(.active) a {
     color: #5D00FF;
+}
+
+/* profile public */
+.card-information-public-profile {
+    border-radius: 20px;
+    border: 2px solid var(--10, #EBECEC);
+    background: var(--White, #FFF);
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.00);
 }

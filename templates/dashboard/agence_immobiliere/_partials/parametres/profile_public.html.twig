@@ -1,1 +1,116 @@
-<div class="js-tab-content" id="cat1">Contenu catégorie 1</div>
+<div class="js-tab-content px-48 pb-92" id="cat1">
+    <div class="row">
+        <div class="col-10 mx-auto">
+            <h2>Profil public</h2>
+            <div class="card-information-public-profile my-32 py-18 px-24">
+
+            <div class="d-flex align-items-center gap-3">
+                
+                <div class="position-relative">
+                    <img src="{{ asset('images/agence/profile-1.png') }}"
+                        alt="avatar"
+                        class="rounded-circle object-fit-cover"
+                        width="100"
+                        height="100">
+
+                    <button class="btn btn-primary rounded-pill position-absolute start-50 translate-middle-x"
+                            style="bottom: -12px;">
+                        Modifier
+                    </button>
+                </div>
+
+                <div>
+                    <h2 class="fw-bold mb-2">Axa Immobilier</h2>
+
+                    <p class="text-secondary mb-0 fs-5">
+                        Agence immobilière premium <br>
+                        spécialisée villas luxe.
+                    </p>
+                </div>
+
+            </div>
+<div class="connexion-securite px-10 py-10">
+    <div class="d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">Mot de passe</h3>
+
+        <button
+            class="btn btn-link p-0 text-decoration-none fw-bold"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapsePassword"
+            aria-expanded="false"
+            aria-controls="collapsePassword"
+        >
+            Modifier
+        </button>
+    </div>
+
+    <div class="collapse mt-12" id="collapsePassword">
+        <div class="collapse-password-content">
+            <div class="d-flex justify-content-between align-items-start">
+                <strong>Mot de passe</strong>
+
+                <button type="submit" class="btn-confirm-password">
+                    Confirmer
+                </button>
+            </div>
+
+            <div class="password-fields mt-8">
+                <input
+                    type="password"
+                    class="form-control"
+                    placeholder="Nouveau mot de passe"
+                >
+
+                <input
+                    type="password"
+                    class="form-control mt-8"
+                    placeholder="Confirmer le mot de passe"
+                >
+            </div>
+
+            <p class="success-message mb-0 mt-12">
+                Lien de modification envoyé par mail.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.collapse-password-content {
+    border: 3px solid #0d99ff;
+    padding: 0 4px 18px 4px;
+    min-height: 168px;
+}
+
+.btn-confirm-password {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+    color: #111;
+}
+
+.password-fields {
+    width: 333px;
+}
+
+.password-fields .form-control {
+    height: 40px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.success-message {
+    color: #00a000;
+    font-weight: 700;
+    font-size: 14px;
+}
+</style>
+
+                
+            </div>
+        </div>
+    </div>
+</div>
