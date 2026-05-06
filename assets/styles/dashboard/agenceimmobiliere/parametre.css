@@ -1,0 +1,42 @@
+#dashboard h2 {
+    color: #0B0F14;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+}
+.dashboard-agence-title {
+    color: #858789;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.profile-public a,
+.information-personnelles a,
+.connexion-securite a,
+.moyen-de-paiement a,
+.langue-et-devise a {
+    color: #858789;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 16px;
+}
+.profile-public:has(.active),
+.information-personnelles:has(.active),
+.connexion-securite:has(.active),
+.moyen-de-paiement:has(.active),
+.langue-et-devise:has(.active) {
+    border-radius: 10px;
+    background: #EBECEC;
+    color: #5D00FF;
+}
+.profile-public:has(.active) a,
+.information-personnelles:has(.active) a,
+.connexion-securite:has(.active) a,
+.moyen-de-paiement:has(.active) a,
+.langue-et-devise:has(.active) a {
+    color: #5D00FF;
+}

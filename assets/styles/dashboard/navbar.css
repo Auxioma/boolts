@@ -1,0 +1,30 @@
+.menu-dashboard-title span {
+    color: #858789;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 16px;
+}
+.menu-dashboard-title.active span {
+    color: #5D00FF;
+}
+
+.aside-dashboard-navbar {
+    border-right: 1px solid #EBECEC;
+    background: #F8F8F8;
+}
+.aside-dashboard-navbar p {
+    color: #858789;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+}
+.deconnection {
+    border-radius: 10px;
+    background: #EBECEC;
+}
+.color-active:has(.menu-dashboard-title.active) {
+    border-radius: 10px;
+    background: #EBECEC;
+}

@@ -22,8 +22,6 @@ final class AgenceImmobiliereParametresController extends AbstractController
     #[Route('/', name: 'parametres')]
     public function index(): Response
     {
-        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_parametres/index.html.twig', [
-            'controller_name' => 'AgenceImmobiliereParametresController',
-        ]);
+        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_parametres/index.html.twig');
     }
 }

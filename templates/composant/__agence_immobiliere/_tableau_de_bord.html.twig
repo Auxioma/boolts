@@ -1,71 +1,107 @@
 <!-- Sidebar 1 -->
-<aside class="col-12 col-md-3 col-lg-2 border-end bg-light">
-    <div class="p-4 h-100">
-        <h2 class="h4 mb-4">Tableau de bord</h2>
+<aside class="col-12 col-md-3 col-lg-2 pt-48 pb-32 px-12 aside-dashboard-navbar">
+    <div class="h-100">
 
-        <div class="mb-4">
-            <a href="{{ path('agence_immobiliere_dashboard') }}" class="btn w-100 text-start d-flex align-items-center gap-2 mb-2">
-                <i class="lucide lucide-layout-dashboard"></i>
-                <span>Dashboard</span>
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_dashboard') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_dashboard' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-layout-dashboard"></i>
+                    Dashboard
+                </span>
             </a>
         </div>
 
-        <div class="mb-4">
-            <p class="text-muted small mb-3">Mon activité</p>
-
-            <div class="d-grid gap-2">
-                <a href="{{ path('agence_immobiliere_mes_biens') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-building"></i>
-                    <span>Mes biens</span>
-                </a>
-
-                <a href="{{ path('agence_immobiliere_notifications') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-bell"></i>
-                    <span>Notifications</span>
-                </a>
-
-                <a href="{{ path('agence_immobiliere_messagerie') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-message-square"></i>
-                    <span>Messagerie</span>
-                </a>
-            </div>
+        <div class="mt-16">
+            <p class="mb-0">Mon activité</p>
         </div>
 
-        <div class="mb-4">
-            <p class="text-muted small mb-3">Mon compte</p>
-
-            <div class="d-grid gap-2">
-                <a href="{{ path('agence_immobiliere_options') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-credit-card"></i>
-                    <span>Options &amp; abonnements</span>
-                </a>
-
-                <a href="{{ path('agence_immobiliere_mes_factures') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-receipt"></i>
-                    <span>Mes factures</span>
-                </a>
-
-                <a href="{{ path('agence_immobiliere_parametres') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-settings"></i>
-                    <span>Paramètres</span>
-                </a>
-            </div>
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_mes_biens') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-building-2"></i>
+                    Mes biens
+                </span>
+            </a>
         </div>
 
-        <div>
-            <p class="text-muted small mb-3">Options supplémentaires</p>
-
-            <div class="d-grid gap-2">
-                <a href="{{ path('agence_immobiliere_aide') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-circle-help"></i>
-                    <span>Aide</span>
-                </a>
-
-                <a href="{{ path('app_logout') }}" class="btn w-100 text-start d-flex align-items-center gap-2">
-                    <i class="lucide lucide-log-out"></i>
-                    <span>Déconnexion</span>
-                </a>
-            </div>
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_notifications') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_notifications' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-bell"></i>
+                    Notifications
+                </span>
+            </a>
         </div>
+
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_messagerie') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_messagerie' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-message-circle-more"></i>
+                    Messagerie
+                </span>
+            </a>
+        </div>
+
+        <div class="mt-16">
+            <p class="mb-0">Mon compte</p>
+        </div>
+
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_options') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_options' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-credit-card"></i>
+                    Options &amp; abonnements
+                </span>
+            </a>
+        </div>
+
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_mes_factures') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_mes_factures' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-receipt"></i>
+                    Mes factures
+                </span>
+            </a>
+        </div>
+
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_parametres') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_parametres' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-settings"></i>
+                    Paramètres
+                </span>
+            </a>
+        </div>
+
+        <div class="mt-16">
+            <p class="mb-0">Options supplémentaires</p>
+        </div>
+
+        <div class="px-10 py-10 color-active">
+            <a href="{{ path('agence_immobiliere_aide') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_aide' ? 'active' : '' }}">
+                <span>
+                    <i class="icon-circle-help"></i>
+                    Aide
+                </span>
+            </a>
+        </div>
+
+        <div class="mt-8 px-10 py-10 deconnection">
+            <a href="{{ path('app_logout') }}" class="menu-dashboard-title">
+                <span>
+                    <i class="icon-log-out"></i>
+                    Déconnexion
+                </span>
+            </a>
+        </div>
+
     </div>
 </aside>

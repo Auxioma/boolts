@@ -1,0 +1,65 @@
+{% set menuParametres = [
+    {
+        title: 'Gestion du compte',
+        items: [
+        {
+            wrapper: 'profile-public',
+            tab: 'cat1',
+            icon: 'icon-user-round',
+            label: 'Profile public',
+            active: true
+        },
+        {
+            wrapper: 'information-personnelles',
+            tab: 'cat2',
+            icon: 'icon-user',
+            label: 'Informations personnelles',
+            active: false
+        }
+    ]
+    },
+    {
+        title: 'Sécurité et paiement',
+        items: [
+        {
+            wrapper: 'connexion-securite',
+            tab: 'cat3',
+            icon: 'icon-lock',
+            label: 'Connexion et sécurité',
+            active: false
+        },
+        {
+            wrapper: 'moyen-de-paiement',
+            tab: 'cat4',
+            icon: 'icon-credit-card',
+            label: 'Moyen de paiement',
+            active: false
+        },
+        {
+            wrapper: 'langue-et-devise',
+            tab: 'cat5',
+            icon: 'icon-languages',
+            label: 'Langue et devise',
+            active: false
+        }
+    ]
+    }
+] %}
+
+
+{% for section in menuParametres %}
+    <span class="dashboard-agence-title mt-32 d-block">
+        {{ section.title }}
+    </span>
+
+    {% for item in section.items %}
+        <div class="{{ item.wrapper }} {{ loop.first ? 'mt-22' : 'mt-8' }} px-10 py-10">
+            <a href="#"
+               class="menu-btn js-tab-link{{ item.active ? ' active' : '' }}"
+               data-tab="{{ item.tab }}">
+                <i class="{{ item.icon }}"></i>
+                {{ item.label }}
+            </a>
+        </div>
+    {% endfor %}
+{% endfor %}

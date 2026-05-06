@@ -31,3 +31,6 @@
 @import "./layouts/responsive/login/911.css";
 @import "./layouts/responsive/topbar.css";
 
+/* Dashboard agence */
+@import './dashboard/navbar.css';
+@import "./dashboard/agenceimmobiliere/parametre.css";
