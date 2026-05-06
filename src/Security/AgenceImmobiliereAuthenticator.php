@@ -63,7 +63,7 @@ class AgenceImmobiliereAuthenticator extends AbstractLoginFormAuthenticator
         }
 
         return new RedirectResponse(
-            $this->urlGenerator->generate('app_professionnel_dashboard')
+            $this->urlGenerator->generate('agence_immobiliere_dashboard')
         );
     }
 

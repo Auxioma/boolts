@@ -1,1 +1,274 @@
-<div class="js-tab-content d-none" id="cat2">Contenu catégorie 2</div>
+{# Onglet : informations personnelles #}
+<div class="js-tab-content d-none px-48 pb-92" id="cat2">
+
+    <div class="row">
+        <div class="col-10 mx-auto">
+
+            <h2>Informations personnelles</h2>
+
+            <div
+                class="card-information-public-profile my-32 py-18 px-24"
+                data-controller="field-save"
+                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+            >
+
+                <div class="connexion-securite px-10 py-10 mt-4">
+
+                    {# Prénom #}
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h3 class="mb-0">Prénom</h3>
+                            <p class="mb-0" id="prenom-value">
+                                {{ app.user.prenom ?? '***' }}
+                            </p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseFirstName"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapseFirstName">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Prénom</strong>
+
+                                <button
+                                    type="button"
+                                    class="btn-confirm-password"
+                                    data-action="click->field-save#save"
+                                    data-field-save-field-param="prenom"
+                                    data-field-save-input-param="#{{ form.prenom.vars.id }}"
+                                    data-field-save-output-param="#prenom-value"
+                                >
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                {{ form_widget(form.prenom, {
+                                    attr: {
+                                        class: 'form-control',
+                                        placeholder: 'Nouveau prénom'
+                                    }
+                                }) }}
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Nom #}
+                    <div class="d-flex justify-content-between align-items-start mt-4">
+                        <div>
+                            <h3 class="mb-0">Nom</h3>
+                            <p class="mb-0" id="nom-value">
+                                {{ app.user.nom ?? '***' }}
+                            </p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseLastName"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapseLastName">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Nom</strong>
+
+                                <button
+                                    type="button"
+                                    class="btn-confirm-password"
+                                    data-action="click->field-save#save"
+                                    data-field-save-field-param="nom"
+                                    data-field-save-input-param="#nom-input"
+                                    data-field-save-output-param="#nom-value"
+                                >
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <input
+                                    id="nom-input"
+                                    name="nom"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Nouveau nom"
+                                    value="{{ app.user.nom ?? '' }}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Email #}
+                    <div class="d-flex justify-content-between align-items-start mt-4">
+                        <div>
+                            <h3 class="mb-0">Email</h3>
+                            <p class="mb-0" id="email-value">
+                                {{ app.user.email ?? '***' }}
+                            </p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseEmail"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapseEmail">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Email</strong>
+
+                                <button
+                                    type="button"
+                                    class="btn-confirm-password"
+                                    data-action="click->field-save#save"
+                                    data-field-save-field-param="email"
+                                    data-field-save-input-param="#email-input"
+                                    data-field-save-output-param="#email-value"
+                                >
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <input
+                                    id="email-input"
+                                    name="email"
+                                    type="email"
+                                    class="form-control"
+                                    placeholder="Nouvelle adresse e-mail"
+                                    value="{{ app.user.email ?? '' }}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Téléphone #}
+                    <div class="d-flex justify-content-between align-items-start mt-4">
+                        <div>
+                            <h3 class="mb-0">Numéro de téléphone</h3>
+                            <p class="mb-0" id="phone-value">
+                                {{ app.user.phone ?? '***' }}
+                            </p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapsePhone"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapsePhone">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Numéro de téléphone</strong>
+
+                                <button
+                                    type="button"
+                                    class="btn-confirm-password"
+                                    data-action="click->field-save#save"
+                                    data-field-save-field-param="phone"
+                                    data-field-save-input-param="#phone-input"
+                                    data-field-save-output-param="#phone-value"
+                                >
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <input
+                                    id="phone-input"
+                                    name="phone"
+                                    type="tel"
+                                    class="form-control"
+                                    placeholder="Nouveau numéro de téléphone"
+                                    value="{{ app.user.phone ?? '' }}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Adresse #}
+                    <div class="d-flex justify-content-between align-items-start mt-4">
+                        <div>
+                            <h3 class="mb-0">Adresse</h3>
+                            <p class="mb-0" id="address-value">
+                                {{ app.user.address ?? '***' }}
+                            </p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseAddress"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapseAddress">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Adresse</strong>
+
+                                <button
+                                    type="button"
+                                    class="btn-confirm-password"
+                                    data-action="click->field-save#save"
+                                    data-field-save-field-param="address"
+                                    data-field-save-input-param="#address-input"
+                                    data-field-save-output-param="#address-value"
+                                >
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <input
+                                    id="address-input"
+                                    name="address"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Nouvelle adresse"
+                                    value="{{ app.user.address ?? '' }}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success d-none mt-3" data-field-save-target="success">
+                        Modification enregistrée.
+                    </div>
+
+                    <div class="alert alert-danger d-none mt-3" data-field-save-target="error">
+                        Une erreur est survenue.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

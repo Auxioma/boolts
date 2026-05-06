@@ -12,6 +12,7 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Form\Dashboard\AgenceImmobiliere\ProfileAgenceType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,6 +23,12 @@ final class AgenceImmobiliereParametresController extends AbstractController
     #[Route('/', name: 'parametres')]
     public function index(): Response
     {
-        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_parametres/index.html.twig');
+        $user = $this->getUser();
+
+        $form = $this->createForm(ProfileAgenceType::class, $user);
+
+        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_parametres/index.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

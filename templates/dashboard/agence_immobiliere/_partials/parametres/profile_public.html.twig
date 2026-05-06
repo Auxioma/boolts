@@ -2,80 +2,287 @@
     <div class="row">
         <div class="col-10 mx-auto">
             <h2>Profil public</h2>
+
             <div class="card-information-public-profile my-32 py-18 px-24">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="position-relative">
+                        <img
+                            src="{{ asset('images/agence/profile-1.png') }}"
+                            alt="avatar"
+                            class="rounded-circle object-fit-cover"
+                            width="100"
+                            height="100"
+                        >
 
-            <div class="d-flex align-items-center gap-3">
-                
-                <div class="position-relative">
-                    <img src="{{ asset('images/agence/profile-1.png') }}"
-                        alt="avatar"
-                        class="rounded-circle object-fit-cover"
-                        width="100"
-                        height="100">
+                        <button
+                            class="btn btn-primary rounded-pill position-absolute start-50 translate-middle-x"
+                            type="button"
+                            style="bottom: -12px;"
+                        >
+                            Modifier
+                        </button>
+                    </div>
 
-                    <button class="btn btn-primary rounded-pill position-absolute start-50 translate-middle-x"
-                            style="bottom: -12px;">
-                        Modifier
-                    </button>
+                    <div>
+                        <h2 class="fw-bold mb-2">Axa Immobilier</h2>
+                        <p class="text-secondary mb-0 fs-5">
+                            Agence immobilière premium <br>
+                            spécialisée villas luxe.
+                        </p>
+                    </div>
                 </div>
 
-                <div>
-                    <h2 class="fw-bold mb-2">Axa Immobilier</h2>
+                <div class="connexion-securite px-10 py-10 mt-4">
 
-                    <p class="text-secondary mb-0 fs-5">
-                        Agence immobilière premium <br>
-                        spécialisée villas luxe.
-                    </p>
+                    <!-- Nom de l'agence -->
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h3 class="mb-0">Nom de l’agence</h3>
+                            <p class="mb-0">Axa Immobilier</p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseAgencyName"
+                            aria-expanded="false"
+                            aria-controls="collapseAgencyName"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapseAgencyName">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Nom de l’agence</strong>
+                                <button type="submit" class="btn-confirm-password">
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Nouveau nom de l’agence"
+                                    value="Axa Immobilier"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="d-flex justify-content-between align-items-start mt-4">
+                        <div>
+                            <h3 class="mb-0">Description</h3>
+                            <p class="mb-0">
+                                Agence immobilière premium spécialisée villas luxe.
+                            </p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseDescription"
+                            aria-expanded="false"
+                            aria-controls="collapseDescription"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapseDescription">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Description</strong>
+                                <button type="submit" class="btn-confirm-password">
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <textarea
+                                    class="form-control"
+                                    rows="3"
+                                    placeholder="Nouvelle description"
+                                >Agence immobilière premium spécialisée villas luxe.</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Numéro de téléphone -->
+                    <div class="d-flex justify-content-between align-items-start mt-4">
+                        <div>
+                            <h3 class="mb-0">Numéro de téléphone</h3>
+                            <p class="mb-0">02 35 44 89 33</p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapsePhone"
+                            aria-expanded="false"
+                            aria-controls="collapsePhone"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapsePhone">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Numéro de téléphone</strong>
+                                <button type="submit" class="btn-confirm-password">
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <input
+                                    type="tel"
+                                    class="form-control"
+                                    placeholder="Nouveau numéro de téléphone"
+                                    value="02 35 44 89 33"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Adresse e-mail -->
+                    <div class="d-flex justify-content-between align-items-start mt-4">
+                        <div>
+                            <h3 class="mb-0">Adresse e-mail</h3>
+                            <p class="mb-0">agence@agence.agence</p>
+                        </div>
+
+                        <button
+                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseEmail"
+                            aria-expanded="false"
+                            aria-controls="collapseEmail"
+                        >
+                            Modifier
+                        </button>
+                    </div>
+
+                    <div class="collapse mt-12" id="collapseEmail">
+                        <div class="collapse-password-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <strong>Adresse e-mail</strong>
+                                <button type="submit" class="btn-confirm-password">
+                                    Confirmer
+                                </button>
+                            </div>
+
+                            <div class="password-fields mt-8">
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    placeholder="Nouvelle adresse e-mail"
+                                    value="agence@agence.agence"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="address-switch-card mt-4">
+                        <div class="address-switch-content">
+                            <h3>Afficher l’adresse</h3>
+                            <p>
+                                Activez l’affichage de votre adresse e-mail pour
+                                maximiser vos opportunités
+                            </p>
+                        </div>
+
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
                 </div>
-
-            </div>
-<div class="connexion-securite px-10 py-10">
-    <div class="d-flex justify-content-between align-items-center">
-        <h3 class="mb-0">Mot de passe</h3>
-
-        <button
-            class="btn btn-link p-0 text-decoration-none fw-bold"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#collapsePassword"
-            aria-expanded="false"
-            aria-controls="collapsePassword"
-        >
-            Modifier
-        </button>
-    </div>
-
-    <div class="collapse mt-12" id="collapsePassword">
-        <div class="collapse-password-content">
-            <div class="d-flex justify-content-between align-items-start">
-                <strong>Mot de passe</strong>
-
-                <button type="submit" class="btn-confirm-password">
-                    Confirmer
-                </button>
-            </div>
-
-            <div class="password-fields mt-8">
-                <input
-                    type="password"
-                    class="form-control"
-                    placeholder="Nouveau mot de passe"
-                >
-
-                <input
-                    type="password"
-                    class="form-control mt-8"
-                    placeholder="Confirmer le mot de passe"
-                >
-            </div>
-
-            <p class="success-message mb-0 mt-12">
-                Lien de modification envoyé par mail.
-            </p>
-        </div>
-    </div>
-</div>    
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .address-switch-card {
+        max-width: 667px;
+        min-height: 84px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 12px 10px;
+        background: #F3F3F3;
+    }
+
+    .address-switch-content h3 {
+        margin: 0;
+        color: #000;
+        font-family: Inter, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 18px;
+    }
+
+    .address-switch-content p {
+        max-width: 287px;
+        margin: 4px 0 0;
+        color: #8D8D8D;
+        font-family: Inter, sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        line-height: 16px;
+    }
+
+    .switch {
+        position: relative;
+        width: 39px;
+        height: 25px;
+        display: inline-block;
+        margin-top: 15px;
+        flex-shrink: 0;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        background: #5D00FF;
+        border-radius: 100px;
+        transition: 0.2s ease;
+    }
+
+    .slider::before {
+        content: "";
+        position: absolute;
+        width: 21px;
+        height: 21px;
+        left: 2px;
+        top: 2px;
+        background: #FFF;
+        border-radius: 50%;
+        transition: 0.2s ease;
+    }
+
+    .switch input:checked + .slider::before {
+        transform: translateX(14px);
+    }
+
+    .switch input:not(:checked) + .slider {
+        background: #CFCFCF;
+    }
+</style>

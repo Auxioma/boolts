@@ -86,8 +86,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $pays = null;
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Pays $pays = null;
 
     public function getId(): ?int
     {
@@ -301,12 +301,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->imageSize;
     }
 
-    public function getPays(): ?string
+    public function getPays(): ?Pays
     {
         return $this->pays;
     }
 
-    public function setPays(string $pays): static
+    public function setPays(?Pays $pays): static
     {
         $this->pays = $pays;
 

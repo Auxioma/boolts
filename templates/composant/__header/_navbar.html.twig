@@ -63,7 +63,7 @@
                             {% if is_granted('ROLE_ADMIN') %}
                                 {% set dashboardPath = path('admin') %}
                             {% elseif is_granted('ROLE_AGENCE') %}
-                                {% set dashboardPath = path('app_dashboard_agence_immobiliere_dashboard') %}
+                                {% set dashboardPath = path('agence_immobiliere_dashboard') %}
                             {% else %}
                                 {% set dashboardPath = path('app_visiteur_dashboard') %}
                             {% endif %}
