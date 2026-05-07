@@ -2,7 +2,8 @@ import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
     static values = {
-        url: String
+        url: String,
+        csrf: String
     }
 
     static targets = ['success', 'error']
@@ -24,7 +25,8 @@ export default class extends Controller {
             },
             body: JSON.stringify({
                 field: field,
-                value: input.value
+                value: input.value,
+                _token: this.csrfValue
             })
         });
 

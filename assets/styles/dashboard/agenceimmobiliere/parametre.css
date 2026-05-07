@@ -1,3 +1,36 @@
+/* code global sur toutes les pages  */
+.contenue-des-page-des-parametres {}
+.contenue-des-page-des-parametres h2 {
+    color: #0B0F14;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 34px;
+}
+.contenue-des-page-des-parametres h3 {
+    color: #0B0F14;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+}
+.contenue-des-page-des-parametres p {
+    color: #858789;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+}
+.contenue-des-page-des-parametres .btn-buttom-agence {
+    color: #0B0F14;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+
+/* Navigation */
 .menu-parametres h2 {
     color: #0B0F14;
     font-size: 20px;
@@ -45,6 +78,7 @@
 .card-information-public-profile {
     border-radius: 20px;
     border: 2px solid var(--10, #EBECEC);
-    background: var(--White, #FFF);
+    background: #FFF;
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.00);
 }
+

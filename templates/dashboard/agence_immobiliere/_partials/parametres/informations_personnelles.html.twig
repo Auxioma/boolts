@@ -1,30 +1,31 @@
 {# Onglet : informations personnelles #}
-<div class="js-tab-content d-none px-48 pb-92" id="cat2">
+<div class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres" id="cat2">
 
     <div class="row">
         <div class="col-10 mx-auto">
 
-            <h2>Informations personnelles</h2>
+            <h2 class="mb-0">Informations personnelles</h2>
 
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
                 data-controller="field-save"
                 data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
             >
 
-                <div class="connexion-securite px-10 py-10 mt-4">
+                <div class="connexion-securite">
 
                     {# Prénom #}
-                    <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                         <div>
                             <h3 class="mb-0">Prénom</h3>
-                            <p class="mb-0" id="prenom-value">
+                            <p class="mt-12 mb-0" id="prenom-value">
                                 {{ app.user.prenom ?? '***' }}
                             </p>
                         </div>
 
                         <button
-                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto"
                             type="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#collapseFirstName"
@@ -36,7 +37,6 @@
                     <div class="collapse mt-12" id="collapseFirstName">
                         <div class="collapse-password-content">
                             <div class="d-flex justify-content-between align-items-start">
-                                <strong>Prénom</strong>
 
                                 <button
                                     type="button"
@@ -51,213 +51,107 @@
                             </div>
 
                             <div class="password-fields mt-8">
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+                    <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom js-editable-field">
+
+                        <div class="w-100">
+                            <h3 class="mb-0">Prénom</h3>
+
+                            {# Valeur affichée #}
+                            <p class="mt-12 mb-0 js-field-value">
+                                {{ app.user.prenom ?? '***' }}
+                            </p>
+
+                            {# Input Symfony caché au départ #}
+                            <div class="mt-12 d-none js-field-input">
                                 {{ form_widget(form.prenom, {
                                     attr: {
-                                        class: 'form-control',
-                                        placeholder: 'Nouveau prénom'
+                                        class: 'form-control'
                                     }
                                 }) }}
-
-
                             </div>
-                        </div>
-                    </div>
-
-                    {# Nom #}
-                    <div class="d-flex justify-content-between align-items-start mt-4">
-                        <div>
-                            <h3 class="mb-0">Nom</h3>
-                            <p class="mb-0" id="nom-value">
-                                {{ app.user.nom ?? '***' }}
-                            </p>
                         </div>
 
                         <button
-                            class="btn btn-link p-0 text-decoration-none fw-bold"
+                            class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
                             type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapseLastName"
                         >
                             Modifier
                         </button>
                     </div>
 
-                    <div class="collapse mt-12" id="collapseLastName">
-                        <div class="collapse-password-content">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <strong>Nom</strong>
+                    <script>
+                        document.querySelectorAll('.js-editable-field').forEach((field) => {
 
-                                <button
-                                    type="button"
-                                    class="btn-confirm-password"
-                                    data-action="click->field-save#save"
-                                    data-field-save-field-param="nom"
-                                    data-field-save-input-param="#nom-input"
-                                    data-field-save-output-param="#nom-value"
-                                >
-                                    Confirmer
-                                </button>
-                            </div>
+                            const button = field.querySelector('.js-edit-button');
+                            const value = field.querySelector('.js-field-value');
+                            const inputWrapper = field.querySelector('.js-field-input');
+                            const input = inputWrapper.querySelector('input, textarea, select');
 
-                            <div class="password-fields mt-8">
-                                <input
-                                    id="nom-input"
-                                    name="nom"
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Nouveau nom"
-                                    value="{{ app.user.nom ?? '' }}"
-                                >
-                            </div>
-                        </div>
-                    </div>
+                            // Valeur initiale
+                            const initialValue = input.value;
 
-                    {# Email #}
-                    <div class="d-flex justify-content-between align-items-start mt-4">
-                        <div>
-                            <h3 class="mb-0">Email</h3>
-                            <p class="mb-0" id="email-value">
-                                {{ app.user.email ?? '***' }}
-                            </p>
-                        </div>
+                            button.addEventListener('click', () => {
 
-                        <button
-                            class="btn btn-link p-0 text-decoration-none fw-bold"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapseEmail"
-                        >
-                            Modifier
-                        </button>
-                    </div>
+                                const isEditing = field.dataset.editing === 'true';
 
-                    <div class="collapse mt-12" id="collapseEmail">
-                        <div class="collapse-password-content">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <strong>Email</strong>
+                                // OUVERTURE
+                                if (!isEditing) {
 
-                                <button
-                                    type="button"
-                                    class="btn-confirm-password"
-                                    data-action="click->field-save#save"
-                                    data-field-save-field-param="email"
-                                    data-field-save-input-param="#email-input"
-                                    data-field-save-output-param="#email-value"
-                                >
-                                    Confirmer
-                                </button>
-                            </div>
+                                    value.classList.add('d-none');
+                                    inputWrapper.classList.remove('d-none');
 
-                            <div class="password-fields mt-8">
-                                <input
-                                    id="email-input"
-                                    name="email"
-                                    type="email"
-                                    class="form-control"
-                                    placeholder="Nouvelle adresse e-mail"
-                                    value="{{ app.user.email ?? '' }}"
-                                >
-                            </div>
-                        </div>
-                    </div>
+                                    button.textContent = 'Fermer';
 
-                    {# Téléphone #}
-                    <div class="d-flex justify-content-between align-items-start mt-4">
-                        <div>
-                            <h3 class="mb-0">Numéro de téléphone</h3>
-                            <p class="mb-0" id="phone-value">
-                                {{ app.user.phone ?? '***' }}
-                            </p>
-                        </div>
+                                    field.dataset.editing = 'true';
 
-                        <button
-                            class="btn btn-link p-0 text-decoration-none fw-bold"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapsePhone"
-                        >
-                            Modifier
-                        </button>
-                    </div>
+                                    input.focus();
 
-                    <div class="collapse mt-12" id="collapsePhone">
-                        <div class="collapse-password-content">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <strong>Numéro de téléphone</strong>
+                                    return;
+                                }
 
-                                <button
-                                    type="button"
-                                    class="btn-confirm-password"
-                                    data-action="click->field-save#save"
-                                    data-field-save-field-param="phone"
-                                    data-field-save-input-param="#phone-input"
-                                    data-field-save-output-param="#phone-value"
-                                >
-                                    Confirmer
-                                </button>
-                            </div>
+                                // SI MODIFIÉ → submit
+                                if (input.value !== initialValue) {
+                                    button.closest('form').submit();
+                                    return;
+                                }
 
-                            <div class="password-fields mt-8">
-                                <input
-                                    id="phone-input"
-                                    name="phone"
-                                    type="tel"
-                                    class="form-control"
-                                    placeholder="Nouveau numéro de téléphone"
-                                    value="{{ app.user.phone ?? '' }}"
-                                >
-                            </div>
-                        </div>
-                    </div>
+                                // FERMETURE
+                                value.classList.remove('d-none');
+                                inputWrapper.classList.add('d-none');
 
-                    {# Adresse #}
-                    <div class="d-flex justify-content-between align-items-start mt-4">
-                        <div>
-                            <h3 class="mb-0">Adresse</h3>
-                            <p class="mb-0" id="address-value">
-                                {{ app.user.address ?? '***' }}
-                            </p>
-                        </div>
+                                button.textContent = 'Modifier';
 
-                        <button
-                            class="btn btn-link p-0 text-decoration-none fw-bold"
-                            type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#collapseAddress"
-                        >
-                            Modifier
-                        </button>
-                    </div>
+                                field.dataset.editing = 'false';
+                            });
 
-                    <div class="collapse mt-12" id="collapseAddress">
-                        <div class="collapse-password-content">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <strong>Adresse</strong>
+                            // Détection modification
+                            input.addEventListener('input', () => {
 
-                                <button
-                                    type="button"
-                                    class="btn-confirm-password"
-                                    data-action="click->field-save#save"
-                                    data-field-save-field-param="address"
-                                    data-field-save-input-param="#address-input"
-                                    data-field-save-output-param="#address-value"
-                                >
-                                    Confirmer
-                                </button>
-                            </div>
+                                if (input.value !== initialValue) {
+                                    button.textContent = 'Enregistrer';
+                                } else {
+                                    button.textContent = 'Fermer';
+                                }
+                            });
+                        });
+                    </script>
 
-                            <div class="password-fields mt-8">
-                                <input
-                                    id="address-input"
-                                    name="address"
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Nouvelle adresse"
-                                    value="{{ app.user.address ?? '' }}"
-                                >
-                            </div>
-                        </div>
-                    </div>
+
+
+
 
                     <div class="alert alert-success d-none mt-3" data-field-save-target="success">
                         Modification enregistrée.
