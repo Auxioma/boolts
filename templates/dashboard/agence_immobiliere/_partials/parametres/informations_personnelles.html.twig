@@ -151,13 +151,19 @@
                                 <h3 class="mb-0">Adresse*</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="telephone-value">
-                                    {{ app.user.adresse
-                                    ? app.user.adresse ~ ' ' ~
-                                    (app.user.adresseComplement ?? '') ~ ', ' ~
-                                    (app.user.codePostal ?? '') ~ ' ' ~
-                                    (app.user.ville ?? '')
-                                    : '***'
-                                    }}
+                                    {% if app.user and app.user.adresse %}
+                                        {{ app.user.adresse }}
+
+                                        {% if app.user.adresseComplement %}
+                                            {{ app.user.adresseComplement }}
+                                        {% endif %}
+
+                                        {% if app.user.codePostal or app.user.ville %}
+                                            , {{ app.user.codePostal }} {{ app.user.ville }}
+                                        {% endif %}
+                                    {% else %}
+                                        ***
+                                    {% endif %}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input">
