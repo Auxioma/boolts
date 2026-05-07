@@ -34,6 +34,11 @@ class ProfileAgenceType extends AbstractType
                     'data-phone-target' => 'input',
                 ],
             ])
+            ->add('adresse')
+            ->add('adresseComplement')
+            ->add('ville')
+            ->add('codePostal')
+            ->add('pays')
         ;
     }
 
