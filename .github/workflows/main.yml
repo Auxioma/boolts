@@ -38,6 +38,6 @@ jobs:
             php bin/console cache:clear --no-interaction
             php bin/console cache:warmup --no-interaction
             php bin/console assets:install public --no-interaction
-            php bin/console inportmap:install --no-interaction
+            php bin/console importmap:install --no-interaction
             php bin/console asset-map:compile
           EOF
