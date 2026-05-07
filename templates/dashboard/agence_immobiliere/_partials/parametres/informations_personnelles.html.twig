@@ -6,61 +6,143 @@
 
             <h2 class="mb-0">Informations personnelles</h2>
 
-<div
-    class="card-information-public-profile my-32 py-18 px-24"
-    data-controller="field-save"
-    data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
-    data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
->
+            <div
+                class="card-information-public-profile my-32 py-18 px-24"
+                data-controller="field-save"
+                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
+            >
 
-    <div class="connexion-securite">
+                <div class="connexion-securite">
 
-        {# Prénom #}
-        <div class="js-editable-field">
+                    {# Prénom #}
+                    <div class="js-editable-field formulaire">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Prénom*</h3>
+                                <p class="mt-12 mb-0 js-field-value" id="prenom-value">
+                                    {{ app.user.prenom ?? '***' }}
+                                </p>
+                                <div class="mt-12 d-none js-field-input">
 
-            <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-
-                <div class="w-100">
-
-                    <h3 class="mb-0">Prénom</h3>
-
-                    {# Valeur affichée #}
-                    <p class="mt-12 mb-0 js-field-value" id="prenom-value">
-                        {{ app.user.prenom ?? '***' }}
-                    </p>
-
-                    {# Input Symfony caché #}
-                    <div class="mt-12 d-none js-field-input">
-
-                        {{ form_widget(form.prenom, {
-                            attr: {
-                                class: 'form-control'
-                            }
-                        }) }}
-
+                                    {{ form_widget(form.prenom, {
+                                        attr: {
+                                            class: 'form-control'
+                                        }
+                                    }) }}
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="prenom"
+                                data-field-save-input-param="#{{ form.prenom.vars.id }}"
+                                data-field-save-output-param="#prenom-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
                     </div>
 
-                </div>
+                    {# Nom #}
+                    <div class="js-editable-field formulaire my-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">nom*</h3>
+                                <p class="mt-12 mb-0 js-field-value" id="nom-value">
+                                    {{ app.user.nom ?? '***' }}
+                                </p>
+                                <div class="mt-12 d-none js-field-input">
 
-                <button
-                    type="button"
-                    class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                    {{ form_widget(form.nom, {
+                                        attr: {
+                                            class: 'form-control'
+                                        }
+                                    }) }}
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="nom"
+                                data-field-save-input-param="#{{ form.nom.vars.id }}"
+                                data-field-save-output-param="#nom-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
 
-                    data-action="click->field-save#handle"
+                    {# E-mail* #}
+                    <div class="js-editable-field formulaire my-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">E-mail*</h3>
+                                <p class="mt-12 mb-0 js-field-value" id="email-value">
+                                    {{ app.user.email ?? '***' }}
+                                </p>
+                                <div class="mt-12 d-none js-field-input">
 
-                    data-field-save-field-param="prenom"
-                    data-field-save-input-param="#{{ form.prenom.vars.id }}"
-                    data-field-save-output-param="#prenom-value"
-                >
-                    Modifier
-                </button>
+                                    {{ form_widget(form.email, {
+                                        attr: {
+                                            class: 'form-control'
+                                        }
+                                    }) }}
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="email"
+                                data-field-save-input-param="#{{ form.email.vars.id }}"
+                                data-field-save-output-param="#email-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
 
-            </div>
+                    {# Telephone #}
+                    <div
+                        class="js-editable-field formulaire my-20"
+                        data-controller="phone"
+                    >
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Numéro de téléphone*</h3>
 
-        </div>
+                                <p class="mt-12 mb-0 js-field-value" id="telephone-value">
+                                    {{ app.user.telephone ?: '***' }}
+                                </p>
 
-    </div>
-</div>
+                                <div class="mt-12 d-none js-field-input">
+                                    {{ form_widget(form.telephone, {
+                                        attr: {
+                                            class: 'form-control',
+                                            'data-phone-target': 'input'
+                                        }
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                data-action="click->phone#sync click->field-save#handle"
+                                data-field-save-field-param="telephone"
+                                data-field-save-input-param="#{{ form.telephone.vars.id }}"
+                                data-field-save-output-param="#telephone-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+
+
+
 
                 </div>
             </div>

@@ -50,14 +50,14 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         $field = $data['field'] ?? null;
         $value = $data['value'] ?? null;
 
-        if (!\in_array($field, ['prenom'], true)) {
+        $form = $this->createForm(ProfileAgenceType::class, $user);
+
+        if (!$form->has($field)) {
             return $this->json([
                 'success' => false,
                 'message' => 'Champ invalide.',
             ], 400);
         }
-
-        $form = $this->createForm(ProfileAgenceType::class, $user);
 
         $form->submit([
             $field => $value,

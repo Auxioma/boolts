@@ -2,6 +2,6 @@
 
 :root {
   /* Image related variables. */
-  --iti-path-flags-1x: url('../img/flags.webp');
-  --iti-path-flags-2x: url('../img/flags@2x.webp');
+  --iti-path-flags-1x: url('./largeFlags.webp');
+  --iti-path-flags-2x: url('./largeFlags@2x.webp');
 }

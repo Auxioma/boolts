@@ -42,4 +42,7 @@ return [
         'version' => '9.3.0',
         'type' => 'css',
     ],
+    'intl-tel-input' => [
+        'version' => '28.0.4',
+    ],
 ];

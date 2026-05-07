@@ -89,6 +89,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Pays $pays = null;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $telephone = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $adresse = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $AdresseComplement = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $codePostal = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $Ville = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $Pays = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -309,6 +327,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPays(?Pays $pays): static
     {
         $this->pays = $pays;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(string $adresse): static
+    {
+        $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getAdresseComplement(): ?string
+    {
+        return $this->AdresseComplement;
+    }
+
+    public function setAdresseComplement(?string $AdresseComplement): static
+    {
+        $this->AdresseComplement = $AdresseComplement;
+
+        return $this;
+    }
+
+    public function getCodePostal(): ?string
+    {
+        return $this->codePostal;
+    }
+
+    public function setCodePostal(?string $codePostal): static
+    {
+        $this->codePostal = $codePostal;
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->Ville;
+    }
+
+    public function setVille(?string $Ville): static
+    {
+        $this->Ville = $Ville;
 
         return $this;
     }

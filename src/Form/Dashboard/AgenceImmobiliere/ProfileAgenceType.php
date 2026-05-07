@@ -14,6 +14,7 @@ namespace App\Form\Dashboard\AgenceImmobiliere;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -23,6 +24,16 @@ class ProfileAgenceType extends AbstractType
     {
         $builder
             ->add('prenom')
+            ->add('nom')
+            ->add('email')
+            ->add('telephone', TelType::class, [
+                'label' => 'Téléphone',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'data-phone-target' => 'input',
+                ],
+            ])
         ;
     }
 
