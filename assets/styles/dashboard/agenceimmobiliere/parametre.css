@@ -1,5 +1,6 @@
 /* code global sur toutes les pages  */
 .contenue-des-page-des-parametres {}
+
 .contenue-des-page-des-parametres h2 {
     color: #0B0F14;
     font-size: 30px;
@@ -77,7 +78,7 @@
 /* profile public */
 .card-information-public-profile {
     border-radius: 20px;
-    border: 2px solid var(--10, #EBECEC);
+    border: 2px solid #EBECEC;
     background: #FFF;
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.00);
 }
