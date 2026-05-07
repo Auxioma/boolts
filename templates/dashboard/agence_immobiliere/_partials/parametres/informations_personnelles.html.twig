@@ -27,7 +27,7 @@
 
                                     {{ form_widget(form.prenom, {
                                         attr: {
-                                            class: 'form-control'
+                                            class: 'form-control w-75'
                                         }
                                     }) }}
                                 </div>
@@ -57,7 +57,7 @@
 
                                     {{ form_widget(form.nom, {
                                         attr: {
-                                            class: 'form-control'
+                                            class: 'form-control w-75'
                                         }
                                     }) }}
                                 </div>
@@ -87,7 +87,7 @@
 
                                     {{ form_widget(form.email, {
                                         attr: {
-                                            class: 'form-control'
+                                            class: 'form-control w-75'
                                         }
                                     }) }}
                                 </div>
@@ -115,13 +115,13 @@
                                 <h3 class="mb-0">Numéro de téléphone*</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="telephone-value">
-                                    {{ app.user.telephone ?? '***' }}
+                                    {{ app.user.telephone ?: '***' }}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input">
                                     {{ form_widget(form.telephone, {
                                         attr: {
-                                            class: 'form-control',
+                                            class: 'form-control w-75',
                                             'data-phone-target': 'input'
                                         }
                                     }) }}
