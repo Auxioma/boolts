@@ -166,32 +166,83 @@
                                     {% endif %}
                                 </p>
 
-                                <div class="mt-12 d-none js-field-input">
-                                    {{ form_widget(form.adresse, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
-                                    }) }}
-                                    {{ form_widget(form.adresseComplement, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
-                                    }) }}
-                                    {{ form_widget(form.ville, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
-                                    }) }}
-                                    {{ form_widget(form.codePostal, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
-                                    }) }}
-                                    {{ form_widget(form.pays, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
-                                    }) }}
+                                <div class="mt-12 d-none js-field-input w-75">
+
+                                    {# Adresse 1 #}
+                                    <div class="mb-16">
+                                        {{ form_widget(form.adresse, {
+                                            attr: {
+                                                class: 'form-control',
+                                                placeholder: 'Entrez un numéro et un nom de rue'
+                                            }
+                                        }) }}
+                                    </div>
+
+                                    {# Adresse 2 #}
+                                    <div class="mb-16">
+                                        {{ form_label(form.adresseComplement, 'Adresse 2 (optionnel)', {
+                                            label_attr: {
+                                                class: 'form-label fw-bold mb-8'
+                                            }
+                                        }) }}
+
+                                        {{ form_widget(form.adresseComplement, {
+                                            attr: {
+                                                class: 'form-control',
+                                                placeholder: 'Entrez un numéro et un nom de rue'
+                                            }
+                                        }) }}
+                                    </div>
+
+                                    {# Ville + Pays #}
+                                    <div class="row mb-16">
+                                        <div class="col-6">
+                                            {{ form_label(form.ville, 'Ville', {
+                                                label_attr: {
+                                                    class: 'form-label fw-bold mb-8'
+                                                }
+                                            }) }}
+
+                                            {{ form_widget(form.ville, {
+                                                attr: {
+                                                    class: 'form-control',
+                                                    placeholder: 'Choisissez une ville'
+                                                }
+                                            }) }}
+                                        </div>
+
+                                        <div class="col-6">
+                                            {{ form_label(form.pays, 'Pays*', {
+                                                label_attr: {
+                                                    class: 'form-label fw-bold mb-8'
+                                                }
+                                            }) }}
+
+                                            {{ form_widget(form.pays, {
+                                                attr: {
+                                                    class: 'form-control',
+                                                    placeholder: 'France'
+                                                }
+                                            }) }}
+                                        </div>
+                                    </div>
+
+                                    {# Code postal #}
+                                    <div class="mb-16">
+                                        {{ form_label(form.codePostal, 'Code postal', {
+                                            label_attr: {
+                                                class: 'form-label fw-bold mb-8'
+                                            }
+                                        }) }}
+
+                                        {{ form_widget(form.codePostal, {
+                                            attr: {
+                                                class: 'form-control',
+                                                placeholder: 'Entrez un code postal'
+                                            }
+                                        }) }}
+                                    </div>
+
                                 </div>
                             </div>
 

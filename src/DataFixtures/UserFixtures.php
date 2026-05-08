@@ -2,13 +2,15 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Pays;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
@@ -19,6 +21,16 @@ class UserFixtures extends Fixture
     {
         $faker = Factory::create('fr_FR');
 
+        $paysReferences = [
+            'FR',
+            'BE',
+            'CH',
+            'ES',
+            'IT',
+            'DE',
+            'PT',
+        ];
+
         // Visiteur
         $visiteur = new User();
         $visiteur
@@ -27,7 +39,7 @@ class UserFixtures extends Fixture
             ->setIsVerified(true)
             ->setNom($faker->lastName())
             ->setPrenom($faker->firstName())
-        ;
+            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
 
         $visiteur->setPassword(
             $this->passwordHasher->hashPassword($visiteur, '0000')
@@ -43,7 +55,7 @@ class UserFixtures extends Fixture
             ->setIsVerified(true)
             ->setNom($faker->lastName())
             ->setPrenom($faker->firstName())
-        ;
+            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
 
         $agence->setPassword(
             $this->passwordHasher->hashPassword($agence, '0000')
@@ -59,7 +71,7 @@ class UserFixtures extends Fixture
             ->setIsVerified(true)
             ->setNom($faker->lastName())
             ->setPrenom($faker->firstName())
-        ;
+            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
 
         $admin->setPassword(
             $this->passwordHasher->hashPassword($admin, '0000')
@@ -69,15 +81,16 @@ class UserFixtures extends Fixture
 
         // Génération d'agences
         for ($i = 1; $i <= 50; ++$i) {
-            $agence = new User();
+            $iso = $faker->randomElement($paysReferences);
 
+            $agence = new User();
             $agence
                 ->setEmail(\sprintf('agence%d@boolts.test', $i))
                 ->setRoles(['ROLE_AGENCE'])
                 ->setIsVerified(true)
                 ->setNom($faker->lastName())
                 ->setPrenom($faker->firstName())
-            ;
+                ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.$iso, Pays::class));
 
             $agence->setPassword(
                 $this->passwordHasher->hashPassword($agence, '0000')
@@ -87,5 +100,12 @@ class UserFixtures extends Fixture
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            PaysFixtures::class,
+        ];
     }
 }
