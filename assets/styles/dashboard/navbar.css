@@ -5,6 +5,11 @@
     font-weight: 700;
     line-height: 16px;
 }
+.menu-dashboard-title span i:before {
+    font-size: 16px;
+    position:relative;
+    top: 3px
+}
 .menu-dashboard-title.active span {
     color: #5D00FF;
 }
@@ -27,4 +32,11 @@
 .color-active:has(.menu-dashboard-title.active) {
     border-radius: 10px;
     background: #EBECEC;
+}
+.color-active:hover,
+.color-active:hover span
+{
+    border-radius: 10px;
+    background: #EBECEC;
+    color: #5D00FF;
 }

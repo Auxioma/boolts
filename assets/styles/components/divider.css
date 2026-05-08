@@ -19,3 +19,8 @@
     font-weight: 700;
     line-height: 20px;
 }
+
+.border-color-right-gris {
+    border-right: 1px solid #EBECEC;
+    background: #FFF;
+}

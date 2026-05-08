@@ -39,6 +39,11 @@
     font-weight: 700;
     line-height: 24px;
 }
+.menu-parametres i:before {
+    font-size: 16px;
+    position:relative;
+    top: 3px
+}
 .dashboard-agence-title {
     color: #858789;
     font-size: 14px;
@@ -58,6 +63,24 @@
     font-weight: 700;
     line-height: 16px;
 }
+
+.menu-parametres .profile-public:hover,
+.menu-parametres .information-personnelles:hover,
+.menu-parametres .connexion-securite:hover,
+.menu-parametres .moyen-de-paiement:hover,
+.menu-parametres .langue-et-devise:hover {
+    border-radius: 10px;
+    background: #EBECEC;
+    color: #5D00FF;
+}
+.menu-parametres .profile-public:hover a,
+.menu-parametres .information-personnelles:hover a,
+.menu-parametres .connexion-securite:hover a,
+.menu-parametres .moyen-de-paiement:hover a,
+.menu-parametres .langue-et-devise:hover a {
+    color: #5D00FF !important;
+}
+
 .profile-public:has(.active),
 .information-personnelles:has(.active),
 .connexion-securite:has(.active),
