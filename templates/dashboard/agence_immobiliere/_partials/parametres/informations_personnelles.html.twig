@@ -142,14 +142,12 @@
                     </div>
 
                     {# Adresse #}
-                    <div
-                        class="js-editable-field formulaire my-20"
-                        data-controller="phone"
-                    >
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                    <div class="js-editable-field formulaire my-20">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div class="w-100">
                                 <h3 class="mb-0">Adresse*</h3>
-                                <p class="mt-12 mb-0 js-field-value" id="telephone-value">
+
+                                <p class="mt-12 mb-0 js-field-value" id="adresse-value">
                                     {% if app.user and app.user.adresse %}
                                         {{ app.user.adresse }}
 
@@ -160,87 +158,95 @@
                                         {% if app.user.codePostal or app.user.ville %}
                                             , {{ app.user.codePostal }} {{ app.user.ville }}
                                         {% endif %}
+
+                                        {% if app.user.pays %}
+                                            , {{ app.user.pays.nom }}
+                                        {% endif %}
                                     {% else %}
                                         ***
                                     {% endif %}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input w-75">
-                                    {# Adresse 1 #}
                                     <div class="mb-16">
                                         {{ form_widget(form.adresse, {
                                             attr: {
-                                                class: 'form-control',
-                                                placeholder: 'Entrez un numéro et un nom de rue'
+                                                class: 'form-control js-address-input',
+                                                placeholder: 'Entrez un numéro et un nom de rue',
+                                                'data-name': 'adresse'
                                             }
                                         }) }}
                                     </div>
 
-                                    {# Adresse 2 #}
                                     <div class="mb-16">
-                                        <label for="inputEmail" class="form-label mb-16">
+                                        <label class="form-label mb-16">
                                             Adresse 2 (optionnel)
                                         </label>
+
                                         {{ form_widget(form.adresseComplement, {
                                             attr: {
-                                                class: 'form-control',
-                                                placeholder: 'Entrez un numéro et un nom de rue'
+                                                class: 'form-control js-address-input',
+                                                placeholder: 'Entrez un complément d’adresse',
+                                                'data-name': 'adresseComplement'
                                             }
                                         }) }}
                                     </div>
-                                    {# Ville + Pays #}
+
                                     <div class="row">
                                         <div class="col-6">
-                                            {# Code postal #}
                                             <div class="mb-16">
-                                                <label for="inputEmail" class="form-label mb-16">
+                                                <label class="form-label mb-16">
                                                     Code postal
                                                 </label>
+
                                                 {{ form_widget(form.codePostal, {
                                                     attr: {
-                                                        class: 'form-control',
-                                                        placeholder: 'Entrez un code postal'
+                                                        class: 'form-control js-address-input',
+                                                        placeholder: 'Entrez un code postal',
+                                                        'data-name': 'codePostal'
                                                     }
                                                 }) }}
                                             </div>
                                         </div>
 
                                         <div class="col-6">
-                                            <label for="inputEmail" class="form-label mb-16">
+                                            <label class="form-label mb-16">
                                                 Ville
                                             </label>
+
                                             {{ form_widget(form.ville, {
                                                 attr: {
-                                                    class: 'form-control',
-                                                    placeholder: 'Choisissez une ville'
+                                                    class: 'form-control js-address-input',
+                                                    placeholder: 'Choisissez une ville',
+                                                    'data-name': 'ville'
                                                 }
                                             }) }}
-
                                         </div>
                                     </div>
 
-                                    {# Code postal #}
-                                    <div class="">
-                                        <label for="inputEmail" class="form-label mb-16">
+                                    <div>
+                                        <label class="form-label mb-16">
                                             Pays*
                                         </label>
 
                                         {{ form_widget(form.pays, {
                                             attr: {
-                                                class: 'form-control',
-                                                placeholder: 'France'
+                                                class: 'form-control js-address-input',
+                                                placeholder: 'France',
+                                                'data-name': 'pays'
                                             }
                                         }) }}
                                     </div>
                                 </div>
                             </div>
+
                             <button
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
-                                data-action="click->phone#sync click->field-save#handle"
-                                data-field-save-field-param="telephone"
-                                data-field-save-input-param="#{{ form.telephone.vars.id }}"
-                                data-field-save-output-param="#telephone-value"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="adresse"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#adresse-value"
                             >
                                 Modifier
                             </button>

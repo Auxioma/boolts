@@ -50,6 +50,41 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         $field = $data['field'] ?? null;
         $value = $data['value'] ?? null;
 
+        if ($field === 'adresse') {
+            if (!\is_array($value)) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Adresse invalide.',
+                ], 422);
+            }
+
+            $form = $this->createForm(ProfileAgenceType::class, $user);
+
+            $form->submit([
+                'adresse' => $value['adresse'] ?? null,
+                'adresseComplement' => $value['adresseComplement'] ?? null,
+                'codePostal' => $value['codePostal'] ?? null,
+                'ville' => $value['ville'] ?? null,
+                'pays' => $value['pays'] ?? null,
+            ], false);
+
+            if (!$form->isValid()) {
+                return $this->json([
+                    'success' => false,
+                    'message' => $this->getFirstFormError($form),
+                    'errors' => $this->getFormErrors($form),
+                ], 422);
+            }
+
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'field' => $field,
+                'value' => $value,
+            ]);
+        }
+
         $form = $this->createForm(ProfileAgenceType::class, $user);
 
         if (!$form->has($field)) {
@@ -64,16 +99,10 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         ], false);
 
         if (!$form->isValid()) {
-            $errors = [];
-
-            foreach ($form->getErrors(true) as $error) {
-                $errors[] = $error->getMessage();
-            }
-
             return $this->json([
                 'success' => false,
-                'message' => $errors[0] ?? 'Formulaire invalide.',
-                'errors' => $errors,
+                'message' => $this->getFirstFormError($form),
+                'errors' => $this->getFormErrors($form),
             ], 422);
         }
 
@@ -84,5 +113,23 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             'field' => $field,
             'value' => $value,
         ]);
+    }
+
+    private function getFormErrors($form): array
+    {
+        $errors = [];
+
+        foreach ($form->getErrors(true) as $error) {
+            $errors[] = $error->getMessage();
+        }
+
+        return $errors;
+    }
+
+    private function getFirstFormError($form): string
+    {
+        $errors = $this->getFormErrors($form);
+
+        return $errors[0] ?? 'Formulaire invalide.';
     }
 }

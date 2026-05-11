@@ -16,26 +16,30 @@ export default class extends Controller {
         const value = field.querySelector('.js-field-value');
         const inputWrapper = field.querySelector('.js-field-input');
 
-        const inputSelector = button.dataset.fieldSaveInputParam;
-
-        const input = document.querySelector(inputSelector);
-
         const fieldName = button.dataset.fieldSaveFieldParam;
 
         const outputSelector = button.dataset.fieldSaveOutputParam;
-
         const output = document.querySelector(outputSelector);
 
-        const initialValue = input.dataset.initialValue ?? input.value;
+        const isMultiple = button.dataset.fieldSaveMultipleParam === 'true';
+
+        const inputSelector = button.dataset.fieldSaveInputParam;
+        const input = inputSelector
+            ? document.querySelector(inputSelector)
+            : field.querySelector('input, textarea, select');
+
+        const finalValue = this.getFinalValue(field, input, isMultiple);
+        const initialValue = field.dataset.initialValue ?? this.serializeValue(finalValue);
 
         const isEditing = field.dataset.editing === 'true';
 
-        // OUVERTURE
         if (!isEditing) {
 
-            field.dataset.initialValue = input.value;
+            field.dataset.initialValue = this.serializeValue(finalValue);
 
-            input.dataset.initialValue = input.value;
+            if (input) {
+                input.dataset.initialValue = this.serializeValue(finalValue);
+            }
 
             value.classList.add('d-none');
 
@@ -45,13 +49,14 @@ export default class extends Controller {
 
             field.dataset.editing = 'true';
 
-            input.focus();
+            if (input) {
+                input.focus();
+            }
 
             return;
         }
 
-        // PAS MODIFIÉ → fermeture
-        if (input.value === initialValue) {
+        if (this.serializeValue(finalValue) === initialValue) {
 
             value.classList.remove('d-none');
 
@@ -64,7 +69,6 @@ export default class extends Controller {
             return;
         }
 
-        // ENREGISTREMENT AJAX
         try {
 
             button.disabled = true;
@@ -72,13 +76,13 @@ export default class extends Controller {
             const response = await fetch(this.urlValue, {
                 method: 'POST',
                 headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
                     field: fieldName,
-                    value: input.value,
+                    value: finalValue,
                     _token: this.csrfValue
                 })
             });
@@ -87,7 +91,7 @@ export default class extends Controller {
 
             if (data.success) {
 
-                output.textContent = input.value || '***';
+                output.textContent = this.formatOutput(finalValue, isMultiple);
 
                 value.classList.remove('d-none');
 
@@ -97,7 +101,11 @@ export default class extends Controller {
 
                 field.dataset.editing = 'false';
 
-                input.dataset.initialValue = input.value;
+                field.dataset.initialValue = this.serializeValue(finalValue);
+
+                if (input) {
+                    input.dataset.initialValue = this.serializeValue(finalValue);
+                }
             }
 
         } catch (e) {
@@ -116,31 +124,93 @@ export default class extends Controller {
 
             const button = field.querySelector('.js-edit-button');
 
-            const input = field.querySelector('input, textarea, select');
-
-            if (!input) {
+            if (!button) {
                 return;
             }
 
-            const initialValue = input.value;
+            const isMultiple = button.dataset.fieldSaveMultipleParam === 'true';
 
-            input.dataset.initialValue = initialValue;
+            const inputSelector = button.dataset.fieldSaveInputParam;
+            const input = inputSelector
+                ? document.querySelector(inputSelector)
+                : field.querySelector('input, textarea, select');
 
-            input.addEventListener('input', () => {
+            const inputs = isMultiple
+                ? field.querySelectorAll('input, textarea, select')
+                : [input];
 
-                if (field.dataset.editing !== 'true') {
+            const initialValue = this.getFinalValue(field, input, isMultiple);
+
+            field.dataset.initialValue = this.serializeValue(initialValue);
+
+            inputs.forEach((item) => {
+
+                if (!item) {
                     return;
                 }
 
-                if (input.value !== input.dataset.initialValue) {
+                item.addEventListener('input', () => {
 
-                    button.textContent = 'Enregistrer';
+                    if (field.dataset.editing !== 'true') {
+                        return;
+                    }
 
-                } else {
+                    const currentValue = this.getFinalValue(field, input, isMultiple);
 
-                    button.textContent = 'Fermer';
-                }
+                    if (this.serializeValue(currentValue) !== field.dataset.initialValue) {
+                        button.textContent = 'Enregistrer';
+                    } else {
+                        button.textContent = 'Fermer';
+                    }
+                });
             });
         });
+    }
+
+    getFinalValue(field, input, isMultiple) {
+
+        if (isMultiple) {
+            const values = {};
+
+            field.querySelectorAll('input, textarea, select').forEach((item) => {
+                const name = item.dataset.name || item.name;
+
+                values[name] = item.value;
+            });
+
+            return values;
+        }
+
+        if (!input) {
+            return '';
+        }
+
+        return input.dataset.fullPhoneValue ?? input.value;
+    }
+
+    serializeValue(value) {
+        return typeof value === 'object'
+            ? JSON.stringify(value)
+            : String(value ?? '');
+    }
+
+    formatOutput(value, isMultiple) {
+
+        if (!isMultiple) {
+            return value || '***';
+        }
+
+        const adresse = value.adresse || '';
+        const adresseComplement = value.adresseComplement || '';
+        const codePostal = value.codePostal || '';
+        const ville = value.ville || '';
+        const pays = value.pays || '';
+
+        return [
+            adresse,
+            adresseComplement,
+            `${codePostal} ${ville}`.trim(),
+            pays
+        ].filter(Boolean).join(', ') || '***';
     }
 }
