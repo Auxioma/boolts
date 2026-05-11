@@ -325,42 +325,89 @@
 
 
     <script>
-        const whatsappSwitch = document.querySelector('#whatsapp-switch');
+    const whatsappSwitch = document.querySelector('#whatsapp-switch');
 
-        const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
+    const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
 
-        whatsappSwitch.addEventListener('change', () => {
+    const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
 
-            if (whatsappSwitch.checked) {
+    const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
 
-                checkboxWrapper.classList.remove('d-none');
+    const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
 
-            } else {
+    const telephoneInput = document.querySelector('#telephone-input');
 
-                checkboxWrapper.classList.add('d-none');
-            }
-        });
-        const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
+    /*
+     * SWITCH WHATSAPP
+     */
+    whatsappSwitch.addEventListener('change', () => {
 
-        const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
+        /*
+         * SWITCH ACTIVÉ
+         */
+        if (whatsappSwitch.checked) {
 
-        const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
+            checkboxWrapper.classList.remove('d-none');
 
-        const telephoneInput = document.querySelector('#telephone-input');
+            /*
+             * Même numéro activé par défaut
+             */
+            sameNumberCheckbox.checked = true;
 
-        sameNumberCheckbox.addEventListener('change', () => {
+            /*
+             * On cache le champ WhatsApp
+             */
+            whatsappPhoneWrapper.classList.add('d-none');
 
-            if (sameNumberCheckbox.checked) {
+            /*
+             * On copie le numéro principal
+             */
+            whatsappPhoneInput.value = telephoneInput.value;
 
-                whatsappPhoneWrapper.classList.remove('d-none');
+        } else {
 
-                whatsappPhoneInput.value = telephoneInput.value;
+            /*
+             * On masque tout
+             */
+            checkboxWrapper.classList.add('d-none');
 
-            } else {
+            whatsappPhoneWrapper.classList.add('d-none');
 
-                whatsappPhoneWrapper.classList.add('d-none');
+            /*
+             * Reset
+             */
+            sameNumberCheckbox.checked = false;
 
-                whatsappPhoneInput.value = '';
-            }
-        });
-    </script>
+            whatsappPhoneInput.value = '';
+        }
+    });
+
+    /*
+     * CHECKBOX MEME NUMERO
+     */
+    sameNumberCheckbox.addEventListener('change', () => {
+
+        /*
+         * CHECKBOX COCHÉE
+         * => même numéro
+         * => pas d'input affiché
+         */
+        if (sameNumberCheckbox.checked) {
+
+            whatsappPhoneWrapper.classList.add('d-none');
+
+            whatsappPhoneInput.value = telephoneInput.value;
+
+        } else {
+
+            /*
+             * CHECKBOX DÉCOCHÉE
+             * => autre numéro
+             * => affichage input
+             */
+            whatsappPhoneWrapper.classList.remove('d-none');
+
+            whatsappPhoneInput.value = '';
+        }
+    });
+</script>
