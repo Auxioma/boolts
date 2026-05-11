@@ -45,12 +45,14 @@
     transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.btn-submit:hover {
+.btn-submit:hover,
+.btn-change-image:hover {
     background: var(--color-primary-hover);
     color: var(--color-white);
 }
 
-.btn-bg-border-blue {
+.btn-bg-border-blue,
+.btn-change-image {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -68,7 +70,7 @@
     transition: box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
 }
 
-.btn-bg-border-blue:hover {
+.btn-bg-border-blue:hover,{
     background: var(--color-white);
     color: var(--color-primary);
     box-shadow: 0 4px 23.6px 0 rgba(93, 0, 255, 0.18);

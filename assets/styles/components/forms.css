@@ -6,7 +6,8 @@
     line-height: 20px;
 }
 
-.formulaire input {
+.formulaire input, 
+.formulaire textarea {
     width: 100%;
     padding: 12px 14px;
     border: 2px solid var(--color-gray-light);
@@ -17,14 +18,17 @@
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     font-size: 14px;
 }
-.formulaire input::-moz-placeholder {
+.formulaire input::-moz-placeholder,
+.formulaire textarea::-moz-placeholder {
     color: #858789;
 }
-.formulaire input::placeholder {
+.formulaire input::placeholder,
+.formulaire textarea::placeholder {
     color: #858789;
 }
 
-.formulaire input:focus {
+.formulaire input:focus,
+.formulaire textarea:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: none;

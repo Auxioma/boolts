@@ -17,6 +17,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ProfileAgenceType extends AbstractType
 {
@@ -50,6 +51,16 @@ class ProfileAgenceType extends AbstractType
             ->add('villeContact')
             ->add('paysContact')
             ->add('emailContact')
+            
+            ->add('imageFile', VichImageType::class, [
+                'required' => false,
+                'label' => 'Photo de profil',
+                'allow_delete' => false,
+                'download_uri' => false,
+                'image_uri' => true,
+                'asset_helper' => true,
+            ])
+
         ;
     }
 

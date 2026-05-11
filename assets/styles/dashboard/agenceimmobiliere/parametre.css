@@ -193,3 +193,28 @@
     font-size: 16px;
     color: #1D1D1F;
 }
+
+
+.profile-public-name {
+    color: #0B0F14!important;
+    font-size: 30px!important;
+    font-style: normal!important;
+    font-weight: 700!important;
+    line-height: 34px!important;
+}
+
+.profile-public-description {
+    color: #858789!important;
+    font-size: 14px!important;
+    font-style: normal!important;
+    font-weight: 500!important;
+    line-height: 20px!important;
+}
+
+.fiche-public p {
+    color: #858789;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px; 
+}

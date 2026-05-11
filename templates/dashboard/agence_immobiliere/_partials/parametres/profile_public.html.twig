@@ -1,7 +1,7 @@
 <div class="js-tab-content px-48 pb-92 contenue-des-page-des-parametres" id="cat1">
     <div class="row">
         <div class="col-10 mx-auto">
-            <h2>Profil public</h2>
+            <h2 class="mb-0">Profil public</h2>
 
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
@@ -10,34 +10,44 @@
                 data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
             >
                 <div class="d-flex align-items-center gap-3">
-                    <div class="position-relative">
-                        <img
-                            src="{{ asset('images/agence/profile-1.png') }}"
-                            alt="avatar"
-                            class="rounded-circle object-fit-cover"
-                            width="100"
-                            height="100"
-                        >
+<div class="position-relative">
+    <img
+        src="{{ asset('images/agence/profile-1.png') }}"
+        alt="avatar"
+        class="rounded-circle object-fit-cover js-avatar-preview"
+        width="100"
+        height="100"
+    >
 
-                        <button
-                            class="btn btn-primary rounded-pill position-absolute start-50 translate-middle-x"
-                            type="button"
-                            style="bottom: -12px;"
-                        >
-                            Modifier
-                        </button>
-                    </div>
+    <button
+        class="btn btn-change-image rounded-pill position-absolute start-50 translate-middle-x"
+        type="button"
+        style="bottom: -12px;"
+        id="change-image-button"
+    >
+        Modifier
+    </button>
 
-                    <div>
-                        <h2 class="fw-bold mb-2">Axa Immobilier</h2>
-                        <p class="text-secondary mb-0 fs-5">
-                            Agence immobilière premium <br>
-                            spécialisée villas luxe.
+    {{ form_widget(form.imageFile, {
+        attr: {
+            class: 'd-none js-image-input',
+            accept: 'image/*'
+        }
+    }) }}
+</div>
+                    
+                    <div class="d-flex flex-column align-items-center">
+                        <h2 class="profile-public-name mb-10">
+                            {{ app.user.entreprise ?? '' }}
+                        </h2>
+
+                        <p class="profile-public-description mb-0">
+                            {{ app.user.description ?? '' }}
                         </p>
                     </div>
                 </div>
-
-                <div class="connexion-securite">
+                <div class="d-inline-block"></div>
+                <div class="connexion-securite mt-24">
 
                     {# Entreprise #}
                     <div class="js-editable-field formulaire my-20">
@@ -66,7 +76,7 @@
                                 data-field-save-input-param="#{{ form.entreprise.vars.id }}"
                                 data-field-save-output-param="#entreprise-value"
                             >
-                                Modifier
+                                Définir
                             </button>
                         </div>
                     </div>
@@ -98,14 +108,14 @@
                                 data-field-save-input-param="#{{ form.description.vars.id }}"
                                 data-field-save-output-param="#description-value"
                             >
-                                Modifier
+                                Définir
                             </button>
                         </div>
                     </div>
 
                     {# Adresse de contact #}
                     <div class="js-editable-field formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
                                 <h3 class="mb-0">Adresse*</h3>
 
@@ -121,7 +131,7 @@
                                             , {{ app.user.paysContact.nom }}
                                         {% endif %}
                                     {% else %}
-                                        ***
+                                        106 rue de Reims, 76000 Rouen
                                     {% endif %}
                                 </p>
 
@@ -192,7 +202,7 @@
                                 data-field-save-multiple-param="true"
                                 data-field-save-output-param="#adresse-contact-value"
                             >
-                                Modifier
+                                Définir
                             </button>
                         </div>
                     </div>
@@ -231,7 +241,7 @@
                                         </div>
 
                                         <div
-                                            class="contenue-des-page-des-parametres-checkbox-wrapper mt-20 d-none"
+                                            class="contenue-des-page-des-parametres-checkbox-wrapper mt-12 d-none"
                                             id="whatsapp-checkbox-wrapper"
                                         >
                                             <label class="contenue-des-page-des-parametres-checkbox">
@@ -249,7 +259,7 @@
                                         </div>
 
                                         <div
-                                            class="mt-20 d-none"
+                                            class="mt-12 d-none"
                                             id="whatsapp-phone-wrapper"
                                         >
                                             <input
@@ -265,13 +275,13 @@
 
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                class="btn btn-link p-0 mt-15 text-decoration-none btn-buttom-agence js-edit-button"
                                 data-action="click->field-save#handle"
                                 data-field-save-field-param="numeroContact"
                                 data-field-save-input-param="#{{ form.numeroContact.vars.id }}"
                                 data-field-save-output-param="#numero-contact-value"
                             >
-                                Modifier
+                                Définir
                             </button>
                         </div>
                     </div>
@@ -284,7 +294,7 @@
                                 <h3 class="mb-0">Email de contact*</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="email-contact-value">
-                                    {{ app.user.emailContact ?? 'Ajoutez votre email de contact' }}
+                                    {{ app.user.emailContact ?? 'Définissez une adresse e-mail de contact' }}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input">
@@ -304,23 +314,23 @@
                                 data-field-save-input-param="#{{ form.emailContact.vars.id }}"
                                 data-field-save-output-param="#email-contact-value"
                             >
-                                Modifier
+                                Définir
                             </button>
                         </div>
                     </div>
-
-
-
-
-
-
-
-
-
-
                 </div>
             </div>
+            
+            <div class="fiche-public mt-48">
+                <a href="" class="">
+                    <i class="icon-eye mr10"></i>
+                    Voir la fiche publique
+                </a>
+                <p class="mt-8">Comme elle apparaitra aux utilisateurs</p>
+            </div>
+
         </div>
+        
     </div>
 
 
@@ -410,4 +420,29 @@
             whatsappPhoneInput.value = '';
         }
     });
+</script>
+<script>
+    const changeImageButton = document.querySelector('#change-image-button');
+
+    const imageInput = document.querySelector('.js-image-input');
+
+    const avatarPreview = document.querySelector('.js-avatar-preview');
+
+    if (changeImageButton && imageInput) {
+
+        changeImageButton.addEventListener('click', () => {
+
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', (event) => {
+
+            const file = event.target.files[0];
+
+            if (file) {
+
+                avatarPreview.src = URL.createObjectURL(file);
+            }
+        });
+    }
 </script>

@@ -51,7 +51,8 @@
     background: var(--color-link-hover-bg);
 }
 
-.topbar-btn {
+.topbar-btn,
+.fiche-public a {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -65,7 +66,8 @@
     transition: background var(--transition-fast), color var(--transition-fast);
 }
 
-.topbar-btn:hover {
+.topbar-btn:hover,
+.fiche-public a:hover {
     background: var(--color-link-hover);
     color: var(--color-white);
 }
