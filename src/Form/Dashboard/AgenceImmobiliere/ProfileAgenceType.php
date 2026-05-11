@@ -39,6 +39,17 @@ class ProfileAgenceType extends AbstractType
             ->add('ville')
             ->add('codePostal')
             ->add('pays')
+            ->add('entreprise')
+            ->add('description')
+
+
+            ->add('numeroContact')
+
+            ->add('adresseContact')
+            ->add('codePostalContact')
+            ->add('villeContact')
+            ->add('paysContact')
+            ->add('emailContact')
         ;
     }
 

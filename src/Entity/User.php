@@ -17,6 +17,7 @@ use App\Entity\Traits\DeletedAtTraits;
 use App\Entity\Traits\LastLoginAtTraits;
 use App\Entity\Traits\UpdatedAtTraits;
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -106,6 +107,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $Pays = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $entreprise = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $emailContact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $numeroContact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $adresseContact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $codePostalContact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $villeContact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $PaysContact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $adresseComplementContact = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $whatsApp = null;
 
     public function getId(): ?int
     {
@@ -387,6 +418,126 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVille(?string $Ville): static
     {
         $this->Ville = $Ville;
+
+        return $this;
+    }
+
+    public function getEntreprise(): ?string
+    {
+        return $this->entreprise;
+    }
+
+    public function setEntreprise(string $entreprise): static
+    {
+        $this->entreprise = $entreprise;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getEmailContact(): ?string
+    {
+        return $this->emailContact;
+    }
+
+    public function setEmailContact(?string $emailContact): static
+    {
+        $this->emailContact = $emailContact;
+
+        return $this;
+    }
+
+    public function getNumeroContact(): ?string
+    {
+        return $this->numeroContact;
+    }
+
+    public function setNumeroContact(?string $numeroContact): static
+    {
+        $this->numeroContact = $numeroContact;
+
+        return $this;
+    }
+
+    public function getAdresseContact(): ?string
+    {
+        return $this->adresseContact;
+    }
+
+    public function setAdresseContact(?string $adresseContact): static
+    {
+        $this->adresseContact = $adresseContact;
+
+        return $this;
+    }
+
+    public function getCodePostalContact(): ?string
+    {
+        return $this->codePostalContact;
+    }
+
+    public function setCodePostalContact(?string $codePostalContact): static
+    {
+        $this->codePostalContact = $codePostalContact;
+
+        return $this;
+    }
+
+    public function getVilleContact(): ?string
+    {
+        return $this->villeContact;
+    }
+
+    public function setVilleContact(?string $villeContact): static
+    {
+        $this->villeContact = $villeContact;
+
+        return $this;
+    }
+
+    public function getPaysContact(): ?string
+    {
+        return $this->PaysContact;
+    }
+
+    public function setPaysContact(?string $PaysContact): static
+    {
+        $this->PaysContact = $PaysContact;
+
+        return $this;
+    }
+
+    public function getAdresseComplementContact(): ?string
+    {
+        return $this->adresseComplementContact;
+    }
+
+    public function setAdresseComplementContact(?string $adresseComplementContact): static
+    {
+        $this->adresseComplementContact = $adresseComplementContact;
+
+        return $this;
+    }
+
+    public function getWhatsApp(): ?string
+    {
+        return $this->whatsApp;
+    }
+
+    public function setWhatsApp(?string $whatsApp): static
+    {
+        $this->whatsApp = $whatsApp;
 
         return $this;
     }
