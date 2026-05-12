@@ -34,7 +34,7 @@
                             </div>
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
                                 data-field-save-field-param="prenom"
                                 data-field-save-input-param="#{{ form.prenom.vars.id }}"
@@ -64,7 +64,7 @@
                             </div>
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
                                 data-field-save-field-param="nom"
                                 data-field-save-input-param="#{{ form.nom.vars.id }}"
@@ -94,7 +94,7 @@
                             </div>
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
                                 data-field-save-field-param="email"
                                 data-field-save-input-param="#{{ form.email.vars.id }}"
@@ -115,7 +115,7 @@
                                 <h3 class="mb-0">Numéro de téléphone*</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="telephone-value">
-                                    {{ app.user.telephone ?? '***' }}
+                                    {{ app.user.telephone ?? '06 22 64 04 78' }}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input">
@@ -130,7 +130,7 @@
 
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->phone#sync click->field-save#handle"
                                 data-field-save-field-param="telephone"
                                 data-field-save-input-param="#{{ form.telephone.vars.id }}"
@@ -163,7 +163,7 @@
                                             , {{ app.user.pays.nom }}
                                         {% endif %}
                                     {% else %}
-                                        ***
+                                        106 rue de Reims, 76000 Rouen. France
                                     {% endif %}
                                 </p>
 
@@ -242,7 +242,7 @@
 
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
                                 data-field-save-field-param="adresse"
                                 data-field-save-multiple-param="true"

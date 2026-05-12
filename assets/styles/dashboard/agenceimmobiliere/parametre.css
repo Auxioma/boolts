@@ -149,8 +149,8 @@
 }
 
 .contenue-des-page-des-parametres .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider {
-    background-color: #34C759;
-    border-color: #34C759;
+    background-color: var(--color-link-hover);
+    border-color: var(--color-link-hover);
 }
 
 .contenue-des-page-des-parametres .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider::before {
@@ -247,7 +247,15 @@
 .js-editable-field[data-editing="true"] .js-btn-pen {
     display: none !important;
 }
+.complete-profile i::before {
+    font-size: 16px;
+    position:relative;
+    top: 3px;
+    color: #5D00FF;
+}
 
-.profile-public-svg {
-
+.icon-eye::before {
+    font-size: 16px;
+    position:relative;
+    top: 1px
 }

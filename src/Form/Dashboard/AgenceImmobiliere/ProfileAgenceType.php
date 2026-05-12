@@ -61,6 +61,8 @@ class ProfileAgenceType extends AbstractType
                 'asset_helper' => true,
             ])
 
+        ->add('whatsApp')
+
         ;
     }
 
