@@ -1,7 +1,19 @@
 <div class="js-tab-content px-48 pb-92 contenue-des-page-des-parametres" id="cat1">
     <div class="row">
         <div class="col-10 mx-auto">
-            <h2 class="mb-0">Profil public</h2>
+            <h2 class="mb-0">Fiche agence</h2>
+
+            <div class="complete-profile py-16 px-16 mt-32">
+                <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
+                <div class="progress my-12" style="height: 4px;">
+                    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <p>Ajouter un nom d’agence</p>
+                <p class="mt-2 mb-0"><i class="icon-check mr-8"></i> Ajouter une description</p>
+                <p class="mt-2 mb-0"><i class="icon-check mr-8"></i> Ajouter une adresse postale</p>
+                <p class="mt-2 mb-0">Ajouter une adresse mail (optionnel)</p>
+                <p class="mt-2 mb-0">Ajouter un numéro (optionnel)</p>
+            </div>
 
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
@@ -10,32 +22,43 @@
                 data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
             >
                 <div class="d-flex align-items-center gap-3">
-<div class="position-relative">
-    <img
-        src="{{ asset('images/agence/profile-1.png') }}"
-        alt="avatar"
-        class="rounded-circle object-fit-cover js-avatar-preview"
-        width="100"
-        height="100"
-    >
+                    <div class="position-relative">
 
-    <button
-        class="btn btn-change-image rounded-pill position-absolute start-50 translate-middle-x"
-        type="button"
-        style="bottom: -12px;"
-        id="change-image-button"
-    >
-        Modifier
-    </button>
+                        {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'avatarFile') : null %}
+                        {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
 
-    {{ form_widget(form.imageFile, {
-        attr: {
-            class: 'd-none js-image-input',
-            accept: 'image/*'
-        }
-    }) }}
-</div>
-                    
+                        {% if avatar %}
+                            photo DL
+                        {% elseif firstLetter %}
+                            <img
+                                src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}"
+                                alt="avatar"
+                                class="rounded-circle object-fit-cover js-avatar-preview"
+                                width="100"
+                                height="100"
+                            >
+                        {% else %}
+
+                        {% endif %}
+
+
+                        <button
+                            class="btn btn-change-image rounded-pill position-absolute start-50 translate-middle-x"
+                            type="button"
+                            style="bottom: -12px;"
+                            id="change-image-button"
+                        >
+                            Modifier
+                        </button>
+
+                        {{ form_widget(form.imageFile, {
+                            attr: {
+                                class: 'd-none js-image-input',
+                                accept: 'image/*'
+                            }
+                        }) }}
+                    </div>
+
                     <div class="d-flex flex-column align-items-center">
                         <h2 class="profile-public-name mb-10">
                             {{ app.user.entreprise ?? '' }}
@@ -320,7 +343,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="fiche-public mt-48">
                 <a href="" class="">
                     <i class="icon-eye mr10"></i>
@@ -330,119 +353,119 @@
             </div>
 
         </div>
-        
+
     </div>
 
 
     <script>
-    const whatsappSwitch = document.querySelector('#whatsapp-switch');
+        const whatsappSwitch = document.querySelector('#whatsapp-switch');
 
-    const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
+        const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
 
-    const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
+        const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
 
-    const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
+        const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
 
-    const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
+        const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
 
-    const telephoneInput = document.querySelector('#telephone-input');
-
-    /*
-     * SWITCH WHATSAPP
-     */
-    whatsappSwitch.addEventListener('change', () => {
+        const telephoneInput = document.querySelector('#telephone-input');
 
         /*
-         * SWITCH ACTIVÉ
+         * SWITCH WHATSAPP
          */
-        if (whatsappSwitch.checked) {
-
-            checkboxWrapper.classList.remove('d-none');
+        whatsappSwitch.addEventListener('change', () => {
 
             /*
-             * Même numéro activé par défaut
+             * SWITCH ACTIVÉ
              */
-            sameNumberCheckbox.checked = true;
+            if (whatsappSwitch.checked) {
 
-            /*
-             * On cache le champ WhatsApp
-             */
-            whatsappPhoneWrapper.classList.add('d-none');
+                checkboxWrapper.classList.remove('d-none');
 
-            /*
-             * On copie le numéro principal
-             */
-            whatsappPhoneInput.value = telephoneInput.value;
+                /*
+                 * Même numéro activé par défaut
+                 */
+                sameNumberCheckbox.checked = true;
 
-        } else {
+                /*
+                 * On cache le champ WhatsApp
+                 */
+                whatsappPhoneWrapper.classList.add('d-none');
 
-            /*
-             * On masque tout
-             */
-            checkboxWrapper.classList.add('d-none');
+                /*
+                 * On copie le numéro principal
+                 */
+                whatsappPhoneInput.value = telephoneInput.value;
 
-            whatsappPhoneWrapper.classList.add('d-none');
+            } else {
 
-            /*
-             * Reset
-             */
-            sameNumberCheckbox.checked = false;
+                /*
+                 * On masque tout
+                 */
+                checkboxWrapper.classList.add('d-none');
 
-            whatsappPhoneInput.value = '';
-        }
-    });
+                whatsappPhoneWrapper.classList.add('d-none');
 
-    /*
-     * CHECKBOX MEME NUMERO
-     */
-    sameNumberCheckbox.addEventListener('change', () => {
+                /*
+                 * Reset
+                 */
+                sameNumberCheckbox.checked = false;
 
-        /*
-         * CHECKBOX COCHÉE
-         * => même numéro
-         * => pas d'input affiché
-         */
-        if (sameNumberCheckbox.checked) {
-
-            whatsappPhoneWrapper.classList.add('d-none');
-
-            whatsappPhoneInput.value = telephoneInput.value;
-
-        } else {
-
-            /*
-             * CHECKBOX DÉCOCHÉE
-             * => autre numéro
-             * => affichage input
-             */
-            whatsappPhoneWrapper.classList.remove('d-none');
-
-            whatsappPhoneInput.value = '';
-        }
-    });
-</script>
-<script>
-    const changeImageButton = document.querySelector('#change-image-button');
-
-    const imageInput = document.querySelector('.js-image-input');
-
-    const avatarPreview = document.querySelector('.js-avatar-preview');
-
-    if (changeImageButton && imageInput) {
-
-        changeImageButton.addEventListener('click', () => {
-
-            imageInput.click();
-        });
-
-        imageInput.addEventListener('change', (event) => {
-
-            const file = event.target.files[0];
-
-            if (file) {
-
-                avatarPreview.src = URL.createObjectURL(file);
+                whatsappPhoneInput.value = '';
             }
         });
-    }
-</script>
+
+        /*
+         * CHECKBOX MEME NUMERO
+         */
+        sameNumberCheckbox.addEventListener('change', () => {
+
+            /*
+             * CHECKBOX COCHÉE
+             * => même numéro
+             * => pas d'input affiché
+             */
+            if (sameNumberCheckbox.checked) {
+
+                whatsappPhoneWrapper.classList.add('d-none');
+
+                whatsappPhoneInput.value = telephoneInput.value;
+
+            } else {
+
+                /*
+                 * CHECKBOX DÉCOCHÉE
+                 * => autre numéro
+                 * => affichage input
+                 */
+                whatsappPhoneWrapper.classList.remove('d-none');
+
+                whatsappPhoneInput.value = '';
+            }
+        });
+    </script>
+    <script>
+        const changeImageButton = document.querySelector('#change-image-button');
+
+        const imageInput = document.querySelector('.js-image-input');
+
+        const avatarPreview = document.querySelector('.js-avatar-preview');
+
+        if (changeImageButton && imageInput) {
+
+            changeImageButton.addEventListener('click', () => {
+
+                imageInput.click();
+            });
+
+            imageInput.addEventListener('change', (event) => {
+
+                const file = event.target.files[0];
+
+                if (file) {
+
+                    avatarPreview.src = URL.createObjectURL(file);
+                }
+            });
+        }
+    </script>
