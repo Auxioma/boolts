@@ -201,6 +201,7 @@
     font-style: normal!important;
     font-weight: 700!important;
     line-height: 34px!important;
+    max-width: 540px;
 }
 
 .profile-public-description {

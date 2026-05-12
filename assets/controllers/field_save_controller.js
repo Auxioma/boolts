@@ -45,7 +45,7 @@ export default class extends Controller {
 
             inputWrapper.classList.remove('d-none');
 
-            button.textContent = 'Fermer';
+            this.setButtonState(button, 'editing'); // ← 'Fermer'
 
             field.dataset.editing = 'true';
 
@@ -62,7 +62,7 @@ export default class extends Controller {
 
             inputWrapper.classList.add('d-none');
 
-            button.textContent = 'Modifier';
+            this.setButtonState(button, 'closed'); // ← 'Modifier'
 
             field.dataset.editing = 'false';
 
@@ -97,7 +97,7 @@ export default class extends Controller {
 
                 inputWrapper.classList.add('d-none');
 
-                button.textContent = 'Modifier';
+                this.setButtonState(button, 'closed'); // ← 'Modifier'
 
                 field.dataset.editing = 'false';
 
@@ -158,13 +158,31 @@ export default class extends Controller {
                     const currentValue = this.getFinalValue(field, input, isMultiple);
 
                     if (this.serializeValue(currentValue) !== field.dataset.initialValue) {
-                        button.textContent = 'Enregistrer';
+                        this.setButtonState(button, 'save'); // ← 'Enregistrer'
                     } else {
-                        button.textContent = 'Fermer';
+                        this.setButtonState(button, 'editing'); // ← 'Fermer'
                     }
                 });
             });
         });
+    }
+
+    // ↓ SEUL AJOUT — tout le reste est intact
+    setButtonState(button, state) {
+
+        const iconPen  = button.querySelector('.js-icon-pen');
+        const iconSave = button.querySelector('.js-icon-save');
+
+        if (iconPen && iconSave) {
+            const isOpen = state === 'editing' || state === 'save';
+            iconPen.classList.toggle('d-none', isOpen);
+            iconSave.classList.toggle('d-none', !isOpen);
+            return;
+        }
+
+        // Comportement texte natif inchangé
+        const labels = { editing: 'Fermer', closed: 'Modifier', save: 'Enregistrer' };
+        button.textContent = labels[state];
     }
 
     getFinalValue(field, input, isMultiple) {
