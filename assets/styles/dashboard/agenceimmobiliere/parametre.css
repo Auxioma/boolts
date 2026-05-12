@@ -243,6 +243,11 @@
     font-weight: 400;
     line-height: 20px;
 }
+
+.js-editable-field[data-editing="true"] .js-btn-pen {
+    display: none !important;
+}
+
 .profile-public-svg {
-    
+
 }

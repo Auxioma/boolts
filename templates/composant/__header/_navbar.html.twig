@@ -68,7 +68,7 @@
                                 {% set dashboardPath = path('app_visiteur_dashboard') %}
                             {% endif %}
 
-                            {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'avatarFile') : null %}
+                            {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'imageFile') : null %}
                             {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
 
                                 {% if avatar %}

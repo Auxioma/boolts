@@ -3,17 +3,70 @@
         <div class="col-10 mx-auto">
             <h2 class="mb-0">Fiche agence</h2>
 
-            <div class="complete-profile py-16 px-16 mt-32">
-                <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
-                <div class="progress my-12" style="height: 4px;">
-                    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-                <p>Ajouter un nom d’agence</p>
-                <p class="mt-2 mb-0"><i class="icon-check mr-8"></i> Ajouter une description</p>
-                <p class="mt-2 mb-0"><i class="icon-check mr-8"></i> Ajouter une adresse postale</p>
-                <p class="mt-2 mb-0">Ajouter une adresse mail (optionnel)</p>
-                <p class="mt-2 mb-0">Ajouter un numéro (optionnel)</p>
-            </div>
+{% set profileItems = [
+    {
+        label: "Ajouter un nom d'agence",
+        done: app.user.entreprise is not empty,
+        optional: false
+    },
+    {
+        label: "Ajouter une description",
+        done: app.user.description is not empty,
+        optional: false
+    },
+    {
+        label: "Ajouter une adresse postale",
+        done: app.user.adresseContact is not empty and app.user.codePostalContact is not empty and app.user.villeContact is not empty,
+        optional: false
+    },
+    {
+        label: "Ajouter une adresse mail",
+        done: app.user.emailContact is not empty,
+        optional: true
+    },
+    {
+        label: "Ajouter un numéro",
+        done: app.user.numeroContact is not empty,
+        optional: true
+    }
+] %}
+
+{% set requiredItems = profileItems|filter(item => not item.optional) %}
+{% set doneRequiredItems = requiredItems|filter(item => item.done) %}
+
+{% set totalRequired = requiredItems|length %}
+{% set totalDone = doneRequiredItems|length %}
+
+{% set progress = totalRequired > 0 ? ((totalDone / totalRequired) * 100)|round : 0 %}
+<div class="complete-profile py-16 px-16 mt-32">
+    <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
+
+    <div class="progress my-12" style="height: 4px;">
+        <div
+            class="progress-bar"
+            role="progressbar"
+            style="width: {{ progress }}%;"
+            aria-valuenow="{{ progress }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+        ></div>
+    </div>
+
+    {% for item in profileItems %}
+        <p class="{{ loop.first ? 'mb-0' : 'mt-2 mb-0' }}">
+            {% if item.done %}
+                <i class="icon-check mr-8"></i>
+            {% endif %}
+
+            {{ item.label }}
+
+            {% if item.optional %}
+                <span>(optionnel)</span>
+            {% endif %}
+        </p>
+    {% endfor %}
+</div>
+
 
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
@@ -24,11 +77,17 @@
                 <div class="d-flex align-items-center gap-3">
                     <div class="position-relative">
 
-                        {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'avatarFile') : null %}
+                        {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'imageFile') : null %}
                         {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
 
                         {% if avatar %}
-                            photo DL
+                            <img
+                                src="{{ avatar }}"
+                                alt="avatar"
+                                class="rounded-circle object-fit-cover js-avatar-preview"
+                                width="100"
+                                height="100"
+                            >
                         {% elseif firstLetter %}
                             <img
                                 src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}"
@@ -37,10 +96,7 @@
                                 width="100"
                                 height="100"
                             >
-                        {% else %}
-
                         {% endif %}
-
 
                         <button
                             class="btn btn-change-image rounded-pill position-absolute start-50 translate-middle-x"
@@ -59,105 +115,106 @@
                         }) }}
                     </div>
 
-                    <div class="d-flex flex-column align-items-center">
-                        <h2 class="profile-public-name mb-10">
-                            {{ app.user.entreprise ?? '' }}
-                        </h2>
+                    <div class="d-flex flex-column w-100">
 
-                        <p class="profile-public-description mb-0">
-                            {{ app.user.description ?? '' }}
-                        </p>
+                        <div class="js-editable-field">
+                            <div class="w-100">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="js-field-value" id="entreprise-public-value">
+                                        <h2 class="profile-public-name mb-0">
+                                            {{ app.user.entreprise ?? 'Définissez le nom de l\'agence' }}
+                                        </h2>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen"
+                                        data-action="click->field-save#handle"
+                                        data-field-save-field-param="entreprise"
+                                        data-field-save-input-param="#{{ form.entreprise.vars.id }}"
+                                        data-field-save-output-param="#entreprise-public-value"
+                                    >
+                                        <i class="icon-pen-line"></i>
+                                    </button>
+                                </div>
+                                <div class="d-none js-field-input">
+                                    <div class="d-flex align-items-center gap-2 mt-2">
+                                        {{ form_widget(form.entreprise, { attr: { class: 'form-control' } }) }}
+                                        <button
+                                            type="button"
+                                            class="btn btn-link p-0 text-decoration-none js-btn-save"
+                                            data-action="click->field-save#handle"
+                                            data-field-save-field-param="entreprise"
+                                            data-field-save-input-param="#{{ form.entreprise.vars.id }}"
+                                            data-field-save-output-param="#entreprise-public-value"
+                                        >
+                                            <i class="icon-save"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="js-editable-field mt-10">
+                            <div class="w-100">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="js-field-value" id="description-public-value">
+                                        <p class="profile-public-description mb-0">
+                                            {{ app.user.description ?? 'Saisissez une description' }}
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen"
+                                        data-action="click->field-save#handle"
+                                        data-field-save-field-param="description"
+                                        data-field-save-input-param="#{{ form.description.vars.id }}"
+                                        data-field-save-output-param="#description-public-value"
+                                    >
+                                        <i class="icon-pen-line"></i>
+                                    </button>
+                                </div>
+                                <div class="d-none js-field-input">
+                                    <div class="d-flex align-items-center gap-2 mt-2">
+                                        {{ form_widget(form.description, { attr: { class: 'form-control' } }) }}
+                                        <button
+                                            type="button"
+                                            class="btn btn-link p-0 text-decoration-none js-btn-save"
+                                            data-action="click->field-save#handle"
+                                            data-field-save-field-param="description"
+                                            data-field-save-input-param="#{{ form.description.vars.id }}"
+                                            data-field-save-output-param="#description-public-value"
+                                        >
+                                            <i class="icon-save"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
                 <div class="d-inline-block"></div>
                 <div class="connexion-securite mt-24">
-
-                    {# Entreprise #}
-                    <div class="js-editable-field formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-                            <div class="w-100">
-                                <h3 class="mb-0">Nom de l’agence*</h3>
-
-                                <p class="mt-12 mb-0 js-field-value" id="entreprise-value">
-                                    {{ app.user.entreprise ?? 'Définissez le nom de l’agence' }}
-                                </p>
-
-                                <div class="mt-12 d-none js-field-input">
-                                    {{ form_widget(form.entreprise, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
-                                    }) }}
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="entreprise"
-                                data-field-save-input-param="#{{ form.entreprise.vars.id }}"
-                                data-field-save-output-param="#entreprise-value"
-                            >
-                                Définir
-                            </button>
-                        </div>
-                    </div>
-
-                    {# Description #}
-                    <div class="js-editable-field formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-                            <div class="w-100">
-                                <h3 class="mb-0">Description*</h3>
-
-                                <p class="mt-12 mb-0 js-field-value" id="description-value">
-                                    {{ app.user.description ?? 'Rédigez une courte description qui s’affichera sur votre profil' }}
-                                </p>
-
-                                <div class="mt-12 d-none js-field-input">
-                                    {{ form_widget(form.description, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
-                                    }) }}
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="description"
-                                data-field-save-input-param="#{{ form.description.vars.id }}"
-                                data-field-save-output-param="#description-value"
-                            >
-                                Définir
-                            </button>
-                        </div>
-                    </div>
 
                     {# Adresse de contact #}
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
                                 <h3 class="mb-0">Adresse*</h3>
-
                                 <p class="mt-12 mb-0 js-field-value" id="adresse-contact-value">
                                     {% if app.user and app.user.adresseContact %}
                                         {{ app.user.adresseContact }}
-
                                         {% if app.user.codePostalContact or app.user.villeContact %}
                                             , {{ app.user.codePostalContact }} {{ app.user.villeContact }}
                                         {% endif %}
-
                                         {% if app.user.paysContact %}
-                                            , {{ app.user.paysContact.nom }}
+                                            , {{ app.user.paysContact }}
                                         {% endif %}
                                     {% else %}
                                         106 rue de Reims, 76000 Rouen
                                     {% endif %}
                                 </p>
-
                                 <div class="mt-12 d-none js-field-input w-75">
                                     <div class="mb-16">
                                         {{ form_widget(form.adresseContact, {
@@ -168,14 +225,10 @@
                                             }
                                         }) }}
                                     </div>
-
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="mb-16">
-                                                <label class="form-label mb-16">
-                                                    Code postal
-                                                </label>
-
+                                                <label class="form-label mb-16">Code postal</label>
                                                 {{ form_widget(form.codePostalContact, {
                                                     attr: {
                                                         class: 'form-control js-address-input',
@@ -185,12 +238,8 @@
                                                 }) }}
                                             </div>
                                         </div>
-
                                         <div class="col-6">
-                                            <label class="form-label mb-16">
-                                                Ville
-                                            </label>
-
+                                            <label class="form-label mb-16">Ville</label>
                                             {{ form_widget(form.villeContact, {
                                                 attr: {
                                                     class: 'form-control js-address-input',
@@ -200,12 +249,8 @@
                                             }) }}
                                         </div>
                                     </div>
-
                                     <div>
-                                        <label class="form-label mb-16">
-                                            Pays*
-                                        </label>
-
+                                        <label class="form-label mb-16">Pays*</label>
                                         {{ form_widget(form.paysContact, {
                                             attr: {
                                                 class: 'form-control js-address-input',
@@ -216,7 +261,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <button
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
@@ -235,67 +279,34 @@
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
                                 <h3 class="mb-0">Numéro de contact*</h3>
-
                                 <p class="mt-12 mb-0 js-field-value" id="numero-contact-value">
                                     {{ app.user.numeroContact ?? 'Définissez un numéro de contact' }}
                                 </p>
-
                                 <div class="mt-12 d-none js-field-input">
                                     {{ form_widget(form.numeroContact, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
+                                        attr: { class: 'form-control w-75' }
                                     }) }}
-
                                     <div class="mt-12">
                                         <div class="d-flex justify-content-between align-items-center w-100">
-                                            <span class="fw-semibold">
-                                                Whatsapp
-                                            </span>
-
+                                            <span class="fw-semibold">Whatsapp</span>
                                             <label class="contenue-des-page-des-parametres-switch">
-                                                <input
-                                                    type="checkbox"
-                                                    id="whatsapp-switch"
-                                                >
-
+                                                <input type="checkbox" id="whatsapp-switch">
                                                 <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                             </label>
                                         </div>
-
-                                        <div
-                                            class="contenue-des-page-des-parametres-checkbox-wrapper mt-12 d-none"
-                                            id="whatsapp-checkbox-wrapper"
-                                        >
+                                        <div class="contenue-des-page-des-parametres-checkbox-wrapper mt-12 d-none" id="whatsapp-checkbox-wrapper">
                                             <label class="contenue-des-page-des-parametres-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    id="same-number-checkbox"
-                                                >
-
+                                                <input type="checkbox" id="same-number-checkbox">
                                                 <span class="contenue-des-page-des-parametres-checkbox-custom"></span>
-
-                                                <span class="contenue-des-page-des-parametres-checkbox-label">
-                                                    Utiliser le même numéro
-                                                </span>
+                                                <span class="contenue-des-page-des-parametres-checkbox-label">Utiliser le même numéro</span>
                                             </label>
                                         </div>
-
-                                        <div
-                                            class="mt-12 d-none"
-                                            id="whatsapp-phone-wrapper"
-                                        >
-                                            <input
-                                                type="text"
-                                                class="form-control w-75"
-                                                id="whatsapp-phone"
-                                                placeholder="Numéro Whatsapp"
-                                            >
+                                        <div class="mt-12 d-none" id="whatsapp-phone-wrapper">
+                                            <input type="text" class="form-control w-75" id="whatsapp-phone" placeholder="Numéro Whatsapp">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                             <button
                                 type="button"
                                 class="btn btn-link p-0 mt-15 text-decoration-none btn-buttom-agence js-edit-button"
@@ -309,26 +320,20 @@
                         </div>
                     </div>
 
-
                     {# Email de contact #}
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
                                 <h3 class="mb-0">Email de contact*</h3>
-
                                 <p class="mt-12 mb-0 js-field-value" id="email-contact-value">
                                     {{ app.user.emailContact ?? 'Définissez une adresse e-mail de contact' }}
                                 </p>
-
                                 <div class="mt-12 d-none js-field-input">
                                     {{ form_widget(form.emailContact, {
-                                        attr: {
-                                            class: 'form-control w-75'
-                                        }
+                                        attr: { class: 'form-control w-75' }
                                     }) }}
                                 </div>
                             </div>
-
                             <button
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence my-auto js-edit-button"
@@ -341,6 +346,7 @@
                             </button>
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -353,120 +359,91 @@
             </div>
 
         </div>
-
     </div>
-</div>
-
 
     <script>
-        const whatsappSwitch = document.querySelector('#whatsapp-switch');
-
-        const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
-
-        const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
-
-        const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
-
-        const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
-
-        const telephoneInput = document.querySelector('#telephone-input');
-
-        /*
-         * SWITCH WHATSAPP
-         */
-        whatsappSwitch.addEventListener('change', () => {
-
-            /*
-             * SWITCH ACTIVÉ
-             */
-            if (whatsappSwitch.checked) {
-
-                checkboxWrapper.classList.remove('d-none');
-
-                /*
-                 * Même numéro activé par défaut
-                 */
-                sameNumberCheckbox.checked = true;
-
-                /*
-                 * On cache le champ WhatsApp
-                 */
-                whatsappPhoneWrapper.classList.add('d-none');
-
-                /*
-                 * On copie le numéro principal
-                 */
-                whatsappPhoneInput.value = telephoneInput.value;
-
-            } else {
-
-                /*
-                 * On masque tout
-                 */
-                checkboxWrapper.classList.add('d-none');
-
-                whatsappPhoneWrapper.classList.add('d-none');
-
-                /*
-                 * Reset
-                 */
-                sameNumberCheckbox.checked = false;
-
-                whatsappPhoneInput.value = '';
-            }
-        });
-
-        /*
-         * CHECKBOX MEME NUMERO
-         */
-        sameNumberCheckbox.addEventListener('change', () => {
-
-            /*
-             * CHECKBOX COCHÉE
-             * => même numéro
-             * => pas d'input affiché
-             */
-            if (sameNumberCheckbox.checked) {
-
-                whatsappPhoneWrapper.classList.add('d-none');
-
-                whatsappPhoneInput.value = telephoneInput.value;
-
-            } else {
-
-                /*
-                 * CHECKBOX DÉCOCHÉE
-                 * => autre numéro
-                 * => affichage input
-                 */
-                whatsappPhoneWrapper.classList.remove('d-none');
-
-                whatsappPhoneInput.value = '';
-            }
-        });
-    </script>
-    <script>
+        // AVATAR
         const changeImageButton = document.querySelector('#change-image-button');
-
         const imageInput = document.querySelector('.js-image-input');
-
         const avatarPreview = document.querySelector('.js-avatar-preview');
 
         if (changeImageButton && imageInput) {
 
             changeImageButton.addEventListener('click', () => {
-
                 imageInput.click();
             });
 
-            imageInput.addEventListener('change', (event) => {
+            imageInput.addEventListener('change', async (event) => {
 
                 const file = event.target.files[0];
 
-                if (file) {
+                if (!file) {
+                    return;
+                }
 
+                if (avatarPreview) {
                     avatarPreview.src = URL.createObjectURL(file);
+                }
+
+                const formData = new FormData();
+                formData.append('imageFile', file);
+                formData.append('_token', '{{ csrf_token("profile_edit") }}');
+
+                try {
+                    changeImageButton.textContent = '...';
+                    changeImageButton.disabled = true;
+
+                    const response = await fetch('{{ path("api_profile_agence_immobiliere") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    changeImageButton.textContent = data.success ? 'Modifier' : 'Erreur';
+
+                } catch (e) {
+                    console.error(e);
+                    changeImageButton.textContent = 'Erreur';
+                } finally {
+                    changeImageButton.disabled = false;
                 }
             });
         }
+
+        // WHATSAPP
+        const whatsappSwitch = document.querySelector('#whatsapp-switch');
+        const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
+        const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
+        const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
+        const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
+        const telephoneInput = document.querySelector('#telephone-input');
+
+        whatsappSwitch.addEventListener('change', () => {
+            if (whatsappSwitch.checked) {
+                checkboxWrapper.classList.remove('d-none');
+                sameNumberCheckbox.checked = true;
+                whatsappPhoneWrapper.classList.add('d-none');
+                whatsappPhoneInput.value = telephoneInput ? telephoneInput.value : '';
+            } else {
+                checkboxWrapper.classList.add('d-none');
+                whatsappPhoneWrapper.classList.add('d-none');
+                sameNumberCheckbox.checked = false;
+                whatsappPhoneInput.value = '';
+            }
+        });
+
+        sameNumberCheckbox.addEventListener('change', () => {
+            if (sameNumberCheckbox.checked) {
+                whatsappPhoneWrapper.classList.add('d-none');
+                whatsappPhoneInput.value = telephoneInput ? telephoneInput.value : '';
+            } else {
+                whatsappPhoneWrapper.classList.remove('d-none');
+                whatsappPhoneInput.value = '';
+            }
+        });
     </script>
+</div>

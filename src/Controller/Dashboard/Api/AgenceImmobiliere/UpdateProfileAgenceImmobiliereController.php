@@ -29,6 +29,26 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             ], 401);
         }
 
+        $imageFile = $request->files->get('imageFile');
+
+        if (!$imageFile) {
+            $formFiles = $request->files->all();
+            $imageFile = $formFiles['profile_agence']['imageFile'] ?? null;
+        }
+
+        if ($imageFile) {
+            $user->setImageFile($imageFile);
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'imageName' => $user->getImageName(),
+                'imageSize' => $user->getImageSize(),
+            ]);
+        }
+
         $data = json_decode($request->getContent(), true);
 
         if (!\is_array($data)) {
@@ -50,7 +70,9 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         $field = $data['field'] ?? null;
         $value = $data['value'] ?? null;
 
-        if ($field === 'adresse') {
+        $form = $this->createForm(ProfileAgenceType::class, $user);
+
+        if (\in_array($field, ['adresse', 'adresseContact'], true)) {
             if (!\is_array($value)) {
                 return $this->json([
                     'success' => false,
@@ -58,15 +80,24 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
                 ], 422);
             }
 
-            $form = $this->createForm(ProfileAgenceType::class, $user);
+            if ($field === 'adresse') {
+                $form->submit([
+                    'adresse' => $value['adresse'] ?? null,
+                    'adresseComplement' => $value['adresseComplement'] ?? null,
+                    'codePostal' => $value['codePostal'] ?? null,
+                    'ville' => $value['ville'] ?? null,
+                    'pays' => $value['pays'] ?? null,
+                ], false);
+            }
 
-            $form->submit([
-                'adresse' => $value['adresse'] ?? null,
-                'adresseComplement' => $value['adresseComplement'] ?? null,
-                'codePostal' => $value['codePostal'] ?? null,
-                'ville' => $value['ville'] ?? null,
-                'pays' => $value['pays'] ?? null,
-            ], false);
+            if ($field === 'adresseContact') {
+                $form->submit([
+                    'adresseContact' => $value['adresseContact'] ?? null,
+                    'codePostalContact' => $value['codePostalContact'] ?? null,
+                    'villeContact' => $value['villeContact'] ?? null,
+                    'paysContact' => $value['paysContact'] ?? null,
+                ], false);
+            }
 
             if (!$form->isValid()) {
                 return $this->json([
@@ -85,9 +116,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             ]);
         }
 
-        $form = $this->createForm(ProfileAgenceType::class, $user);
-
-        if (!$form->has($field)) {
+        if (!$field || !$form->has($field)) {
             return $this->json([
                 'success' => false,
                 'message' => 'Champ invalide.',

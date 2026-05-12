@@ -22,6 +22,7 @@ export default class extends Controller {
         const output = document.querySelector(outputSelector);
 
         const isMultiple = button.dataset.fieldSaveMultipleParam === 'true';
+        const isAppend = button.dataset.fieldSaveAppendParam === 'true';
 
         const inputSelector = button.dataset.fieldSaveInputParam;
         const input = inputSelector
@@ -41,11 +42,13 @@ export default class extends Controller {
                 input.dataset.initialValue = this.serializeValue(finalValue);
             }
 
-            value.classList.add('d-none');
+            if (!isAppend) {
+                value.classList.add('d-none');
+            }
 
             inputWrapper.classList.remove('d-none');
 
-            button.textContent = 'Fermer';
+            this.setButtonState(button, 'editing');
 
             field.dataset.editing = 'true';
 
@@ -58,11 +61,13 @@ export default class extends Controller {
 
         if (this.serializeValue(finalValue) === initialValue) {
 
-            value.classList.remove('d-none');
+            if (!isAppend) {
+                value.classList.remove('d-none');
+            }
 
             inputWrapper.classList.add('d-none');
 
-            button.textContent = 'Modifier';
+            this.setButtonState(button, 'closed');
 
             field.dataset.editing = 'false';
 
@@ -93,11 +98,13 @@ export default class extends Controller {
 
                 output.textContent = this.formatOutput(finalValue, isMultiple);
 
-                value.classList.remove('d-none');
+                if (!isAppend) {
+                    value.classList.remove('d-none');
+                }
 
                 inputWrapper.classList.add('d-none');
 
-                button.textContent = 'Modifier';
+                this.setButtonState(button, 'closed');
 
                 field.dataset.editing = 'false';
 
@@ -158,13 +165,23 @@ export default class extends Controller {
                     const currentValue = this.getFinalValue(field, input, isMultiple);
 
                     if (this.serializeValue(currentValue) !== field.dataset.initialValue) {
-                        button.textContent = 'Enregistrer';
+                        this.setButtonState(button, 'save');
                     } else {
-                        button.textContent = 'Fermer';
+                        this.setButtonState(button, 'editing');
                     }
                 });
             });
         });
+    }
+
+    setButtonState(button, state) {
+
+        if (button.classList.contains('js-btn-pen') || button.classList.contains('js-btn-save')) {
+            return;
+        }
+
+        const labels = { editing: 'Fermer', closed: 'Modifier', save: 'Enregistrer' };
+        button.textContent = labels[state];
     }
 
     getFinalValue(field, input, isMultiple) {
@@ -174,7 +191,6 @@ export default class extends Controller {
 
             field.querySelectorAll('input, textarea, select').forEach((item) => {
                 const name = item.dataset.name || item.name;
-
                 values[name] = item.value;
             });
 
@@ -200,17 +216,25 @@ export default class extends Controller {
             return value || '***';
         }
 
-        const adresse = value.adresse || '';
-        const adresseComplement = value.adresseComplement || '';
-        const codePostal = value.codePostal || '';
-        const ville = value.ville || '';
-        const pays = value.pays || '';
+        // Adresse principale
+        if (value.adresse || value.codePostal || value.ville || value.pays) {
+            return [
+                value.adresse || '',
+                value.adresseComplement || '',
+                `${value.codePostal || ''} ${value.ville || ''}`.trim(),
+                value.pays || ''
+            ].filter(Boolean).join(', ') || '***';
+        }
 
-        return [
-            adresse,
-            adresseComplement,
-            `${codePostal} ${ville}`.trim(),
-            pays
-        ].filter(Boolean).join(', ') || '***';
+        // Adresse de contact
+        if (value.adresseContact || value.codePostalContact || value.villeContact || value.paysContact) {
+            return [
+                value.adresseContact || '',
+                `${value.codePostalContact || ''} ${value.villeContact || ''}`.trim(),
+                value.paysContact || ''
+            ].filter(Boolean).join(', ') || '***';
+        }
+
+        return '***';
     }
 }

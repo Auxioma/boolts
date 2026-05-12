@@ -205,13 +205,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
      */
-    public function __serialize(): array
-    {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+public function __serialize(): array
+{
+    return [
+        'id' => $this->id,
+        'email' => $this->email,
+        'roles' => $this->roles,
+        'password' => hash('crc32c', $this->password),
+    ];
+}
 
-        return $data;
-    }
+public function __unserialize(array $data): void
+{
+    $this->id = $data['id'] ?? null;
+    $this->email = $data['email'] ?? null;
+    $this->roles = $data['roles'] ?? [];
+    $this->password = $data['password'] ?? null;
+}
 
     public function getEmailAuthCode(): ?string
     {
