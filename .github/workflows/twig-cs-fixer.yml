@@ -31,4 +31,4 @@ jobs:
         run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
 
       - name: Vérifier les templates Twig
-        run: vendor/bin/twig-cs-fixer fix templates --dry-run
+        run: vendor/bin/twig-cs-fixer fix templates
