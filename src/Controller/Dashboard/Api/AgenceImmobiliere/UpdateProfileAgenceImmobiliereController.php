@@ -6,8 +6,10 @@ use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\ProfileAgenceType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -19,6 +21,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         CsrfTokenManagerInterface $csrfTokenManager,
+        UserPasswordHasherInterface $passwordHasher,
     ): JsonResponse {
         $user = $this->getUser();
 
@@ -69,6 +72,51 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
         $field = $data['field'] ?? null;
         $value = $data['value'] ?? null;
+
+        if ($field === 'plainPassword') {
+            if (!\is_array($value)) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Mot de passe invalide.',
+                ], 422);
+            }
+
+            $password = $value['password'] ?? null;
+            $passwordConfirm = $value['passwordConfirm'] ?? null;
+
+            if (!$password || !$passwordConfirm) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Veuillez remplir les deux champs.',
+                ], 422);
+            }
+
+            if ($password !== $passwordConfirm) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Les mots de passe ne correspondent pas.',
+                ], 422);
+            }
+
+            if (mb_strlen($password) < 8) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Le mot de passe doit contenir au moins 8 caractères.',
+                ], 422);
+            }
+
+            $user->setPassword(
+                $passwordHasher->hashPassword($user, $password)
+            );
+
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'field' => $field,
+                'value' => '*****************',
+            ]);
+        }
 
         $form = $this->createForm(ProfileAgenceType::class, $user);
 
@@ -144,7 +192,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         ]);
     }
 
-    private function getFormErrors($form): array
+    private function getFormErrors(FormInterface $form): array
     {
         $errors = [];
 
@@ -155,7 +203,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         return $errors;
     }
 
-    private function getFirstFormError($form): string
+    private function getFirstFormError(FormInterface $form): string
     {
         $errors = $this->getFormErrors($form);
 

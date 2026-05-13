@@ -259,3 +259,11 @@
     position:relative;
     top: 1px
 }
+
+.mode-de-paiement-profile {
+    color: #0B0F14;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+}

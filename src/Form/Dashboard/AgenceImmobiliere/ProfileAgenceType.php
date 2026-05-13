@@ -14,9 +14,13 @@ namespace App\Form\Dashboard\AgenceImmobiliere;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ProfileAgenceType extends AbstractType
@@ -51,7 +55,7 @@ class ProfileAgenceType extends AbstractType
             ->add('villeContact')
             ->add('paysContact')
             ->add('emailContact')
-            
+
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
                 'label' => 'Photo de profil',
@@ -62,6 +66,72 @@ class ProfileAgenceType extends AbstractType
             ])
 
         ->add('whatsApp')
+
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+
+                'options' => [
+                    'attr' => [
+                        'autocomplete' => 'new-password',
+                    ],
+                ],
+
+                'first_options' => [
+                    'toggle' => true,
+
+                    // ⚠️ DOIT être string (pas bool)
+                    'visible_label' => '',
+                    'hidden_label' => '',
+
+                    // icônes
+                    'visible_icon' => 'eye',
+                    'hidden_icon' => 'eye-slash',
+
+                    // ⚠️ DOIT être tableau
+                    'button_classes' => ['password-toggle-button'],
+                    'toggle_container_classes' => ['password-toggle'],
+
+                    'label' => 'form.password.new',
+                    'attr' => [
+                        'class' => 'form-control password-input',
+                        'placeholder' => 'Veuillez entrer votre mot de passe',
+                    ],
+
+                    'constraints' => [
+                        new NotBlank(
+                            message: 'form.password.error.blank'
+                        ),
+                        new Length(
+                            min: 8,
+                            max: 4096,
+                            minMessage: 'form.password.error.min',
+                            maxMessage: 'form.password.error.max',
+                        ),
+                    ],
+                ],
+
+                'second_options' => [
+                    'toggle' => true,
+
+                    'visible_label' => '',
+                    'hidden_label' => '',
+
+                    'visible_icon' => 'eye',
+                    'hidden_icon' => 'eye-slash',
+
+                    'button_classes' => ['password-toggle-button'],
+                    'toggle_container_classes' => ['password-toggle'],
+
+                    'label' => 'form.password.repeat',
+                    'attr' => [
+                        'placeholder' => 'Veuillez confirmer votre mot de passe',
+                        'class' => 'form-control password-input mt-8 mb-12',
+                    ],
+                ],
+
+                'invalid_message' => 'form.password.error.mismatch',
+                'mapped' => false,
+            ])
 
         ;
     }

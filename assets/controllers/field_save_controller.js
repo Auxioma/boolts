@@ -34,6 +34,8 @@ export default class extends Controller {
 
         const isEditing = field.dataset.editing === 'true';
 
+        const errorMessage = field.querySelector('.js-field-error');
+
         if (!isEditing) {
 
             field.dataset.initialValue = this.serializeValue(finalValue);
@@ -93,6 +95,28 @@ export default class extends Controller {
             });
 
             const data = await response.json();
+
+            if (!response.ok || data.success === false) {
+
+                if (errorMessage) {
+
+                    errorMessage.textContent = data.message || 'Une erreur est survenue.';
+
+                    errorMessage.classList.remove('d-none');
+
+                    clearTimeout(errorMessage.hideTimeout);
+
+                    errorMessage.hideTimeout = setTimeout(() => {
+
+                        errorMessage.classList.add('d-none');
+
+                        errorMessage.textContent = '';
+
+                    }, 3000);
+                }
+
+                return;
+            }
 
             if (data.success) {
 

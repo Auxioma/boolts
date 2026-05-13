@@ -1,154 +1,114 @@
-<div class="js-tab-content d-none px-48 pb-92" id="cat4">
+<div class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres" id="cat4">
     <div class="row">
         <div class="col-10 mx-auto">
-    <div class="payment-section">
-        <h2 class="payment-title mb-5">Paiement</h2>
+            <h2 class="mb-0">Paiement A finir page forfait</h2>
+            <div
+                class="card-information-public-profile my-32 py-18 px-24"
+                data-controller="field-save"
+                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
+            >
+                <div class="connexion-securite">
+                    <h5 class="mb-32 mode-de-paiement-profile">Modes de paiement</h5>
 
-        <div class="payment-card">
-            <h3 class="payment-subtitle mb-24">Modes de paiement</h3>
+                    {# card 1 #}
+                    <div class="js-editable-field formulaire">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Mastercard 3640</h3>
+                                <p class="mt-12 mb-0 js-field-value" id="password-value">
+                                    Date d’expiration : 12/08/2027
+                                </p>
+                            </div>
 
-            {% for i in 1..2 %}
-                <div class="payment-method d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="payment-name mb-8">Mastercard 3640</p>
-                        <p class="payment-date mb-0">Date d’expiration : 12/08/2027</p>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button mr-20"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Modifier
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Supprimer
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="d-flex align-items-center gap-24">
-                        <a href="#" class="payment-action">Modifier</a>
-                        <a href="#" class="payment-action">Supprimer</a>
+                    {# card 2 #}
+                    <div class="js-editable-field formulaire mt-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Mastercard 3640</h3>
+                                <p class="mt-12 mb-0 js-field-value" id="password-value">
+                                    Date d’expiration : 12/08/2027
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button mr-20"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Modifier
+                            </button>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Supprimer
+                            </button>
+                        </div>
                     </div>
+
+                    <div class="d-flex justify-content-end mt-32 mb-32">
+                        <button type="button" class="btn-add-payment">
+                            <span class="btn-plus">+</span>
+                                je ne fait rien, ne sais pas si bnt ou link
+                        </button>
+                    </div>
+
+                    <h5 class="my-32 mode-de-paiement-profile">Historique des paiements</h5>
+
+                    {% for i in 1..4 %}
+                        <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
+                            <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+
+                                <div>
+                                    <h3 class="mb-0">Mastercard 3640</h3>
+
+                                    <p class="mt-12 mb-0 js-field-value" id="password-value-{{ i }}">
+                                        Date d’expiration : 12/08/2027
+                                    </p>
+                                </div>
+
+                                <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
+                                    19.99€
+                                </p>
+
+                            </div>
+                        </div>
+                    {% endfor %}
+
+
                 </div>
-            {% endfor %}
-
-            <div class="d-flex justify-content-end mt-24 mb-24">
-                <button type="button" class="btn-add-payment">
-                    <span class="btn-plus">+</span>
-                    Ajouter un mode de paiement
-                </button>
             </div>
-
-            <h3 class="payment-subtitle mt-16 mb-24">Historique des paiements</h3>
-
-            {% for i in 1..4 %}
-                <div class="payment-history d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="payment-name mb-8">Via Mastercard3640</p>
-                        <p class="payment-date mb-0">Le 12/08/2027</p>
-                    </div>
-
-                    <p class="payment-price mb-0">19,99€</p>
-                </div>
-            {% endfor %}
         </div>
     </div>
-
-        </div></div>
-<style>
-    .payment-section {
-        background: #ffffff;
-    }
-
-    .px-48 {
-        padding-left: 48px;
-        padding-right: 48px;
-    }
-
-    .py-48 {
-        padding-top: 48px;
-        padding-bottom: 48px;
-    }
-
-    .mb-24 {
-        margin-bottom: 24px;
-    }
-
-    .mt-24 {
-        margin-top: 24px;
-    }
-
-    .mt-16 {
-        margin-top: 16px;
-    }
-
-    .gap-24 {
-        gap: 24px;
-    }
-
-    .payment-title {
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 1.2;
-        color: #171b26;
-    }
-
-    .payment-card {
-        padding: 16px 18px 0 18px;
-        background: #ffffff;
-    }
-
-    .payment-subtitle {
-        font-size: 17px;
-        font-weight: 700;
-        line-height: 1.25;
-        color: #171b26;
-    }
-
-    .payment-method,
-    .payment-history {
-        min-height: 68px;
-        border-bottom: 1px solid #eeeeee;
-    }
-
-    .payment-name {
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1.2;
-        color: #171b26;
-    }
-
-    .payment-date {
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 1.2;
-        color: #858789;
-    }
-
-    .payment-action {
-        font-size: 14px;
-        font-weight: 700;
-        color: #171b26;
-        text-decoration: none;
-    }
-
-    .payment-action:hover {
-        color: #5d00ff;
-    }
-
-    .payment-price {
-        font-size: 14px;
-        font-weight: 700;
-        color: #171b26;
-    }
-
-    .btn-add-payment {
-        height: 32px;
-        padding: 0 16px;
-        border: 0;
-        border-radius: 999px;
-        background: #5d00ff;
-        color: #ffffff;
-        font-size: 13px;
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-plus {
-        font-size: 24px;
-        font-weight: 400;
-        line-height: 1;
-        margin-top: -2px;
-    }
-</style>
+</div>
