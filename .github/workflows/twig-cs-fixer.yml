@@ -28,7 +28,7 @@ jobs:
           tools: composer
 
       - name: Installer les dépendances Composer
-        run: composer install --prefer-dist --no-progress --no-interaction
+        run: composer install --prefer-dist --no-progress --no-interaction --no-scripts
 
       - name: Vérifier les templates Twig
-        run: vendor/bin/twig-cs-fixer fix templates
+        run: vendor/bin/twig-cs-fixer fix templates --dry-run
