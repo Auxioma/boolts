@@ -147,6 +147,9 @@ class ProfileAgenceType extends AbstractType
                 'mapped' => false,
             ])
 
+            ->add('langues')
+            ->add('devise')
+            ->add('fuseauHoraire')
         ;
     }
 

@@ -138,6 +138,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsApp = null;
 
+    #[ORM\ManyToOne(inversedBy: 'langue')]
+    private ?Langues $langues = null;
+
+    #[ORM\ManyToOne(inversedBy: 'devise')]
+    private ?Devise $devise = null;
+
+    #[ORM\ManyToOne(inversedBy: 'FuseauHoraire')]
+    private ?FuseauHoraire $fuseauHoraire = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -548,6 +557,42 @@ public function __unserialize(array $data): void
     public function setWhatsApp(?string $whatsApp): static
     {
         $this->whatsApp = $whatsApp;
+
+        return $this;
+    }
+
+    public function getLangues(): ?Langues
+    {
+        return $this->langues;
+    }
+
+    public function setLangues(?Langues $langues): static
+    {
+        $this->langues = $langues;
+
+        return $this;
+    }
+
+    public function getDevise(): ?Devise
+    {
+        return $this->devise;
+    }
+
+    public function setDevise(?Devise $devise): static
+    {
+        $this->devise = $devise;
+
+        return $this;
+    }
+
+    public function getFuseauHoraire(): ?FuseauHoraire
+    {
+        return $this->fuseauHoraire;
+    }
+
+    public function setFuseauHoraire(?FuseauHoraire $fuseauHoraire): static
+    {
+        $this->fuseauHoraire = $fuseauHoraire;
 
         return $this;
     }

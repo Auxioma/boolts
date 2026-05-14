@@ -1,1 +1,190 @@
-<div class="js-tab-content d-none" id="cat5">Contenu catégorie 5</div>
+<div class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres" id="cat5">
+
+    <div class="row">
+        <div class="col-10 mx-auto">
+
+            <h2 class="mb-0">Langue et devise</h2>
+
+            <div
+                class="card-information-public-profile my-32 py-18 px-24"
+                data-controller="field-save"
+                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
+            >
+
+                <div class="connexion-securite">
+
+                    {# langue préféré #}
+                    <div class="js-editable-field formulaire">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Langue préférée</h3>
+
+                                <p class="mt-12 mb-0 js-field-value" id="password-value">
+                                    English
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input w-75">
+                                    {{ form_widget(form.langues) }}
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+
+                    {# devise #}
+                    <div class="js-editable-field formulaire">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Devise préférée</h3>
+
+                                <p class="mt-12 mb-0 js-field-value" id="password-value">
+                                    Euro
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input w-75 custom-select-wrapper">
+                                    {{ form_widget(form.devise) }}
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+
+                    {# fuseau horaire #}
+                    <div class="js-editable-field formulaire">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Fuseau horaire</h3>
+
+                                <p class="mt-12 mb-0 js-field-value" id="password-value">
+                                    (UTC+01:00) Paris
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input w-75">
+                                    {{ form_widget(form.fuseauHoraire) }}
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+<style>
+    .custom-select-wrapper {
+        position: relative;
+        width: 540px;
+    }
+
+    /* RESET BOOTSTRAP */
+    .custom-select-ui {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+
+        background-image: none !important;
+
+        width: 100%;
+        height: 64px;
+
+        padding: 0 60px 0 22px;
+
+        border: 2px solid #dcdcdc;
+        border-radius: 14px;
+
+        background-color: #fff;
+
+        font-size: 20px;
+        font-weight: 400;
+        color: #7d7d7d;
+
+        box-shadow: none !important;
+        outline: none !important;
+
+        transition: all 0.2s ease;
+    }
+
+    /* hover léger */
+    .custom-select-ui:hover {
+        border-color: #cfcfcf;
+    }
+
+    /* focus sans bleu bootstrap */
+    .custom-select-ui:focus {
+        border-color: #cfcfcf;
+        box-shadow: none !important;
+        outline: none;
+    }
+
+    /* DOUBLE CHEVRON */
+    .custom-select-wrapper::before,
+    .custom-select-wrapper::after {
+        content: "";
+        position: absolute;
+        right: 22px;
+
+        width: 10px;
+        height: 10px;
+
+        border-right: 2px solid #8c8c8c;
+        border-bottom: 2px solid #8c8c8c;
+
+        pointer-events: none;
+    }
+
+    /* flèche du haut */
+    .custom-select-wrapper::before {
+        top: 22px;
+        transform: rotate(225deg);
+    }
+
+    /* flèche du bas */
+    .custom-select-wrapper::after {
+        bottom: 22px;
+        transform: rotate(45deg);
+    }
+</style>

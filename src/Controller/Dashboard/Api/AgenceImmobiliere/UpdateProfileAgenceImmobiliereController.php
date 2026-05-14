@@ -171,9 +171,15 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             ], 400);
         }
 
-        $form->submit([
+        $submitData = [
             $field => $value,
-        ], false);
+        ];
+
+        if ($field === 'numeroContact' && \array_key_exists('whatsApp', $data)) {
+            $submitData['whatsApp'] = $data['whatsApp'];
+        }
+
+        $form->submit($submitData, false);
 
         if (!$form->isValid()) {
             return $this->json([
@@ -189,6 +195,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             'success' => true,
             'field' => $field,
             'value' => $value,
+            'whatsApp' => $data['whatsApp'] ?? null,
         ]);
     }
 

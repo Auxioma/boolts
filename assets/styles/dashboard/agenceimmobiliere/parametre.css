@@ -237,6 +237,14 @@
     max-width: 300px;
 }
 .complete-profile p {
+    color: #000;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.complete-profile .active {
     color: #858789;
     font-size: 14px;
     font-style: normal;

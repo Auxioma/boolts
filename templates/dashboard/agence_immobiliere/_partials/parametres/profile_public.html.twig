@@ -5,26 +5,31 @@
 
             {% set profileItems = [
                 {
+                    field: 'entreprise',
                     label: "Ajouter un nom d’agence",
                     done: app.user.entreprise is not empty,
                     optional: false
                 },
                 {
+                    field: 'description',
                     label: "Ajouter une description",
                     done: app.user.description is not empty,
                     optional: false
                 },
                 {
+                    field: 'adresseContact',
                     label: "Ajouter une adresse postale",
                     done: app.user.adresseContact is not empty and app.user.codePostalContact is not empty and app.user.villeContact is not empty,
                     optional: false
                 },
                 {
+                    field: 'emailContact',
                     label: "Ajouter une adresse mail",
                     done: app.user.emailContact is not empty,
                     optional: true
                 },
                 {
+                    field: 'numeroContact',
                     label: "Ajouter un numéro",
                     done: app.user.numeroContact is not empty,
                     optional: true
@@ -39,12 +44,16 @@
 
             {% set progress = totalRequired > 0 ? ((totalDone / totalRequired) * 100)|round : 0 %}
 
-            <div class="complete-profile py-24 px-24 mt-32">
+            <div
+                class="complete-profile py-24 px-24 mt-32"
+                data-controller="profile-progress"
+            >
                 <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
 
                 <div class="progress my-12" style="height: 10px;">
                     <div
                         class="progress-bar"
+                        data-profile-progress-target="bar"
                         role="progressbar"
                         style="width: {{ progress }}%;"
                         aria-valuenow="{{ progress }}"
@@ -54,10 +63,18 @@
                 </div>
 
                 {% for item in profileItems %}
-                    <p class="{{ loop.first ? 'mb-0' : 'mt-2 mb-0' }}">
-                        {% if item.done %}
-                            <i class="icon-check mr-8"></i>
-                        {% endif %}
+                    <p
+                        class="{{ loop.first ? 'mb-0' : 'mt-2 mb-0' }} {% if item.done %} active {% endif %}"
+                        data-profile-progress-target="item"
+                        data-field="{{ item.field }}"
+                        data-optional="{{ item.optional ? 'true' : 'false' }}"
+                        data-done="{{ item.done ? 'true' : 'false' }}"
+                    >
+            <span data-profile-progress-target="icon">
+                {% if item.done %}
+                    <i class="icon-check mr-8"></i>
+                {% endif %}
+            </span>
 
                         {{ item.label }}
 
@@ -301,7 +318,7 @@
                     </div>
 
                     {# Numéro de contact #}
-                    <div class="js-editable-field formulaire my-20" data-controller="phone">
+                    <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
 
@@ -319,20 +336,27 @@
                                         class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                         data-action="click->field-save#handle"
                                         data-field-save-field-param="numeroContact"
-                                        data-field-save-input-param="#{{ form.numeroContact.vars.id }}"
+                                        data-field-save-input-param="#telephone-input"
                                         data-field-save-output-param="#numero-contact-value"
+                                        data-field-save-whatsapp-switch-param="#whatsapp-switch"
+                                        data-field-save-same-number-param="#same-number-checkbox"
+                                        data-field-save-whatsapp-input-param="#whatsapp-phone"
                                     >
                                         Définir
                                     </button>
                                 </div>
 
-                                {{ form_widget(form.numeroContact, {
-                                    id: 'telephone-input',
-                                    attr: {
-                                        class: 'form-control w-75',
-                                        'data-phone-target': 'input'
-                                    }
-                                }) }}
+                                <div class="js-field-input d-none mt-12">
+
+                                    <div data-controller="phone">
+                                        {{ form_widget(form.numeroContact, {
+                                            id: 'telephone-input',
+                                            attr: {
+                                                class: 'form-control w-75',
+                                                'data-phone-target': 'input'
+                                            }
+                                        }) }}
+                                    </div>
 
                                     <div class="mt-12">
                                         <div class="d-flex justify-content-between align-items-center w-100">
@@ -360,15 +384,19 @@
                                         </div>
 
                                         <div class="mt-12 d-none" id="whatsapp-phone-wrapper">
-                                            {{ form_widget(form.whatsApp, {
-                                                id: 'whatsapp-phone',
-                                                attr: {
-                                                    class: 'form-control w-75',
-                                                    'data-phone-target': 'input'
-                                                }
-                                            }) }}
+                                            <div data-controller="phone">
+                                                {{ form_widget(form.whatsApp, {
+                                                    id: 'whatsapp-phone',
+                                                    attr: {
+                                                        class: 'form-control w-75',
+                                                        'data-phone-target': 'input'
+                                                    }
+                                                }) }}
+                                            </div>
                                         </div>
                                     </div>
+
+                                    <span class="flash-message flash-message-error js-field-error d-none"></span>
                                 </div>
 
                             </div>
@@ -481,7 +509,7 @@
             const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
             const telephoneInput = document.querySelector('#telephone-input');
 
-            console.log(whatsappSwitch, checkboxWrapper, sameNumberCheckbox, whatsappPhoneWrapper, whatsappPhoneInput, telephoneInput);
+            //console.log(whatsappSwitch, checkboxWrapper, sameNumberCheckbox, whatsappPhoneWrapper, whatsappPhoneInput, telephoneInput);
 
             if (
             !whatsappSwitch ||
@@ -491,7 +519,7 @@
             !whatsappPhoneInput ||
             !telephoneInput
             ) {
-            console.warn('WhatsApp switch: élément manquant');
+            //console.warn('WhatsApp switch: élément manquant');
             return;
         }
 

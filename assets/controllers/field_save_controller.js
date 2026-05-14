@@ -44,11 +44,13 @@ export default class extends Controller {
                 input.dataset.initialValue = this.serializeValue(finalValue);
             }
 
-            if (!isAppend) {
+            if (!isAppend && value) {
                 value.classList.add('d-none');
             }
 
-            inputWrapper.classList.remove('d-none');
+            if (inputWrapper) {
+                inputWrapper.classList.remove('d-none');
+            }
 
             this.setButtonState(button, 'editing');
 
@@ -61,13 +63,30 @@ export default class extends Controller {
             return;
         }
 
-        if (this.serializeValue(finalValue) === initialValue) {
+        const whatsAppValue = this.getWhatsAppValue(button, finalValue);
 
-            if (!isAppend) {
+        const payload = {
+            field: fieldName,
+            value: finalValue,
+            _token: this.csrfValue
+        };
+
+        if (whatsAppValue !== undefined) {
+            payload.whatsApp = whatsAppValue;
+        }
+
+        if (
+            this.serializeValue(finalValue) === initialValue
+            && whatsAppValue === undefined
+        ) {
+
+            if (!isAppend && value) {
                 value.classList.remove('d-none');
             }
 
-            inputWrapper.classList.add('d-none');
+            if (inputWrapper) {
+                inputWrapper.classList.add('d-none');
+            }
 
             this.setButtonState(button, 'closed');
 
@@ -87,11 +106,7 @@ export default class extends Controller {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({
-                    field: fieldName,
-                    value: finalValue,
-                    _token: this.csrfValue
-                })
+                body: JSON.stringify(payload)
             });
 
             const data = await response.json();
@@ -107,11 +122,8 @@ export default class extends Controller {
                     clearTimeout(errorMessage.hideTimeout);
 
                     errorMessage.hideTimeout = setTimeout(() => {
-
                         errorMessage.classList.add('d-none');
-
                         errorMessage.textContent = '';
-
                     }, 3000);
                 }
 
@@ -120,13 +132,25 @@ export default class extends Controller {
 
             if (data.success) {
 
-                output.textContent = this.formatOutput(finalValue, isMultiple);
+                window.dispatchEvent(new CustomEvent('profile:field-saved', {
+                    detail: {
+                        field: fieldName,
+                        value: finalValue,
+                        whatsApp: whatsAppValue
+                    }
+                }));
 
-                if (!isAppend) {
+                if (output) {
+                    output.textContent = this.formatOutput(finalValue, isMultiple);
+                }
+
+                if (!isAppend && value) {
                     value.classList.remove('d-none');
                 }
 
-                inputWrapper.classList.add('d-none');
+                if (inputWrapper) {
+                    inputWrapper.classList.add('d-none');
+                }
 
                 this.setButtonState(button, 'closed');
 
@@ -142,6 +166,11 @@ export default class extends Controller {
         } catch (e) {
 
             console.error(e);
+
+            if (errorMessage) {
+                errorMessage.textContent = 'Erreur de communication avec le serveur.';
+                errorMessage.classList.remove('d-none');
+            }
 
         } finally {
 
@@ -198,13 +227,49 @@ export default class extends Controller {
         });
     }
 
+    getWhatsAppValue(button, phoneValue) {
+
+        const whatsappSwitchSelector = button.dataset.fieldSaveWhatsappSwitchParam;
+        const sameNumberSelector = button.dataset.fieldSaveSameNumberParam;
+        const whatsappInputSelector = button.dataset.fieldSaveWhatsappInputParam;
+
+        if (!whatsappSwitchSelector) {
+            return undefined;
+        }
+
+        const whatsappSwitch = document.querySelector(whatsappSwitchSelector);
+        const sameNumber = document.querySelector(sameNumberSelector);
+        const whatsappInput = document.querySelector(whatsappInputSelector);
+
+        if (!whatsappSwitch || !whatsappSwitch.checked) {
+            return null;
+        }
+
+        if (sameNumber && sameNumber.checked) {
+            return phoneValue || null;
+        }
+
+        if (whatsappInput) {
+            const whatsAppValue = whatsappInput.dataset.fullPhoneValue ?? whatsappInput.value;
+
+            return whatsAppValue || null;
+        }
+
+        return null;
+    }
+
     setButtonState(button, state) {
 
         if (button.classList.contains('js-btn-pen') || button.classList.contains('js-btn-save')) {
             return;
         }
 
-        const labels = { editing: 'Fermer', closed: 'Modifier', save: 'Enregistrer' };
+        const labels = {
+            editing: 'Fermer',
+            closed: 'Modifier',
+            save: 'Enregistrer'
+        };
+
         button.textContent = labels[state];
     }
 
@@ -215,7 +280,8 @@ export default class extends Controller {
 
             field.querySelectorAll('input, textarea, select').forEach((item) => {
                 const name = item.dataset.name || item.name;
-                values[name] = item.value;
+
+                values[name] = item.dataset.fullPhoneValue ?? item.value;
             });
 
             return values;
@@ -240,7 +306,6 @@ export default class extends Controller {
             return value || '***';
         }
 
-        // Adresse principale
         if (value.adresse || value.codePostal || value.ville || value.pays) {
             return [
                 value.adresse || '',
@@ -250,7 +315,6 @@ export default class extends Controller {
             ].filter(Boolean).join(', ') || '***';
         }
 
-        // Adresse de contact
         if (value.adresseContact || value.codePostalContact || value.villeContact || value.paysContact) {
             return [
                 value.adresseContact || '',
