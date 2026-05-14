@@ -48,7 +48,14 @@ class ProfileAgenceType extends AbstractType
             ->add('description')
 
 
-            ->add('numeroContact')
+            ->add('numeroContact', TelType::class, [
+                'label' => 'Téléphone',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'data-phone-target' => 'input',
+                ],
+            ])
 
             ->add('adresseContact')
             ->add('codePostalContact')
@@ -65,7 +72,14 @@ class ProfileAgenceType extends AbstractType
                 'asset_helper' => true,
             ])
 
-        ->add('whatsApp')
+        ->add('whatsApp', TelType::class, [
+            'label' => 'Téléphone',
+            'required' => false,
+            'attr' => [
+                'class' => 'form-control',
+                'data-phone-target' => 'input',
+            ],
+        ])
 
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,

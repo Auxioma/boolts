@@ -5,35 +5,45 @@ export default class extends Controller {
     static targets = ['input'];
 
     connect() {
-        this.iti = intlTelInput(this.inputTarget, {
-            initialCountry: 'fr',
-            preferredCountries: ['fr', 'be', 'ch', 'cn'],
-            separateDialCode: true,
-            nationalMode: false,
-        });
+        this.itiInstances = new Map();
 
-        this.inputTarget.addEventListener('input', () => {
-            this.updateFullNumber();
-        });
+        this.inputTargets.forEach((input) => {
+            const iti = intlTelInput(input, {
+                initialCountry: 'fr',
+                preferredCountries: ['fr', 'be', 'ch', 'cn'],
+                separateDialCode: true,
+                nationalMode: false,
+            });
 
-        this.inputTarget.addEventListener('countrychange', () => {
-            this.updateFullNumber();
+            this.itiInstances.set(input, iti);
+
+            input.addEventListener('input', () => {
+                this.updateFullNumber(input);
+            });
+
+            input.addEventListener('countrychange', () => {
+                this.updateFullNumber(input);
+            });
         });
     }
 
     sync() {
-        this.updateFullNumber();
+        this.inputTargets.forEach((input) => {
+            this.updateFullNumber(input);
+        });
     }
 
-    updateFullNumber() {
-        if (!this.iti || !this.hasInputTarget) {
+    updateFullNumber(input) {
+        const iti = this.itiInstances.get(input);
+
+        if (!iti) {
             return;
         }
 
-        const countryData = this.iti.getSelectedCountryData();
+        const countryData = iti.getSelectedCountryData();
         const dialCode = countryData.dialCode;
 
-        let phone = this.inputTarget.value.trim();
+        let phone = input.value.trim();
 
         phone = phone.replace(/\s+/g, '');
         phone = phone.replace(/^0+/, '');
@@ -43,6 +53,6 @@ export default class extends Controller {
             ? `+${dialCode}${phone}`
             : '';
 
-        this.inputTarget.dataset.fullPhoneValue = fullNumber;
+        input.dataset.fullPhoneValue = fullNumber;
     }
 }

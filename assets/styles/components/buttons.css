@@ -70,8 +70,13 @@
     transition: box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
 }
 
-.btn-bg-border-blue:hover,{
+.btn-bg-border-blue:hover,
+.btn-change-image:hover {
     background: var(--color-white);
     color: var(--color-primary);
     box-shadow: 0 4px 23.6px 0 rgba(93, 0, 255, 0.18);
+}
+.btn-change-image {
+    min-height: auto!important;
+    padding: 4px 10px!important;
 }

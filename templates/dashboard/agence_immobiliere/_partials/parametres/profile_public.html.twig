@@ -39,10 +39,10 @@
 
             {% set progress = totalRequired > 0 ? ((totalDone / totalRequired) * 100)|round : 0 %}
 
-            <div class="complete-profile py-16 px-16 mt-32">
+            <div class="complete-profile py-24 px-24 mt-32">
                 <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
 
-                <div class="progress my-12" style="height: 4px;">
+                <div class="progress my-12" style="height: 10px;">
                     <div
                         class="progress-bar"
                         role="progressbar"
@@ -115,7 +115,7 @@
                         }) }}
                     </div>
 
-                    <div class="d-flex flex-column w-100">
+                    <div class="d-flex flex-column w-100 formulaire formulaire-profile-public">
 
                         <div class="js-editable-field">
                             <div class="w-100">
@@ -134,7 +134,7 @@
                                         data-field-save-input-param="#{{ form.entreprise.vars.id }}"
                                         data-field-save-output-param="#entreprise-public-value"
                                     >
-                                        <i class="icon-pen-line"></i>
+                                        <i class="icon-pen"></i>
                                     </button>
                                 </div>
 
@@ -142,7 +142,7 @@
                                     <div class="d-flex align-items-center gap-2 mt-2">
                                         {{ form_widget(form.entreprise, {
                                             attr: {
-                                                class: 'form-control'
+                                                class: 'form-control w-75'
                                             }
                                         }) }}
 
@@ -178,7 +178,7 @@
                                         data-field-save-input-param="#{{ form.description.vars.id }}"
                                         data-field-save-output-param="#description-public-value"
                                     >
-                                        <i class="icon-pen-line"></i>
+                                        <i class="icon-pen"></i>
                                     </button>
                                 </div>
 
@@ -186,7 +186,7 @@
                                     <div class="d-flex align-items-center gap-2 mt-2">
                                         {{ form_widget(form.description, {
                                             attr: {
-                                                class: 'form-control'
+                                                class: 'form-control w-75'
                                             }
                                         }) }}
 
@@ -301,7 +301,7 @@
                     </div>
 
                     {# Numéro de contact #}
-                    <div class="js-editable-field formulaire my-20">
+                    <div class="js-editable-field formulaire my-20" data-controller="phone">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
 
@@ -326,13 +326,13 @@
                                     </button>
                                 </div>
 
-                                <div class="mt-12 d-none js-field-input">
-                                    {{ form_widget(form.numeroContact, {
-                                        attr: {
-                                            class: 'form-control w-75',
-                                            id: 'telephone-input'
-                                        }
-                                    }) }}
+                                {{ form_widget(form.numeroContact, {
+                                    id: 'telephone-input',
+                                    attr: {
+                                        class: 'form-control w-75',
+                                        'data-phone-target': 'input'
+                                    }
+                                }) }}
 
                                     <div class="mt-12">
                                         <div class="d-flex justify-content-between align-items-center w-100">
@@ -361,9 +361,10 @@
 
                                         <div class="mt-12 d-none" id="whatsapp-phone-wrapper">
                                             {{ form_widget(form.whatsApp, {
+                                                id: 'whatsapp-phone',
                                                 attr: {
                                                     class: 'form-control w-75',
-                                                    id: 'telephone-input'
+                                                    'data-phone-target': 'input'
                                                 }
                                             }) }}
                                         </div>
@@ -376,7 +377,7 @@
 
                     {# Email de contact #}
                     <div class="js-editable-field formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                        <div class="d-flex justify-content-between align-items-start pb-20">
                             <div class="w-100">
                                 <h3 class="mb-0">Adresse e-mail</h3>
 
@@ -415,7 +416,7 @@
                     Voir la fiche publique
                 </a>
 
-                <p class="mt-8">Comme elle apparaitra aux utilisateurs</p>
+                <p class="mt-8">Telle qu'elle apparaitra aux utilisateurs</p>
             </div>
 
         </div>
@@ -472,43 +473,59 @@
         }
 
         // WHATSAPP
-        const whatsappSwitch = document.querySelector('#whatsapp-switch');
-        const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
-        const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
-        const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
-        const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
-        const telephoneInput = document.querySelector('#telephone-input');
+            document.addEventListener('DOMContentLoaded', () => {
+            const whatsappSwitch = document.querySelector('#whatsapp-switch');
+            const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
+            const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
+            const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
+            const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
+            const telephoneInput = document.querySelector('#telephone-input');
 
-        if (
-            whatsappSwitch &&
-            checkboxWrapper &&
-            sameNumberCheckbox &&
-            whatsappPhoneWrapper &&
-            whatsappPhoneInput
-        ) {
+            console.log(whatsappSwitch, checkboxWrapper, sameNumberCheckbox, whatsappPhoneWrapper, whatsappPhoneInput, telephoneInput);
+
+            if (
+            !whatsappSwitch ||
+            !checkboxWrapper ||
+            !sameNumberCheckbox ||
+            !whatsappPhoneWrapper ||
+            !whatsappPhoneInput ||
+            !telephoneInput
+            ) {
+            console.warn('WhatsApp switch: élément manquant');
+            return;
+        }
+
             whatsappSwitch.addEventListener('change', () => {
-                if (whatsappSwitch.checked) {
-                    checkboxWrapper.classList.remove('d-none');
-                    sameNumberCheckbox.checked = true;
-                    whatsappPhoneWrapper.classList.add('d-none');
-                    whatsappPhoneInput.value = telephoneInput ? telephoneInput.value : '';
-                } else {
-                    checkboxWrapper.classList.add('d-none');
-                    whatsappPhoneWrapper.classList.add('d-none');
-                    sameNumberCheckbox.checked = false;
-                    whatsappPhoneInput.value = '';
-                }
-            });
+            if (whatsappSwitch.checked) {
+            checkboxWrapper.classList.remove('d-none');
+            sameNumberCheckbox.checked = true;
+            whatsappPhoneWrapper.classList.add('d-none');
+            whatsappPhoneInput.value = telephoneInput.value;
+        } else {
+            checkboxWrapper.classList.add('d-none');
+            whatsappPhoneWrapper.classList.add('d-none');
+            sameNumberCheckbox.checked = false;
+            whatsappPhoneInput.value = '';
+        }
+        });
 
             sameNumberCheckbox.addEventListener('change', () => {
-                if (sameNumberCheckbox.checked) {
-                    whatsappPhoneWrapper.classList.add('d-none');
-                    whatsappPhoneInput.value = telephoneInput ? telephoneInput.value : '';
-                } else {
-                    whatsappPhoneWrapper.classList.remove('d-none');
-                    whatsappPhoneInput.value = '';
-                }
-            });
+            if (sameNumberCheckbox.checked) {
+            whatsappPhoneWrapper.classList.add('d-none');
+            whatsappPhoneInput.value = telephoneInput.value;
+        } else {
+            whatsappPhoneWrapper.classList.remove('d-none');
+            whatsappPhoneInput.value = '';
+            whatsappPhoneInput.focus();
         }
+        });
+
+            telephoneInput.addEventListener('input', () => {
+            if (whatsappSwitch.checked && sameNumberCheckbox.checked) {
+            whatsappPhoneInput.value = telephoneInput.value;
+        }
+        });
+        });
     </script>
+
 </div>
