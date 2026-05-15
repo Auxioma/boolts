@@ -6,8 +6,9 @@
     line-height: 20px;
 }
 
-.formulaire input, 
-.formulaire textarea {
+.formulaire input,
+.formulaire textarea,
+.formulaire select {
     width: 100%;
     padding: 12px 14px;
     border: 2px solid var(--color-gray-light);
@@ -23,12 +24,14 @@
     color: #858789;
 }
 .formulaire input::placeholder,
-.formulaire textarea::placeholder {
+.formulaire textarea::placeholder,
+.formulaire select::placeholder {
     color: #858789;
 }
 
 .formulaire input:focus,
-.formulaire textarea:focus {
+.formulaire textarea:focus,
+.formulaire select:focus  {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: none;
