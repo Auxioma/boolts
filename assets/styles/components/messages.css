@@ -30,5 +30,44 @@
     color: var(--colors-red-red-500)!important;
     opacity: 1!important; /* important pour éviter le gris transparent */
 }
-
-/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1lc3NhZ2VzLmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtJQUNJLGdDQUFnQztJQUNoQyxrQkFBa0I7SUFDbEIsZUFBZTtJQUNmLGtCQUFrQjtJQUNsQixnQkFBZ0I7SUFDaEIsbUJBQW1CO0FBQ3ZCOztBQUVBO0lBQ0ksY0FBYztJQUNkLGtCQUFrQjtJQUNsQixlQUFlO0lBQ2Ysa0JBQWtCO0lBQ2xCLGdCQUFnQjtJQUNoQixtQkFBbUI7QUFDdkI7OztBQUdBO0lBQ0kscURBQXFEO0lBQ3JELCtDQUErQztJQUMvQywwQ0FBMEM7QUFDOUM7QUFDQTtJQUNJLDBDQUEwQztJQUMxQyxvQkFBb0IsRUFBRSw4Q0FBOEM7QUFDeEU7QUFIQTtJQUNJLDBDQUEwQztJQUMxQyxvQkFBb0IsRUFBRSw4Q0FBOEM7QUFDeEUiLCJmaWxlIjoibWVzc2FnZXMuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmZsYXNoLW1lc3NhZ2UtZXJyb3Ige1xyXG4gICAgY29sb3I6IHZhcigtLWNvbG9ycy1yZWQtcmVkLTUwMCk7XHJcbiAgICBmb250LWZhbWlseTogSW50ZXI7XHJcbiAgICBmb250LXNpemU6IDE0cHg7XHJcbiAgICBmb250LXN0eWxlOiBub3JtYWw7XHJcbiAgICBmb250LXdlaWdodDogNjAwO1xyXG4gICAgbGluZS1oZWlnaHQ6IG5vcm1hbDtcclxufVxyXG5cclxuLmZsYXNoLW1lc3NhZ2Utc3VjY2VzcyB7XHJcbiAgICBjb2xvcjogIzFBOTkwMDtcclxuICAgIGZvbnQtZmFtaWx5OiBJbnRlcjtcclxuICAgIGZvbnQtc2l6ZTogMTRweDtcclxuICAgIGZvbnQtc3R5bGU6IG5vcm1hbDtcclxuICAgIGZvbnQtd2VpZ2h0OiA2MDA7XHJcbiAgICBsaW5lLWhlaWdodDogbm9ybWFsO1xyXG59XHJcblxyXG5cclxuLmZsYXNoLWlucHV0LWVycm9yIHtcclxuICAgIGJvcmRlcjogMnB4IHNvbGlkIHZhcigtLWNvbG9ycy1yZWQtcmVkLTMwMCkhaW1wb3J0YW50O1xyXG4gICAgYmFja2dyb3VuZDogcmdiYSgyNDgsIDIxNSwgMjE4LCAwLjQwKSFpbXBvcnRhbnQ7XHJcbiAgICBjb2xvcjogdmFyKC0tY29sb3JzLXJlZC1yZWQtNTAwKSFpbXBvcnRhbnQ7XHJcbn1cclxuLmZsYXNoLWlucHV0LWVycm9yOjpwbGFjZWhvbGRlciB7XHJcbiAgICBjb2xvcjogdmFyKC0tY29sb3JzLXJlZC1yZWQtNTAwKSFpbXBvcnRhbnQ7XHJcbiAgICBvcGFjaXR5OiAxIWltcG9ydGFudDsgLyogaW1wb3J0YW50IHBvdXIgw6l2aXRlciBsZSBncmlzIHRyYW5zcGFyZW50ICovXHJcbn1cclxuIl19 */
+.message-flash-profile {
+    display: flex;
+    padding: 12px 22px;
+    align-items: center;
+    gap: 43px;
+    border-radius: 78px;
+    background: #CCFFCD;
+    color: #1A9900;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    width: fit-content;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 24px;
+    z-index: 9999;
+}
+.message-flash-profile-error {
+    width: fit-content;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 24px;
+    z-index: 9999;
+    display: flex;
+    padding: 12px 22px;
+    align-items: center;
+    gap: 43px;
+    align-self: stretch;
+    border-radius: 78px;
+    background: #F8D7DA;
+    color: #DC3545;
+    font-family: Inter;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}

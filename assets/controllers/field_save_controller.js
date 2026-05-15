@@ -132,6 +132,10 @@ export default class extends Controller {
 
             if (data.success) {
 
+                this.showSuccessMessage(
+                    data.message || 'Les modifications ont étés effectuées avec succès !'
+                );
+
                 window.dispatchEvent(new CustomEvent('profile:field-saved', {
                     detail: {
                         field: fieldName,
@@ -227,6 +231,29 @@ export default class extends Controller {
         });
     }
 
+    showSuccessMessage(message) {
+
+        const successMessage = document.querySelector('.js-success-message');
+
+        if (!successMessage) {
+            return;
+        }
+
+        successMessage.textContent = message;
+
+        successMessage.classList.remove('d-none');
+
+        clearTimeout(successMessage.hideTimeout);
+
+        successMessage.hideTimeout = setTimeout(() => {
+
+            successMessage.classList.add('d-none');
+
+            successMessage.textContent = '';
+
+        }, 3000);
+    }
+
     getWhatsAppValue(button, phoneValue) {
 
         const whatsappSwitchSelector = button.dataset.fieldSaveWhatsappSwitchParam;
@@ -276,9 +303,11 @@ export default class extends Controller {
     getFinalValue(field, input, isMultiple) {
 
         if (isMultiple) {
+
             const values = {};
 
             field.querySelectorAll('input, textarea, select').forEach((item) => {
+
                 const name = item.dataset.name || item.name;
 
                 values[name] = item.dataset.fullPhoneValue ?? item.value;
@@ -295,6 +324,7 @@ export default class extends Controller {
     }
 
     serializeValue(value) {
+
         return typeof value === 'object'
             ? JSON.stringify(value)
             : String(value ?? '');
@@ -307,6 +337,7 @@ export default class extends Controller {
         }
 
         if (value.adresse || value.codePostal || value.ville || value.pays) {
+
             return [
                 value.adresse || '',
                 value.adresseComplement || '',
@@ -316,6 +347,7 @@ export default class extends Controller {
         }
 
         if (value.adresseContact || value.codePostalContact || value.villeContact || value.paysContact) {
+
             return [
                 value.adresseContact || '',
                 `${value.codePostalContact || ''} ${value.villeContact || ''}`.trim(),

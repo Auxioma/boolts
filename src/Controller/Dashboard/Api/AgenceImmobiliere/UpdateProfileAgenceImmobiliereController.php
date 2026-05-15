@@ -47,6 +47,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json([
                 'success' => true,
+                'message' => 'Les modifications ont étés effectuées avec succès !',
                 'imageName' => $user->getImageName(),
                 'imageSize' => $user->getImageSize(),
             ]);
@@ -57,7 +58,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!\is_array($data)) {
             return $this->json([
                 'success' => false,
-                'message' => 'JSON invalide.',
+                'message' => 'Un problème est survenu avec les modifications. Rééssayez.',
             ], 400);
         }
 
@@ -66,7 +67,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!$csrfTokenManager->isTokenValid($csrfToken)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Token CSRF invalide.',
+                'message' => 'Un problème est survenu avec les modifications. Rééssayez.',
             ], 419);
         }
 
@@ -98,10 +99,10 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
                 ], 422);
             }
 
-            if (mb_strlen($password) < 8) {
+            if (mb_strlen($password) < 12) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Le mot de passe doit contenir au moins 8 caractères.',
+                    'message' => 'Le mot de passe doit contenir au moins 12 caractères.',
                 ], 422);
             }
 
@@ -113,6 +114,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json([
                 'success' => true,
+                'message' => 'Les modifications ont étés effectuées avec succès !',
                 'field' => $field,
                 'value' => '*****************',
             ]);
@@ -159,6 +161,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json([
                 'success' => true,
+                'message' => 'Les modifications ont étés effectuées avec succès !',
                 'field' => $field,
                 'value' => $value,
             ]);
@@ -167,7 +170,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!$field || !$form->has($field)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Champ invalide.',
+                'message' => 'Un problème est survenu avec les modifications. Rééssayez.',
             ], 400);
         }
 
@@ -193,6 +196,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
         return $this->json([
             'success' => true,
+            'message' => 'Les modifications ont étés effectuées avec succès !',
             'field' => $field,
             'value' => $value,
             'whatsApp' => $data['whatsApp'] ?? null,

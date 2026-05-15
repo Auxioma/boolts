@@ -12,7 +12,10 @@
 
 namespace App\Form\Dashboard\AgenceImmobiliere;
 
+use App\Entity\FuseauHoraire;
 use App\Entity\User;
+use App\Repository\FuseauHoraireRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -46,7 +49,6 @@ class ProfileAgenceType extends AbstractType
             ->add('pays')
             ->add('entreprise')
             ->add('description')
-
 
             ->add('numeroContact', TelType::class, [
                 'label' => 'Téléphone',
@@ -147,9 +149,20 @@ class ProfileAgenceType extends AbstractType
                 'mapped' => false,
             ])
 
-            ->add('langues')
+            ->add('langues', EntityType::class, [
+                'class' => \App\Entity\Langues::class,
+                'choice_label' => 'name',
+                'required' => false,
+            ])
+
             ->add('devise')
-            ->add('fuseauHoraire')
+            ->add('fuseauHoraire', EntityType::class, [
+                'class' => FuseauHoraire::class,
+                'choice_label' => 'nom',
+                'query_builder' => static function (FuseauHoraireRepository $repository) {
+                    return $repository->createOrderedByUtcQueryBuilder();
+                },
+            ])
         ;
     }
 

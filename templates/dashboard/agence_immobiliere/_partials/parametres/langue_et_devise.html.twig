@@ -20,14 +20,15 @@
                             <div class="w-100">
                                 <h3 class="mb-0">Langue préférée</h3>
 
-                                <p class="mt-12 mb-0 js-field-value" id="password-value">
-                                    English
+                                <p class="mt-12 mb-0 js-field-value" id="langue-value">
+                                    {{ app.user.langues ? app.user.langues.name : '***' }}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input w-75">
                                     {{ form_widget(form.langues, {
                                         attr: {
                                             class: 'form-control',
+                                            'data-name': 'langues'
                                         }
                                     }) }}
                                 </div>
@@ -37,29 +38,31 @@
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
-                                data-field-save-field-param="plainPassword"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#password-value"
+                                data-field-save-field-param="langues"
+                                data-field-save-multiple-param="false"
+                                data-field-save-output-param="#langue-value"
                             >
                                 Modifier
                             </button>
                         </div>
+
+                        <span class="flash-message flash-message-error js-field-error d-none"></span>
                     </div>
 
-                    {# devise #}
-                    <div class="js-editable-field  formulaire my-20">
+                    {# devise #}<div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
                                 <h3 class="mb-0">Devise préférée</h3>
 
-                                <p class="mt-12 mb-0 js-field-value" id="password-value">
-                                    Euro
+                                <p class="mt-12 mb-0 js-field-value" id="devise-value">
+                                    {{ app.user.devise ? app.user.devise.nom : '***' }}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input w-75">
                                     {{ form_widget(form.devise, {
                                         attr: {
                                             class: 'form-control',
+                                            'data-name': 'devise'
                                         }
                                     }) }}
                                 </div>
@@ -69,29 +72,32 @@
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
-                                data-field-save-field-param="plainPassword"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#password-value"
+                                data-field-save-field-param="devise"
+                                data-field-save-multiple-param="false"
+                                data-field-save-output-param="#devise-value"
                             >
                                 Modifier
                             </button>
                         </div>
+
+                        <span class="flash-message flash-message-error js-field-error d-none"></span>
                     </div>
 
                     {# fuseau horaire #}
-                    <div class="js-editable-field  formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                    <div class="js-editable-field formulaire my-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20">
                             <div class="w-100">
                                 <h3 class="mb-0">Fuseau horaire</h3>
 
-                                <p class="mt-12 mb-0 js-field-value" id="password-value">
-                                    (UTC+01:00) Paris
+                                <p class="mt-12 mb-0 js-field-value" id="fuseau-horaire-value">
+                                    {{ app.user.fuseauHoraire ? app.user.fuseauHoraire.nom : '***' }}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input w-75">
                                     {{ form_widget(form.fuseauHoraire, {
                                         attr: {
                                             class: 'form-control js-address-input',
+                                            'data-name': 'fuseauHoraire'
                                         }
                                     }) }}
                                 </div>
@@ -101,14 +107,18 @@
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
-                                data-field-save-field-param="plainPassword"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#password-value"
+                                data-field-save-field-param="fuseauHoraire"
+                                data-field-save-multiple-param="false"
+                                data-field-save-output-param="#fuseau-horaire-value"
                             >
                                 Modifier
                             </button>
                         </div>
+
+                        <span class="flash-message flash-message-error js-field-error d-none"></span>
                     </div>
+
+
                 </div>
             </div>
         </div>

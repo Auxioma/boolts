@@ -26,6 +26,12 @@ class FuseauHoraireRepository extends ServiceEntityRepository
         parent::__construct($registry, FuseauHoraire::class);
     }
 
+    public function createOrderedByUtcQueryBuilder()
+    {
+        return $this->createQueryBuilder('f')
+            ->orderBy('f.nom', 'ASC');
+    }
+
     //    /**
     //     * @return FuseauHoraire[] Returns an array of FuseauHoraire objects
     //     */
