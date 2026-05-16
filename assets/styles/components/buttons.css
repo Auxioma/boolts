@@ -79,3 +79,12 @@
     min-height: auto!important;
     padding: 4px 10px!important;
 }
+.btn-add-payment {
+    border-radius: 50px;
+    background: #5D00FF;
+    color: #FFF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px; /* 125% */
+}

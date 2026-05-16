@@ -1,4 +1,10 @@
 /* Margin Top / Bottom / Y */
+.mr-2 { margin-right:2px; }
+.ml-2 { margin-left:2px; }
+.mx-2 { margin-right:2px; margin-left:2px; }
+
+.mr-6 { margin-right:6px }
+
 .mt-8 {margin-top:8px; }
 .mb-8 { margin-bottom: 8px; }
 .my-8 { margin-top:8px; margin-bottom: 8px; }
@@ -47,6 +53,13 @@
 .mt-24 { margin-top: 24px; }
 .mb-24 { margin-bottom: 24px; }
 .my-24 { margin-top: 24px; margin-bottom: 24px; }
+
+.mt-25 { margin-top: 25px; }
+.mb-25 { margin-bottom: 25px; }
+.my-25 { margin-top:25px; margin-bottom: 25px; }
+.mr-25 { margin-right:25px }
+.ml-25 { margin-left:25px }
+.mx-25 { margin-right:25px; margin-left:25px }
 
 .mt-28 { margin-top: 28px; }
 .mb-28 { margin-bottom: 28px; }

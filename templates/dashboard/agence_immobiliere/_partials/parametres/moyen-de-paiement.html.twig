@@ -1,114 +1,205 @@
 <div class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres" id="cat4">
     <div class="row">
         <div class="col-10 mx-auto">
-            <h2 class="mb-0">Paiement A finir page forfait</h2>
+
+            <h2 class="mb-0">
+                Paiement A finir page forfait
+            </h2>
+
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
                 data-controller="field-save"
                 data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
                 data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
             >
+
                 <div class="connexion-securite">
-                    <h5 class="mb-32 mode-de-paiement-profile">Modes de paiement</h5>
+                    <h5 class="mb-32 mode-de-paiement-profile">
+                        Modes de paiement
+                    </h5>
 
-                    {# card 1 #}
-                    <div class="js-editable-field formulaire">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-                            <div class="w-100">
-                                <h3 class="mb-0">Mastercard 3640</h3>
-                                <p class="mt-12 mb-0 js-field-value" id="password-value">
-                                    Date d’expiration : 12/08/2027
-                                </p>
-                            </div>
+                    {% for i in 1..20 %}
+                        {% set cardType = cycle(['mastercard', 'visa'], loop.index0) %}
+                        {% set cardName = cardType == 'mastercard' ? 'Mastercard' : 'Visa' %}
+                        {% set cardNumber = random(1000, 9999) %}
+                        {% set month = '%02d'|format(random(1, 12)) %}
+                        {% set year = random(2027, 2032) %}
 
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button mr-20"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="plainPassword"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#password-value"
-                            >
-                                Modifier
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="plainPassword"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#password-value"
-                            >
-                                Supprimer
-                            </button>
-                        </div>
-                    </div>
-
-                    {# card 2 #}
-                    <div class="js-editable-field formulaire mt-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-                            <div class="w-100">
-                                <h3 class="mb-0">Mastercard 3640</h3>
-                                <p class="mt-12 mb-0 js-field-value" id="password-value">
-                                    Date d’expiration : 12/08/2027
-                                </p>
-                            </div>
-
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button mr-20"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="plainPassword"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#password-value"
-                            >
-                                Modifier
-                            </button>
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="plainPassword"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#password-value"
-                            >
-                                Supprimer
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end mt-32 mb-32">
-                        <button type="button" class="btn-add-payment">
-                            <span class="btn-plus">+</span>
-                                je ne fait rien, ne sais pas si bnt ou link
-                        </button>
-                    </div>
-
-                    <h5 class="my-32 mode-de-paiement-profile">Historique des paiements</h5>
-
-                    {% for i in 1..4 %}
-                        <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
+                        <div class="js-editable-field js-payment-line formulaire position-relative {{ not loop.first ? 'mt-20' }}">
                             <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                                <div class="w-100 d-flex align-items-start">
+                                    <img
+                                        src="{{ asset('images/paiement_card/' ~ cardType ~ '.svg') }}"
+                                        alt=""
+                                        class="mr-25"
+                                    >
+                                    <div>
+                                        <h3 class="mb-0">
+                                            {{ cardName }} {{ cardNumber }}
+                                        </h3>
+                                        <p class="mt-12 mb-0 js-field-value">
+                                            Date d’expiration : {{ month }}/{{ year }}
+                                        </p>
+                                    </div>
 
-                                <div>
-                                    <h3 class="mb-0">Mastercard 3640</h3>
-
-                                    <p class="mt-12 mb-0 js-field-value" id="password-value-{{ i }}">
-                                        Date d’expiration : 12/08/2027
-                                    </p>
                                 </div>
+                                <button
+                                    type="button"
+                                    class="btn btn-link p-0 text-dark text-decoration-none boolts-ellipsis-btn js-payment-menu-toggle"
+                                    aria-expanded="false"
+                                >
+                                    <i class="icon-ellipsis"></i>
+                                </button>
+                                <div class="position-absolute bg-white border rounded-8 overflow-hidden boolts-card-menu js-payment-menu d-none">
+                                    <button
+                                        type="button"
+                                        class="btn w-100 border-0 rounded-0 d-flex align-items-center gap-8 text-start boolts-card-menu-item py-8 px-16"
+                                    >
+                                        <i class="icon-credit-card mr-2"></i>
+                                        <span>
+                                            Définir par défaut
+                                        </span>
+                                    </button>
 
-                                <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
-                                    19.99€
-                                </p>
-
+                                    <button
+                                        type="button"
+                                        class="btn w-100 border-0 rounded-0 d-flex align-items-center gap-8 text-start boolts-card-menu-item boolts-card-menu-item-supprime py-8 px-16"
+                                    >
+                                        <i class="icon-trash-2 mr-2"></i>
+                                        <span>
+                                            Supprimer
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
-
-
                 </div>
+
+                <div class="d-flex justify-content-end mt-32 mb-32">
+                    <a type="button" class="btn-add-payment py-10 px-16">
+                        <span class="icon-plus mr-6"></span>
+                        Ajouter un mode de paiement
+                    </a>
+                </div>
+
+                <h5 class="my-32 mode-de-paiement-profile">
+                    Historique des paiements
+                </h5>
+
+                {% for i in 1..4 %}
+
+                    <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
+
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+
+                            <div>
+
+                                <h3 class="mb-0">
+                                    Mastercard {{ random(1000, 9999) }}
+                                </h3>
+
+                                <p class="mt-12 mb-0 js-field-value">
+                                    Date d’expiration :
+                                    {{ '%02d'|format(random(1, 12)) }}/{{ random(2027, 2032) }}
+                                </p>
+
+                            </div>
+
+                            <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
+                                19.99€
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
             </div>
+
         </div>
     </div>
 </div>
+
+<style>
+
+    .boolts-card-menu {
+        top: 45px;
+        right: 0;
+        z-index: 1000;
+        width: 172px;
+        border: 1px solid #E5E5E5 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .boolts-card-menu-item {
+        color: #0B0F14;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 20px;
+    }
+
+    .boolts-card-menu-item:hover {
+        background: #F5F5F5;
+    }
+
+    .boolts-ellipsis-btn {
+        position: relative;
+        z-index: 10;
+    }
+    .boolts-card-menu-item-supprime {
+        color: #DC3545!important;
+    }
+</style>
+
+<script>
+
+    document.addEventListener('click', function (event) {
+
+        const toggleButton = event.target.closest('.js-payment-menu-toggle');
+
+        document.querySelectorAll('.js-payment-line').forEach((line) => {
+
+            const menu = line.querySelector('.js-payment-menu');
+            const button = line.querySelector('.js-payment-menu-toggle');
+
+            if (!menu || !button) {
+                return;
+            }
+
+            if (!toggleButton || !line.contains(toggleButton)) {
+
+                menu.classList.add('d-none');
+
+                button.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        if (!toggleButton) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const line = toggleButton.closest('.js-payment-line');
+        const menu = line.querySelector('.js-payment-menu');
+
+        if (!menu) {
+            return;
+        }
+
+        const isOpen = !menu.classList.contains('d-none');
+
+        menu.classList.toggle('d-none', isOpen);
+
+        toggleButton.setAttribute(
+            'aria-expanded',
+            isOpen ? 'false' : 'true'
+        );
+    });
+
+</script>
