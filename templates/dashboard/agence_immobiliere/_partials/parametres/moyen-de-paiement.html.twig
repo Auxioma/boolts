@@ -18,19 +18,20 @@
                         Modes de paiement
                     </h5>
 
-                    {% for i in 1..20 %}
+                    {% for i in 1..5 %}
                         {% set cardType = cycle(['mastercard', 'visa'], loop.index0) %}
                         {% set cardName = cardType == 'mastercard' ? 'Mastercard' : 'Visa' %}
                         {% set cardNumber = random(1000, 9999) %}
                         {% set month = '%02d'|format(random(1, 12)) %}
                         {% set year = random(2027, 2032) %}
 
-                        <div class="js-editable-field js-payment-line formulaire position-relative {{ not loop.first ? 'mt-20' }}">
+                        <div class="js-payment-line formulaire position-relative {{ not loop.first ? 'mt-20' }}">
                             <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+
                                 <div class="w-100 d-flex align-items-start">
                                     <img
                                         src="{{ asset('images/paiement_card/' ~ cardType ~ '.svg') }}"
-                                        alt=""
+                                        alt="{{ cardName }}"
                                         class="mr-25"
                                     >
                                     <div>
@@ -41,35 +42,35 @@
                                             Date d’expiration : {{ month }}/{{ year }}
                                         </p>
                                     </div>
-
                                 </div>
-                                <button
-                                    type="button"
-                                    class="btn btn-link p-0 text-dark text-decoration-none boolts-ellipsis-btn js-payment-menu-toggle"
-                                    aria-expanded="false"
-                                >
-                                    <i class="icon-ellipsis"></i>
-                                </button>
-                                <div class="position-absolute bg-white border rounded-8 overflow-hidden boolts-card-menu js-payment-menu d-none">
+                                <div class="position-relative">
                                     <button
                                         type="button"
-                                        class="btn w-100 border-0 rounded-0 d-flex align-items-center gap-8 text-start boolts-card-menu-item py-8 px-16"
+                                        class="btn btn-link p-0 text-dark text-decoration-none boolts-ellipsis-btn js-payment-menu-toggle"
+                                        aria-expanded="false"
                                     >
-                                        <i class="icon-credit-card mr-2"></i>
-                                        <span>
-                                            Définir par défaut
-                                        </span>
+                                        <i class="icon-ellipsis"></i>
                                     </button>
-
-                                    <button
-                                        type="button"
-                                        class="btn w-100 border-0 rounded-0 d-flex align-items-center gap-8 text-start boolts-card-menu-item boolts-card-menu-item-supprime py-8 px-16"
-                                    >
-                                        <i class="icon-trash-2 mr-2"></i>
-                                        <span>
-                                            Supprimer
-                                        </span>
-                                    </button>
+                                    <div class="bg-white overflow-hidden boolts-card-menu js-payment-menu d-none">
+                                        <button
+                                            type="button"
+                                            class="btn w-100 border-0 rounded-0 d-flex align-items-center text-start boolts-card-menu-item py-8 px-16"
+                                        >
+                                            <i class="icon-credit-card mr-2"></i>
+                                            <span>
+                                                Définir par défaut
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="btn w-100 border-0 rounded-0 d-flex align-items-center text-start boolts-card-menu-item boolts-card-menu-item-supprime py-8 px-16"
+                                        >
+                                            <i class="icon-trash-2 mr-2"></i>
+                                            <span>
+                                                Supprimer
+                                            </span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -77,129 +78,357 @@
                 </div>
 
                 <div class="d-flex justify-content-end mt-32 mb-32">
-                    <a type="button" class="btn-add-payment py-10 px-16">
+                    <button
+                        type="button"
+                        class="btn-add-payment py-10 px-16 payment-open-btn"
+                        data-payment-modal-open
+                    >
                         <span class="icon-plus mr-6"></span>
+
                         Ajouter un mode de paiement
-                    </a>
+                    </button>
                 </div>
-
-                <h5 class="my-32 mode-de-paiement-profile">
-                    Historique des paiements
-                </h5>
-
-                {% for i in 1..4 %}
-
-                    <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
-
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-
-                            <div>
-
-                                <h3 class="mb-0">
-                                    Mastercard {{ random(1000, 9999) }}
-                                </h3>
-
-                                <p class="mt-12 mb-0 js-field-value">
-                                    Date d’expiration :
-                                    {{ '%02d'|format(random(1, 12)) }}/{{ random(2027, 2032) }}
-                                </p>
-
-                            </div>
-
-                            <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
-                                19.99€
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                {% endfor %}
-
             </div>
-
         </div>
     </div>
 </div>
+{# Modal mode ajouter une carte #}
+<div class="payment-modal-overlay" data-payment-modal>
+    <div class="payment-modal">
+        <button
+            type="button"
+            class="payment-modal-close"
+            data-payment-modal-close
+        >
+            <i class="icon-x"></i>
+        </button>
+        <div class="payment-modal-header">
+
+            <div>
+                <h2 class="payment-modal-title">
+                    Indiquez les informations de votre carte
+                </h2>
+            </div>
+        </div>
+
+        <form
+            method="post"
+            action="#"
+            class="payment-modal-form formulaire"
+        >
+
+            <div class="payment-form-group">
+                <label for="cardNumber" class="mb-16">
+                    Nom du titulaire
+                </label>
+
+                <input
+                    type="text"
+                    id="cardNumber"
+                    name="cardNumber"
+                    class="payment-form-control mb-16"
+                    placeholder="Saisissez votre nom"
+                    autocomplete="cc-number"
+                    maxlength="19"
+                >
+            </div>
+
+            <div class="payment-form-group">
+                <label for="cardNumber" class="mb-16">
+                    Numéro de carte
+                </label>
+
+                <input
+                    type="text"
+                    id="cardNumber"
+                    name="cardNumber"
+                    class="payment-form-control mb-16"
+                    placeholder="1234 1234 1234 1234"
+                    inputmode="numeric"
+                    autocomplete="cc-number"
+                    maxlength="19"
+                >
+            </div>
+
+            <div class="payment-form-row">
+                <div class="payment-form-group">
+                    <label for="cardExpiry" class="mb-16">
+                        Expiration
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cardExpiry"
+                        name="cardExpiry"
+                        class="payment-form-control mb-16"
+                        placeholder="MM/AA"
+                        inputmode="numeric"
+                        autocomplete="cc-exp"
+                        maxlength="5"
+                    >
+                </div>
+
+                <div class="payment-form-group">
+                    <label for="cardCvc" class="mb-16">
+                        Code de sécurité
+                    </label>
+
+                    <input
+                        type="text"
+                        id="cardCvc"
+                        name="cardCvc"
+                        class="payment-form-control mb-16"
+                        placeholder="CVV"
+                        inputmode="numeric"
+                        autocomplete="cc-csc"
+                        maxlength="4"
+                    >
+                </div>
+            </div>
+
+            <label class="payment-checkbox">
+                <input
+                    type="checkbox"
+                    name="defaultPayment"
+                    class="mr-12"
+                >
+                <span></span>
+
+                Définir comme moyen de paiement par défaut
+            </label>
+
+
+
+            <div class="payment-modal-actions">
+                <button
+                    type="button"
+                    class="payment-btn-cancel"
+                    data-payment-modal-close
+                >
+                    Annuler
+                </button>
+
+                <button
+                    type="submit"
+                    class="payment-btn-submit"
+                >
+                    Ajouter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.querySelector('[data-payment-modal]');
+        const openButtons = document.querySelectorAll('[data-payment-modal-open]');
+        const closeButtons = document.querySelectorAll('[data-payment-modal-close]');
+
+        if (!modal) {
+            return;
+        }
+
+        const openModal = () => {
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+        };
+
+        const closeModal = () => {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        };
+
+        openButtons.forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                openModal();
+            });
+        });
+
+        closeButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                closeModal();
+            });
+        });
+
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (
+                event.key === 'Escape'
+                && modal.classList.contains('is-open')
+            ) {
+                closeModal();
+            }
+        });
+
+        const cardNameInput = document.querySelector('#cardName');
+        const cardNumberInput = document.querySelector('#cardNumber');
+        const cardExpiryInput = document.querySelector('#cardExpiry');
+        const cardCvcInput = document.querySelector('#cardCvc');
+
+        const previewCardName = document.querySelector('#previewCardName');
+        const previewCardNumber = document.querySelector('#previewCardNumber');
+        const previewCardExpiry = document.querySelector('#previewCardExpiry');
+
+        if (cardNameInput) {
+            cardNameInput.addEventListener('input', () => {
+                previewCardName.textContent =
+                    cardNameInput.value || 'Guillaume Devaux';
+            });
+        }
+
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', () => {
+                let value = cardNumberInput.value
+                    .replace(/\D/g, '')
+                    .slice(0, 16);
+
+                value = value
+                    .replace(/(.{4})/g, '$1 ')
+                    .trim();
+
+                cardNumberInput.value = value;
+
+                previewCardNumber.textContent =
+                    value || '•••• •••• •••• ••••';
+            });
+        }
+
+        if (cardExpiryInput) {
+            cardExpiryInput.addEventListener('input', () => {
+                let value = cardExpiryInput.value
+                    .replace(/\D/g, '')
+                    .slice(0, 4);
+
+                if (value.length >= 3) {
+                    value =
+                        value.slice(0, 2)
+                        + '/'
+                        + value.slice(2);
+                }
+
+                cardExpiryInput.value = value;
+
+                previewCardExpiry.textContent =
+                    value || 'MM/AA';
+            });
+        }
+
+        if (cardCvcInput) {
+            cardCvcInput.addEventListener('input', () => {
+                cardCvcInput.value = cardCvcInput.value
+                    .replace(/\D/g, '')
+                    .slice(0, 4);
+            });
+        }
+    });
+</script>
+
+
 
 <style>
-
     .boolts-card-menu {
-        top: 45px;
+        position: absolute;
+        top: 42px;
         right: 0;
-        z-index: 1000;
-        width: 172px;
-        border: 1px solid #E5E5E5 !important;
-        border-radius: 16px !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        z-index: 9999;
+        width: 210px;
+        border: 1px solid #E5E5E5;
+        border-radius: 16px;
+        background: #FFFFFF;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     }
 
     .boolts-card-menu-item {
+        width: 100%;
+        gap: 8px;
         color: #0B0F14;
         font-size: 14px;
-        font-style: normal;
         font-weight: 500;
         line-height: 20px;
+        background: transparent;
+        transition: background 0.2s ease;
     }
 
     .boolts-card-menu-item:hover {
         background: #F5F5F5;
     }
 
+    .boolts-card-menu-item-supprime {
+        color: #DC3545 !important;
+    }
+
     .boolts-ellipsis-btn {
         position: relative;
-        z-index: 10;
+        z-index: 20;
     }
-    .boolts-card-menu-item-supprime {
-        color: #DC3545!important;
-    }
+
 </style>
 
 <script>
 
-    document.addEventListener('click', function (event) {
+    document.addEventListener('DOMContentLoaded', function () {
 
-        const toggleButton = event.target.closest('.js-payment-menu-toggle');
+        const toggleButtons = document.querySelectorAll('.js-payment-menu-toggle');
 
-        document.querySelectorAll('.js-payment-line').forEach((line) => {
+        toggleButtons.forEach(function (button) {
 
-            const menu = line.querySelector('.js-payment-menu');
-            const button = line.querySelector('.js-payment-menu-toggle');
+            button.addEventListener('click', function (event) {
 
-            if (!menu || !button) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const currentLine = button.closest('.js-payment-line');
+
+                const currentMenu = currentLine.querySelector('.js-payment-menu');
+
+                if (!currentMenu) {
+                    return;
+                }
+
+                document.querySelectorAll('.js-payment-menu').forEach(function (menu) {
+
+                    if (menu !== currentMenu) {
+                        menu.classList.add('d-none');
+                    }
+                });
+
+                const isOpen = !currentMenu.classList.contains('d-none');
+
+                currentMenu.classList.toggle('d-none', isOpen);
+
+                button.setAttribute(
+                    'aria-expanded',
+                    isOpen ? 'false' : 'true'
+                );
+            });
+        });
+
+        document.addEventListener('click', function (event) {
+
+            if (
+                event.target.closest('.js-payment-menu') ||
+                event.target.closest('.js-payment-menu-toggle')
+            ) {
                 return;
             }
 
-            if (!toggleButton || !line.contains(toggleButton)) {
-
+            document.querySelectorAll('.js-payment-menu').forEach(function (menu) {
                 menu.classList.add('d-none');
+            });
 
+            document.querySelectorAll('.js-payment-menu-toggle').forEach(function (button) {
                 button.setAttribute('aria-expanded', 'false');
-            }
+            });
         });
 
-        if (!toggleButton) {
-            return;
-        }
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        const line = toggleButton.closest('.js-payment-line');
-        const menu = line.querySelector('.js-payment-menu');
-
-        if (!menu) {
-            return;
-        }
-
-        const isOpen = !menu.classList.contains('d-none');
-
-        menu.classList.toggle('d-none', isOpen);
-
-        toggleButton.setAttribute(
-            'aria-expanded',
-            isOpen ? 'false' : 'true'
-        );
     });
 
 </script>

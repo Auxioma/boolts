@@ -30,7 +30,8 @@
     color: var(--color-text);
 }
 
-.btn-submit {
+.btn-submit,
+.payment-btn-submit {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -52,7 +53,8 @@
 }
 
 .btn-bg-border-blue,
-.btn-change-image {
+.btn-change-image,
+.payment-btn-cancel {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -87,4 +89,10 @@
     font-style: normal;
     font-weight: 700;
     line-height: 20px; /* 125% */
+}
+
+.icon-x:before {
+    font-size: 16px;
+    position: absolute;
+    top:7px;
 }
