@@ -292,7 +292,7 @@ export default class extends Controller {
         }
 
         const labels = {
-            editing: 'Fermer',
+            editing: 'Annuler',
             closed: 'Modifier',
             save: 'Enregistrer'
         };

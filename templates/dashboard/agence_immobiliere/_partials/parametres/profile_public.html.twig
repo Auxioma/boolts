@@ -137,9 +137,9 @@
                         <div class="js-editable-field">
                             <div class="w-100">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="js-field-value" id="entreprise-public-value">
-                                        <h2 class="profile-public-name mb-0">
-                                            {{ app.user.entreprise ?? 'Nom de l’agence' }}
+                                    <div class="js-field-value">
+                                        <h2 class="profile-public-name mb-0" id="entreprise-public-value">
+                                            {{ app.user.entreprise ?? 'Définissez le nom de votre agence' }}
                                         </h2>
                                     </div>
 
@@ -183,7 +183,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="js-field-value" id="description-public-value">
                                         <p class="profile-public-description mb-0">
-                                            {{ app.user.description ?? 'Agence immobilière spécialisée dans l’achat, la vente et la location de biens. Nous accompagnons chaque client avec transparence, réactivité et expertise pour concrétiser tous les projets immobiliers, du premier contact jusqu’à signature.' }}
+                                            {{ app.user.description ?? 'Rédigez une courte description ici.' }}
                                         </p>
                                     </div>
 
@@ -247,7 +247,7 @@
                                             , {{ app.user.paysContact }}
                                         {% endif %}
                                     {% else %}
-                                        106 rue de Reims, 76000 Rouen
+                                        Saisissez votre adresse postale
                                     {% endif %}
                                 </p>
 

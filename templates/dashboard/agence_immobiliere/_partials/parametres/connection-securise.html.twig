@@ -16,15 +16,21 @@
 
                     {# Password #}
                     <div class="js-editable-field formulaire">
+
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+
                             <div class="w-100">
-                                <h3 class="mb-0">Mot de passe</h3>
+
+                                <h3 class="mb-0">
+                                    Mot de passe
+                                </h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="password-value">
                                     *****************
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input w-75">
+
                                     {{ form_widget(form.plainPassword.first, {
                                         attr: {
                                             id: 'plain-password-first',
@@ -42,7 +48,9 @@
                                     }) }}
 
                                     <span class="flash-message flash-message-error d-none js-field-error"></span>
+
                                 </div>
+
                             </div>
 
                             <button
@@ -55,115 +63,152 @@
                             >
                                 Modifier
                             </button>
+
                         </div>
+
                     </div>
 
-                    {# Authentification à deux facteurs #}
-                    <div class="formulaire pt-20">
+                    {# 2FA #}
+                    <div class="formulaire js-2fa-wrapper">
 
-                        <div class="d-flex justify-content-between align-items-center pb-20">
-                            <h3 class="mb-0">A finir en fonction des fonctionnalité a faire + coté authentification</h3>
+                        <div class="d-flex justify-content-between align-items-center pt-32">
+
+                            <h3 class="mb-0">
+                                Authentification à deux facteurs
+                            </h3>
 
                             <div class="form-check form-switch m-0">
-                                <input
-                                    type="checkbox"
-                                    class="form-check-input js-two-factor-switch"
-                                    role="switch"
-                                    id="two-factor-switch"
 
-                                >
+                                <label class="contenue-des-page-des-parametres-switch">
+
+                                    <input
+                                        type="checkbox"
+                                        id="two-factor-switch"
+                                        class="js-two-factor-switch"
+                                        autocomplete="off"
+                                    >
+
+                                    <span class="contenue-des-page-des-parametres-switch-slider"></span>
+
+                                </label>
+
                             </div>
+
                         </div>
 
                         <div class="d-none js-two-factor-content">
 
-                            <div class="d-flex justify-content-between align-items-start py-20">
-
-                                <div>
-                                    <h3 class="mb-0">Code secret</h3>
-
+                            {# Code secret #}
+                            <div class="d-flex justify-content-between align-items-start pt-32">
+                                <div class="w-100">
+                                    <h3 class="mb-0">
+                                        Adresse e-mail
+                                    </h3>
                                     <p class="mt-12 mb-0 js-code-secret-date">
-                                        Dernière mise à jour il y a 4 ans
+                                        {{ app.user.email }}
                                     </p>
-
-                                    <input
-                                        type="text"
-                                        class="form-control mt-12 d-none js-code-secret-input"
-                                        placeholder="Entrez votre code secret"
-                                    >
                                 </div>
-
-                                <button
-                                    type="button"
-                                    class="btn btn-link p-0 text-decoration-none btn-buttom-agence js-code-secret-button"
-                                >
-                                    Modifier
-                                </button>
-
                             </div>
-
-                            <div class="d-flex justify-content-between align-items-start py-20">
-
-                                <div>
-                                    <h3 class="mb-0">Question de sécurité</h3>
-
-                                    <p class="mt-12 mb-0 js-security-question-date">
-                                        Dernière mise à jour il y a 4 ans
-                                    </p>
-
-                                    <input
-                                        type="text"
-                                        class="form-control mt-12 d-none js-security-question-input"
-                                        placeholder="Entrez votre question de sécurité"
-                                    >
-                                </div>
-
-                                <button
-                                    type="button"
-                                    class="btn btn-link p-0 text-decoration-none btn-buttom-agence js-security-question-button"
-                                >
-                                    Modifier
-                                </button>
-
-                            </div>
-
                         </div>
-
                     </div>
-
                 </div>
 
             </div>
 
         </div>
     </div>
+
 </div>
 
 <script>
-    const twoFactorSwitch = document.querySelector('.js-two-factor-switch');
-    const twoFactorContent = document.querySelector('.js-two-factor-content');
+    document.addEventListener('DOMContentLoaded', function () {
 
-    twoFactorSwitch.addEventListener('change', function () {
-        twoFactorContent.classList.toggle('d-none', !this.checked);
-    });
+        /*
+        |--------------------------------------------------------------------------
+        | TOGGLE 2FA
+        |--------------------------------------------------------------------------
+        */
 
-    const codeSecretButton = document.querySelector('.js-code-secret-button');
-    const codeSecretDate = document.querySelector('.js-code-secret-date');
-    const codeSecretInput = document.querySelector('.js-code-secret-input');
+        const twoFactorSwitch = document.querySelector('.js-two-factor-switch');
+        const twoFactorContent = document.querySelector('.js-two-factor-content');
 
-    codeSecretButton.addEventListener('click', function () {
-        codeSecretDate.classList.add('d-none');
-        codeSecretInput.classList.remove('d-none');
-        codeSecretInput.focus();
-    });
+        if (twoFactorSwitch && twoFactorContent) {
 
-    const securityQuestionButton = document.querySelector('.js-security-question-button');
-    const securityQuestionDate = document.querySelector('.js-security-question-date');
-    const securityQuestionInput = document.querySelector('.js-security-question-input');
+            const toggle2FA = () => {
 
-    securityQuestionButton.addEventListener('click', function () {
-        securityQuestionDate.classList.add('d-none');
-        securityQuestionInput.classList.remove('d-none');
-        securityQuestionInput.focus();
+                if (twoFactorSwitch.checked) {
+
+                    twoFactorContent.classList.remove('d-none');
+
+                } else {
+
+                    twoFactorContent.classList.add('d-none');
+
+                }
+
+            };
+
+            toggle2FA();
+
+            twoFactorSwitch.addEventListener('change', toggle2FA);
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CODE SECRET
+        |--------------------------------------------------------------------------
+        */
+
+        const codeSecretButton = document.querySelector('.js-code-secret-button');
+        const codeSecretDate = document.querySelector('.js-code-secret-date');
+        const codeSecretInput = document.querySelector('.js-code-secret-input');
+
+        if (
+            codeSecretButton &&
+            codeSecretDate &&
+            codeSecretInput
+        ) {
+
+            codeSecretButton.addEventListener('click', function () {
+
+                codeSecretDate.classList.add('d-none');
+
+                codeSecretInput.classList.remove('d-none');
+
+                codeSecretInput.focus();
+
+            });
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | QUESTION DE SECURITE
+        |--------------------------------------------------------------------------
+        */
+
+        const securityQuestionButton = document.querySelector('.js-security-question-button');
+        const securityQuestionDate = document.querySelector('.js-security-question-date');
+        const securityQuestionInput = document.querySelector('.js-security-question-input');
+
+        if (
+            securityQuestionButton &&
+            securityQuestionDate &&
+            securityQuestionInput
+        ) {
+
+            securityQuestionButton.addEventListener('click', function () {
+
+                securityQuestionDate.classList.add('d-none');
+
+                securityQuestionInput.classList.remove('d-none');
+
+                securityQuestionInput.focus();
+
+            });
+
+        }
+
     });
 </script>

@@ -61,7 +61,7 @@
     color: #858789;
     font-size: 14px;
     font-style: normal;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 16px;
 }
 
@@ -560,3 +560,48 @@
     color: #DC3545!important;
 }
 
+.boolts-card-menu {
+    position: absolute;
+    top: 42px;
+    right: 0;
+    z-index: 9999;
+    width: 210px;
+    border: 1px solid #E5E5E5;
+    border-radius: 16px;
+    background: #FFFFFF;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.boolts-card-menu-item {
+    width: 100%;
+    gap: 8px;
+    color: #0B0F14;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+
+.boolts-card-menu-item:hover {
+    background: #F5F5F5;
+}
+
+.boolts-card-menu-item-supprime {
+    color: #DC3545 !important;
+}
+
+.boolts-ellipsis-btn {
+    position: relative;
+    z-index: 20;
+}
+
+.icon-ellipsis:before {
+    font-size: 16px;
+}
+.icon-credit:before,
+.icon-trash {
+    font-size:16px;
+    top: 2px;
+    position: relative;
+}
