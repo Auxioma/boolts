@@ -1,0 +1,12 @@
+# See the configuration reference at https://symfony.com/bundles/SchebTwoFactorBundle/6.x/configuration.html
+scheb_two_factor:
+    security_tokens:
+        - Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken
+        - Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken
+    email:
+        enabled: true
+        sender_email: noreply@boolts.com
+        sender_name: "Boolts"
+        digits: 6
+        template: 'authentification/double_authentification/form.html.twig'
+        mailer: app.2fa_mailer

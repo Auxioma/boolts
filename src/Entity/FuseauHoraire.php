@@ -16,6 +16,9 @@ class FuseauHoraire
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $utc = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -51,5 +54,17 @@ class FuseauHoraire
     public function __toString(): string
     {
         return $this->nom ?? '';
+    }
+
+    public function getUtc(): ?string
+    {
+        return $this->utc;
+    }
+
+    public function setUtc(string $utc): static
+    {
+        $this->utc = $utc;
+
+        return $this;
     }
 }

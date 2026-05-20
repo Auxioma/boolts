@@ -30,6 +30,9 @@ class Pays
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'pays')]
     private Collection $users;
 
+    #[ORM\ManyToOne(inversedBy: 'pays')]
+    private ?Devise $devise = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -90,6 +93,18 @@ class Pays
                 $user->setPays(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDevise(): ?Devise
+    {
+        return $this->devise;
+    }
+
+    public function setDevise(?Devise $devise): static
+    {
+        $this->devise = $devise;
 
         return $this;
     }

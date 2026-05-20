@@ -24,97 +24,12 @@
         {% block body %}{% endblock %}
         {{ include('composant/_footer/_footer.html.twig') }}
 
-    <script>
-        console.log({
-            // Langue
-            language: navigator.language,
-            languages: navigator.languages,
-
-            // Navigateur
-            appName: navigator.appName,
-            appVersion: navigator.appVersion,
-            userAgent: navigator.userAgent,
-            platform: navigator.platform,
-            vendor: navigator.vendor,
-
-            // CPU / RAM
-            hardwareConcurrency: navigator.hardwareConcurrency,
-            deviceMemory: navigator.deviceMemory,
-
-            // Réseau
-            online: navigator.onLine,
-
-            // Cookies
-            cookiesEnabled: navigator.cookieEnabled,
-
-            // Taille écran
-            screenWidth: screen.width,
-            screenHeight: screen.height,
-            availWidth: screen.availWidth,
-            availHeight: screen.availHeight,
-            colorDepth: screen.colorDepth,
-            pixelDepth: screen.pixelDepth,
-
-            // Fenêtre
-            innerWidth: window.innerWidth,
-            innerHeight: window.innerHeight,
-
-            // Fuseau horaire
-            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-
-            // Pays approximatif
-            country: navigator.language.split('-')[1],
-
-            // URL
-            currentUrl: window.location.href,
-            pathname: window.location.pathname,
-            hostname: window.location.hostname,
-
-            // Historique
-            historyLength: history.length,
-
-            // Dark mode
-            darkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
-
-            // Touch screen
-            touchScreen: navigator.maxTouchPoints > 0,
-
-            // Langue système
-            browserLanguage: navigator.browserLanguage || null,
-
-            // Referrer
-            referrer: document.referrer,
-
-            // Local storage
-            localStorage: typeof localStorage !== 'undefined',
-
-            // Session storage
-            sessionStorage: typeof sessionStorage !== 'undefined',
-
-            // PDF viewer
-            pdfViewerEnabled: navigator.pdfViewerEnabled,
-
-            // Géolocalisation disponible
-            geolocation: 'geolocation' in navigator,
-
-            // Bluetooth
-            bluetooth: 'bluetooth' in navigator,
-
-            // USB
-            usb: 'usb' in navigator,
-
-            // Clipboard
-            clipboard: 'clipboard' in navigator,
-
-            // Webcam / micro
-            mediaDevices: 'mediaDevices' in navigator,
-
-            // Nombre d’écrans
-            screenOrientation: screen.orientation?.type,
-
-            // Mode plein écran
-            fullscreenEnabled: document.fullscreenEnabled,
-        });
-    </script>
+        {% if app.user %}
+            <div
+                data-controller="browser-preferences"
+                data-browser-preferences-url-value="{{ path('app_user_browser_preferences') }}"
+                data-browser-preferences-token-value="{{ csrf_token('browser_preferences') }}"
+            ></div>
+        {% endif %}
     </body>
 </html>

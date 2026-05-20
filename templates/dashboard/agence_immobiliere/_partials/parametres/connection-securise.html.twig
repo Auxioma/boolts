@@ -68,7 +68,7 @@
 
                     </div>
 
-                    {# 2FA #}
+                    {# DoubleAuthentification #}
                     <div class="formulaire js-2fa-wrapper">
 
                         <div class="d-flex justify-content-between align-items-center pt-32">
@@ -121,94 +121,58 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggle = document.getElementById('two-factor-switch');
+        const content = document.querySelector('.js-two-factor-content');
 
-        /*
-        |--------------------------------------------------------------------------
-        | TOGGLE 2FA
-        |--------------------------------------------------------------------------
-        */
+        const refreshUI = (enabled) => {
+            toggle.checked = !!enabled;
+            content.classList.toggle('d-none', !enabled);
+        };
 
-        const twoFactorSwitch = document.querySelector('.js-two-factor-switch');
-        const twoFactorContent = document.querySelector('.js-two-factor-content');
+        // État initial
+        fetch('/account/2fa/status', { credentials: 'same-origin' })
+            .then(r => r.ok ? r.json() : Promise.reject(r))
+            .then(d => refreshUI(d.enabled))
+            .catch(() => { /* silencieux */ });
 
-        if (twoFactorSwitch && twoFactorContent) {
+        toggle.addEventListener('change', async () => {
+            const desired = toggle.checked;
 
-            const toggle2FA = () => {
+            try {
+                const r = await fetch('/account/2fa/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        // Décommente si CSRF requis côté serveur:
+                        // 'X-CSRF-TOKEN': '{{ csrf_token("toggle_2fa") }}'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ enabled: desired })
+                });
 
-                if (twoFactorSwitch.checked) {
+                const text = await r.text();
+                let data;
+                try { data = JSON.parse(text); } catch { data = text; }
 
-                    twoFactorContent.classList.remove('d-none');
-
-                } else {
-
-                    twoFactorContent.classList.add('d-none');
-
+                if (!r.ok) {
+                    // Si redirection/401 → probablement page login
+                    console.error('Toggle 2FA error', r.status, data);
+                    toggle.checked = !desired;
+                    return;
                 }
 
-            };
-
-            toggle2FA();
-
-            twoFactorSwitch.addEventListener('change', toggle2FA);
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | CODE SECRET
-        |--------------------------------------------------------------------------
-        */
-
-        const codeSecretButton = document.querySelector('.js-code-secret-button');
-        const codeSecretDate = document.querySelector('.js-code-secret-date');
-        const codeSecretInput = document.querySelector('.js-code-secret-input');
-
-        if (
-            codeSecretButton &&
-            codeSecretDate &&
-            codeSecretInput
-        ) {
-
-            codeSecretButton.addEventListener('click', function () {
-
-                codeSecretDate.classList.add('d-none');
-
-                codeSecretInput.classList.remove('d-none');
-
-                codeSecretInput.focus();
-
-            });
-
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | QUESTION DE SECURITE
-        |--------------------------------------------------------------------------
-        */
-
-        const securityQuestionButton = document.querySelector('.js-security-question-button');
-        const securityQuestionDate = document.querySelector('.js-security-question-date');
-        const securityQuestionInput = document.querySelector('.js-security-question-input');
-
-        if (
-            securityQuestionButton &&
-            securityQuestionDate &&
-            securityQuestionInput
-        ) {
-
-            securityQuestionButton.addEventListener('click', function () {
-
-                securityQuestionDate.classList.add('d-none');
-
-                securityQuestionInput.classList.remove('d-none');
-
-                securityQuestionInput.focus();
-
-            });
-
-        }
-
+                if (data && typeof data.enabled !== 'undefined') {
+                    refreshUI(data.enabled);
+                } else {
+                    // Réponse inattendue
+                    toggle.checked = !desired;
+                }
+            } catch (e) {
+                toggle.checked = !desired;
+            }
+        });
     });
 </script>
+

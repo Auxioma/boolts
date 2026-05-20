@@ -8,6 +8,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.languages: ['fr', 'en']
+    app.2fa.from_email: 'noreply@boolts.com'
+    app.2fa.from_name: 'Boolts'
 
 services:
     # default configuration for services in *this* file
@@ -25,3 +27,12 @@ services:
     App\Service\DatabaseTranslator:
         decorates: 'translator'
         arguments: ['@.inner', '@App\Repository\TranslationRepository']
+
+    App\Mailer\TwoFactorEmailMailer:
+        arguments:
+            $mailer: '@mailer'
+            $fromEmail: '%app.2fa.from_email%'
+            $fromName: '%app.2fa.from_name%'
+        public: true
+        tags: ['scheb_two_factor.auth_code_mailer'] # ou alias ci-dessous
+    app.2fa_mailer: '@App\Mailer\TwoFactorEmailMailer'

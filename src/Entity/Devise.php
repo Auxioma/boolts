@@ -41,9 +41,16 @@ class Devise
     #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'devise')]
     private Collection $devise;
 
+    /**
+     * @var Collection<int, Pays>
+     */
+    #[ORM\OneToMany(targetEntity: Pays::class, mappedBy: 'devise')]
+    private Collection $pays;
+
     public function __construct()
     {
         $this->devise = new ArrayCollection();
+        $this->pays = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -99,6 +106,36 @@ class Devise
             // set the owning side to null (unless already changed)
             if ($devise->getDevise() === $this) {
                 $devise->setDevise(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Pays>
+     */
+    public function getPays(): Collection
+    {
+        return $this->pays;
+    }
+
+    public function addPay(Pays $pay): static
+    {
+        if (!$this->pays->contains($pay)) {
+            $this->pays->add($pay);
+            $pay->setDevise($this);
+        }
+
+        return $this;
+    }
+
+    public function removePay(Pays $pay): static
+    {
+        if ($this->pays->removeElement($pay)) {
+            // set the owning side to null (unless already changed)
+            if ($pay->getDevise() === $this) {
+                $pay->setDevise(null);
             }
         }
 

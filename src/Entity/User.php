@@ -1,15 +1,5 @@
 <?php
 
-/**
- * Copyright(c) 2026 Boolts (https://boolts.com)
- *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
- * Tous droits réservés.
- *
- * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
- */
-
 namespace App\Entity;
 
 use App\Entity\Traits\CreatedAtTraits;
@@ -19,43 +9,65 @@ use App\Entity\Traits\UpdatedAtTraits;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`utilisateur`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\Index(name: 'IDX_USER_VERIFIED', columns: ['is_verified'])]
-#[ORM\Table(name: '`utilisateur`')]
 #[Vich\Uploadable]
 #[ORM\HasLifecycleCallbacks]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Traits de dates
+    |--------------------------------------------------------------------------
+    */
+
     use CreatedAtTraits;
     use DeletedAtTraits;
     use LastLoginAtTraits;
     use UpdatedAtTraits;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Identifiant principal
+    |--------------------------------------------------------------------------
+    */
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 250)]
-    private ?string $email;
+    /*
+    |--------------------------------------------------------------------------
+    | Authentification Symfony
+    |--------------------------------------------------------------------------
+    */
 
-    /**
-     * @var list<string> The user roles
-     */
+    #[ORM\Column(length: 250)]
+    private ?string $email = null;
+
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $password = null;
+
+    #[ORM\Column]
+    private bool $isVerified = false;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Double authentification par email
+    |--------------------------------------------------------------------------
+    */
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $emailAuthCode = null;
@@ -69,14 +81,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(options: ['default' => 0])]
     private int $failedVerificationAttempts = 0;
 
-    #[ORM\Column]
-    private bool $isVerified = false;
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $emailAuthEnabled = false;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Informations personnelles
+    |--------------------------------------------------------------------------
+    */
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prenom = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $telephone = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Avatar utilisateur
+    |--------------------------------------------------------------------------
+    */
 
     #[Vich\UploadableField(mapping: 'avatars', fileNameProperty: 'imageName', size: 'imageSize')]
     private ?File $imageFile = null;
@@ -87,32 +114,44 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
 
+    /*
+    |--------------------------------------------------------------------------
+    | Adresse utilisateur
+    |--------------------------------------------------------------------------
+    */
+
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Pays $pays = null;
-
-    #[ORM\Column(length: 20, nullable: true)]
-    private ?string $telephone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresse = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $AdresseComplement = null;
+    private ?string $adresseComplement = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $Ville = null;
+    private ?string $ville = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $Pays = null;
+    /*
+    |--------------------------------------------------------------------------
+    | Informations professionnelles
+    |--------------------------------------------------------------------------
+    */
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $entreprise = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Informations de contact public
+    |--------------------------------------------------------------------------
+    */
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $emailContact = null;
@@ -130,7 +169,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $villeContact = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $PaysContact = null;
+    private ?string $paysContact = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresseComplementContact = null;
@@ -138,19 +177,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsApp = null;
 
-    #[ORM\ManyToOne(inversedBy: 'langue')]
+    /*
+    |--------------------------------------------------------------------------
+    | Préférences utilisateur
+    |--------------------------------------------------------------------------
+    */
+
+    #[ORM\ManyToOne]
     private ?Langues $langues = null;
 
-    #[ORM\ManyToOne(inversedBy: 'devise')]
+    #[ORM\ManyToOne]
     private ?Devise $devise = null;
 
-    #[ORM\ManyToOne(inversedBy: 'FuseauHoraire')]
+    #[ORM\ManyToOne]
     private ?FuseauHoraire $fuseauHoraire = null;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Identifiant
+    |--------------------------------------------------------------------------
+    */
 
     public function getId(): ?int
     {
         return $this->id;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Authentification Symfony
+    |--------------------------------------------------------------------------
+    */
 
     public function getEmail(): ?string
     {
@@ -159,36 +216,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setEmail(string $email): static
     {
-        $this->email = mb_strtolower(mb_trim($email));
+        $this->email = mb_strtolower(trim($email));
 
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
-    /**
-     * @see UserInterface
-     */
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
-        return array_unique($roles);
+        return array_values(array_unique($roles));
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -196,52 +241,73 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see PasswordAuthenticatedUserInterface
-     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(?string $password): static
     {
         $this->password = $password;
 
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
-public function __serialize(): array
-{
-    return [
-        'id' => $this->id,
-        'email' => $this->email,
-        'roles' => $this->roles,
-        'password' => hash('crc32c', $this->password),
-    ];
-}
-
-public function __unserialize(array $data): void
-{
-    $this->id = $data['id'] ?? null;
-    $this->email = $data['email'] ?? null;
-    $this->roles = $data['roles'] ?? [];
-    $this->password = $data['password'] ?? null;
-}
-
-    public function getEmailAuthCode(): ?string
+    public function eraseCredentials(): void
     {
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'roles' => $this->roles,
+            'password' => $this->password !== null ? hash('crc32c', $this->password) : null,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->id = $data['id'] ?? null;
+        $this->email = $data['email'] ?? null;
+        $this->roles = $data['roles'] ?? [];
+        $this->password = $data['password'] ?? null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Double authentification email
+    |--------------------------------------------------------------------------
+    */
+
+    public function isEmailAuthEnabled(): bool
+    {
+        return $this->emailAuthEnabled;
+    }
+    public function setEmailAuthEnabled(bool $enabled): static
+    {
+        $this->emailAuthEnabled = $enabled;
+        return $this;
+    }
+
+    public function getEmailAuthRecipient(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getEmailAuthCode(): string
+    {
+        if ($this->emailAuthCode === null) {
+            throw new \LogicException('The email authentication code was not set.');
+        }
+
         return $this->emailAuthCode;
     }
 
-    public function setEmailAuthCode(?string $emailAuthCode): static
+    public function setEmailAuthCode(string $authCode): void
     {
-        $this->emailAuthCode = $emailAuthCode;
-
-        return $this;
+        $this->emailAuthCode = $authCode;
     }
 
     public function getEmailAuthCodeExpiresAt(): ?\DateTimeImmutable
@@ -297,6 +363,12 @@ public function __unserialize(array $data): void
         return $this;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Vérification du compte
+    |--------------------------------------------------------------------------
+    */
+
     public function isVerified(): bool
     {
         return $this->isVerified;
@@ -308,6 +380,12 @@ public function __unserialize(array $data): void
 
         return $this;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Informations personnelles
+    |--------------------------------------------------------------------------
+    */
 
     public function getNom(): ?string
     {
@@ -333,13 +411,29 @@ public function __unserialize(array $data): void
         return $this;
     }
 
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Avatar utilisateur
+    |--------------------------------------------------------------------------
+    */
+
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;
 
-        if (null !== $imageFile) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
+        if ($imageFile !== null) {
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
@@ -369,6 +463,12 @@ public function __unserialize(array $data): void
         return $this->imageSize;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Adresse utilisateur
+    |--------------------------------------------------------------------------
+    */
+
     public function getPays(): ?Pays
     {
         return $this->pays;
@@ -381,24 +481,12 @@ public function __unserialize(array $data): void
         return $this;
     }
 
-    public function getTelephone(): ?string
-    {
-        return $this->telephone;
-    }
-
-    public function setTelephone(?string $telephone): static
-    {
-        $this->telephone = $telephone;
-
-        return $this;
-    }
-
     public function getAdresse(): ?string
     {
         return $this->adresse;
     }
 
-    public function setAdresse(string $adresse): static
+    public function setAdresse(?string $adresse): static
     {
         $this->adresse = $adresse;
 
@@ -407,12 +495,12 @@ public function __unserialize(array $data): void
 
     public function getAdresseComplement(): ?string
     {
-        return $this->AdresseComplement;
+        return $this->adresseComplement;
     }
 
-    public function setAdresseComplement(?string $AdresseComplement): static
+    public function setAdresseComplement(?string $adresseComplement): static
     {
-        $this->AdresseComplement = $AdresseComplement;
+        $this->adresseComplement = $adresseComplement;
 
         return $this;
     }
@@ -431,22 +519,28 @@ public function __unserialize(array $data): void
 
     public function getVille(): ?string
     {
-        return $this->Ville;
+        return $this->ville;
     }
 
-    public function setVille(?string $Ville): static
+    public function setVille(?string $ville): static
     {
-        $this->Ville = $Ville;
+        $this->ville = $ville;
 
         return $this;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Informations professionnelles
+    |--------------------------------------------------------------------------
+    */
 
     public function getEntreprise(): ?string
     {
         return $this->entreprise;
     }
 
-    public function setEntreprise(string $entreprise): static
+    public function setEntreprise(?string $entreprise): static
     {
         $this->entreprise = $entreprise;
 
@@ -458,12 +552,18 @@ public function __unserialize(array $data): void
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(?string $description): static
     {
         $this->description = $description;
 
         return $this;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Informations de contact public
+    |--------------------------------------------------------------------------
+    */
 
     public function getEmailContact(): ?string
     {
@@ -527,12 +627,12 @@ public function __unserialize(array $data): void
 
     public function getPaysContact(): ?string
     {
-        return $this->PaysContact;
+        return $this->paysContact;
     }
 
-    public function setPaysContact(?string $PaysContact): static
+    public function setPaysContact(?string $paysContact): static
     {
-        $this->PaysContact = $PaysContact;
+        $this->paysContact = $paysContact;
 
         return $this;
     }
@@ -560,6 +660,12 @@ public function __unserialize(array $data): void
 
         return $this;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Getters / Setters - Préférences utilisateur
+    |--------------------------------------------------------------------------
+    */
 
     public function getLangues(): ?Langues
     {

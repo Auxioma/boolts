@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/dashboard', name: 'agence_immobiliere_')]
+#[Route('/pro/dashboard', name: 'agence_immobiliere_')]
 final class DashboardController extends AbstractController
 {
     #[Route('/', name: 'dashboard')]

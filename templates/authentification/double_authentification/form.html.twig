@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Two Step Verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        html {
+            --main-color: #2c2ccc;
+            --main-color-hover: #2323a2;
+            --body-background: #f5f5f5;
+            --text-color: #333;
+            --box-bg-color: #fff;
+            --box-shadow-color: #e4e4e4;
+            --border-color: #ced4da;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Montserrat", sans-serif;
+            background-color: var(--body-background);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--main-color);
+        }
+
+        a:hover {
+            color: var(--main-color-hover);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--box-bg-color);
+            border-radius: 15px;
+            box-shadow: 3px 3px 6px var(--box-shadow-color);
+            overflow: hidden;
+        }
+
+        @media (min-width: 576px) {
+            .container {
+                flex-direction: row;
+            }
+        }
+
+        .image-wapper,
+        .form-wapper {
+            flex: 1;
+            padding: 50px 30px;
+        }
+
+        .image-wapper {
+            background-image: url("https://media.istockphoto.com/photos/clothes-shop-costume-dress-fashion-store-style-concept-picture-id955641488?k=20&m=955641488&s=612x612&w=0&h=g7i-RIy3EeBiURdNr9cxI2Llt9s4UdobLMq5c738_TY=");
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+        }
+
+        .image-wapper::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.7));
+        }
+
+        .image-wapper h1 {
+            align-self: flex-end;
+            font-size: 48px;
+            color: #fff;
+            z-index: 1;
+            margin: 0;
+        }
+
+        .form-header {
+            margin-bottom: 40px;
+        }
+
+        .form-header h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .form-header p {
+            font-size: 14px;
+            color: #888;
+            margin-top: 15px;
+        }
+
+        .input-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .input-wrapper label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            height: 40px;
+            padding: 0 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--main-color);
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--main-color-hover);
+        }
+
+        .form-footer {
+            margin-top: 30px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="image-wapper">
+        <h1>Welcome Back</h1>
+    </div>
+
+    <div class="form-wapper">
+
+        <div class="form-header">
+            <h2>{{ 'auth_code'|trans({}, 'SchebTwoFactorBundle') }}
+                    {{ twoFactorProvider }}</h2>
+            <p>
+                Please confirm access to your account by entering one of your emergency recovery codes.
+            </p>
+            <p>
+                <p class="text-danger">{{ authenticationError|trans(authenticationErrorData|default({}), 'SchebTwoFactorBundle') }}</p>
+            </p>
+        </div>
+
+        <div class="form-body">
+            <form action="{{ checkPathUrl ? checkPathUrl : path(checkPathRoute) }}" method="post" novalidate>
+                            {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label }} mt-3" role="alert">
+                            {{ message|trans }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <div class="input-wrapper">
+                    <label for="code">Recovery Code</label>
+                    <input id="_auth_code" name="{{ authCodeParameterName }}" type="text" inputmode="numeric" pattern="\d*" autocomplete="one-time-code" required>
+                </div>
+
+                {% if displayTrustedOption %}
+                    <div class="form-check mb-3">
+                        <input id="_trusted" class="form-check-input" type="checkbox" name="{{ trustedParameterName }}">
+                        <label class="form-check-label" for="_trusted">{{ 'trusted'|trans({}, 'SchebTwoFactorBundle') }}</label>
+                    </div>
+                {% endif %}
+
+                {% if isCsrfProtectionEnabled %}
+                    <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+                {% endif %}
+
+                <button type="submit">{{ 'login'|trans({}, 'SchebTwoFactorBundle') }}</button>
+            </form>
+        </div>
+
+        <div class="form-footer">
+            <p>
+                <a href="./auth-2fa-code.html">Use an authentication code</a>
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
