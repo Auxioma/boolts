@@ -63,6 +63,26 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->persist($agence);
 
+        // mohcine
+        $mohcine = new User();
+        $mohcine
+            ->setEmail('mohcine.elafia@gmail.com')
+            ->setRoles(['ROLE_AGENCE'])
+            ->setIsVerified(true)
+            ->setNom($faker->lastName())
+            ->setPrenom($faker->firstName())
+            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
+
+        $mohcine->setPassword(
+            $this->passwordHasher->hashPassword($mohcine, '0000')
+        );
+
+        $manager->persist($mohcine);
+
+
+
+
+
         // Admin
         $admin = new User();
         $admin
