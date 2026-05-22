@@ -49,6 +49,11 @@
 .ml-20 { margin-left:20px; }
 .mx-20 { margin-right:20px; margin-left:20px }
 
+.mb-21 { margin-bottom: 21px }
+.mt-21 { margin-top: 21px }
+.my-21 { margin-top: 21px; margin-bottom: 21px; }
+
+
 .mt-22 { margin-top:22px }
 .mb-22 { margin-bottom: 22px }
 .my-22 { margin-top:22px; margin-bottom: 22px; }
@@ -197,6 +202,7 @@
 .pb-48 { padding-bottom: 48px; }
 .py-48 { padding-top: 48px; padding-bottom: 48px; }
 .px-48 { padding-left: 48px; padding-right: 48px}
+.p-48 { padding:48px }
 
 .pt-92 { padding-top: 92px; }
 .pb-92 { padding-bottom: 92px; }

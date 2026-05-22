@@ -6,14 +6,99 @@
     <main id=dashboard" class="dashboard">
         <div class="container-fluid">
             <div class="row">
-                {# div 4 pour le menu du dashboard #}
+
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                {# contenu du dashboard #}
-                <div class="col-8">
-                    <h2>mes biens</h2>
+                <div class="col-10 p-48">
+                    <div class="row">
+                        <div class="col-10 mx-auto">
+                            <div class="row">
+                                <div class="col-3 pr-24">
+                                    {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/navbar.html.twig') }}
+                                </div>
+                                <div class="col-9">
+                                    <div class="col-10">
+                                        {% include 'dashboard/agence_immobiliere/_partials/mes_biens/type-de-bien.html.twig' %}
+                                        {% include 'dashboard/agence_immobiliere/_partials/mes_biens/type-de-transaction.html.twig' %}
+                                        {% include 'dashboard/agence_immobiliere/_partials/mes_biens/informations-principales.html.twig' %}
+                                        {% include 'dashboard/agence_immobiliere/_partials/mes_biens/details-de-l-annonce.html.twig' %}
+                                        {% include 'dashboard/agence_immobiliere/_partials/mes_biens/photos-de-l-annonce.html.twig' %}
+                                        {% include 'dashboard/agence_immobiliere/_partials/mes_biens/finalisation.html.twig' %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </main>
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+        const links = document.querySelectorAll('.js-stepper-link');
+        const contents = document.querySelectorAll('.js-tab-content');
+        const line = document.querySelector('.mes-bien-stepper-line');
+
+        function updateLine(activeElement) {
+
+        const currentIndex = [...links].indexOf(activeElement);
+
+        const totalSteps = links.length - 1;
+
+        const percentage = (currentIndex / totalSteps) * 100;
+
+        const maxHeight = 500;
+
+        line.style.height = (maxHeight * percentage / 100) + 'px';
+
+    }
+
+        // INITIAL STATE
+        const activeStep = document.querySelector('.mes-bien-stepper-item-active');
+
+        if (activeStep) {
+        updateLine(activeStep);
+    }
+
+        links.forEach(function (link) {
+
+        link.addEventListener('click', function () {
+
+        const target = this.dataset.tab;
+
+        // remove active
+        links.forEach(function (item) {
+        item.classList.remove('mes-bien-stepper-item-active');
+    });
+
+        // hide all
+        contents.forEach(function (content) {
+        content.classList.add('d-none');
+    });
+
+        // active current
+        this.classList.add('mes-bien-stepper-item-active');
+
+        // show content
+        const targetElement = document.getElementById(target);
+
+        if (targetElement) {
+        targetElement.classList.remove('d-none');
+    }
+
+        // UPDATE LINE
+        updateLine(this);
+
+    });
+
+    });
+
+    });
+
+</script>
 {% endblock %}

@@ -97,3 +97,25 @@
     position: absolute;
     top:7px;
 }
+/* border bleu ecriture bleu, bg blanc */
+.btn-retour {
+    border-radius: 50px;
+    border: 2px solid #5D00FF;
+    background: #FFF;
+    color: #5D00FF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+/* bg bleu ecriture en blanc */
+.btn-suivant {
+    border-radius: 50px;
+    background: #5D00FF;
+    color: #FFF;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+}

@@ -12,7 +12,10 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\Property;
+use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -20,10 +23,19 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
     #[Route('/', name: 'mes_biens')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $mesBiens = new Property();
+
+        $form = $this->createForm(
+            MesBiensType::class,
+            $mesBiens
+        );
+
+        $form->handleRequest($request);
+
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig', [
-            'controller_name' => 'AgenceImmobiliereMesBiensController',
+            'form' => $form->createView(),
         ]);
     }
 }

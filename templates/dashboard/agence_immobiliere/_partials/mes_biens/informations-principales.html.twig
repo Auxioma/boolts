@@ -1,3 +1,140 @@
 <div class="js-tab-content d-none" id="cat3">
-    wx
+    <div class="d-flex justify-content-between align-items-end">
+        <h1>
+            Quel est le type de bien que vous souhaitez publier ?
+        </h1>
+        <div class="d-flex align-items-end">
+            <a href="#" class="btn-retour py-10 px-16 mr-12">
+                Retour
+            </a>
+            <a href="#" class="btn-suivant py-10 px-16">
+                Suivant
+            </a>
+        </div>
+    </div>
+    <div class="mt-48">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="mt-48">
+                        <div class="row">
+                            <div class="col-12 mb-21 formulaire">
+                                <div>
+                                    <label for="" class="mb-16">Titre du logement (facultatif)</label>
+                                    {{ form_widget(form.titreDuLogement, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : Logement spacieux et lumineux'
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div>
+                                    <label for="" class="mb-16">Description du logement</label>
+                                    {{ form_widget(form.descriptionLogement, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : Logement spacieux et lumineux'
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div>
+                                    <label for="" class="mb-16">Prix du logement (par mois) + achat ( dynamyque )</label>
+                                    {{ form_widget(form.prix, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : 968 €'
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div>
+                                    <label for="" class="mb-16">Année de construction</label>
+                                    {{ form_widget(form.anneeConstruction, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : 1983'
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div>
+                                    <label for="" class="mb-16">Performance énergétique</label>
+                                    {{ form_widget(form.performanceEnergetique, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : 1983'
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div>
+                                    <label class="d-flex mb-32">
+                                        <input type="checkbox" class="w-auto mr-12">
+                                            Charges comprises
+                                        </span>
+                                    </label>
+                                </div>
+
+                                <div>
+                                    <label for="" class="mb-16">Adresse du logement (facultatif)</label>
+                                    {{ form_widget(form.adresse, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : 106 rue du Poirier'
+                                        }
+                                    }) }}
+                                </div>
+
+                                <div>
+                                    <label for="" class="mb-16">Code postal</label>
+                                    {{ form_widget(form.codePostal, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : 76000'
+                                        }
+                                    }) }}
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div>
+                                            <label for="" class="mb-16">Code Ville</label>
+                                            {{ form_widget(form.ville, {
+                                                attr: {
+                                                    class: 'form-control mb-32',
+                                                    placeholder: 'Exemple : Toulouse'
+                                                }
+                                            }) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div>
+                                            <label for="" class="mb-16">Pays</label>
+                                            {{ form_widget(form.pays, {
+                                                attr: {
+                                                    class: 'form-control mb-32',
+                                                    placeholder: 'Exemple : Toulouse'
+                                                }
+                                            }) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="" class="mb-16">Référence interne (facultatif)</label>
+                                    {{ form_widget(form.referenceInterne, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : Toulouse'
+                                        }
+                                    }) }}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
