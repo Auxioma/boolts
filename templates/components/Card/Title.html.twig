@@ -1,0 +1,12 @@
+{# templates/components/Card/Title.html.twig #}
+
+{# @prop as The HTML tag to render. Defaults to h3 #}
+{# @block content The title content #}
+
+{%- props as = 'h3' -%}
+
+<{{ as }} {{ attributes.defaults({
+    class: 'card-title',
+}) }}>
+    {%- block content %}{% endblock -%}
+</{{ as }}>

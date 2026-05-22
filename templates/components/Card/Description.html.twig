@@ -1,0 +1,12 @@
+{# templates/components/Card/Description.html.twig #}
+
+{# @prop as The HTML tag to render. Defaults to p #}
+{# @block content The description content #}
+
+{%- props as = 'p' -%}
+
+<{{ as }} {{ attributes.defaults({
+    class: 'card-text text-muted',
+}) }}>
+    {%- block content %}{% endblock -%}
+</{{ as }}>

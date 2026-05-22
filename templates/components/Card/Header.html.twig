@@ -1,0 +1,12 @@
+{# templates/components/Card/Header.html.twig #}
+
+{# @prop as The HTML tag to render. Defaults to div #}
+{# @block content The header content #}
+
+{%- props as = 'div' -%}
+
+<{{ as }} {{ attributes.defaults({
+    class: 'card-header',
+}) }}>
+    {%- block content %}{% endblock -%}
+</{{ as }}>

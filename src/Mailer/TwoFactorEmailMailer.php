@@ -1,5 +1,15 @@
 <?php
-// src/Mailer/TwoFactorEmailMailer.php
+
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Mailer;
 
 use Scheb\TwoFactorBundle\Mailer\AuthCodeMailerInterface;
@@ -13,7 +23,8 @@ final class TwoFactorEmailMailer implements AuthCodeMailerInterface
         private readonly MailerInterface $mailer,
         private readonly string $fromEmail,
         private readonly string $fromName,
-    ) {}
+    ) {
+    }
 
     /**
      * Le bundle te passe $user (qui implémente EmailTwoFactorInterface).

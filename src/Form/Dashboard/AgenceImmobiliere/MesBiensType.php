@@ -55,7 +55,7 @@ class MesBiensType extends AbstractType
             ->add('codePostal')
             ->add('ville')
             ->add('pays', CountryType::class, [
-                'placeholder' => 'Sélectionnez un pays'
+                'placeholder' => 'Sélectionnez un pays',
             ])
             ->add('referenceInterne')
 

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Dashboard\Api\UserBrowserPreferences;
 
 use App\Entity\FuseauHoraire;
@@ -32,7 +42,7 @@ final class UserBrowserPreferencesController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        if (!is_array($data)) {
+        if (!\is_array($data)) {
             return $this->json([
                 'success' => false,
                 'message' => 'Données invalides.',
@@ -48,8 +58,8 @@ final class UserBrowserPreferencesController extends AbstractController
             ], 403);
         }
 
-        $countryIso = strtoupper((string) ($data['country'] ?? ''));
-        $languageIso = strtolower((string) ($data['language'] ?? ''));
+        $countryIso = mb_strtoupper((string) ($data['country'] ?? ''));
+        $languageIso = mb_strtolower((string) ($data['language'] ?? ''));
         $timeZoneName = (string) ($data['timeZone'] ?? '');
 
         /*
@@ -59,7 +69,7 @@ final class UserBrowserPreferencesController extends AbstractController
          * timeZone = Europe/Paris
          */
 
-        if ($countryIso !== '') {
+        if ('' !== $countryIso) {
             $pays = $paysRepository->findOneBy([
                 'iso' => $countryIso,
             ]);
@@ -70,7 +80,7 @@ final class UserBrowserPreferencesController extends AbstractController
             }
         }
 
-        if ($languageIso !== '') {
+        if ('' !== $languageIso) {
             $langue = $languesRepository->findOneBy([
                 'iso' => $languageIso,
             ]);
@@ -80,7 +90,7 @@ final class UserBrowserPreferencesController extends AbstractController
             }
         }
 
-        if ($timeZoneName !== '') {
+        if ('' !== $timeZoneName) {
             $fuseauHoraire = $fuseauHoraireRepository->findOneBy([
                 'nom' => $timeZoneName,
             ]);

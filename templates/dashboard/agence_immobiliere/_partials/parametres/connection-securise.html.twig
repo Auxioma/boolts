@@ -35,16 +35,16 @@
                                         attr: {
                                             id: 'plain-password-first',
                                             class: 'form-control mb-12',
-                                            'data-name': 'password'
-                                        }
+                                            'data-name': 'password',
+                                        },
                                     }) }}
 
                                     {{ form_widget(form.plainPassword.second, {
                                         attr: {
                                             id: 'plain-password-second',
                                             class: 'form-control',
-                                            'data-name': 'passwordConfirm'
-                                        }
+                                            'data-name': 'passwordConfirm',
+                                        },
                                     }) }}
 
                                     <span class="flash-message flash-message-error d-none js-field-error"></span>
@@ -146,7 +146,7 @@
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
                         // Décommente si CSRF requis côté serveur:
-                        // 'X-CSRF-TOKEN': '{{ csrf_token("toggle_2fa") }}'
+                        // 'X-CSRF-TOKEN': '{{ csrf_token('toggle_2fa') }}'
                     },
                     credentials: 'same-origin',
                     body: JSON.stringify({ enabled: desired })
@@ -175,4 +175,3 @@
         });
     });
 </script>
-

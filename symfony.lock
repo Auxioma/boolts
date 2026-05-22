@@ -367,6 +367,9 @@
     "symfony/ux-toggle-password": {
         "version": "v2.35.0"
     },
+    "symfony/ux-toolkit": {
+        "version": "v3.0.0"
+    },
     "symfony/ux-turbo": {
         "version": "3.0",
         "recipe": {

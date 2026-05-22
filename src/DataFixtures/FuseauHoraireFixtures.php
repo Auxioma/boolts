@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\DataFixtures;
 
 use App\Entity\FuseauHoraire;
@@ -22,11 +32,11 @@ class FuseauHoraireFixtures extends Fixture
             $minutes = intdiv(abs($offset) % 3600, 60);
             $sign = $offset >= 0 ? '+' : '-';
 
-            $utc = sprintf('UTC%s%02d:%02d', $sign, $hours, $minutes);
+            $utc = \sprintf('UTC%s%02d:%02d', $sign, $hours, $minutes);
 
             $city = $this->formatTimezoneName($timezoneIdentifier);
 
-            $nom = sprintf('(%s) %s', $utc, $city);
+            $nom = \sprintf('(%s) %s', $utc, $city);
 
             $existingFuseauHoraire = $manager
                 ->getRepository(FuseauHoraire::class)

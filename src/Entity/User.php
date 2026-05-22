@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Entity;
 
 use App\Entity\Traits\CreatedAtTraits;
@@ -216,7 +226,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function setEmail(string $email): static
     {
-        $this->email = mb_strtolower(trim($email));
+        $this->email = mb_strtolower(mb_trim($email));
 
         return $this;
     }
@@ -263,7 +273,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
             'id' => $this->id,
             'email' => $this->email,
             'roles' => $this->roles,
-            'password' => $this->password !== null ? hash('crc32c', $this->password) : null,
+            'password' => null !== $this->password ? hash('crc32c', $this->password) : null,
         ];
     }
 
@@ -285,9 +295,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     {
         return $this->emailAuthEnabled;
     }
+
     public function setEmailAuthEnabled(bool $enabled): static
     {
         $this->emailAuthEnabled = $enabled;
+
         return $this;
     }
 
@@ -298,7 +310,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function getEmailAuthCode(): string
     {
-        if ($this->emailAuthCode === null) {
+        if (null === $this->emailAuthCode) {
             throw new \LogicException('The email authentication code was not set.');
         }
 
@@ -433,7 +445,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     {
         $this->imageFile = $imageFile;
 
-        if ($imageFile !== null) {
+        if (null !== $imageFile) {
             $this->updatedAt = new \DateTimeImmutable();
         }
     }

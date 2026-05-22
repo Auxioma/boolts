@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Dashboard\Api\AgenceImmobiliere;
 
 use App\Entity\User;
@@ -74,7 +84,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         $field = $data['field'] ?? null;
         $value = $data['value'] ?? null;
 
-        if ($field === 'plainPassword') {
+        if ('plainPassword' === $field) {
             if (!\is_array($value)) {
                 return $this->json([
                     'success' => false,
@@ -130,7 +140,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
                 ], 422);
             }
 
-            if ($field === 'adresse') {
+            if ('adresse' === $field) {
                 $form->submit([
                     'adresse' => $value['adresse'] ?? null,
                     'adresseComplement' => $value['adresseComplement'] ?? null,
@@ -140,7 +150,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
                 ], false);
             }
 
-            if ($field === 'adresseContact') {
+            if ('adresseContact' === $field) {
                 $form->submit([
                     'adresseContact' => $value['adresseContact'] ?? null,
                     'codePostalContact' => $value['codePostalContact'] ?? null,
@@ -178,7 +188,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             $field => $value,
         ];
 
-        if ($field === 'numeroContact' && \array_key_exists('whatsApp', $data)) {
+        if ('numeroContact' === $field && \array_key_exists('whatsApp', $data)) {
             $submitData['whatsApp'] = $data['whatsApp'];
         }
 

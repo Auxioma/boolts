@@ -1,0 +1,48 @@
+{# templates/components/Button.html.twig #}
+
+{# @prop variant default|secondary|destructive|outline|ghost|link The button variant #}
+{# @prop size default|xs|sm|lg|icon|icon-xs|icon-sm|icon-lg The button size #}
+{# @prop as The HTML tag to render. Defaults to button #}
+{# @prop type The button type. Defaults to button #}
+{# @block content The button label and/or icon #}
+
+{%- props
+    variant = 'default',
+    size = 'default',
+    as = 'button',
+    type = 'button'
+-%}
+
+{% set bootstrapVariant = {
+    default: 'btn-primary',
+    secondary: 'btn-secondary',
+    destructive: 'btn-danger',
+    outline: 'btn-outline-primary',
+    ghost: 'btn-link',
+    link: 'btn-link',
+}[variant]|default('btn-primary') %}
+
+{% set bootstrapSize = {
+    default: '',
+    xs: 'btn-sm',
+    sm: 'btn-sm',
+    lg: 'btn-lg',
+    icon: '',
+    'icon-xs': 'btn-sm',
+    'icon-sm': 'btn-sm',
+    'icon-lg': 'btn-lg',
+}[size]|default('') %}
+
+{% set defaultAttributes = {
+    class: ('btn ' ~ bootstrapVariant ~ ' ' ~ bootstrapSize)|trim,
+} %}
+
+{% if as == 'button' %}
+    {% set defaultAttributes = defaultAttributes|merge({
+        type: type,
+    }) %}
+{% endif %}
+
+<{{ as }} {{ attributes.defaults(defaultAttributes) }}>
+    {%- block content %}{% endblock -%}
+</{{ as }}>

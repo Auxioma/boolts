@@ -6,34 +6,34 @@
             {% set profileItems = [
                 {
                     field: 'entreprise',
-                    label: "Ajouter un nom d’agence",
+                    label: 'Ajouter un nom d’agence',
                     done: app.user.entreprise is not empty,
-                    optional: false
+                    optional: false,
                 },
                 {
                     field: 'description',
-                    label: "Ajouter une description",
+                    label: 'Ajouter une description',
                     done: app.user.description is not empty,
-                    optional: false
+                    optional: false,
                 },
                 {
                     field: 'adresseContact',
-                    label: "Ajouter une adresse postale",
+                    label: 'Ajouter une adresse postale',
                     done: app.user.adresseContact is not empty and app.user.codePostalContact is not empty and app.user.villeContact is not empty,
-                    optional: false
+                    optional: false,
                 },
                 {
                     field: 'emailContact',
-                    label: "Ajouter une adresse mail",
+                    label: 'Ajouter une adresse mail',
                     done: app.user.emailContact is not empty,
-                    optional: true
+                    optional: true,
                 },
                 {
                     field: 'numeroContact',
-                    label: "Ajouter un numéro",
+                    label: 'Ajouter un numéro',
                     done: app.user.numeroContact is not empty,
-                    optional: true
-                }
+                    optional: true,
+                },
             ] %}
 
             {% set requiredItems = profileItems|filter(item => not item.optional) %}
@@ -127,8 +127,8 @@
                         {{ form_widget(form.imageFile, {
                             attr: {
                                 class: 'd-none js-image-input',
-                                accept: 'image/*'
-                            }
+                                accept: 'image/*',
+                            },
                         }) }}
                     </div>
 
@@ -159,8 +159,8 @@
                                     <div class="d-flex align-items-center gap-2 mt-2">
                                         {{ form_widget(form.entreprise, {
                                             attr: {
-                                                class: 'form-control w-75'
-                                            }
+                                                class: 'form-control w-75',
+                                            },
                                         }) }}
 
                                         <button
@@ -203,8 +203,8 @@
                                     <div class="d-flex align-items-center gap-2 mt-2">
                                         {{ form_widget(form.description, {
                                             attr: {
-                                                class: 'form-control w-75'
-                                            }
+                                                class: 'form-control w-75',
+                                            },
                                         }) }}
 
                                         <button
@@ -257,8 +257,8 @@
                                             attr: {
                                                 class: 'form-control js-address-input',
                                                 placeholder: 'Entrez un numéro et un nom de rue',
-                                                'data-name': 'adresseContact'
-                                            }
+                                                'data-name': 'adresseContact',
+                                            },
                                         }) }}
                                     </div>
 
@@ -271,8 +271,8 @@
                                                     attr: {
                                                         class: 'form-control js-address-input',
                                                         placeholder: 'Entrez un code postal',
-                                                        'data-name': 'codePostalContact'
-                                                    }
+                                                        'data-name': 'codePostalContact',
+                                                    },
                                                 }) }}
                                             </div>
                                         </div>
@@ -284,8 +284,8 @@
                                                 attr: {
                                                     class: 'form-control js-address-input',
                                                     placeholder: 'Choisissez une ville',
-                                                    'data-name': 'villeContact'
-                                                }
+                                                    'data-name': 'villeContact',
+                                                },
                                             }) }}
                                         </div>
                                     </div>
@@ -297,8 +297,8 @@
                                             attr: {
                                                 class: 'form-control js-address-input',
                                                 placeholder: 'France',
-                                                'data-name': 'paysContact'
-                                            }
+                                                'data-name': 'paysContact',
+                                            },
                                         }) }}
                                     </div>
                                 </div>
@@ -353,8 +353,8 @@
                                             id: 'telephone-input',
                                             attr: {
                                                 class: 'form-control w-75',
-                                                'data-phone-target': 'input'
-                                            }
+                                                'data-phone-target': 'input',
+                                            },
                                         }) }}
                                     </div>
 
@@ -389,8 +389,8 @@
                                                     id: 'whatsapp-phone',
                                                     attr: {
                                                         class: 'form-control w-75',
-                                                        'data-phone-target': 'input'
-                                                    }
+                                                        'data-phone-target': 'input',
+                                                    },
                                                 }) }}
                                             </div>
                                         </div>
@@ -416,8 +416,8 @@
                                 <div class="mt-12 d-none js-field-input">
                                     {{ form_widget(form.emailContact, {
                                         attr: {
-                                            class: 'form-control w-75'
-                                        }
+                                            class: 'form-control w-75',
+                                        },
                                     }) }}
                                 </div>
                             </div>
@@ -472,13 +472,13 @@
 
                 const formData = new FormData();
                 formData.append('imageFile', file);
-                formData.append('_token', '{{ csrf_token("profile_edit") }}');
+                formData.append('_token', '{{ csrf_token('profile_edit') }}');
 
                 try {
                     changeImageButton.textContent = '...';
                     changeImageButton.disabled = true;
 
-                    const response = await fetch('{{ path("api_profile_agence_immobiliere") }}', {
+                    const response = await fetch('{{ path('api_profile_agence_immobiliere') }}', {
                         method: 'POST',
                         headers: {
                             'X-Requested-With': 'XMLHttpRequest'

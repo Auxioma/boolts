@@ -1,0 +1,12 @@
+{# templates/components/Card.html.twig #}
+
+{# @prop as The HTML tag to render. Defaults to div #}
+{# @block content The card content #}
+
+{%- props as = 'div' -%}
+
+<{{ as }} {{ attributes.defaults({
+    class: 'card',
+}) }}>
+    {%- block content %}{% endblock -%}
+</{{ as }}>

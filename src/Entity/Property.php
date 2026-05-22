@@ -12,9 +12,11 @@
 
 namespace App\Entity;
 
-use App\Entity\CategoryBien;
 use App\Entity\Enum\PerformanceEnergetique;
+use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Repository\PropertyRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -71,6 +73,27 @@ class Property
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $surfaceTotal = null;
 
+    #[ORM\Column(enumType: StatutAnnonceImmobiliere::class)]
+    private StatutAnnonceImmobiliere $statut = StatutAnnonceImmobiliere::BROUILLON;
+
+    /**
+     * @var Collection<int, Caracteristique>
+     */
+    #[ORM\ManyToMany(targetEntity: Caracteristique::class, inversedBy: 'properties')]
+    private Collection $caracteristique;
+
+    /**
+     * @var Collection<int, PropertyImage>
+     */
+    #[ORM\OneToMany(targetEntity: PropertyImage::class, mappedBy: 'property')]
+    private Collection $propertyImages;
+
+    public function __construct()
+    {
+        $this->caracteristique = new ArrayCollection();
+        $this->propertyImages = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,7 +128,7 @@ class Property
         return $this->titreDuLogement;
     }
 
-    public function setTitreDuLogement(string $titreDuLogement): static
+    public function setTitreDuLogement(?string $titreDuLogement): static
     {
         $this->titreDuLogement = $titreDuLogement;
 
@@ -117,7 +140,7 @@ class Property
         return $this->descriptionLogement;
     }
 
-    public function setDescriptionLogement(string $descriptionLogement): static
+    public function setDescriptionLogement(?string $descriptionLogement): static
     {
         $this->descriptionLogement = $descriptionLogement;
 
@@ -225,7 +248,7 @@ class Property
         return $this->chambres;
     }
 
-    public function setChambres(string $chambres): static
+    public function setChambres(?string $chambres): static
     {
         $this->chambres = $chambres;
 
@@ -237,7 +260,7 @@ class Property
         return $this->salleDeBains;
     }
 
-    public function setSalleDeBains(string $salleDeBains): static
+    public function setSalleDeBains(?string $salleDeBains): static
     {
         $this->salleDeBains = $salleDeBains;
 
@@ -249,9 +272,75 @@ class Property
         return $this->surfaceTotal;
     }
 
-    public function setSurfaceTotal(string $surfaceTotal): static
+    public function setSurfaceTotal(?string $surfaceTotal): static
     {
         $this->surfaceTotal = $surfaceTotal;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Caracteristique>
+     */
+    public function getCaracteristique(): Collection
+    {
+        return $this->caracteristique;
+    }
+
+    public function addCaracteristique(Caracteristique $caracteristique): static
+    {
+        if (!$this->caracteristique->contains($caracteristique)) {
+            $this->caracteristique->add($caracteristique);
+        }
+
+        return $this;
+    }
+
+    public function removeCaracteristique(Caracteristique $caracteristique): static
+    {
+        $this->caracteristique->removeElement($caracteristique);
+
+        return $this;
+    }
+
+    public function getStatut(): StatutAnnonceImmobiliere
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(StatutAnnonceImmobiliere $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PropertyImage>
+     */
+    public function getPropertyImages(): Collection
+    {
+        return $this->propertyImages;
+    }
+
+    public function addPropertyImage(PropertyImage $propertyImage): static
+    {
+        if (!$this->propertyImages->contains($propertyImage)) {
+            $this->propertyImages->add($propertyImage);
+            $propertyImage->setProperty($this);
+        }
+
+        return $this;
+    }
+
+    public function removePropertyImage(PropertyImage $propertyImage): static
+    {
+        if ($this->propertyImages->removeElement($propertyImage)) {
+            // set the owning side to null (unless already changed)
+            if ($propertyImage->getProperty() === $this) {
+                $propertyImage->setProperty(null);
+            }
+        }
 
         return $this;
     }

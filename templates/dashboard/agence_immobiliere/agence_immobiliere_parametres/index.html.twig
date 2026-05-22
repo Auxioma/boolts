@@ -4,37 +4,37 @@
 {% endblock %}
 
 {% block body %}
-	<main id="dashboard" class="dashboard">
-		<div class="container-fluid bg-white">
-			<div class="row">
-				{{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
-				<div class="col-2 pt-48 border-color-right-gris">
-					<div class="menu-parametres">
-						<h2>Paramètres du compte</h2>
-						{% include 'dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig' %}
-					</div>
-				</div>
-				<div class="col-8">
-					<div class="row bg-white">
-						<div class="col-12 pt-48">
-							{{ include('dashboard/agence_immobiliere/_partials/parametres/profile_public.html.twig') }}
-							{{ include('dashboard/agence_immobiliere/_partials/parametres/informations_personnelles.html.twig') }}
-							{{ include('dashboard/agence_immobiliere/_partials/parametres/connection-securise.html.twig') }}
-							{{ include('dashboard/agence_immobiliere/_partials/parametres/moyen-de-paiement.html.twig') }}
-							{{ include('dashboard/agence_immobiliere/_partials/parametres/historique-des-paiements.html.twig') }}
-							{{ include('dashboard/agence_immobiliere/_partials/parametres/langue_et_devise.html.twig') }}
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid bg-white">
+            <div class="row">
+                {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+                <div class="col-2 pt-48 border-color-right-gris">
+                    <div class="menu-parametres">
+                        <h2>Paramètres du compte</h2>
+                        {{ include('dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig') }}
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="row bg-white">
+                        <div class="col-12 pt-48">
+                            {{ include('dashboard/agence_immobiliere/_partials/parametres/profile_public.html.twig') }}
+                            {{ include('dashboard/agence_immobiliere/_partials/parametres/informations_personnelles.html.twig') }}
+                            {{ include('dashboard/agence_immobiliere/_partials/parametres/connection-securise.html.twig') }}
+                            {{ include('dashboard/agence_immobiliere/_partials/parametres/moyen-de-paiement.html.twig') }}
+                            {{ include('dashboard/agence_immobiliere/_partials/parametres/historique-des-paiements.html.twig') }}
+                            {{ include('dashboard/agence_immobiliere/_partials/parametres/langue_et_devise.html.twig') }}
                             <div class="js-success-message flash-message flash-message-success message-flash-profile d-none"></div>
                             <div class="js-error-message flash-message flash-message-error message-flash-profile-error d-none"></div>
                         </div>
-					</div>
-				</div>
+                    </div>
+                </div>
 
-			</div>
-		</div>
-	</main>
+            </div>
+        </div>
+    </main>
 
-	<script>
-		document.querySelectorAll('.js-tab-link').forEach(function (link) {
+    <script>
+        document.querySelectorAll('.js-tab-link').forEach(function (link) {
 link.addEventListener('click', function (e) {
 e.preventDefault(); // 🔥 empêche le reload
 
@@ -52,6 +52,5 @@ this.classList.add('active');
 document.getElementById(target).classList.remove('d-none');
 });
 });
-	</script>
+    </script>
 {% endblock %}
-

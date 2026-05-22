@@ -1,0 +1,12 @@
+{# templates/components/Card/Footer.html.twig #}
+
+{# @prop as The HTML tag to render. Defaults to div #}
+{# @block content The footer content #}
+
+{%- props as = 'div' -%}
+
+<{{ as }} {{ attributes.defaults({
+    class: 'card-footer',
+}) }}>
+    {%- block content %}{% endblock -%}
+</{{ as }}>

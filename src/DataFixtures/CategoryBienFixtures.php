@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\DataFixtures;
 
 use App\Entity\CategoryBien;
@@ -33,7 +43,7 @@ class CategoryBienFixtures extends Fixture
         foreach ($categories as $categoryData) {
             $category = new CategoryBien();
 
-            $slug = strtolower(
+            $slug = mb_strtolower(
                 $this->slugger->slug($categoryData['name'])->toString()
             );
 
@@ -45,7 +55,7 @@ class CategoryBienFixtures extends Fixture
             $manager->persist($category);
 
             $this->addReference(
-                self::CATEGORY_BIEN_REFERENCE_PREFIX . $slug,
+                self::CATEGORY_BIEN_REFERENCE_PREFIX.$slug,
                 $category
             );
         }
