@@ -12,6 +12,7 @@
 
 namespace App\Entity;
 
+use App\Entity\CategoryBien;
 use App\Entity\Enum\PerformanceEnergetique;
 use App\Repository\PropertyRepository;
 use Doctrine\DBAL\Types\Types;
@@ -31,7 +32,7 @@ class Property
     #[ORM\ManyToOne(inversedBy: 'properties')]
     private ?CategoryBienTransaction $typeTransaction = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $titreDuLogement = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -61,13 +62,13 @@ class Property
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $referenceInterne = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $chambres = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $salleDeBains = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $surfaceTotal = null;
 
     public function getId(): ?int
