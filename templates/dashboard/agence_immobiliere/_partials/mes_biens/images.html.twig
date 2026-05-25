@@ -1,0 +1,210 @@
+<div class="js-tab-content d-none mes-biens-immobilier formulaire" id="cat6">
+    <div class="d-flex justify-content-between align-items-end">
+        <h1>
+            Téléchargez quelques photos de votre bien
+        </h1>
+
+        <div class="d-flex align-items-end">
+            <a href="#" class="btn-retour py-10 px-16 mr-12">
+                Enregistrer
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-48 mb-24">
+        <div>
+            <span>Attention :</span>les annonces <br>comprenant moins de 5 images sont généralement moins attrayantes pour les particuliers et, de ce fait, moins mises en avant par Boolts. Nous vous recommandons d’ajouter au moins 5 images.
+        </div>
+    </div>
+
+    <div
+        class="property-upload-grid"
+        id="property-images-collection"
+        data-prototype="{{ form_widget(form.propertyImages.vars.prototype.imageFile)|e('html_attr') }}"
+        data-index="{{ form.propertyImages|length }}"
+    >
+
+            {% for i in 1..5 %}
+                <div class="property-preview-card" data-position="{{ i }}">
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none">
+                            <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            {% endfor %}
+
+
+        <div class="property-upload-card" id="property-upload-card">
+            <div class="property-upload-placeholder">
+                <span>+</span>
+                <small>Glissez-déposez un fichier</small>
+                <strong>Parcourir</strong>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const maxImages = 50;
+            const collection = document.getElementById('property-images-collection');
+            const uploadCard = document.getElementById('property-upload-card');
+
+            function getPreviewCards() {
+                return collection.querySelectorAll('.property-preview-card');
+            }
+
+            function createPreviewCard(position) {
+                const card = document.createElement('div');
+                card.className = 'property-preview-card';
+                card.dataset.position = position;
+                collection.insertBefore(card, uploadCard);
+
+                return card;
+            }
+
+            function getOrCreateEmptyCard() {
+                let cards = Array.from(getPreviewCards());
+                let emptyCard = cards.find(card => !card.classList.contains('is-filled'));
+
+                if (emptyCard) {
+                    return emptyCard;
+                }
+
+                if (cards.length >= maxImages) {
+                    return null;
+                }
+
+                return createPreviewCard(cards.length + 1);
+            }
+
+            function createUploadInput() {
+                const index = collection.dataset.index;
+                const prototype = collection.dataset.prototype.replace(/__name__/g, index);
+
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = prototype;
+
+                const input = wrapper.querySelector('input[type="file"]');
+                input.classList.add('property-upload-input');
+
+                input.addEventListener('change', function () {
+                    if (!input.files || !input.files[0]) {
+                        return;
+                    }
+
+                    const emptyCard = getOrCreateEmptyCard();
+
+                    if (!emptyCard) {
+                        uploadCard.style.display = 'none';
+                        return;
+                    }
+
+                    const file = input.files[0];
+                    const reader = new FileReader();
+
+                    reader.onload = function (event) {
+                        emptyCard.classList.add('is-filled');
+
+                        emptyCard.innerHTML = `
+                    <img src="${event.target.result}" alt="Photo du bien">
+                    <span class="property-image-position">${emptyCard.dataset.position}</span>
+                `;
+
+                        input.classList.remove('property-upload-input');
+                        input.classList.add('property-hidden-input');
+
+                        emptyCard.appendChild(input);
+
+                        collection.dataset.index = parseInt(index) + 1;
+
+                        if (getPreviewCards().length >= maxImages) {
+                            uploadCard.style.display = 'none';
+                            return;
+                        }
+
+                        createUploadInput();
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+
+                uploadCard.querySelectorAll('input[type="file"]').forEach(oldInput => oldInput.remove());
+                uploadCard.appendChild(input);
+            }
+
+            createUploadInput();
+        });
+    </script>
+<style>
+    .property-upload-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .property-preview-card,
+    .property-upload-card {
+        position: relative;
+        height: 187px;
+        background: #f1f1f1;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .property-preview-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .property-upload-card {
+        cursor: pointer;
+    }
+
+    .property-upload-input {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .property-hidden-input {
+        display: none;
+    }
+
+    .property-upload-placeholder {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        color: #777;
+    }
+
+    .property-upload-placeholder span {
+        font-size: 18px;
+    }
+
+    .property-upload-placeholder strong {
+        margin-top: 6px;
+        padding: 4px 14px;
+        border: 1px solid #5D00FF;
+        border-radius: 20px;
+        color: #5D00FF;
+        font-size: 11px;
+    }
+
+    .property-image-position {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: #5D00FF;
+        color: #fff;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 11px;
+    }
+</style>
