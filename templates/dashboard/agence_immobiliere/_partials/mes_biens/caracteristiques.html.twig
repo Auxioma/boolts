@@ -1,3 +1,299 @@
-<div class="js-tab-content d-none" id="cat4">
-    01
+<div class="js-tab-content d-none mes-biens-immobilier formulaire" id="cat4">
+    <div class="d-flex justify-content-between align-items-end">
+        <h1>
+            Remplissez les caractéristiques de votre bien
+        </h1>
+
+        <div class="d-flex align-items-end">
+            <a href="#" class="btn-retour py-10 px-16 mr-12">
+                Enregistrer
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-48 caracteristique-logements">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="">
+                        <div class="row">
+
+                            <h2 class="mb-32">Pièces</h2>
+
+                            <div>
+
+                                {# CHAMBRES #}
+
+                                <div class="position-relative mb-18">
+
+                                    {{ form_widget(form.chambres, {
+                                        attr: {
+                                            class: 'chambre-input',
+                                            value: 0
+                                        }
+                                    }) }}
+
+                                    <input
+                                        type="text"
+                                        class="form-control pe-5 fw-bold-700"
+                                        placeholder="Chambre*"
+                                        readonly
+                                    >
+
+                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center me-3">
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm p-0 border-0 bg-transparent"
+                                            onclick="decrementChambre(this)"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+
+                                        <span class="chambre-value">
+                                            0
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm p-0 border-0 bg-transparent"
+                                            onclick="incrementChambre(this)"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                {# SALLE DE BAIN #}
+
+                                <div class="position-relative mb-7">
+
+                                    {{ form_widget(form.salleDeBains, {
+                                        attr: {
+                                            class: 'salle-bain-input',
+                                            value: 0
+                                        }
+                                    }) }}
+
+                                    <input
+                                        type="text"
+                                        class="form-control pe-5 fw-bold-700"
+                                        placeholder="Salle de bain*"
+                                        readonly
+                                    >
+
+                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center me-3">
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm p-0 border-0 bg-transparent"
+                                            onclick="decrementSalleBain(this)"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+
+                                        <span class="salle-bain-value">
+                                            0
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm p-0 border-0 bg-transparent"
+                                            onclick="incrementSalleBain(this)"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                <small class="mb-32 d-block">
+                                    Si votre bien comprend des toilettes séparées de la salle de bain, sélectionnez la valeur de 0,5.
+                                </small>
+
+                                {# SURFACE #}
+
+                                <div>
+                                    <label class="mb-16">
+                                        Surface totale*
+                                    </label>
+
+                                    {{ form_widget(form.surfaceTotal, {
+                                        attr: {
+                                            class: 'form-control mb-32',
+                                            placeholder: 'Exemple : 150 m2',
+                                        },
+                                    }) }}
+                                </div>
+
+                                {# ANNEE #}
+
+                                <div>
+                                    <label class="mb-16">
+                                        Année de construction (facultatif)
+                                    </label>
+
+                                    {{ form_widget(form.anneeConstruction, {
+                                        attr: {
+                                            class: 'form-control mb-48',
+                                            placeholder: 'Exemple : 1983',
+                                        },
+                                    }) }}
+                                </div>
+
+                                {# CARACTERISTIQUES #}
+
+                                <h2 class="mb-32">
+                                    Caractéristiques
+                                </h2>
+
+                                <div class="row">
+
+                                    {% for choice in form.caracteristique.vars.choices %}
+                                        {% set isChecked = choice.value in form.caracteristique.vars.value %}
+
+                                        <div class="col-4 mb-21">
+
+                                            <label
+                                                class="type-bien px-24 py-24 w-100 js-caracteristique-item {% if isChecked %}active{% endif %}"
+                                                for="caracteristique_{{ loop.index0 }}"
+                                            >
+
+                                                <input
+                                                    type="checkbox"
+                                                    id="caracteristique_{{ loop.index0 }}"
+                                                    name="{{ form.caracteristique.vars.full_name }}[]"
+                                                    value="{{ choice.value }}"
+                                                    class="d-none js-caracteristique-input"
+                                                    {% if isChecked %}checked="checked"{% endif %}
+                                                >
+
+                                                <div>
+                                                    <div>
+                                                        <i class="{{ choice.attr.icon }} mb-12"></i>
+                                                    </div>
+
+                                                    <div>
+                                                        <span>
+                                                            {{ choice.label }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                            </label>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+
+    function incrementChambre(button) {
+
+        const container = button.closest('.position-relative');
+        const hiddenInput = container.querySelector('.chambre-input');
+        const span = container.querySelector('.chambre-value');
+
+        let current = parseInt(span.textContent.trim(), 10) || 0;
+
+        current++;
+
+        span.textContent = current;
+        hiddenInput.value = current;
+
+    }
+
+    function decrementChambre(button) {
+
+        const container = button.closest('.position-relative');
+        const hiddenInput = container.querySelector('.chambre-input');
+        const span = container.querySelector('.chambre-value');
+
+        let current = parseInt(span.textContent.trim(), 10) || 0;
+
+        if (current > 0) {
+            current--;
+        }
+
+        span.textContent = current;
+        hiddenInput.value = current;
+
+    }
+
+    function incrementSalleBain(button) {
+
+        const container = button.closest('.position-relative');
+        const hiddenInput = container.querySelector('.salle-bain-input');
+        const span = container.querySelector('.salle-bain-value');
+
+        let current = parseFloat(span.textContent.replace(',', '.')) || 0;
+
+        current += 0.5;
+
+        span.textContent = current.toString().replace('.', ',');
+        hiddenInput.value = current;
+
+    }
+
+    function decrementSalleBain(button) {
+
+        const container = button.closest('.position-relative');
+        const hiddenInput = container.querySelector('.salle-bain-input');
+        const span = container.querySelector('.salle-bain-value');
+
+        let current = parseFloat(span.textContent.replace(',', '.')) || 0;
+
+        if (current > 0) {
+            current -= 0.5;
+        }
+
+        if (current < 0) {
+            current = 0;
+        }
+
+        span.textContent = current.toString().replace('.', ',');
+        hiddenInput.value = current;
+
+    }
+
+    document.querySelectorAll('.js-caracteristique-item').forEach(function (item) {
+
+        item.addEventListener('click', function () {
+
+            const input = item.querySelector('.js-caracteristique-input');
+
+            input.checked = !input.checked;
+
+            if (input.checked) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+
+        });
+
+    });
+</script>

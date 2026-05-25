@@ -36,12 +36,9 @@ class PropertyImage
         return $this->id;
     }
 
-    // NOTE: This is not a mapped field of entity metadata, just a simple property.
     #[Vich\UploadableField(mapping: 'products', fileNameProperty: 'imageName', size: 'imageSize')]
     private ?File $imageFile = null;
 
-    // NOTE: This field and the next one need to be nullable, otherwise the deletion won't work
-    //       if you want non-nullable fields, set the "erase_fields" option to false in the mapping config
     #[ORM\Column(nullable: true)]
     private ?string $imageName = null;
 

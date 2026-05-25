@@ -12,7 +12,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Enum\PerformanceEnergetique;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Repository\PropertyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -45,9 +44,6 @@ class Property
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $anneeConstruction = null;
-
-    #[ORM\Column(enumType: PerformanceEnergetique::class, nullable: true)]
-    private ?PerformanceEnergetique $performanceEnergetique = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresse = null;
@@ -87,6 +83,27 @@ class Property
      */
     #[ORM\OneToMany(targetEntity: PropertyImage::class, mappedBy: 'property')]
     private Collection $propertyImages;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $dpe = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $dpeLettre = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $ges = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $gesLettre = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $dpeMin = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $dpeMax = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $dateIndexationEnergie = null;
 
     public function __construct()
     {
@@ -167,18 +184,6 @@ class Property
     public function setAnneeConstruction(?string $anneeConstruction): static
     {
         $this->anneeConstruction = $anneeConstruction;
-
-        return $this;
-    }
-
-    public function getPerformanceEnergetique(): ?PerformanceEnergetique
-    {
-        return $this->performanceEnergetique;
-    }
-
-    public function setPerformanceEnergetique(?PerformanceEnergetique $performanceEnergetique): static
-    {
-        $this->performanceEnergetique = $performanceEnergetique;
 
         return $this;
     }
@@ -341,6 +346,90 @@ class Property
                 $propertyImage->setProperty(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDpe(): ?string
+    {
+        return $this->dpe;
+    }
+
+    public function setDpe(?string $dpe): static
+    {
+        $this->dpe = $dpe;
+
+        return $this;
+    }
+
+    public function getDpeLettre(): ?string
+    {
+        return $this->dpeLettre;
+    }
+
+    public function setDpeLettre(?string $dpeLettre): static
+    {
+        $this->dpeLettre = $dpeLettre;
+
+        return $this;
+    }
+
+    public function getGes(): ?string
+    {
+        return $this->ges;
+    }
+
+    public function setGes(?string $ges): static
+    {
+        $this->ges = $ges;
+
+        return $this;
+    }
+
+    public function getGesLettre(): ?string
+    {
+        return $this->gesLettre;
+    }
+
+    public function setGesLettre(?string $gesLettre): static
+    {
+        $this->gesLettre = $gesLettre;
+
+        return $this;
+    }
+
+    public function getDpeMin(): ?string
+    {
+        return $this->dpeMin;
+    }
+
+    public function setDpeMin(?string $dpeMin): static
+    {
+        $this->dpeMin = $dpeMin;
+
+        return $this;
+    }
+
+    public function getDpeMax(): ?string
+    {
+        return $this->dpeMax;
+    }
+
+    public function setDpeMax(?string $dpeMax): static
+    {
+        $this->dpeMax = $dpeMax;
+
+        return $this;
+    }
+
+    public function getDateIndexationEnergie(): ?\DateTimeImmutable
+    {
+        return $this->dateIndexationEnergie;
+    }
+
+    public function setDateIndexationEnergie(?\DateTimeImmutable $dateIndexationEnergie): static
+    {
+        $this->dateIndexationEnergie = $dateIndexationEnergie;
 
         return $this;
     }

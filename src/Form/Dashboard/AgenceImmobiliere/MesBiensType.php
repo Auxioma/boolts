@@ -12,14 +12,20 @@
 
 namespace App\Form\Dashboard\AgenceImmobiliere;
 
+use App\Entity\Caracteristique;
 use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
 use App\Entity\Property;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class MesBiensType extends AbstractType
 {
@@ -50,7 +56,6 @@ class MesBiensType extends AbstractType
             ->add('descriptionLogement')
             ->add('prix')
             ->add('anneeConstruction')
-            ->add('performanceEnergetique')
             ->add('adresse')
             ->add('codePostal')
             ->add('ville')
@@ -59,6 +64,62 @@ class MesBiensType extends AbstractType
             ])
             ->add('referenceInterne')
 
+            ->add('chambres', HiddenType::class, [
+                'required' => true,
+            ])
+
+            ->add('salleDeBains', HiddenType::class, [
+                'required' => true,
+            ])
+
+            ->add('surfaceTotal')
+            ->add('caracteristique', EntityType::class, [
+                'class' => Caracteristique::class,
+                'choice_label' => 'nom',
+                'multiple' => true,
+                'expanded' => true,
+                'required' => false,
+                'choice_attr' => static function (Caracteristique $caracteristique) {
+                    return [
+                        'icon' => $caracteristique->getIcone(),
+                        'name' => $caracteristique->getNom(),
+                    ];
+                },
+            ])
+
+            ->add('dpe')
+            ->add('ges')
+            ->add('dpeMax')
+            ->add('dpeMin')
+            ->add('dateIndexationEnergie', DateType::class, [
+                'widget' => 'single_text',
+                'html5' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                ],
+            ])
+            ->add('dpeLettre', ChoiceType::class, [
+                'choices' => [
+                    'A' => 'A',
+                    'B' => 'B',
+                    'C' => 'C',
+                    'D' => 'D',
+                    'E' => 'E',
+                    'F' => 'F',
+                    'G' => 'G',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'required' => true,
+            ])
+            ->add('propertyImages', CollectionType::class, [
+                'entry_type' => PropertyImageType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'prototype' => true,
+                'required' => false,
+            ])
         ;
     }
 

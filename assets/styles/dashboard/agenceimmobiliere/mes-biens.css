@@ -137,3 +137,43 @@
 .type-bien.active span {
     color: #5D00FF;
 }
+.caracteristique-logements h2 {
+    color: #0B0F14;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 24px;
+}
+.caracteristique-logements input[type=number]::-webkit-inner-spin-button,
+.caracteristique-logements input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.caracteristique-logements input[type=number] {
+    -moz-appearance: textfield;
+    padding-right: 120px !important;
+}
+.caracteristique-logements .fw-bold-700::placeholder {
+    color: #0B0F14;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+}
+.caracteristique-logements .chambre-value,
+.caracteristique-logements .salle-bain-value {
+    color: #0B0F14;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    margin: 0 16px;
+}
+.caracteristique-logements small {
+    color: #858789;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+}
