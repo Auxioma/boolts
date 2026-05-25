@@ -15,7 +15,6 @@ namespace App\DataFixtures;
 use App\Entity\Caracteristique;
 use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
-use App\Entity\Enum\PerformanceEnergetique;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Property;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -96,9 +95,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 ->setAnneeConstruction(
                     (string) $faker->numberBetween(1900, 2026)
                 )
-                ->setPerformanceEnergetique(
-                    $faker->randomElement(PerformanceEnergetique::cases())
-                )
+
                 ->setAdresse($faker->streetAddress())
                 ->setCodePostal($faker->postcode())
                 ->setVille($ville)
