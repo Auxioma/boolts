@@ -25,17 +25,36 @@
                                         {{ include('dashboard/agence_immobiliere/_partials/mes_biens/bilan-energetique.html.twig') }}
                                         {{ include('dashboard/agence_immobiliere/_partials/mes_biens/images.html.twig') }}
                                         {{ include('dashboard/agence_immobiliere/_partials/mes_biens/description.html.twig') }}
+                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/prix.html.twig') }}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
-
+    <div class="py-20 navigation-fixed">
+        <a href="" class="btn-retour py-10 px-16 mr-12">Retour</a>
+        <a href="" class="btn-suivant py-10 px-16">Suivant</a>
+    </div>
+<style>
+    .navigation-fixed {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 9999;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+        border-top: 1px solid #EBECEC;
+        background: #FFF;
+        box-shadow: 0 -4px 20px 0 rgba(0, 0, 0, 0.07);
+        padding-right: 108px;
+    }
+    </style>
     <script>
 
         document.addEventListener('DOMContentLoaded', function () {

@@ -120,6 +120,10 @@ class MesBiensType extends AbstractType
                 'prototype' => true,
                 'required' => false,
             ])
+            ->add('montantDepotDeGarantie')
+            ->add('montantLoyerHorsCharge')
+            ->add('montantDesCharges')
+
         ;
     }
 

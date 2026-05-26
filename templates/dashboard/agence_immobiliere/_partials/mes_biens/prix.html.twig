@@ -1,0 +1,60 @@
+<div class="js-tab-content d-none mes-biens-immobilier formulaire" id="cat8">
+    <div class="d-flex justify-content-between align-items-end">
+        <h1>
+            Définissez le prix de votre bien
+        </h1>
+        <div class="d-flex align-items-end">
+            <a href="#" class="btn-retour py-10 px-16 mr-12">
+                Enregistrer
+            </a>
+        </div>
+    </div>
+
+    <div class="mt-48 caracteristique-logements">
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <label for="" class="mb-16">Montant du loyer (hors charges)*</label>
+                    {{ form_widget(form.prix, {
+                        attr: {
+                            class: 'form-control mb-32',
+                            placeholder: '€/mois',
+                        },
+                    }) }}
+                </div>
+            </div>
+            <div class="col-6">
+                <div>
+                    <label for="" class="mb-16">Montant des charges*</label>
+                    {{ form_widget(form.montantDesCharges, {
+                        attr: {
+                            class: 'form-control mb-32',
+                            placeholder: '€/mois',
+                        },
+                    }) }}
+                </div>
+            </div>
+            <div>
+                <h2>Loyer affiché sur l’annonce : 867€ CC/mois </h2>
+            </div>
+            <div>
+                <label for="" class="mb-16">Montant du dépôt de garantie</label>
+                {{ form_widget(form.montantDepotDeGarantie, {
+                    attr: {
+                        class: 'form-control mb-32',
+                        placeholder: '€/mois',
+                    },
+                }) }}
+            </div>
+
+            <div>
+                <label for="">
+                    <input type="checkbox">
+                    Je reconnais avoir été informé(e) de la réglementation applicable à l’encadrement des loyers et déclare que le bien concerné respecte les dispositions légales en vigueur. La responsabilité liée à la conformité du montant du loyer renseigné incombe exclusivement au propriétaire/bailleur.
+                </label>
+            </div>
+
+        </div>
+    </div>
+</div>
+

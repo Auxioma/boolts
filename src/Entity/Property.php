@@ -105,6 +105,15 @@ class Property
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dateIndexationEnergie = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $montantLoyerHorsCharge = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $montantDepotDeGarantie = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $montantDesCharges = null;
+
     public function __construct()
     {
         $this->caracteristique = new ArrayCollection();
@@ -430,6 +439,42 @@ class Property
     public function setDateIndexationEnergie(?\DateTimeImmutable $dateIndexationEnergie): static
     {
         $this->dateIndexationEnergie = $dateIndexationEnergie;
+
+        return $this;
+    }
+
+    public function getMontantLoyerHorsCharge(): ?string
+    {
+        return $this->montantLoyerHorsCharge;
+    }
+
+    public function setMontantLoyerHorsCharge(?string $montantLoyerHorsCharge): static
+    {
+        $this->montantLoyerHorsCharge = $montantLoyerHorsCharge;
+
+        return $this;
+    }
+
+    public function getMontantDepotDeGarantie(): ?string
+    {
+        return $this->montantDepotDeGarantie;
+    }
+
+    public function setMontantDepotDeGarantie(?string $montantDepotDeGarantie): static
+    {
+        $this->montantDepotDeGarantie = $montantDepotDeGarantie;
+
+        return $this;
+    }
+
+    public function getMontantDesCharges(): ?string
+    {
+        return $this->montantDesCharges;
+    }
+
+    public function setMontantDesCharges(?string $montantDesCharges): static
+    {
+        $this->montantDesCharges = $montantDesCharges;
 
         return $this;
     }
