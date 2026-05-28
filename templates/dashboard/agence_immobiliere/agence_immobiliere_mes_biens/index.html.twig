@@ -13,19 +13,52 @@
                     <div class="row">
                         <div class="col-10 mx-auto">
                             <div class="row">
-                                <div class="col-3 pr-24">
+                                <div class="col-4 pr-24">
                                     {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/navbar.html.twig') }}
                                 </div>
-                                <div class="col-9">
+                                <div class="col-8">
                                     <div class="col-12">
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/type-de-bien.html.twig') }}
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/type-de-transaction.html.twig') }}
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/informations-principales.html.twig') }}
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/caracteristiques.html.twig') }}
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/bilan-energetique.html.twig') }}
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/images.html.twig') }}
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/description.html.twig') }}
-                                        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/prix.html.twig') }}
+                                        {{ form_start(form, {
+                                            attr: {
+                                                novalidate: 'novalidate',
+                                                enctype: 'multipart/form-data'
+                                            }
+                                        }) }}
+                                        {% if step == 1 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/type-de-bien.html.twig') }}
+                                        {% elseif step == 2 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/type-de-transaction.html.twig') }}
+                                        {% elseif step == 3 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/informations-principales.html.twig') }}
+                                        {% elseif step == 4 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/caracteristiques.html.twig') }}
+                                        {% elseif step == 5 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/bilan-energetique.html.twig') }}
+                                        {% elseif step == 6 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/images.html.twig') }}
+                                        {% elseif step == 7 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/description.html.twig') }}
+                                        {% elseif step == 8 %}
+                                            {{ include('dashboard/agence_immobiliere/_partials/mes_biens/prix.html.twig') }}
+                                        {% endif %} 
+                                        <div class="py-20 navigation-fixed">
+                                            <a
+                                                href="{{ path('agence_immobiliere_mes_biens', { step: step - 1 }) }}"
+                                                class="btn-retour py-10 px-16 mr-12 js-navigation-retour"
+                                            >
+                                                Retour
+                                            </a>
+
+                                            <button
+                                                type="submit"
+                                                name="direction"
+                                                value="next"
+                                                class="btn-suivant py-10 px-16"
+                                            >
+                                                toto
+                                            </button>
+                                        </div>
+                                        {{ form_end(form) }}
                                     </div>
                                 </div>
                             </div>
@@ -35,82 +68,37 @@
             </div>
         </div>
     </main>
-    <div class="py-20 navigation-fixed">
-        <a href="" class="btn-retour py-10 px-16 mr-12">Retour</a>
-        <a href="" class="btn-suivant py-10 px-16">Suivant</a>
-    </div>
-<style>
-    .navigation-fixed {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: 9999;
-        display: flex;
-        justify-content: end;
-        align-items: center;
-        border-top: 1px solid #EBECEC;
-        background: #FFF;
-        box-shadow: 0 -4px 20px 0 rgba(0, 0, 0, 0.07);
-        padding-right: 108px;
-    }
-    </style>
+
     <script>
-
         document.addEventListener('DOMContentLoaded', function () {
-
         const links = document.querySelectorAll('.js-stepper-link');
         const contents = document.querySelectorAll('.js-tab-content');
         const line = document.querySelector('.mes-bien-stepper-line');
-
         function updateLine(activeElement) {
-
         const currentIndex = [...links].indexOf(activeElement);
-
         const totalSteps = links.length - 1;
-
         const percentage = (currentIndex / totalSteps) * 100;
-
         const maxHeight = 500;
-
         line.style.height = (maxHeight * percentage / 100) + 'px';
-
     }
-
-        // INITIAL STATE
         const activeStep = document.querySelector('.mes-bien-stepper-item-active');
-
         if (activeStep) {
         updateLine(activeStep);
     }
-
         links.forEach(function (link) {
-
         link.addEventListener('click', function () {
-
         const target = this.dataset.tab;
-
-        // remove active
         links.forEach(function (item) {
         item.classList.remove('mes-bien-stepper-item-active');
     });
-
-        // hide all
         contents.forEach(function (content) {
         content.classList.add('d-none');
     });
-
-        // active current
         this.classList.add('mes-bien-stepper-item-active');
-
-        // show content
         const targetElement = document.getElementById(target);
-
         if (targetElement) {
         targetElement.classList.remove('d-none');
     }
-
-        // UPDATE LINE
         updateLine(this);
 
     });
@@ -120,4 +108,317 @@
     });
 
 </script>
+{% endblock %}
+{% block js %}
+    {{ parent() }}
+    <script>
+        // Attend que le DOM soit complètement chargé
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Récupère tous les inputs ayant la classe .js-type-bien-input
+            const inputs = document.querySelectorAll('.js-type-bien-input');
+
+            // Boucle sur chaque input
+            inputs.forEach(function (input) {
+
+                // Écoute le changement de sélection
+                input.addEventListener('change', function () {
+
+                    // Supprime la classe "active" sur tous les éléments
+                    document.querySelectorAll('.js-type-bien-item').forEach(function (item) {
+                        item.classList.remove('active');
+                    });
+
+                    // Récupère le parent le plus proche ayant la classe .js-type-bien-item
+                    const label = input.closest('.js-type-bien-item');
+
+                    // Vérifie que l'élément existe
+                    if (label) {
+
+                        // Ajoute la classe "active" sur l'élément sélectionné
+                        label.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const pages = [
+                '#cat1',
+                '#cat2',
+                '#cat3',
+                '#cat4',
+                '#cat5',
+                '#cat6',
+                '#cat7',
+                '#cat8',
+            ];
+
+            let currentPage = 0;
+
+            const btnRetour = document.querySelector('.js-navigation-retour');
+            const btnSuivant = document.querySelector('.js-navigation-suivant');
+
+            const stepperLinks = document.querySelectorAll('.js-stepper-link');
+            const line = document.querySelector('.mes-bien-stepper-line');
+
+            function updateStepper(index) {
+
+                stepperLinks.forEach(function (item, itemIndex) {
+
+                    item.classList.remove(
+                        'mes-bien-stepper-item-active',
+                        'mes-bien-stepper-item-completed'
+                    );
+
+                    if (itemIndex < index) {
+                        item.classList.add('mes-bien-stepper-item-completed');
+                    }
+
+                    if (itemIndex === index) {
+                        item.classList.add('mes-bien-stepper-item-active');
+                    }
+                });
+
+                if (line) {
+
+                    // PREMIÈRE PAGE
+                    if (index === 0) {
+
+                        line.style.height = '0px';
+                        line.style.display = 'none';
+
+                        return;
+                    }
+
+                    line.style.display = 'block';
+
+                    const totalSteps = stepperLinks.length - 1;
+                    const percentage = index / totalSteps;
+
+                    const firstStep = stepperLinks[0];
+                    const lastStep = stepperLinks[stepperLinks.length - 1];
+
+                    const firstTop = firstStep.offsetTop;
+                    const lastTop = lastStep.offsetTop;
+
+                    const totalHeight = lastTop - firstTop;
+
+                    line.style.height = (totalHeight * percentage) + 'px';
+                }
+            }
+
+            function showPage(index) {
+
+                // CACHE TOUTES LES PAGES
+                pages.forEach(function (pageId) {
+
+                    const page = document.querySelector(pageId);
+
+                    if (page) {
+                        page.classList.add('d-none');
+                    }
+                });
+
+                // AFFICHE LA PAGE ACTIVE
+                const activePage = document.querySelector(pages[index]);
+
+                if (activePage) {
+                    activePage.classList.remove('d-none');
+                }
+
+                // BOUTON RETOUR
+                if (index === 0) {
+                    btnRetour.classList.add('is-first-page');
+                } else {
+                    btnRetour.classList.remove('is-first-page');
+                }
+
+                // BOUTON SUIVANT
+                if (index === pages.length - 1) {
+                    btnSuivant.classList.add('is-last-page');
+                } else {
+                    btnSuivant.classList.remove('is-last-page');
+                }
+
+                // UPDATE STEPPER
+                updateStepper(index);
+            }
+
+            btnSuivant.addEventListener('click', function (event) {
+
+                event.preventDefault();
+
+                if (currentPage < pages.length - 1) {
+
+                    currentPage++;
+
+                    showPage(currentPage);
+                }
+            });
+
+            btnRetour.addEventListener('click', function (event) {
+
+                event.preventDefault();
+
+                if (currentPage > 0) {
+
+                    currentPage--;
+
+                    showPage(currentPage);
+                }
+            });
+
+            // INIT
+            showPage(currentPage);
+        });
+    </script>
+
+    <script>
+
+        /*
+        |--------------------------------------------------------------------------
+        | Gestion du nombre de chambres
+        |--------------------------------------------------------------------------
+        */
+        function incrementChambre(button) {
+            // Récupère le conteneur principal
+            const container = button.closest('.position-relative');
+            // Input hidden
+            const hiddenInput = container.querySelector('.chambre-input');
+            // Élément affichant la valeur
+            const span = container.querySelector('.chambre-value');
+            // Valeur actuelle
+            let current = parseInt(span.textContent.trim(), 10) || 0;
+            // Incrémente
+            current++;
+            // Mise à jour affichage
+            span.textContent = current;
+            // Mise à jour input
+            hiddenInput.value = current;
+        }
+
+        function decrementChambre(button) {
+            // Récupère le conteneur principal
+            const container = button.closest('.position-relative');
+            // Input hidden
+            const hiddenInput = container.querySelector('.chambre-input');
+            // Élément affichant la valeur
+            const span = container.querySelector('.chambre-value');
+            // Valeur actuelle
+            let current = parseInt(span.textContent.trim(), 10) || 0;
+            // Décrémente sans passer sous 0
+            if (current > 0) {
+                current--;
+            }
+
+            // Mise à jour affichage
+            span.textContent = current;
+
+            // Mise à jour input
+            hiddenInput.value = current;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Gestion du nombre de salles de bain
+        |--------------------------------------------------------------------------
+        */
+
+        function incrementSalleBain(button) {
+
+            // Récupère le conteneur principal
+            const container = button.closest('.position-relative');
+
+            // Input hidden
+            const hiddenInput = container.querySelector('.salle-bain-input');
+
+            // Élément affichant la valeur
+            const span = container.querySelector('.salle-bain-value');
+
+            // Valeur actuelle
+            let current = parseFloat(span.textContent.replace(',', '.')) || 0;
+
+            // Incrémente de 0.5
+            current += 0.5;
+
+            // Mise à jour affichage
+            span.textContent = current.toString().replace('.', ',');
+
+            // Mise à jour input
+            hiddenInput.value = current;
+        }
+
+        function decrementSalleBain(button) {
+
+            // Récupère le conteneur principal
+            const container = button.closest('.position-relative');
+
+            // Input hidden
+            const hiddenInput = container.querySelector('.salle-bain-input');
+
+            // Élément affichant la valeur
+            const span = container.querySelector('.salle-bain-value');
+
+            // Valeur actuelle
+            let current = parseFloat(span.textContent.replace(',', '.')) || 0;
+
+            // Décrémente
+            if (current > 0) {
+                current -= 0.5;
+            }
+
+            // Sécurité
+            if (current < 0) {
+                current = 0;
+            }
+
+            // Mise à jour affichage
+            span.textContent = current.toString().replace('.', ',');
+
+            // Mise à jour input
+            hiddenInput.value = current;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Gestion des caractéristiques
+        |--------------------------------------------------------------------------
+        */
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Récupère tous les checkbox caractéristiques
+            const featureInputs = document.querySelectorAll('.js-property-feature-input');
+
+            // Boucle sur chaque input
+            featureInputs.forEach(function (input) {
+
+                // Écoute du changement
+                input.addEventListener('change', function () {
+
+                    // Récupère la card parente
+                    const item = input.closest('.js-property-feature-card');
+
+                    // Vérifie si l'élément existe
+                    if (!item) {
+                        return;
+                    }
+
+                    // Active / désactive la classe
+                    if (input.checked) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}

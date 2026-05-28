@@ -18,6 +18,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PropertyRepository::class)]
 class Property
@@ -27,45 +28,59 @@ class Property
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(groups: ['step_1'])]
     #[ORM\ManyToOne(inversedBy: 'properties')]
     private ?CategoryBien $typeBien = null;
 
+    #[Assert\NotBlank(groups: ['step_2'])]
     #[ORM\ManyToOne(inversedBy: 'properties')]
     private ?CategoryBienTransaction $typeTransaction = null;
 
+    #[Assert\NotBlank(groups: ['step_7'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $titreDuLogement = null;
 
+    #[Assert\NotBlank(groups: ['step_7'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $descriptionLogement = null;
 
+    #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $prix = null;
 
+    #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $anneeConstruction = null;
 
+    #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $adresse = null;
 
+    #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
+    #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ville = null;
 
+    #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $pays = null;
 
+    #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $referenceInterne = null;
 
+    #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $chambres = null;
 
+    #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $salleDeBains = null;
 
+    #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $surfaceTotal = null;
 
@@ -81,36 +96,46 @@ class Property
     /**
      * @var Collection<int, PropertyImage>
      */
+    #[Assert\Count(min: 1, groups: ['step_6'])]
     #[ORM\OneToMany(targetEntity: PropertyImage::class, mappedBy: 'property')]
     private Collection $propertyImages;
 
+    #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $dpe = null;
 
+    #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $dpeLettre = null;
 
+    #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ges = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $gesLettre = null;
 
+    #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $dpeMin = null;
 
+    #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $dpeMax = null;
 
+    #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dateIndexationEnergie = null;
 
+    #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $montantLoyerHorsCharge = null;
 
+    #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $montantDepotDeGarantie = null;
 
+    #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $montantDesCharges = null;
 
@@ -350,7 +375,6 @@ class Property
     public function removePropertyImage(PropertyImage $propertyImage): static
     {
         if ($this->propertyImages->removeElement($propertyImage)) {
-            // set the owning side to null (unless already changed)
             if ($propertyImage->getProperty() === $this) {
                 $propertyImage->setProperty(null);
             }

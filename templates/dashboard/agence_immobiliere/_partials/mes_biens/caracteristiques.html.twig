@@ -1,11 +1,11 @@
-<div class="js-tab-content d-none mes-biens-immobilier formulaire" id="cat4">
+<div class="js-tab-content mes-biens-immobilier formulaire" id="cat4">
     <div class="d-flex justify-content-between align-items-end">
         <h1>
             Remplissez les caractéristiques de votre bien
         </h1>
 
         <div class="d-flex align-items-end">
-            <a href="#" class="btn-retour py-10 px-16 mr-12">
+            <a href="#" class="btn-retour py-10 px-16">
                 Enregistrer
             </a>
         </div>
@@ -40,7 +40,7 @@
                                         readonly
                                     >
 
-                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center me-3">
+                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center mr-14   ">
 
                                         <button
                                             type="button"
@@ -88,7 +88,7 @@
                                         readonly
                                     >
 
-                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center me-3">
+                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center mr-14">
 
                                         <button
                                             type="button"
@@ -164,18 +164,16 @@
                                         {% set isChecked = choice.value in form.caracteristique.vars.value %}
 
                                         <div class="col-4 mb-21">
-
                                             <label
-                                                class="type-bien px-24 py-24 w-100 js-caracteristique-item {% if isChecked %}active{% endif %}"
-                                                for="caracteristique_{{ loop.index0 }}"
+                                                class="type-bien px-24 py-24 w-100 js-property-feature-card {% if isChecked %}active{% endif %}"
+                                                for="property_feature_{{ loop.index0 }}"
                                             >
-
                                                 <input
                                                     type="checkbox"
-                                                    id="caracteristique_{{ loop.index0 }}"
+                                                    id="property_feature_{{ loop.index0 }}"
                                                     name="{{ form.caracteristique.vars.full_name }}[]"
                                                     value="{{ choice.value }}"
-                                                    class="d-none js-caracteristique-input"
+                                                    class="d-none js-property-feature-input"
                                                     {% if isChecked %}checked="checked"{% endif %}
                                                 >
 
@@ -190,17 +188,12 @@
                                                         </span>
                                                     </div>
                                                 </div>
-
                                             </label>
-
                                         </div>
-
                                     {% endfor %}
 
                                 </div>
-
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -208,92 +201,3 @@
         </div>
     </div>
 </div>
-
-<script>
-
-    function incrementChambre(button) {
-
-        const container = button.closest('.position-relative');
-        const hiddenInput = container.querySelector('.chambre-input');
-        const span = container.querySelector('.chambre-value');
-
-        let current = parseInt(span.textContent.trim(), 10) || 0;
-
-        current++;
-
-        span.textContent = current;
-        hiddenInput.value = current;
-
-    }
-
-    function decrementChambre(button) {
-
-        const container = button.closest('.position-relative');
-        const hiddenInput = container.querySelector('.chambre-input');
-        const span = container.querySelector('.chambre-value');
-
-        let current = parseInt(span.textContent.trim(), 10) || 0;
-
-        if (current > 0) {
-            current--;
-        }
-
-        span.textContent = current;
-        hiddenInput.value = current;
-
-    }
-
-    function incrementSalleBain(button) {
-
-        const container = button.closest('.position-relative');
-        const hiddenInput = container.querySelector('.salle-bain-input');
-        const span = container.querySelector('.salle-bain-value');
-
-        let current = parseFloat(span.textContent.replace(',', '.')) || 0;
-
-        current += 0.5;
-
-        span.textContent = current.toString().replace('.', ',');
-        hiddenInput.value = current;
-
-    }
-
-    function decrementSalleBain(button) {
-
-        const container = button.closest('.position-relative');
-        const hiddenInput = container.querySelector('.salle-bain-input');
-        const span = container.querySelector('.salle-bain-value');
-
-        let current = parseFloat(span.textContent.replace(',', '.')) || 0;
-
-        if (current > 0) {
-            current -= 0.5;
-        }
-
-        if (current < 0) {
-            current = 0;
-        }
-
-        span.textContent = current.toString().replace('.', ',');
-        hiddenInput.value = current;
-
-    }
-
-    document.querySelectorAll('.js-caracteristique-item').forEach(function (item) {
-
-        item.addEventListener('click', function () {
-
-            const input = item.querySelector('.js-caracteristique-input');
-
-            input.checked = !input.checked;
-
-            if (input.checked) {
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
-            }
-
-        });
-
-    });
-</script>

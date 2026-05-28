@@ -71,6 +71,13 @@
 .ml-25 { margin-left:25px }
 .mx-25 { margin-right:25px; margin-left:25px }
 
+.mt-26 { margin-top: 26px; }
+.mb-26 { margin-bottom: 26px; }
+.my-26 { margin-top:26px; margin-bottom: 26px; }
+.mr-26 { margin-right:26px }
+.ml-26 { margin-left:26px }
+.mx-26 { margin-right:26px; margin-left:26px }
+
 .mt-28 { margin-top: 28px; }
 .mb-28 { margin-bottom: 28px; }
 .my-28 { margin-top: 28px; margin-bottom: 28px; }
@@ -96,7 +103,6 @@
 .mt-48 { margin-top: 48px; }
 .mb-48 { margin-bottom: 48px; }
 .my-48 { margin-top: 48px; margin-bottom: 48px; }
-
 
 .mt-50 { margin-top: 50px; }
 .mb-50 { margin-bottom: 50px; }
@@ -184,6 +190,13 @@
 .pt-20 { padding-top: 20px; }
 .pb-20 { padding-bottom: 20px; }
 .py-20 { padding-top: 20px; padding-bottom: 20px; }
+
+.pt-22 { padding-top: 22px; }
+.pb-22 { padding-bottom: 22px }
+.py-22 { padding-top:22px; padding-bottom: 22px }
+.pl-22 { padding-left: 22px }
+.pr-22 { padding-right: 22px }
+.px-22 { padding-left: 22px; padding-right: 22px; }
 
 .pt-24 { padding-top: 24px; }
 .pb-24 { padding-bottom: 24px; }

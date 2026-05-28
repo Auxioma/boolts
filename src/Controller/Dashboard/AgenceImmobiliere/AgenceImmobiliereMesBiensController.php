@@ -25,17 +25,47 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     #[Route('/', name: 'mes_biens')]
     public function index(Request $request): Response
     {
-        $mesBiens = new Property();
+        $step = $request->query->getInt('step', 1);
 
-        $form = $this->createForm(
-            MesBiensType::class,
-            $mesBiens
-        );
+        $mesBiens = new Property();
+        $form = $this->createForm(MesBiensType::class, $mesBiens, [
+            'step' => $step,
+        ]);
 
         $form->handleRequest($request);
 
+        if ($form->isSubmitted()) {
+            /* mettre en session step 1 */
+            if (1 === $step) {
+                $formName = $form->getName();
+                $typeBienId = $request->request->all($formName)['typeBien'] ?? null;
+
+                $request->getSession()->set('mes_biens_step_1', [
+                    'typeBien' => $typeBienId,
+                ]);
+
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 2,
+                ]);
+            }
+            /* mettre en session step 2 */
+            if (2 === $step) {
+                $formName = $form->getName();
+                $typeTransactionId = $request->request->all($formName)['typeTransaction'] ?? null;
+
+                $request->getSession()->set('mes_biens_step_2', [
+                    'typeTransaction' => $typeTransactionId,
+                ]);
+
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 3,
+                ]);
+            }
+        }
+
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig', [
             'form' => $form->createView(),
+            'step' => $step,
         ]);
     }
 }
