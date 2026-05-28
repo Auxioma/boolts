@@ -90,7 +90,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $entityManager->flush();
                 
                 /* je verifie que le champs pays est bien france */
-                if ('Fr' !== $mesBiens->getPays()) {
+                if ('FR' !== $mesBiens->getPays()) {
                     return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                         'step' => 6,
                     ]);
