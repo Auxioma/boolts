@@ -63,7 +63,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
 
             /* mettre en session le step 3 */
-            if(3 === $step) {
+            if (3 === $step) {
                 $formName = $form->getName();
                 $adresseId = $request->request->all($formName)['adresse'] ?? null;
                 $codePostal = $request->request->all($formName)['codePostal'] ?? null;
@@ -81,31 +81,91 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     'step' => 4,
                 ]);
             }
+            /* mettre en session le step 4 */
+            if (4 === $step) {
+                $formName = $form->getName();
+                $data = $request->request->all($formName);
 
-                if (4 === $step) {
-                    $formName = $form->getName();
-                    $data = $request->request->all($formName);
+                $chambres = $data['chambres'] ?? null;
+                $salleDeBains = $data['salleDeBains'] ?? null;
+                $surfaceTotal = $data['surfaceTotal'] ?? null;
+                $anneeConstruction = $data['anneeConstruction'] ?? null;
+                $caracteristique = $data['caracteristique'] ?? [];
 
-                    $chambres = $data['chambres'] ?? null;
-                    $salleDeBains = $data['salleDeBains'] ?? null;
-                    $surfaceTotal = $data['surfaceTotal'] ?? null;
-                    $anneeConstruction = $data['anneeConstruction'] ?? null;
-                    $caracteristique = $data['caracteristique'] ?? [];
+                $request->getSession()->set('mes_biens_step_4', [
+                    'chambres' => $chambres,
+                    'salleDeBains' => $salleDeBains,
+                    'surfaceTotal' => $surfaceTotal,
+                    'anneeConstruction' => $anneeConstruction,
+                    'caracteristique' => $caracteristique,
+                ]);
 
-                    $request->getSession()->set('mes_biens_step_4', [
-                        'chambres' => $chambres,
-                        'salleDeBains' => $salleDeBains,
-                        'surfaceTotal' => $surfaceTotal,
-                        'anneeConstruction' => $anneeConstruction,
-                        'caracteristique' => $caracteristique,
-                    ]);
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 5,
+                ]);
+            }
+            /* mettre en session le step 5 */
+            if (5 === $step) {
+                $formName = $form->getName();
+                $data = $request->request->all($formName);
 
-                    dd($request->getSession()->all());
+                $request->getSession()->set('mes_biens_step_5', [
+                    'dpe' => $data['dpe'] ?? null,
+                    'ges' => $data['ges'] ?? null,
+                    'dpeMax' => $data['dpeMax'] ?? null,
+                    'dpeMin' => $data['dpeMin'] ?? null,
+                    'dateIndexationEnergie' => $data['dateIndexationEnergie'] ?? null,
+                    'dpeLettre' => $data['dpeLettre'] ?? null,
+                ]);
 
-                    return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                        'step' => 5,
-                    ]);
-                }
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 6,
+                ]);
+            }
+
+            if (6 === $step) {
+                $formName = $form->getName();
+                $data = $request->request->all($formName);
+
+                $request->getSession()->set('mes_biens_step_6', [
+                    'propertyImages' => $data['propertyImages'] ?? [],
+                ]);
+
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 7,
+                ]);
+            }
+
+            if (7 === $step) {
+                $formName = $form->getName();
+                $data = $request->request->all($formName);
+
+                $request->getSession()->set('mes_biens_step_7', [
+                    'titreDuLogement' => $data['titreDuLogement'] ?? null,
+                    'descriptionLogement' => $data['descriptionLogement'] ?? null,
+                ]);
+
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 8,
+                ]);
+            }
+
+            if (8 === $step) {
+                $formName = $form->getName();
+                $data = $request->request->all($formName);
+
+                $request->getSession()->set('mes_biens_step_8', [
+                    'prix' => $data['prix'] ?? null,
+                    'referenceInterne' => $data['referenceInterne'] ?? null,
+                    'montantDepotDeGarantie' => $data['montantDepotDeGarantie'] ?? null,
+                    'montantLoyerHorsCharge' => $data['montantLoyerHorsCharge'] ?? null,
+                    'montantDesCharges' => $data['montantDesCharges'] ?? null,
+                ]);
+
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 9,
+                ]);
+            }
         }
 
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig', [

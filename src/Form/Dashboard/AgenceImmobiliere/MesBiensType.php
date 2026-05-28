@@ -141,12 +141,14 @@ class MesBiensType extends AbstractType
                 ])
             ;
         }
+
         if (7 === $step) {
             $builder
                 ->add('titreDuLogement')
                 ->add('descriptionLogement')
             ;
         }
+
         if (8 === $step) {
             $builder
                 ->add('prix')
