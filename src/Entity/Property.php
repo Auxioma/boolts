@@ -97,7 +97,12 @@ class Property
      * @var Collection<int, PropertyImage>
      */
     #[Assert\Count(min: 1, groups: ['step_6'])]
-    #[ORM\OneToMany(targetEntity: PropertyImage::class, mappedBy: 'property')]
+    #[ORM\OneToMany(
+        targetEntity: PropertyImage::class,
+        mappedBy: 'property',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $propertyImages;
 
     #[Assert\NotBlank(groups: ['step_5'])]
@@ -138,6 +143,9 @@ class Property
     #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $montantDesCharges = null;
+
+    #[ORM\ManyToOne(inversedBy: 'properties')]
+    private ?User $user = null;
 
     public function __construct()
     {
@@ -499,6 +507,18 @@ class Property
     public function setMontantDesCharges(?string $montantDesCharges): static
     {
         $this->montantDesCharges = $montantDesCharges;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

@@ -14,6 +14,11 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 
 use App\Entity\Property;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
+use App\Repository\CaracteristiqueRepository;
+use App\Repository\CategoryBienRepository;
+use App\Repository\CategoryBienTransactionRepository;
+use App\Repository\PropertyRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,11 +28,24 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
     #[Route('/', name: 'mes_biens')]
-    public function index(Request $request): Response
+    public function index(
+        Request $request,
+        PropertyRepository $propertyRepository,
+        EntityManagerInterface $entityManager): Response
     {
         $step = $request->query->getInt('step', 1);
 
-        $mesBiens = new Property();
+        $propertyId = $request->getSession()->get('mes_biens_property_id');
+
+        if ($propertyId) {
+            $mesBiens = $propertyRepository->find($propertyId);
+            if (!$mesBiens) {
+                $mesBiens = new Property();
+            }
+        } else {
+            $mesBiens = new Property();
+        }
+
         $form = $this->createForm(MesBiensType::class, $mesBiens, [
             'step' => $step,
         ]);
@@ -37,12 +55,14 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         if ($form->isSubmitted()) {
             /* mettre en session step 1 */
             if (1 === $step) {
-                $formName = $form->getName();
-                $typeBienId = $request->request->all($formName)['typeBien'] ?? null;
+                $entityManager->persist($mesBiens);
 
-                $request->getSession()->set('mes_biens_step_1', [
-                    'typeBien' => $typeBienId,
-                ]);
+                $entityManager->flush();
+
+                $request->getSession()->set(
+                    'mes_biens_property_id',
+                    $mesBiens->getId()
+                );
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 2,
@@ -50,12 +70,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
             /* mettre en session step 2 */
             if (2 === $step) {
-                $formName = $form->getName();
-                $typeTransactionId = $request->request->all($formName)['typeTransaction'] ?? null;
-
-                $request->getSession()->set('mes_biens_step_2', [
-                    'typeTransaction' => $typeTransactionId,
-                ]);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 3,
@@ -64,18 +79,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
             /* mettre en session le step 3 */
             if (3 === $step) {
-                $formName = $form->getName();
-                $adresseId = $request->request->all($formName)['adresse'] ?? null;
-                $codePostal = $request->request->all($formName)['codePostal'] ?? null;
-                $ville = $request->request->all($formName)['ville'] ?? null;
-                $pays = $request->request->all($formName)['pays'] ?? null;
-
-                $request->getSession()->set('mes_biens_step_3', [
-                    'adresse' => $adresseId,
-                    'codePostal' => $codePostal,
-                    'ville' => $ville,
-                    'pays' => $pays,
-                ]);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 4,
@@ -83,22 +87,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
             /* mettre en session le step 4 */
             if (4 === $step) {
-                $formName = $form->getName();
-                $data = $request->request->all($formName);
-
-                $chambres = $data['chambres'] ?? null;
-                $salleDeBains = $data['salleDeBains'] ?? null;
-                $surfaceTotal = $data['surfaceTotal'] ?? null;
-                $anneeConstruction = $data['anneeConstruction'] ?? null;
-                $caracteristique = $data['caracteristique'] ?? [];
-
-                $request->getSession()->set('mes_biens_step_4', [
-                    'chambres' => $chambres,
-                    'salleDeBains' => $salleDeBains,
-                    'surfaceTotal' => $surfaceTotal,
-                    'anneeConstruction' => $anneeConstruction,
-                    'caracteristique' => $caracteristique,
-                ]);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 5,
@@ -106,17 +95,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
             /* mettre en session le step 5 */
             if (5 === $step) {
-                $formName = $form->getName();
-                $data = $request->request->all($formName);
-
-                $request->getSession()->set('mes_biens_step_5', [
-                    'dpe' => $data['dpe'] ?? null,
-                    'ges' => $data['ges'] ?? null,
-                    'dpeMax' => $data['dpeMax'] ?? null,
-                    'dpeMin' => $data['dpeMin'] ?? null,
-                    'dateIndexationEnergie' => $data['dateIndexationEnergie'] ?? null,
-                    'dpeLettre' => $data['dpeLettre'] ?? null,
-                ]);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 6,
@@ -124,12 +103,16 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
 
             if (6 === $step) {
-                $formName = $form->getName();
-                $data = $request->request->all($formName);
+                foreach ($mesBiens->getPropertyImages() as $index => $propertyImage) {
+                    $propertyImage->setProperty($mesBiens);
+                    $propertyImage->setPosition($index + 1);
+                    $propertyImage->setSize(
+                        $propertyImage->getImageFile()?->getSize()
+                    );
+                }
 
-                $request->getSession()->set('mes_biens_step_6', [
-                    'propertyImages' => $data['propertyImages'] ?? [],
-                ]);
+                $entityManager->persist($mesBiens);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 7,
@@ -137,13 +120,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
 
             if (7 === $step) {
-                $formName = $form->getName();
-                $data = $request->request->all($formName);
-
-                $request->getSession()->set('mes_biens_step_7', [
-                    'titreDuLogement' => $data['titreDuLogement'] ?? null,
-                    'descriptionLogement' => $data['descriptionLogement'] ?? null,
-                ]);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 8,
@@ -151,20 +128,9 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
 
             if (8 === $step) {
-                $formName = $form->getName();
-                $data = $request->request->all($formName);
+                $entityManager->flush();
 
-                $request->getSession()->set('mes_biens_step_8', [
-                    'prix' => $data['prix'] ?? null,
-                    'referenceInterne' => $data['referenceInterne'] ?? null,
-                    'montantDepotDeGarantie' => $data['montantDepotDeGarantie'] ?? null,
-                    'montantLoyerHorsCharge' => $data['montantLoyerHorsCharge'] ?? null,
-                    'montantDesCharges' => $data['montantDesCharges'] ?? null,
-                ]);
-
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 9,
-                ]);
+                return $this->redirectToRoute('agence_immobiliere_mes_biens_status');
             }
         }
 
@@ -172,5 +138,11 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'form' => $form->createView(),
             'step' => $step,
         ]);
+    }
+
+    #[Route('/status', name: 'mes_biens_status')]
+    public function status(): Response
+    {
+        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/status.html.twig');
     }
 }

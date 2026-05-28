@@ -17,6 +17,8 @@ use App\Entity\Traits\DeletedAtTraits;
 use App\Entity\Traits\LastLoginAtTraits;
 use App\Entity\Traits\UpdatedAtTraits;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
@@ -201,6 +203,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\ManyToOne]
     private ?FuseauHoraire $fuseauHoraire = null;
+
+    /**
+     * @var Collection<int, Property>
+     */
+    #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'user')]
+    private Collection $properties;
+
+    public function __construct()
+    {
+        $this->properties = new ArrayCollection();
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -711,6 +724,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setFuseauHoraire(?FuseauHoraire $fuseauHoraire): static
     {
         $this->fuseauHoraire = $fuseauHoraire;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Property>
+     */
+    public function getProperties(): Collection
+    {
+        return $this->properties;
+    }
+
+    public function addProperty(Property $property): static
+    {
+        if (!$this->properties->contains($property)) {
+            $this->properties->add($property);
+            $property->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProperty(Property $property): static
+    {
+        if ($this->properties->removeElement($property)) {
+            // set the owning side to null (unless already changed)
+            if ($property->getUser() === $this) {
+                $property->setUser(null);
+            }
+        }
 
         return $this;
     }
