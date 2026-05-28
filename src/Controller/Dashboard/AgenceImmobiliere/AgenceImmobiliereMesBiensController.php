@@ -88,6 +88,13 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             /* mettre en session le step 4 */
             if (4 === $step) {
                 $entityManager->flush();
+                
+                /* je verifie que le champs pays est bien france */
+                if ('Fr' !== $mesBiens->getPays()) {
+                    return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                        'step' => 6,
+                    ]);
+                }
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 5,
@@ -106,9 +113,6 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 foreach ($mesBiens->getPropertyImages() as $index => $propertyImage) {
                     $propertyImage->setProperty($mesBiens);
                     $propertyImage->setPosition($index + 1);
-                    $propertyImage->setSize(
-                        $propertyImage->getImageFile()?->getSize()
-                    );
                 }
 
                 $entityManager->persist($mesBiens);
