@@ -76,10 +76,10 @@ class MesBiensType extends AbstractType
         if (4 === $step) {
             $builder
                 ->add('chambres', HiddenType::class, [
-                    'required' => true,
+                    'required' => false,
                 ])
                 ->add('salleDeBains', HiddenType::class, [
-                    'required' => true,
+                    'required' => false,
                 ])
                 ->add('surfaceTotal')
                 ->add('anneeConstruction')

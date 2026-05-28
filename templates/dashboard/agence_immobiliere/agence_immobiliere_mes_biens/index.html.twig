@@ -21,7 +21,8 @@
                                         {{ form_start(form, {
                                             attr: {
                                                 novalidate: 'novalidate',
-                                                enctype: 'multipart/form-data'
+                                                enctype: 'multipart/form-data',
+                                                'data-turbo': 'false'
                                             }
                                         }) }}
                                         {% if step == 1 %}
@@ -421,4 +422,22 @@
             });
         });
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const items = document.querySelectorAll('.js-type-transaction-item');
+        items.forEach(function (item) {
+            item.addEventListener('click', function () {
+                document.querySelectorAll('.js-type-transaction-item').forEach(function (element) {
+                    element.classList.remove('active');
+                });
+
+                const input = item.querySelector('.js-type-transaction-input');
+                if (input) {
+                    input.checked = true;
+                }
+                item.classList.add('active');
+            });
+        });
+    });
+</script>
 {% endblock %}

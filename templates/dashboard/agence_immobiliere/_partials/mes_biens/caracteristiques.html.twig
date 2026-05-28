@@ -18,6 +18,8 @@
                     <div class="">
                         <div class="row">
 
+                            {{ form_errors(form) }}
+
                             <h2 class="mb-32">Pièces</h2>
 
                             <div>
@@ -191,6 +193,7 @@
                                             </label>
                                         </div>
                                     {% endfor %}
+                                    {% do form.caracteristique.setRendered %}
 
                                 </div>
                             </div>

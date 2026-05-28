@@ -61,6 +61,51 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     'step' => 3,
                 ]);
             }
+
+            /* mettre en session le step 3 */
+            if(3 === $step) {
+                $formName = $form->getName();
+                $adresseId = $request->request->all($formName)['adresse'] ?? null;
+                $codePostal = $request->request->all($formName)['codePostal'] ?? null;
+                $ville = $request->request->all($formName)['ville'] ?? null;
+                $pays = $request->request->all($formName)['pays'] ?? null;
+
+                $request->getSession()->set('mes_biens_step_3', [
+                    'adresse' => $adresseId,
+                    'codePostal' => $codePostal,
+                    'ville' => $ville,
+                    'pays' => $pays,
+                ]);
+
+                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                    'step' => 4,
+                ]);
+            }
+
+                if (4 === $step) {
+                    $formName = $form->getName();
+                    $data = $request->request->all($formName);
+
+                    $chambres = $data['chambres'] ?? null;
+                    $salleDeBains = $data['salleDeBains'] ?? null;
+                    $surfaceTotal = $data['surfaceTotal'] ?? null;
+                    $anneeConstruction = $data['anneeConstruction'] ?? null;
+                    $caracteristique = $data['caracteristique'] ?? [];
+
+                    $request->getSession()->set('mes_biens_step_4', [
+                        'chambres' => $chambres,
+                        'salleDeBains' => $salleDeBains,
+                        'surfaceTotal' => $surfaceTotal,
+                        'anneeConstruction' => $anneeConstruction,
+                        'caracteristique' => $caracteristique,
+                    ]);
+
+                    dd($request->getSession()->all());
+
+                    return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                        'step' => 5,
+                    ]);
+                }
         }
 
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig', [
