@@ -32,6 +32,7 @@ class MesBiensType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $step = $options['step'];
+        $typeTransaction = $options['typeTransaction'] ?? null;
 
         if (1 === $step) {
             $builder
@@ -146,17 +147,21 @@ class MesBiensType extends AbstractType
             $builder
                 ->add('titreDuLogement')
                 ->add('descriptionLogement')
+                ->add('referenceInterne')
             ;
         }
 
         if (8 === $step) {
-            $builder
-                ->add('prix')
-                ->add('referenceInterne')
-                ->add('montantDepotDeGarantie')
-                ->add('montantLoyerHorsCharge')
-                ->add('montantDesCharges')
-            ;
+            if ('location' === $typeTransaction) {
+                $builder
+                    ->add('montantLoyerHorsCharge')
+                    ->add('montantDepotDeGarantie')
+                    ->add('montantDesCharges');
+            }
+            if ('vente' === $typeTransaction) {
+                $builder
+                    ->add('prix');
+            }
         }
     }
 
@@ -165,11 +170,14 @@ class MesBiensType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Property::class,
             'step' => 1,
+            'typeTransaction' => null,
             'validation_groups' => static function (FormInterface $form): array {
                 $step = $form->getConfig()->getOption('step');
 
                 return ['step_'.$step];
             },
         ]);
+        $resolver->setAllowedTypes('step', 'int');
+        $resolver->setAllowedTypes('typeTransaction', ['null', 'string']);
     }
 }

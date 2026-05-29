@@ -12,40 +12,18 @@
 
     <div class="mt-48 caracteristique-logements">
         <div class="row">
-            <div class="col-6">
-                <div>
-                    <label for="" class="mb-16">Montant du loyer (hors charges)*</label>
-                    {{ form_widget(form.prix, {
-                        attr: {
-                            class: 'form-control mb-32',
-                            placeholder: '€/mois',
-                        },
-                    }) }}
-                </div>
-            </div>
-            <div class="col-6">
-                <div>
-                    <label for="" class="mb-16">Montant des charges*</label>
-                    {{ form_widget(form.montantDesCharges, {
-                        attr: {
-                            class: 'form-control mb-32',
-                            placeholder: '€/mois',
-                        },
-                    }) }}
-                </div>
-            </div>
-            <div class="mb-32">
-                <h2>Loyer affiché sur l’annonce : 867€ CC/mois </h2>
-            </div>
-            <div>
-                <label for="" class="mb-16">Montant du dépôt de garantie</label>
-                {{ form_widget(form.montantDepotDeGarantie, {
-                    attr: {
-                        class: 'form-control mb-32',
-                        placeholder: '€/mois',
-                    },
-                }) }}
-            </div>
+            {% set typeTransaction = app.request.query.get('typeTransaction') %}
+
+            {% if typeTransaction %}
+                {% set transaction = typeTransaction|lower %}
+
+                {% if transaction == 'vente' %}
+                    {% include 'dashboard/agence_immobiliere/_partials/mes_biens/_partials/achat.html.twig' %}
+                {% elseif transaction == 'location' %}
+                    {% include 'dashboard/agence_immobiliere/_partials/mes_biens/_partials/location.html.twig' %}
+                {% endif %}
+            {% endif %}
+
 
             <div>
                 <label for="" class="d-flex">

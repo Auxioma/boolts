@@ -5,9 +5,9 @@
         </h1>
 
         <div class="d-flex align-items-end">
-            <a href="#" class="btn-retour py-10 px-16">
+            <button type="submit" class="btn-retour py-10 px-16">
                 Enregistrer
-            </a>
+            </button>
         </div>
     </div>
 
@@ -17,27 +17,62 @@
         </div>
     </div>
 
-    {% set existingImages = form.propertyImages.vars.data %}
-    {% set existingImagesCount = existingImages|length %}
+    {% set existingImagesCount = form.propertyImages|length %}
     {% set emptyCardsCount = existingImagesCount < 5 ? 5 - existingImagesCount : 0 %}
 
     <div
         class="property-upload-grid"
         id="property-images-collection"
-        data-prototype="{{ form_widget(form.propertyImages.vars.prototype.imageFile, {
+        data-prototype="{{ form_widget(form.propertyImages.vars.prototype, {
             attr: {
                 class: 'd-none'
             }
         })|e('html_attr') }}"
         data-index="{{ form.propertyImages|length }}"
     >
-        {% for image in existingImages %}
-            <div class="property-preview-card is-filled" data-position="{{ loop.index }}">
-                <img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Photo du bien">
-                <span class="property-image-position">{{ loop.index }}</span>
+        {# Images déjà enregistrées en BDD #}
+        {% for propertyImageForm in form.propertyImages %}
+            {% set image = propertyImageForm.vars.data %}
+
+            <div class="property-preview-card is-filled" data-position="{{ loop.index }}" draggable="true">
+                {% if image %}
+                    <img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Photo du bien">
+                {% endif %}
+
+                <div class="property-image-actions">
+                    <button type="button" class="property-image-actions-button js-property-image-actions-button" aria-label="Actions de l'image">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <div class="property-image-actions-menu d-none">
+                        <button type="button" data-image-action="cover">Définir comme couverture</button>
+                        <button type="button" data-image-action="backward">Déplacer vers l’arrière</button>
+                        <button type="button" data-image-action="forward">Déplacer vers l’avant</button>
+                        <button type="button" data-image-action="delete">Supprimer</button>
+                    </div>
+                </div>
+
+                <div class="d-none">
+                    {{ form_widget(propertyImageForm.imageFile, {
+                        attr: {
+                            class: 'd-none'
+                        }
+                    }) }}
+
+                    {{ form_widget(propertyImageForm.position, {
+                        attr: {
+                            class: 'js-image-position'
+                        }
+                    }) }}
+                </div>
             </div>
         {% endfor %}
 
+        {# Cartes vides visuelles #}
         {% if emptyCardsCount > 0 %}
             {% for i in 1..emptyCardsCount %}
                 {% set position = existingImagesCount + i %}
@@ -45,7 +80,7 @@
                 <div class="property-preview-card" data-position="{{ position }}">
                     <div class="position-absolute top-50 start-50 translate-middle">
                         <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none">
-                            <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                 </div>
@@ -73,36 +108,297 @@
                 return;
             }
 
+            let draggedCard = null;
+
+            const imageActionsHtml = `
+                <div class="property-image-actions">
+                    <button type="button" class="property-image-actions-button js-property-image-actions-button" aria-label="Actions de l'image">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M5 13C5.55228 13 6 12.5523 6 12C6 11.4477 5.55228 11 5 11C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+
+                    <div class="property-image-actions-menu d-none">
+                        <button type="button" data-image-action="cover">Définir comme couverture</button>
+                        <button type="button" data-image-action="backward">Déplacer vers l’arrière</button>
+                        <button type="button" data-image-action="forward">Déplacer vers l’avant</button>
+                        <button type="button" data-image-action="delete">Supprimer</button>
+                    </div>
+                </div>
+            `;
+
+            const emptyCardHtml = `
+                <div class="position-absolute top-50 start-50 translate-middle">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none">
+                        <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            `;
+
             function getPreviewCards() {
-                return collection.querySelectorAll('.property-preview-card');
+                return Array.from(collection.querySelectorAll('.property-preview-card'));
+            }
+
+            function getFilledCards() {
+                return getPreviewCards().filter(function (card) {
+                    return card.classList.contains('is-filled');
+                });
+            }
+
+            function getEmptyCards() {
+                return getPreviewCards().filter(function (card) {
+                    return !card.classList.contains('is-filled');
+                });
+            }
+
+            function closeAllMenus() {
+                collection.querySelectorAll('.property-image-actions-menu').forEach(function (menu) {
+                    menu.classList.add('d-none');
+                });
+            }
+
+            function updatePositions() {
+                getPreviewCards().forEach(function (card, index) {
+                    const position = index + 1;
+
+                    card.dataset.position = position;
+
+                    const positionInput = card.querySelector('.js-image-position');
+
+                    if (positionInput) {
+                        positionInput.value = position;
+                    }
+                });
+
+                getFilledCards().forEach(function (card, index) {
+                    card.classList.toggle('is-cover', index === 0);
+                });
+            }
+
+            function normalizeGrid() {
+                getFilledCards().forEach(function (card) {
+                    collection.insertBefore(card, uploadCard);
+                });
+
+                getEmptyCards().forEach(function (card) {
+                    collection.insertBefore(card, uploadCard);
+                });
+
+                collection.appendChild(uploadCard);
+                updatePositions();
             }
 
             function createPreviewCard(position) {
                 const card = document.createElement('div');
                 card.className = 'property-preview-card';
                 card.dataset.position = position;
+                card.innerHTML = emptyCardHtml;
 
                 collection.insertBefore(card, uploadCard);
 
                 return card;
             }
 
-            function getOrCreateEmptyCard() {
-                const cards = Array.from(getPreviewCards());
+            function ensureMinimumEmptyCards() {
+                const totalCards = getPreviewCards().length;
 
-                const emptyCard = cards.find(function (card) {
-                    return !card.classList.contains('is-filled');
-                });
+                if (totalCards >= 5) {
+                    return;
+                }
+
+                for (let i = totalCards; i < 5; i++) {
+                    createPreviewCard(i + 1);
+                }
+
+                normalizeGrid();
+            }
+
+            function getOrCreateEmptyCard() {
+                const emptyCard = getEmptyCards()[0];
 
                 if (emptyCard) {
                     return emptyCard;
                 }
 
-                if (cards.length >= maxImages) {
+                if (getPreviewCards().length >= maxImages) {
                     return null;
                 }
 
-                return createPreviewCard(cards.length + 1);
+                return createPreviewCard(getPreviewCards().length + 1);
+            }
+
+            function moveCardToCover(card) {
+                const firstFilledCard = getFilledCards()[0];
+
+                if (firstFilledCard && firstFilledCard !== card) {
+                    collection.insertBefore(card, firstFilledCard);
+                }
+
+                normalizeGrid();
+            }
+
+            function moveCardBackward(card) {
+                const filledCards = getFilledCards();
+                const currentIndex = filledCards.indexOf(card);
+                const nextCard = filledCards[currentIndex + 1];
+
+                if (!nextCard) {
+                    return;
+                }
+
+                collection.insertBefore(card, nextCard.nextSibling);
+                normalizeGrid();
+            }
+
+            function moveCardForward(card) {
+                const filledCards = getFilledCards();
+                const currentIndex = filledCards.indexOf(card);
+                const previousCard = filledCards[currentIndex - 1];
+
+                if (!previousCard) {
+                    return;
+                }
+
+                collection.insertBefore(card, previousCard);
+                normalizeGrid();
+            }
+
+            function deleteCard(card) {
+                card.remove();
+
+                ensureMinimumEmptyCards();
+                normalizeGrid();
+
+                if (getPreviewCards().length < maxImages) {
+                    uploadCard.style.display = '';
+                }
+            }
+
+            function bindActions(card) {
+                if (card.dataset.actionsEnabled === '1') {
+                    return;
+                }
+
+                card.dataset.actionsEnabled = '1';
+
+                const actionsButton = card.querySelector('.js-property-image-actions-button');
+                const actionsMenu = card.querySelector('.property-image-actions-menu');
+
+                if (!actionsButton || !actionsMenu) {
+                    return;
+                }
+
+                actionsButton.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const isOpen = !actionsMenu.classList.contains('d-none');
+
+                    closeAllMenus();
+
+                    if (!isOpen) {
+                        actionsMenu.classList.remove('d-none');
+                    }
+                });
+
+                actionsMenu.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const button = event.target.closest('[data-image-action]');
+
+                    if (!button) {
+                        return;
+                    }
+
+                    const action = button.dataset.imageAction;
+
+                    if ('cover' === action) {
+                        moveCardToCover(card);
+                    }
+
+                    if ('backward' === action) {
+                        moveCardBackward(card);
+                    }
+
+                    if ('forward' === action) {
+                        moveCardForward(card);
+                    }
+
+                    if ('delete' === action) {
+                        deleteCard(card);
+                    }
+
+                    closeAllMenus();
+                });
+            }
+
+            function enableDragAndDrop(card) {
+                if (!card.classList.contains('is-filled')) {
+                    return;
+                }
+
+                if (card.dataset.dragEnabled === '1') {
+                    return;
+                }
+
+                card.dataset.dragEnabled = '1';
+                card.setAttribute('draggable', 'true');
+
+                card.addEventListener('dragstart', function (event) {
+                    if (event.target.closest('.property-image-actions')) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    draggedCard = card;
+                    card.classList.add('is-dragging');
+                    closeAllMenus();
+                });
+
+                card.addEventListener('dragend', function () {
+                    draggedCard = null;
+                    card.classList.remove('is-dragging');
+                    normalizeGrid();
+                });
+
+                card.addEventListener('dragover', function (event) {
+                    event.preventDefault();
+
+                    if (!draggedCard || draggedCard === card) {
+                        return;
+                    }
+
+                    const rectangle = card.getBoundingClientRect();
+                    const middle = rectangle.height / 2;
+                    const mousePosition = event.clientY - rectangle.top;
+
+                    if (mousePosition > middle) {
+                        collection.insertBefore(draggedCard, card.nextSibling);
+                    } else {
+                        collection.insertBefore(draggedCard, card);
+                    }
+
+                    updatePositions();
+                });
+
+                card.addEventListener('drop', function (event) {
+                    event.preventDefault();
+                    normalizeGrid();
+                });
+            }
+
+            function enableFilledCard(card) {
+                bindActions(card);
+                enableDragAndDrop(card);
+            }
+
+            function enableAllFilledCards() {
+                getFilledCards().forEach(function (card) {
+                    enableFilledCard(card);
+                });
             }
 
             function createUploadInput() {
@@ -138,15 +434,25 @@
 
                     reader.onload = function (event) {
                         emptyCard.classList.add('is-filled');
+                        emptyCard.setAttribute('draggable', 'true');
 
                         emptyCard.innerHTML = `
                             <img src="${event.target.result}" alt="Photo du bien">
-                            <span class="property-image-position">${emptyCard.dataset.position}</span>
+                            ${imageActionsHtml}
                         `;
 
                         emptyCard.appendChild(wrapper);
 
-                        collection.dataset.index = index + 1;
+                        const positionInput = emptyCard.querySelector('.js-image-position');
+
+                        if (positionInput) {
+                            positionInput.value = emptyCard.dataset.position;
+                        }
+
+                        collection.dataset.index = String(index + 1);
+
+                        enableFilledCard(emptyCard);
+                        normalizeGrid();
 
                         if (getPreviewCards().length >= maxImages) {
                             uploadCard.style.display = 'none';
@@ -166,7 +472,88 @@
                 uploadCard.appendChild(wrapper);
             }
 
+            document.addEventListener('click', function () {
+                closeAllMenus();
+            });
+
+            enableAllFilledCards();
+            normalizeGrid();
             createUploadInput();
         });
     </script>
+    <style>
+        .property-preview-card {
+            position: relative;
+        }
+
+        .property-image-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+        }
+
+        .property-image-actions-button {
+            width: 36px;
+            height: 36px;
+            border: 0;
+            border-radius: 50%;
+            background: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .property-image-actions-menu {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            min-width: 210px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+            z-index: 10;
+        }
+
+        .property-image-actions-menu button {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            text-align: left;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .property-image-actions-menu button:hover {
+            background: #F4F0FF;
+            color: #5D00FF;
+        }
+
+        .property-preview-card.is-dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .property-preview-card.is-filled {
+            cursor: grab;
+        }
+
+        .property-preview-card.is-cover::after {
+            content: "Couverture";
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            background: #5D00FF;
+            color: #FFFFFF;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            z-index: 4;
+        }
+    </style>
 </div>

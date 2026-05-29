@@ -14,6 +14,7 @@ namespace App\Form\Dashboard\AgenceImmobiliere;
 
 use App\Entity\PropertyImage;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -25,16 +26,23 @@ class PropertyImageType extends AbstractType
         $builder
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
-                'allow_delete' => true,
-                'delete_label' => 'Supprimer',
+                'allow_delete' => false,
                 'download_uri' => false,
-                'image_uri' => true,
+                'image_uri' => false,
                 'asset_helper' => true,
                 'label' => false,
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control d-none',
                 ],
-            ]);
+            ])
+            ->add('position', HiddenType::class, [
+                'required' => false,
+                'attr' => [
+                    'class' => 'js-image-position',
+                ],
+            ])
+
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

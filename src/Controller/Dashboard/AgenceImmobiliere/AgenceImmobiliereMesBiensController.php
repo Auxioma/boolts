@@ -14,9 +14,6 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 
 use App\Entity\Property;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
-use App\Repository\CaracteristiqueRepository;
-use App\Repository\CategoryBienRepository;
-use App\Repository\CategoryBienTransactionRepository;
 use App\Repository\PropertyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,8 +43,12 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             $mesBiens = new Property();
         }
 
+        $session = $request->getSession();
+        $typeTransaction = $session->get('typeTransaction');
+
         $form = $this->createForm(MesBiensType::class, $mesBiens, [
             'step' => $step,
+            'typeTransaction' => $typeTransaction,
         ]);
 
         $form->handleRequest($request);
@@ -71,6 +72,11 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             /* mettre en session step 2 */
             if (2 === $step) {
                 $entityManager->flush();
+                $transaction = $mesBiens->getTypeTransaction();
+
+                if ($transaction) {
+                    $session->set('typeTransaction', mb_strtolower($transaction->getName()));
+                }
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 3,
@@ -88,7 +94,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             /* mettre en session le step 4 */
             if (4 === $step) {
                 $entityManager->flush();
-                
+
                 /* je verifie que le champs pays est bien france */
                 if ('FR' !== $mesBiens->getPays()) {
                     return $this->redirectToRoute('agence_immobiliere_mes_biens', [
@@ -126,13 +132,25 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             if (7 === $step) {
                 $entityManager->flush();
 
+                $session = $request->getSession();
+                $typeTransaction = $session->get('typeTransaction');
+
+                if (null === $typeTransaction) {
+                    return $this->redirectToRoute('agence_immobiliere_mes_biens', [
+                        'step' => 2,
+                    ]);
+                }
+                $typeTransaction = $mesBiens->getTypeTransaction()->getName();
+
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 8,
+                    'typeTransaction' => $typeTransaction,
                 ]);
             }
 
             if (8 === $step) {
                 $entityManager->flush();
+                $session->remove('typeTransaction');
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens_status');
             }

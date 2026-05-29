@@ -40,6 +40,18 @@
                     <a href="" class="btn-suivant py-10 px-16">Générer avec IA</a>
                 </div>
 
+                <div class="mt-32">
+                    <label for="" class="mb-16">
+                        Référence interne (facultatif)
+                    </label>
+                    {{ form_widget(form.referenceInterne, {
+                        attr: {
+                            class: 'form-control mb-26',
+                            placeholder: 'Saisissez votre référence interne',
+                        },
+                    }) }}
+                </div>
+
             </div>
         </div>
     </div>
