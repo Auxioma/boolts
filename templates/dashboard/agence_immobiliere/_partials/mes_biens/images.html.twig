@@ -49,10 +49,21 @@
                     </button>
 
                     <div class="property-image-actions-menu d-none">
-                        <button type="button" data-image-action="cover">Définir comme couverture</button>
-                        <button type="button" data-image-action="backward">Déplacer vers l’arrière</button>
-                        <button type="button" data-image-action="forward">Déplacer vers l’avant</button>
-                        <button type="button" data-image-action="delete">Supprimer</button>
+                        <button type="button" data-image-action="cover">
+                            Définir comme couverture
+                        </button>
+
+                        <button type="button" data-image-action="backward">
+                            Déplacer vers l’arrière
+                        </button>
+
+                        <button type="button" data-image-action="forward">
+                            Déplacer vers l’avant
+                        </button>
+
+                        <button type="button" data-image-action="delete">
+                            Supprimer
+                        </button>
                     </div>
                 </div>
 
@@ -80,7 +91,7 @@
                 <div class="property-preview-card" data-position="{{ position }}">
                     <div class="position-absolute top-50 start-50 translate-middle">
                         <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none">
-                            <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
                 </div>
@@ -121,10 +132,21 @@
                     </button>
 
                     <div class="property-image-actions-menu d-none">
-                        <button type="button" data-image-action="cover">Définir comme couverture</button>
-                        <button type="button" data-image-action="backward">Déplacer vers l’arrière</button>
-                        <button type="button" data-image-action="forward">Déplacer vers l’avant</button>
-                        <button type="button" data-image-action="delete">Supprimer</button>
+                        <button type="button" data-image-action="cover">
+                            Définir comme couverture
+                        </button>
+
+                        <button type="button" data-image-action="backward">
+                            Déplacer vers l’arrière
+                        </button>
+
+                        <button type="button" data-image-action="forward">
+                            Déplacer vers l’avant
+                        </button>
+
+                        <button type="button" data-image-action="delete">
+                            Supprimer
+                        </button>
                     </div>
                 </div>
             `;
@@ -132,7 +154,7 @@
             const emptyCardHtml = `
                 <div class="position-absolute top-50 start-50 translate-middle">
                     <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none">
-                        <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
             `;
@@ -187,11 +209,13 @@
                 });
 
                 collection.appendChild(uploadCard);
+
                 updatePositions();
             }
 
             function createPreviewCard(position) {
                 const card = document.createElement('div');
+
                 card.className = 'property-preview-card';
                 card.dataset.position = position;
                 card.innerHTML = emptyCardHtml;
@@ -239,20 +263,12 @@
                 normalizeGrid();
             }
 
+            /**
+             * Déplacer vers l’arrière
+             * Exemple :
+             * position 3 devient position 2
+             */
             function moveCardBackward(card) {
-                const filledCards = getFilledCards();
-                const currentIndex = filledCards.indexOf(card);
-                const nextCard = filledCards[currentIndex + 1];
-
-                if (!nextCard) {
-                    return;
-                }
-
-                collection.insertBefore(card, nextCard.nextSibling);
-                normalizeGrid();
-            }
-
-            function moveCardForward(card) {
                 const filledCards = getFilledCards();
                 const currentIndex = filledCards.indexOf(card);
                 const previousCard = filledCards[currentIndex - 1];
@@ -262,6 +278,26 @@
                 }
 
                 collection.insertBefore(card, previousCard);
+
+                normalizeGrid();
+            }
+
+            /**
+             * Déplacer vers l’avant
+             * Exemple :
+             * position 2 devient position 3
+             */
+            function moveCardForward(card) {
+                const filledCards = getFilledCards();
+                const currentIndex = filledCards.indexOf(card);
+                const nextCard = filledCards[currentIndex + 1];
+
+                if (!nextCard) {
+                    return;
+                }
+
+                collection.insertBefore(card, nextCard.nextSibling);
+
                 normalizeGrid();
             }
 
@@ -406,6 +442,7 @@
                 const prototype = collection.dataset.prototype.replace(/__name__/g, index);
 
                 const wrapper = document.createElement('div');
+
                 wrapper.classList.add('d-none');
                 wrapper.innerHTML = prototype;
 
