@@ -18,20 +18,20 @@
                     <div class="">
                         <div class="row">
 
-                            {{ form_errors(form) }}
-
                             <h2 class="mb-32">Pièces</h2>
 
                             <div>
 
                                 {# CHAMBRES #}
 
-                                <div class="position-relative mb-18">
-
+                                <div
+                                    class="position-relative mb-18"
+                                    data-controller="mes-biens--chambres"
+                                >
                                     {{ form_widget(form.chambres, {
                                         attr: {
                                             class: 'chambre-input',
-                                            value: 0
+                                            'data-mes-biens--chambres-target': 'input'
                                         }
                                     }) }}
 
@@ -42,26 +42,29 @@
                                         readonly
                                     >
 
-                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center mr-14   ">
+                                    <div class="position-absolute top-50 end-0 translate-middle-y d-flex align-items-center mr-14">
 
                                         <button
                                             type="button"
                                             class="btn btn-sm p-0 border-0 bg-transparent"
-                                            onclick="decrementChambre(this)"
+                                            data-action="click->mes-biens--chambres#decrement"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                                 <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </button>
 
-                                        <span class="chambre-value">
-                                            0
+                                        <span
+                                            class="chambre-value"
+                                            data-mes-biens--chambres-target="value"
+                                        >
+                                            {{ form.chambres.vars.value|default(0) }}
                                         </span>
 
                                         <button
                                             type="button"
                                             class="btn btn-sm p-0 border-0 bg-transparent"
-                                            onclick="incrementChambre(this)"
+                                            data-action="click->mes-biens--chambres#increment"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                                 <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -70,16 +73,19 @@
 
                                     </div>
 
+                                    {{ form_errors(form.chambres) }}
                                 </div>
 
                                 {# SALLE DE BAIN #}
 
-                                <div class="position-relative mb-7">
-
+                                <div
+                                    class="position-relative mb-7"
+                                    data-controller="mes-biens--salle-de-bains"
+                                >
                                     {{ form_widget(form.salleDeBains, {
                                         attr: {
                                             class: 'salle-bain-input',
-                                            value: 0
+                                            'data-mes-biens--salle-de-bains-target': 'input'
                                         }
                                     }) }}
 
@@ -95,21 +101,24 @@
                                         <button
                                             type="button"
                                             class="btn btn-sm p-0 border-0 bg-transparent"
-                                            onclick="decrementSalleBain(this)"
+                                            data-action="click->mes-biens--salle-de-bains#decrement"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                                 <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </button>
 
-                                        <span class="salle-bain-value">
-                                            0
+                                        <span
+                                            class="salle-bain-value"
+                                            data-mes-biens--salle-de-bains-target="value"
+                                        >
+                                            {{ form.salleDeBains.vars.value|default(0)|replace({'.': ','}) }}
                                         </span>
 
                                         <button
                                             type="button"
                                             class="btn btn-sm p-0 border-0 bg-transparent"
-                                            onclick="incrementSalleBain(this)"
+                                            data-action="click->mes-biens--salle-de-bains#increment"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                                                 <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -118,6 +127,7 @@
 
                                     </div>
 
+                                    {{ form_errors(form.salleDeBains) }}
                                 </div>
 
                                 <small class="mb-32 d-block">
@@ -127,7 +137,10 @@
                                 {# SURFACE #}
 
                                 <div>
-                                    <label class="mb-16">
+                                    <label
+                                        for="{{ form.surfaceTotal.vars.id }}"
+                                        class="mb-16"
+                                    >
                                         Surface totale*
                                     </label>
 
@@ -137,13 +150,18 @@
                                             placeholder: 'Exemple : 150 m2',
                                         },
                                     }) }}
+
+                                    {{ form_errors(form.surfaceTotal) }}
                                 </div>
 
                                 {# ANNEE #}
 
                                 <div>
-                                    <label class="mb-16">
-                                        Année de construction (facultatif)
+                                    <label
+                                        for="{{ form.anneeConstruction.vars.id }}"
+                                        class="mb-16"
+                                    >
+                                        Année de construction <span>(facultatif)</span>
                                     </label>
 
                                     {{ form_widget(form.anneeConstruction, {
@@ -152,6 +170,8 @@
                                             placeholder: 'Exemple : 1983',
                                         },
                                     }) }}
+
+                                    {{ form_errors(form.anneeConstruction) }}
                                 </div>
 
                                 {# CARACTERISTIQUES #}
@@ -160,15 +180,18 @@
                                     Caractéristiques
                                 </h2>
 
-                                <div class="row">
-
+                                <div
+                                    class="row"
+                                    data-controller="mes-biens--caracteristiques"
+                                >
                                     {% for choice in form.caracteristique.vars.choices %}
-                                        {% set isChecked = choice.value in form.caracteristique.vars.value %}
+                                        {% set isChecked = choice.value in form.caracteristique.vars.value|default([]) %}
 
                                         <div class="col-4 mb-21">
                                             <label
                                                 class="type-bien px-24 py-24 w-100 js-property-feature-card {% if isChecked %}active{% endif %}"
                                                 for="property_feature_{{ loop.index0 }}"
+                                                data-mes-biens--caracteristiques-target="item"
                                             >
                                                 <input
                                                     type="checkbox"
@@ -176,6 +199,8 @@
                                                     name="{{ form.caracteristique.vars.full_name }}[]"
                                                     value="{{ choice.value }}"
                                                     class="d-none js-property-feature-input"
+                                                    data-mes-biens--caracteristiques-target="input"
+                                                    data-action="change->mes-biens--caracteristiques#toggle"
                                                     {% if isChecked %}checked="checked"{% endif %}
                                                 >
 
@@ -193,9 +218,27 @@
                                             </label>
                                         </div>
                                     {% endfor %}
-                                    {% do form.caracteristique.setRendered %}
 
+                                    {% if form.caracteristique.vars.errors|length > 0 %}
+                                        <div class="col-12 mt-2">
+                                            <div class="invalid-feedback d-block">
+                                                {% for error in form.caracteristique.vars.errors %}
+                                                    <div>
+                                                        {{ error.message }}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    {% do form.caracteristique.setRendered %}
                                 </div>
+
+                                {% do form.chambres.setRendered %}
+                                {% do form.salleDeBains.setRendered %}
+                                {% do form.surfaceTotal.setRendered %}
+                                {% do form.anneeConstruction.setRendered %}
+
                             </div>
                         </div>
                     </div>

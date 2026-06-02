@@ -26,6 +26,7 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MesBiensType extends AbstractType
 {
@@ -39,6 +40,15 @@ class MesBiensType extends AbstractType
                 ->add('typeBien', EntityType::class, [
                     'class' => CategoryBien::class,
                     'choice_label' => 'name',
+                    'required' => true,
+
+                    'constraints' => [
+                        new NotBlank(
+                            message: 'Veuillez sélectionner un type de bien.',
+                            groups: ['step_1']
+                        ),
+                    ],
+
                     'choice_attr' => static function (CategoryBien $categoryBien) {
                         return [
                             'icon' => $categoryBien->getIcone(),

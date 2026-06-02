@@ -1,14 +1,20 @@
-<div class="js-tab-content mes-biens-immobilier" id="cat1">
+<div
+    class="js-tab-content mes-biens-immobilier"
+    id="cat1"
+    data-controller="mes-biens--type-bien"
+>
     <div class="d-flex justify-content-between align-items-end">
         <h1>
             Quel est le type de bien que vous souhaitez publier ?
         </h1>
+
         <div class="d-flex align-items-end">
             <a href="#" class="btn-retour py-10 px-16">
                 Enregistrer et quitter
             </a>
         </div>
     </div>
+
     <div class="mt-48">
         <div class="row">
             <div class="col-12">
@@ -22,6 +28,7 @@
                                     <label
                                         class="type-bien px-24 py-24 w-100 js-type-bien-item {% if isChecked %}active{% endif %}"
                                         for="type_bien_{{ loop.index0 }}"
+                                        data-mes-biens--type-bien-target="item"
                                     >
                                         <input
                                             type="radio"
@@ -29,6 +36,8 @@
                                             name="{{ form.typeBien.vars.full_name }}"
                                             value="{{ choice.value }}"
                                             class="d-none js-type-bien-input"
+                                            data-mes-biens--type-bien-target="input"
+                                            data-action="change->mes-biens--type-bien#select"
                                             {% if isChecked %}checked{% endif %}
                                         >
 
@@ -46,6 +55,19 @@
                                     </label>
                                 </div>
                             {% endfor %}
+
+                            {% if form.typeBien.vars.errors|length > 0 %}
+                                <div class="col-12 mt-2">
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.typeBien.vars.errors %}
+                                            <div>
+                                                {{ error.message }}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
                             {% do form.typeBien.setRendered %}
                         </div>
                     </div>
@@ -54,23 +76,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputs = document.querySelectorAll('.js-type-bien-input');
-
-        inputs.forEach(function (input) {
-            input.addEventListener('change', function () {
-                document.querySelectorAll('.js-type-bien-item').forEach(function (item) {
-                    item.classList.remove('active');
-                });
-
-                const label = input.closest('.js-type-bien-item');
-
-                if (label) {
-                    label.classList.add('active');
-                }
-            });
-        });
-    });
-</script>

@@ -13,7 +13,7 @@
 
     <div class="mt-48 mb-24">
         <div class="attention-photos-images py-22 px-22">
-            <span>Attention :</span>les annonces <br>comprenant moins de 5 images sont généralement moins attrayantes pour les particuliers et, de ce fait, moins mises en avant par Boolts. Nous vous recommandons d’ajouter au moins 5 images.
+            <span>Attention :</span> Les annonces comprenant moins de 5 images sont généralement moins attrayantes pour les particuliers et, de ce fait, moins mises en avant par Boolts. Nous vous recommandons d’ajouter au moins 5 images.
         </div>
     </div>
 
@@ -23,24 +23,28 @@
     <div
         class="property-upload-grid"
         id="property-images-collection"
-        data-prototype="{{ form_widget(form.propertyImages.vars.prototype, {
-            attr: {
-                class: 'd-none'
-            }
-        })|e('html_attr') }}"
+        data-prototype="{{ form_widget(form.propertyImages.vars.prototype)|e('html_attr') }}"
         data-index="{{ form.propertyImages|length }}"
     >
         {# Images déjà enregistrées en BDD #}
         {% for propertyImageForm in form.propertyImages %}
             {% set image = propertyImageForm.vars.data %}
 
-            <div class="property-preview-card is-filled" data-position="{{ loop.index }}" draggable="true">
+            <div
+                class="property-preview-card is-filled"
+                data-position="{{ loop.index }}"
+                draggable="true"
+            >
                 {% if image %}
                     <img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Photo du bien">
                 {% endif %}
 
                 <div class="property-image-actions">
-                    <button type="button" class="property-image-actions-button js-property-image-actions-button" aria-label="Actions de l'image">
+                    <button
+                        type="button"
+                        class="property-image-actions-button js-property-image-actions-button"
+                        aria-label="Actions de l'image"
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -83,13 +87,16 @@
             </div>
         {% endfor %}
 
-        {# Cartes vides visuelles #}
+        {# Les 5 premières cards vides : uniquement SVG, mais cliquables #}
         {% if emptyCardsCount > 0 %}
             {% for i in 1..emptyCardsCount %}
                 {% set position = existingImagesCount + i %}
 
-                <div class="property-preview-card" data-position="{{ position }}">
-                    <div class="position-absolute top-50 start-50 translate-middle">
+                <div
+                    class="property-preview-card is-empty js-property-empty-card"
+                    data-position="{{ position }}"
+                >
+                    <div class="property-empty-content">
                         <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none">
                             <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -98,12 +105,18 @@
             {% endfor %}
         {% endif %}
 
-        <div class="property-upload-card" id="property-upload-card">
-            <div class="property-upload-placeholder">
-                <span>+</span>
-                <small>Glissez-déposez un fichier</small>
-                <strong>Parcourir</strong>
-            </div>
+        {# 6e card : uniquement Parcourir #}
+        <div
+            class="property-preview-card property-browse-card"
+            id="property-browse-card"
+        >
+            <button
+                type="button"
+                class="property-browse-button"
+                id="property-browse-button"
+            >
+                Parcourir
+            </button>
         </div>
     </div>
 
@@ -112,18 +125,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const maxImages = 50;
-            const collection = document.getElementById('property-images-collection');
-            const uploadCard = document.getElementById('property-upload-card');
+            const minimumVisibleCards = 5;
 
-            if (!collection || !uploadCard) {
+            const collection = document.getElementById('property-images-collection');
+            const browseCard = document.getElementById('property-browse-card');
+            const browseButton = document.getElementById('property-browse-button');
+
+            if (!collection || !browseCard || !browseButton) {
                 return;
             }
 
             let draggedCard = null;
+            let dragGhost = null;
 
             const imageActionsHtml = `
                 <div class="property-image-actions">
-                    <button type="button" class="property-image-actions-button js-property-image-actions-button" aria-label="Actions de l'image">
+                    <button
+                        type="button"
+                        class="property-image-actions-button js-property-image-actions-button"
+                        aria-label="Actions de l'image"
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M19 13C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11C18.4477 11 18 11.4477 18 12C18 12.5523 18.4477 13 19 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -152,7 +173,7 @@
             `;
 
             const emptyCardHtml = `
-                <div class="position-absolute top-50 start-50 translate-middle">
+                <div class="property-empty-content">
                     <svg xmlns="http://www.w3.org/2000/svg" width="29" height="24" viewBox="0 0 29 24" fill="none">
                         <path d="M21 15L17.914 11.914C17.5389 11.5391 17.0303 11.3284 16.5 11.3284C15.9697 11.3284 15.4611 11.5391 15.086 11.914L6 21M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 5 5 3ZM11 9C11 10.1046 10.1046 11 9 11C7.89543 11 7 10.1046 7 9C7 7.89543 7.89543 7 9 7C10.1046 7 11 7.89543 11 9Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -160,7 +181,9 @@
             `;
 
             function getPreviewCards() {
-                return Array.from(collection.querySelectorAll('.property-preview-card'));
+                return Array.from(collection.querySelectorAll('.property-preview-card')).filter(function (card) {
+                    return !card.classList.contains('property-browse-card');
+                });
             }
 
             function getFilledCards() {
@@ -171,7 +194,7 @@
 
             function getEmptyCards() {
                 return getPreviewCards().filter(function (card) {
-                    return !card.classList.contains('is-filled');
+                    return card.classList.contains('is-empty');
                 });
             }
 
@@ -179,6 +202,18 @@
                 collection.querySelectorAll('.property-image-actions-menu').forEach(function (menu) {
                     menu.classList.add('d-none');
                 });
+
+                collection.querySelectorAll('.property-preview-card').forEach(function (card) {
+                    card.classList.remove('is-menu-open');
+                });
+            }
+
+            function getNextIndex() {
+                return parseInt(collection.dataset.index || '0', 10);
+            }
+
+            function setNextIndex(index) {
+                collection.dataset.index = String(index);
             }
 
             function updatePositions() {
@@ -187,9 +222,11 @@
 
                     card.dataset.position = position;
 
-                    const positionInput = card.querySelector('.js-image-position');
+                    const positionInput = card.querySelector('.js-image-position')
+                        || card.querySelector('input[name$="[position]"]');
 
                     if (positionInput) {
+                        positionInput.classList.add('js-image-position');
                         positionInput.value = position;
                     }
                 });
@@ -201,56 +238,205 @@
 
             function normalizeGrid() {
                 getFilledCards().forEach(function (card) {
-                    collection.insertBefore(card, uploadCard);
+                    collection.insertBefore(card, browseCard);
                 });
 
                 getEmptyCards().forEach(function (card) {
-                    collection.insertBefore(card, uploadCard);
+                    collection.insertBefore(card, browseCard);
                 });
 
-                collection.appendChild(uploadCard);
+                collection.appendChild(browseCard);
 
                 updatePositions();
             }
 
-            function createPreviewCard(position) {
+            function createEmptyCard() {
                 const card = document.createElement('div');
 
-                card.className = 'property-preview-card';
-                card.dataset.position = position;
+                card.className = 'property-preview-card is-empty js-property-empty-card';
+                card.dataset.position = getPreviewCards().length + 1;
                 card.innerHTML = emptyCardHtml;
 
-                collection.insertBefore(card, uploadCard);
+                collection.insertBefore(card, browseCard);
+
+                enableEmptyCard(card);
+                updatePositions();
 
                 return card;
             }
 
-            function ensureMinimumEmptyCards() {
+            function ensureMinimumCards() {
                 const totalCards = getPreviewCards().length;
 
-                if (totalCards >= 5) {
+                if (totalCards >= minimumVisibleCards) {
                     return;
                 }
 
-                for (let i = totalCards; i < 5; i++) {
-                    createPreviewCard(i + 1);
+                for (let i = totalCards; i < minimumVisibleCards; i++) {
+                    createEmptyCard();
                 }
 
-                normalizeGrid();
+                updatePositions();
             }
 
-            function getOrCreateEmptyCard() {
-                const emptyCard = getEmptyCards()[0];
-
-                if (emptyCard) {
-                    return emptyCard;
+            function ensureOneEmptyCardIfPossible() {
+                if (getPreviewCards().length >= maxImages) {
+                    return;
                 }
 
-                if (getPreviewCards().length >= maxImages) {
+                if (getEmptyCards().length > 0) {
+                    return;
+                }
+
+                createEmptyCard();
+            }
+
+            function createPrototypeWrapper() {
+                const index = getNextIndex();
+                const prototype = collection.dataset.prototype.replace(/__name__/g, index);
+
+                const wrapper = document.createElement('div');
+
+                wrapper.classList.add('d-none');
+                wrapper.innerHTML = prototype;
+
+                const fileInput = wrapper.querySelector('input[type="file"]');
+
+                if (!fileInput) {
                     return null;
                 }
 
-                return createPreviewCard(getPreviewCards().length + 1);
+                fileInput.classList.add('d-none');
+                fileInput.setAttribute('accept', 'image/*');
+
+                const positionInput = wrapper.querySelector('.js-image-position')
+                    || wrapper.querySelector('input[name$="[position]"]');
+
+                if (positionInput) {
+                    positionInput.classList.add('js-image-position');
+                }
+
+                setNextIndex(index + 1);
+
+                return {
+                    wrapper: wrapper,
+                    fileInput: fileInput,
+                    positionInput: positionInput,
+                };
+            }
+
+            function setInputFile(fileInput, file) {
+                const dataTransfer = new DataTransfer();
+
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+            }
+
+            function isImageFile(file) {
+                return file && file.type && file.type.startsWith('image/');
+            }
+
+            function fillCardWithFile(card, file, wrapper) {
+                if (!card || !file || !wrapper) {
+                    return;
+                }
+
+                if (!isImageFile(file)) {
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    card.classList.remove('is-empty');
+                    card.classList.add('is-filled');
+                    card.setAttribute('draggable', 'true');
+
+                    card.innerHTML = `
+                        <img src="${event.target.result}" alt="Photo du bien">
+                        ${imageActionsHtml}
+                    `;
+
+                    card.appendChild(wrapper);
+
+                    const positionInput = card.querySelector('.js-image-position')
+                        || card.querySelector('input[name$="[position]"]');
+
+                    if (positionInput) {
+                        positionInput.classList.add('js-image-position');
+                        positionInput.value = card.dataset.position;
+                    }
+
+                    enableFilledCard(card);
+
+                    normalizeGrid();
+                    ensureMinimumCards();
+                    ensureOneEmptyCardIfPossible();
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            function openFileInputForCard(card) {
+                if (!card || !card.classList.contains('is-empty')) {
+                    return;
+                }
+
+                const prototypeData = createPrototypeWrapper();
+
+                if (!prototypeData) {
+                    return;
+                }
+
+                prototypeData.fileInput.addEventListener('change', function () {
+                    const file = prototypeData.fileInput.files[0];
+
+                    if (!file) {
+                        return;
+                    }
+
+                    fillCardWithFile(card, file, prototypeData.wrapper);
+                });
+
+                prototypeData.fileInput.click();
+            }
+
+            function openFileInputFromBrowseCard() {
+                const card = getEmptyCards()[0] || createEmptyCard();
+
+                openFileInputForCard(card);
+            }
+
+            function handleDroppedFiles(files, targetCard) {
+                const validFiles = Array.from(files).filter(isImageFile);
+
+                if (validFiles.length === 0) {
+                    return;
+                }
+
+                validFiles.forEach(function (file, index) {
+                    let card = null;
+
+                    if (index === 0 && targetCard && targetCard.classList.contains('is-empty')) {
+                        card = targetCard;
+                    } else {
+                        card = getEmptyCards()[0] || createEmptyCard();
+                    }
+
+                    if (!card) {
+                        return;
+                    }
+
+                    const prototypeData = createPrototypeWrapper();
+
+                    if (!prototypeData) {
+                        return;
+                    }
+
+                    setInputFile(prototypeData.fileInput, file);
+
+                    fillCardWithFile(card, file, prototypeData.wrapper);
+                });
             }
 
             function moveCardToCover(card) {
@@ -263,11 +449,6 @@
                 normalizeGrid();
             }
 
-            /**
-             * Déplacer vers l’arrière
-             * Exemple :
-             * position 3 devient position 2
-             */
             function moveCardBackward(card) {
                 const filledCards = getFilledCards();
                 const currentIndex = filledCards.indexOf(card);
@@ -278,15 +459,9 @@
                 }
 
                 collection.insertBefore(card, previousCard);
-
                 normalizeGrid();
             }
 
-            /**
-             * Déplacer vers l’avant
-             * Exemple :
-             * position 2 devient position 3
-             */
             function moveCardForward(card) {
                 const filledCards = getFilledCards();
                 const currentIndex = filledCards.indexOf(card);
@@ -297,19 +472,15 @@
                 }
 
                 collection.insertBefore(card, nextCard.nextSibling);
-
                 normalizeGrid();
             }
 
             function deleteCard(card) {
                 card.remove();
 
-                ensureMinimumEmptyCards();
+                ensureMinimumCards();
+                ensureOneEmptyCardIfPossible();
                 normalizeGrid();
-
-                if (getPreviewCards().length < maxImages) {
-                    uploadCard.style.display = '';
-                }
             }
 
             function bindActions(card) {
@@ -335,6 +506,7 @@
                     closeAllMenus();
 
                     if (!isOpen) {
+                        card.classList.add('is-menu-open');
                         actionsMenu.classList.remove('d-none');
                     }
                 });
@@ -351,19 +523,19 @@
 
                     const action = button.dataset.imageAction;
 
-                    if ('cover' === action) {
+                    if (action === 'cover') {
                         moveCardToCover(card);
                     }
 
-                    if ('backward' === action) {
+                    if (action === 'backward') {
                         moveCardBackward(card);
                     }
 
-                    if ('forward' === action) {
+                    if (action === 'forward') {
                         moveCardForward(card);
                     }
 
-                    if ('delete' === action) {
+                    if (action === 'delete') {
                         deleteCard(card);
                     }
 
@@ -371,7 +543,40 @@
                 });
             }
 
-            function enableDragAndDrop(card) {
+            function createDragGhost(card, event) {
+                removeDragGhost();
+
+                dragGhost = card.cloneNode(true);
+
+                const rectangle = card.getBoundingClientRect();
+
+                dragGhost.classList.add('property-preview-card-drag-ghost');
+                dragGhost.style.width = `${rectangle.width}px`;
+                dragGhost.style.height = `${rectangle.height}px`;
+
+                document.body.appendChild(dragGhost);
+
+                const offsetX = event.clientX - rectangle.left;
+                const offsetY = event.clientY - rectangle.top;
+
+                if (event.dataTransfer) {
+                    event.dataTransfer.setDragImage(dragGhost, offsetX, offsetY);
+                }
+            }
+
+            function removeDragGhost() {
+                if (dragGhost) {
+                    dragGhost.remove();
+                    dragGhost = null;
+                }
+            }
+
+            function enableFilledCard(card) {
+                bindActions(card);
+                enableFilledCardDragAndDrop(card);
+            }
+
+            function enableFilledCardDragAndDrop(card) {
                 if (!card.classList.contains('is-filled')) {
                     return;
                 }
@@ -390,22 +595,32 @@
                     }
 
                     draggedCard = card;
-                    card.classList.add('is-dragging');
+
                     closeAllMenus();
+                    createDragGhost(card, event);
+
+                    card.classList.add('is-dragging');
+
+                    if (event.dataTransfer) {
+                        event.dataTransfer.effectAllowed = 'move';
+                    }
                 });
 
                 card.addEventListener('dragend', function () {
                     draggedCard = null;
+
                     card.classList.remove('is-dragging');
+
+                    removeDragGhost();
                     normalizeGrid();
                 });
 
                 card.addEventListener('dragover', function (event) {
-                    event.preventDefault();
-
                     if (!draggedCard || draggedCard === card) {
                         return;
                     }
+
+                    event.preventDefault();
 
                     const rectangle = card.getBoundingClientRect();
                     const middle = rectangle.height / 2;
@@ -421,119 +636,279 @@
                 });
 
                 card.addEventListener('drop', function (event) {
+                    if (!draggedCard) {
+                        return;
+                    }
+
                     event.preventDefault();
                     normalizeGrid();
                 });
             }
 
-            function enableFilledCard(card) {
-                bindActions(card);
-                enableDragAndDrop(card);
-            }
-
-            function enableAllFilledCards() {
-                getFilledCards().forEach(function (card) {
-                    enableFilledCard(card);
-                });
-            }
-
-            function createUploadInput() {
-                const index = parseInt(collection.dataset.index || '0', 10);
-                const prototype = collection.dataset.prototype.replace(/__name__/g, index);
-
-                const wrapper = document.createElement('div');
-
-                wrapper.classList.add('d-none');
-                wrapper.innerHTML = prototype;
-
-                const input = wrapper.querySelector('input[type="file"]');
-
-                if (!input) {
+            function enableEmptyCard(card) {
+                if (!card.classList.contains('is-empty')) {
                     return;
                 }
 
-                input.classList.add('d-none');
+                if (card.dataset.emptyEnabled === '1') {
+                    return;
+                }
 
-                input.addEventListener('change', function () {
-                    if (!input.files || !input.files[0]) {
-                        return;
-                    }
+                card.dataset.emptyEnabled = '1';
 
-                    const emptyCard = getOrCreateEmptyCard();
-
-                    if (!emptyCard) {
-                        uploadCard.style.display = 'none';
-                        return;
-                    }
-
-                    const file = input.files[0];
-                    const reader = new FileReader();
-
-                    reader.onload = function (event) {
-                        emptyCard.classList.add('is-filled');
-                        emptyCard.setAttribute('draggable', 'true');
-
-                        emptyCard.innerHTML = `
-                            <img src="${event.target.result}" alt="Photo du bien">
-                            ${imageActionsHtml}
-                        `;
-
-                        emptyCard.appendChild(wrapper);
-
-                        const positionInput = emptyCard.querySelector('.js-image-position');
-
-                        if (positionInput) {
-                            positionInput.value = emptyCard.dataset.position;
-                        }
-
-                        collection.dataset.index = String(index + 1);
-
-                        enableFilledCard(emptyCard);
-                        normalizeGrid();
-
-                        if (getPreviewCards().length >= maxImages) {
-                            uploadCard.style.display = 'none';
-                            return;
-                        }
-
-                        createUploadInput();
-                    };
-
-                    reader.readAsDataURL(file);
+                card.addEventListener('click', function () {
+                    openFileInputForCard(card);
                 });
 
-                uploadCard.onclick = function () {
-                    input.click();
-                };
+                card.addEventListener('dragenter', function (event) {
+                    event.preventDefault();
 
-                uploadCard.appendChild(wrapper);
+                    if (draggedCard) {
+                        return;
+                    }
+
+                    card.classList.add('is-drag-over');
+                });
+
+                card.addEventListener('dragover', function (event) {
+                    if (draggedCard) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    if (event.dataTransfer) {
+                        event.dataTransfer.dropEffect = 'copy';
+                    }
+
+                    card.classList.add('is-drag-over');
+                });
+
+                card.addEventListener('dragleave', function () {
+                    card.classList.remove('is-drag-over');
+                });
+
+                card.addEventListener('drop', function (event) {
+                    if (draggedCard) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    card.classList.remove('is-drag-over');
+
+                    if (!event.dataTransfer || !event.dataTransfer.files) {
+                        return;
+                    }
+
+                    handleDroppedFiles(event.dataTransfer.files, card);
+                });
             }
+
+            function enableAllCards() {
+                getFilledCards().forEach(function (card) {
+                    enableFilledCard(card);
+                });
+
+                getEmptyCards().forEach(function (card) {
+                    enableEmptyCard(card);
+                });
+            }
+
+            browseButton.addEventListener('click', function () {
+                openFileInputFromBrowseCard();
+            });
+
+            browseCard.addEventListener('dragover', function (event) {
+                event.preventDefault();
+
+                if (event.dataTransfer) {
+                    event.dataTransfer.dropEffect = 'copy';
+                }
+            });
+
+            browseCard.addEventListener('drop', function (event) {
+                event.preventDefault();
+
+                if (!event.dataTransfer || !event.dataTransfer.files) {
+                    return;
+                }
+
+                const targetCard = getEmptyCards()[0] || createEmptyCard();
+
+                handleDroppedFiles(event.dataTransfer.files, targetCard);
+            });
 
             document.addEventListener('click', function () {
                 closeAllMenus();
             });
 
-            enableAllFilledCards();
+            enableAllCards();
+            ensureMinimumCards();
+            ensureOneEmptyCardIfPossible();
             normalizeGrid();
-            createUploadInput();
         });
     </script>
+
     <style>
+        .property-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            overflow: visible;
+        }
+
+        .property-preview-card,
+        .property-upload-card {
+            position: relative;
+            height: 197px;
+            background: #f1f1f1;
+            border-radius: 12px;
+            overflow: visible;
+        }
+
         .property-preview-card {
             position: relative;
+            overflow: visible;
+            z-index: 1;
+        }
+
+        .property-preview-card.is-menu-open {
+            z-index: 3000;
+        }
+
+        .property-preview-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .property-upload-card {
+            cursor: pointer;
+        }
+
+        .property-upload-input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .property-hidden-input {
+            display: none;
+        }
+
+        .property-upload-placeholder {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #777;
+        }
+
+        .property-upload-placeholder span {
+            font-size: 18px;
+        }
+
+        .property-upload-placeholder strong {
+            margin-top: 6px;
+            padding: 4px 14px;
+            border: 1px solid #5D00FF;
+            border-radius: 20px;
+            color: #5D00FF;
+            font-size: 11px;
+        }
+
+        .property-image-position {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #5D00FF;
+            color: #fff;
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 11px;
+        }
+
+        .navigation-fixed {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            border-top: 1px solid #EBECEC;
+            background: #FFF;
+            box-shadow: 0 -4px 20px 0 rgba(0, 0, 0, 0.07);
+            padding-right: 108px;
+        }
+
+        .navigation-fixed .is-last-page {
+            border-radius: 50px;
+            border: 2px solid #EBECEC;
+            background: #FFF;
+            color: #858789;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .property-preview-card.is-empty {
+            cursor: pointer;
+        }
+
+        .property-preview-card.is-empty.is-drag-over {
+            border-color: #5D00FF;
+            background: #F4F0FF;
+        }
+
+        .property-empty-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #858789;
+        }
+
+        .property-browse-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .property-browse-button {
+            border: 0;
+            background: transparent;
+            color: #5D00FF;
+            font-weight: 700;
+            padding: 0;
+            cursor: pointer;
         }
 
         .property-image-actions {
             position: absolute;
-            top: 12px;
-            right: 12px;
-            z-index: 5;
+            top: 8px;
+            right: 8px;
+            z-index: 3500;
         }
 
         .property-image-actions-button {
-            width: 36px;
-            height: 36px;
-            border: 0;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background: #FFFFFF;
             display: flex;
@@ -541,18 +916,19 @@
             justify-content: center;
             padding: 0;
             cursor: pointer;
+            border: 2px solid #5D00FF;
         }
 
         .property-image-actions-menu {
             position: absolute;
             top: 44px;
             right: 0;
-            min-width: 210px;
+            width: 230px;
             background: #FFFFFF;
             border-radius: 16px;
             padding: 8px;
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
-            z-index: 10;
+            z-index: 4000;
         }
 
         .property-image-actions-menu button {
@@ -571,26 +947,52 @@
             color: #5D00FF;
         }
 
-        .property-preview-card.is-dragging {
-            opacity: 0.5;
-            cursor: grabbing;
-        }
-
         .property-preview-card.is-filled {
             cursor: grab;
+        }
+
+        .property-preview-card.is-dragging {
+            opacity: 0.25;
+            cursor: grabbing;
         }
 
         .property-preview-card.is-cover::after {
             content: "Couverture";
             position: absolute;
-            left: 12px;
-            bottom: 12px;
+            top: 8px;
+            left: 8px;
             background: #5D00FF;
             color: #FFFFFF;
-            padding: 6px 10px;
+            padding: 10px 16px;
             border-radius: 999px;
-            font-size: 12px;
-            z-index: 4;
+            font-size: 16px;
+            z-index: 3500;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .property-preview-card-drag-ghost {
+            position: fixed;
+            top: -10000px;
+            left: -10000px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 1;
+            overflow: hidden;
+            box-sizing: border-box;
+            transform: rotate(1deg);
+        }
+
+        .property-preview-card-drag-ghost img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .property-preview-card-drag-ghost .property-image-actions-menu {
+            display: none !important;
         }
     </style>
 </div>
