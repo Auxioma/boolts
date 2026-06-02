@@ -1,93 +1,137 @@
-<div class="mes-bien-stepper">
+{% set paysCode = form.vars.data.pays ?? null %}
 
-    <div class="mes-bien-stepper-line-background"></div>
+{% set showBilanEnergetique = paysCode is empty or paysCode == 'FR' %}
 
-    <div class="mes-bien-stepper-line"></div>
+{#
+step = étape réellement affichée
+visualStep = étape maximale atteinte pour garder la barre bleue à sa position
+#}
+{% set visualStep = stepperStep|default(step) %}
 
-    <div class="mes-bien-stepper-item mes-bien-stepper-item-active js-stepper-link" data-tab="cat1">
-        <div class="mes-bien-stepper-circle"></div>
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">Type de bien</p>
-        </div>
-    </div>
+{% set steps = [
+    {
+        step: 1,
+        tab: 'cat1',
+        title: 'Type de bien'
+    },
+    {
+        step: 2,
+        tab: 'cat2',
+        title: 'Type de transaction'
+    },
+    {
+        step: 3,
+        tab: 'cat3',
+        title: 'Adresse'
+    },
+    {
+        step: 4,
+        tab: 'cat4',
+        title: 'Caractéristiques'
+    }
+] %}
 
-    <div class="mes-bien-stepper-item js-stepper-link" data-tab="cat2">
-        <div class="mes-bien-stepper-circle"></div>
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">Type de transaction</p>
-        </div>
-    </div>
-
-    <div class="mes-bien-stepper-item js-stepper-link" data-tab="cat3">
-        <div class="mes-bien-stepper-circle"></div>
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">
-                Adresse
-            </p>
-        </div>
-    </div>
-
-{% if form.vars.data.pays == 'FR' %}
-    <div class="mes-bien-stepper-item js-stepper-link"
-         data-tab="cat4">
-
-        <div class="mes-bien-stepper-circle"></div>
-
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">
-                Bilan énergétique
-            </p>
-        </div>
-
-    </div>
+{% if showBilanEnergetique %}
+    {% set steps = steps|merge([
+        {
+            step: 5,
+            tab: 'cat5',
+            title: 'Bilan énergétique'
+        }
+    ]) %}
 {% endif %}
 
-    <div class="mes-bien-stepper-item js-stepper-link"
-         data-tab="cat5">
+{% set steps = steps|merge([
+    {
+        step: 6,
+        tab: 'cat6',
+        title: 'Photos'
+    },
+    {
+        step: 7,
+        tab: 'cat7',
+        title: 'Description'
+    },
+    {
+        step: 8,
+        tab: 'cat8',
+        title: 'Prix'
+    }
+]) %}
 
-        <div class="mes-bien-stepper-circle"></div>
+{#
+Calcul de la position de la barre avec visualStep,
+pas avec step.
+#}
+{% if visualStep <= 4 %}
+    {% set activePosition = visualStep %}
+{% elseif visualStep == 5 %}
+    {% set activePosition = showBilanEnergetique ? 5 : 4 %}
+{% else %}
+    {% set activePosition = showBilanEnergetique ? visualStep : visualStep - 1 %}
+{% endif %}
 
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">
-                Caractéristiques
-            </p>
-        </div>
-    </div>
+{% set totalSteps = steps|length %}
+{% set progressPercent = totalSteps > 1 ? ((activePosition - 1) / (totalSteps - 1) * 100) : 0 %}
 
-    <div class="mes-bien-stepper-item js-stepper-link"
-         data-tab="cat6">
+<div
+    class="mes-bien-stepper"
+    style="--stepper-progress: {{ progressPercent }}%;"
+>
+    <div class="mes-bien-stepper-line-background"></div>
 
-        <div class="mes-bien-stepper-circle"></div>
+    <div
+        class="mes-bien-stepper-line"
+        style="height: {{ progressPercent }}%;"
+    ></div>
 
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">
-                Photos
-            </p>
-        </div>
-    </div>
+    {% for item in steps %}
+        {% set isCurrentDisplayedStep = item.step == step %}
+        {% set isVisualActive = item.step == visualStep %}
+        {% set isCompleted = item.step < visualStep %}
 
+        {% if isCompleted %}
+            <a
+                href="{{ path('agence_immobiliere_mes_biens', { step: item.step }) }}"
+                class="
+                    mes-bien-stepper-item
+                    mes-bien-stepper-item-completed
+                    js-stepper-link
+                    {% if isCurrentDisplayedStep %}active{% endif %}
+                    {% if isVisualActive %}mes-bien-stepper-item-active{% endif %}
+                "
+                data-tab="{{ item.tab }}"
+                title="Revenir à l’étape {{ item.title }}"
+            >
+                <div class="mes-bien-stepper-circle"></div>
 
-    <div class="mes-bien-stepper-item js-stepper-link"
-         data-tab="cat7">
+                <div class="mes-bien-stepper-content">
+                    <p class="mes-bien-stepper-title">
+                        {{ item.title }}
+                    </p>
+                </div>
+            </a>
+        {% else %}
+            <div
+                class="
+                    mes-bien-stepper-item
+                    js-stepper-link
+                    {% if isCurrentDisplayedStep %}active{% endif %}
+                    {% if isVisualActive %}mes-bien-stepper-item-active{% endif %}
+                "
+                data-tab="{{ item.tab }}"
+            >
+                <div class="mes-bien-stepper-circle"></div>
 
-        <div class="mes-bien-stepper-circle"></div>
-
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">
-                Description
-            </p>
-        </div>
-    </div>
-
-    <div class="mes-bien-stepper-item js-stepper-link"
-         data-tab="cat8">
-
-        <div class="mes-bien-stepper-circle"></div>
-
-        <div class="mes-bien-stepper-content">
-            <p class="mes-bien-stepper-title">
-                Prix
-            </p>
-        </div>
-    </div>
+                <div class="mes-bien-stepper-content">
+                    <p class="mes-bien-stepper-title">
+                        {{ item.title }}
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
 </div>
+<style>
+
+</style>

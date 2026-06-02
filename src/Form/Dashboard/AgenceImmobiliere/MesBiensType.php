@@ -23,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -41,14 +42,12 @@ class MesBiensType extends AbstractType
                     'class' => CategoryBien::class,
                     'choice_label' => 'name',
                     'required' => true,
-
                     'constraints' => [
                         new NotBlank(
                             message: 'Veuillez sélectionner un type de bien.',
                             groups: ['step_1']
                         ),
                     ],
-
                     'choice_attr' => static function (CategoryBien $categoryBien) {
                         return [
                             'icon' => $categoryBien->getIcone(),
@@ -84,6 +83,7 @@ class MesBiensType extends AbstractType
                 ])
             ;
         }
+
         if (4 === $step) {
             $builder
                 ->add('chambres', HiddenType::class, [
@@ -166,13 +166,26 @@ class MesBiensType extends AbstractType
                 $builder
                     ->add('montantLoyerHorsCharge')
                     ->add('montantDepotDeGarantie')
-                    ->add('montantDesCharges');
+                    ->add('montantDesCharges')
+                ;
             }
+
             if ('vente' === $typeTransaction) {
                 $builder
-                    ->add('prix');
+                    ->add('prix')
+                ;
             }
         }
+
+        $builder
+            ->add('submit', SubmitType::class, [
+                'label' => 'Suivant',
+                'attr' => [
+                    'class' => 'py-10 px-16 btn-suivant',
+                    'data-mes-biens--submit-target' => 'submit',
+                ],
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -187,6 +200,7 @@ class MesBiensType extends AbstractType
                 return ['step_'.$step];
             },
         ]);
+
         $resolver->setAllowedTypes('step', 'int');
         $resolver->setAllowedTypes('typeTransaction', ['null', 'string']);
     }

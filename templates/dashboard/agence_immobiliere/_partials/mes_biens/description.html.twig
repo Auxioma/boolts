@@ -3,6 +3,7 @@
         <h1>
             Saisissez la description de votre bien
         </h1>
+
         <div class="d-flex align-items-end">
             <a href="#" class="btn-retour py-10 px-16">
                 Enregistrer
@@ -13,47 +14,73 @@
     <div class="mt-48 caracteristique-logements">
         <div class="row">
             <div class="col-12">
+
                 <div>
-                    <label for="" class="mb-16">
-                        Titre du logement (facultatif)
+                    <label
+                        for="{{ form.titreDuLogement.vars.id }}"
+                        class="mb-16"
+                    >
+                        Titre du logement <span>(facultatif)</span>
                     </label>
+
                     {{ form_widget(form.titreDuLogement, {
                         attr: {
                             class: 'form-control mb-32',
                             placeholder: 'Exemple : Logement spacieux et lumineux',
                         },
                     }) }}
+
+                    {{ form_errors(form.titreDuLogement) }}
                 </div>
 
                 <div>
-                    <label for="" class="mb-16">
+                    <label
+                        for="{{ form.descriptionLogement.vars.id }}"
+                        class="mb-16"
+                    >
                         Description du logement*
                     </label>
+
                     {{ form_widget(form.descriptionLogement, {
                         attr: {
                             class: 'form-control mb-26',
                             placeholder: 'Exemple : Logement spacieux et lumineux',
+                            'data-mes-biens-required-field': 'true',
                         },
                     }) }}
+
+                    {{ form_errors(form.descriptionLogement) }}
                 </div>
+
                 <div>
-                    <a href="" class="btn-suivant py-10 px-16">Générer avec IA</a>
+                    <a href="#" class="btn-suivant py-10 px-16">
+                        Générer avec IA
+                    </a>
                 </div>
 
                 <div class="mt-32">
-                    <label for="" class="mb-16">
-                        Référence interne (facultatif)
+                    <label
+                        for="{{ form.referenceInterne.vars.id }}"
+                        class="mb-16"
+                    >
+                        Référence interne <span>(facultatif)</span>
                     </label>
+
                     {{ form_widget(form.referenceInterne, {
                         attr: {
                             class: 'form-control mb-26',
                             placeholder: 'Saisissez votre référence interne',
                         },
                     }) }}
+
+                    {{ form_errors(form.referenceInterne) }}
                 </div>
+
+                {% do form.titreDuLogement.setRendered %}
+                {% do form.descriptionLogement.setRendered %}
+                {% do form.referenceInterne.setRendered %}
 
             </div>
         </div>
     </div>
-</div></div>
-
+</div>

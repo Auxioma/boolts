@@ -25,7 +25,8 @@
                                             attr: {
                                                 novalidate: 'novalidate',
                                                 enctype: 'multipart/form-data',
-                                                'data-turbo': 'false'
+                                                'data-turbo': 'false',
+                                                'data-controller': 'mes-biens--submit'
                                             }
                                         }) }}
 
@@ -64,14 +65,7 @@
                                                 </a>
                                             {% endif %}
 
-                                            <button
-                                                type="submit"
-                                                name="direction"
-                                                value="next"
-                                                class="btn-suivant py-10 px-16"
-                                            >
-                                                Suivant
-                                            </button>
+                                            {{ form_widget(form.submit) }}
                                         </div>
 
                                         {{ form_end(form) }}
@@ -87,6 +81,21 @@
             </div>
         </div>
     </main>
+
+    <style>
+        .btn-suivant:disabled,
+        .btn-suivant.is-disabled {
+            border-radius: 50px;
+            border: 2px solid #EBECEC;
+            background: #FFF;
+            color: #858789;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 20px;
+        }
+    </style>
+
 {% endblock %}
 
 {% block js %}

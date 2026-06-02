@@ -1,34 +1,75 @@
-<div class="col-6">
+<div
+    class="row"
+    data-controller="mes-biens--loyer"
+>
+    <div class="col-6">
+        <div>
+            <label
+                for="{{ form.montantLoyerHorsCharge.vars.id }}"
+                class="mb-16"
+            >
+                Montant du loyer hors charges*
+            </label>
+
+            {{ form_widget(form.montantLoyerHorsCharge, {
+                attr: {
+                    class: 'form-control mb-32',
+                    placeholder: '€/mois',
+                    'data-mes-biens-required-field': 'true',
+                    'data-mes-biens--loyer-target': 'loyerHorsCharge',
+                    'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
+                },
+            }) }}
+
+            {{ form_errors(form.montantLoyerHorsCharge) }}
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div>
+            <label
+                for="{{ form.montantDesCharges.vars.id }}"
+                class="mb-16"
+            >
+                Montant des charges*
+            </label>
+
+            {{ form_widget(form.montantDesCharges, {
+                attr: {
+                    class: 'form-control mb-32',
+                    placeholder: '€/mois',
+                    'data-mes-biens-required-field': 'true',
+                    'data-mes-biens--loyer-target': 'charges',
+                    'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
+                },
+            }) }}
+
+            {{ form_errors(form.montantDesCharges) }}
+        </div>
+    </div>
+
+    <div class="mb-32">
+        <h2>
+            Loyer affiché sur l’annonce :
+            <span data-mes-biens--loyer-target="total">0</span>€ CC/mois
+        </h2>
+    </div>
+
     <div>
-        <label for="" class="mb-16">Montant du loyer (hors charges)*</label>
-        {{ form_widget(form.montantLoyerHorsCharge, {
+        <label
+            for="{{ form.montantDepotDeGarantie.vars.id }}"
+            class="mb-16"
+        >
+            Montant du dépôt de garantie <span>(facultatif)</span>
+        </label>
+
+        {{ form_widget(form.montantDepotDeGarantie, {
             attr: {
                 class: 'form-control mb-32',
-                placeholder: '€/mois',
+                placeholder: '€',
             },
         }) }}
+
+        {{ form_errors(form.montantDepotDeGarantie) }}
     </div>
-</div>
-<div class="col-6">
-    <div>
-        <label for="" class="mb-16">Montant des charges*</label>
-        {{ form_widget(form.montantDesCharges, {
-            attr: {
-                class: 'form-control mb-32',
-                placeholder: '€/mois',
-            },
-        }) }}
-    </div>
-</div>
-<div class="mb-32">
-    <h2>Loyer affiché sur l’annonce : 867€ CC/mois </h2>
-</div>
-<div>
-    <label for="" class="mb-16">Montant du dépôt de garantie</label>
-    {{ form_widget(form.montantDepotDeGarantie, {
-        attr: {
-            class: 'form-control mb-32',
-            placeholder: '€/mois',
-        },
-    }) }}
 </div>

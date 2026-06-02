@@ -1,14 +1,20 @@
 <div class="col-12">
     <div>
-        <label for="" class="mb-16">Prix du logement*</label>
+        <label
+            for="{{ form.prix.vars.id }}"
+            class="mb-16"
+        >
+            Prix du logement*
+        </label>
+
         {{ form_widget(form.prix, {
             attr: {
                 class: 'form-control mb-32',
-                placeholder: '€/mois',
+                placeholder: '€',
+                'data-mes-biens-required-field': 'true',
             },
         }) }}
+
+        {{ form_errors(form.prix) }}
     </div>
 </div>
-
-
-

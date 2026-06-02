@@ -48,7 +48,7 @@
                                     for="{{ form.codePostal.vars.id }}"
                                     class="mb-16"
                                 >
-                                    Code postal
+                                    Code postal*
                                 </label>
 
                                 {{ form_widget(form.codePostal, {
@@ -58,6 +58,7 @@
                                         autocomplete: 'off',
                                         'data-mes-biens--adresse-autocomplete-target': 'codePostal',
                                         'data-action': 'input->mes-biens--adresse-autocomplete#search',
+                                        'data-mes-biens-required-field': 'true',
                                     },
                                 }) }}
 
@@ -71,7 +72,7 @@
                                             for="{{ form.ville.vars.id }}"
                                             class="mb-16"
                                         >
-                                            Ville
+                                            Ville*
                                         </label>
 
                                         {{ form_widget(form.ville, {
@@ -81,6 +82,7 @@
                                                 autocomplete: 'off',
                                                 'data-mes-biens--adresse-autocomplete-target': 'ville',
                                                 'data-action': 'input->mes-biens--adresse-autocomplete#search',
+                                                'data-mes-biens-required-field': 'true',
                                             },
                                         }) }}
 
@@ -94,13 +96,14 @@
                                             for="{{ form.pays.vars.id }}"
                                             class="mb-16"
                                         >
-                                            Pays
+                                            Pays*
                                         </label>
 
                                         {{ form_widget(form.pays, {
                                             attr: {
                                                 class: 'form-control',
                                                 'data-mes-biens--adresse-autocomplete-target': 'pays',
+                                                'data-mes-biens-required-field': 'true',
                                             },
                                         }) }}
 

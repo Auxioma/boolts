@@ -3,6 +3,7 @@
         <h1>
             Définissez le prix de votre bien
         </h1>
+
         <div class="d-flex align-items-end">
             <a href="#" class="btn-retour py-10 px-16">
                 Enregistrer
@@ -24,15 +25,21 @@
                 {% endif %}
             {% endif %}
 
-
             <div>
-                <label for="" class="d-flex">
-                    <input type="checkbox" class="form-check-therms w-auto d-block mr-12" id="complete_profile_agreeTerms">
+                <label
+                    for="complete_profile_agreeTerms"
+                    class="d-flex"
+                >
+                    <input
+                        type="checkbox"
+                        class="form-check-therms w-auto d-block mr-12"
+                        id="complete_profile_agreeTerms"
+                        data-mes-biens-required-field="true"
+                    >
+
                     Je reconnais avoir été informé(e) de la réglementation applicable à l’encadrement des loyers et déclare que le bien concerné respecte les dispositions légales en vigueur. La responsabilité liée à la conformité du montant du loyer renseigné incombe exclusivement au propriétaire/bailleur.
                 </label>
             </div>
-
         </div>
     </div>
 </div>
-

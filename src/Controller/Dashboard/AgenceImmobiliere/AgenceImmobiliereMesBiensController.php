@@ -19,6 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/mes/biens', name: 'agence_immobiliere_')]
@@ -28,22 +29,36 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     public function index(
         Request $request,
         PropertyRepository $propertyRepository,
-        EntityManagerInterface $entityManager): Response
-    {
+        EntityManagerInterface $entityManager
+    ): Response {
+        $session = $request->getSession();
         $step = $request->query->getInt('step', 1);
 
-        $propertyId = $request->getSession()->get('mes_biens_property_id');
+        /*
+        |--------------------------------------------------------------------------
+        | Étape maximale atteinte
+        |--------------------------------------------------------------------------
+        |
+        | step        = étape réellement affichée
+        | stepperStep = étape maximale atteinte pour garder la barre bleue
+        */
+        if (!$session->has('mes_biens_reached_step')) {
+            $session->set('mes_biens_reached_step', 1);
+        }
+
+        $propertyId = $session->get('mes_biens_property_id');
 
         if ($propertyId) {
             $mesBiens = $propertyRepository->find($propertyId);
+
             if (!$mesBiens) {
+                $this->clearMesBiensSession($session);
                 $mesBiens = new Property();
             }
         } else {
             $mesBiens = new Property();
         }
 
-        $session = $request->getSession();
         $typeTransaction = $session->get('typeTransaction');
 
         $form = $this->createForm(MesBiensType::class, $mesBiens, [
@@ -54,67 +69,108 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
-            /* mettre en session step 1 */
+            /*
+            |--------------------------------------------------------------------------
+            | Step 1 : type de bien
+            |--------------------------------------------------------------------------
+            */
             if (1 === $step) {
                 $entityManager->persist($mesBiens);
-
                 $entityManager->flush();
 
-                $request->getSession()->set(
-                    'mes_biens_property_id',
-                    $mesBiens->getId()
-                );
+                $session->set('mes_biens_property_id', $mesBiens->getId());
+
+                $this->updateReachedStep($session, 2);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 2,
                 ]);
             }
-            /* mettre en session step 2 */
+
+            /*
+            |--------------------------------------------------------------------------
+            | Step 2 : type de transaction
+            |--------------------------------------------------------------------------
+            */
             if (2 === $step) {
                 $entityManager->flush();
+
                 $transaction = $mesBiens->getTypeTransaction();
 
                 if ($transaction) {
                     $session->set('typeTransaction', mb_strtolower($transaction->getName()));
                 }
 
+                $this->updateReachedStep($session, 3);
+
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 3,
                 ]);
             }
 
-            /* mettre en session le step 3 */
+            /*
+            |--------------------------------------------------------------------------
+            | Step 3 : adresse
+            |--------------------------------------------------------------------------
+            */
             if (3 === $step) {
                 $entityManager->flush();
+
+                $this->updateReachedStep($session, 4);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 4,
                 ]);
             }
-            /* mettre en session le step 4 */
+
+            /*
+            |--------------------------------------------------------------------------
+            | Step 4 : caractéristiques
+            |--------------------------------------------------------------------------
+            */
             if (4 === $step) {
                 $entityManager->flush();
 
-                /* je verifie que le champs pays est bien france */
+                /*
+                |--------------------------------------------------------------------------
+                | Si le pays n’est pas la France, on saute le bilan énergétique
+                |--------------------------------------------------------------------------
+                */
                 if ('FR' !== $mesBiens->getPays()) {
+                    $this->updateReachedStep($session, 6);
+
                     return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                         'step' => 6,
                     ]);
                 }
 
+                $this->updateReachedStep($session, 5);
+
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 5,
                 ]);
             }
-            /* mettre en session le step 5 */
+
+            /*
+            |--------------------------------------------------------------------------
+            | Step 5 : bilan énergétique
+            |--------------------------------------------------------------------------
+            */
             if (5 === $step) {
                 $entityManager->flush();
+
+                $this->updateReachedStep($session, 6);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 6,
                 ]);
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Step 6 : photos
+            |--------------------------------------------------------------------------
+            */
             if (6 === $step) {
                 foreach ($mesBiens->getPropertyImages() as $index => $propertyImage) {
                     $propertyImage->setProperty($mesBiens);
@@ -124,15 +180,21 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $entityManager->persist($mesBiens);
                 $entityManager->flush();
 
+                $this->updateReachedStep($session, 7);
+
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 7,
                 ]);
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Step 7 : description
+            |--------------------------------------------------------------------------
+            */
             if (7 === $step) {
                 $entityManager->flush();
 
-                $session = $request->getSession();
                 $typeTransaction = $session->get('typeTransaction');
 
                 if (null === $typeTransaction) {
@@ -140,7 +202,10 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                         'step' => 2,
                     ]);
                 }
-                $typeTransaction = $mesBiens->getTypeTransaction()->getName();
+
+                $typeTransaction = $mesBiens->getTypeTransaction()?->getName();
+
+                $this->updateReachedStep($session, 8);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 8,
@@ -148,9 +213,15 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 ]);
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | Step 8 : prix
+            |--------------------------------------------------------------------------
+            */
             if (8 === $step) {
                 $entityManager->flush();
-                $session->remove('typeTransaction');
+
+                $this->clearMesBiensSession($session);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens_status');
             }
@@ -159,6 +230,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig', [
             'form' => $form->createView(),
             'step' => $step,
+            'stepperStep' => $session->get('mes_biens_reached_step', $step),
         ]);
     }
 
@@ -166,5 +238,21 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     public function status(): Response
     {
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/status.html.twig');
+    }
+
+    private function updateReachedStep(SessionInterface $session, int $step): void
+    {
+        $currentReachedStep = $session->get('mes_biens_reached_step', 1);
+
+        if ($step > $currentReachedStep) {
+            $session->set('mes_biens_reached_step', $step);
+        }
+    }
+
+    private function clearMesBiensSession(SessionInterface $session): void
+    {
+        $session->remove('mes_biens_property_id');
+        $session->remove('typeTransaction');
+        $session->remove('mes_biens_reached_step');
     }
 }

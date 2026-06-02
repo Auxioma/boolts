@@ -23,7 +23,6 @@
                             <div>
 
                                 {# CHAMBRES #}
-
                                 <div
                                     class="position-relative mb-18"
                                     data-controller="mes-biens--chambres"
@@ -31,7 +30,8 @@
                                     {{ form_widget(form.chambres, {
                                         attr: {
                                             class: 'chambre-input',
-                                            'data-mes-biens--chambres-target': 'input'
+                                            'data-mes-biens--chambres-target': 'input',
+                                            'data-mes-biens-required-min-value': '1',
                                         }
                                     }) }}
 
@@ -50,7 +50,7 @@
                                             data-action="click->mes-biens--chambres#decrement"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 2 12 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </button>
 
@@ -67,7 +67,7 @@
                                             data-action="click->mes-biens--chambres#increment"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 2 12 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </button>
 
@@ -77,7 +77,6 @@
                                 </div>
 
                                 {# SALLE DE BAIN #}
-
                                 <div
                                     class="position-relative mb-7"
                                     data-controller="mes-biens--salle-de-bains"
@@ -85,7 +84,8 @@
                                     {{ form_widget(form.salleDeBains, {
                                         attr: {
                                             class: 'salle-bain-input',
-                                            'data-mes-biens--salle-de-bains-target': 'input'
+                                            'data-mes-biens--salle-de-bains-target': 'input',
+                                            'data-mes-biens-required-min-value': '0.5',
                                         }
                                     }) }}
 
@@ -104,7 +104,7 @@
                                             data-action="click->mes-biens--salle-de-bains#decrement"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8 12H16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 2 12 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </button>
 
@@ -121,7 +121,7 @@
                                             data-action="click->mes-biens--salle-de-bains#increment"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M8 12H16M12 8V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 2 12 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                             </svg>
                                         </button>
 
@@ -135,7 +135,6 @@
                                 </small>
 
                                 {# SURFACE #}
-
                                 <div>
                                     <label
                                         for="{{ form.surfaceTotal.vars.id }}"
@@ -148,6 +147,7 @@
                                         attr: {
                                             class: 'form-control mb-32',
                                             placeholder: 'Exemple : 150 m2',
+                                            'data-mes-biens-required-field': 'true',
                                         },
                                     }) }}
 
@@ -155,7 +155,6 @@
                                 </div>
 
                                 {# ANNEE #}
-
                                 <div>
                                     <label
                                         for="{{ form.anneeConstruction.vars.id }}"
@@ -175,7 +174,6 @@
                                 </div>
 
                                 {# CARACTERISTIQUES #}
-
                                 <h2 class="mb-32">
                                     Caractéristiques
                                 </h2>

@@ -14,8 +14,12 @@
     <div class="mt-48 caracteristique-logements">
         <div class="row">
             <div class="col-12">
+
                 <div>
-                    <label class="mb-16">
+                    <label
+                        for="{{ form.dpe.vars.id }}"
+                        class="mb-16"
+                    >
                         Consommation en énergie primaire*
                     </label>
 
@@ -23,7 +27,8 @@
                         {{ form_widget(form.dpe, {
                             attr: {
                                 class: 'form-control pe-120',
-                                placeholder: '0'
+                                placeholder: '0',
+                                'data-mes-biens-required-field': 'true',
                             }
                         }) }}
 
@@ -31,6 +36,8 @@
                             kWhEP/m2/an
                         </span>
                     </div>
+
+                    {{ form_errors(form.dpe) }}
                 </div>
 
                 <div class="mt-32">
@@ -39,7 +46,8 @@
                             <div class="energy-item energy-{{ child.vars.value|lower }} {% if child.vars.checked %}active{% endif %}">
                                 {{ form_widget(child, {
                                     attr: {
-                                        class: 'd-none'
+                                        class: 'd-none',
+                                        'data-mes-biens-required-group': 'dpeLettre',
                                     }
                                 }) }}
 
@@ -47,20 +55,25 @@
                             </div>
                         {% endfor %}
                     </div>
+
                     <div class="d-flex justify-content-between mt-16">
-                        <small class="">
+                        <small>
                             Logement économe
                         </small>
 
-                        <small class="">
+                        <small>
                             Logement énergivore
                         </small>
                     </div>
+
+                    {{ form_errors(form.dpeLettre) }}
                 </div>
 
-
                 <div class="mt-32">
-                    <label class="mb-16">
+                    <label
+                        for="{{ form.ges.vars.id }}"
+                        class="mb-16"
+                    >
                         Emissions de gaz à effet de serre*
                     </label>
 
@@ -68,7 +81,8 @@
                         {{ form_widget(form.ges, {
                             attr: {
                                 class: 'form-control pe-120',
-                                placeholder: '0'
+                                placeholder: '0',
+                                'data-mes-biens-required-field': 'true',
                             }
                         }) }}
 
@@ -76,74 +90,102 @@
                             kgCO2/m2/an
                         </span>
                     </div>
+
+                    {{ form_errors(form.ges) }}
                 </div>
+
                 <div class="mt-32 mb-24">
-                    <h2>Estimation des coûts d'énergie du logement</h2>
+                    <h2>
+                        Estimation des coûts d'énergie du logement
+                    </h2>
                 </div>
+
                 <div class="row mb-32">
                     <div class="col-6">
-                        <div class="">
-                            <label class="mb-16">
-                                Minimum
+                        <div>
+                            <label
+                                for="{{ form.dpeMin.vars.id }}"
+                                class="mb-16"
+                            >
+                                Minimum <span>(facultatif)</span>
                             </label>
 
                             <div class="position-relative">
                                 {{ form_widget(form.dpeMin, {
                                     attr: {
                                         class: 'form-control pe-120',
-                                        placeholder: ''
+                                        placeholder: '',
                                     }
                                 }) }}
 
                                 <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                                   €/an
+                                    €/an
                                 </span>
                             </div>
+
+                            {{ form_errors(form.dpeMin) }}
                         </div>
                     </div>
+
                     <div class="col-6">
-                        <div class="">
-                            <label class="mb-16">
-                                Maximum
+                        <div>
+                            <label
+                                for="{{ form.dpeMax.vars.id }}"
+                                class="mb-16"
+                            >
+                                Maximum <span>(facultatif)</span>
                             </label>
 
                             <div class="position-relative">
                                 {{ form_widget(form.dpeMax, {
                                     attr: {
                                         class: 'form-control pe-120',
-                                        placeholder: ''
+                                        placeholder: '',
                                     }
                                 }) }}
 
                                 <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                                   €/an
+                                    €/an
                                 </span>
                             </div>
+
+                            {{ form_errors(form.dpeMax) }}
                         </div>
                     </div>
 
                     <div class="mt-32">
-                        <label class="mb-16">
-                            Date d'indexation du prix des énergies
+                        <label
+                            for="{{ form.dateIndexationEnergie.vars.id }}"
+                            class="mb-16"
+                        >
+                            Date d'indexation du prix des énergies <span>(facultatif)</span>
                         </label>
 
                         <div class="position-relative">
                             {{ form_widget(form.dateIndexationEnergie, {
                                 attr: {
                                     class: 'form-control text-uppercase',
-                                    placeholder: ''
+                                    placeholder: '',
                                 }
                             }) }}
-
                         </div>
-                    </div>
 
+                        {{ form_errors(form.dateIndexationEnergie) }}
+                    </div>
                 </div>
+
+                {% do form.dpe.setRendered %}
+                {% do form.ges.setRendered %}
+                {% do form.dpeMin.setRendered %}
+                {% do form.dpeMax.setRendered %}
+                {% do form.dateIndexationEnergie.setRendered %}
+                {% do form.dpeLettre.setRendered %}
 
             </div>
         </div>
     </div>
 </div>
+
 <script>
     document.querySelectorAll('.energy-item').forEach(function (item) {
         item.addEventListener('click', function () {
