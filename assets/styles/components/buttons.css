@@ -98,7 +98,8 @@
     top:7px;
 }
 /* border bleu ecriture bleu, bg blanc */
-.btn-retour {
+.btn-retour,
+.property-browse-button {
     border-radius: 50px;
     border: 2px solid #5D00FF;
     background: #FFF;
@@ -118,4 +119,7 @@
     font-style: normal;
     font-weight: 700;
     line-height: 20px;
+}
+.property-browse-button {
+    background: transparent!important;
 }

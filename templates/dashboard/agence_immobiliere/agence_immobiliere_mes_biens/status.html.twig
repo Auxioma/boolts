@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes biens immobiliers{% endblock %}
+
+{% block body %}
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid">
+            <div class="row">
+
+                {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+                <div class="col-10 d-flex flex-column justify-content-center align-items-center text-center">
+                    <div class="row">
+                        <div class="col-12 show-annonce">
+                            Votre annonce a bien été créée. Elle est actuellement en cours d’analyse.
+                        </div>
+
+                        <div class="col-12 mt-3 voir-les-bien">
+                            <a href="">Voir mes biens</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+<style>
+    .show-annonce {
+        max-width: 687px;
+        color: #0B0F14;
+        text-align: center;
+        font-size: 30px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 34px;
+        margin-bottom: 24px;
+    }
+    .voir-les-bien {
+        max-width: 687px;
+    }
+    .voir-les-bien a {
+        height: 44px;
+        padding: 10px 16px;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        border-radius: 50px;
+        background: #5D00FF;
+        color: #FFF;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 20px;
+        width: 144px;
+    }
+</style>
+{% endblock %}

@@ -35,20 +35,20 @@ export default class extends Controller {
                 </button>
 
                 <div class="property-image-actions-menu d-none">
-                    <button type="button" data-image-action="cover">
-                        Définir comme couverture
+                    <button type="button" data-image-action="cover" class="couverture-image">
+                        <i class="icon-image mr-8"></i> Définir comme couverture
                     </button>
 
-                    <button type="button" data-image-action="forward">
-                        Déplacer vers l’avant
+                    <button type="button" data-image-action="forward" class="avant-image">
+                        <i class="icon-chevrons-up-down mr-8"></i> Déplacer vers l’avant
                     </button>
 
-                    <button type="button" data-image-action="backward">
-                        Déplacer vers l’arrière
+                    <button type="button" data-image-action="backward" class="arriere-image">
+                        <i class="icon-chevrons-up-down mr-8"></i> Déplacer vers l’arrière
                     </button>
 
-                    <button type="button" data-image-action="delete">
-                        Supprimer
+                    <button type="button" data-image-action="delete" class="supprime-image">
+                        <i class="icon-trash mr-8"></i> Supprimer
                     </button>
                 </div>
             </div>
