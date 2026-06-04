@@ -96,7 +96,7 @@
     position: absolute;
     top: 1px;
     left: 21px;
-    width: 4px;
+    width: 3px;
     height: 0;
     background: #5D00FF;
     border-radius: 50px;
@@ -105,13 +105,27 @@
 }
 
 .mes-bien-stepper-item.active .mes-bien-stepper-circle {
-    border: 2px solid #5D00FF!important;
+    border: 3px solid #5D00FF!important;
     background: #fff!important;
+}
+
+.mes-bien-stepper-item-completed .mes-bien-stepper-circle {
+    background: #CEB2FF!important;
+}
+.mes-bien-stepper-item-completed .mes-bien-stepper-circle::after {
+    content: "";
+    position: absolute;
+    top: 13px;
+    left: 13px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #5D00FF;
 }
 .mes-bien-stepper-item.active .mes-bien-stepper-circle::after {
     background: #5D00FF!important;
-    top: 9px;
-    left: 9px;
+    top: 8px;
+    left: 8px;
     width: 22px;
     height: 22px;
 }
@@ -503,12 +517,26 @@
     font-style: normal;
     font-weight: 500;
     line-height: 20px;
-    padding: 16px 8px;
+    padding: 8px 16px;
 }
 
 .property-image-actions-menu button:hover {
     background: #EBECEC;
+    border-radius: initial;
 }
+
+/* Premier élément */
+.property-image-actions-menu button:first-child:hover {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Dernier élément */
+.property-image-actions-menu button:last-child:hover {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
 .supprime-image {
     color: #DC3545!important;
 }

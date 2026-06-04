@@ -4,9 +4,7 @@
     data-controller="mes-biens--adresse-autocomplete"
 >
     <div class="d-flex justify-content-between align-items-end">
-        <h1>
-            Où se situe votre bien ?
-        </h1>
+        <h1>Où se situe votre bien ?</h1>
 
         <div class="d-flex align-items-end">
             <a href="#" class="btn-retour py-10 px-16">
@@ -19,106 +17,88 @@
         <div class="row">
             <div class="col-12">
                 <div class="row">
-                    <div>
-                        <div class="row">
 
-                            <div class="js-address-autocomplete-field">
-                                <label
-                                    for="{{ form.adresse.vars.id }}"
-                                    class="mb-16"
-                                >
-                                    Adresse du logement
+                    <div class="js-address-autocomplete-field">
+                        <label for="{{ form.adresse.vars.id }}" class="mb-16">
+                            Adresse du logement
+                        </label>
+
+                        {{ form_widget(form.adresse, {
+                            attr: {
+                                class: 'form-control',
+                                placeholder: 'Entrez un numéro et un nom de rue',
+                                autocomplete: 'off',
+                                'data-mes-biens--adresse-autocomplete-target': 'adresse',
+                                'data-action': 'input->mes-biens--adresse-autocomplete#search',
+                            },
+                        }) }}
+
+                        {{ form_errors(form.adresse) }}
+                    </div>
+
+                    <div class="mt-32">
+                        <label for="{{ form.codePostal.vars.id }}" class="mb-16">
+                            Code postal*
+                        </label>
+
+                        {{ form_widget(form.codePostal, {
+                            attr: {
+                                class: 'form-control mb-32',
+                                placeholder: 'Entrez un code postal',
+                                autocomplete: 'off',
+                                'data-mes-biens--adresse-autocomplete-target': 'codePostal',
+                                'data-mes-biens-required-field': 'true',
+                            },
+                        }) }}
+
+                        {{ form_errors(form.codePostal) }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6">
+                            <div>
+                                <label for="{{ form.ville.vars.id }}" class="mb-16">
+                                    Ville*
                                 </label>
 
-                                {{ form_widget(form.adresse, {
+                                {{ form_widget(form.ville, {
                                     attr: {
-                                        class: 'form-control mb-32',
-                                        placeholder: 'Exemple : 106 rue du Poirier',
+                                        class: 'form-control',
+                                        placeholder: 'Choisissez une ville',
                                         autocomplete: 'off',
-                                        'data-mes-biens--adresse-autocomplete-target': 'adresse',
-                                        'data-action': 'input->mes-biens--adresse-autocomplete#search',
-                                    },
-                                }) }}
-
-                                {{ form_errors(form.adresse) }}
-                            </div>
-
-                            <div class="js-address-autocomplete-field">
-                                <label
-                                    for="{{ form.codePostal.vars.id }}"
-                                    class="mb-16"
-                                >
-                                    Code postal*
-                                </label>
-
-                                {{ form_widget(form.codePostal, {
-                                    attr: {
-                                        class: 'form-control mb-32',
-                                        placeholder: 'Exemple : 76000',
-                                        autocomplete: 'off',
-                                        'data-mes-biens--adresse-autocomplete-target': 'codePostal',
-                                        'data-action': 'input->mes-biens--adresse-autocomplete#search',
+                                        'data-mes-biens--adresse-autocomplete-target': 'ville',
                                         'data-mes-biens-required-field': 'true',
                                     },
                                 }) }}
 
-                                {{ form_errors(form.codePostal) }}
+                                {{ form_errors(form.ville) }}
                             </div>
+                        </div>
 
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="js-address-autocomplete-field">
-                                        <label
-                                            for="{{ form.ville.vars.id }}"
-                                            class="mb-16"
-                                        >
-                                            Ville*
-                                        </label>
+                        <div class="col-6">
+                            <div>
+                                <label for="{{ form.pays.vars.id }}" class="mb-16">
+                                    Pays*
+                                </label>
 
-                                        {{ form_widget(form.ville, {
-                                            attr: {
-                                                class: 'form-control',
-                                                placeholder: 'Exemple : Toulouse',
-                                                autocomplete: 'off',
-                                                'data-mes-biens--adresse-autocomplete-target': 'ville',
-                                                'data-action': 'input->mes-biens--adresse-autocomplete#search',
-                                                'data-mes-biens-required-field': 'true',
-                                            },
-                                        }) }}
+                                {{ form_widget(form.pays, {
+                                    attr: {
+                                        class: 'form-control',
+                                        'data-mes-biens--adresse-autocomplete-target': 'pays',
+                                        'data-mes-biens-required-field': 'true',
+                                    },
+                                }) }}
 
-                                        {{ form_errors(form.ville) }}
-                                    </div>
-                                </div>
-
-                                <div class="col-6">
-                                    <div>
-                                        <label
-                                            for="{{ form.pays.vars.id }}"
-                                            class="mb-16"
-                                        >
-                                            Pays*
-                                        </label>
-
-                                        {{ form_widget(form.pays, {
-                                            attr: {
-                                                class: 'form-control',
-                                                'data-mes-biens--adresse-autocomplete-target': 'pays',
-                                                'data-mes-biens-required-field': 'true',
-                                            },
-                                        }) }}
-
-                                        {{ form_errors(form.pays) }}
-                                    </div>
-                                </div>
+                                {{ form_errors(form.pays) }}
                             </div>
-
-                            {% do form.adresse.setRendered %}
-                            {% do form.codePostal.setRendered %}
-                            {% do form.ville.setRendered %}
-                            {% do form.pays.setRendered %}
-
                         </div>
                     </div>
+
+                    {% do form.adresse.setRendered %}
+                    {% do form.codePostal.setRendered %}
+                    {% do form.ville.setRendered %}
+                    {% do form.pays.setRendered %}
+
                 </div>
             </div>
         </div>

@@ -24,47 +24,47 @@ class CaracteristiqueFixtures extends Fixture
         [
             'reference' => 'stationnement',
             'nom' => 'Stationnement',
-            'icone' => 'circle-parking',
+            'icone' => 'icon-circle-parking',
         ],
         [
             'reference' => 'terrasse',
             'nom' => 'Terrasse',
-            'icone' => 'fence',
+            'icone' => 'icon-fence',
         ],
         [
             'reference' => 'balcon',
             'nom' => 'Balcon',
-            'icone' => 'house',
+            'icone' => 'icon-house',
         ],
         [
             'reference' => 'jardin',
             'nom' => 'Jardin',
-            'icone' => 'trees',
+            'icone' => 'icon-birdhouse',
         ],
         [
             'reference' => 'piscine',
             'nom' => 'Piscine',
-            'icone' => 'waves-ladder',
+            'icone' => 'icon-waves-ladder',
         ],
         [
             'reference' => 'cave-debarras',
             'nom' => 'Cave/débarras',
-            'icone' => 'brick-wall',
+            'icone' => 'icon-brick-wall',
         ],
         [
             'reference' => 'climatisation',
             'nom' => 'Climatisation',
-            'icone' => 'air-vent',
+            'icone' => 'icon-air-vent',
         ],
         [
             'reference' => 'chauffage',
             'nom' => 'Chauffage',
-            'icone' => 'heater',
+            'icone' => 'icon-brick-wall-fire',
         ],
         [
             'reference' => 'ascenseur',
             'nom' => 'Ascenseur',
-            'icone' => 'door-closed',
+            'icone' => 'icon-door-closed',
         ],
     ];
 

@@ -15,7 +15,6 @@ export default class extends Controller {
     connect() {
         this.timeout = null;
         this.abortController = null;
-        this.activeInput = null;
 
         this.resultsElement = document.createElement('div');
         this.resultsElement.className = 'list-group position-absolute w-100 shadow';
@@ -25,7 +24,6 @@ export default class extends Controller {
         this.resultsElement.style.display = 'none';
 
         this.closeOnOutsideClick = this.closeOnOutsideClick.bind(this);
-
         document.addEventListener('click', this.closeOnOutsideClick);
     }
 
@@ -44,11 +42,14 @@ export default class extends Controller {
     }
 
     search(event) {
-        this.activeInput = event.currentTarget;
+        if (!this.hasAdresseTarget || event.currentTarget !== this.adresseTarget) {
+            this.hideResults();
+            return;
+        }
 
         clearTimeout(this.timeout);
 
-        const query = this.buildQuery();
+        const query = this.adresseTarget.value.trim();
 
         if (query.length < 3) {
             this.hideResults();
@@ -58,26 +59,6 @@ export default class extends Controller {
         this.timeout = setTimeout(() => {
             this.fetchAddresses(query);
         }, 300);
-    }
-
-    buildQuery() {
-        const adresse = this.hasAdresseTarget ? this.adresseTarget.value.trim() : '';
-        const codePostal = this.hasCodePostalTarget ? this.codePostalTarget.value.trim() : '';
-        const ville = this.hasVilleTarget ? this.villeTarget.value.trim() : '';
-
-        if (this.hasAdresseTarget && this.activeInput === this.adresseTarget) {
-            return adresse;
-        }
-
-        if (this.hasCodePostalTarget && this.activeInput === this.codePostalTarget) {
-            return [codePostal, ville].filter(Boolean).join(' ');
-        }
-
-        if (this.hasVilleTarget && this.activeInput === this.villeTarget) {
-            return [ville, codePostal].filter(Boolean).join(' ');
-        }
-
-        return [adresse, codePostal, ville].filter(Boolean).join(' ');
     }
 
     async fetchAddresses(query) {
@@ -117,7 +98,7 @@ export default class extends Controller {
     renderResults(features) {
         this.resultsElement.innerHTML = '';
 
-        const parent = this.activeInput.closest('.js-address-autocomplete-field');
+        const parent = this.adresseTarget.closest('.js-address-autocomplete-field');
 
         if (!parent) {
             return;
@@ -148,7 +129,6 @@ export default class extends Controller {
             }
 
             const item = document.createElement('button');
-
             item.type = 'button';
             item.className = 'list-group-item list-group-item-action text-start';
             item.innerText = label;
@@ -291,10 +271,9 @@ export default class extends Controller {
 
     closeOnOutsideClick(event) {
         const isInsideResults = this.resultsElement.contains(event.target);
+        const isInsideController = this.element.contains(event.target);
 
-        const isInsideField = this.element.contains(event.target);
-
-        if (isInsideResults || isInsideField) {
+        if (isInsideResults || isInsideController) {
             return;
         }
 

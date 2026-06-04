@@ -119,6 +119,7 @@
     font-style: normal;
     font-weight: 700;
     line-height: 20px;
+    border: transparent;
 }
 .property-browse-button {
     background: transparent!important;

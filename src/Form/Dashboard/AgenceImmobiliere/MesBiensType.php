@@ -79,7 +79,7 @@ class MesBiensType extends AbstractType
                 ->add('codePostal')
                 ->add('ville')
                 ->add('pays', CountryType::class, [
-                    'placeholder' => 'Exemple : France',
+                    'placeholder' => 'Saisissez le pays',
                 ])
             ;
         }
