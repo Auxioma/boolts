@@ -44,7 +44,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
 
         $payload = json_decode($request->getContent(), true);
 
-        if (!is_array($payload)) {
+        if (!\is_array($payload)) {
             return $this->json([
                 'success' => false,
                 'message' => 'Données invalides.',
@@ -69,12 +69,12 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
             ], 500);
         }
 
-        $title = trim((string) ($payload['title'] ?? ''));
-        $currentDescription = trim((string) ($payload['currentDescription'] ?? ''));
+        $title = mb_trim((string) ($payload['title'] ?? ''));
+        $currentDescription = mb_trim((string) ($payload['currentDescription'] ?? ''));
 
         $payloadFormData = $payload['formData'] ?? [];
         $formContext = $this->buildPropertyContextFromPayload(
-            is_array($payloadFormData) ? $payloadFormData : []
+            \is_array($payloadFormData) ? $payloadFormData : []
         );
 
         $sessionContext = $this->buildPropertyContextFromSession($request);
@@ -226,11 +226,11 @@ PROMPT;
         $lines = [];
 
         foreach ($formData as $field => $value) {
-            if (!is_scalar($value) && null !== $value) {
+            if (!\is_scalar($value) && null !== $value) {
                 continue;
             }
 
-            $fieldValue = trim((string) $value);
+            $fieldValue = mb_trim((string) $value);
 
             if ('' === $fieldValue) {
                 continue;
@@ -242,7 +242,7 @@ PROMPT;
 
             $cleanField = $this->cleanFormFieldName((string) $field);
 
-            $lines[] = sprintf(
+            $lines[] = \sprintf(
                 '- %s : %s',
                 $this->humanizeFieldName($cleanField),
                 $fieldValue
@@ -276,7 +276,7 @@ PROMPT;
 
             $value = $session->get($sessionKey);
 
-            if (!is_array($value)) {
+            if (!\is_array($value)) {
                 continue;
             }
 
@@ -291,7 +291,7 @@ PROMPT;
 
                 $cleanField = $this->cleanFormFieldName($field);
 
-                $lines[] = sprintf(
+                $lines[] = \sprintf(
                     '- %s : %s',
                     $this->humanizeFieldName($cleanField),
                     $fieldValue
@@ -316,13 +316,13 @@ PROMPT;
                 ? (string) $key
                 : $prefix.'.'.$key;
 
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $result += $this->flattenArray($value, $newKey);
                 continue;
             }
 
-            if (is_scalar($value) || null === $value) {
-                $result[$newKey] = trim((string) $value);
+            if (\is_scalar($value) || null === $value) {
+                $result[$newKey] = mb_trim((string) $value);
             }
         }
 
@@ -335,7 +335,7 @@ PROMPT;
 
         foreach ($contexts as $context) {
             foreach (explode("\n", $context) as $line) {
-                $line = trim($line);
+                $line = mb_trim($line);
 
                 if ('' === $line) {
                     continue;
@@ -448,20 +448,20 @@ PROMPT;
      */
     private function extractGeneratedText(array $data): string
     {
-        if (isset($data['output_text']) && is_string($data['output_text'])) {
-            return trim($data['output_text']);
+        if (isset($data['output_text']) && \is_string($data['output_text'])) {
+            return mb_trim($data['output_text']);
         }
 
         $texts = [];
 
         foreach ($data['output'] ?? [] as $output) {
             foreach ($output['content'] ?? [] as $content) {
-                if (isset($content['text']) && is_string($content['text'])) {
-                    $texts[] = trim($content['text']);
+                if (isset($content['text']) && \is_string($content['text'])) {
+                    $texts[] = mb_trim($content['text']);
                 }
             }
         }
 
-        return trim(implode("\n", array_filter($texts)));
+        return mb_trim(implode("\n", array_filter($texts)));
     }
 }
