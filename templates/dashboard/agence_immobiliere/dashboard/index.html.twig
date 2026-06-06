@@ -1,29 +1,115 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% block title %}Mes biens immobiliers{% endblock %}
 
 {% block body %}
-    <main id=dashboard" class="dashboard">
+    <main id="dashboard" class="dashboard">
         <div class="container-fluid">
             <div class="row">
-                {# div 4 pour le menu du dashboard #}
+
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                {# contenu du dashboard #}
-                <div class="col-8">
-                    <h2>dashboard</h2>
-                    <twig:Property:Card
-                        title="Appadfdfrtement à louer"
-                        price="765€"
-                        period="/mois"
-                        badge="Chargdfdfdfes comprises"
-                        description="Appadfdfdfdfrtement très spacieux et lumineux"
-                        details="2 pièces · 1 chambre · 50m2"
-                        address="Rue de Courdfdfdfdfdfdfdfteneueve, 76510 Saint-Nicolas"
-                        image="{{ asset('images/biens/appartement.jpg') }}"
-                    />
+                <div class="col-10 p-48 bg-white">
+                    <div class="row">
+                        <div class="col-10 mx-auto">
+                            <div class="row">
+                                <div class="col-10 mx-auto">
+                                    <h1 class="entreprise">
+                                        Welcome, {{ app.user.prenom }} {{ app.user.nom }} !
+                                    </h1>
+
+                                    <div class="px-24 py-24">
+                                        <div>
+                                            <h2>Terminez la création de votre compte pro !</h2>
+                                            <p>Veuillez déposer les derniers documents afin de valider la création de votre compte.</p>
+                                        </div>
+                                        <div>
+                                            <h2>Confirmez votre pays de domiciliation*</h2>
+                                            <input type="text">
+                                            <buttom>Continuer</buttom>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
+                                                <span class="d-block fw-semibold text-dark">
+                                                    Vue du profil
+                                                </span>
+                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
+                                                    393 374
+                                                </span>
+                                                <i class="icon-user-round position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
+                                                <span class="d-block fw-semibold text-dark">
+                                                    Annonces actives
+                                                </span>
+                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
+                                                    300
+                                                </span>
+                                                <i class="icon-building-2 position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
+                                                <span class="d-block fw-semibold text-dark">
+                                                    Vues des annonces
+                                                </span>
+                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
+                                                    393 374
+                                                </span>
+                                                <i class="icon-eye position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
+                                                <span class="d-block fw-semibold text-dark">
+                                                    Mis en favoris
+                                                </span>
+                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
+                                                    30
+                                                </span>
+                                                <i class="icon-heart position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <span>Statistiques</span>
+                                            <div>
+                                                vues /// favoris /// 7 jours // 30 jours /// 12 mois // personnalisé
+                                            </div>
+                                        </div>
+                                        <div class="col-3">
+                                            <span>Notifications</span>
+                                            <ul>
+                                                <li>
+                                                    Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.
+                                                </li>
+                                                <li>
+                                                    Your listing House on the beverly hills has been approved
+                                                </li>
+                                            </ul>
+                                            <a href="">Voir plus</a>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </main>
+
+
 {% endblock %}
+

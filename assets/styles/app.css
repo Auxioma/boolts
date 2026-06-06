@@ -35,3 +35,6 @@
 @import './dashboard/navbar.css';
 @import "./dashboard/agenceimmobiliere/parametre.css";
 @import "./dashboard/agenceimmobiliere/mes-biens.css";
+
+/* font */
+@import './public/detail_agence.css';

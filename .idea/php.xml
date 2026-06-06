@@ -191,6 +191,7 @@
       <path value="$PROJECT_DIR$/vendor/scheb/2fa-email" />
       <path value="$PROJECT_DIR$/vendor/symfony/rate-limiter" />
       <path value="$PROJECT_DIR$/vendor/symfony/ux-toolkit" />
+      <path value="$PROJECT_DIR$/vendor/symfony/ux-chartjs" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.4">

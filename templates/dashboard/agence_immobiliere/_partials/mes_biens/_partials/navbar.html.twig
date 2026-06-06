@@ -2,10 +2,6 @@
 
 {% set showBilanEnergetique = paysCode is empty or paysCode == 'FR' %}
 
-{#
-step = étape réellement affichée
-visualStep = étape maximale atteinte pour garder la barre bleue à sa position
-#}
 {% set visualStep = stepperStep|default(step) %}
 
 {% set steps = [
@@ -59,10 +55,6 @@ visualStep = étape maximale atteinte pour garder la barre bleue à sa position
     }
 ]) %}
 
-{#
-Calcul de la position de la barre avec visualStep,
-pas avec step.
-#}
 {% if visualStep <= 4 %}
     {% set activePosition = visualStep %}
 {% elseif visualStep == 5 %}
@@ -89,19 +81,20 @@ pas avec step.
         {% set isCurrentDisplayedStep = item.step == step %}
         {% set isVisualActive = item.step == visualStep %}
         {% set isCompleted = item.step < visualStep %}
+        {% set isClickable = isCompleted or isCurrentDisplayedStep or isVisualActive %}
 
-        {% if isCompleted %}
+        {% if isClickable %}
             <a
                 href="{{ path('agence_immobiliere_mes_biens', { step: item.step }) }}"
                 class="
                     mes-bien-stepper-item
-                    mes-bien-stepper-item-completed
                     js-stepper-link
+                    {% if isCompleted %}mes-bien-stepper-item-completed{% endif %}
                     {% if isCurrentDisplayedStep %}active{% endif %}
                     {% if isVisualActive %}mes-bien-stepper-item-active{% endif %}
                 "
                 data-tab="{{ item.tab }}"
-                title="Revenir à l’étape {{ item.title }}"
+                title="Aller à l’étape {{ item.title }}"
             >
                 <div class="mes-bien-stepper-circle"></div>
 
@@ -115,9 +108,7 @@ pas avec step.
             <div
                 class="
                     mes-bien-stepper-item
-                    js-stepper-link
-                    {% if isCurrentDisplayedStep %}active{% endif %}
-                    {% if isVisualActive %}mes-bien-stepper-item-active{% endif %}
+                    mes-bien-stepper-item-disabled
                 "
                 data-tab="{{ item.tab }}"
             >
