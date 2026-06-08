@@ -1,0 +1,216 @@
+{# templates/public/research/_filters_modal.html.twig #}
+<div
+    class="modal fade boolts-filter-modal"
+    id="booltsFiltersModal"
+    tabindex="-1"
+    aria-labelledby="booltsFiltersModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-scrollable boolts-filter-dialog">
+        <form class="modal-content boolts-filter-content" method="get" action="#">
+            <div class="boolts-filter-header">
+                <h2 id="booltsFiltersModalLabel">Filtres</h2>
+
+                <button
+                    type="button"
+                    class="boolts-filter-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                >
+                    <i class="icon-x" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="modal-body boolts-filter-body">
+                <button type="reset" class="boolts-filter-reset">
+                    Réinitialiser les filtres
+                </button>
+
+                <section class="boolts-filter-block border-0 pt-0">
+                    <h3>Type de logement</h3>
+
+                    <div class="boolts-segment-group" role="group" aria-label="Type de logement">
+                        <input type="radio" class="btn-check" name="transaction" id="filter-location" value="location">
+                        <label class="boolts-segment" for="filter-location">Location</label>
+
+                        <input type="radio" class="btn-check" name="transaction" id="filter-vente" value="vente" checked>
+                        <label class="boolts-segment" for="filter-vente">Vente</label>
+                    </div>
+                </section>
+
+                <div class="accordion accordion-flush boolts-filter-accordion" id="booltsFilterAccordion">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingPropertyType">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePropertyType" aria-expanded="true" aria-controls="collapsePropertyType">
+                                Type de propriété
+                            </button>
+                        </h3>
+                        <div id="collapsePropertyType" class="accordion-collapse collapse show" aria-labelledby="headingPropertyType">
+                            <div class="accordion-body">
+                                <div class="boolts-chip-list">
+                                    <input type="checkbox" class="btn-check" id="type-maison" name="propertyType[]" value="maison" checked>
+                                    <label class="boolts-chip" for="type-maison"><i class="icon-house"></i> Maison</label>
+
+                                    <input type="checkbox" class="btn-check" id="type-appartement" name="propertyType[]" value="appartement">
+                                    <label class="boolts-chip" for="type-appartement"><i class="icon-building-2"></i> Appartement</label>
+
+                                    <input type="checkbox" class="btn-check" id="type-local" name="propertyType[]" value="local">
+                                    <label class="boolts-chip" for="type-local"><i class="icon-store"></i> Local</label>
+                                </div>
+
+                                <button type="button" class="boolts-filter-more">Voir plus</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingPrice">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrice" aria-expanded="true" aria-controls="collapsePrice">
+                                Fourchette de prix
+                            </button>
+                        </h3>
+                        <div id="collapsePrice" class="accordion-collapse collapse show" aria-labelledby="headingPrice">
+                            <div class="accordion-body">
+                                <div class="row g-4">
+                                    <div class="col-6">
+                                        <label class="boolts-filter-label" for="price-min">Minimum</label>
+                                        <div class="boolts-input-suffix">
+                                            <input id="price-min" type="number" name="priceMin" inputmode="numeric">
+                                            <span>€</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="boolts-filter-label" for="price-max">Maximum</label>
+                                        <div class="boolts-input-suffix is-focus">
+                                            <input id="price-max" type="number" name="priceMax" inputmode="numeric">
+                                            <span>€</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingSurface">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSurface" aria-expanded="true" aria-controls="collapseSurface">
+                                Surface
+                            </button>
+                        </h3>
+                        <div id="collapseSurface" class="accordion-collapse collapse show" aria-labelledby="headingSurface">
+                            <div class="accordion-body">
+                                <div class="row g-4">
+                                    <div class="col-6">
+                                        <label class="boolts-filter-label" for="surface-min">Minimum</label>
+                                        <div class="boolts-input-suffix">
+                                            <input id="surface-min" type="number" name="surfaceMin" inputmode="numeric">
+                                            <span>m²</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="boolts-filter-label" for="surface-max">Maximum</label>
+                                        <div class="boolts-input-suffix">
+                                            <input id="surface-max" type="number" name="surfaceMax" inputmode="numeric">
+                                            <span>m²</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% for field in [
+                        { id: 'rooms', label: 'Chambres' },
+                        { id: 'bathrooms', label: 'Salle de bain' },
+                        { id: 'year', label: 'Année de construction' }
+                    ] %}
+                        <div class="accordion-item">
+                            <h3 class="accordion-header" id="heading-{{ field.id }}">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ field.id }}" aria-expanded="true" aria-controls="collapse-{{ field.id }}">
+                                    {{ field.label }}
+                                </button>
+                            </h3>
+                            <div id="collapse-{{ field.id }}" class="accordion-collapse collapse show" aria-labelledby="heading-{{ field.id }}">
+                                <div class="accordion-body">
+                                    <div class="row g-4">
+                                        <div class="col-6">
+                                            <label class="boolts-filter-label" for="{{ field.id }}-min">Minimum</label>
+                                            <select id="{{ field.id }}-min" name="{{ field.id }}Min" class="boolts-select">
+                                                <option value=""></option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4+</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="boolts-filter-label" for="{{ field.id }}-max">Maximum</label>
+                                            <select id="{{ field.id }}-max" name="{{ field.id }}Max" class="boolts-select">
+                                                <option value=""></option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4+</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="headingFeatures">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFeatures" aria-expanded="true" aria-controls="collapseFeatures">
+                                Caractéristiques
+                            </button>
+                        </h3>
+                        <div id="collapseFeatures" class="accordion-collapse collapse show" aria-labelledby="headingFeatures">
+                            <div class="accordion-body">
+                                <div class="boolts-chip-list">
+                                    {% for feature in [
+                                        { id: 'balcon', label: 'Balcon', checked: false },
+                                        { id: 'piscine', label: 'Piscine', checked: false },
+                                        { id: 'cheminee', label: 'Cheminée', checked: true },
+                                        { id: 'debarras', label: 'Débarras', checked: false },
+                                        { id: 'cave', label: 'Cave', checked: true },
+                                        { id: 'ascenseur', label: 'Ascenseur', checked: false }
+                                    ] %}
+                                        <input type="checkbox" class="btn-check" id="feature-{{ feature.id }}" name="features[]" value="{{ feature.id }}" {% if feature.checked %}checked{% endif %}>
+                                        <label class="boolts-chip" for="feature-{{ feature.id }}"><i class="icon-plus"></i> {{ feature.label }}</label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item border-0">
+                        <h3 class="accordion-header" id="headingEnergy">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnergy" aria-expanded="true" aria-controls="collapseEnergy">
+                                Performance énergétique
+                            </button>
+                        </h3>
+                        <div id="collapseEnergy" class="accordion-collapse collapse show" aria-labelledby="headingEnergy">
+                            <div class="accordion-body">
+                                <div class="boolts-energy-list" aria-label="Performance énergétique">
+                                    {% for dpe in ['A','B','C','D','E','F','G'] %}
+                                        <label class="boolts-energy-row">
+                                            <input type="checkbox" name="dpe[]" value="{{ dpe }}">
+                                            <span class="boolts-energy-bar boolts-energy-{{ dpe|lower }}">{{ dpe }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer boolts-filter-footer">
+                <button type="submit" class="bt-research-primary-btn w-100">
+                    Afficher les {{ totalResults|default(287) }} logements
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
