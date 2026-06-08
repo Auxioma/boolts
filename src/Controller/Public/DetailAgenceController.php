@@ -12,17 +12,36 @@
 
 namespace App\Controller\Public;
 
+use App\Repository\PropertyRepository;
+use App\Repository\UserRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class DetailAgenceController extends AbstractController
 {
-    #[Route('/public/detail/agence', name: 'app_public_detail_agence')]
-    public function index(): Response
+    #[Route('/agency/{slug}', name: 'app_public_detail_agence')]
+    public function index(
+        UserRepository $userRepository, 
+        PropertyRepository $propertyRepository, 
+        string $slug,
+        PaginatorInterface $paginator, 
+        Request $request
+        ): Response
     {
+        $user = $userRepository->findOneBy(['slug' => $slug]);
+
+        $properties = $paginator->paginate(
+            $propertyRepository->findBy(['user' => $user]),
+            $request->query->getInt('page', 1), 
+            8 
+        );
+
         return $this->render('public/detail_agence/index.html.twig', [
-            'controller_name' => 'DetailAgenceController',
-        ]);
+            'user' => $user,
+            'properties' => $properties,
+        ]); 
     }
 }

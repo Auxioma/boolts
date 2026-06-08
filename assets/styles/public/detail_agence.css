@@ -191,30 +191,46 @@
     line-height: 24px;
 }
 
-.agence-property-card {
+.agence-empty-state {
+    padding: 24px;
+    border: 2px solid var(--color-gray-light);
+    border-radius: 24px;
+    color: var(--color-gray);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+/* Cards Symfony UX Property */
+.agence-properties .property-card {
     overflow: hidden;
+    height: 100%;
     border: 2px solid var(--color-gray-light);
     border-radius: 24px;
     background: var(--color-white);
 }
 
-.agence-property-image {
+.agence-properties .property-card__media {
     height: 221px;
     border-bottom: 2px solid var(--color-gray-light);
+    overflow: hidden;
 }
 
-.agence-property-image img {
+.agence-properties .property-card__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.agence-property-body {
-    padding: 16px 16px 18px;
+.agence-properties .property-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 16px 0;
 }
 
-.agence-property-card h3 {
-    max-width: calc(100% - 32px);
+.agence-properties .property-card__title {
     margin: 0;
     overflow: hidden;
     color: var(--color-text);
@@ -225,36 +241,43 @@
     white-space: nowrap;
 }
 
-.agence-favorite-btn {
+.agence-properties .property-card__favorite {
+    flex: 0 0 auto;
     border: 0;
     background: transparent;
     color: var(--color-text);
     font-size: 24px;
+    line-height: 1;
     padding: 0;
 }
 
-.agence-property-price {
+.agence-properties .property-card__content {
+    padding: 12px 16px 0;
+}
+
+.agence-properties .property-card__price-row {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-top: 12px;
+    margin: 0;
 }
 
-.agence-property-price strong {
+.agence-properties .property-card__price {
+    margin: 0;
     color: var(--color-text);
     font-size: 16px;
     font-weight: 700;
     line-height: 20px;
 }
 
-.agence-property-price span {
+.agence-properties .property-card__price span {
     color: var(--color-gray);
     font-size: 12px;
     font-weight: 500;
     line-height: 20px;
 }
 
-.agence-property-price small {
+.agence-properties .property-card__badge {
     margin-left: auto;
     padding: 4px 10px;
     border: 1px solid var(--color-gray-light);
@@ -263,12 +286,14 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
+    white-space: nowrap;
 }
 
-.agence-property-description,
-.agence-property-details p {
-    margin: 0;
+.agence-properties .property-card__description,
+.agence-properties .property-card__details,
+.agence-properties .property-card__footer {
     overflow: hidden;
+    color: var(--color-gray);
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
@@ -276,24 +301,18 @@
     white-space: nowrap;
 }
 
-.agence-property-description {
-    margin-top: 12px;
-    color: var(--color-gray);
+.agence-properties .property-card__description {
+    margin: 12px 0 0;
 }
 
-.agence-property-details {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 12px;
-}
-
-.agence-property-details p:first-child {
+.agence-properties .property-card__details {
+    margin: 12px 0 0;
     color: var(--color-text);
 }
 
-.agence-property-details p:last-child {
-    color: var(--color-gray);
+.agence-properties .property-card__footer {
+    margin: 6px 0 0;
+    padding: 0 16px 18px;
 }
 
 .agence-pagination {
@@ -323,6 +342,11 @@
 .agence-pagination a.active {
     background: var(--color-primary);
     color: var(--color-white);
+}
+
+.agence-pagination a.disabled {
+    pointer-events: none;
+    opacity: .45;
 }
 
 .agence-contact-card {
@@ -642,10 +666,7 @@
         line-height: 20px;
     }
 
-    .agence-search input {
-        font-size: 16px;
-    }
-
+    .agence-search input,
     .agence-filter-btn {
         font-size: 16px;
     }
@@ -654,38 +675,47 @@
         margin-bottom: 24px;
     }
 
-    .agence-property-card {
+    .agence-properties .property-card {
         height: 440px;
         display: flex;
         flex-direction: column;
     }
 
-    .agence-property-image {
+    .agence-properties .property-card__media {
         flex: 1;
         min-height: 0;
         height: auto;
     }
 
-    .agence-property-body {
-        padding: 12px 12px 16px;
+    .agence-properties .property-card__header {
+        padding: 12px 12px 0;
     }
 
-    .agence-property-card h3,
-    .agence-property-price strong {
+    .agence-properties .property-card__content {
+        padding: 8px 12px 0;
+    }
+
+    .agence-properties .property-card__title,
+    .agence-properties .property-card__price {
         font-size: 14px;
         line-height: 16px;
     }
 
-    .agence-property-price small {
+    .agence-properties .property-card__badge {
         padding: 2px 10px;
         font-size: 12px;
         line-height: 16px;
     }
 
-    .agence-property-description,
-    .agence-property-details p {
+    .agence-properties .property-card__description,
+    .agence-properties .property-card__details,
+    .agence-properties .property-card__footer {
         font-size: 12px;
         line-height: 16px;
+    }
+
+    .agence-properties .property-card__footer {
+        padding: 0 12px 16px;
     }
 
     .agence-contact-card {
@@ -695,4 +725,12 @@
     .agence-footer {
         padding-bottom: 110px;
     }
+}
+
+.agence-contact-form--hidden {
+    display: none !important;
+}
+
+.agence-contact-form--visible {
+    display: flex !important;
 }

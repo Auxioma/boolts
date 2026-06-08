@@ -6,6 +6,7 @@
 /public/bundles/
 /var/
 /vendor/
+/public/images/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###

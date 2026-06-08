@@ -22,6 +22,12 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface
 {
+    public const USER_VISITEUR_REFERENCE = 'user_visiteur';
+    public const USER_AGENCE_REFERENCE = 'user_agence';
+    public const USER_MOHCINE_REFERENCE = 'user_mohcine';
+    public const USER_ADMIN_REFERENCE = 'user_admin';
+    public const USER_AGENCE_REFERENCE_PREFIX = 'user_agence_';
+
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
     ) {
@@ -57,7 +63,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->persist($visiteur);
 
-        // Agence
+        $this->addReference(
+            self::USER_VISITEUR_REFERENCE,
+            $visiteur
+        );
+
+        // Agence principale
         $agence = new User();
         $agence
             ->setEmail('agence@agence.agence')
@@ -65,6 +76,22 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setIsVerified(true)
             ->setNom($faker->lastName())
             ->setPrenom($faker->firstName())
+            ->setTelephone($faker->phoneNumber())
+            ->setAdresse($faker->streetAddress())
+            ->setAdresseComplement($faker->optional(0.4)->secondaryAddress())
+            ->setCodePostal($faker->postcode())
+            ->setVille($faker->city())
+            ->setEntreprise('toto')
+            ->setDescription(
+                $faker->paragraphs(3, true)
+            )
+            ->setNumeroContact($faker->phoneNumber())
+            ->setAdresseContact($faker->streetAddress())
+            ->setAdresseComplementContact($faker->optional(0.4)->secondaryAddress())
+            ->setCodePostalContact($faker->postcode())
+            ->setVilleContact($faker->city())
+            ->setPaysContact('France')
+            ->setWhatsApp($faker->phoneNumber())
             ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
 
         $agence->setPassword(
@@ -73,7 +100,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->persist($agence);
 
-        // mohcine
+        $this->addReference(
+            self::USER_AGENCE_REFERENCE,
+            $agence
+        );
+
+        // Mohcine
         $mohcine = new User();
         $mohcine
             ->setEmail('mohcine.elafia@gmail.com')
@@ -81,6 +113,22 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setIsVerified(true)
             ->setNom($faker->lastName())
             ->setPrenom($faker->firstName())
+            ->setTelephone($faker->phoneNumber())
+            ->setAdresse($faker->streetAddress())
+            ->setAdresseComplement($faker->optional(0.4)->secondaryAddress())
+            ->setCodePostal($faker->postcode())
+            ->setVille($faker->city())
+            ->setEntreprise('Agence Mohcine')
+            ->setDescription(
+                $faker->paragraphs(3, true)
+            )
+            ->setNumeroContact($faker->phoneNumber())
+            ->setAdresseContact($faker->streetAddress())
+            ->setAdresseComplementContact($faker->optional(0.4)->secondaryAddress())
+            ->setCodePostalContact($faker->postcode())
+            ->setVilleContact($faker->city())
+            ->setPaysContact('France')
+            ->setWhatsApp($faker->phoneNumber())
             ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
 
         $mohcine->setPassword(
@@ -88,6 +136,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         );
 
         $manager->persist($mohcine);
+
+        $this->addReference(
+            self::USER_MOHCINE_REFERENCE,
+            $mohcine
+        );
 
         // Admin
         $admin = new User();
@@ -105,6 +158,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $manager->persist($admin);
 
+        $this->addReference(
+            self::USER_ADMIN_REFERENCE,
+            $admin
+        );
+
         // Génération d'agences
         for ($i = 1; $i <= 50; ++$i) {
             $iso = $faker->randomElement($paysReferences);
@@ -116,6 +174,22 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setIsVerified(true)
                 ->setNom($faker->lastName())
                 ->setPrenom($faker->firstName())
+                ->setTelephone($faker->phoneNumber())
+                ->setAdresse($faker->streetAddress())
+                ->setAdresseComplement($faker->optional(0.4)->secondaryAddress())
+                ->setCodePostal($faker->postcode())
+                ->setVille($faker->city())
+                ->setEntreprise(\sprintf('Agence immobilière %d', $i))
+                ->setDescription(
+                    $faker->paragraphs(3, true)
+                )
+                ->setNumeroContact($faker->phoneNumber())
+                ->setAdresseContact($faker->streetAddress())
+                ->setAdresseComplementContact($faker->optional(0.4)->secondaryAddress())
+                ->setCodePostalContact($faker->postcode())
+                ->setVilleContact($faker->city())
+                ->setPaysContact('France')
+                ->setWhatsApp($faker->phoneNumber())
                 ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.$iso, Pays::class));
 
             $agence->setPassword(
@@ -123,6 +197,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             );
 
             $manager->persist($agence);
+
+            $this->addReference(
+                self::USER_AGENCE_REFERENCE_PREFIX.$i,
+                $agence
+            );
         }
 
         $manager->flush();

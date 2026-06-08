@@ -19,9 +19,9 @@
                 {% set transaction = typeTransaction|lower %}
 
                 {% if transaction == 'vente' %}
-                    {% include 'dashboard/agence_immobiliere/_partials/mes_biens/_partials/achat.html.twig' %}
+                    {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/achat.html.twig') }}
                 {% elseif transaction == 'location' %}
-                    {% include 'dashboard/agence_immobiliere/_partials/mes_biens/_partials/location.html.twig' %}
+                    {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/location.html.twig') }}
                 {% endif %}
             {% endif %}
 

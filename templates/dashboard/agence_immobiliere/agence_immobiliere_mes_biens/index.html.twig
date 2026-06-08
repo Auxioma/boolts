@@ -26,8 +26,8 @@
                                                 novalidate: 'novalidate',
                                                 enctype: 'multipart/form-data',
                                                 'data-turbo': 'false',
-                                                'data-controller': 'mes-biens--submit'
-                                            }
+                                                'data-controller': 'mes-biens--submit',
+                                            },
                                         }) }}
 
                                         {% if step == 1 %}
@@ -51,7 +51,7 @@
                                         <div class="py-20 navigation-fixed">
                                             {% if step > 1 %}
                                                 <a
-                                                    href="{{ path('agence_immobiliere_mes_biens', { step: step - 1 }) }}"
+                                                    href="{{ path('agence_immobiliere_mes_biens', {step: step - 1}) }}"
                                                     class="btn-retour py-10 px-16 mr-12 js-navigation-retour"
                                                 >
                                                     Retour
@@ -97,4 +97,3 @@
     </style>
 
 {% endblock %}
-

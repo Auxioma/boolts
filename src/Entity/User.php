@@ -21,6 +21,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -209,6 +210,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
      */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'user')]
     private Collection $properties;
+
+    #[Gedmo\Slug(fields: ['entreprise'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $slug = null;
 
     public function __construct()
     {
@@ -567,7 +572,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function setEntreprise(?string $entreprise): static
     {
-        $this->entreprise = $entreprise;
+        $entreprise = null !== $entreprise ? mb_trim($entreprise) : null;
+
+        $this->entreprise = '' !== $entreprise ? $entreprise : null;
+
+        if (null === $this->entreprise) {
+            $this->slug = null;
+        }
 
         return $this;
     }
@@ -754,6 +765,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
                 $property->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
 
         return $this;
     }

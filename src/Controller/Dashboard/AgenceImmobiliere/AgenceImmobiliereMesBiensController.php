@@ -29,7 +29,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     public function index(
         Request $request,
         PropertyRepository $propertyRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): Response {
         $session = $request->getSession();
         $step = $request->query->getInt('step', 1);

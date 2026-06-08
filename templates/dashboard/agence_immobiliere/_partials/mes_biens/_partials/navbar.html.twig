@@ -8,23 +8,23 @@
     {
         step: 1,
         tab: 'cat1',
-        title: 'Type de bien'
+        title: 'Type de bien',
     },
     {
         step: 2,
         tab: 'cat2',
-        title: 'Type de transaction'
+        title: 'Type de transaction',
     },
     {
         step: 3,
         tab: 'cat3',
-        title: 'Adresse'
+        title: 'Adresse',
     },
     {
         step: 4,
         tab: 'cat4',
-        title: 'Caractéristiques'
-    }
+        title: 'Caractéristiques',
+    },
 ] %}
 
 {% if showBilanEnergetique %}
@@ -32,8 +32,8 @@
         {
             step: 5,
             tab: 'cat5',
-            title: 'Bilan énergétique'
-        }
+            title: 'Bilan énergétique',
+        },
     ]) %}
 {% endif %}
 
@@ -41,18 +41,18 @@
     {
         step: 6,
         tab: 'cat6',
-        title: 'Photos'
+        title: 'Photos',
     },
     {
         step: 7,
         tab: 'cat7',
-        title: 'Description'
+        title: 'Description',
     },
     {
         step: 8,
         tab: 'cat8',
-        title: 'Prix'
-    }
+        title: 'Prix',
+    },
 ]) %}
 
 {% if visualStep <= 4 %}
@@ -85,7 +85,7 @@
 
         {% if isClickable %}
             <a
-                href="{{ path('agence_immobiliere_mes_biens', { step: item.step }) }}"
+                href="{{ path('agence_immobiliere_mes_biens', {step: item.step}) }}"
                 class="
                     mes-bien-stepper-item
                     js-stepper-link

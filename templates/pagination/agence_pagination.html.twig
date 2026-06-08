@@ -1,0 +1,60 @@
+{# templates/pagination/agence_pagination.html.twig #}
+
+{% if pageCount > 1 %}
+    <nav class="agence-pagination" aria-label="Pagination">
+
+        {# Flèche gauche #}
+        {% if previous is defined %}
+            <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}">
+                <i class="icon-chevron-left"></i>
+            </a>
+        {% else %}
+            <a href="#" class="disabled" aria-disabled="true">
+                <i class="icon-chevron-left"></i>
+            </a>
+        {% endif %}
+
+
+        {# Première page si elle est hors de la plage #}
+        {% if first is defined and first not in pagesInRange %}
+            <a href="{{ path(route, query|merge({(pageParameterName): first})) }}">{{ first }}</a>
+
+            {% if pagesInRange|first > first + 1 %}
+                <span>...</span>
+            {% endif %}
+        {% endif %}
+
+
+        {# Pages visibles #}
+        {% for page in pagesInRange %}
+            {% if page == current %}
+                <a href="#" class="active">{{ page }}</a>
+            {% else %}
+                <a href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+
+
+        {# Dernière page si elle est hors de la plage #}
+        {% if last is defined and last not in pagesInRange %}
+            {% if pagesInRange|last < last - 1 %}
+                <span>...</span>
+            {% endif %}
+
+            <a href="{{ path(route, query|merge({(pageParameterName): last})) }}">{{ last }}</a>
+        {% endif %}
+
+
+        {# Flèche droite #}
+        {% if next is defined %}
+            <a href="{{ path(route, query|merge({(pageParameterName): next})) }}">
+                <i class="icon-chevron-right"></i>
+            </a>
+        {% else %}
+            <a href="#" class="disabled" aria-disabled="true">
+                <i class="icon-chevron-right"></i>
+            </a>
+        {% endif %}
+
+    </nav>
+{% endif %}

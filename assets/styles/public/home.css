@@ -1,0 +1,892 @@
+.bt-home-page {
+    min-height: 100vh;
+    background: var(--color-white);
+    color: var(--color-text);
+    font-family: var(--font-family-base);
+    overflow-x: hidden;
+}
+
+.bt-home-header {
+    height: 72px;
+    background: var(--color-white);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .07);
+    position: relative;
+    z-index: 20;
+}
+
+.bt-home-logo {
+    color: var(--color-primary);
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 32px;
+    text-decoration: none;
+}
+
+.bt-home-nav {
+    gap: 4px;
+}
+
+.bt-home-nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.bt-home-nav a.active {
+    background: #DFCBFF;
+    color: var(--color-primary);
+}
+
+.bt-home-header-btn {
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius-pill);
+    color: var(--color-primary);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.bt-home-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 24px;
+    padding: 0;
+}
+
+.bt-home-hero-section {
+    padding-top: 64px;
+}
+
+.bt-home-hero {
+    position: relative;
+    height: 418px;
+    overflow: hidden;
+    border-radius: 50px;
+    background-image: url("https://www.figma.com/api/mcp/asset/345f6ade-570d-4500-b984-613cc8144811");
+    background-size: cover;
+    background-position: center;
+    padding: 38px 210px;
+}
+
+.bt-home-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0, 0, 0, .3) 42.776%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
+}
+
+.bt-home-hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 42px;
+    max-width: 696px;
+}
+
+.bt-home-hero h1 {
+    margin: 0;
+    color: var(--color-white);
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 60px;
+    letter-spacing: 0;
+}
+
+.bt-home-search-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    padding: 24px;
+    border-radius: 24px;
+    background: var(--color-white);
+}
+
+.bt-home-search-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 300px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.bt-home-search-tab {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 63px;
+    border: 0;
+    background: transparent;
+    color: var(--color-gray);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    padding: 0;
+}
+
+.bt-home-search-tab i {
+    font-size: 24px;
+}
+
+.bt-home-search-tab.active {
+    color: var(--color-text);
+}
+
+.bt-home-search-tab.active::after {
+    content: "";
+    width: 29px;
+    height: 3px;
+    border-radius: 50px;
+    background: var(--color-primary);
+}
+
+.bt-home-search-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 56px;
+    padding: 8px 8px 8px 32px;
+    border: 2px solid var(--color-gray-light);
+    border-radius: 70px;
+}
+
+.bt-home-search-form input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.bt-home-search-form input::placeholder {
+    color: var(--color-gray);
+}
+
+.bt-home-search-form button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-size: 24px;
+}
+
+.bt-home-resume {
+    height: 168px;
+    margin-top: 24px;
+    border: 2px solid var(--color-gray-light);
+    border-radius: 24px;
+    background: var(--color-white);
+    overflow: hidden;
+}
+
+.bt-home-resume-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 100%;
+    padding: 24px;
+    text-align: center;
+}
+
+.bt-home-resume-item strong {
+    color: var(--color-text);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+}
+
+.bt-home-resume-item span {
+    color: var(--color-gray);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.bt-home-properties-section {
+    padding-top: 80px;
+}
+
+.bt-home-search-header {
+    width: 444px;
+    max-width: 100%;
+    margin-bottom: 0;
+}
+
+.bt-home-search-header h2 {
+    margin: 0 0 17px;
+    color: var(--color-text);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+}
+
+.bt-home-main-tabs {
+    width: 241px;
+    height: 48px;
+    padding: 4px;
+    border: 2px solid var(--color-gray-light);
+    border-radius: 60px;
+    background: var(--color-white);
+}
+
+.bt-home-main-tab {
+    flex: 1;
+    border: 0;
+    border-radius: 50px;
+    background: transparent;
+    color: var(--color-gray);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.bt-home-main-tab.active {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.bt-home-tab-panel {
+    display: none;
+    padding-top: 99px;
+}
+
+.bt-home-tab-panel.is-active {
+    display: block;
+}
+
+.bt-property-slider {
+    width: 100%;
+}
+
+.bt-property-slider + .bt-property-slider {
+    margin-top: 32px;
+}
+
+.bt-property-slider-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    margin-bottom: 18px;
+}
+
+.bt-property-slider-header h3 {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: var(--color-text);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.bt-property-slider-header h3 i {
+    font-size: 30px;
+}
+
+.bt-property-slider-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.bt-property-slider-nav button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 30px;
+    padding: 0;
+}
+
+.bt-property-slider-viewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.bt-property-slider-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 1px;
+}
+
+.bt-property-slider-track::-webkit-scrollbar {
+    display: none;
+}
+
+.bt-property-slider-track .property-card {
+    flex: 0 0 264px;
+    scroll-snap-align: start;
+}
+
+.property-card {
+    overflow: hidden;
+    height: 409px;
+    border: 2px solid var(--color-gray-light);
+    border-radius: 24px;
+    background: var(--color-white);
+}
+
+.property-card__media {
+    height: 221px;
+    border-bottom: 2px solid var(--color-gray-light);
+    overflow: hidden;
+}
+
+.property-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.property-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 16px 0;
+}
+
+.property-card__title {
+    margin: 0;
+    overflow: hidden;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.property-card__favorite {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 24px;
+    line-height: 1;
+    padding: 0;
+}
+
+.property-card__content {
+    padding: 12px 16px 0;
+}
+
+.property-card__price-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.property-card__price {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.property-card__price span {
+    color: var(--color-gray);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.property-card__badge {
+    margin-left: auto;
+    padding: 4px 10px;
+    border: 1px solid var(--color-gray-light);
+    border-radius: 55px;
+    color: var(--color-gray);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+.property-card__description,
+.property-card__details,
+.property-card__footer {
+    overflow: hidden;
+    color: var(--color-gray);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.property-card__description {
+    margin: 12px 0 0;
+}
+
+.property-card__details {
+    margin: 12px 0 0;
+    color: var(--color-text);
+}
+
+.property-card__footer {
+    margin: 6px 0 0;
+    padding: 0 16px 18px;
+}
+
+.bt-home-content-section {
+    padding-top: 80px;
+}
+
+.bt-home-content-row {
+    min-height: 514px;
+}
+
+.bt-home-content-row + .bt-home-content-row {
+    margin-top: 0;
+}
+
+.bt-home-text-block {
+    max-width: 418px;
+}
+
+.bt-home-text-block h2 {
+    margin: 0 0 10px;
+    color: var(--color-text);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+}
+
+.bt-home-text-block p {
+    margin: 0;
+    color: var(--color-gray);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.bt-home-image-placeholder {
+    width: 100%;
+    height: 354px;
+    border-radius: 24px;
+    background: #EBECEC;
+}
+
+.bt-home-features-section {
+    padding-top: 80px;
+}
+
+.bt-home-features-section h2 {
+    margin: 0 0 64px;
+    color: var(--color-text);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+}
+
+.bt-home-feature {
+    text-align: center;
+}
+
+.bt-home-feature i {
+    display: inline-flex;
+    margin-bottom: 24px;
+    color: var(--color-text);
+    font-size: 44px;
+}
+
+.bt-home-feature h3 {
+    margin: 0 0 12px;
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.bt-home-feature p {
+    max-width: 246px;
+    margin: 0 auto;
+    color: var(--color-gray);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.bt-home-app-section {
+    padding: 80px 0 72px;
+}
+
+.bt-home-app-card {
+    position: relative;
+    min-height: 408px;
+    overflow: hidden;
+    border-radius: 24px;
+    background: #F8F8F8;
+    padding: 72px 53px;
+}
+
+.bt-home-app-content {
+    width: 398px;
+    margin-left: auto;
+}
+
+.bt-home-app-content h2 {
+    margin: 0 0 10px;
+    color: var(--color-text);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+}
+
+.bt-home-app-content p {
+    margin: 0 0 24px;
+    color: var(--color-gray);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.bt-home-app-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
+    padding: 14px 19px;
+    border-radius: var(--radius-pill);
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.bt-home-app-visual {
+    position: absolute;
+    left: -135px;
+    bottom: -145px;
+    width: 595px;
+    height: 531px;
+    border-radius: 40px;
+    background: #EBECEC;
+}
+
+@media (max-width: 1199.98px) {
+    .bt-home-hero-section {
+        padding-top: 48px;
+    }
+
+    .bt-home-hero {
+        height: 410px;
+        padding: 38px 67px;
+    }
+
+    .bt-home-hero-content {
+        max-width: none;
+    }
+
+    .bt-home-properties-section {
+        padding-top: 64px;
+    }
+
+    .bt-home-search-header {
+        width: 385px;
+    }
+
+    .bt-home-main-tabs {
+        width: 231px;
+    }
+
+    .bt-home-tab-panel {
+        padding-top: 99px;
+    }
+
+    .bt-property-slider-track .property-card {
+        flex-basis: 291.5px;
+    }
+
+    .bt-home-content-section {
+        padding-top: 64px;
+    }
+
+    .bt-home-content-row {
+        min-height: 250px;
+    }
+
+    .bt-home-image-placeholder {
+        height: 250px;
+    }
+
+    .bt-home-features-section {
+        padding-top: 64px;
+    }
+
+    .bt-home-features-section h2 {
+        margin-bottom: 64px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .bt-home-header {
+        height: 72px;
+    }
+
+    .bt-home-hero-section {
+        padding-top: 0;
+    }
+
+    .bt-home-hero-container {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .bt-home-hero {
+        height: 320px;
+        border-radius: 0;
+        padding: 16px 10px;
+    }
+
+    .bt-home-hero-overlay {
+        border-radius: 0;
+    }
+
+    .bt-home-hero-content {
+        gap: 24px;
+    }
+
+    .bt-home-hero h1 {
+        font-size: 40px;
+        line-height: 60px;
+    }
+
+    .bt-home-search-card {
+        padding: 24px;
+    }
+
+    .bt-home-search-form {
+        min-height: 56px;
+        padding-left: 24px;
+    }
+
+    .bt-home-search-form input {
+        font-size: 15px;
+    }
+
+    .bt-home-resume {
+        height: 111px;
+        margin-top: 24px;
+        border-radius: 0;
+        border-right: 0;
+        border-left: 0;
+    }
+
+    .bt-home-resume-item {
+        padding: 14px 8px;
+    }
+
+    .bt-home-resume-item strong {
+        font-size: 20px;
+        line-height: 24px;
+    }
+
+    .bt-home-resume-item span {
+        font-size: 11px;
+        line-height: 16px;
+    }
+
+    .bt-home-properties-section {
+        padding-top: 48px;
+    }
+
+    .bt-home-search-header {
+        width: 355px;
+    }
+
+    .bt-home-search-header h2 {
+        font-size: 30px;
+        line-height: 34px;
+    }
+
+    .bt-home-main-tabs {
+        width: 221px;
+    }
+
+    .bt-home-tab-panel {
+        padding-top: 115px;
+    }
+
+    .bt-property-slider + .bt-property-slider {
+        margin-top: 24px;
+    }
+
+    .bt-property-slider-header {
+        width: 1042px;
+        max-width: none;
+        height: 48px;
+        margin-bottom: 20px;
+    }
+
+    .bt-property-slider-header h3 {
+        max-width: 240px;
+        font-size: 20px;
+        line-height: 24px;
+    }
+
+    .bt-property-slider-viewport {
+        overflow: visible;
+    }
+
+    .bt-property-slider-track {
+        width: 1042px;
+    }
+
+    .bt-property-slider-track .property-card {
+        flex-basis: 245.5px;
+    }
+
+    .property-card {
+        height: 407px;
+    }
+
+    .property-card__media {
+        height: 221px;
+    }
+
+    .property-card__header {
+        padding: 12px 12px 0;
+    }
+
+    .property-card__content {
+        padding: 8px 12px 0;
+    }
+
+    .property-card__title,
+    .property-card__price {
+        font-size: 14px;
+        line-height: 16px;
+    }
+
+    .property-card__badge,
+    .property-card__description,
+    .property-card__details,
+    .property-card__footer {
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    .property-card__badge {
+        padding: 2px 10px;
+    }
+
+    .property-card__footer {
+        padding: 0 12px 16px;
+    }
+
+    .bt-home-content-section {
+        padding-top: 48px;
+    }
+
+    .bt-home-content-row {
+        min-height: auto;
+    }
+
+    .bt-home-content-row + .bt-home-content-row {
+        margin-top: 48px;
+    }
+
+    .bt-home-text-block {
+        max-width: 351px;
+    }
+
+    .bt-home-image-placeholder {
+        height: 227px;
+    }
+
+    .bt-home-features-section {
+        padding-top: 48px;
+    }
+
+    .bt-home-features-section h2 {
+        width: 417px;
+        max-width: none;
+        margin: 0 0 16px -33px;
+        font-size: 30px;
+        line-height: 34px;
+    }
+
+    .bt-home-feature i {
+        margin-bottom: 20px;
+    }
+
+    .bt-home-feature p {
+        max-width: 149px;
+    }
+
+    .bt-home-app-section {
+        padding: 48px 0 72px;
+    }
+
+    .bt-home-app-card {
+        min-height: 542px;
+        padding: 16px;
+    }
+
+    .bt-home-app-content {
+        width: 319px;
+        max-width: 100%;
+        margin-left: 0;
+    }
+
+    .bt-home-app-content h2 {
+        font-size: 30px;
+        line-height: 34px;
+    }
+
+    .bt-home-app-visual {
+        left: -11px;
+        bottom: -43px;
+        width: 272px;
+        height: 243px;
+        border-radius: 28px;
+    }
+}

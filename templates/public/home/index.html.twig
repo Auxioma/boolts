@@ -1,125 +1,707 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello HomeController!{% endblock %}
+{% block title %}Boolts - L’immobilier réinventé{% endblock %}
 
 {% block body %}
 
-    <main>
-        {# hero #}
-        <div class="container mt-64" id="home-hero">
-            <div class="row">
-                <div class="col-12">
-                    <div
-                        class="home-hero position-relative overflow-hidden d-flex align-items-center justify-content-center"
-                        data-controller="media-hero"
-                        data-media-hero-type-value="video"
-                        data-media-hero-src-value="{{ asset('images/home/hero/Boolts-' ~ random(1, 16) ~ '.mp4') }}"
-                        data-media-hero-poster-value=""
-                    >
-                        <div class="home-hero-content w-100">
-                            <div class="row mx-0">
-                                <div class="col-12 col-lg-8 mx-auto">
-                                    <h1 class="home-hero-title">
-                                        L’immobilier,<br>
-                                        réinventé.
-                                    </h1>
+<div
+    class="bt-home-page"
+    data-controller="public-home"
+>
+    <header class="bt-home-header">
+        <div class="container-xl h-100">
+            <div class="d-flex align-items-center justify-content-between h-100">
+                <a href="#" class="bt-home-logo">
+                    boolts
+                </a>
 
-                                    <div class="home-hero-search-card">
-                                        champs de recherche
-                                    </div>
-                                </div>
+                <nav class="bt-home-nav d-none d-lg-flex align-items-center">
+                    <a href="#" class="active">Acheter</a>
+                    <a href="#">Louer</a>
+                    <a href="#">Vendre</a>
+                    <a href="#">Trouver un pro</a>
+                </nav>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="#" class="bt-home-header-btn d-none d-md-inline-flex">
+                        Déposer une annonce
+                    </a>
+
+                    <button type="button" class="bt-home-icon-btn">
+                        <i class="icon-user-round"></i>
+                    </button>
+
+                    <button type="button" class="bt-home-icon-btn d-lg-none">
+                        <i class="icon-menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        {# HERO #}
+        <section class="bt-home-hero-section">
+            <div class="container-xl bt-home-hero-container">
+                <div class="bt-home-hero">
+                    <div class="bt-home-hero-overlay"></div>
+
+                    <div class="bt-home-hero-content">
+                        <h1>
+                            L’immobilier,<br>
+                            réinventé.
+                        </h1>
+
+                        <div class="bt-home-search-card">
+                            <div class="bt-home-search-tabs">
+                                <button type="button" class="bt-home-search-tab active">
+                                    <i class="icon-house"></i>
+                                    Acheter
+                                </button>
+
+                                <button type="button" class="bt-home-search-tab">
+                                    <i class="icon-key-round"></i>
+                                    Louer
+                                </button>
+
+                                <button type="button" class="bt-home-search-tab">
+                                    <i class="icon-pencil"></i>
+                                    Vendre
+                                </button>
+                            </div>
+
+                            <form class="bt-home-search-form">
+                                <input type="search" placeholder="Saisir un lieu, un code postal...">
+
+                                <button type="submit">
+                                    <i class="icon-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bt-home-resume">
+                    <div class="row g-0 h-100">
+                        <div class="col-4">
+                            <div class="bt-home-resume-item">
+                                <strong>12 500+</strong>
+                                <span>biens disponibles</span>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="bt-home-resume-item">
+                                <strong>4 200+</strong>
+                                <span>agences partenaires</span>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="bt-home-resume-item">
+                                <strong>24h/24</strong>
+                                <span>recherche immobilière</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        {# cookies de recherche #}
-        <div class="container">
-            <div class="row">
-                <div class="cookies">
-                    <h2>Continuez votre recherche pour “Appartement à louer” à Paris</h2>
-                    <a href="#">Reprendre la recherche</a>
-                    <a href="#">Annuler</a>
+        {# PROPRIÉTÉS #}
+        <section class="bt-home-properties-section">
+            <div class="container-xl">
+                <div class="bt-home-search-header mx-auto text-center">
+                    <h2>Trouvez votre futur logement</h2>
+
+                    <div class="bt-home-main-tabs nav mx-auto">
+                        <button
+                            type="button"
+                            class="bt-home-main-tab active"
+                            data-public-home-target="tab"
+                            data-tab-name="location"
+                            data-action="click->public-home#changeTab"
+                        >
+                            En location
+                        </button>
+
+                        <button
+                            type="button"
+                            class="bt-home-main-tab"
+                            data-public-home-target="tab"
+                            data-tab-name="vente"
+                            data-action="click->public-home#changeTab"
+                        >
+                            En vente
+                        </button>
+                    </div>
                 </div>
-                <img src="" alt="">
-                <img src="" alt="">
-                <img src="" alt="">
-            </div>
-        </div>
 
-        {# exploration #}
-        <div class="container">
-            <div class="row">
-                <div class="col-6 mx-auto">
-                    <div class="explore-property">
-                        <h2>Explorez toutes les propritétés</h2>
-                        <a href="En location"></a>
-                        <a href="En vente"></a>
+                <div
+                    class="bt-home-tab-panel is-active"
+                    data-public-home-target="panel"
+                    data-tab-panel="location"
+                >
+                    <section class="bt-property-slider">
+                        <div class="bt-property-slider-header">
+                            <h3>
+                                Biens en location
+                                <i class="icon-arrow-right"></i>
+                            </h3>
+
+                            <div class="bt-property-slider-nav">
+                                <button
+                                    type="button"
+                                    data-action="click->public-home#slide"
+                                    data-public-home-track-param="location-1"
+                                    data-public-home-direction-param="prev"
+                                >
+                                    <i class="icon-chevron-left"></i>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-action="click->public-home#slide"
+                                    data-public-home-track-param="location-1"
+                                    data-public-home-direction-param="next"
+                                >
+                                    <i class="icon-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bt-property-slider-viewport">
+                            <div
+                                class="bt-property-slider-track"
+                                data-public-home-target="track"
+                                data-slider-track="location-1"
+                            >
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/000000/FFFFFF/png" alt="Appartement à louer" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Appartement à louer</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                765€ <span>/mois</span>
+                                            </p>
+                                            <span class="property-card__badge">Charges comprises</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Appartement très spacieux et lumineux.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            2 pièces · 1 chambre · 50m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Rue de Courteneneuve, 76510 Saint Nicolas d’Aliermont
+                                    </div>
+                                </article>
+
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/111111/FFFFFF/png" alt="Maison à louer" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Maison à louer</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                1 150€ <span>/mois</span>
+                                            </p>
+                                            <span class="property-card__badge">Charges comprises</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Maison familiale avec jardin.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            5 pièces · 3 chambres · 120m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Avenue des Fleurs, 76000 Rouen
+                                    </div>
+                                </article>
+
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/222222/FFFFFF/png" alt="Studio à louer" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Studio à louer</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                520€ <span>/mois</span>
+                                            </p>
+                                            <span class="property-card__badge">Charges comprises</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Studio moderne proche centre-ville.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            1 pièce · 28m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Rue Nationale, 76600 Le Havre
+                                    </div>
+                                </article>
+
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/333333/FFFFFF/png" alt="Appartement à louer" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Appartement à louer</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                890€ <span>/mois</span>
+                                            </p>
+                                            <span class="property-card__badge">Charges comprises</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Bel appartement rénové.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            3 pièces · 2 chambres · 72m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Boulevard Maritime, 76200 Dieppe
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="bt-property-slider">
+                        <div class="bt-property-slider-header">
+                            <h3>
+                                Locations récentes
+                                <i class="icon-arrow-right"></i>
+                            </h3>
+
+                            <div class="bt-property-slider-nav">
+                                <button
+                                    type="button"
+                                    data-action="click->public-home#slide"
+                                    data-public-home-track-param="location-2"
+                                    data-public-home-direction-param="prev"
+                                >
+                                    <i class="icon-chevron-left"></i>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-action="click->public-home#slide"
+                                    data-public-home-track-param="location-2"
+                                    data-public-home-direction-param="next"
+                                >
+                                    <i class="icon-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bt-property-slider-viewport">
+                            <div
+                                class="bt-property-slider-track"
+                                data-public-home-target="track"
+                                data-slider-track="location-2"
+                            >
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/444444/FFFFFF/png" alt="Bien à louer" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Appartement récent</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                710€ <span>/mois</span>
+                                            </p>
+                                            <span class="property-card__badge">Charges comprises</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Appartement lumineux avec balcon.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            2 pièces · 1 chambre · 48m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Centre-ville, 14000 Caen
+                                    </div>
+                                </article>
+
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/555555/FFFFFF/png" alt="Bien à louer" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Maison de ville</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                980€ <span>/mois</span>
+                                            </p>
+                                            <span class="property-card__badge">Charges comprises</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Maison de ville agréable.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            4 pièces · 2 chambres · 86m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Rue Victor Hugo, 27000 Évreux
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div
+                    class="bt-home-tab-panel"
+                    data-public-home-target="panel"
+                    data-tab-panel="vente"
+                >
+                    <section class="bt-property-slider">
+                        <div class="bt-property-slider-header">
+                            <h3>
+                                Biens en vente
+                                <i class="icon-arrow-right"></i>
+                            </h3>
+
+                            <div class="bt-property-slider-nav">
+                                <button
+                                    type="button"
+                                    data-action="click->public-home#slide"
+                                    data-public-home-track-param="vente-1"
+                                    data-public-home-direction-param="prev"
+                                >
+                                    <i class="icon-chevron-left"></i>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    data-action="click->public-home#slide"
+                                    data-public-home-track-param="vente-1"
+                                    data-public-home-direction-param="next"
+                                >
+                                    <i class="icon-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bt-property-slider-viewport">
+                            <div
+                                class="bt-property-slider-track"
+                                data-public-home-target="track"
+                                data-slider-track="vente-1"
+                            >
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/000000/FFFFFF/png" alt="Maison à vendre" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Maison à vendre</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                275 000€
+                                            </p>
+                                            <span class="property-card__badge">Vente</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Maison familiale avec jardin.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            6 pièces · 4 chambres · 145m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Rue des Jardins, 76000 Rouen
+                                    </div>
+                                </article>
+
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/111111/FFFFFF/png" alt="Appartement à vendre" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Appartement à vendre</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                189 000€
+                                            </p>
+                                            <span class="property-card__badge">Vente</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Appartement rénové proche commerces.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            3 pièces · 2 chambres · 68m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Avenue Foch, 76600 Le Havre
+                                    </div>
+                                </article>
+
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/222222/FFFFFF/png" alt="Villa à vendre" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Villa à vendre</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                420 000€
+                                            </p>
+                                            <span class="property-card__badge">Vente</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Villa contemporaine avec terrasse.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            7 pièces · 5 chambres · 190m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Route de la Mer, 14800 Deauville
+                                    </div>
+                                </article>
+
+                                <article class="property-card">
+                                    <div class="property-card__media">
+                                        <img src="https://placehold.co/600x400/333333/FFFFFF/png" alt="Loft à vendre" class="property-card__image">
+                                    </div>
+
+                                    <div class="property-card__header">
+                                        <h3 class="property-card__title">Loft à vendre</h3>
+                                        <button type="button" class="property-card__favorite">
+                                            <i class="icon-heart"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="property-card__content">
+                                        <div class="property-card__price-row">
+                                            <p class="property-card__price">
+                                                315 000€
+                                            </p>
+                                            <span class="property-card__badge">Vente</span>
+                                        </div>
+
+                                        <p class="property-card__description">
+                                            Loft atypique avec beaux volumes.
+                                        </p>
+
+                                        <p class="property-card__details">
+                                            4 pièces · 2 chambres · 110m²
+                                        </p>
+                                    </div>
+
+                                    <div class="property-card__footer">
+                                        Quai de Seine, 76000 Rouen
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+
+        {# CONTENT #}
+        <section class="bt-home-content-section">
+            <div class="container-xl">
+                <div class="row align-items-center gy-4 bt-home-content-row">
+                    <div class="col-12 col-md-6">
+                        <div class="bt-home-text-block">
+                            <h2>Une nouvelle manière de trouver un bien.</h2>
+                            <p>
+                                Boolts simplifie la recherche immobilière avec une expérience claire,
+                                rapide et pensée pour les particuliers comme pour les professionnels.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="bt-home-image-placeholder"></div>
+                    </div>
+                </div>
+
+                <div class="row align-items-center gy-4 bt-home-content-row flex-md-row-reverse">
+                    <div class="col-12 col-md-6">
+                        <div class="bt-home-text-block">
+                            <h2>Des annonces plus lisibles et plus utiles.</h2>
+                            <p>
+                                Chaque bien est présenté avec les informations importantes pour aider
+                                l’utilisateur à comparer rapidement les opportunités.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="bt-home-image-placeholder"></div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        {# Card des bien immobilier #}
-        <div class="container">
-            <div class="row">
-                <div class="slide-immobilier">
+        {# FEATURES #}
+        <section class="bt-home-features-section">
+            <div class="container-xl">
+                <h2 class="text-center">Pourquoi utiliser Boolts ?</h2>
 
+                <div class="row g-4">
+                    <div class="col-6 col-md-3">
+                        <div class="bt-home-feature">
+                            <i class="icon-package-check"></i>
+                            <h3>Transparence</h3>
+                            <p>Des informations claires pour chaque annonce immobilière.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="bt-home-feature">
+                            <i class="icon-globe"></i>
+                            <h3>Recherche</h3>
+                            <p>Une expérience adaptée à votre localisation.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="bt-home-feature">
+                            <i class="icon-message-circle"></i>
+                            <h3>Contact</h3>
+                            <p>Des échanges simples avec les professionnels.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <div class="bt-home-feature">
+                            <i class="icon-network"></i>
+                            <h3>Écosystème</h3>
+                            <p>Une plateforme pensée pour évoluer avec vos besoins.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        {# Card des bien immobilier #}
-        <div class="container">
-            <div class="row">
-                slide 01
-            </div>
-        </div>
+        {# CTA #}
+        <section class="bt-home-app-section">
+            <div class="container-xl">
+                <div class="bt-home-app-card">
+                    <div class="bt-home-app-content">
+                        <h2>Trouvez votre futur bien avec Boolts.</h2>
 
-        {# Card des bien immobilier #}
-        <div class="container">
-            <div class="row">
-                slide 01
-            </div>
-        </div>
+                        <p>
+                            Une interface moderne, simple et rapide pour découvrir les biens
+                            immobiliers disponibles autour de vous.
+                        </p>
 
-        {# pensil a droite #}
-        <div class="container">
-            <div class="row">
-                <div class="col-6">sdsdsd</div>
-                <div class="col-6">sdsdsd</div>
-            </div>
-        </div>
+                        <a href="#" class="bt-home-app-btn">
+                            Découvrir Boolts
+                        </a>
+                    </div>
 
-        {# pensil a gauche #}
-        <div class="container">
-            <div class="row">
-                <div class="col-6">sdsdsd</div>
-                <div class="col-6">sdsdsd</div>
-            </div>
-        </div>
-
-        {# reassurance #}
-        <div class="container">
-            <div class="row">
-                <div class="col-3">SQD</div>
-                <div class="col-3">DSQ</div>
-                <div class="col-3">DSQ</div>
-                <div class="col-3">DSQ</div>
-            </div>
-        </div>
-
-        {# Image bas #}
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    img
+                    <div class="bt-home-app-visual"></div>
                 </div>
             </div>
-        </div>
-
+        </section>
     </main>
+</div>
 
 {% endblock %}

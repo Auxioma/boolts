@@ -14,13 +14,47 @@
 
 <twig:Card class="property-card">
     <div class="property-card__media">
-        {% if image %}
+{% if image %}
+        <picture class="property-card__picture">
+            <source
+                media="(max-width: 575px)"
+                srcset="{{ image }}"
+                type="image/webp"
+            >
+
+            <source
+                media="(max-width: 991px)"
+                srcset="{{ image }}"
+                type="image/webp"
+            >
+
+            <source
+                media="(min-width: 992px)"
+                srcset="{{ image }}"
+                type="image/webp"
+            >
+
+            <source
+                media="(max-width: 575px)"
+                srcset="{{ image }}"
+                type="image/jpeg"
+            >
+
+            <source
+                media="(min-width: 576px)"
+                srcset="{{ image }}"
+                type="image/jpeg"
+            >
+
             <img
-                src="{{ image }}"
+                src="{{ image}}"
                 alt="{{ title }}"
                 class="property-card__image"
+                loading="lazy"
+                decoding="async"
             >
-        {% endif %}
+        </picture>
+    {% endif %}
     </div>
 
     <twig:Card:Header class="property-card__header border-0 bg-white">

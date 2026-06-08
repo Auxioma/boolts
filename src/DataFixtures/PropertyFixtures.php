@@ -17,6 +17,7 @@ use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Property;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -46,6 +47,19 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         /**
+         * On prépare uniquement les utilisateurs qui ont le rôle agence.
+         * Chaque bien immobilier sera rattaché à une agence.
+         */
+        $agenceReferences = [
+            UserFixtures::USER_AGENCE_REFERENCE,
+            UserFixtures::USER_MOHCINE_REFERENCE,
+        ];
+
+        for ($i = 1; $i <= 50; ++$i) {
+            $agenceReferences[] = UserFixtures::USER_AGENCE_REFERENCE_PREFIX.$i;
+        }
+
+        /**
          * On prend uniquement les caractéristiques déjà existantes.
          * Donc ici, je n’invente aucun slug ni aucune référence.
          */
@@ -55,6 +69,12 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
         for ($i = 1; $i <= self::NUMBER_OF_PROPERTIES; ++$i) {
             $propertyData = $faker->randomElement(self::PROPERTIES);
+
+            /** @var User $user */
+            $user = $this->getReference(
+                $faker->randomElement($agenceReferences),
+                User::class
+            );
 
             /** @var CategoryBien $categoryBien */
             $categoryBien = $this->getReference(
@@ -73,6 +93,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             $property = new Property();
 
             $property
+                ->setUser($user)
                 ->setTypeBien($categoryBien)
                 ->setTypeTransaction($categoryBienTransaction)
                 ->setTitreDuLogement(
@@ -95,7 +116,6 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 ->setAnneeConstruction(
                     (string) $faker->numberBetween(1900, 2026)
                 )
-
                 ->setAdresse($faker->streetAddress())
                 ->setCodePostal($faker->postcode())
                 ->setVille($ville)
@@ -195,6 +215,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
+            UserFixtures::class,
             CategoryBienFixtures::class,
             CategoryBienTransactionFixtures::class,
         ];
