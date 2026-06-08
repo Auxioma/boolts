@@ -84,6 +84,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 2,
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName() ?? '',
                 ]);
             }
 
@@ -105,6 +106,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 3,
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
                 ]);
             }
 
@@ -120,6 +122,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 4,
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
                 ]);
             }
 
@@ -141,6 +144,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                     return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                         'step' => 6,
+                        'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
                     ]);
                 }
 
@@ -148,6 +152,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 5,
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
                 ]);
             }
 
@@ -163,6 +168,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 6,
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
                 ]);
             }
 
@@ -184,6 +190,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 7,
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
                 ]);
             }
 
@@ -203,13 +210,11 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     ]);
                 }
 
-                $typeTransaction = $mesBiens->getTypeTransaction()?->getName();
-
                 $this->updateReachedStep($session, 8);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 8,
-                    'typeTransaction' => $typeTransaction,
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
                 ]);
             }
 
@@ -223,7 +228,9 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 $this->clearMesBiensSession($session);
 
-                return $this->redirectToRoute('agence_immobiliere_mes_biens_status');
+                return $this->redirectToRoute('agence_immobiliere_mes_biens_status', [
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                ]);
             }
         }
 
