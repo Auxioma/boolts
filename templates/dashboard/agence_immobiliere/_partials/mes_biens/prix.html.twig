@@ -13,16 +13,12 @@
 
     <div class="mt-48 caracteristique-logements">
         <div class="row">
-            {% set typeTransaction = app.request.query.get('typeTransaction') %}
+            {% set property = app.user.properties|first %}
 
-            {% if typeTransaction %}
-                {% set transaction = typeTransaction|lower %}
-
-                {% if transaction == 'vente' %}
-                    {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/achat.html.twig') }}
-                {% elseif transaction == 'location' %}
-                    {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/location.html.twig') }}
-                {% endif %}
+            {% if property and property.typeTransaction and property.typeTransaction.name == 'Vente' %}
+                {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/achat.html.twig') }}
+            {% elseif property and property.typeTransaction and property.typeTransaction.name == 'Location' %}
+                {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/location.html.twig') }}
             {% endif %}
 
             <div>
