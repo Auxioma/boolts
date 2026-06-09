@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Boolts - Recherche{% endblock %}
+
+{% block body %}
+    {% set totalResults = totalResults|default(287) %}
+    {% set propertyImage = propertyImage|default(asset('images/placeholders/property-card.jpg')) %}
+
+    <div class="bt-research-page">
+        <div class="bt-research-sticky-bar">
+            <div class="bt-research-sticky-inner">
+                <button type="button" class="bt-research-back-btn d-md-none" aria-label="Retour">
+                    <i class="icon-chevron-left" aria-hidden="true"></i>
+                </button>
+
+                <form class="bt-research-search" action="#" method="get">
+                    <input type="search" name="q" value="Rouen (76)" aria-label="Lieu recherché">
+                    <button type="submit" aria-label="Rechercher">
+                        <i class="icon-search" aria-hidden="true"></i>
+                    </button>
+                </form>
+
+                <button
+                    type="button"
+                    class="bt-research-filter-btn"
+                    data-bs-toggle="modal"
+                    data-bs-target="#booltsFiltersModal"
+                >
+                    <i class="icon-sliders-horizontal" aria-hidden="true"></i>
+                    <span class="d-none d-md-inline">Filtres</span>
+                </button>
+
+                <a href="#results" class="bt-research-primary-btn d-none d-md-inline-flex">
+                    Afficher les {{ totalResults }} logements
+                </a>
+            </div>
+        </div>
+
+        <main class="bt-research-main" id="results">
+            <section class="bt-results-section">
+                <div class="bt-research-container">
+                    <h1 class="bt-results-title">{{ totalResults }} logements trouvés</h1>
+
+                    <div class="row bt-results-grid">
+                        {% for i in 1..9 %}
+                            <div class="col-12 col-md-4">
+                                <twig:Property:Card
+                                    title="Appartement à louer"
+                                    price="765€"
+                                    period="/mois"
+                                    badge="Charges comprises"
+                                    description="Appartement très spacieux et lumineux et très agréable."
+                                    details="2 pièces · 1 chambre · 50m²"
+                                    address="Rue de Courteneneuve, 76510 Saint Nicolas d’Aliermont"
+                                    image="{{ propertyImage }}"
+                                />
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="bt-featured-section" aria-labelledby="featured-title">
+                <div class="bt-featured-inner">
+                    <h2 id="featured-title" class="bt-featured-title">
+                        <i class="icon-sparkles" aria-hidden="true"></i>
+                        <span>Annonces <strong>à la une</strong></span>
+                    </h2>
+
+                    <div class="bt-featured-viewport">
+                        <div class="bt-featured-track">
+                            {% for i in 1..4 %}
+                                <div class="bt-featured-card">
+                                    <twig:Property:Card
+                                        title="Appartement à louer"
+                                        price="765€"
+                                        period="/mois"
+                                        badge="Charges comprises"
+                                        description="Appartement très spacieux et lumineux."
+                                        details="2 pièces · 1 chambre · 50m²"
+                                        address="Rue de Courteneneuve, 76510 Saint Nicolas d’Aliermont"
+                                        image="{{ propertyImage }}"
+                                    />
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <nav class="bt-research-pagination" aria-label="Pagination">
+                <a href="#" class="disabled" aria-label="Page précédente"><i class="icon-chevron-left"></i></a>
+                <a href="#" class="active">1</a>
+                <a href="#">2</a>
+                <a href="#">3</a>
+                <a href="#">4</a>
+                <span>...</span>
+                <a href="#">32</a>
+                <a href="#" aria-label="Page suivante"><i class="icon-chevron-right"></i></a>
+            </nav>
+        </main>
+
+        {% include 'composant/_search/_search.html.twig' with { totalResults: totalResults } only %}
+
+        <nav class="bt-mobile-tabbar d-md-none" aria-label="Navigation mobile">
+            <a href="#" class="active"><i class="icon-search"></i><span>Explorer</span></a>
+            <a href="#"><i class="icon-heart"></i><span>Favoris</span></a>
+            <a href="#"><i class="icon-message-circle"></i><span>Messagerie</span></a>
+            <a href="#"><i class="icon-user-round"></i><span>Compte</span></a>
+        </nav>
+    </div>
+{% endblock %}

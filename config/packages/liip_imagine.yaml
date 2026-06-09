@@ -1,0 +1,63 @@
+liip_imagine:
+    driver: "imagick"
+
+    resolvers:
+        default:
+            web_path: ~
+
+    filter_sets:
+        cache: ~
+
+        property_card_mobile_webp:
+            quality: 80
+            format: webp
+            filters:
+                thumbnail:
+                    size: [351, 264]
+                    mode: outbound
+                    allow_upscale: false
+
+        property_card_tablet_webp:
+            quality: 82
+            format: webp
+            filters:
+                thumbnail:
+                    size: [360, 270]
+                    mode: outbound
+                    allow_upscale: false
+
+        property_card_desktop_webp:
+            quality: 85
+            format: webp
+            filters:
+                thumbnail:
+                    size: [360, 270]
+                    mode: outbound
+                    allow_upscale: false
+
+        property_card_mobile_png:
+            format: png
+            png_compression_level: 8
+            filters:
+                thumbnail:
+                    size: [351, 264]
+                    mode: outbound
+                    allow_upscale: false
+
+        property_card_tablet_png:
+            format: png
+            png_compression_level: 8
+            filters:
+                thumbnail:
+                    size: [360, 270]
+                    mode: outbound
+                    allow_upscale: false
+
+        property_card_desktop_png:
+            format: png
+            png_compression_level: 8
+            filters:
+                thumbnail:
+                    size: [356, 267]
+                    mode: outbound
+                    allow_upscale: false
