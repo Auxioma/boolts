@@ -147,10 +147,17 @@ class Property
     #[ORM\ManyToOne(inversedBy: 'properties')]
     private ?User $user = null;
 
+    /**
+     * @var Collection<int, Favoris>
+     */
+    #[ORM\OneToMany(targetEntity: Favoris::class, mappedBy: 'property')]
+    private Collection $favoris;
+
     public function __construct()
     {
         $this->caracteristique = new ArrayCollection();
         $this->propertyImages = new ArrayCollection();
+        $this->favoris = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -519,6 +526,36 @@ class Property
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favoris>
+     */
+    public function getFavoris(): Collection
+    {
+        return $this->favoris;
+    }
+
+    public function addFavori(Favoris $favori): static
+    {
+        if (!$this->favoris->contains($favori)) {
+            $this->favoris->add($favori);
+            $favori->setProperty($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavori(Favoris $favori): static
+    {
+        if ($this->favoris->removeElement($favori)) {
+            // set the owning side to null (unless already changed)
+            if ($favori->getProperty() === $this) {
+                $favori->setProperty(null);
+            }
+        }
 
         return $this;
     }
