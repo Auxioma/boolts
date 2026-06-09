@@ -36,3 +36,8 @@ services:
         public: true
         tags: ['scheb_two_factor.auth_code_mailer'] # ou alias ci-dessous
     app.2fa_mailer: '@App\Mailer\TwoFactorEmailMailer'
+
+    App\Service\ContactForm\ContactMailer:
+        arguments:
+            $mailerFromEmail: '%env(MAILER_FROM_EMAIL)%'
+            $mailerFromName: '%env(MAILER_FROM_NAME)%'

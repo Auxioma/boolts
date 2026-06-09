@@ -15,45 +15,57 @@
 <twig:Card class="property-card">
     <div class="property-card__media">
 {% if image %}
-        <picture class="property-card__picture">
-            <source
-                media="(max-width: 575px)"
-                srcset="{{ image }}"
-                type="image/webp"
-            >
+    <picture class="property-card__picture">
+        {# Mobile - WebP #}
+        <source
+            media="(max-width: 575px)"
+            srcset="{{ image|imagine_filter('property_card_mobile_webp') }}"
+            type="image/webp"
+        >
 
-            <source
-                media="(max-width: 991px)"
-                srcset="{{ image }}"
-                type="image/webp"
-            >
+        {# Mobile - PNG fallback #}
+        <source
+            media="(max-width: 575px)"
+            srcset="{{ image|imagine_filter('property_card_mobile_png') }}"
+            type="image/png"
+        >
 
-            <source
-                media="(min-width: 992px)"
-                srcset="{{ image }}"
-                type="image/webp"
-            >
+        {# Tablette - WebP #}
+        <source
+            media="(min-width: 576px) and (max-width: 991px)"
+            srcset="{{ image|imagine_filter('property_card_tablet_webp') }}"
+            type="image/webp"
+        >
 
-            <source
-                media="(max-width: 575px)"
-                srcset="{{ image }}"
-                type="image/jpeg"
-            >
+        {# Tablette - PNG fallback #}
+        <source
+            media="(min-width: 576px) and (max-width: 991px)"
+            srcset="{{ image|imagine_filter('property_card_tablet_png') }}"
+            type="image/png"
+        >
 
-            <source
-                media="(min-width: 576px)"
-                srcset="{{ image }}"
-                type="image/jpeg"
-            >
+        {# Desktop - WebP #}
+        <source
+            media="(min-width: 992px)"
+            srcset="{{ image|imagine_filter('property_card_desktop_webp') }}"
+            type="image/webp"
+        >
 
-            <img
-                src="{{ image}}"
-                alt="{{ title }}"
-                class="property-card__image"
-                loading="lazy"
-                decoding="async"
-            >
-        </picture>
+        {# Desktop - PNG fallback #}
+        <source
+            media="(min-width: 992px)"
+            srcset="{{ image|imagine_filter('property_card_desktop_png') }}"
+            type="image/png"
+        >
+
+        <img
+            src="{{ image|imagine_filter('property_card_desktop_png') }}"
+            alt="{{ title }}"
+            class="property-card__image"
+            loading="lazy"
+            decoding="async"
+        >
+    </picture>
     {% endif %}
     </div>
 
@@ -64,6 +76,7 @@
             </twig:Card:Title>
         </div>
 
+        {% if not is_granted('ROLE_AGENCE') %}
         {% if favoriteUrl %}
             <twig:Button
                 as="a"
@@ -73,21 +86,8 @@
                 class="property-card__favorite"
                 aria-label="Ajouter aux favoris"
             >
-                <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M20.84 4.61C20.3292 4.099 19.7228 3.69365 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69365 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.06211 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.61Z"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 9.50004C2.00002 8.38724 2.33759 7.30062 2.96813 6.3837C3.59867 5.46678 4.49252 4.7627 5.53161 4.36444C6.5707 3.96618 7.70616 3.89248 8.78801 4.15308C9.86987 4.41368 10.8472 4.99632 11.591 5.82404C11.6434 5.88005 11.7067 5.92471 11.7771 5.95524C11.8474 5.98577 11.9233 6.00152 12 6.00152C12.0767 6.00152 12.1526 5.98577 12.2229 5.95524C12.2933 5.92471 12.3566 5.88005 12.409 5.82404C13.1504 4.99094 14.128 4.40341 15.2116 4.13964C16.2952 3.87588 17.4335 3.94839 18.4749 4.34752C19.5163 4.74666 20.4114 5.45349 21.0411 6.37394C21.6708 7.29439 22.0053 8.3848 22 9.50004C22 11.79 20.5 13.5 19 15L13.508 20.313C13.3217 20.527 13.0919 20.699 12.834 20.8173C12.5762 20.9357 12.296 20.9979 12.0123 20.9997C11.7285 21.0015 11.4476 20.9429 11.1883 20.8278C10.9289 20.7127 10.697 20.5437 10.508 20.332L5 15C3.5 13.5 2 11.8 2 9.50004Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </twig:Button>
         {% else %}
@@ -98,24 +98,13 @@
                 class="property-card__favorite"
                 aria-label="Ajouter aux favoris"
             >
-                <svg
-                    width="28"
-                    height="28"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M20.84 4.61C20.3292 4.099 19.7228 3.69365 19.0554 3.41708C18.3879 3.14052 17.6725 2.99817 16.95 2.99817C16.2275 2.99817 15.5121 3.14052 14.8446 3.41708C14.1772 3.69365 13.5708 4.099 13.06 4.61L12 5.67L10.94 4.61C9.9083 3.57831 8.50903 2.99871 7.05 2.99871C5.59096 2.99871 4.19169 3.57831 3.16 4.61C2.1283 5.64169 1.54871 7.04097 1.54871 8.5C1.54871 9.95903 2.1283 11.3583 3.16 12.39L12 21.23L20.84 12.39C21.351 11.8792 21.7563 11.2728 22.0329 10.6054C22.3095 9.93789 22.4518 9.22249 22.4518 8.5C22.4518 7.77751 22.3095 7.06211 22.0329 6.39464C21.7563 5.72718 21.351 5.12075 20.84 4.61Z"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M2 9.50004C2.00002 8.38724 2.33759 7.30062 2.96813 6.3837C3.59867 5.46678 4.49252 4.7627 5.53161 4.36444C6.5707 3.96618 7.70616 3.89248 8.78801 4.15308C9.86987 4.41368 10.8472 4.99632 11.591 5.82404C11.6434 5.88005 11.7067 5.92471 11.7771 5.95524C11.8474 5.98577 11.9233 6.00152 12 6.00152C12.0767 6.00152 12.1526 5.98577 12.2229 5.95524C12.2933 5.92471 12.3566 5.88005 12.409 5.82404C13.1504 4.99094 14.128 4.40341 15.2116 4.13964C16.2952 3.87588 17.4335 3.94839 18.4749 4.34752C19.5163 4.74666 20.4114 5.45349 21.0411 6.37394C21.6708 7.29439 22.0053 8.3848 22 9.50004C22 11.79 20.5 13.5 19 15L13.508 20.313C13.3217 20.527 13.0919 20.699 12.834 20.8173C12.5762 20.9357 12.296 20.9979 12.0123 20.9997C11.7285 21.0015 11.4476 20.9429 11.1883 20.8278C10.9289 20.7127 10.697 20.5437 10.508 20.332L5 15C3.5 13.5 2 11.8 2 9.50004Z" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </twig:Button>
         {% endif %}
+        {% endif %}
+
     </twig:Card:Header>
 
     <twig:Card:Content class="property-card__content">

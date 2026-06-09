@@ -156,15 +156,15 @@
 										{% endif %}
 
 										<div class="col-12 col-md-6">
-											<twig:Property:Card 
-                                            title="{{ propertyTitle }}" 
-                                            price="{{ propertyPrice }}" 
-                                            period="{{ propertyPeriod }}" 
-                                            badge="{{ propertyBadge }}" 
-                                            description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}" 
-                                            details="{{ details|join(' ⸱ ') }}" 
-                                            address="{{ addressParts|join(', ') }}" 
-                                            image="{{ uploadedImage }}" 
+											<twig:Property:Card
+                                            title="{{ propertyTitle }}"
+                                            price="{{ propertyPrice }}"
+                                            period="{{ propertyPeriod }}"
+                                            badge="{{ propertyBadge }}"
+                                            description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                                            details="{{ details|join(' ⸱ ') }}"
+                                            address="{{ addressParts|join(', ') }}"
+                                            image="{{ uploadedImage }}"
                                             favoriteurl="#"/>
 										</div>
 
@@ -206,11 +206,24 @@
 											{{ user.villeContact }}
 										</p>
 
-										{% if user.numeroContact is not empty %}
-											<button type="button" class="agence-btn agence-btn-outline agence-contact-number">
-												Afficher le numéro
-											</button>
-										{% endif %}
+                                        {% if user.numeroContact is not empty %}
+                                            <button
+                                                type="button"
+                                                class="agence-btn agence-btn-outline agence-contact-number"
+                                                data-action="click->agence-contact-form#showPhoneNumber"
+                                                data-agence-contact-form-target="phoneButton"
+                                            >
+                                                Afficher le numéro
+                                            </button>
+
+                                            <a
+                                                href="tel:{{ user.numeroContact }}"
+                                                class="agence-contact-phone d-none"
+                                                data-agence-contact-form-target="phoneNumber"
+                                            >
+                                                {{ user.numeroContact }}
+                                            </a>
+                                        {% endif %}
 
 										<a href="mailto:{{ user.emailContact }}" class="agence-contact-email d-lg-none">
 											{{ user.emailContact }}
@@ -242,38 +255,61 @@
 										Contacter par email
 									</button>
 								</div>
-
-								<form id="agency_contact_form" class="agence-contact-form d-none flex-column" data-agence-contact-form-target="form">
+                                {{ form_start(form, {
+                                    attr: {
+                                        id: 'agency_contact_form',
+                                        class: 'agence-contact-form d-none flex-column',
+                                        'data-agence-contact-form-target': 'form'
+                                    }
+                                }) }}
 									<div class="agence-field">
 										<label for="contact_lastname">Votre nom*</label>
-										<input id="contact_lastname" name="lastname" type="text" placeholder="Veuillez saisir votre nom" data-agence-contact-form-target="firstField">
+                                        {{ form_widget(form.nom, {
+                                            attr: {
+                                                id: 'contact_lastname',
+                                                placeholder: 'Veuillez saisir votre nom',
+                                                'data-agence-contact-form-target': 'firstField'
+                                            }
+                                        }) }}
 									</div>
 
 									<div class="agence-field">
 										<label for="contact_firstname">Votre prénom*</label>
-										<input id="contact_firstname" name="firstname" type="text" placeholder="Veuillez saisir votre prénom">
+                                        {{ form_widget(form.prenom, {
+                                            id: 'contact_firstname',
+                                            attr: {
+                                                placeholder: 'Veuillez saisir votre prénom',
+                                                class: 'contact_firstname'
+                                            }
+                                        }) }}
 									</div>
 
 									<div class="agence-field">
 										<label for="contact_email">Votre e-mail*</label>
-										<input id="contact_email" name="email" type="email" placeholder="Veuillez saisir votre e-mail">
-									</div>
-
-									<div class="agence-field">
-										<label for="contact_phone">Votre numéro de téléphone*</label>
-										<input id="contact_phone" name="phone" type="tel" placeholder="Veuillez saisir votre numéro">
+                                        {{ form_widget(form.email, {
+                                            id: 'contact_email',
+                                            attr: {
+                                                placeholder: 'Veuillez saisir votre e-mail'
+                                            }
+                                        }) }}
 									</div>
 
 									<div class="agence-field">
 										<label for="contact_message">Votre message*</label>
-										<textarea id="contact_message" name="message" placeholder="Veuillez saisir votre message"></textarea>
+                                        {{ form_widget(form.message, {
+                                            id: 'contact_message',
+                                            attr: {
+                                                placeholder: 'Veuillez saisir votre message',
+                                                rows: 6
+                                            }
+                                        }) }}
 									</div>
 
 									<button type="submit" class="agence-btn agence-btn-primary w-100">
 										<i class="icon-mail"></i>
 										Envoyer le mail
 									</button>
-								</form>
+                                {{ form_end(form) }}
 							</div>
 						</aside>
 

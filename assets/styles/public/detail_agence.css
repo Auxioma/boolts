@@ -211,7 +211,6 @@
 }
 
 .agence-properties .property-card__media {
-    height: 221px;
     border-bottom: 2px solid var(--color-gray-light);
     overflow: hidden;
 }
@@ -220,6 +219,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    aspect-ratio: 4/3;
+    object-position: center;
 }
 
 .agence-properties .property-card__header {
@@ -571,7 +572,6 @@
 
 .agence-mobile-topbar {
     height: 44px;
-    margin-top: 72px;
     border-bottom: 1px solid var(--color-gray-light);
     padding-inline: 12px;
 }
@@ -676,13 +676,13 @@
     }
 
     .agence-properties .property-card {
-        height: 440px;
+        /*height: 440px;*/
         display: flex;
         flex-direction: column;
     }
 
     .agence-properties .property-card__media {
-        flex: 1;
+        /*flex: 1;*/
         min-height: 0;
         height: auto;
     }

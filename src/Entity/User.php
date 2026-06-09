@@ -12,6 +12,7 @@
 
 namespace App\Entity;
 
+use App\Entity\FormContact\Contact;
 use App\Entity\Traits\CreatedAtTraits;
 use App\Entity\Traits\DeletedAtTraits;
 use App\Entity\Traits\LastLoginAtTraits;
@@ -215,9 +216,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $slug = null;
 
+    /**
+     * @var Collection<int, Contact>
+     */
+    #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'agence')]
+    private Collection $contacts;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
     }
 
     /*
@@ -777,6 +785,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setSlug(string $slug): static
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contact>
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(Contact $contact): static
+    {
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts->add($contact);
+            $contact->setAgence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(Contact $contact): static
+    {
+        if ($this->contacts->removeElement($contact)) {
+            // set the owning side to null (unless already changed)
+            if ($contact->getAgence() === $this) {
+                $contact->setAgence(null);
+            }
+        }
 
         return $this;
     }
