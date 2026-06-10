@@ -12,6 +12,7 @@
 
 namespace App\Controller\Dashboard\Api\AgenceImmobiliere;
 
+use App\Entity\HoraireOuverture;
 use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\ProfileAgenceType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,7 +58,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Les modifications ont étés effectuées avec succès !',
+                'message' => 'Les modifications ont été effectuées avec succès !',
                 'imageName' => $user->getImageName(),
                 'imageSize' => $user->getImageSize(),
             ]);
@@ -68,7 +69,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!\is_array($data)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Un problème est survenu avec les modifications. Rééssayez.',
+                'message' => 'Un problème est survenu avec les modifications. Réessayez.',
             ], 400);
         }
 
@@ -77,7 +78,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!$csrfTokenManager->isTokenValid($csrfToken)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Un problème est survenu avec les modifications. Rééssayez.',
+                'message' => 'Un problème est survenu avec les modifications. Réessayez.',
             ], 419);
         }
 
@@ -124,9 +125,43 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Les modifications ont étés effectuées avec succès !',
+                'message' => 'Les modifications ont été effectuées avec succès !',
                 'field' => $field,
                 'value' => '*****************',
+            ]);
+        }
+
+        /**
+         * Correction importante :
+         * gestion spéciale des horaires d'ouverture.
+         *
+         * Dès qu'un seul input horaire est rempli,
+         * on autorise l'enregistrement.
+         */
+        if (\in_array($field, ['horaireOuvertures', 'openingHours', 'horaireOuverture'], true)) {
+            if (!\is_array($value)) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Les horaires sont invalides.',
+                ], 422);
+            }
+
+            if (!$this->hasAtLeastOneOpeningHour($value)) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Veuillez renseigner au moins un horaire.',
+                ], 422);
+            }
+
+            $this->updateHoraireOuvertures($user, $value, $entityManager);
+
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Les horaires ont été enregistrés avec succès !',
+                'field' => $field,
+                'value' => $value,
             ]);
         }
 
@@ -171,7 +206,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Les modifications ont étés effectuées avec succès !',
+                'message' => 'Les modifications ont été effectuées avec succès !',
                 'field' => $field,
                 'value' => $value,
             ]);
@@ -180,7 +215,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!$field || !$form->has($field)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Un problème est survenu avec les modifications. Rééssayez.',
+                'message' => 'Un problème est survenu avec les modifications. Réessayez.',
             ], 400);
         }
 
@@ -206,11 +241,126 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
         return $this->json([
             'success' => true,
-            'message' => 'Les modifications ont étés effectuées avec succès !',
+            'message' => 'Les modifications ont été effectuées avec succès !',
             'field' => $field,
             'value' => $value,
             'whatsApp' => $data['whatsApp'] ?? null,
         ]);
+    }
+
+    private function hasAtLeastOneOpeningHour(array $openingHours): bool
+    {
+        foreach ($openingHours as $dayData) {
+            if (!\is_array($dayData)) {
+                continue;
+            }
+
+            if (!empty($dayData['ouvertureMatin'])) {
+                return true;
+            }
+
+            if (!empty($dayData['fermetureMatin'])) {
+                return true;
+            }
+
+            if (!empty($dayData['ouvertureApresMidi'])) {
+                return true;
+            }
+
+            if (!empty($dayData['fermetureApresMidi'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function updateHoraireOuvertures(
+        User $user,
+        array $openingHours,
+        EntityManagerInterface $entityManager
+    ): void {
+        $days = [
+            'lundi',
+            'mardi',
+            'mercredi',
+            'jeudi',
+            'vendredi',
+            'samedi',
+            'dimanche',
+        ];
+
+        foreach ($days as $index => $day) {
+            $dayData = $openingHours[$day] ?? $openingHours[$index] ?? [];
+
+            if (!\is_array($dayData)) {
+                $dayData = [];
+            }
+
+            $horaireOuverture = $this->findHoraireOuvertureByJour($user, $day);
+
+            if (!$horaireOuverture) {
+                $horaireOuverture = new HoraireOuverture();
+                $horaireOuverture->setJour($day);
+                $horaireOuverture->setAgence($user);
+
+                $user->addHoraireOuverture($horaireOuverture);
+
+                $entityManager->persist($horaireOuverture);
+            }
+
+            $hasHourForThisDay =
+                !empty($dayData['ouvertureMatin'])
+                || !empty($dayData['fermetureMatin'])
+                || !empty($dayData['ouvertureApresMidi'])
+                || !empty($dayData['fermetureApresMidi']);
+
+            $horaireOuverture->setIsOpen(
+                !empty($dayData['isOpen']) || $hasHourForThisDay
+            );
+
+            $horaireOuverture->setOuvertureMatin(
+                $this->toTime($dayData['ouvertureMatin'] ?? null)
+            );
+
+            $horaireOuverture->setFermetureMatin(
+                $this->toTime($dayData['fermetureMatin'] ?? null)
+            );
+
+            $horaireOuverture->setOuvertureApresMidi(
+                $this->toTime($dayData['ouvertureApresMidi'] ?? null)
+            );
+
+            $horaireOuverture->setFermetureApresMidi(
+                $this->toTime($dayData['fermetureApresMidi'] ?? null)
+            );
+        }
+    }
+
+    private function findHoraireOuvertureByJour(User $user, string $jour): ?HoraireOuverture
+    {
+        foreach ($user->getHoraireOuvertures() as $horaireOuverture) {
+            if ($horaireOuverture->getJour() === $jour) {
+                return $horaireOuverture;
+            }
+        }
+
+        return null;
+    }
+
+    private function toTime(?string $value): ?\DateTimeInterface
+    {
+        if (!$value) {
+            return null;
+        }
+
+        $time = \DateTime::createFromFormat('H:i', $value);
+
+        if (!$time instanceof \DateTimeInterface) {
+            return null;
+        }
+
+        return $time;
     }
 
     private function getFormErrors(FormInterface $form): array

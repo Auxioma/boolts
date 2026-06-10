@@ -228,11 +228,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToMany(targetEntity: Favoris::class, mappedBy: 'user')]
     private Collection $favoris;
 
+    /**
+     * @var Collection<int, HoraireOuverture>
+     */
+    #[ORM\OneToMany(targetEntity: HoraireOuverture::class, mappedBy: 'agence')]
+    private Collection $horaireOuvertures;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->favoris = new ArrayCollection();
+        $this->horaireOuvertures = new ArrayCollection();
     }
 
     /*
@@ -850,6 +857,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
             // set the owning side to null (unless already changed)
             if ($favori->getUser() === $this) {
                 $favori->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, HoraireOuverture>
+     */
+    public function getHoraireOuvertures(): Collection
+    {
+        return $this->horaireOuvertures;
+    }
+
+    public function addHoraireOuverture(HoraireOuverture $horaireOuverture): static
+    {
+        if (!$this->horaireOuvertures->contains($horaireOuverture)) {
+            $this->horaireOuvertures->add($horaireOuverture);
+            $horaireOuverture->setAgence($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHoraireOuverture(HoraireOuverture $horaireOuverture): static
+    {
+        if ($this->horaireOuvertures->removeElement($horaireOuverture)) {
+            // set the owning side to null (unless already changed)
+            if ($horaireOuverture->getAgence() === $this) {
+                $horaireOuverture->setAgence(null);
             }
         }
 

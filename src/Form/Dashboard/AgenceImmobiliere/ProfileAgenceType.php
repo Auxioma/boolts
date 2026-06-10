@@ -17,6 +17,7 @@ use App\Entity\User;
 use App\Repository\FuseauHoraireRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
@@ -162,6 +163,17 @@ class ProfileAgenceType extends AbstractType
                 'query_builder' => static function (FuseauHoraireRepository $repository) {
                     return $repository->createOrderedByUtcQueryBuilder();
                 },
+            ])
+            ->add('horaireOuvertures', CollectionType::class, [
+                'entry_type' => OpenHourType::class,
+                'entry_options' => [
+                    'label' => false,
+                ],
+                'required' => false,
+                'label' => false,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
             ])
         ;
     }
