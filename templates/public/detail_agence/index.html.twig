@@ -65,6 +65,7 @@
 
 							{# Recherche #}
 							<section class="agence-search-section">
+                                {#
 								<form class="agence-search">
 									<input type="search" placeholder="Rechercher un bien, une référence">
 
@@ -72,164 +73,17 @@
 										<i class="icon-search"></i>
 									</button>
 								</form>
-
+                                #}
 								<div class="d-flex flex-wrap gap-2">
 									<button type="button" class="agence-filter-btn">
 										<i class="icon-sliders-horizontal"></i>
 										Filtres
 									</button>
 
-                                    {% set routeName = app.request.attributes.get('_route') %}
-                                    {% set routeParams = app.request.attributes.get('_route_params') %}
-                                    {% set queryParams = app.request.query.all %}
-                                    {% set baseParams = routeParams|merge(queryParams)|merge({ page: 1 }) %}
-
-                                    {% set currentSort = app.request.query.get('sort', 'p.createdAt') %}
-                                    {% set currentDirection = app.request.query.get('direction', 'desc') %}
-
-                                    {% set currentLabel = 'Plus récentes' %}
-
-                                    {% if currentSort == 'p.createdAt' and currentDirection == 'asc' %}
-                                        {% set currentLabel = 'Plus anciennes' %}
-                                    {% elseif currentSort == 'p.views' and currentDirection == 'desc' %}
-                                        {% set currentLabel = 'Vues : plus → moins' %}
-                                    {% elseif currentSort == 'p.views' and currentDirection == 'asc' %}
-                                        {% set currentLabel = 'Vues : moins → plus' %}
-                                    {% elseif currentSort == 'favorisCount' and currentDirection == 'desc' %}
-                                        {% set currentLabel = 'Favoris : plus → moins' %}
-                                    {% elseif currentSort == 'favorisCount' and currentDirection == 'asc' %}
-                                        {% set currentLabel = 'Favoris : moins → plus' %}
-                                    {% endif %}
-
-                                    <div class="agence-filter-sort" data-controller="agence-sort">
-                                        <button
-                                            type="button"
-                                            class="agence-filter-btn"
-                                            data-action="click->agence-sort#toggle"
-                                            data-agence-sort-target="button"
-                                            aria-expanded="false"
-                                        >
-                                            <i class="icon-arrow-down-up"></i>
-                                            Tri : {{ currentLabel }}
-                                        </button>
-
-                                        <div
-                                            class="agence-filter-sort__dropdown d-none"
-                                            data-agence-sort-target="menu"
-                                            role="menu"
-                                            aria-label="Trier les annonces"
-                                        >
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({ sort: 'p.createdAt', direction: 'desc' })) }}"
-                                                class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                Date d'ajout (récent → ancien)
-                                            </a>
-
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({ sort: 'p.createdAt', direction: 'asc' })) }}"
-                                                class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                Date d'ajout (ancien → récent)
-                                            </a>
-
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({ sort: 'p.views', direction: 'desc' })) }}"
-                                                class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                Vues (plus → moins)
-                                            </a>
-
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({ sort: 'p.views', direction: 'asc' })) }}"
-                                                class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                Vues (moins → plus)
-                                            </a>
-
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({ sort: 'favorisCount', direction: 'desc' })) }}"
-                                                class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                Favoris (plus → moins)
-                                            </a>
-
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({ sort: 'favorisCount', direction: 'asc' })) }}"
-                                                class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                Favoris (moins → plus)
-                                            </a>
-                                        </div>
-                                    </div>
+									{% include 'public/detail_agence/_partials/tri.html.twig' %}
 								</div>
 							</section>
-<style>
-    .agence-filter-sort {
-        position: relative;
-        display: inline-flex;
-    }
 
-    .agence-filter-sort__dropdown {
-        position: absolute;
-        top: calc(100% + 8px);
-        right: 0;
-        z-index: 100;
-
-        width: 229px;
-
-        display: flex;
-        flex-direction: column;
-
-        background: #ffffff;
-        border: 1px solid #ebecec;
-        border-radius: 8px;
-        box-shadow: 0 4px 24.1px rgba(0, 0, 0, 0.05);
-        overflow: hidden;
-
-        font-family: "Eudoxus Sans", sans-serif;
-    }
-
-    .agence-filter-sort__item {
-        width: 100%;
-        min-height: 36px;
-        padding: 8px 16px;
-
-        display: flex;
-        align-items: center;
-
-        color: #0b0f14;
-        background: #ffffff;
-
-        font-family: "Eudoxus Sans", sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
-        text-decoration: none;
-        white-space: nowrap;
-    }
-
-    .agence-filter-sort__item:hover {
-        background: #f8f8f8;
-        color: #0b0f14;
-    }
-
-    .agence-filter-sort__item--active {
-        background: #5d00ff;
-        color: #ffffff;
-    }
-
-    .agence-filter-sort__item--active:hover {
-        background: #5d00ff;
-        color: #ffffff;
-    }
-</style>
 							{# Liste des biens immobiliers #}
 							<section class="agence-properties">
 								<h2>Biens de l’agence récemment ajoutés</h2>
@@ -375,117 +229,19 @@
 									</div>
 								</div>
 
-                                {# début horaire simple #}
-                                {% set jours = {
-                                    1: 'lundi',
-                                    2: 'mardi',
-                                    3: 'mercredi',
-                                    4: 'jeudi',
-                                    5: 'vendredi',
-                                    6: 'samedi',
-                                    7: 'dimanche'
-                                } %}
+                                {% set horairesRenseignes = user.horaireOuvertures|filter(horaire =>
+                                    horaire.open
+                                    and (
+                                    (horaire.ouvertureMatin and horaire.fermetureMatin)
+                                    or
+                                    (horaire.ouvertureApresMidi and horaire.fermetureApresMidi)
+                                    )
+                                    ) %}
 
-                                {% set jourActuel = jours["now"|date("N")] %}
-
-                                {% set horaireDuJour = null %}
-
-                                {% for horaire in user.horaireOuvertures %}
-                                    {% if horaire.jour|lower|trim == jourActuel %}
-                                        {% set horaireDuJour = horaire %}
-                                    {% endif %}
-                                {% endfor %}
-
-                                <div class="agence-availability">
-
-                                    <div class="d-flex align-items-center justify-content-between w-100">
-                                        <span>
-                                            {% if horaireDuJour and horaireDuJour.open %}
-                                                Ouvert
-                                            {% else %}
-                                                Fermé
-                                            {% endif %}
-                                        </span>
-
-                                        {% if horaireDuJour and horaireDuJour.open %}
-                                            <strong>
-                                                {% if horaireDuJour.ouvertureMatin and horaireDuJour.fermetureMatin %}
-                                                    {{ horaireDuJour.ouvertureMatin|date('H:i') }}–{{ horaireDuJour.fermetureMatin|date('H:i') }}
-                                                {% endif %}
-
-                                                {% if horaireDuJour.ouvertureApresMidi and horaireDuJour.fermetureApresMidi %}
-                                                    / {{ horaireDuJour.ouvertureApresMidi|date('H:i') }}–{{ horaireDuJour.fermetureApresMidi|date('H:i') }}
-                                                {% endif %}
-                                            </strong>
-                                        {% else %}
-                                            <strong>Fermé</strong>
-                                        {% endif %}
-
-                                        <i class="icon-chevron-down"></i>
-                                    </div>
-
-                                </div>
-
-                                {# fin petit module horaire simple #}
-
-                                <div class="agence-availability w-100 h-auto d-table">
-
-                                    <!-- Ligne 1 : Ouvert à gauche / chevron à droite -->
-                                    <div class="d-flex justify-content-between align-items-center w-100">
-                                        <span>Ouvert</span>
-
-                                        <i class="icon-chevron-down"></i>
-                                    </div>
-
-                                    <!-- Horaires dessous -->
-                                    {% set jours = {
-                                        1: 'lundi',
-                                        2: 'mardi',
-                                        3: 'mercredi',
-                                        4: 'jeudi',
-                                        5: 'vendredi',
-                                        6: 'samedi',
-                                        7: 'dimanche'
-                                    } %}
-
-                                    {% set jourNumeroActuel = "now"|date("N", "Europe/Paris") + 0 %}
-
-                                    <div class="d-flex flex-column gap-1 mt-2 w-100">
-
-                                        {% for i in 0..6 %}
-                                            {% set numeroJour = ((jourNumeroActuel - 1 + i) % 7) + 1 %}
-                                            {% set nomJour = jours[numeroJour] %}
-
-                                            {% set horaireDuJour = user.horaireOuvertures|filter(horaire =>
-                                                horaire.jour|lower|trim == nomJour
-                                            )|first %}
-
-                                            <div class="d-flex justify-content-between align-items-center w-100">
-                                                <div>
-                                                    {{ nomJour|capitalize }}
-                                                </div>
-
-                                                <strong>
-                                                    {% if horaireDuJour and horaireDuJour.open %}
-
-                                                        {% if horaireDuJour.ouvertureMatin and horaireDuJour.fermetureMatin %}
-                                                            {{ horaireDuJour.ouvertureMatin|date('H:i') }}–{{ horaireDuJour.fermetureMatin|date('H:i') }}
-                                                        {% endif %}
-
-                                                        {% if horaireDuJour.ouvertureApresMidi and horaireDuJour.fermetureApresMidi %}
-                                                            / {{ horaireDuJour.ouvertureApresMidi|date('H:i') }}–{{ horaireDuJour.fermetureApresMidi|date('H:i') }}
-                                                        {% endif %}
-
-                                                    {% else %}
-                                                        Fermé
-                                                    {% endif %}
-                                                </strong>
-                                            </div>
-                                        {% endfor %}
-
-                                    </div>
-
-                                </div>
+                                {% if horairesRenseignes|length > 0 %}
+                                    {% include 'public/detail_agence/_partials/horaire_ouverture.html.twig' %}
+                                    {% include 'public/detail_agence/_partials/liste_horaire_ouverture.html.twig' %}
+                                {% endif %}
 
 
 								<div class="agence-contact-actions">

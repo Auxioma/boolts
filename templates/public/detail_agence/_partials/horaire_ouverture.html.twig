@@ -1,0 +1,44 @@
+{% set horaires = user.horaireOuvertures|sort((a, b) => a.id <=> b.id) %}
+
+{% set numeroJourActuel = "now"|date("N", "Europe/Paris") + 0 %}
+{% set indexJourActuel = numeroJourActuel - 1 %}
+
+{% set horaireDuJour = horaires[indexJourActuel] ?? null %}
+{% set horairesPanelId = 'agence-horaires-liste-' ~ user.id %}
+
+{% if horaireDuJour %}
+    <div
+        class="agence-availability"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-controls="{{ horairesPanelId }}"
+        data-horaire-open="{{ horairesPanelId }}"
+    >
+        <span class="agence-availability__day my-auto">
+            {{ horaireDuJour.jour }}
+        </span>
+
+        <div class="agence-availability__hours">
+            {% if horaireDuJour.open %}
+
+                {% if horaireDuJour.ouvertureMatin and horaireDuJour.fermetureMatin %}
+                    <strong class="w-auto">
+                        {{ horaireDuJour.ouvertureMatin|date('H:i') }}–{{ horaireDuJour.fermetureMatin|date('H:i') }}
+                    </strong>
+                {% endif %}
+
+                {% if horaireDuJour.ouvertureApresMidi and horaireDuJour.fermetureApresMidi %}
+                    <strong class="w-auto">
+                        {{ horaireDuJour.ouvertureApresMidi|date('H:i') }}–{{ horaireDuJour.fermetureApresMidi|date('H:i') }}
+                    </strong>
+                {% endif %}
+
+            {% else %}
+                <strong>Fermé</strong>
+            {% endif %}
+        </div>
+
+        <i class="icon-chevron-down agence-availability__icon my-auto"></i>
+    </div>
+{% endif %}

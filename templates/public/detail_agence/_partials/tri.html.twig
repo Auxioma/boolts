@@ -1,0 +1,88 @@
+{% set routeName = app.request.attributes.get('_route') %}
+                                    {% set routeParams = app.request.attributes.get('_route_params') %}
+                                    {% set queryParams = app.request.query.all %}
+                                    {% set baseParams = routeParams|merge(queryParams)|merge({ page: 1 }) %}
+
+                                    {% set currentSort = app.request.query.get('sort', 'p.createdAt') %}
+                                    {% set currentDirection = app.request.query.get('direction', 'desc') %}
+
+                                    {% set currentLabel = 'Plus récentes' %}
+
+                                    {% if currentSort == 'p.createdAt' and currentDirection == 'asc' %}
+                                        {% set currentLabel = 'Plus anciennes' %}
+                                    {% elseif currentSort == 'p.views' and currentDirection == 'desc' %}
+                                        {% set currentLabel = 'Vues : plus → moins' %}
+                                    {% elseif currentSort == 'p.views' and currentDirection == 'asc' %}
+                                        {% set currentLabel = 'Vues : moins → plus' %}
+                                    {% elseif currentSort == 'favorisCount' and currentDirection == 'desc' %}
+                                        {% set currentLabel = 'Favoris : plus → moins' %}
+                                    {% elseif currentSort == 'favorisCount' and currentDirection == 'asc' %}
+                                        {% set currentLabel = 'Favoris : moins → plus' %}
+                                    {% endif %}
+<div class="agence-filter-sort" data-controller="agence-sort">
+    <button
+        type="button"
+        class="agence-filter-btn"
+        data-action="click->agence-sort#toggle"
+        data-agence-sort-target="button"
+        aria-expanded="false"
+    >
+        <i class="icon-arrow-down-up"></i>
+        Tri : {{ currentLabel }}
+    </button>
+
+    <div
+        class="agence-filter-sort__dropdown d-none"
+        data-agence-sort-target="menu"
+        role="menu"
+        aria-label="Trier les annonces"
+    >
+        <a
+            href="{{ path(routeName, baseParams|merge({ sort: 'p.createdAt', direction: 'desc' })) }}"
+            class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
+            role="menuitem"
+        >
+            Date d'ajout (récent → ancien)
+        </a>
+
+        <a
+            href="{{ path(routeName, baseParams|merge({ sort: 'p.createdAt', direction: 'asc' })) }}"
+            class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
+            role="menuitem"
+        >
+            Date d'ajout (ancien → récent)
+        </a>
+
+        <a
+            href="{{ path(routeName, baseParams|merge({ sort: 'p.views', direction: 'desc' })) }}"
+            class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
+            role="menuitem"
+        >
+            Vues (plus → moins)
+        </a>
+
+        <a
+            href="{{ path(routeName, baseParams|merge({ sort: 'p.views', direction: 'asc' })) }}"
+            class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
+            role="menuitem"
+        >
+            Vues (moins → plus)
+        </a>
+
+        <a
+            href="{{ path(routeName, baseParams|merge({ sort: 'favorisCount', direction: 'desc' })) }}"
+            class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
+            role="menuitem"
+        >
+            Favoris (plus → moins)
+        </a>
+
+        <a
+            href="{{ path(routeName, baseParams|merge({ sort: 'favorisCount', direction: 'asc' })) }}"
+            class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
+            role="menuitem"
+        >
+            Favoris (moins → plus)
+        </a>
+    </div>
+</div>

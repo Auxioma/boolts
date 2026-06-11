@@ -401,30 +401,57 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    height: 52px;
     padding: 14px;
     border: 2px solid var(--color-gray-light);
     border-radius: var(--radius-sm);
 }
 
-.agence-availability span {
-    padding: 3px 10px;
-    border-radius: var(--radius-pill);
-    background: rgba(0, 255, 4, .2);
-    color: #1A9900;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 16px;
-}
-
-.agence-availability strong {
-    margin-left: auto;
-    color: var(--color-gray);
+.agence-availability span,
+.agence-availability__day {
+    color: #858789;
     font-size: 14px;
-    font-weight: 500;
+    font-style: normal;
+    font-weight: 700;
     line-height: 20px;
 }
 
+.agence-availability strong {
+    color: #858789;
+    text-align: right;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 20px;
+    width: 44px;
+}
+.agence-availability b {
+    color: #0B0F14;
+}
+.agence-availability {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    gap: 12px;
+}
+
+.agence-availability__day {
+    font-weight: 600;
+    min-width: 70px;
+}
+
+.agence-availability__hours {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: auto;
+    line-height: 1.35;
+}
+
+.agence-availability__hours strong {
+    display: block;
+    font-weight: 700;
+    white-space: nowrap;
+}
 .agence-contact-actions,
 .agence-contact-form {
     display: flex;
@@ -733,4 +760,62 @@
 
 .agence-contact-form--visible {
     display: flex !important;
+}
+.agence-filter-sort {
+    position: relative;
+    display: inline-flex;
+}
+
+.agence-filter-sort__dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 100;
+
+    width: 229px;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+    border: 1px solid #ebecec;
+    border-radius: 8px;
+    box-shadow: 0 4px 24.1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+
+    font-family: "Eudoxus Sans", sans-serif;
+}
+
+.agence-filter-sort__item {
+    width: 100%;
+    min-height: 36px;
+    padding: 8px 16px;
+
+    display: flex;
+    align-items: center;
+
+    color: #0b0f14;
+    background: #ffffff;
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.agence-filter-sort__item:hover {
+    background: #f8f8f8;
+    color: #0b0f14;
+}
+
+.agence-filter-sort__item--active {
+    background: #5d00ff;
+    color: #ffffff;
+}
+
+.agence-filter-sort__item--active:hover {
+    background: #5d00ff;
+    color: #ffffff;
 }

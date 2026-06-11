@@ -1,0 +1,141 @@
+{% set horaires = user.horaireOuvertures|sort((a, b) => a.id <=> b.id) %}
+
+{% set numeroJourActuel = "now"|date("N", "Europe/Paris") + 0 %}
+{% set indexJourActuel = numeroJourActuel - 1 %}
+
+{% set horairesOrdonnes = horaires|slice(indexJourActuel) %}
+{% set horairesOrdonnes = horairesOrdonnes|merge(horaires|slice(0, indexJourActuel)) %}
+
+{% set horaireDuJour = horaires[indexJourActuel] ?? null %}
+{% set heureActuelle = "now"|date("H:i", "Europe/Paris") %}
+
+{% set estOuvertMaintenant = false %}
+{% set horairesPanelId = 'agence-horaires-liste-' ~ user.id %}
+
+{% if horaireDuJour and horaireDuJour.open %}
+
+    {% set ouvertureMatin = horaireDuJour.ouvertureMatin ? horaireDuJour.ouvertureMatin|date('H:i') : null %}
+    {% set fermetureMatin = horaireDuJour.fermetureMatin ? horaireDuJour.fermetureMatin|date('H:i') : null %}
+
+    {% set ouvertureApresMidi = horaireDuJour.ouvertureApresMidi ? horaireDuJour.ouvertureApresMidi|date('H:i') : null %}
+    {% set fermetureApresMidi = horaireDuJour.fermetureApresMidi ? horaireDuJour.fermetureApresMidi|date('H:i') : null %}
+
+    {% if ouvertureMatin and fermetureMatin and heureActuelle >= ouvertureMatin and heureActuelle <= fermetureMatin %}
+        {% set estOuvertMaintenant = true %}
+    {% endif %}
+
+    {% if ouvertureApresMidi and fermetureApresMidi and heureActuelle >= ouvertureApresMidi and heureActuelle <= fermetureApresMidi %}
+        {% set estOuvertMaintenant = true %}
+    {% endif %}
+
+{% endif %}
+
+<div
+    id="{{ horairesPanelId }}"
+    class="agence-availability w-100 h-auto d-table d-none"
+    data-horaire-panel
+>
+
+    <div class="d-flex justify-content-between align-items-center w-100">
+        <span>
+
+        </span>
+
+        <button
+            type="button"
+            class="p-0 border-0 bg-transparent"
+            aria-label="Fermer les horaires"
+            data-horaire-close="{{ horairesPanelId }}"
+        >
+            <i class="icon-chevron-down agence-availability__icon is-open"></i>
+        </button>
+    </div>
+
+    <div class="d-flex flex-column gap-1 mt-2 w-100">
+        {% for horaire in horairesOrdonnes %}
+            <div class="d-flex w-100 mb-12">
+                <div class="agence-availability__day my-auto ml-10">
+                    <b>{{ horaire.jour }}</b>
+                </div>
+
+                <div class="agence-availability__hours ms-3">
+                    {% if horaire.open %}
+
+                        {% if horaire.ouvertureMatin and horaire.fermetureMatin %}
+                            <strong>
+                                {{ horaire.ouvertureMatin|date('H:i') }}–{{ horaire.fermetureMatin|date('H:i') }}
+                            </strong>
+                        {% endif %}
+
+                        {% if horaire.ouvertureApresMidi and horaire.fermetureApresMidi %}
+                            <strong>
+                                {{ horaire.ouvertureApresMidi|date('H:i') }}–{{ horaire.fermetureApresMidi|date('H:i') }}
+                            </strong>
+                        {% endif %}
+
+                    {% else %}
+                        <strong>Fermé</strong>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    if (!window.__agenceHoraireToggleInitialized) {
+        window.__agenceHoraireToggleInitialized = true;
+
+        document.addEventListener('click', function (event) {
+            const openButton = event.target.closest('[data-horaire-open]');
+            const closeButton = event.target.closest('[data-horaire-close]');
+
+            if (openButton) {
+                const panelId = openButton.getAttribute('data-horaire-open');
+                const panel = document.getElementById(panelId);
+
+                if (!panel) {
+                    return;
+                }
+
+                panel.classList.remove('d-none');
+                openButton.classList.add('d-none');
+                openButton.setAttribute('aria-expanded', 'true');
+            }
+
+            if (closeButton) {
+                const panelId = closeButton.getAttribute('data-horaire-close');
+                const panel = document.getElementById(panelId);
+
+                if (!panel) {
+                    return;
+                }
+
+                const openButton = document.querySelector('[data-horaire-open="' + panelId + '"]');
+
+                panel.classList.add('d-none');
+
+                if (openButton) {
+                    openButton.classList.remove('d-none');
+                    openButton.setAttribute('aria-expanded', 'false');
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            const openButton = event.target.closest('[data-horaire-open]');
+
+            if (!openButton) {
+                return;
+            }
+
+            if (event.key !== 'Enter' && event.key !== ' ') {
+                return;
+            }
+
+            event.preventDefault();
+            openButton.click();
+        });
+    }
+</script>
