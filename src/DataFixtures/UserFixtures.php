@@ -26,7 +26,30 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     public const USER_AGENCE_REFERENCE = 'user_agence';
     public const USER_MOHCINE_REFERENCE = 'user_mohcine';
     public const USER_ADMIN_REFERENCE = 'user_admin';
+
     public const USER_AGENCE_REFERENCE_PREFIX = 'user_agence_';
+
+    /**
+     * Références génériques utilisées par d'autres fixtures.
+     *
+     * Exemple :
+     * user_1
+     * user_2
+     * user_3
+     */
+    public const USER_REFERENCE_PREFIX = 'user_';
+
+    /**
+     * Total :
+     * 1 visiteur
+     * 1 agence principale
+     * 1 Mohcine
+     * 1 admin
+     * 50 agences générées
+     *
+     * Donc : 54 utilisateurs.
+     */
+    public const USER_COUNT = 54;
 
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
@@ -36,6 +59,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+
+        $userReferenceIndex = 1;
 
         $paysReferences = [
             'FR',
@@ -47,7 +72,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             'PT',
         ];
 
-        // Visiteur
+        /*
+        |--------------------------------------------------------------------------
+        | Visiteur
+        |--------------------------------------------------------------------------
+        */
+
         $visiteur = new User();
         $visiteur
             ->setEmail('visiteur@visiteur.visiteur')
@@ -55,7 +85,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setIsVerified(true)
             ->setNom($faker->lastName())
             ->setPrenom($faker->firstName())
-            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
+            ->setPays(
+                $this->getReference(
+                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    Pays::class
+                )
+            );
 
         $visiteur->setPassword(
             $this->passwordHasher->hashPassword($visiteur, '0000')
@@ -68,7 +103,19 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $visiteur
         );
 
-        // Agence principale
+        $this->addReference(
+            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            $visiteur
+        );
+
+        ++$userReferenceIndex;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Agence principale
+        |--------------------------------------------------------------------------
+        */
+
         $agence = new User();
         $agence
             ->setEmail('agence@agence.agence')
@@ -92,7 +139,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setVilleContact($faker->city())
             ->setPaysContact('France')
             ->setWhatsApp($faker->phoneNumber())
-            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
+            ->setPays(
+                $this->getReference(
+                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    Pays::class
+                )
+            );
 
         $agence->setPassword(
             $this->passwordHasher->hashPassword($agence, '0000')
@@ -105,7 +157,19 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $agence
         );
 
-        // Mohcine
+        $this->addReference(
+            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            $agence
+        );
+
+        ++$userReferenceIndex;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mohcine
+        |--------------------------------------------------------------------------
+        */
+
         $mohcine = new User();
         $mohcine
             ->setEmail('mohcine.elafia@gmail.com')
@@ -129,7 +193,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setVilleContact($faker->city())
             ->setPaysContact('France')
             ->setWhatsApp($faker->phoneNumber())
-            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
+            ->setPays(
+                $this->getReference(
+                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    Pays::class
+                )
+            );
 
         $mohcine->setPassword(
             $this->passwordHasher->hashPassword($mohcine, '0000')
@@ -142,7 +211,19 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $mohcine
         );
 
-        // Admin
+        $this->addReference(
+            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            $mohcine
+        );
+
+        ++$userReferenceIndex;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Admin
+        |--------------------------------------------------------------------------
+        */
+
         $admin = new User();
         $admin
             ->setEmail('admin@admin.admin')
@@ -150,7 +231,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setIsVerified(true)
             ->setNom($faker->lastName())
             ->setPrenom($faker->firstName())
-            ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.'FR', Pays::class));
+            ->setPays(
+                $this->getReference(
+                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    Pays::class
+                )
+            );
 
         $admin->setPassword(
             $this->passwordHasher->hashPassword($admin, '0000')
@@ -163,13 +249,25 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $admin
         );
 
-        // Génération d'agences
+        $this->addReference(
+            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            $admin
+        );
+
+        ++$userReferenceIndex;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Génération des agences
+        |--------------------------------------------------------------------------
+        */
+
         for ($i = 1; $i <= 50; ++$i) {
             $iso = $faker->randomElement($paysReferences);
 
             $agence = new User();
             $agence
-                ->setEmail(\sprintf('agence%d@boolts.test', $i))
+                ->setEmail(sprintf('agence%d@boolts.test', $i))
                 ->setRoles(['ROLE_AGENCE'])
                 ->setIsVerified(true)
                 ->setNom($faker->lastName())
@@ -179,7 +277,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setAdresseComplement($faker->optional(0.4)->secondaryAddress())
                 ->setCodePostal($faker->postcode())
                 ->setVille($faker->city())
-                ->setEntreprise(\sprintf('Agence immobilière %d', $i))
+                ->setEntreprise(sprintf('Agence immobilière %d', $i))
                 ->setDescription(
                     $faker->paragraphs(3, true)
                 )
@@ -190,7 +288,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setVilleContact($faker->city())
                 ->setPaysContact('France')
                 ->setWhatsApp($faker->phoneNumber())
-                ->setPays($this->getReference(PaysFixtures::PAYS_REFERENCE_PREFIX.$iso, Pays::class));
+                ->setPays(
+                    $this->getReference(
+                        PaysFixtures::PAYS_REFERENCE_PREFIX . $iso,
+                        Pays::class
+                    )
+                );
 
             $agence->setPassword(
                 $this->passwordHasher->hashPassword($agence, '0000')
@@ -198,10 +301,31 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->persist($agence);
 
+            /*
+             * Référence spéciale utilisée dans PropertyFixtures.
+             *
+             * Exemple :
+             * user_agence_1
+             * user_agence_2
+             */
             $this->addReference(
-                self::USER_AGENCE_REFERENCE_PREFIX.$i,
+                self::USER_AGENCE_REFERENCE_PREFIX . $i,
                 $agence
             );
+
+            /*
+             * Référence générique utilisée dans PropertyViewFixtures.
+             *
+             * Exemple :
+             * user_5
+             * user_6
+             */
+            $this->addReference(
+                self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+                $agence
+            );
+
+            ++$userReferenceIndex;
         }
 
         $manager->flush();

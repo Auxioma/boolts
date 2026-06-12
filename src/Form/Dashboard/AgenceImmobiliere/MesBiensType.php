@@ -81,6 +81,16 @@ class MesBiensType extends AbstractType
                 ->add('pays', CountryType::class, [
                     'placeholder' => 'Saisissez le pays',
                 ])
+                ->add('neighborhood')
+                ->add('locality')
+                ->add('mapboxId', HiddenType::class)
+                ->add('fullAddress', HiddenType::class)
+                ->add('featureType', HiddenType::class)
+                ->add('region', HiddenType::class)
+                ->add('district', HiddenType::class)
+                ->add('poi', HiddenType::class)
+                ->add('longitude', HiddenType::class)
+                ->add('latitude', HiddenType::class)
             ;
         }
 

@@ -3,6 +3,7 @@ twig:
 
     globals:
         locales: '%app.languages%'
+        mapbox_public_token: '%env(MAPBOX_PUBLIC_TOKEN)%'
 
 when@test:
     twig:

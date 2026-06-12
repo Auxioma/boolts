@@ -12,39 +12,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Property;
+use App\Entity\PropertyView;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Property>
+ * @extends ServiceEntityRepository<PropertyView>
  */
-class PropertyRepository extends ServiceEntityRepository
+class PropertyViewRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Property::class);
-    }
-
-    /**
-     * Retourne une requête pour récupérer les biens immobiliers d’un utilisateur donné.
-     * Cette méthode est utilisée pour la pagination dans le contrôleur DetailAgenceController.
-     * De plus, il y aura les filtre de recherche à ajouter dans cette requête.
-     * par default, elle retourne tous les biens de l’utilisateur sans filtre en ASC
-     */
-    public function findPropertysByUserQuery($user): array
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.user = :user')
-            ->setParameter('user', $user)
-            ->orderBy('p.id', 'DESC')
-            ->getQuery()
-            ->getResult()
-        ;
+        parent::__construct($registry, PropertyView::class);
     }
 
     //    /**
-    //     * @return Property[] Returns an array of Property objects
+    //     * @return PropertyView[] Returns an array of PropertyView objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -58,4 +41,13 @@ class PropertyRepository extends ServiceEntityRepository
     //        ;
     //    }
 
+    //    public function findOneBySomeField($value): ?PropertyView
+    //    {
+    //        return $this->createQueryBuilder('p')
+    //            ->andWhere('p.exampleField = :val')
+    //            ->setParameter('val', $value)
+    //            ->getQuery()
+    //            ->getOneOrNullResult()
+    //        ;
+    //    }
 }

@@ -4,6 +4,7 @@ namespace App\Controller\Public;
 
 use App\Entity\FormContact\Contact;
 use App\Form\FormContact\ContactType;
+use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\UserRepository;
 use App\Service\ContactForm\ContactMailer;
@@ -25,6 +26,7 @@ final class DetailAgenceController extends AbstractController
     public function index(
         UserRepository $userRepository,
         PropertyRepository $propertyRepository,
+        FavorisRepository $favorisRepository,
         string $slug,
         PaginatorInterface $paginator,
         Request $request,
@@ -37,10 +39,23 @@ final class DetailAgenceController extends AbstractController
         }
 
         $properties = $paginator->paginate(
-            $propertyRepository->findBy(['user' => $user]),
+            $propertyRepository->findPropertysByUserQuery($user),
             $request->query->getInt('page', 1),
             8
         );
+
+        /*
+         * Liste des biens déjà ajoutés en favoris
+         * par l'utilisateur connecté.
+         *
+         * Si le visiteur n'est pas connecté : tableau vide.
+         * Si c'est une agence : tableau vide.
+         */
+        $favoritePropertyIds = [];
+
+        if ($this->getUser() && !$this->isGranted('ROLE_AGENCE')) {
+            $favoritePropertyIds = $favorisRepository->findPropertyIdsByUser($this->getUser());
+        }
 
         $contactForm = new Contact();
         $form = $this->createForm(ContactType::class, $contactForm);
@@ -68,6 +83,7 @@ final class DetailAgenceController extends AbstractController
             'user' => $user,
             'properties' => $properties,
             'form' => $form->createView(),
+            'favoritePropertyIds' => $favoritePropertyIds,
         ]);
     }
 }

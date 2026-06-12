@@ -13,6 +13,7 @@
 namespace App\Repository;
 
 use App\Entity\Favoris;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,6 +27,19 @@ class FavorisRepository extends ServiceEntityRepository
         parent::__construct($registry, Favoris::class);
     }
 
+        public function findPropertyIdsByUser(User $user): array
+    {
+        $rows = $this->createQueryBuilder('f')
+            ->select('IDENTITY(f.property) AS propertyId')
+            ->andWhere('f.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map('intval', array_column($rows, 'propertyId'));
+    }
+
+    
     //    /**
     //     * @return Favoris[] Returns an array of Favoris objects
     //     */

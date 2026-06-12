@@ -1,5 +1,3 @@
-// assets/controllers/mes_biens/adresse_autocomplete_controller.js
-
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
@@ -10,572 +8,681 @@ export default class extends Controller {
         'pays',
         'latitude',
         'longitude',
+        'results',
+
+        'mapboxId',
+        'fullAddress',
+        'featureType',
+        'region',
+        'district',
+        'locality',
+        'neighborhood',
+        'poi',
     ];
 
     static values = {
-        debug: {
-            type: Boolean,
-            default: true,
+        token: String,
+        language: {
+            type: String,
+            default: 'fr',
         },
         limit: {
             type: Number,
             default: 10,
         },
-        lang: {
+        types: {
             type: String,
-            default: 'fr',
-        },
-        osmTag: {
-            type: String,
-            default: '',
+            default: 'address,poi,street,place,locality,neighborhood,postcode,region,country',
         },
     };
 
     connect() {
         this.timeout = null;
         this.abortController = null;
+        this.activeIndex = -1;
+        this.suggestions = [];
+        this.sessionToken = this.createSessionToken();
+        this.isSelecting = false;
 
-        this.resultsElement = document.createElement('div');
-        this.resultsElement.className = 'list-group position-absolute w-100 shadow';
-        this.resultsElement.style.zIndex = '1000';
-        this.resultsElement.style.maxHeight = '300px';
-        this.resultsElement.style.overflowY = 'auto';
-        this.resultsElement.style.display = 'none';
-
-        this.closeOnOutsideClick = this.closeOnOutsideClick.bind(this);
-        document.addEventListener('click', this.closeOnOutsideClick);
+        this.hideResults();
     }
 
     disconnect() {
-        document.removeEventListener('click', this.closeOnOutsideClick);
+        this.abortCurrentRequest();
 
-        if (this.abortController) {
-            this.abortController.abort();
+        if (this.timeout) {
+            clearTimeout(this.timeout);
         }
+    }
+
+    search() {
+        if (this.isSelecting) {
+            return;
+        }
+
+        const query = this.adresseTarget.value.trim();
 
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
 
-        this.resultsElement.remove();
-    }
-
-    search(event) {
-        if (!this.hasAdresseTarget || event.currentTarget !== this.adresseTarget) {
-            this.hideResults();
-            return;
-        }
-
-        clearTimeout(this.timeout);
-
-        const query = this.adresseTarget.value.trim();
-
-        if (query.length < 3) {
-            this.hideResults();
+        if (query.length < 2) {
+            this.clearSuggestions();
+            this.clearHiddenFields();
             return;
         }
 
         this.timeout = setTimeout(() => {
-            this.fetchAddresses(query);
+            if (!this.isSelecting) {
+                this.fetchSuggestions(query);
+            }
         }, 300);
     }
 
-    async fetchAddresses(query) {
+    async fetchSuggestions(query) {
+        if (this.isSelecting) {
+            return;
+        }
+
+        this.abortCurrentRequest();
+
+        this.abortController = new AbortController();
+
+        const url = new URL('https://api.mapbox.com/search/searchbox/v1/suggest');
+
+        url.searchParams.set('q', query);
+        url.searchParams.set('access_token', this.tokenValue);
+        url.searchParams.set('session_token', this.sessionToken);
+        url.searchParams.set('language', this.languageValue);
+        url.searchParams.set('limit', String(this.limitValue));
+
+        if (this.typesValue) {
+            url.searchParams.set('types', this.typesValue);
+        }
+
         try {
-            if (this.abortController) {
-                this.abortController.abort();
-            }
-
-            this.abortController = new AbortController();
-
-            const url = this.buildPhotonUrl(query);
-
-            const response = await fetch(url, {
+            const response = await fetch(url.toString(), {
+                method: 'GET',
                 signal: this.abortController.signal,
+                headers: {
+                    Accept: 'application/json',
+                },
             });
 
             if (!response.ok) {
-                this.hideResults();
+                console.error('Erreur Mapbox suggest :', response.status, response.statusText);
+                this.clearSuggestions();
                 return;
             }
 
             const data = await response.json();
 
-            this.debugApiResponse(query, url, data);
+            console.log('Mapbox suggest complet :', data);
 
-            if (!data.features || data.features.length === 0) {
-                this.hideResults();
+            this.suggestions = Array.isArray(data.suggestions)
+                ? data.suggestions
+                : [];
+
+            this.activeIndex = -1;
+            this.renderSuggestions();
+        } catch (error) {
+            if (error.name === 'AbortError') {
                 return;
             }
 
-            this.renderResults(data.features);
-        } catch (error) {
-            if (error.name !== 'AbortError') {
-                console.error('Erreur autocomplete adresse :', error);
-            }
+            console.error('Erreur requête Mapbox suggest :', error);
+            this.clearSuggestions();
         }
     }
 
-    buildPhotonUrl(query) {
-        const params = new URLSearchParams();
-
-        params.set('q', query);
-        params.set('limit', String(this.limitValue));
-        params.set('lang', this.langValue);
-
-        /*
-         * Exemple :
-         * data-mes-biens--adresse-autocomplete-osm-tag-value="amenity:school"
-         */
-        if (this.osmTagValue) {
-            params.set('osm_tag', this.osmTagValue);
-        }
-
-        return `https://photon.komoot.io/api/?${params.toString()}`;
-    }
-
-    renderResults(features) {
-        this.resultsElement.innerHTML = '';
-
-        const parent = this.adresseTarget.closest('.js-address-autocomplete-field');
-
-        if (!parent) {
+    renderSuggestions() {
+        if (!this.hasResultsTarget) {
             return;
         }
 
-        parent.classList.add('position-relative');
-        parent.appendChild(this.resultsElement);
+        this.resultsTarget.innerHTML = '';
 
-        features.forEach((feature, index) => {
-            const props = feature.properties || {};
-
-            this.debugRenderedOption(feature, index);
-
-            const label = this.buildResultLabel(feature);
-
-            if (!label) {
-                return;
-            }
-
-            const item = document.createElement('button');
-            item.type = 'button';
-            item.className = 'list-group-item list-group-item-action text-start';
-            item.innerText = label;
-
-            item.addEventListener('click', () => {
-                this.selectAddress(feature);
-            });
-
-            this.resultsElement.appendChild(item);
-        });
-
-        if (this.resultsElement.children.length === 0) {
+        if (this.suggestions.length === 0) {
             this.hideResults();
             return;
         }
 
-        this.resultsElement.style.display = 'block';
+        this.suggestions.forEach((suggestion, index) => {
+            const button = document.createElement('button');
+
+            button.type = 'button';
+            button.className = 'list-group-item list-group-item-action mapbox-autocomplete-result';
+            button.dataset.index = String(index);
+            button.innerHTML = this.renderSuggestionHtml(suggestion);
+
+            button.addEventListener('mousedown', (event) => {
+                event.preventDefault();
+            });
+
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                this.selectSuggestion(index);
+            });
+
+            this.resultsTarget.appendChild(button);
+        });
+
+        this.showResults();
     }
 
-    selectAddress(feature) {
-        const props = feature.properties || {};
+    renderSuggestionHtml(suggestion) {
+        const name = this.escapeHtml(
+            suggestion.name ||
+            suggestion.name_preferred ||
+            suggestion.text ||
+            ''
+        );
 
-        this.debugSelectedOption(feature);
+        const fullAddress = this.escapeHtml(
+            suggestion.full_address ||
+            suggestion.place_formatted ||
+            suggestion.address ||
+            ''
+        );
 
-        const rue = this.buildStreet(props);
-        const ville = this.getCity(props);
-        const codePostal = props.postcode || '';
-        const pays = props.country || '';
-        const countryCode = props.countrycode || '';
+        const featureType = this.escapeHtml(
+            suggestion.feature_type ||
+            suggestion.type ||
+            ''
+        );
 
-        const coordinates = feature.geometry && feature.geometry.coordinates
-            ? feature.geometry.coordinates
-            : [];
+        return `
+            <div class="d-flex flex-column">
+                <strong>${name}</strong>
+                ${fullAddress ? `<small>${fullAddress}</small>` : ''}
+                ${featureType ? `<small class="text-muted">${featureType}</small>` : ''}
+            </div>
+        `;
+    }
+
+    async selectSuggestion(index) {
+        const suggestion = this.suggestions[index];
+
+        if (!suggestion) {
+            return;
+        }
+
+        this.isSelecting = true;
+        this.clearPendingSearch();
+        this.hideResults();
+
+        console.log('Suggestion Mapbox sélectionnée :', suggestion);
+
+        const mapboxId = suggestion.mapbox_id || suggestion.id || '';
+
+        if (!mapboxId) {
+            console.error('Aucun mapbox_id trouvé dans la suggestion :', suggestion);
+            this.isSelecting = false;
+            return;
+        }
+
+        await this.retrieveFeature(mapboxId, suggestion);
+    }
+
+    async retrieveFeature(mapboxId, suggestion = null) {
+        this.abortCurrentRequest();
+
+        this.abortController = new AbortController();
+
+        const url = new URL(`https://api.mapbox.com/search/searchbox/v1/retrieve/${encodeURIComponent(mapboxId)}`);
+
+        url.searchParams.set('access_token', this.tokenValue);
+        url.searchParams.set('session_token', this.sessionToken);
+        url.searchParams.set('language', this.languageValue);
+
+        try {
+            const response = await fetch(url.toString(), {
+                method: 'GET',
+                signal: this.abortController.signal,
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                console.error('Erreur Mapbox retrieve :', response.status, response.statusText);
+                this.isSelecting = false;
+                return;
+            }
+
+            const data = await response.json();
+
+            console.log('Mapbox retrieve complet :', data);
+
+            const feature = this.getFirstFeature(data);
+
+            if (!feature) {
+                console.error('Aucune feature Mapbox récupérée :', data);
+                this.isSelecting = false;
+                return;
+            }
+
+            this.fillFieldsFromFeature(feature, suggestion);
+
+            this.clearSuggestions();
+            this.hideResults();
+            this.resetSessionToken();
+
+            setTimeout(() => {
+                this.isSelecting = false;
+            }, 300);
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            console.error('Erreur requête Mapbox retrieve :', error);
+            this.isSelecting = false;
+        }
+    }
+
+    fillFieldsFromFeature(feature, suggestion = null) {
+        const properties = feature.properties || {};
+        const context = properties.context || {};
+        const coordinates = feature.geometry?.coordinates || [];
 
         const longitude = coordinates[0] ?? '';
         const latitude = coordinates[1] ?? '';
 
-        if (this.hasAdresseTarget && rue) {
-            this.adresseTarget.value = rue;
-            this.dispatchNativeChange(this.adresseTarget);
+        const mapboxId =
+            properties.mapbox_id ||
+            suggestion?.mapbox_id ||
+            feature.id ||
+            '';
+
+        const featureType =
+            properties.feature_type ||
+            suggestion?.feature_type ||
+            '';
+
+        const name =
+            properties.name ||
+            properties.name_preferred ||
+            suggestion?.name ||
+            suggestion?.name_preferred ||
+            '';
+
+        const fullAddress =
+            properties.full_address ||
+            properties.place_formatted ||
+            suggestion?.full_address ||
+            suggestion?.place_formatted ||
+            name ||
+            '';
+
+        const country = this.getContextName(context, 'country');
+        const countryCode = this.getContextCode(context, 'country');
+
+        const postcode = this.getContextName(context, 'postcode');
+        const region = this.getContextName(context, 'region');
+        const district = this.getContextName(context, 'district');
+        const place = this.getContextName(context, 'place');
+        const locality = this.getContextName(context, 'locality');
+        const neighborhood = this.getContextName(context, 'neighborhood');
+
+        const poi = featureType === 'poi'
+            ? name
+            : '';
+
+        this.setTargetValue('adresse', fullAddress || name);
+        this.setTargetValue('codePostal', postcode);
+        this.setTargetValue('ville', place || locality || district || neighborhood || name);
+
+        /**
+         * Important :
+         * pays est un select Symfony.
+         * On ne fait pas this.setTargetValue('pays', country).
+         */
+        this.setSelectValueByTextOrValue('pays', country, countryCode);
+
+        this.setTargetValue('latitude', latitude);
+        this.setTargetValue('longitude', longitude);
+
+        this.setTargetValue('mapboxId', mapboxId);
+        this.setTargetValue('fullAddress', fullAddress);
+        this.setTargetValue('featureType', featureType);
+        this.setTargetValue('region', region);
+        this.setTargetValue('district', district);
+        this.setTargetValue('locality', locality);
+        this.setTargetValue('neighborhood', neighborhood);
+        this.setTargetValue('poi', poi);
+
+        console.log('Données finales enregistrées dans les inputs :', {
+            adresse: this.getTargetValue('adresse'),
+            codePostal: this.getTargetValue('codePostal'),
+            ville: this.getTargetValue('ville'),
+            pays: this.getTargetValue('pays'),
+            latitude: this.getTargetValue('latitude'),
+            longitude: this.getTargetValue('longitude'),
+            mapboxId: this.getTargetValue('mapboxId'),
+            fullAddress: this.getTargetValue('fullAddress'),
+            featureType: this.getTargetValue('featureType'),
+            region: this.getTargetValue('region'),
+            district: this.getTargetValue('district'),
+            locality: this.getTargetValue('locality'),
+            neighborhood: this.getTargetValue('neighborhood'),
+            poi: this.getTargetValue('poi'),
+        });
+    }
+
+    getFirstFeature(data) {
+        if (Array.isArray(data.features) && data.features.length > 0) {
+            return data.features[0];
         }
 
-        if (this.hasCodePostalTarget && codePostal) {
-            this.codePostalTarget.value = codePostal;
-            this.dispatchNativeChange(this.codePostalTarget);
+        if (data.feature) {
+            return data.feature;
         }
 
-        if (this.hasVilleTarget && ville) {
-            this.villeTarget.value = ville;
-            this.dispatchNativeChange(this.villeTarget);
+        if (data.type === 'Feature') {
+            return data;
         }
 
-        if (this.hasPaysTarget) {
-            this.setPaysValue(pays, countryCode);
+        return null;
+    }
+
+    getContextName(context, key) {
+        if (!context || !key) {
+            return '';
         }
 
-        if (this.hasLatitudeTarget) {
-            this.latitudeTarget.value = latitude;
-            this.dispatchNativeChange(this.latitudeTarget);
+        if (context[key]?.name) {
+            return context[key].name;
         }
 
-        if (this.hasLongitudeTarget) {
-            this.longitudeTarget.value = longitude;
-            this.dispatchNativeChange(this.longitudeTarget);
+        if (context[key]?.text) {
+            return context[key].text;
+        }
+
+        if (context[key]?.id) {
+            return context[key].name || context[key].text || '';
+        }
+
+        if (Array.isArray(context)) {
+            const item = context.find((element) => {
+                return element.id?.startsWith(`${key}.`) || element.type === key;
+            });
+
+            return item?.name || item?.text || '';
+        }
+
+        return '';
+    }
+
+    getContextCode(context, key) {
+        if (!context || !key) {
+            return '';
+        }
+
+        if (context[key]?.country_code) {
+            return context[key].country_code;
+        }
+
+        if (context[key]?.short_code) {
+            return context[key].short_code;
+        }
+
+        if (context[key]?.code) {
+            return context[key].code;
+        }
+
+        if (Array.isArray(context)) {
+            const item = context.find((element) => {
+                return element.id?.startsWith(`${key}.`) || element.type === key;
+            });
+
+            return item?.country_code || item?.short_code || item?.code || '';
+        }
+
+        return '';
+    }
+
+    setSelectValueByTextOrValue(targetName, searchedText, searchedCode = '') {
+        const hasTargetName = `has${this.capitalize(targetName)}Target`;
+        const targetElementName = `${targetName}Target`;
+
+        if (!this[hasTargetName] || !this[targetElementName]) {
+            return;
+        }
+
+        const element = this[targetElementName];
+
+        if (!(element instanceof HTMLSelectElement)) {
+            this.setTargetValue(targetName, searchedText);
+            return;
+        }
+
+        const normalizedText = this.normalizeText(searchedText);
+        const normalizedCode = this.normalizeText(searchedCode);
+
+        if (!normalizedText && !normalizedCode) {
+            return;
+        }
+
+        const options = Array.from(element.options);
+
+        const matchingOption = options.find((option) => {
+            const optionValue = this.normalizeText(option.value);
+            const optionText = this.normalizeText(option.textContent);
+
+            return optionValue === normalizedText ||
+                optionText === normalizedText ||
+                optionValue === normalizedCode ||
+                optionText === normalizedCode;
+        });
+
+        if (!matchingOption) {
+            console.warn('Aucune option trouvée dans le select pays pour :', {
+                searchedText,
+                searchedCode,
+                options: options.map((option) => ({
+                    value: option.value,
+                    text: option.textContent.trim(),
+                })),
+            });
+
+            return;
+        }
+
+        element.value = matchingOption.value;
+
+        this.dispatchChangeEvent(element);
+    }
+
+    onKeydown(event) {
+        if (!this.hasResultsTarget || this.resultsTarget.hidden) {
+            return;
+        }
+
+        const items = Array.from(
+            this.resultsTarget.querySelectorAll('.mapbox-autocomplete-result')
+        );
+
+        if (items.length === 0) {
+            return;
+        }
+
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+
+            this.activeIndex += 1;
+
+            if (this.activeIndex >= items.length) {
+                this.activeIndex = 0;
+            }
+
+            this.updateActiveItem(items);
+            return;
+        }
+
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+
+            this.activeIndex -= 1;
+
+            if (this.activeIndex < 0) {
+                this.activeIndex = items.length - 1;
+            }
+
+            this.updateActiveItem(items);
+            return;
+        }
+
+        if (event.key === 'Enter') {
+            if (this.activeIndex >= 0 && this.activeIndex < this.suggestions.length) {
+                event.preventDefault();
+                this.selectSuggestion(this.activeIndex);
+            }
+
+            return;
+        }
+
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            this.hideResults();
+        }
+    }
+
+    updateActiveItem(items) {
+        items.forEach((item, index) => {
+            if (index === this.activeIndex) {
+                item.classList.add('active');
+
+                item.scrollIntoView({
+                    block: 'nearest',
+                });
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    onBlur() {
+        setTimeout(() => {
+            if (!this.isSelecting) {
+                this.hideResults();
+            }
+        }, 150);
+    }
+
+    showResults() {
+        if (this.hasResultsTarget && !this.isSelecting) {
+            this.resultsTarget.hidden = false;
+        }
+    }
+
+    hideResults() {
+        if (this.hasResultsTarget) {
+            this.resultsTarget.hidden = true;
+        }
+    }
+
+    clearSuggestions() {
+        this.suggestions = [];
+        this.activeIndex = -1;
+
+        if (this.hasResultsTarget) {
+            this.resultsTarget.innerHTML = '';
         }
 
         this.hideResults();
     }
 
-    buildResultLabel(feature) {
-        const props = feature.properties || {};
-
-        const rue = this.buildStreet(props);
-        const ville = this.getCity(props);
-        const codePostal = props.postcode || '';
-        const pays = props.country || '';
-
-        const poiType = this.getPoiLabel(props);
-
-        return [
-            rue || props.name,
-            poiType,
-            codePostal,
-            ville,
-            pays,
-        ]
-            .filter(Boolean)
-            .join(', ');
+    clearHiddenFields() {
+        this.setTargetValue('mapboxId', '');
+        this.setTargetValue('fullAddress', '');
+        this.setTargetValue('featureType', '');
+        this.setTargetValue('region', '');
+        this.setTargetValue('district', '');
+        this.setTargetValue('locality', '');
+        this.setTargetValue('neighborhood', '');
+        this.setTargetValue('poi', '');
+        this.setTargetValue('latitude', '');
+        this.setTargetValue('longitude', '');
     }
 
-    buildStreet(props) {
-        const houseNumber = props.housenumber || '';
-        const street = props.street || props.name || '';
-
-        return [
-            houseNumber,
-            street,
-        ]
-            .filter(Boolean)
-            .join(' ');
+    clearPendingSearch() {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
     }
 
-    getCity(props) {
-        return props.city
-            || props.town
-            || props.village
-            || props.municipality
-            || props.county
-            || '';
+    setTargetValue(targetName, value) {
+        const hasTargetName = `has${this.capitalize(targetName)}Target`;
+        const targetElementName = `${targetName}Target`;
+
+        if (this[hasTargetName] && this[targetElementName]) {
+            this[targetElementName].value = value ?? '';
+            this.dispatchChangeEvent(this[targetElementName]);
+        }
     }
 
-    getPoiLabel(props) {
-        if (!props.osm_key || !props.osm_value) {
+    getTargetValue(targetName) {
+        const hasTargetName = `has${this.capitalize(targetName)}Target`;
+        const targetElementName = `${targetName}Target`;
+
+        if (this[hasTargetName] && this[targetElementName]) {
+            return this[targetElementName].value;
+        }
+
+        return '';
+    }
+
+    dispatchChangeEvent(element) {
+        element.dispatchEvent(new Event('change', {
+            bubbles: true,
+        }));
+    }
+
+    abortCurrentRequest() {
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
+    }
+
+    resetSessionToken() {
+        this.sessionToken = this.createSessionToken();
+    }
+
+    createSessionToken() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+        }
+
+        return `session-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
+    }
+
+    capitalize(value) {
+        if (!value) {
             return '';
         }
 
-        const key = props.osm_key;
-        const value = props.osm_value;
-
-        const labels = {
-            'amenity:school': 'École',
-            'amenity:kindergarten': 'Maternelle / crèche',
-            'amenity:college': 'Collège / établissement',
-            'amenity:university': 'Université',
-            'amenity:hospital': 'Hôpital',
-            'amenity:pharmacy': 'Pharmacie',
-            'amenity:restaurant': 'Restaurant',
-            'amenity:cafe': 'Café',
-            'tourism:museum': 'Musée',
-            'tourism:hotel': 'Hôtel',
-            'shop:supermarket': 'Supermarché',
-        };
-
-        return labels[`${key}:${value}`] || `${key}:${value}`;
+        return value.charAt(0).toUpperCase() + value.slice(1);
     }
 
-    isPoi(props) {
-        if (!props.osm_key || !props.osm_value) {
-            return false;
-        }
-
-        const addressKeys = [
-            'place',
-            'highway',
-            'boundary',
-        ];
-
-        return !addressKeys.includes(props.osm_key);
-    }
-
-    isSchool(props) {
-        return props.osm_key === 'amenity'
-            && props.osm_value === 'school';
-    }
-
-    setPaysValue(pays, countryCode) {
-        const field = this.paysTarget;
-
-        if (!pays && !countryCode) {
-            return;
-        }
-
-        if (field.tagName === 'SELECT') {
-            const normalizedPays = this.normalize(pays);
-            const normalizedCountryCode = this.normalize(countryCode);
-
-            const option = Array.from(field.options).find((option) => {
-                const optionText = this.normalize(option.textContent);
-                const optionValue = this.normalize(option.value);
-
-                return optionText === normalizedPays
-                    || optionText.includes(normalizedPays)
-                    || optionValue === normalizedPays
-                    || optionValue === normalizedCountryCode;
-            });
-
-            if (option) {
-                field.value = option.value;
-                this.dispatchNativeChange(field);
-            }
-
-            return;
-        }
-
-        field.value = pays || countryCode;
-        this.dispatchNativeChange(field);
-    }
-
-    normalize(value) {
-        return String(value || '')
+    normalizeText(value) {
+        return String(value ?? '')
             .trim()
             .toLowerCase()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '');
     }
 
-    dispatchNativeChange(element) {
-        element.dispatchEvent(new Event('change', {
-            bubbles: true,
-        }));
-    }
-
-    hideResults() {
-        this.resultsElement.innerHTML = '';
-        this.resultsElement.style.display = 'none';
-    }
-
-    closeOnOutsideClick(event) {
-        const isInsideResults = this.resultsElement.contains(event.target);
-        const isInsideController = this.element.contains(event.target);
-
-        if (isInsideResults || isInsideController) {
-            return;
-        }
-
-        this.hideResults();
-    }
-
-    debugApiResponse(query, url, data) {
-        if (!this.debugValue) {
-            return;
-        }
-
-        console.group('🌍 API Photon - Réponse complète');
-
-        console.log('Recherche :', query);
-        console.log('URL appelée :', url);
-        console.log('Réponse brute complète :', data);
-        console.log('Type GeoJSON :', data.type || null);
-        console.log('Nombre de résultats :', data.features ? data.features.length : 0);
-
-        if (!data.features || data.features.length === 0) {
-            console.log('Aucun résultat.');
-            console.groupEnd();
-            return;
-        }
-
-        const resume = data.features.map((feature, index) => {
-            const props = feature.properties || {};
-            const geometry = feature.geometry || {};
-            const coordinates = geometry.coordinates || [];
-
-            return {
-                index: index + 1,
-
-                name: props.name || '',
-                label: props.label || '',
-
-                rue: this.buildStreet(props),
-                postcode: props.postcode || '',
-                ville: this.getCity(props),
-                country: props.country || '',
-                countrycode: props.countrycode || '',
-
-                longitude: coordinates[0] ?? '',
-                latitude: coordinates[1] ?? '',
-
-                geometry_type: geometry.type || '',
-                feature_type: feature.type || '',
-
-                osm_key: props.osm_key || '',
-                osm_value: props.osm_value || '',
-                osm_type: props.osm_type || '',
-                osm_id: props.osm_id || '',
-
-                poi: this.isPoi(props) ? 'oui' : 'non',
-                school: this.isSchool(props) ? 'oui' : 'non',
-                poi_label: this.getPoiLabel(props),
-
-                extent: props.extent ? JSON.stringify(props.extent) : '',
-                properties_keys: Object.keys(props).join(', '),
-            };
-        });
-
-        console.group('📋 Résumé des options');
-        console.table(resume);
-        console.groupEnd();
-
-        data.features.forEach((feature, index) => {
-            this.debugFeature(feature, index);
-        });
-
-        console.groupEnd();
-    }
-
-    debugRenderedOption(feature, index) {
-        if (!this.debugValue) {
-            return;
-        }
-
-        const props = feature.properties || {};
-
-        console.group(`👁️ Option affichée ${index + 1}`);
-        console.log('Label affiché :', this.buildResultLabel(feature));
-        console.log('Feature complète :', feature);
-        console.log('Properties :', props);
-        console.table(this.prepareObjectForTable(props));
-        console.groupEnd();
-    }
-
-    debugSelectedOption(feature) {
-        if (!this.debugValue) {
-            return;
-        }
-
-        console.group('✅ Option sélectionnée');
-        this.debugFeature(feature, 0);
-        console.groupEnd();
-    }
-
-    debugFeature(feature, index) {
-        const props = feature.properties || {};
-        const geometry = feature.geometry || {};
-        const coordinates = geometry.coordinates || [];
-        const flatFeature = this.flattenObject(feature);
-
-        console.group(`📍 Détail option API ${index + 1}`);
-
-        console.log('Feature complète :', feature);
-        console.log('Properties complètes :', props);
-        console.log('Geometry complète :', geometry);
-        console.log('Coordonnées :', coordinates);
-
-        console.group('🧭 Géolocalisation');
-        console.log({
-            longitude: coordinates[0] ?? null,
-            latitude: coordinates[1] ?? null,
-            geometry_type: geometry.type || null,
-            extent: props.extent || null,
-        });
-        console.groupEnd();
-
-        console.group('🏢 POI / École / OSM');
-        console.log({
-            is_poi: this.isPoi(props),
-            is_school: this.isSchool(props),
-            poi_label: this.getPoiLabel(props),
-            osm_key: props.osm_key || null,
-            osm_value: props.osm_value || null,
-            osm_type: props.osm_type || null,
-            osm_id: props.osm_id || null,
-        });
-        console.groupEnd();
-
-        console.group('🏠 Adresse détaillée');
-        console.log({
-            name: props.name || null,
-            label: props.label || null,
-            housenumber: props.housenumber || null,
-            street: props.street || null,
-            postcode: props.postcode || null,
-            city: props.city || null,
-            town: props.town || null,
-            village: props.village || null,
-            municipality: props.municipality || null,
-            district: props.district || null,
-            county: props.county || null,
-            state: props.state || null,
-            country: props.country || null,
-            countrycode: props.countrycode || null,
-        });
-        console.groupEnd();
-
-        console.group('📦 Toutes les properties');
-        console.table(this.prepareObjectForTable(props));
-        console.groupEnd();
-
-        console.group('🧩 Feature complète aplatie');
-        console.table(this.prepareObjectForTable(flatFeature));
-        console.groupEnd();
-
-        console.groupEnd();
-    }
-
-    flattenObject(object, prefix = '', result = {}) {
-        Object.entries(object || {}).forEach(([key, value]) => {
-            const path = prefix ? `${prefix}.${key}` : key;
-
-            if (
-                value !== null
-                && typeof value === 'object'
-                && !Array.isArray(value)
-            ) {
-                this.flattenObject(value, path, result);
-                return;
-            }
-
-            result[path] = Array.isArray(value)
-                ? JSON.stringify(value)
-                : value;
-        });
-
-        return result;
-    }
-
-    prepareObjectForTable(object) {
-        return Object.entries(object || {}).map(([key, value]) => {
-            return {
-                champ: key,
-                valeur: this.formatConsoleValue(value),
-                type: Array.isArray(value) ? 'array' : typeof value,
-            };
-        });
-    }
-
-    formatConsoleValue(value) {
-        if (value === null) {
-            return null;
-        }
-
-        if (typeof value === 'undefined') {
-            return undefined;
-        }
-
-        if (Array.isArray(value) || typeof value === 'object') {
-            return JSON.stringify(value);
-        }
-
-        return value;
+    escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
     }
 }

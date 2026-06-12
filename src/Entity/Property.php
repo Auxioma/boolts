@@ -13,6 +13,8 @@
 namespace App\Entity;
 
 use App\Entity\Enum\StatutAnnonceImmobiliere;
+use App\Entity\Traits\CreatedAtTraits;
+use App\Entity\Traits\UpdatedAtTraits;
 use App\Repository\PropertyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,8 +23,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PropertyRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Property
 {
+    use CreatedAtTraits;
+    use UpdatedAtTraits;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,22 +41,6 @@ class Property
     #[Assert\NotBlank(groups: ['step_2'])]
     #[ORM\ManyToOne(inversedBy: 'properties')]
     private ?CategoryBienTransaction $typeTransaction = null;
-
-    #[Assert\NotBlank(groups: ['step_7'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $titreDuLogement = null;
-
-    #[Assert\NotBlank(groups: ['step_7'])]
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $descriptionLogement = null;
-
-    #[Assert\NotBlank(groups: ['step_8'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $prix = null;
-
-    #[Assert\NotBlank(groups: ['step_4'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $anneeConstruction = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -68,9 +58,49 @@ class Property
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $pays = null;
 
-    #[Assert\NotBlank(groups: ['step_8'])]
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 7, nullable: true)]
+    private ?string $latitude = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 7, nullable: true)]
+    private ?string $longitude = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $referenceInterne = null;
+    private ?string $mapboxId = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fullAddress = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $featureType = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $region = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $district = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $locality = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $neighborhood = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $poi = null;
+
+    #[Assert\NotBlank(groups: ['step_4'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $anneeConstruction = null;
 
     #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -83,27 +113,6 @@ class Property
     #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $surfaceTotal = null;
-
-    #[ORM\Column(enumType: StatutAnnonceImmobiliere::class)]
-    private StatutAnnonceImmobiliere $statut = StatutAnnonceImmobiliere::BROUILLON;
-
-    /**
-     * @var Collection<int, Caracteristique>
-     */
-    #[ORM\ManyToMany(targetEntity: Caracteristique::class, inversedBy: 'properties')]
-    private Collection $caracteristique;
-
-    /**
-     * @var Collection<int, PropertyImage>
-     */
-    #[Assert\Count(min: 1, groups: ['step_6'])]
-    #[ORM\OneToMany(
-        targetEntity: PropertyImage::class,
-        mappedBy: 'property',
-        cascade: ['persist', 'remove'],
-        orphanRemoval: true
-    )]
-    private Collection $propertyImages;
 
     #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -132,6 +141,34 @@ class Property
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dateIndexationEnergie = null;
 
+    /**
+     * @var Collection<int, PropertyImage>
+     */
+    #[Assert\Count(min: 1, groups: ['step_6'])]
+    #[ORM\OneToMany(
+        targetEntity: PropertyImage::class,
+        mappedBy: 'property',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $propertyImages;
+
+    #[Assert\NotBlank(groups: ['step_7'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $titreDuLogement = null;
+
+    #[Assert\NotBlank(groups: ['step_7'])]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $descriptionLogement = null;
+
+    #[Assert\NotBlank(groups: ['step_8'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $prix = null;
+
+    #[Assert\NotBlank(groups: ['step_8'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $referenceInterne = null;
+
     #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $montantLoyerHorsCharge = null;
@@ -144,6 +181,15 @@ class Property
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $montantDesCharges = null;
 
+    #[ORM\Column(enumType: StatutAnnonceImmobiliere::class)]
+    private StatutAnnonceImmobiliere $statut = StatutAnnonceImmobiliere::BROUILLON;
+
+    /**
+     * @var Collection<int, Caracteristique>
+     */
+    #[ORM\ManyToMany(targetEntity: Caracteristique::class, inversedBy: 'properties')]
+    private Collection $caracteristique;
+
     #[ORM\ManyToOne(inversedBy: 'properties')]
     private ?User $user = null;
 
@@ -153,11 +199,18 @@ class Property
     #[ORM\OneToMany(targetEntity: Favoris::class, mappedBy: 'property')]
     private Collection $favoris;
 
+    /**
+     * @var Collection<int, PropertyView>
+     */
+    #[ORM\OneToMany(targetEntity: PropertyView::class, mappedBy: 'property')]
+    private Collection $propertyViews;
+
     public function __construct()
     {
         $this->caracteristique = new ArrayCollection();
         $this->propertyImages = new ArrayCollection();
         $this->favoris = new ArrayCollection();
+        $this->propertyViews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -185,54 +238,6 @@ class Property
     public function setTypeTransaction(?CategoryBienTransaction $typeTransaction): static
     {
         $this->typeTransaction = $typeTransaction;
-
-        return $this;
-    }
-
-    public function getTitreDuLogement(): ?string
-    {
-        return $this->titreDuLogement;
-    }
-
-    public function setTitreDuLogement(?string $titreDuLogement): static
-    {
-        $this->titreDuLogement = $titreDuLogement;
-
-        return $this;
-    }
-
-    public function getDescriptionLogement(): ?string
-    {
-        return $this->descriptionLogement;
-    }
-
-    public function setDescriptionLogement(?string $descriptionLogement): static
-    {
-        $this->descriptionLogement = $descriptionLogement;
-
-        return $this;
-    }
-
-    public function getPrix(): ?string
-    {
-        return $this->prix;
-    }
-
-    public function setPrix(?string $prix): static
-    {
-        $this->prix = $prix;
-
-        return $this;
-    }
-
-    public function getAnneeConstruction(): ?string
-    {
-        return $this->anneeConstruction;
-    }
-
-    public function setAnneeConstruction(?string $anneeConstruction): static
-    {
-        $this->anneeConstruction = $anneeConstruction;
 
         return $this;
     }
@@ -285,14 +290,134 @@ class Property
         return $this;
     }
 
-    public function getReferenceInterne(): ?string
+    public function getLatitude(): ?string
     {
-        return $this->referenceInterne;
+        return $this->latitude;
     }
 
-    public function setReferenceInterne(?string $referenceInterne): static
+    public function setLatitude(?string $latitude): static
     {
-        $this->referenceInterne = $referenceInterne;
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): ?string
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?string $longitude): static
+    {
+        $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getMapboxId(): ?string
+    {
+        return $this->mapboxId;
+    }
+
+    public function setMapboxId(?string $mapboxId): static
+    {
+        $this->mapboxId = $mapboxId;
+
+        return $this;
+    }
+
+    public function getFullAddress(): ?string
+    {
+        return $this->fullAddress;
+    }
+
+    public function setFullAddress(?string $fullAddress): static
+    {
+        $this->fullAddress = $fullAddress;
+
+        return $this;
+    }
+
+    public function getFeatureType(): ?string
+    {
+        return $this->featureType;
+    }
+
+    public function setFeatureType(?string $featureType): static
+    {
+        $this->featureType = $featureType;
+
+        return $this;
+    }
+
+    public function getRegion(): ?string
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?string $region): static
+    {
+        $this->region = $region;
+
+        return $this;
+    }
+
+    public function getDistrict(): ?string
+    {
+        return $this->district;
+    }
+
+    public function setDistrict(?string $district): static
+    {
+        $this->district = $district;
+
+        return $this;
+    }
+
+    public function getLocality(): ?string
+    {
+        return $this->locality;
+    }
+
+    public function setLocality(?string $locality): static
+    {
+        $this->locality = $locality;
+
+        return $this;
+    }
+
+    public function getNeighborhood(): ?string
+    {
+        return $this->neighborhood;
+    }
+
+    public function setNeighborhood(?string $neighborhood): static
+    {
+        $this->neighborhood = $neighborhood;
+
+        return $this;
+    }
+
+    public function getPoi(): ?string
+    {
+        return $this->poi;
+    }
+
+    public function setPoi(?string $poi): static
+    {
+        $this->poi = $poi;
+
+        return $this;
+    }
+
+    public function getAnneeConstruction(): ?string
+    {
+        return $this->anneeConstruction;
+    }
+
+    public function setAnneeConstruction(?string $anneeConstruction): static
+    {
+        $this->anneeConstruction = $anneeConstruction;
 
         return $this;
     }
@@ -329,71 +454,6 @@ class Property
     public function setSurfaceTotal(?string $surfaceTotal): static
     {
         $this->surfaceTotal = $surfaceTotal;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Caracteristique>
-     */
-    public function getCaracteristique(): Collection
-    {
-        return $this->caracteristique;
-    }
-
-    public function addCaracteristique(Caracteristique $caracteristique): static
-    {
-        if (!$this->caracteristique->contains($caracteristique)) {
-            $this->caracteristique->add($caracteristique);
-        }
-
-        return $this;
-    }
-
-    public function removeCaracteristique(Caracteristique $caracteristique): static
-    {
-        $this->caracteristique->removeElement($caracteristique);
-
-        return $this;
-    }
-
-    public function getStatut(): StatutAnnonceImmobiliere
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(StatutAnnonceImmobiliere $statut): static
-    {
-        $this->statut = $statut;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, PropertyImage>
-     */
-    public function getPropertyImages(): Collection
-    {
-        return $this->propertyImages;
-    }
-
-    public function addPropertyImage(PropertyImage $propertyImage): static
-    {
-        if (!$this->propertyImages->contains($propertyImage)) {
-            $this->propertyImages->add($propertyImage);
-            $propertyImage->setProperty($this);
-        }
-
-        return $this;
-    }
-
-    public function removePropertyImage(PropertyImage $propertyImage): static
-    {
-        if ($this->propertyImages->removeElement($propertyImage)) {
-            if ($propertyImage->getProperty() === $this) {
-                $propertyImage->setProperty(null);
-            }
-        }
 
         return $this;
     }
@@ -482,6 +542,83 @@ class Property
         return $this;
     }
 
+    /**
+     * @return Collection<int, PropertyImage>
+     */
+    public function getPropertyImages(): Collection
+    {
+        return $this->propertyImages;
+    }
+
+    public function addPropertyImage(PropertyImage $propertyImage): static
+    {
+        if (!$this->propertyImages->contains($propertyImage)) {
+            $this->propertyImages->add($propertyImage);
+            $propertyImage->setProperty($this);
+        }
+
+        return $this;
+    }
+
+    public function removePropertyImage(PropertyImage $propertyImage): static
+    {
+        if ($this->propertyImages->removeElement($propertyImage)) {
+            if ($propertyImage->getProperty() === $this) {
+                $propertyImage->setProperty(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTitreDuLogement(): ?string
+    {
+        return $this->titreDuLogement;
+    }
+
+    public function setTitreDuLogement(?string $titreDuLogement): static
+    {
+        $this->titreDuLogement = $titreDuLogement;
+
+        return $this;
+    }
+
+    public function getDescriptionLogement(): ?string
+    {
+        return $this->descriptionLogement;
+    }
+
+    public function setDescriptionLogement(?string $descriptionLogement): static
+    {
+        $this->descriptionLogement = $descriptionLogement;
+
+        return $this;
+    }
+
+    public function getPrix(): ?string
+    {
+        return $this->prix;
+    }
+
+    public function setPrix(?string $prix): static
+    {
+        $this->prix = $prix;
+
+        return $this;
+    }
+
+    public function getReferenceInterne(): ?string
+    {
+        return $this->referenceInterne;
+    }
+
+    public function setReferenceInterne(?string $referenceInterne): static
+    {
+        $this->referenceInterne = $referenceInterne;
+
+        return $this;
+    }
+
     public function getMontantLoyerHorsCharge(): ?string
     {
         return $this->montantLoyerHorsCharge;
@@ -514,6 +651,42 @@ class Property
     public function setMontantDesCharges(?string $montantDesCharges): static
     {
         $this->montantDesCharges = $montantDesCharges;
+
+        return $this;
+    }
+
+    public function getStatut(): StatutAnnonceImmobiliere
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(StatutAnnonceImmobiliere $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Caracteristique>
+     */
+    public function getCaracteristique(): Collection
+    {
+        return $this->caracteristique;
+    }
+
+    public function addCaracteristique(Caracteristique $caracteristique): static
+    {
+        if (!$this->caracteristique->contains($caracteristique)) {
+            $this->caracteristique->add($caracteristique);
+        }
+
+        return $this;
+    }
+
+    public function removeCaracteristique(Caracteristique $caracteristique): static
+    {
+        $this->caracteristique->removeElement($caracteristique);
 
         return $this;
     }
@@ -551,9 +724,37 @@ class Property
     public function removeFavori(Favoris $favori): static
     {
         if ($this->favoris->removeElement($favori)) {
-            // set the owning side to null (unless already changed)
             if ($favori->getProperty() === $this) {
                 $favori->setProperty(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PropertyView>
+     */
+    public function getPropertyViews(): Collection
+    {
+        return $this->propertyViews;
+    }
+
+    public function addPropertyView(PropertyView $propertyView): static
+    {
+        if (!$this->propertyViews->contains($propertyView)) {
+            $this->propertyViews->add($propertyView);
+            $propertyView->setProperty($this);
+        }
+
+        return $this;
+    }
+
+    public function removePropertyView(PropertyView $propertyView): static
+    {
+        if ($this->propertyViews->removeElement($propertyView)) {
+            if ($propertyView->getProperty() === $this) {
+                $propertyView->setProperty(null);
             }
         }
 

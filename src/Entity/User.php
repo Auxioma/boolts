@@ -234,12 +234,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToMany(targetEntity: HoraireOuverture::class, mappedBy: 'agence')]
     private Collection $horaireOuvertures;
 
+    /**
+     * @var Collection<int, PropertyView>
+     */
+    #[ORM\OneToMany(targetEntity: PropertyView::class, mappedBy: 'user')]
+    private Collection $propertyViews;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->favoris = new ArrayCollection();
         $this->horaireOuvertures = new ArrayCollection();
+        $this->propertyViews = new ArrayCollection();
     }
 
     /*
@@ -887,6 +894,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
             // set the owning side to null (unless already changed)
             if ($horaireOuverture->getAgence() === $this) {
                 $horaireOuverture->setAgence(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PropertyView>
+     */
+    public function getPropertyViews(): Collection
+    {
+        return $this->propertyViews;
+    }
+
+    public function addPropertyView(PropertyView $propertyView): static
+    {
+        if (!$this->propertyViews->contains($propertyView)) {
+            $this->propertyViews->add($propertyView);
+            $propertyView->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePropertyView(PropertyView $propertyView): static
+    {
+        if ($this->propertyViews->removeElement($propertyView)) {
+            // set the owning side to null (unless already changed)
+            if ($propertyView->getUser() === $this) {
+                $propertyView->setUser(null);
             }
         }
 

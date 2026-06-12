@@ -28,7 +28,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 {
     public const PROPERTY_REFERENCE_PREFIX = 'property_';
 
-    private const NUMBER_OF_PROPERTIES = 1000;
+    public const PROPERTY_COUNT = 1000;
 
     private const PROPERTIES = [
         ['typeBien' => 'maison', 'typeTransaction' => 'vente'],
@@ -56,7 +56,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         for ($i = 1; $i <= 50; ++$i) {
-            $agenceReferences[] = UserFixtures::USER_AGENCE_REFERENCE_PREFIX.$i;
+            $agenceReferences[] = UserFixtures::USER_AGENCE_REFERENCE_PREFIX . $i;
         }
 
         /**
@@ -67,7 +67,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             ->getRepository(Caracteristique::class)
             ->findAll();
 
-        for ($i = 1; $i <= self::NUMBER_OF_PROPERTIES; ++$i) {
+        for ($i = 1; $i <= self::PROPERTY_COUNT; ++$i) {
             $propertyData = $faker->randomElement(self::PROPERTIES);
 
             /** @var User $user */
@@ -78,13 +78,13 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             /** @var CategoryBien $categoryBien */
             $categoryBien = $this->getReference(
-                CategoryBienFixtures::CATEGORY_BIEN_REFERENCE_PREFIX.$propertyData['typeBien'],
+                CategoryBienFixtures::CATEGORY_BIEN_REFERENCE_PREFIX . $propertyData['typeBien'],
                 CategoryBien::class
             );
 
             /** @var CategoryBienTransaction $categoryBienTransaction */
             $categoryBienTransaction = $this->getReference(
-                CategoryBienTransactionFixtures::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX.$propertyData['typeTransaction'],
+                CategoryBienTransactionFixtures::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX . $propertyData['typeTransaction'],
                 CategoryBienTransaction::class
             );
 
@@ -121,7 +121,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 ->setVille($ville)
                 ->setPays('France')
                 ->setReferenceInterne(
-                    \sprintf('PROPERTY-%04d', $i)
+                    sprintf('PROPERTY-%04d', $i)
                 )
                 ->setChambres(
                     (string) $faker->numberBetween(0, 8)
@@ -144,8 +144,16 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->persist($property);
 
+            /**
+             * Référence utilisée ensuite dans PropertyViewFixtures.
+             *
+             * Exemple :
+             * property_1
+             * property_2
+             * property_3
+             */
             $this->addReference(
-                self::PROPERTY_REFERENCE_PREFIX.$i,
+                self::PROPERTY_REFERENCE_PREFIX . $i,
                 $property
             );
         }
@@ -166,7 +174,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             default => '',
         };
 
-        return ucfirst($typeBienLabel).' '.$transactionLabel.' à '.$ville;
+        return ucfirst($typeBienLabel) . ' ' . $transactionLabel . ' à ' . $ville;
     }
 
     private function generatePrice(
@@ -195,7 +203,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
         $numberOfCaracteristiques = $faker->numberBetween(
             0,
-            min(6, \count($caracteristiques))
+            min(6, count($caracteristiques))
         );
 
         if (0 === $numberOfCaracteristiques) {

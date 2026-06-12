@@ -1,7 +1,18 @@
+{% set supportedMapboxLanguages = ['fr', 'en', 'de', 'es', 'it', 'nl', 'pt'] %}
+{% set browserLanguage = app.request.getPreferredLanguage(supportedMapboxLanguages) %}
+
+{% if browserLanguage is empty %}
+    {% set browserLanguage = 'fr' %}
+{% endif %}
+
 <div
     class="js-tab-content mes-biens-immobilier formulaire"
     id="cat3"
     data-controller="mes-biens--adresse-autocomplete"
+    data-mes-biens--adresse-autocomplete-token-value="{{ mapbox_public_token|e('html_attr') }}"
+    data-mes-biens--adresse-autocomplete-language-value="{{ browserLanguage|e('html_attr') }}"
+    data-mes-biens--adresse-autocomplete-limit-value="10"
+    data-mes-biens--adresse-autocomplete-types-value="address,poi,street,place,locality,neighborhood,postcode,region,country"
 >
     <div class="d-flex justify-content-between align-items-end">
         <h1>Où se situe votre bien ?</h1>
@@ -18,8 +29,8 @@
             <div class="col-12">
                 <div class="row">
 
-                    <div class="js-address-autocomplete-field">
-                        <label for="{{ form.adresse.vars.id }}" class="mb-16">
+                    <div class="js-address-autocomplete-field position-relative">
+                        <label for="adresse" class="mb-16">
                             Adresse du logement
                         </label>
 
@@ -29,15 +40,19 @@
                                 placeholder: 'Entrez un numéro et un nom de rue',
                                 autocomplete: 'off',
                                 'data-mes-biens--adresse-autocomplete-target': 'adresse',
-                                'data-action': 'input->mes-biens--adresse-autocomplete#search',
-                            },
+                                'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur'
+                            }
                         }) }}
 
-                        {{ form_errors(form.adresse) }}
+                        <div
+                            class="mapbox-autocomplete-results list-group shadow"
+                            data-mes-biens--adresse-autocomplete-target="results"
+                            hidden
+                        ></div>
                     </div>
 
                     <div class="mt-32">
-                        <label for="{{ form.codePostal.vars.id }}" class="mb-16">
+                        <label for="codePostal" class="mb-16">
                             Code postal*
                         </label>
 
@@ -47,17 +62,15 @@
                                 placeholder: 'Entrez un code postal',
                                 autocomplete: 'off',
                                 'data-mes-biens--adresse-autocomplete-target': 'codePostal',
-                                'data-mes-biens-required-field': 'true',
-                            },
+                                'data-mes-biens-required-field': 'true'
+                            }
                         }) }}
-
-                        {{ form_errors(form.codePostal) }}
                     </div>
 
                     <div class="row">
                         <div class="col-6">
                             <div>
-                                <label for="{{ form.ville.vars.id }}" class="mb-16">
+                                <label for="ville" class="mb-16">
                                     Ville*
                                 </label>
 
@@ -67,37 +80,106 @@
                                         placeholder: 'Choisissez une ville',
                                         autocomplete: 'off',
                                         'data-mes-biens--adresse-autocomplete-target': 'ville',
-                                        'data-mes-biens-required-field': 'true',
-                                    },
+                                        'data-mes-biens-required-field': 'true'
+                                    }
                                 }) }}
-
-                                {{ form_errors(form.ville) }}
                             </div>
                         </div>
 
                         <div class="col-6">
                             <div>
-                                <label for="{{ form.pays.vars.id }}" class="mb-16">
+                                <label for="pays" class="mb-16">
                                     Pays*
                                 </label>
 
                                 {{ form_widget(form.pays, {
                                     attr: {
                                         class: 'form-control',
+                                        autocomplete: 'off',
                                         'data-mes-biens--adresse-autocomplete-target': 'pays',
-                                        'data-mes-biens-required-field': 'true',
-                                    },
+                                        'data-mes-biens-required-field': 'true'
+                                    }
                                 }) }}
-
-                                {{ form_errors(form.pays) }}
                             </div>
                         </div>
                     </div>
 
-                    {% do form.adresse.setRendered %}
-                    {% do form.codePostal.setRendered %}
-                    {% do form.ville.setRendered %}
-                    {% do form.pays.setRendered %}
+                    <div class="row mt-32">
+                        <div class="col-6">
+                            <label for="latitude" class="mb-16">
+                                Quartier*
+                            </label>
+
+                            {{ form_widget(form.neighborhood, {
+                                attr: {
+                                    'data-mes-biens--adresse-autocomplete-target': 'neighborhood'
+                                }
+                            }) }}
+                        </div>
+
+                        <div class="col-6">
+                            <label for="longitude" class="mb-16">
+                                Arrondissement*
+                            </label>
+
+                            {{ form_widget(form.locality, {
+                                attr: {
+                                    'data-mes-biens--adresse-autocomplete-target': 'locality'
+                                }
+                            }) }}
+
+                        </div>
+                    </div>
+
+                    {# Champs cachés Mapbox #}
+
+                    {{ form_widget(form.mapboxId, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'mapboxId'
+                        }
+                    }) }}
+
+                    {{ form_widget(form.fullAddress, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'fullAddress'
+                        }
+                    }) }}
+
+                    {{ form_widget(form.featureType, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'featureType'
+                        }
+                    }) }}
+
+                    {{ form_widget(form.region, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'region'
+                        }
+                    }) }}
+
+                    {{ form_widget(form.district, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'district'
+                        }
+                    }) }}
+
+                    {{ form_widget(form.poi, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'poi'
+                        }
+                    }) }}
+
+                    {{ form_widget(form.longitude, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'longitude'
+                        }
+                    }) }}
+
+                    {{ form_widget(form.latitude, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'latitude'
+                        }
+                    }) }}
 
                 </div>
             </div>
