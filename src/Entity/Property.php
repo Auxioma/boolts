@@ -24,14 +24,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PropertyRepository::class)]
 #[ORM\Table(name: 'property')]
-#[ORM\Index(name: 'idx_property_ville', fields: ['ville'])]
-#[ORM\Index(name: 'idx_property_code_postal', fields: ['codePostal'])]
-#[ORM\Index(name: 'idx_property_statut', fields: ['statut'])]
-#[ORM\Index(name: 'idx_property_ville_statut', fields: ['ville', 'statut'])]
-#[ORM\Index(name: 'idx_property_location', fields: ['latitude', 'longitude'])]
-#[ORM\Index(name: 'idx_property_type_bien', columns: ['type_bien_id'])]
-#[ORM\Index(name: 'idx_property_type_transaction', columns: ['type_transaction_id'])]
-#[ORM\Index(name: 'idx_property_user', columns: ['user_id'])]
 #[ORM\HasLifecycleCallbacks]
 class Property
 {
