@@ -46,8 +46,8 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
         $projectDir = $this->kernel->getProjectDir();
 
-        $tempDirectory = $projectDir . self::TEMP_DIRECTORY;
-        $uploadDirectory = $projectDir . self::UPLOAD_DIRECTORY;
+        $tempDirectory = $projectDir.self::TEMP_DIRECTORY;
+        $uploadDirectory = $projectDir.self::UPLOAD_DIRECTORY;
 
         if ($filesystem->exists($tempDirectory)) {
             $filesystem->remove($tempDirectory);
@@ -69,20 +69,20 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
             $imagesCount = $this->getImagesCount($property->getId());
 
-            for ($position = 1; $position <= $imagesCount; $position++) {
+            for ($position = 1; $position <= $imagesCount; ++$position) {
                 $imageName = $this->getImageName(
                     propertyId: $property->getId(),
                     position: $position
                 );
 
-                $serverImagePath = $uploadDirectory . '/' . $imageName;
+                $serverImagePath = $uploadDirectory.'/'.$imageName;
 
                 $propertyImage = new PropertyImage();
                 $propertyImage->setProperty($property);
                 $propertyImage->setPosition((string) $position);
 
                 if ($filesystem->exists($serverImagePath)) {
-                    /**
+                    /*
                      * L’image existe déjà sur le serveur.
                      * On ne télécharge rien.
                      * On ne demande pas à Vich de déplacer le fichier.
@@ -115,12 +115,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                         test: true
                     );
 
-                    /**
+                    /*
                      * VichUploader déplacera le fichier dans public/uploads/biens.
                      */
                     $propertyImage->setImageFile($uploadedFile);
 
-                    /**
+                    /*
                      * Sécurité :
                      * On renseigne aussi la BDD manuellement avec le même nom stable.
                      * Comme le namer Vich utilise exactement ce nom, le fichier réel
@@ -148,7 +148,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
     private function getImageName(int $propertyId, int $position): string
     {
-        return sprintf(
+        return \sprintf(
             'property-%03d-image-%02d.jpg',
             $propertyId,
             $position
@@ -159,26 +159,23 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         string $tempDirectory,
         int $propertyId,
         int $position,
-        string $imageName
+        string $imageName,
     ): string {
-        $seed = sprintf('boolts-property-%d-image-%d', $propertyId, $position);
+        $seed = \sprintf('boolts-property-%d-image-%d', $propertyId, $position);
 
-        $url = sprintf(
+        $url = \sprintf(
             'https://picsum.photos/seed/%s/%d/%d',
             $seed,
             self::IMAGE_WIDTH,
             self::IMAGE_HEIGHT
         );
 
-        $imagePath = $tempDirectory . '/' . $imageName;
+        $imagePath = $tempDirectory.'/'.$imageName;
 
         $response = $this->httpClient->request('GET', $url);
 
         if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(sprintf(
-                'Impossible de télécharger l’image placeholder : %s',
-                $url
-            ));
+            throw new \RuntimeException(\sprintf('Impossible de télécharger l’image placeholder : %s', $url));
         }
 
         file_put_contents($imagePath, $response->getContent());

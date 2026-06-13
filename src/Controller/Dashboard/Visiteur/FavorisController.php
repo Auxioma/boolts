@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Dashboard\Visiteur;
 
 use App\Entity\Favoris;
@@ -20,7 +30,7 @@ class FavorisController extends AbstractController
         Property $property,
         Request $request,
         FavorisRepository $favorisRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): JsonResponse {
         if ($this->isGranted('ROLE_AGENCE')) {
             return $this->json([
@@ -31,7 +41,7 @@ class FavorisController extends AbstractController
 
         $token = $request->headers->get('X-CSRF-TOKEN');
 
-        if (!$this->isCsrfTokenValid('favorite_property_' . $property->getId(), $token)) {
+        if (!$this->isCsrfTokenValid('favorite_property_'.$property->getId(), $token)) {
             return $this->json([
                 'success' => false,
                 'message' => 'Token CSRF invalide.',

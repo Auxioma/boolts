@@ -56,7 +56,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         for ($i = 1; $i <= 50; ++$i) {
-            $agenceReferences[] = UserFixtures::USER_AGENCE_REFERENCE_PREFIX . $i;
+            $agenceReferences[] = UserFixtures::USER_AGENCE_REFERENCE_PREFIX.$i;
         }
 
         /**
@@ -78,17 +78,23 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             /** @var CategoryBien $categoryBien */
             $categoryBien = $this->getReference(
-                CategoryBienFixtures::CATEGORY_BIEN_REFERENCE_PREFIX . $propertyData['typeBien'],
+                CategoryBienFixtures::CATEGORY_BIEN_REFERENCE_PREFIX.$propertyData['typeBien'],
                 CategoryBien::class
             );
 
             /** @var CategoryBienTransaction $categoryBienTransaction */
             $categoryBienTransaction = $this->getReference(
-                CategoryBienTransactionFixtures::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX . $propertyData['typeTransaction'],
+                CategoryBienTransactionFixtures::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX.$propertyData['typeTransaction'],
                 CategoryBienTransaction::class
             );
 
             $ville = $faker->city();
+
+            $createdAtMutable = $faker->dateTimeBetween('-1 year', 'now');
+            $updatedAtMutable = $faker->dateTimeBetween($createdAtMutable, 'now');
+
+            $createdAt = \DateTimeImmutable::createFromMutable($createdAtMutable);
+            $updatedAt = \DateTimeImmutable::createFromMutable($updatedAtMutable);
 
             $property = new Property();
 
@@ -121,7 +127,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 ->setVille($ville)
                 ->setPays('France')
                 ->setReferenceInterne(
-                    sprintf('PROPERTY-%04d', $i)
+                    \sprintf('PROPERTY-%04d', $i)
                 )
                 ->setChambres(
                     (string) $faker->numberBetween(0, 8)
@@ -134,7 +140,10 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 )
                 ->setStatut(
                     $faker->randomElement(StatutAnnonceImmobiliere::cases())
-                );
+                )
+
+->setCreatedAt($createdAt)
+->setUpdatedAt($updatedAt);
 
             $this->addRandomCaracteristiques(
                 $property,
@@ -144,7 +153,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->persist($property);
 
-            /**
+            /*
              * Référence utilisée ensuite dans PropertyViewFixtures.
              *
              * Exemple :
@@ -153,7 +162,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
              * property_3
              */
             $this->addReference(
-                self::PROPERTY_REFERENCE_PREFIX . $i,
+                self::PROPERTY_REFERENCE_PREFIX.$i,
                 $property
             );
         }
@@ -174,7 +183,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             default => '',
         };
 
-        return ucfirst($typeBienLabel) . ' ' . $transactionLabel . ' à ' . $ville;
+        return ucfirst($typeBienLabel).' '.$transactionLabel.' à '.$ville;
     }
 
     private function generatePrice(
@@ -203,7 +212,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
         $numberOfCaracteristiques = $faker->numberBetween(
             0,
-            min(6, count($caracteristiques))
+            min(6, \count($caracteristiques))
         );
 
         if (0 === $numberOfCaracteristiques) {

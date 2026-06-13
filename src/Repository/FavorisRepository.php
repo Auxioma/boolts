@@ -27,7 +27,7 @@ class FavorisRepository extends ServiceEntityRepository
         parent::__construct($registry, Favoris::class);
     }
 
-        public function findPropertyIdsByUser(User $user): array
+    public function findPropertyIdsByUser(User $user): array
     {
         $rows = $this->createQueryBuilder('f')
             ->select('IDENTITY(f.property) AS propertyId')
@@ -39,7 +39,6 @@ class FavorisRepository extends ServiceEntityRepository
         return array_map('intval', array_column($rows, 'propertyId'));
     }
 
-    
     //    /**
     //     * @return Favoris[] Returns an array of Favoris objects
     //     */

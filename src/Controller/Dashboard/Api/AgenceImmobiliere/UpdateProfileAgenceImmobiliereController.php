@@ -131,7 +131,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             ]);
         }
 
-        /**
+        /*
          * Correction importante :
          * gestion spéciale des horaires d'ouverture.
          *
@@ -278,7 +278,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
     private function updateHoraireOuvertures(
         User $user,
         array $openingHours,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
     ): void {
         $days = [
             'lundi',

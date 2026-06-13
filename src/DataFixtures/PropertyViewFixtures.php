@@ -47,7 +47,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
 
         try {
             for ($propertyIndex = 1; $propertyIndex <= PropertyFixtures::PROPERTY_COUNT; ++$propertyIndex) {
-                $propertyReference = PropertyFixtures::PROPERTY_REFERENCE_PREFIX . $propertyIndex;
+                $propertyReference = PropertyFixtures::PROPERTY_REFERENCE_PREFIX.$propertyIndex;
 
                 if (!$this->hasReference($propertyReference, Property::class)) {
                     continue;
@@ -100,7 +100,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
                         'viewed_at' => $viewedAt->format('Y-m-d H:i:s'),
                     ];
 
-                    if (count($rows) >= self::BATCH_SIZE) {
+                    if (\count($rows) >= self::BATCH_SIZE) {
                         $this->insertBatch($connection, $rows);
                         $rows = [];
                     }
@@ -138,7 +138,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
             $params[] = $row['viewed_at'];
         }
 
-        $sql = sprintf(
+        $sql = \sprintf(
             'INSERT INTO property_view 
                 (property_id, user_id, view_key, visitor_hash, viewed_at) 
              VALUES %s',
@@ -150,7 +150,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
 
     private function getRandomUser(): ?User
     {
-        /**
+        /*
          * 60% des vues sont anonymes.
          */
         if (random_int(1, 100) <= 60) {
@@ -159,7 +159,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
 
         $userIndex = random_int(1, UserFixtures::USER_COUNT);
 
-        $userReference = UserFixtures::USER_REFERENCE_PREFIX . $userIndex;
+        $userReference = UserFixtures::USER_REFERENCE_PREFIX.$userIndex;
 
         if (!$this->hasReference($userReference, User::class)) {
             return null;
@@ -174,16 +174,16 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
     private function generateVisitorHash(
         int $propertyIndex,
         int $viewIndex,
-        ?User $user
+        ?User $user,
     ): string {
         if ($user instanceof User) {
-            return hash('sha256', sprintf(
+            return hash('sha256', \sprintf(
                 'connected_user_%d',
                 $user->getId()
             ));
         }
 
-        return hash('sha256', sprintf(
+        return hash('sha256', \sprintf(
             'anonymous_property_%d_view_%d_random_%d',
             $propertyIndex,
             $viewIndex,
@@ -194,9 +194,9 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
     private function generateViewKey(
         int $propertyIndex,
         string $visitorHash,
-        \DateTimeImmutable $viewedAt
+        \DateTimeImmutable $viewedAt,
     ): string {
-        return hash('sha256', sprintf(
+        return hash('sha256', \sprintf(
             'property_%d_visitor_%s_day_%s',
             $propertyIndex,
             $visitorHash,
@@ -211,7 +211,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
         $minutesAgo = random_int(0, 59);
         $secondsAgo = random_int(0, 59);
 
-        return new \DateTimeImmutable(sprintf(
+        return new \DateTimeImmutable(\sprintf(
             '-%d days -%d hours -%d minutes -%d seconds',
             $daysAgo,
             $hoursAgo,

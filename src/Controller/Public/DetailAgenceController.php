@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller\Public;
 
 use App\Entity\FormContact\Contact;
@@ -38,10 +48,38 @@ final class DetailAgenceController extends AbstractController
             throw $this->createNotFoundException('Agence introuvable.');
         }
 
+        /**
+         * Gestion des filtre avec la pagination.
+         */
+        $sort = $request->query->get('sort', 'p.createdAt');
+        $direction = mb_strtolower($request->query->get('direction', 'desc'));
+
+        $allowedSorts = [
+            'p.createdAt',
+            'p.views',
+            'favorisCount',
+        ];
+
+        if (!\in_array($sort, $allowedSorts, true)) {
+            $sort = 'p.createdAt';
+        }
+
+        if (!\in_array($direction, ['asc', 'desc'], true)) {
+            $direction = 'desc';
+        }
+
         $properties = $paginator->paginate(
-            $propertyRepository->findPropertysByUserQuery($user),
+            $propertyRepository->findPropertysByUserQuery(
+                user: $user,
+                sort: $sort,
+                direction: mb_strtoupper($direction)
+            ),
             $request->query->getInt('page', 1),
-            8
+            8,
+            [
+                'sortFieldParameterName' => '_sort',
+                'sortDirectionParameterName' => '_direction',
+            ]
         );
 
         /*

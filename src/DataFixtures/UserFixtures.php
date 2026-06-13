@@ -87,7 +87,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setPrenom($faker->firstName())
             ->setPays(
                 $this->getReference(
-                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    PaysFixtures::PAYS_REFERENCE_PREFIX.'FR',
                     Pays::class
                 )
             );
@@ -104,7 +104,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         );
 
         $this->addReference(
-            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            self::USER_REFERENCE_PREFIX.$userReferenceIndex,
             $visiteur
         );
 
@@ -141,7 +141,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setWhatsApp($faker->phoneNumber())
             ->setPays(
                 $this->getReference(
-                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    PaysFixtures::PAYS_REFERENCE_PREFIX.'FR',
                     Pays::class
                 )
             );
@@ -158,7 +158,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         );
 
         $this->addReference(
-            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            self::USER_REFERENCE_PREFIX.$userReferenceIndex,
             $agence
         );
 
@@ -195,7 +195,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setWhatsApp($faker->phoneNumber())
             ->setPays(
                 $this->getReference(
-                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    PaysFixtures::PAYS_REFERENCE_PREFIX.'FR',
                     Pays::class
                 )
             );
@@ -212,7 +212,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         );
 
         $this->addReference(
-            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            self::USER_REFERENCE_PREFIX.$userReferenceIndex,
             $mohcine
         );
 
@@ -233,7 +233,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setPrenom($faker->firstName())
             ->setPays(
                 $this->getReference(
-                    PaysFixtures::PAYS_REFERENCE_PREFIX . 'FR',
+                    PaysFixtures::PAYS_REFERENCE_PREFIX.'FR',
                     Pays::class
                 )
             );
@@ -250,7 +250,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         );
 
         $this->addReference(
-            self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+            self::USER_REFERENCE_PREFIX.$userReferenceIndex,
             $admin
         );
 
@@ -267,7 +267,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
             $agence = new User();
             $agence
-                ->setEmail(sprintf('agence%d@boolts.test', $i))
+                ->setEmail(\sprintf('agence%d@boolts.test', $i))
                 ->setRoles(['ROLE_AGENCE'])
                 ->setIsVerified(true)
                 ->setNom($faker->lastName())
@@ -277,7 +277,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setAdresseComplement($faker->optional(0.4)->secondaryAddress())
                 ->setCodePostal($faker->postcode())
                 ->setVille($faker->city())
-                ->setEntreprise(sprintf('Agence immobilière %d', $i))
+                ->setEntreprise(\sprintf('Agence immobilière %d', $i))
                 ->setDescription(
                     $faker->paragraphs(3, true)
                 )
@@ -290,7 +290,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setWhatsApp($faker->phoneNumber())
                 ->setPays(
                     $this->getReference(
-                        PaysFixtures::PAYS_REFERENCE_PREFIX . $iso,
+                        PaysFixtures::PAYS_REFERENCE_PREFIX.$iso,
                         Pays::class
                     )
                 );
@@ -309,7 +309,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
              * user_agence_2
              */
             $this->addReference(
-                self::USER_AGENCE_REFERENCE_PREFIX . $i,
+                self::USER_AGENCE_REFERENCE_PREFIX.$i,
                 $agence
             );
 
@@ -321,7 +321,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
              * user_6
              */
             $this->addReference(
-                self::USER_REFERENCE_PREFIX . $userReferenceIndex,
+                self::USER_REFERENCE_PREFIX.$userReferenceIndex,
                 $agence
             );
 

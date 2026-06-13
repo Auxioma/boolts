@@ -12,8 +12,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Favoris;
 use App\Entity\Property;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -30,32 +33,39 @@ class PropertyRepository extends ServiceEntityRepository
      * Retourne une requête pour récupérer les biens immobiliers d’un utilisateur donné.
      * Cette méthode est utilisée pour la pagination dans le contrôleur DetailAgenceController.
      * De plus, il y aura les filtre de recherche à ajouter dans cette requête.
-     * par default, elle retourne tous les biens de l’utilisateur sans filtre en ASC
+     * par default, elle retourne tous les biens de l’utilisateur sans filtre en ASC.
      */
-    public function findPropertysByUserQuery($user): array
-    {
-        return $this->createQueryBuilder('p')
+    public function findPropertysByUserQuery(
+        User $user,
+        string $sort = 'p.createdAt',
+        string $direction = 'DESC',
+    ): QueryBuilder {
+        $direction = mb_strtoupper($direction);
+
+        if (!\in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'DESC';
+        }
+
+        $qb = $this->createQueryBuilder('p')
             ->andWhere('p.user = :user')
-            ->setParameter('user', $user)
-            ->orderBy('p.id', 'DESC')
-            ->getQuery()
-            ->getResult()
-        ;
+            ->setParameter('user', $user);
+
+        if ('p.views' === $sort) {
+            return $qb
+                ->leftJoin('p.propertyViews', 'pv')
+                ->addSelect('COUNT(pv.id) AS HIDDEN viewsCount')
+                ->groupBy('p.id')
+                ->orderBy('viewsCount', $direction);
+        }
+
+        if ('favorisCount' === $sort) {
+            return $qb
+                ->leftJoin(Favoris::class, 'f', 'WITH', 'f.property = p')
+                ->addSelect('COUNT(f.id) AS HIDDEN favorisCount')
+                ->groupBy('p.id')
+                ->orderBy('favorisCount', $direction);
+        }
+
+        return $qb->orderBy('p.createdAt', $direction);
     }
-
-    //    /**
-    //     * @return Property[] Returns an array of Property objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
 }

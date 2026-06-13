@@ -19,16 +19,23 @@ trait CreatedAtTraits
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
     #[ORM\PrePersist]
-    public function setCreatedAt(): void
+    public function updateCreatedAt(): void
     {
         if (null === $this->createdAt) {
             $this->createdAt = new \DateTimeImmutable();
         }
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 }
