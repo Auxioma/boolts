@@ -153,20 +153,25 @@
                                         ]) %}
 										{% endif %}
 
+										{% set detailUrl = path('app_public_detail_bien', {
+											slug: bienImmobilier.slug
+										}) %}
+
 										<div class="col-12 col-md-6">
-<twig:Property:Card
-    title="{{ propertyTitle }}"
-    price="{{ propertyPrice }}"
-    period="{{ propertyPeriod }}"
-    badge="{{ propertyBadge }}"
-    description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
-    details="{{ details|join(' ⸱ ') }}"
-    address="{{ addressParts|join(', ') }}"
-    image="{{ uploadedImage }}"
-    favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
-    favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
-    :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
-/>
+											<twig:Property:Card
+												title="{{ propertyTitle }}"
+												price="{{ propertyPrice }}"
+												period="{{ propertyPeriod }}"
+												badge="{{ propertyBadge }}"
+												description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+												details="{{ details|join(' ⸱ ') }}"
+												address="{{ addressParts|join(', ') }}"
+												image="{{ uploadedImage }}"
+												url="{{ detailUrl }}"
+												favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+												favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+												:isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
+											/>
 										</div>
 
 									{% else %}

@@ -142,8 +142,10 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                     $faker->randomElement(StatutAnnonceImmobiliere::cases())
                 )
 
-->setCreatedAt($createdAt)
-->setUpdatedAt($updatedAt);
+                ->setCreatedAt($createdAt)
+                ->setUpdatedAt($updatedAt)
+                ->setSlug($i);
+
 
             $this->addRandomCaracteristiques(
                 $property,

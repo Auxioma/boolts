@@ -12,17 +12,24 @@
 
 namespace App\Controller\Public;
 
+use App\Entity\Property;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class DetailBienController extends AbstractController
 {
-    #[Route('/public/detail/bien', name: 'app_public_detail_bien')]
-    public function index(): Response
+    #[Route('/public/detail/bien/{slug}', name: 'app_public_detail_bien')]
+    public function index(
+        #[MapEntity(mapping: ['slug' => 'slug'])]
+        Property $property): Response
     {
+
+        dd($property);
         return $this->render('public/detail_bien/index.html.twig', [
             'controller_name' => 'DetailBienController',
+            'property' => $property,
         ]);
     }
 }

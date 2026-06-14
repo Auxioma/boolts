@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\NumericSlugGenerator;
 
 #[Route('/mes/biens', name: 'agence_immobiliere_')]
 final class AgenceImmobiliereMesBiensController extends AbstractController
@@ -30,6 +31,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         Request $request,
         PropertyRepository $propertyRepository,
         EntityManagerInterface $entityManager,
+        NumericSlugGenerator $numericSlugGenerator,
     ): Response {
         $session = $request->getSession();
         $step = $request->query->getInt('step', 1);
@@ -75,6 +77,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             |--------------------------------------------------------------------------
             */
             if (1 === $step) {
+                $mesBiens->setSlug($numericSlugGenerator->generate(16));
                 $entityManager->persist($mesBiens);
                 $entityManager->flush();
 

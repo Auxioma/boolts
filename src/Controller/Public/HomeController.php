@@ -12,6 +12,8 @@
 
 namespace App\Controller\Public;
 
+use App\Entity\SearchBar\FilterCityCountry;
+use App\Form\SearchBar\FilterCityCountryType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,10 +24,13 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(Request $request): Response
     {
-        $lang = $request->getLocale();
+        $filter = new FilterCityCountry();
+        $form = $this->createForm(FilterCityCountryType::class, $filter);
+        $form->handleRequest($request); 
 
         return $this->render('public/home/index.html.twig', [
-            'lang' => $lang,
+            'form' => $form->createView(),
+            'mapbox_public_token' => $_ENV['MAPBOX_PUBLIC_TOKEN'],
         ]);
     }
 }

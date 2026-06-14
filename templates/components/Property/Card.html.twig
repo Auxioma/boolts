@@ -9,11 +9,13 @@
     details = '2 pièces · 1 chambre · 50m2',
     address = 'Rue de Courteneueve, 76510 Saint Ni...',
     image = null,
+    url = '#',
     favoriteUrl = null,
     favoriteToken = null,
     isFavorite = false
 -%}
 
+<a href="{{ url }}" class="property-card-link">
 <twig:Card class="property-card">
     <div class="property-card__media">
         {% if image %}
@@ -120,3 +122,4 @@
         {{ address }}
     </twig:Card:Footer>
 </twig:Card>
+</a>

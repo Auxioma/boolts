@@ -12,6 +12,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Favoris;
 use App\Entity\Property;
 use App\Entity\User;
@@ -48,7 +49,9 @@ class PropertyRepository extends ServiceEntityRepository
 
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.user = :user')
-            ->setParameter('user', $user);
+            ->setParameter('user', $user)
+            ->andWhere('p.statut = :statut')
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE);
 
         if ('p.views' === $sort) {
             return $qb

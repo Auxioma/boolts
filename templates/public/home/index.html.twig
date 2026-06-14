@@ -19,7 +19,7 @@
                                     <button type="button" class="home-bt-search-tab active">
                                         <i class="bi bi-house-door"></i>
                                         Acheter
-                                    </button>
+                                    </button> 
 
                                     <button type="button" class="home-bt-search-tab">
                                         <i class="bi bi-key"></i>
@@ -32,12 +32,62 @@
                                     </button>
                                 </div>
 
-                                <form class="home-bt-search-bar">
-                                    <input type="search" value="Saisir un lieu, un code postal..." aria-label="Saisir un lieu, un code postal...">
-                                    <button type="submit" aria-label="Rechercher">
-                                        <i class="bi bi-search"></i>
-                                    </button>
-                                </form>
+{{ form_start(form, {
+    attr: {
+        class: 'home-bt-search-bar',
+        'data-controller': 'home-bt-mapbox-search',
+        'data-home-bt-mapbox-search-token-value': mapbox_public_token,
+        'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr')
+    }
+}) }}
+
+    <div class="home-bt-search-bar__field">
+        {{ form_widget(form.filter, {
+            attr: {
+                autocomplete: 'off',
+                'data-home-bt-mapbox-search-target': 'input',
+                'data-action': 'input->home-bt-mapbox-search#search'
+            }
+        }) }}
+
+        <button type="submit" aria-label="Rechercher">
+            <i class="bi bi-search"></i>
+        </button>
+    </div>
+
+    <ul
+        class="home-bt-search-bar__results"
+        data-home-bt-mapbox-search-target="results"
+    ></ul>
+
+    <input
+        type="text"
+        name="pays"
+        id="pays"
+        placeholder="Pays"
+        class="search-bar__input"
+        data-home-bt-mapbox-search-target="pays"
+    >
+
+    <input
+        type="text"
+        name="ville"
+        id="ville"
+        placeholder="Ville"
+        class="search-bar__input"
+        data-home-bt-mapbox-search-target="ville"
+    >
+
+    <input
+        type="text"
+        name="cp"
+        id="cp"
+        placeholder="Code postal"
+        class="search-bar__input"
+        data-home-bt-mapbox-search-target="cp"
+    >
+
+{{ form_end(form, { render_rest: false }) }}
                             </div>
                         </div>
                     </div>
