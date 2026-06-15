@@ -71,4 +71,69 @@ class PropertyRepository extends ServiceEntityRepository
 
         return $qb->orderBy('p.createdAt', $direction);
     }
+
+    /**
+     * filtre des bien similaire
+     */
+    public function getBienSimilaire(Property $property, int $limit = 6): array
+    {
+        $qb = $this->createQueryBuilder('p');
+
+        $ville = $property->getVille();
+        $typeBien = $property->getTypeBien();
+        $prix = $property->getPrix();
+        $loyerHC = $property->getMontantLoyerHorsCharge();
+
+        $qb
+            ->andWhere('p.id != :currentId')
+            ->setParameter('currentId', $property->getId())
+            ->setMaxResults($limit)
+        ;
+
+        if ($ville) {
+            $qb
+                ->andWhere('p.ville = :ville')
+                ->setParameter('ville', $ville)
+            ;
+        }
+
+        if ($typeBien) {
+            $qb
+                ->andWhere('p.typeBien = :typeBien')
+                ->setParameter('typeBien', $typeBien)
+            ;
+        }
+
+        /**
+         * Si c'est une vente, on compare le prix avec une marge de 20%
+         */
+        if ($prix) {
+            $prixMin = $prix * 0.8;
+            $prixMax = $prix * 1.2;
+
+            $qb
+                ->andWhere('p.prix BETWEEN :prixMin AND :prixMax')
+                ->setParameter('prixMin', $prixMin)
+                ->setParameter('prixMax', $prixMax)
+            ;
+        }
+
+        /**
+         * Si c'est une location, on compare le loyer hors charge avec une marge de 20%
+         */
+        if ($loyerHC) {
+            $loyerMin = $loyerHC * 0.8;
+            $loyerMax = $loyerHC * 1.2;
+
+            $qb
+                ->andWhere('p.montantLoyerHorsCharge BETWEEN :loyerMin AND :loyerMax')
+                ->setParameter('loyerMin', $loyerMin)
+                ->setParameter('loyerMax', $loyerMax)
+            ;
+        }
+
+        $qb->orderBy('p.createdAt', 'DESC');
+
+        return $qb->getQuery()->getResult();
+    }
 }

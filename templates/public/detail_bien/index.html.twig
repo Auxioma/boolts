@@ -1,593 +1,1226 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DetailBienController!{% endblock %}
+{% block title %}Détail du bien{% endblock %}
 
 {% block body %}
-<div class="bt-page">
+    {% set totalPictures = property.propertyImages|length %}
+    {% set pictures = property.propertyImages|slice(0, 5) %}
+    {% set firstPicture = pictures|first %}
 
-    <div class="bt-mobile-topbar align-items-center justify-content-center">
-        <button class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="Retour">
-            <i class="bi bi-chevron-left"></i>
-        </button>
-        <button class="bt-icon-btn bt-icon-btn--small position-absolute end-0 me-2" type="button" aria-label="Favori">
-            <i class="bi bi-heart"></i>
-        </button>
+    <div class="bt-page">
+
+        <div class="bt-mobile-topbar align-items-center justify-content-center">
+            <button class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="Retour">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <button class="bt-icon-btn bt-icon-btn--small position-absolute end-0 me-2" type="button" aria-label="Favori">
+                <i class="bi bi-heart"></i>
+            </button>
+        </div>
+
+        <main>
+
+            {% if totalPictures > 0 and firstPicture %}
+                <section class="bt-hero-responsive" data-open-slider="0">
+                    <img
+                        src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+                        class="bt-hero-responsive__image js-bt-img"
+                        alt="Photo principale de l'annonce"
+                        loading="lazy"
+                    >
+
+                    <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
+                        <button class="bt-btn bt-btn--glass" type="button" data-open-gallery>
+                            Voir les photos
+                        </button>
+
+                        <button class="bt-btn bt-btn--glass" type="button" data-open-slider="0">
+                            1/{{ totalPictures }}
+                        </button>
+                    </div>
+                </section>
+            {% endif %}
+
+            <section class="bt-annonce">
+                <div class="container bt-annonce__container">
+
+                    {% if property.titreDuLogement|trim is not empty %}
+                        <h1 class="bt-annonce__title">
+                            {{ property.titreDuLogement }}
+                        </h1>
+                    {% endif %}
+
+                    {% if totalPictures > 0 and firstPicture %}
+                        <div class="bt-gallery d-flex gap-3">
+                            <div
+                                class="bt-gallery__main"
+                                role="button"
+                                tabindex="0"
+                                data-open-slider="0"
+                                aria-label="Ouvrir la photo principale"
+                            >
+                                <img
+                                    src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+                                    class="js-bt-img"
+                                    alt="Photo principale de l'appartement"
+                                    loading="lazy"
+                                >
+                            </div>
+
+                            {% set sidePictures = pictures|slice(1, 4) %}
+
+                            {% if sidePictures is not empty %}
+                                <div class="bt-gallery__side d-flex flex-column gap-3">
+
+                                    {% for picture in sidePictures %}
+                                        {% set imageIndex = loop.index %}
+
+                                        {% if loop.index0 is even %}
+                                            <div class="bt-gallery__row d-flex">
+                                        {% endif %}
+
+                                        <div
+                                            class="bt-gallery__thumb
+                                                {% if imageIndex == 2 %} bt-gallery__thumb--top-right{% endif %}
+                                                {% if imageIndex == 4 %} bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay{% endif %}
+                                                {% if loop.last and imageIndex < 4 %} bt-gallery__thumb--overlay{% endif %}
+                                            "
+                                            role="button"
+                                            tabindex="0"
+                                            data-open-slider="{{ imageIndex }}"
+                                            aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
+                                        >
+                                            <img
+                                                src="{{ vich_uploader_asset(picture, 'imageFile') }}"
+                                                class="js-bt-img"
+                                                alt="Photo {{ imageIndex + 1 }}"
+                                                loading="lazy"
+                                            >
+
+                                            {% if loop.last %}
+                                                <span
+                                                    class="bt-gallery__open"
+                                                    role="button"
+                                                    tabindex="0"
+                                                    data-open-gallery
+                                                >
+                                                    Voir les {{ totalPictures }} photos
+                                                </span>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if loop.index0 is odd or loop.last %}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="row g-4 align-items-start">
+                        <div class="col-lg-8">
+
+                            <section class="bt-property-head">
+                                <h2 class="bt-section-title">
+                                    {{ property.typeBien.name }} à {{ property.typeTransaction.name }}, {{ property.pays }}
+                                </h2>
+
+                                <p class="bt-property-head__subtitle">
+                                    {{ property.chambres }} chambres - {{ property.salleDeBains }} salle de bain
+                                </p>
+                            </section>
+
+                            {% if property.descriptionLogement|trim is not empty %}
+                                <section class="bt-info-section">
+                                    <h2 class="bt-section-title">Description du bien</h2>
+                                    <p class="bt-info-section__text">
+                                        {{ property.descriptionLogement }}
+                                    </p>
+                                </section>
+                            {% endif %}
+
+                            {% if property.caracteristique is not empty %}
+                                <section class="bt-info-section bt-info-section--border-bottom">
+                                    <h2 class="bt-section-title">Ce que le bien propose</h2>
+
+                                    <div class="row gy-4 mt-0">
+                                        {% for item in property.caracteristique %}
+                                            <div class="col-4">
+                                                <div class="bt-feature d-flex align-items-center gap-2">
+                                                    {% if item.icone %}
+                                                        <i class="{{ item.icone }}"></i>
+                                                    {% endif %}
+
+                                                    <span>{{ item.nom }}</span>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </section>
+                            {% endif %}
+
+                            {% if property.dpeLettre or property.gesLettre %}
+                                <section class="bt-info-section bt-info-section--border-bottom">
+                                    <h2 class="bt-section-title">Performance énergétique</h2>
+
+                                    <div class="row gy-4 mt-0">
+                                        <div class="col-12">
+                                            <div class="bt-feature d-flex align-items-center gap-2 bt-energy-perf-wrapper">
+                                                <div class="container-fluid px-0">
+                                                    <div class="row g-5">
+
+                                                        {% if property.dpeLettre %}
+                                                            <div class="col-12 col-lg-6">
+                                                                <h3 class="bt-energy-perf-title">
+                                                                    Diagnostic de performance énergétique (DPE)
+                                                                </h3>
+
+                                                                <div class="bt-energy-perf-scale mb-4">
+                                                                    {% for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] %}
+                                                                        {% if property.dpeLettre|lower == letter %}
+                                                                            <span class="bt-energy-perf-badge bt-energy-perf-dpe-{{ letter }}">
+                                                                                {{ property.dpeLettre|upper }}
+                                                                            </span>
+                                                                        {% else %}
+                                                                            <span class="bt-energy-perf-step bt-energy-perf-dpe-{{ letter }}"></span>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+
+                                                                {% if property.anneeConstruction %}
+                                                                    <div>
+                                                                        <div class="bt-energy-perf-label">
+                                                                            Année de construction
+                                                                        </div>
+
+                                                                        <div class="bt-energy-perf-value">
+                                                                            {{ property.anneeConstruction }}
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        {% endif %}
+
+                                                        {% if property.gesLettre %}
+                                                            <div class="col-12 col-lg-6">
+                                                                <h3 class="bt-energy-perf-title">
+                                                                    Indice d’émission de gaz à effet de serre (GES)
+                                                                </h3>
+
+                                                                <div class="bt-energy-perf-scale mb-4">
+                                                                    {% for letter in ['a', 'b', 'c', 'd', 'e', 'f', 'g'] %}
+                                                                        {% if property.gesLettre|lower == letter %}
+                                                                            <span class="bt-energy-perf-badge bt-energy-perf-ges-{{ letter }}">
+                                                                                {{ property.gesLettre|upper }}
+                                                                            </span>
+                                                                        {% else %}
+                                                                            <span class="bt-energy-perf-step bt-energy-perf-ges-{{ letter }}"></span>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </div>
+
+                                                                {% if property.dateIndexationEnergie %}
+                                                                    <div>
+                                                                        <div class="bt-energy-perf-label">
+                                                                            Date du diagnostic
+                                                                        </div>
+
+                                                                        <div class="bt-energy-perf-value">
+                                                                            {{ property.dateIndexationEnergie|date('d M Y') }}
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        {% endif %}
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            {% endif %}
+
+                            {% set hasLoyer = property.montantLoyerHorsCharge is not null %}
+                            {% set hasCharges = property.montantDesCharges is not null %}
+                            {% set hasDepot = property.montantDepotDeGarantie is not null %}
+
+                            {% if hasLoyer or hasCharges or hasDepot %}
+                                <section class="bt-cost-detail-card">
+                                    <h2 class="bt-cost-detail-title">Détails des coûts</h2>
+
+                                    <div class="d-flex flex-column gap-3">
+
+                                        {% if hasLoyer %}
+                                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                                <div class="bt-cost-detail-label">
+                                                    Loyer charges comprises
+                                                </div>
+
+                                                <div class="bt-cost-detail-price">
+                                                    {% set total = property.montantLoyerHorsCharge + (property.montantDesCharges ?? 0) %}
+                                                    {{ total|number_format(0, ',', ' ') }}€
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if hasCharges %}
+                                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                                <div class="bt-cost-detail-muted">
+                                                    dont charges
+                                                </div>
+
+                                                <div class="bt-cost-detail-muted">
+                                                    {{ property.montantDesCharges|number_format(0, ',', ' ') }}€
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if hasDepot %}
+                                            <div class="d-flex justify-content-between align-items-start gap-3">
+                                                <div class="bt-cost-detail-label">
+                                                    Dépôt de garantie à la charge du locataire
+                                                </div>
+
+                                                <div class="bt-cost-detail-price">
+                                                    {{ property.montantDepotDeGarantie|number_format(0, ',', ' ') }}€
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </section>
+                            {% endif %}
+
+                            <section class="bt-related">
+                                <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+                                    <h2 class="bt-section-title">
+                                        Autres biens similaires à Rouen
+                                    </h2>
+
+                                    <div class="d-flex align-items-center gap-2 text-secondary">
+                                        <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Précédent">
+                                            <i class="bi bi-arrow-left-circle"></i>
+                                        </button>
+
+                                        <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Suivant">
+                                            <i class="bi bi-arrow-right-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="bt-related__viewport">
+                                    <div class="d-flex gap-4">
+                                        <div class="owl-carousel owl-theme">
+                                            {% for i in 1..7 %}
+                                                <div class="item">
+                                                    <div class="bt-property-card">
+                                                        <div class="bt-property-card__image">
+                                                            <img
+                                                                src="{{ asset('images/default-property.jpg') }}"
+                                                                class="js-bt-img"
+                                                                alt="Bien similaire {{ i }}"
+                                                            >
+                                                        </div>
+
+                                                        <div class="bt-property-card__body">
+                                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                                                                <h3 class="bt-property-card__title">
+                                                                    Appartement à louer
+                                                                </h3>
+
+                                                                <i class="bi bi-heart"></i>
+                                                            </div>
+
+                                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                                                                <div class="bt-property-card__price">
+                                                                    765€ <small>/mois</small>
+                                                                </div>
+
+                                                                <span class="bt-property-card__badge">
+                                                                    Charges comprises
+                                                                </span>
+                                                            </div>
+
+                                                            <p class="bt-property-card__text mb-3">
+                                                                Appartement très spacieux et lumineux...
+                                                            </p>
+
+                                                            <p class="bt-property-card__meta mb-1">
+                                                                2 pièces · 1 chambre · 50m2
+                                                            </p>
+
+                                                            <p class="bt-property-card__address">
+                                                                Rue de Courteneneuve, 76510 Saint Nicolas...
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </section>
+
+
+                        </div>
+
+                        <div class="col-lg-4">
+                            <aside class="bt-contact-sticky">
+                                <div class="bt-contact-card">
+
+                                    <div class="d-flex align-items-start gap-4 mb-4">
+                                        <div class="bt-contact-card__avatar"></div>
+
+                                        <div class="min-w-0">
+                                            <p class="bt-contact-card__name">
+                                                {{ property.user.entreprise }}
+                                                <i class="bi bi-chevron-right small ms-1"></i>
+                                            </p>
+
+                                            <p class="bt-contact-card__address">
+                                                Agence immobilière -
+                                                {{ property.user.adresseContact }}
+                                                {{ property.user.codePostalContact }}
+                                                {{ property.user.villeContact }}
+                                                {{ property.user.paysContact }}
+                                            </p>
+
+                                            <div class="d-flex flex-column align-items-start gap-1 mt-3">
+                                                <button type="button" class="bt-btn bt-btn--outline-primary">
+                                                    Afficher le numéro
+                                                </button>
+
+                                                <a href="mailto:agence@agence.agence" class="bt-contact-card__email">
+                                                    agence@agence.agence
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bt-hours d-flex align-items-center gap-2 mb-4">
+                                        <div class="bt-hours__day flex-fill">
+                                            Lundi :
+                                        </div>
+
+                                        <div class="bt-hours__time flex-fill">
+                                            9:00-12:00<br>
+                                            14:00-18:00
+                                        </div>
+
+                                        <i class="bi bi-chevron-down"></i>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+
+                                        {% set prixVente = property.prix %}
+                                        {% set loyerHorsCharge = property.montantLoyerHorsCharge %}
+                                        {% set charges = property.montantDesCharges|default(0) %}
+
+                                        {% set hasPrixVente = prixVente is not null and prixVente != '' %}
+                                        {% set hasLoyerAside = loyerHorsCharge is not null and loyerHorsCharge != '' %}
+
+                                        {% if hasPrixVente or hasLoyerAside %}
+                                            {% if hasPrixVente %}
+                                                <div class="bt-price">
+                                                    {{ prixVente|number_format(0, ',', ' ') }} €
+                                                </div>
+                                            {% elseif hasLoyerAside %}
+                                                {% set location = loyerHorsCharge + charges %}
+
+                                                <div class="bt-price">
+                                                    {{ location|number_format(0, ',', ' ') }} €
+                                                </div>
+
+                                                <div class="bt-charge-badge">
+                                                    Charges comprises
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="d-grid gap-3">
+                                        {% if property.user.whatsApp is not empty %}
+                                            <a href="https://wa.me/{{ property.user.whatsApp }}" class="agence-btn agence-btn-whatsapp">
+                                                Contacter via Whatsapp
+                                            </a>
+                                        {% endif %}
+
+                                        {% if property.user.numeroContact is not empty %}
+                                            <a href="tel:{{ property.user.numeroContact }}" class="agence-btn agence-btn-primary">
+                                                <i class="icon-phone"></i>
+                                                Appeler l’agence
+                                            </a>
+                                        {% endif %}
+
+                                        <button type="button" class="bt-btn bt-btn--outline-primary w-100">
+                                            <i class="bi bi-envelope"></i>
+                                            Contacter par email
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="bt-mobile-tabbar" aria-label="Navigation mobile">
+            <div class="bt-mobile-tabbar__nav d-flex align-items-center justify-content-center">
+                <a href="#" class="bt-mobile-tabbar__item is-active d-flex flex-column align-items-center justify-content-between">
+                    <i class="bi bi-search fs-5"></i>
+                    Explorer
+                </a>
+
+                <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
+                    <i class="bi bi-heart fs-5"></i>
+                    Favoris
+                </a>
+
+                <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
+                    <i class="bi bi-chat-square fs-5"></i>
+                    Messagerie
+                </a>
+
+                <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
+                    <i class="bi bi-person-circle fs-5"></i>
+                    Compte
+                </a>
+            </div>
+
+            <div class="bt-mobile-tabbar__safe"></div>
+        </nav>
     </div>
 
-    <main>
-        <section class="bt-hero-responsive" data-open-slider="0">
-            <img class="bt-hero-responsive__image js-bt-img" alt="Appartement lumineux à Rouen">
-            <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
-                <button class="bt-btn bt-btn--glass" type="button" data-open-gallery>Voir les photos</button>
-                <button class="bt-btn bt-btn--glass" type="button" data-open-slider="0">1/8</button>
-            </div>
-        </section>
 
-        <section class="bt-annonce">
-            <div class="container bt-annonce__container">
-                <h1 class="bt-annonce__title">
-                    Appartement à louer, très spacieux, 2 chambres, 1 salle de bain, 2 WC. Appartement lumineux et bien situé à Rouen
-                </h1>
+    {# ========================= #}
+    {# MODALE 1 : GRILLE PHOTOS #}
+    {# ========================= #}
 
-                <div class="bt-gallery d-flex gap-3">
-                    <button class="bt-gallery__main" type="button" data-open-slider="0" aria-label="Ouvrir la photo principale">
-                        <img class="js-bt-img" alt="Photo principale de l'appartement">
-                    </button>
+    {% if totalPictures > 0 %}
+        <section class="bt-media-modal" id="btMediaGridModal" aria-hidden="true">
 
-                    <div class="bt-gallery__side d-flex flex-column gap-3">
-                        <div class="bt-gallery__row d-flex">
-                            <button class="bt-gallery__thumb" type="button" data-open-slider="1">
-                                <img class="js-bt-img" alt="Photo 2">
-                            </button>
-                            <button class="bt-gallery__thumb bt-gallery__thumb--top-right" type="button" data-open-slider="2">
-                                <img class="js-bt-img" alt="Photo 3">
-                            </button>
-                        </div>
-                        <div class="bt-gallery__row d-flex">
-                            <button class="bt-gallery__thumb" type="button" data-open-slider="3">
-                                <img class="js-bt-img" alt="Photo 4">
-                            </button>
-                            <button class="bt-gallery__thumb bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay" type="button" data-open-slider="4">
-                                <img class="js-bt-img" alt="Photo 5">
-                                <span class="bt-gallery__open" data-open-gallery>Voir les 32 photos</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-4 align-items-start">
-                    <div class="col-lg-8">
-                        <section class="bt-property-head">
-                            <h2 class="bt-section-title">Appartement à louer - Rouen, France</h2>
-                            <p class="bt-property-head__subtitle">2 chambres - 1 salle de bain</p>
-                        </section>
-
-                        <section class="bt-info-section">
-                            <h2 class="bt-section-title">Description du bien</h2>
-                            <p class="bt-info-section__text">
-                                Entrez dans un studio calme de style riad, avec une ambiance marocaine chaleureuse et un confort moderne.
-                                Profitez d'une connexion Wi-Fi rapide par fibre optique (100 Mbit/s), d'une cuisine entièrement équipée avec
-                                des carreaux verts et d'un coin salon/chambre confortable pour un séjour reposant. Arrivée autonome avec serrure
-                                intelligente. Parking privé gratuit sur place. Piscine partagée saisonnière en été pour se rafraîchir après les journées à Marrakech.
-                            </p>
-                        </section>
-
-                        <section class="bt-info-section bt-info-section--border-bottom">
-                            <h2 class="bt-section-title">Ce que le bien propose</h2>
-
-                            <div class="row gy-4 mt-0">
-                                <div class="col-4">
-                                    <div class="bt-feature d-flex align-items-center gap-2">
-                                        <i class="bi bi-house-door"></i>
-                                        <span>Balcon</span>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="bt-feature d-flex align-items-center gap-2">
-                                        <i class="bi bi-bricks"></i>
-                                        <span>Cheminée</span>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="bt-feature d-flex align-items-center gap-2">
-                                        <i class="bi bi-house-door"></i>
-                                        <span>Cheminée</span>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="bt-feature d-flex align-items-center gap-2">
-                                        <i class="bi bi-house-door"></i>
-                                        <span>Piscine</span>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="bt-feature d-flex align-items-center gap-2">
-                                        <i class="bi bi-building"></i>
-                                        <span>Ascenseur</span>
-                                    </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="bt-feature d-flex align-items-center gap-2">
-                                        <i class="bi bi-house-door"></i>
-                                        <span>Ascenseur</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="bt-related">
-                            <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-                                <h2 class="bt-section-title">Autres biens similaires à Rouen</h2>
-                                <div class="d-flex align-items-center gap-2 text-secondary">
-                                    <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Précédent">
-                                        <i class="bi bi-arrow-left-circle"></i>
-                                    </button>
-                                    <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Suivant">
-                                        <i class="bi bi-arrow-right-circle"></i>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="bt-related__viewport">
-                                <div class="d-flex gap-4">
-                                    <article class="bt-property-card">
-                                        <div class="bt-property-card__image">
-                                            <img class="js-bt-img" alt="Bien similaire">
-                                        </div>
-                                        <div class="bt-property-card__body">
-                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                <h3 class="bt-property-card__title">Appartement à louer</h3>
-                                                <i class="bi bi-heart"></i>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                <div class="bt-property-card__price">765€ <small>/mois</small></div>
-                                                <span class="bt-property-card__badge">Charges comprises</span>
-                                            </div>
-                                            <p class="bt-property-card__text mb-3">Appartement très spacieux et lumineux...</p>
-                                            <p class="bt-property-card__meta mb-1">2 pièces · 1 chambre · 50m2</p>
-                                            <p class="bt-property-card__address">Rue de Courteneneuve, 76510 Saint Nicolas...</p>
-                                        </div>
-                                    </article>
-
-                                    <article class="bt-property-card">
-                                        <div class="bt-property-card__image">
-                                            <img class="js-bt-img" alt="Bien similaire">
-                                        </div>
-                                        <div class="bt-property-card__body">
-                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                <h3 class="bt-property-card__title">Appartement à louer</h3>
-                                                <i class="bi bi-heart"></i>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                <div class="bt-property-card__price">765€ <small>/mois</small></div>
-                                                <span class="bt-property-card__badge">Charges comprises</span>
-                                            </div>
-                                            <p class="bt-property-card__text mb-3">Appartement très spacieux et lumineux...</p>
-                                            <p class="bt-property-card__meta mb-1">2 pièces · 1 chambre · 50m2</p>
-                                            <p class="bt-property-card__address">Rue de Courteneneuve, 76510 Saint Nicolas...</p>
-                                        </div>
-                                    </article>
-
-                                    <article class="bt-property-card">
-                                        <div class="bt-property-card__image">
-                                            <img class="js-bt-img" alt="Bien similaire">
-                                        </div>
-                                        <div class="bt-property-card__body">
-                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                <h3 class="bt-property-card__title">Appartement à louer</h3>
-                                                <i class="bi bi-heart"></i>
-                                            </div>
-                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                <div class="bt-property-card__price">765€ <small>/mois</small></div>
-                                                <span class="bt-property-card__badge">Charges comprises</span>
-                                            </div>
-                                            <p class="bt-property-card__text mb-3">Appartement très spacieux et lumineux...</p>
-                                            <p class="bt-property-card__meta mb-1">2 pièces · 1 chambre · 50m2</p>
-                                            <p class="bt-property-card__address">Rue de Courteneneuve, 76510 Saint Nicolas...</p>
-                                        </div>
-                                    </article>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-
-                    <div class="col-lg-4">
-                        <aside class="bt-contact-sticky">
-                            <div class="bt-contact-card">
-                                <div class="d-flex align-items-start gap-4 mb-4">
-                                    <div class="bt-contact-card__avatar"></div>
-                                    <div class="min-w-0">
-                                        <p class="bt-contact-card__name">
-                                            Axa Immobilier
-                                            <i class="bi bi-chevron-right small ms-1"></i>
-                                        </p>
-                                        <p class="bt-contact-card__address">
-                                            Agence immobilière - 94 quai Charles de Gaulle , 69006 Lyon. France
-                                        </p>
-                                        <div class="d-flex flex-column align-items-start gap-1 mt-3">
-                                            <button type="button" class="bt-btn bt-btn--outline-primary">Afficher le numéro</button>
-                                            <a href="mailto:agence@agence.agence" class="bt-contact-card__email">agence@agence.agence</a>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="bt-hours d-flex align-items-center gap-2 mb-4">
-                                    <div class="bt-hours__day flex-fill">Lundi :</div>
-                                    <div class="bt-hours__time flex-fill">9:00-12:00<br>14:00-18:00</div>
-                                    <i class="bi bi-chevron-down"></i>
-                                </div>
-
-                                <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
-                                    <div class="bt-price">748€<small>/mois</small></div>
-                                    <div class="bt-charge-badge">Charges comprises</div>
-                                </div>
-
-                                <div class="d-grid gap-3">
-                                    <button type="button" class="bt-btn bt-btn--whatsapp w-100">Contacter via Whatsapp</button>
-                                    <button type="button" class="bt-btn bt-btn--primary w-100">
-                                        <i class="bi bi-telephone"></i>
-                                        Appeler l’agence
-                                    </button>
-                                    <button type="button" class="bt-btn bt-btn--outline-primary w-100">
-                                        <i class="bi bi-envelope"></i>
-                                        Contacter par email
-                                    </button>
-                                </div>
-                            </div>
-                        </aside>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bt-footer">
-        <div class="container bt-footer__container">
-            <div class="row g-4">
-                <div class="col-12 col-md-3 bt-footer__col">
-                    <h3 class="bt-footer__title">Lorem ipsum <i class="bi bi-chevron-up bt-footer__chevron"></i></h3>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                </div>
-                <div class="col-12 col-md-3 bt-footer__col">
-                    <h3 class="bt-footer__title">Lorem ipsum <i class="bi bi-chevron-down bt-footer__chevron"></i></h3>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                </div>
-                <div class="col-12 col-md-3 bt-footer__col">
-                    <h3 class="bt-footer__title">Lorem ipsum <i class="bi bi-chevron-down bt-footer__chevron"></i></h3>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                    <p class="bt-footer__link">Lorem ipsum</p>
-                </div>
-                <div class="col-12 col-md-3 bt-footer__col">
-                    <h3 class="bt-footer__title">App mobile</h3>
-                    <p class="bt-footer__text">Découvrez l’application</p>
-                    <div class="bt-store-badge">Download on the<br>App Store</div><br>
-                    <div class="bt-store-badge">GET IT ON<br>Google Play</div>
-                </div>
-            </div>
-
-            <div class="bt-footer__bottom d-flex align-items-center justify-content-between">
-                <p class="bt-footer__copyright">
-                    © 2026 Boolts, Inc. Confidentialité - Conditions générales - Fonctionnement du site - Infos sur l’entreprise
-                </p>
-                <div class="bt-footer__settings d-flex align-items-center gap-3">
-                    <span><i class="bi bi-globe"></i> Français</span>
-                    <span>€ EUR</span>
-                    <span><i class="bi bi-facebook"></i></span>
-                    <span><i class="bi bi-instagram"></i></span>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <nav class="bt-mobile-tabbar" aria-label="Navigation mobile">
-        <div class="bt-mobile-tabbar__nav d-flex align-items-center justify-content-center">
-            <a href="#" class="bt-mobile-tabbar__item is-active d-flex flex-column align-items-center justify-content-between">
-                <i class="bi bi-search fs-5"></i>
-                Explorer
-            </a>
-            <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
-                <i class="bi bi-heart fs-5"></i>
-                Favoris
-            </a>
-            <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
-                <i class="bi bi-chat-square fs-5"></i>
-                Messagerie
-            </a>
-            <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
-                <i class="bi bi-person-circle fs-5"></i>
-                Compte
-            </a>
-        </div>
-        <div class="bt-mobile-tabbar__safe"></div>
-    </nav>
-</div>
-
-<!-- MODALE 1 : VOIR LES 32 PHOTOS -->
-<section class="bt-media-modal" id="btMediaGridModal" aria-hidden="true">
-    <header class="bt-header d-flex align-items-center justify-content-between">
-        <a href="#" class="bt-header__logo">
-            <span class="bt-header__logo-symbol" aria-hidden="true"></span>
-            <span>boolts</span>
-        </a>
-
-        <div class="d-flex align-items-center gap-4">
-            <nav class="bt-header__nav d-flex align-items-center">
-                <a href="#" class="bt-header__link">Acheter</a>
-                <a href="#" class="bt-header__link">Louer</a>
-                <a href="#" class="bt-header__link">Vendre</a>
-                <a href="#" class="bt-header__link is-active">Trouver un pro</a>
-                <a href="#" class="bt-header__link">Exclusivités</a>
-            </nav>
-            <a href="#" class="bt-btn bt-btn--outline-primary"><i class="bi bi-plus-lg"></i>Déposer une annonce</a>
-            <button class="bt-icon-btn" type="button" aria-label="Compte"><i class="bi bi-person-circle"></i></button>
-            <button class="bt-icon-btn bt-header__burger" type="button" aria-label="Menu"><i class="bi bi-list"></i></button>
-        </div>
-    </header>
-
-    <div class="bt-media-modal__body position-relative">
-        <button class="bt-modal-round bt-media-modal__back" type="button" data-close-grid aria-label="Retour">
-            <i class="bi bi-arrow-left"></i>
-        </button>
-
-        <div class="bt-media-grid d-flex flex-column gap-3 gap-md-4" id="btMediaGrid"></div>
-    </div>
-</section>
-
-<!-- MODALE 2 : SLIDER IMAGE -->
-<section class="bt-media-modal" id="btSliderModal" aria-hidden="true">
-    <header class="bt-header d-flex align-items-center justify-content-between">
-        <a href="#" class="bt-header__logo">
-            <span class="bt-header__logo-symbol" aria-hidden="true"></span>
-            <span>boolts</span>
-        </a>
-
-        <div class="d-flex align-items-center gap-4">
-            <nav class="bt-header__nav d-flex align-items-center">
-                <a href="#" class="bt-header__link">Acheter</a>
-                <a href="#" class="bt-header__link">Louer</a>
-                <a href="#" class="bt-header__link">Vendre</a>
-                <a href="#" class="bt-header__link is-active">Trouver un pro</a>
-                <a href="#" class="bt-header__link">Exclusivités</a>
-            </nav>
-            <a href="#" class="bt-btn bt-btn--outline-primary"><i class="bi bi-plus-lg"></i>Déposer une annonce</a>
-            <button class="bt-icon-btn" type="button" aria-label="Compte"><i class="bi bi-person-circle"></i></button>
-            <button class="bt-icon-btn bt-header__burger" type="button" aria-label="Menu"><i class="bi bi-list"></i></button>
-        </div>
-    </header>
-
-    <div class="bt-media-modal__body position-relative">
-        <button class="bt-modal-round bt-media-modal__back" type="button" data-close-slider aria-label="Fermer">
-            <i class="bi bi-x-lg"></i>
-        </button>
-
-        <div class="bt-slider-stage">
-            <div class="bt-slider-stage__counter" id="btSliderCounter">1/8</div>
-
-            <div class="d-flex align-items-center justify-content-center gap-4">
-                <button class="bt-slider-stage__arrow d-flex align-items-center justify-content-center" type="button" data-prev-slide aria-label="Image précédente">
+            <div class="bt-media-modal__body position-relative">
+                <button
+                    class="bt-modal-round bt-media-modal__back"
+                    type="button"
+                    data-close-grid
+                    aria-label="Retour"
+                >
                     <i class="bi bi-arrow-left"></i>
                 </button>
 
-                <div class="bt-slider-stage__image">
-                    <img id="btSliderImage" alt="Photo de l'annonce">
-                </div>
-
-                <button class="bt-slider-stage__arrow d-flex align-items-center justify-content-center" type="button" data-next-slide aria-label="Image suivante">
-                    <i class="bi bi-arrow-right"></i>
-                </button>
+                <div class="bt-media-grid d-flex flex-column gap-3 gap-md-4" id="btMediaGrid"></div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<script>
-    const btImages = [
-        "https://www.figma.com/api/mcp/asset/03846a91-5be7-44ca-81a4-b134f0843eff",
-        "https://www.figma.com/api/mcp/asset/cf5063fd-6286-4277-b239-7beb1b83b9e0",
-        "https://www.figma.com/api/mcp/asset/b662b00a-0892-4733-ae64-27d28034dbc4",
-        "https://www.figma.com/api/mcp/asset/2f3606f6-dff3-407e-b0ed-c5654d433e53",
-        "https://www.figma.com/api/mcp/asset/512470f2-5680-4c6d-8035-19426ae7bed2",
-        "https://www.figma.com/api/mcp/asset/8e4c3d5b-ad48-405f-8397-7c78f1397675",
-        "https://www.figma.com/api/mcp/asset/03846a91-5be7-44ca-81a4-b134f0843eff",
-        "https://www.figma.com/api/mcp/asset/cf5063fd-6286-4277-b239-7beb1b83b9e0"
-    ];
 
-    const btPhotos = Array.from({ length: 32 }, function (_, index) {
-        return {
-            src: btImages[index % btImages.length],
-            alt: "Photo " + (index + 1) + " de l'annonce"
-        };
-    });
+        {# ========================= #}
+        {# MODALE 2 : SLIDER IMAGE #}
+        {# ========================= #}
 
-    const btBody = document.body;
-    const btGridModal = document.getElementById("btMediaGridModal");
-    const btSliderModal = document.getElementById("btSliderModal");
-    const btMediaGrid = document.getElementById("btMediaGrid");
-    const btSliderImage = document.getElementById("btSliderImage");
-    const btSliderCounter = document.getElementById("btSliderCounter");
+        <section class="bt-media-modal" id="btSliderModal" aria-hidden="true">
+            <div class="bt-media-modal__body position-relative">
+                <button
+                    class="bt-modal-round bt-media-modal__back"
+                    type="button"
+                    data-close-slider
+                    aria-label="Fermer"
+                >
+                    <i class="bi bi-x-lg"></i>
+                </button>
 
-    let btCurrentIndex = 0;
-    let btTouchStartX = 0;
-
-    function btInitImages() {
-        document.documentElement.style.setProperty("--bt-gallery-image", "url('" + btPhotos[0].src + "')");
-
-        document.querySelectorAll(".js-bt-img").forEach(function (img, index) {
-            img.src = btPhotos[index % btPhotos.length].src;
-            img.loading = "lazy";
-        });
-    }
-
-    function btCreateGridItem(index, className, label) {
-        const photo = btPhotos[index % btPhotos.length];
-
-        return `
-            <button
-                type="button"
-                class="bt-media-grid__item ${className}"
-                data-open-slider="${index % btPhotos.length}"
-                data-label="${label}"
-                aria-label="Ouvrir ${photo.alt}">
-                <img src="${photo.src}" alt="${photo.alt}" loading="lazy">
-            </button>
-        `;
-    }
-
-    function btRenderMediaGrid() {
-        const parts = [];
-        let index = 0;
-
-        while (index < btPhotos.length) {
-            parts.push(btCreateGridItem(index++, "bt-media-grid__wide", "4:3\n(768x576px)"));
-
-            if (index < btPhotos.length) {
-                parts.push(`
-                    <div class="d-flex gap-3 gap-md-4">
-                        ${btCreateGridItem(index++, "bt-media-grid__half flex-fill", "4:3\n(374x281px)")}
-                        ${btCreateGridItem(index++, "bt-media-grid__half flex-fill", "4:3\n(374x281px)")}
+                <div class="bt-slider-stage">
+                    <div class="bt-slider-stage__counter" id="btSliderCounter">
+                        1/{{ totalPictures }}
                     </div>
-                `);
-            }
 
-            if (index < btPhotos.length) {
-                parts.push(btCreateGridItem(index++, "bt-media-grid__wide", "4:3\n(768x576px)"));
-            }
+                    <div class="d-flex align-items-center justify-content-center gap-4">
+                        <button
+                            class="bt-slider-stage__arrow d-flex align-items-center justify-content-center"
+                            type="button"
+                            data-prev-slide
+                            aria-label="Image précédente"
+                        >
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
 
-            if (index < btPhotos.length) {
-                parts.push(`
-                    <div class="bt-media-grid__portrait-row d-flex gap-3 gap-md-4">
-                        ${btCreateGridItem(index++, "bt-media-grid__portrait-big", "3:4\n(502x669px)")}
-                        <div class="bt-media-grid__portrait-small d-flex flex-column gap-3 gap-md-4">
-                            ${btCreateGridItem(index++, "flex-fill", "3:4\n(246x324px)")}
-                            ${btCreateGridItem(index++, "flex-fill", "3:4\n(246x324px)")}
+                        <div class="bt-slider-stage__image">
+                            <img id="btSliderImage" alt="Photo de l'annonce">
                         </div>
+
+                        <button
+                            class="bt-slider-stage__arrow d-flex align-items-center justify-content-center"
+                            type="button"
+                            data-next-slide
+                            aria-label="Image suivante"
+                        >
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
                     </div>
-                `);
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+
+    {# ========================= #}
+    {# CSS #}
+    {# ========================= #}
+
+    <style>
+        .bt-media-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #ffffff;
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+        }
+
+        .bt-media-modal.is-open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        body.bt-modal-open {
+            overflow: hidden;
+        }
+
+        .bt-media-modal__body {
+            min-height: calc(100vh - 90px);
+            padding: 40px 16px 80px;
+        }
+
+        .bt-media-modal__back {
+            position: sticky;
+            top: 24px;
+            left: 24px;
+            z-index: 20;
+        }
+
+        .bt-media-grid {
+            max-width: 768px;
+            margin: 0 auto;
+        }
+
+        .bt-media-grid__item {
+            width: 100%;
+            border: 0;
+            padding: 0;
+            background: transparent;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 18px;
+        }
+
+        .bt-media-grid__item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform .25s ease;
+        }
+
+        .bt-media-grid__item:hover img {
+            transform: scale(1.03);
+        }
+
+        .bt-media-grid__wide {
+            aspect-ratio: 4 / 3;
+        }
+
+        .bt-media-grid__half {
+            aspect-ratio: 4 / 3;
+        }
+
+        .bt-media-grid__portrait-row {
+            width: 100%;
+        }
+
+        .bt-media-grid__portrait-big {
+            width: 66%;
+            aspect-ratio: 3 / 4;
+        }
+
+        .bt-media-grid__portrait-small {
+            width: 34%;
+        }
+
+        .bt-slider-stage {
+            min-height: calc(100vh - 140px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 32px 16px;
+        }
+
+        .bt-slider-stage__counter {
+            font-size: 15px;
+            font-weight: 700;
+            color: #151515;
+            margin-bottom: 24px;
+        }
+
+        .bt-slider-stage__image {
+            width: min(900px, 75vw);
+            height: min(620px, 70vh);
+            border-radius: 22px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .bt-slider-stage__image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .bt-slider-stage__arrow {
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            border-radius: 50%;
+            border: 1px solid #e5e5e5;
+            background: #ffffff;
+            color: #151515;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background .2s ease, transform .2s ease;
+        }
+
+        .bt-slider-stage__arrow:hover {
+            background: #f5f5f5;
+            transform: scale(1.05);
+        }
+
+        .bt-gallery__open {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .bt-energy-perf-wrapper {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .bt-energy-perf-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #151515;
+            margin-bottom: 12px;
+        }
+
+        .bt-energy-perf-scale {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-height: 34px;
+        }
+
+        .bt-energy-perf-step {
+            width: 38px;
+            height: 7px;
+            border-radius: 2px;
+            display: block;
+            flex: 0 0 auto;
+        }
+
+        .bt-energy-perf-badge {
+            width: 38px;
+            height: 30px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #111;
+            line-height: 1;
+            flex: 0 0 auto;
+        }
+
+        .bt-energy-perf-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 6px;
+        }
+
+        .bt-energy-perf-value {
+            font-size: 15px;
+            color: #8a8a8a;
+        }
+
+        .bt-energy-perf-dpe-a { background: #009c3b; }
+        .bt-energy-perf-dpe-b { background: #48b600; }
+        .bt-energy-perf-dpe-c { background: #d6db00; }
+        .bt-energy-perf-dpe-d { background: #ffef00; }
+        .bt-energy-perf-dpe-e { background: #f7a600; }
+        .bt-energy-perf-dpe-f { background: #f76b00; }
+        .bt-energy-perf-dpe-g { background: #ed2500; }
+
+        .bt-energy-perf-ges-a { background: #5fd2e8; }
+        .bt-energy-perf-ges-b { background: #60bfdb; }
+        .bt-energy-perf-ges-c { background: #65a9cf; }
+        .bt-energy-perf-ges-d { background: #4d789e; }
+        .bt-energy-perf-ges-e { background: #3f577e; }
+        .bt-energy-perf-ges-f { background: #303b61; }
+        .bt-energy-perf-ges-g { background: #25113f; }
+
+        .bt-cost-detail-card {
+            width: 100%;
+            background: #f5f5f5;
+            border-radius: 20px;
+            padding: 28px 24px;
+        }
+
+        .bt-cost-detail-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #151515;
+            margin-bottom: 22px;
+        }
+
+        .bt-cost-detail-label {
+            font-size: 16px;
+            font-weight: 700;
+            color: #151515;
+            line-height: 1.35;
+        }
+
+        .bt-cost-detail-price {
+            font-size: 16px;
+            font-weight: 800;
+            color: #151515;
+            line-height: 1.35;
+            white-space: nowrap;
+        }
+
+        .bt-cost-detail-muted {
+            font-size: 15px;
+            font-weight: 500;
+            color: #8b8b8b;
+            line-height: 1.35;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .bt-slider-stage__image {
+                width: 100%;
+                height: 65vh;
+            }
+
+            .bt-slider-stage__arrow {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+            }
+
+            .bt-media-modal__body {
+                padding-inline: 12px;
             }
         }
 
-        btMediaGrid.innerHTML = parts.join("");
-    }
+        @media (max-width: 576px) {
+            .bt-energy-perf-scale {
+                gap: 4px;
+            }
 
-    function btOpenModal(modal) {
-        modal.classList.add("is-open");
-        modal.setAttribute("aria-hidden", "false");
-        btBody.classList.add("bt-modal-open");
-    }
+            .bt-energy-perf-step,
+            .bt-energy-perf-badge {
+                width: 32px;
+            }
 
-    function btCloseModal(modal) {
-        modal.classList.remove("is-open");
-        modal.setAttribute("aria-hidden", "true");
+            .bt-energy-perf-badge {
+                height: 28px;
+                font-size: 13px;
+            }
 
-        if (!btGridModal.classList.contains("is-open") && !btSliderModal.classList.contains("is-open")) {
-            btBody.classList.remove("bt-modal-open");
+            .bt-cost-detail-card {
+                border-radius: 18px;
+                padding: 24px 18px;
+            }
+
+            .bt-cost-detail-title {
+                font-size: 19px;
+                margin-bottom: 20px;
+            }
+
+            .bt-cost-detail-label,
+            .bt-cost-detail-price {
+                font-size: 15px;
+            }
+
+            .bt-cost-detail-muted {
+                font-size: 14px;
+            }
         }
-    }
+    </style>
 
-    function btOpenGrid() {
-        btOpenModal(btGridModal);
-        btGridModal.scrollTop = 0;
-    }
 
-    function btOpenSlider(index) {
-        btCurrentIndex = Number(index) || 0;
-        btUpdateSlider();
-        btCloseModal(btGridModal);
-        btOpenModal(btSliderModal);
-    }
+    {# ========================= #}
+    {# JAVASCRIPT GALERIE #}
+    {# ========================= #}
 
-    function btUpdateSlider() {
-        const photo = btPhotos[btCurrentIndex];
+    {% set btPhotos = [] %}
 
-        btSliderImage.src = photo.src;
-        btSliderImage.alt = photo.alt;
-        btSliderCounter.textContent = (btCurrentIndex + 1) + "/" + btPhotos.length;
-    }
+    {% for picture in property.propertyImages %}
+        {% set imageSrc = vich_uploader_asset(picture, 'imageFile') %}
 
-    function btNextSlide() {
-        btCurrentIndex = (btCurrentIndex + 1) % btPhotos.length;
-        btUpdateSlider();
-    }
+        {% if imageSrc %}
+            {% set btPhotos = btPhotos|merge([
+                {
+                    src: imageSrc,
+                    alt: 'Photo ' ~ loop.index ~ ' de l’annonce'
+                }
+            ]) %}
+        {% endif %}
+    {% endfor %}
 
-    function btPrevSlide() {
-        btCurrentIndex = (btCurrentIndex - 1 + btPhotos.length) % btPhotos.length;
-        btUpdateSlider();
-    }
+    <script>
+        const btPhotos = {{ btPhotos|json_encode|raw }};
 
-    document.addEventListener("click", function (event) {
-        const openGalleryBtn = event.target.closest("[data-open-gallery]");
-        const openSliderBtn = event.target.closest("[data-open-slider]");
+        const btBody = document.body;
+        const btGridModal = document.getElementById("btMediaGridModal");
+        const btSliderModal = document.getElementById("btSliderModal");
+        const btMediaGrid = document.getElementById("btMediaGrid");
+        const btSliderImage = document.getElementById("btSliderImage");
+        const btSliderCounter = document.getElementById("btSliderCounter");
 
-        if (openGalleryBtn) {
-            event.preventDefault();
-            event.stopPropagation();
-            btOpenGrid();
-            return;
+        let btCurrentIndex = 0;
+        let btTouchStartX = 0;
+
+        function btHasPhotos() {
+            return Array.isArray(btPhotos) && btPhotos.length > 0;
         }
 
-        if (openSliderBtn) {
-            event.preventDefault();
-            btOpenSlider(openSliderBtn.dataset.openSlider);
-            return;
+        function btCreateGridItem(index, className) {
+            const photo = btPhotos[index];
+
+            return `
+                <button
+                    type="button"
+                    class="bt-media-grid__item ${className}"
+                    data-open-slider="${index}"
+                    aria-label="Ouvrir ${photo.alt}"
+                >
+                    <img src="${photo.src}" alt="${photo.alt}" loading="lazy">
+                </button>
+            `;
         }
 
-        if (event.target.closest("[data-close-grid]")) {
+        function btRenderMediaGrid() {
+            if (!btHasPhotos() || !btMediaGrid) {
+                return;
+            }
+
+            const parts = [];
+            let index = 0;
+
+            while (index < btPhotos.length) {
+                parts.push(btCreateGridItem(index++, "bt-media-grid__wide"));
+
+                if (index < btPhotos.length) {
+                    const firstHalf = btCreateGridItem(index++, "bt-media-grid__half flex-fill");
+                    const secondHalf = index < btPhotos.length
+                        ? btCreateGridItem(index++, "bt-media-grid__half flex-fill")
+                        : "";
+
+                    parts.push(`
+                        <div class="d-flex gap-3 gap-md-4">
+                            ${firstHalf}
+                            ${secondHalf}
+                        </div>
+                    `);
+                }
+
+                if (index < btPhotos.length) {
+                    parts.push(btCreateGridItem(index++, "bt-media-grid__wide"));
+                }
+
+                if (index < btPhotos.length) {
+                    const bigPortrait = btCreateGridItem(index++, "bt-media-grid__portrait-big");
+                    const smallPortraitOne = index < btPhotos.length
+                        ? btCreateGridItem(index++, "flex-fill")
+                        : "";
+                    const smallPortraitTwo = index < btPhotos.length
+                        ? btCreateGridItem(index++, "flex-fill")
+                        : "";
+
+                    parts.push(`
+                        <div class="bt-media-grid__portrait-row d-flex gap-3 gap-md-4">
+                            ${bigPortrait}
+
+                            <div class="bt-media-grid__portrait-small d-flex flex-column gap-3 gap-md-4">
+                                ${smallPortraitOne}
+                                ${smallPortraitTwo}
+                            </div>
+                        </div>
+                    `);
+                }
+            }
+
+            btMediaGrid.innerHTML = parts.join("");
+        }
+
+        function btOpenModal(modal) {
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.add("is-open");
+            modal.setAttribute("aria-hidden", "false");
+            btBody.classList.add("bt-modal-open");
+        }
+
+        function btCloseModal(modal) {
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.remove("is-open");
+            modal.setAttribute("aria-hidden", "true");
+
+            const isGridOpen = btGridModal && btGridModal.classList.contains("is-open");
+            const isSliderOpen = btSliderModal && btSliderModal.classList.contains("is-open");
+
+            if (!isGridOpen && !isSliderOpen) {
+                btBody.classList.remove("bt-modal-open");
+            }
+        }
+
+        function btOpenGrid() {
+            if (!btHasPhotos()) {
+                return;
+            }
+
+            btOpenModal(btGridModal);
+
+            if (btGridModal) {
+                btGridModal.scrollTop = 0;
+            }
+        }
+
+        function btOpenSlider(index) {
+            if (!btHasPhotos()) {
+                return;
+            }
+
+            btCurrentIndex = Number(index) || 0;
+
+            if (btCurrentIndex < 0) {
+                btCurrentIndex = 0;
+            }
+
+            if (btCurrentIndex >= btPhotos.length) {
+                btCurrentIndex = btPhotos.length - 1;
+            }
+
+            btUpdateSlider();
             btCloseModal(btGridModal);
-            return;
+            btOpenModal(btSliderModal);
         }
 
-        if (event.target.closest("[data-close-slider]")) {
-            btCloseModal(btSliderModal);
-            return;
+        function btUpdateSlider() {
+            if (!btHasPhotos() || !btSliderImage || !btSliderCounter) {
+                return;
+            }
+
+            const photo = btPhotos[btCurrentIndex];
+
+            btSliderImage.src = photo.src;
+            btSliderImage.alt = photo.alt;
+            btSliderCounter.textContent = (btCurrentIndex + 1) + "/" + btPhotos.length;
         }
 
-        if (event.target.closest("[data-next-slide]")) {
-            btNextSlide();
-            return;
+        function btNextSlide() {
+            if (!btHasPhotos()) {
+                return;
+            }
+
+            btCurrentIndex = (btCurrentIndex + 1) % btPhotos.length;
+            btUpdateSlider();
         }
 
-        if (event.target.closest("[data-prev-slide]")) {
-            btPrevSlide();
-        }
-    });
+        function btPrevSlide() {
+            if (!btHasPhotos()) {
+                return;
+            }
 
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-            btCloseModal(btGridModal);
-            btCloseModal(btSliderModal);
+            btCurrentIndex = (btCurrentIndex - 1 + btPhotos.length) % btPhotos.length;
+            btUpdateSlider();
         }
 
-        if (btSliderModal.classList.contains("is-open")) {
-            if (event.key === "ArrowRight") {
+        document.addEventListener("click", function (event) {
+            const openGalleryBtn = event.target.closest("[data-open-gallery]");
+            const openSliderBtn = event.target.closest("[data-open-slider]");
+
+            if (openGalleryBtn) {
+                event.preventDefault();
+                event.stopPropagation();
+                btOpenGrid();
+                return;
+            }
+
+            if (openSliderBtn) {
+                event.preventDefault();
+                btOpenSlider(openSliderBtn.dataset.openSlider);
+                return;
+            }
+
+            if (event.target.closest("[data-close-grid]")) {
+                event.preventDefault();
+                btCloseModal(btGridModal);
+                return;
+            }
+
+            if (event.target.closest("[data-close-slider]")) {
+                event.preventDefault();
+                btCloseModal(btSliderModal);
+                return;
+            }
+
+            if (event.target.closest("[data-next-slide]")) {
+                event.preventDefault();
                 btNextSlide();
+                return;
             }
 
-            if (event.key === "ArrowLeft") {
+            if (event.target.closest("[data-prev-slide]")) {
+                event.preventDefault();
                 btPrevSlide();
             }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            const activeElement = document.activeElement;
+
+            if (
+                activeElement &&
+                activeElement.matches("[data-open-gallery], [data-open-slider]") &&
+                (event.key === "Enter" || event.key === " ")
+            ) {
+                event.preventDefault();
+
+                if (activeElement.hasAttribute("data-open-gallery")) {
+                    btOpenGrid();
+                    return;
+                }
+
+                if (activeElement.hasAttribute("data-open-slider")) {
+                    btOpenSlider(activeElement.dataset.openSlider);
+                    return;
+                }
+            }
+
+            if (event.key === "Escape") {
+                btCloseModal(btGridModal);
+                btCloseModal(btSliderModal);
+            }
+
+            if (btSliderModal && btSliderModal.classList.contains("is-open")) {
+                if (event.key === "ArrowRight") {
+                    btNextSlide();
+                }
+
+                if (event.key === "ArrowLeft") {
+                    btPrevSlide();
+                }
+            }
+        });
+
+        if (btSliderModal) {
+            btSliderModal.addEventListener("touchstart", function (event) {
+                btTouchStartX = event.changedTouches[0].clientX;
+            }, { passive: true });
+
+            btSliderModal.addEventListener("touchend", function (event) {
+                const touchEndX = event.changedTouches[0].clientX;
+                const diff = touchEndX - btTouchStartX;
+
+                if (Math.abs(diff) > 50) {
+                    diff < 0 ? btNextSlide() : btPrevSlide();
+                }
+            }, { passive: true });
         }
-    });
 
-    btSliderModal.addEventListener("touchstart", function (event) {
-        btTouchStartX = event.changedTouches[0].clientX;
-    }, { passive: true });
+        btRenderMediaGrid();
+        btUpdateSlider();
+    </script>
+{% endblock %}
+{% block js %}
+    {{ parent() }}
 
-    btSliderModal.addEventListener("touchend", function (event) {
-        const touchEndX = event.changedTouches[0].clientX;
-        const diff = touchEndX - btTouchStartX;
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="{{ asset('styles/plugin/owl/dist/owl.carousel.min.js') }}"></script>
 
-        if (Math.abs(diff) > 50) {
-            diff < 0 ? btNextSlide() : btPrevSlide();
-        }
-    }, { passive: true });
+    <script>
+        (function ($) {
+            'use strict';
 
-    btInitImages();
-    btRenderMediaGrid();
-    btUpdateSlider();
-</script>
+            $(window).on('load', function () {
+                const $carousel = $('.owl-carousel');
+
+                if (!$carousel.length) {
+                    return;
+                }
+
+                if (typeof $.fn.owlCarousel === 'undefined') {
+                    console.error('Owl Carousel n’est pas chargé.');
+                    return;
+                }
+
+                $carousel.each(function () {
+                    const $this = $(this);
+
+                    if ($this.data('owl.carousel')) {
+                        $this.trigger('destroy.owl.carousel');
+                        $this.removeClass('owl-loaded owl-drag');
+                        $this.find('.owl-stage-outer').children().unwrap();
+                    }
+
+                    $this.owlCarousel({
+                        loop: true,
+                        margin: 24,
+                        nav: true,
+                        dots: false,
+                        autoHeight: false,
+                        responsive: {
+                            0: {
+                                items: 1
+                            },
+                            600: {
+                                items: 2
+                            },
+                            1000: {
+                                items: 3
+                            },
+                            1200: {
+                                items: 3
+                            }
+                        }
+                    });
+                });
+            });
+        })(jQuery);
+    </script>
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/plugin/owl/dist/assets/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/plugin/owl/dist/assets/owl.theme.default.min.css') }}">
 {% endblock %}

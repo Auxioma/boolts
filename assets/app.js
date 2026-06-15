@@ -11,3 +11,4 @@ import './styles/app.css';
 
 import './stimulus_bootstrap.js';
 import './styles/plugin/intl-tel-input/intlTelInputWithAssets.css';
+
