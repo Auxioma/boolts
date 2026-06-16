@@ -30,8 +30,17 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
     private const PROPERTY_IMAGES_MIN = 3;
     private const PROPERTY_IMAGES_MAX = 6;
 
-    private const IMAGE_WIDTH = 1200;
-    private const IMAGE_HEIGHT = 800;
+    /**
+     * Photo iPhone verticale.
+     */
+    private const IMAGE_PORTRAIT_WIDTH = 3024;
+    private const IMAGE_PORTRAIT_HEIGHT = 4032;
+
+    /**
+     * Photo iPhone horizontale.
+     */
+    private const IMAGE_LANDSCAPE_WIDTH = 4032;
+    private const IMAGE_LANDSCAPE_HEIGHT = 3024;
 
     public function __construct(
         private readonly KernelInterface $kernel,
@@ -91,7 +100,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                     $propertyImage->setImageName($imageName);
                     $propertyImage->setImageSize(filesize($serverImagePath) ?: null);
                 } else {
-                    /**
+                    /*
                      * L’image n’existe pas.
                      * On la télécharge dans var/fixtures/property-images.
                      */
@@ -102,7 +111,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                         imageName: $imageName
                     );
 
-                    /**
+                    /*
                      * On prépare un vrai UploadedFile pour VichUploader.
                      * Le dernier argument "true" indique que c’est un fichier de test,
                      * donc Symfony accepte un fichier déjà présent sur le disque.
@@ -123,8 +132,6 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                     /*
                      * Sécurité :
                      * On renseigne aussi la BDD manuellement avec le même nom stable.
-                     * Comme le namer Vich utilise exactement ce nom, le fichier réel
-                     * et la valeur imageName resteront identiques.
                      */
                     $propertyImage->setImageName($imageName);
                     $propertyImage->setImageSize(filesize($temporaryImagePath) ?: null);
@@ -163,11 +170,28 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
     ): string {
         $seed = \sprintf('boolts-property-%d-image-%d', $propertyId, $position);
 
+        /*
+         * Répartition souhaitée :
+         * 80% horizontal
+         * 20% vertical
+         *
+         * Le modulo 5 donne 1 image verticale sur 5.
+         */
+        $isPortrait = (($propertyId + $position) % 5) === 0;
+
+        $width = $isPortrait
+            ? self::IMAGE_PORTRAIT_WIDTH
+            : self::IMAGE_LANDSCAPE_WIDTH;
+
+        $height = $isPortrait
+            ? self::IMAGE_PORTRAIT_HEIGHT
+            : self::IMAGE_LANDSCAPE_HEIGHT;
+
         $url = \sprintf(
             'https://picsum.photos/seed/%s/%d/%d',
-            $seed,
-            self::IMAGE_WIDTH,
-            self::IMAGE_HEIGHT
+            rawurlencode($seed),
+            $width,
+            $height
         );
 
         $imagePath = $tempDirectory.'/'.$imageName;
@@ -175,7 +199,10 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         $response = $this->httpClient->request('GET', $url);
 
         if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(\sprintf('Impossible de télécharger l’image placeholder : %s', $url));
+            throw new \RuntimeException(\sprintf(
+                'Impossible de télécharger l’image placeholder : %s',
+                $url
+            ));
         }
 
         file_put_contents($imagePath, $response->getContent());

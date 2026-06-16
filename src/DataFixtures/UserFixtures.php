@@ -277,7 +277,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setAdresseComplement($faker->optional(0.4)->secondaryAddress())
                 ->setCodePostal($faker->postcode())
                 ->setVille($faker->city())
-                ->setEntreprise(\sprintf('Agence immobilière %d', $i))
+                ->setEntreprise(\sprintf('toto', $i))
                 ->setDescription(
                     $faker->paragraphs(3, true)
                 )
