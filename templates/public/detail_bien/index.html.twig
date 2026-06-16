@@ -22,7 +22,11 @@
         <main>
 
             {% if totalPictures > 0 and firstPicture %}
-                <section class="bt-hero-responsive" data-open-slider="0">
+                <section
+                    class="bt-hero-responsive position-relative overflow-hidden"
+                    data-open-slider="0"
+                    style="--bt-hero-bg: url('{{ vich_uploader_asset(firstPicture, 'imageFile') }}');"
+                >
                     <img
                         src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
                         class="bt-hero-responsive__image js-bt-img"
@@ -31,17 +35,47 @@
                     >
 
                     <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
-                        <button class="bt-btn bt-btn--glass" type="button" data-open-gallery>
-                            Voir les photos
-                        </button>
-
                         <button class="bt-btn bt-btn--glass" type="button" data-open-slider="0">
                             1/{{ totalPictures }}
                         </button>
                     </div>
                 </section>
             {% endif %}
+<style>
+    /* Background flouté */
+    .bt-hero-responsive::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background-image: var(--bt-hero-bg);
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+        filter: blur(18px);
+        transform: scale(1.08);
+    }
 
+    /* Image nette au centre */
+    .bt-hero-responsive__image {
+        position: relative;
+        z-index: 1;
+        display: block;
+        width: auto;
+        height: 100%;
+        margin: 0 auto;
+        object-fit: cover;
+        object-position: center center;
+    }
+
+    /* Actions au-dessus */
+    .bt-hero-responsive__actions {
+        position: absolute;
+        right: 24px;
+        bottom: 24px;
+        z-index: 2;
+    }
+</style>
             <section class="bt-annonce">
                 <div class="container bt-annonce__container">
 
@@ -51,217 +85,44 @@
                         </h1>
                     {% endif %}
 
-                    {% if totalPictures > 5 %}
+                    {% if totalPictures > 5 %} +5
                         {% include 'public/detail_bien/_partials/image/plus_cinq_image.html.twig' %}
-                    {% elseif totalPictures == 5 %}
-                        5
-                    {% elseif totalPictures == 4 %}
-                        4
-                    {% elseif totalPictures == 3 %}
-                        3
-                    {% elseif totalPictures == 2 %}
-                        2
-                    {% elseif totalPictures == 1 %}
-                        1
+                    {% elseif totalPictures == 5 %}5
+                        {% include 'public/detail_bien/_partials/image/cinq_image.html.twig' %}
+                    {% elseif totalPictures == 4 %}4
+                        {% include 'public/detail_bien/_partials/image/quatre_image.html.twig' %}
+                    {% elseif totalPictures == 3 %}3
+                        {% include 'public/detail_bien/_partials/image/trois_image.html.twig' %}
+                    {% elseif totalPictures == 2 %}2
+                        {% include 'public/detail_bien/_partials/image/deux_image.html.twig' %}
+                    {% elseif totalPictures == 1 %}1
+                        {% include 'public/detail_bien/_partials/image/une_image.html.twig' %}
                     {% endif %}
 
                     <div class="row g-4 align-items-start">
                         <div class="col-lg-8">
+                            {% include 'public/detail_bien/_partials/information_basic.html.twig' %}
+                            {% include 'public/detail_bien/_partials/description.html.twig' %}
 
-                            <section class="bt-property-head">
-                                <h2 class="bt-section-title">
-                                    {{ property.typeBien.name }} à {{ property.typeTransaction.name }}, {{ property.district }},  {{ property.pays }}
-                                </h2>
+                            {% include 'public/detail_bien/_partials/caracteristique.html.twig' %}
+                            {% include 'public/detail_bien/_partials/dpe.html.twig' %}
 
-                                <p class="bt-property-head__subtitle">
-                                    {{ property.chambres }} chambres - {{ property.salleDeBains }} salle de bain
-                                </p>
-
-                                <p class="bt-property-head__subtitle__date">
-                                    Annonce publiée le {{ property.updatedAt|date('d M Y') }}
-                                </p>
-
-                            </section>
-
-                            {% if property.descriptionLogement|trim is not empty %}
-                                <section class="bt-info-section">
-                                    <h2 class="bt-section-title">Description du bien</h2>
-                                    <p class="bt-info-section__text">
-                                        {{ property.descriptionLogement }}
-                                    </p>
-                                </section>
-                            {% endif %}
-
-                            {% if property.caracteristique is not empty %}
-                                <section class="bt-info-section bt-info-section--border-bottom">
-                                    <h2 class="bt-section-title">Ce que le bien propose</h2>
-
-                                    <div class="row gy-4 mt-0">
-                                        {% for item in property.caracteristique %}
-                                            <div class="col-4">
-                                                <div class="bt-feature d-flex align-items-center gap-2">
-                                                    {% if item.icone %}
-                                                        <i class="{{ item.icone }}"></i>
-                                                    {% endif %}
-
-                                                    <span>{{ item.nom }}</span>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                </section>
-                            {% endif %}
-
-                            {% if property.dpeLettre or property.gesLettre %}
-                                <section class="bt-info-section bt-info-section--border-bottom">
-                                    <h2 class="bt-section-title">Performance énergétique</h2>
-
-                                    <div class="row gy-4 mt-0">
-                                        <div class="col-12">
-                                            <div class="bt-feature d-flex align-items-center gap-2 bt-energy-perf-wrapper">
-                                                <div class="container-fluid px-0">
-                                                    <div class="row g-5">
-
-                                                        {% if property.dpeLettre %}
-                                                        <div class="col-12 col-lg-6">
-                                                            <h3 class="bt-energy-perf-title">
-                                                                Diagnostic de performance énergétique (DPE)
-                                                            </h3>
-
-                                                            {% set dpeLettre = property.dpeLettre|default('')|trim|lower %}
-                                                            {% set dpeLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] %}
-
-                                                            {% if dpeLettre in dpeLetters %}
-                                                                <div class="bt-energy-perf-scale mb-4">
-                                                                    {% for letter in dpeLetters %}
-                                                                        {% if dpeLettre == letter %}
-                                                                            <span class="bt-energy-perf-badge bt-energy-perf-dpe-{{ letter }}">
-                                                                                {{ letter|upper }}
-                                                                            </span>
-                                                                        {% else %}
-                                                                            <span class="bt-energy-perf-step bt-energy-perf-dpe-{{ letter }}"></span>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </div>
-                                                            {% endif %}
-                                                            {% endif %}
-                                                            {% if property.anneeConstruction %}
-                                                                <div>
-                                                                    <div class="bt-energy-perf-label">
-                                                                        Année de construction
-                                                                    </div>
-
-                                                                    <div class="bt-energy-perf-value">
-                                                                        {{ property.anneeConstruction }}
-                                                                    </div>
-                                                                </div>
-                                                            {% endif %}
-                                                        </div>
-
-
-                                                        {% if property.gesLettre %}
-                                                            <div class="col-12 col-lg-6">
-                                                                <h3 class="bt-energy-perf-title">
-                                                                    Indice d’émission de gaz à effet de serre (GES)
-                                                                </h3>
-
-                                                                {% set gesLettre = property.gesLettre|default('')|trim|lower %}
-                                                                {% set energyLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] %}
-
-                                                                {% if gesLettre in energyLetters %}
-                                                                    <div class="bt-energy-perf-scale mb-4">
-                                                                        {% for letter in energyLetters %}
-                                                                            {% if gesLettre == letter %}
-                                                                                <span class="bt-energy-perf-badge bt-energy-perf-ges-{{ letter }}">
-                                                                                    {{ letter|upper }}
-                                                                                </span>
-                                                                            {% else %}
-                                                                                <span class="bt-energy-perf-step bt-energy-perf-ges-{{ letter }}"></span>
-                                                                            {% endif %}
-                                                                        {% endfor %}
-                                                                    </div>
-                                                                {% endif %}
-
-                                                                {% if property.dateIndexationEnergie %}
-                                                                    <div>
-                                                                        <div class="bt-energy-perf-label">
-                                                                            Date du diagnostic
-                                                                        </div>
-
-                                                                        <div class="bt-energy-perf-value">
-                                                                            {{ property.dateIndexationEnergie|date('d M Y') }}
-                                                                        </div>
-                                                                    </div>
-                                                                {% endif %}
-                                                            </div>
-                                                        {% endif %}
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                            {% endif %}
 
                             {% set hasLoyer = property.montantLoyerHorsCharge is not null %}
                             {% set hasCharges = property.montantDesCharges is not null %}
                             {% set hasDepot = property.montantDepotDeGarantie is not null %}
 
                             {% if hasLoyer or hasCharges or hasDepot %}
-                                <section class="bt-cost-detail-card">
-                                    <h2 class="bt-cost-detail-title">Détails des coûts</h2>
-
-                                    <div class="d-flex flex-column gap-3">
-
-                                        {% if hasLoyer %}
-                                            <div class="d-flex justify-content-between align-items-start gap-3">
-                                                <div class="bt-cost-detail-label">
-                                                    Loyer charges comprises
-                                                </div>
-
-                                                <div class="bt-cost-detail-price">
-                                                    {% set total = property.montantLoyerHorsCharge + (property.montantDesCharges ?? 0) %}
-                                                    {{ total|number_format(0, ',', ' ') }}€
-                                                </div>
-                                            </div>
-                                        {% endif %}
-
-                                        {% if hasCharges %}
-                                            <div class="d-flex justify-content-between align-items-start gap-3">
-                                                <div class="bt-cost-detail-muted">
-                                                    dont charges
-                                                </div>
-
-                                                <div class="bt-cost-detail-muted">
-                                                    {{ property.montantDesCharges|number_format(0, ',', ' ') }}€
-                                                </div>
-                                            </div>
-                                        {% endif %}
-
-                                        {% if hasDepot %}
-                                            <div class="d-flex justify-content-between align-items-start gap-3">
-                                                <div class="bt-cost-detail-label">
-                                                    Dépôt de garantie à la charge du locataire
-                                                </div>
-
-                                                <div class="bt-cost-detail-price">
-                                                    {{ property.montantDepotDeGarantie|number_format(0, ',', ' ') }}€
-                                                </div>
-                                            </div>
-                                        {% endif %}
-
-                                    </div>
-                                </section>
+                                {% include 'public/detail_bien/_partials/loyer.html.twig' %}
                             {% endif %}
 
                             <section class="bt-related">
                                 <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
                                     <h2 class="bt-section-title">
-                                        Autres biens similaires à Rouen
+                                        Autres biens similaires à {{ property.ville }}
                                     </h2>
 
-                                    <div class="d-flex align-items-center gap-2 text-secondary">
+                                    {# <div class="d-flex align-items-center gap-2 text-secondary">
                                         <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Précédent">
                                             <i class="bi bi-arrow-left-circle"></i>
                                         </button>
@@ -269,64 +130,17 @@
                                         <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Suivant">
                                             <i class="bi bi-arrow-right-circle"></i>
                                         </button>
-                                    </div>
+                                    </div> #}
                                 </div>
 
                                 <div class="bt-related__viewport">
                                     <div class="d-flex gap-4">
                                         <div class="owl-carousel owl-theme">
-                                            {% for i in 1..7 %}
-                                                <div class="item">
-                                                    <div class="bt-property-card">
-                                                        <div class="bt-property-card__image">
-                                                            <img
-                                                                src="{{ asset('images/default-property.jpg') }}"
-                                                                class="js-bt-img"
-                                                                alt="Bien similaire {{ i }}"
-                                                            >
-                                                        </div>
-
-                                                        <div class="bt-property-card__body">
-                                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                                <h3 class="bt-property-card__title">
-                                                                    Appartement à louer
-                                                                </h3>
-
-                                                                <i class="bi bi-heart"></i>
-                                                            </div>
-
-                                                            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                                                                <div class="bt-property-card__price">
-                                                                    765€ <small>/mois</small>
-                                                                </div>
-
-                                                                <span class="bt-property-card__badge">
-                                                                    Charges comprises
-                                                                </span>
-                                                            </div>
-
-                                                            <p class="bt-property-card__text mb-3">
-                                                                Appartement très spacieux et lumineux...
-                                                            </p>
-
-                                                            <p class="bt-property-card__meta mb-1">
-                                                                2 pièces · 1 chambre · 50m2
-                                                            </p>
-
-                                                            <p class="bt-property-card__address">
-                                                                Rue de Courteneneuve, 76510 Saint Nicolas...
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endfor %}
+                                            {% include 'public/detail_bien/_partials/slider.html.twig' %}
                                         </div>
-
                                     </div>
                                 </div>
                             </section>
-
-
                         </div>
 
                         <div class="col-lg-4">
@@ -335,21 +149,13 @@
 
                                     <div class="d-flex align-items-start gap-4 mb-4">
                                         <div class="bt-contact-card__avatar">
-                                            {% set avatar = property.user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
-                                            {% set firstLetter = property.user.prenom ? property.user.prenom|first|upper : null %}
-                                            {% if avatar %}
-                                                <img src="{{ avatar }}" alt="{{ user.entreprise }}">
-                                            {% else %}
-                                                <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" class="w-100" alt="{{ property.user.entreprise }}">
-                                            {% endif %}
+                                            {% include 'public/detail_bien/_partials/composant/image_entreprise.html.twig' %}
                                         </div>
-
                                         <div class="min-w-0">
                                             <p class="bt-contact-card__name">
                                                 {{ property.user.entreprise }}
                                                 <i class="bi bi-chevron-right small ms-1"></i>
                                             </p>
-
                                             <p class="bt-contact-card__address">
                                                 Agence immobilière -
                                                 {{ property.user.adresseContact }}
@@ -357,7 +163,6 @@
                                                 {{ property.user.villeContact }}
                                                 {{ property.user.paysContact }}
                                             </p>
-
                                             <div class="d-flex flex-column align-items-start gap-1 mt-3">
                                                 <button type="button" class="bt-btn bt-btn--outline-primary"
                                                         type="button"
@@ -373,7 +178,6 @@
                                                 >
                                                     {{ property.user.numeroContact }}
                                                 </a>
-
                                                 <a href="mailto:agence@agence.agence" class="bt-contact-card__email">
                                                     agence@agence.agence
                                                 </a>
@@ -381,46 +185,9 @@
                                         </div>
                                     </div>
 
-                                    <div class="bt-hours d-flex align-items-center gap-2 mb-4">
-                                        <div class="bt-hours__day flex-fill">
-                                            Lundi :
-                                        </div>
+                                    {% include 'public/detail_bien/_partials/horaire.html.twig' %}
 
-                                        <div class="bt-hours__time flex-fill">
-                                            9:00-12:00<br>
-                                            14:00-18:00
-                                        </div>
-
-                                        <i class="bi bi-chevron-down"></i>
-                                    </div>
-
-                                    <div class="d-flex align-items-center justify-content-between gap-3 mb-4">
-
-                                        {% set prixVente = property.prix %}
-                                        {% set loyerHorsCharge = property.montantLoyerHorsCharge %}
-                                        {% set charges = property.montantDesCharges|default(0) %}
-
-                                        {% set hasPrixVente = prixVente is not null and prixVente != '' %}
-                                        {% set hasLoyerAside = loyerHorsCharge is not null and loyerHorsCharge != '' %}
-
-                                        {% if hasPrixVente or hasLoyerAside %}
-                                            {% if hasPrixVente %}
-                                                <div class="bt-price">
-                                                    {{ prixVente|number_format(0, ',', ' ') }} €
-                                                </div>
-                                            {% elseif hasLoyerAside %}
-                                                {% set location = loyerHorsCharge + charges %}
-
-                                                <div class="bt-price">
-                                                    {{ location|number_format(0, ',', ' ') }} €
-                                                </div>
-
-                                                <div class="bt-charge-badge">
-                                                    Charges comprises
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
-                                    </div>
+                                    {% include 'public/detail_bien/_partials/composant/loyer.html.twig' %}
 
                                     <div class="d-grid gap-3">
                                         {% if property.user.whatsApp is not empty %}
@@ -447,61 +214,7 @@
                                             Contacter par email
                                         </button>
                                     </div>
-                                    {{ form_start(form, {
-                                        attr: {
-                                            id: 'agency_contact_form',
-                                            class: 'agence-contact-form d-none flex-column',
-                                            'data-agence-contact-form-target': 'form'
-                                        }
-                                    }) }}
-                                    <div class="agence-field">
-                                        <label for="contact_lastname">Votre nom*</label>
-                                        {{ form_widget(form.nom, {
-                                            attr: {
-                                                id: 'contact_lastname',
-                                                placeholder: 'Veuillez saisir votre nom',
-                                                'data-agence-contact-form-target': 'firstField'
-                                            }
-                                        }) }}
-                                    </div>
-
-                                    <div class="agence-field">
-                                        <label for="contact_firstname">Votre prénom*</label>
-                                        {{ form_widget(form.prenom, {
-                                            id: 'contact_firstname',
-                                            attr: {
-                                                placeholder: 'Veuillez saisir votre prénom',
-                                                class: 'contact_firstname'
-                                            }
-                                        }) }}
-                                    </div>
-
-                                    <div class="agence-field">
-                                        <label for="contact_email">Votre e-mail*</label>
-                                        {{ form_widget(form.email, {
-                                            id: 'contact_email',
-                                            attr: {
-                                                placeholder: 'Veuillez saisir votre e-mail'
-                                            }
-                                        }) }}
-                                    </div>
-
-                                    <div class="agence-field">
-                                        <label for="contact_message">Votre message*</label>
-                                        {{ form_widget(form.message, {
-                                            id: 'contact_message',
-                                            attr: {
-                                                placeholder: 'Veuillez saisir votre message',
-                                                rows: 6
-                                            }
-                                        }) }}
-                                    </div>
-
-                                    <button type="submit" class="agence-btn agence-btn-primary w-100">
-                                        <i class="icon-mail"></i>
-                                        Envoyer le mail
-                                    </button>
-                                    {{ form_end(form) }}
+                                    {% include 'public/detail_bien/_partials/composant/formulaire.html.twig' %}
                                 </div>
                             </aside>
                         </div>

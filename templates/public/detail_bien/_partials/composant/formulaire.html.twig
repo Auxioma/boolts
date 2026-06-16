@@ -1,0 +1,55 @@
+{{ form_start(form, {
+    attr: {
+        id: 'agency_contact_form',
+        class: 'agence-contact-form d-none flex-column',
+        'data-agence-contact-form-target': 'form'
+    }
+}) }}
+<div class="agence-field">
+    <label for="contact_lastname">Votre nom*</label>
+    {{ form_widget(form.nom, {
+        attr: {
+            id: 'contact_lastname',
+            placeholder: 'Veuillez saisir votre nom',
+            'data-agence-contact-form-target': 'firstField'
+        }
+    }) }}
+</div>
+
+<div class="agence-field">
+    <label for="contact_firstname">Votre prénom*</label>
+    {{ form_widget(form.prenom, {
+        id: 'contact_firstname',
+        attr: {
+            placeholder: 'Veuillez saisir votre prénom',
+            class: 'contact_firstname'
+        }
+    }) }}
+</div>
+
+<div class="agence-field">
+    <label for="contact_email">Votre e-mail*</label>
+    {{ form_widget(form.email, {
+        id: 'contact_email',
+        attr: {
+            placeholder: 'Veuillez saisir votre e-mail'
+        }
+    }) }}
+</div>
+
+<div class="agence-field">
+    <label for="contact_message">Votre message*</label>
+    {{ form_widget(form.message, {
+        id: 'contact_message',
+        attr: {
+            placeholder: 'Veuillez saisir votre message',
+            rows: 6
+        }
+    }) }}
+</div>
+
+<button type="submit" class="agence-btn agence-btn-primary w-100">
+    <i class="icon-mail"></i>
+    Envoyer le mail
+</button>
+{{ form_end(form) }}

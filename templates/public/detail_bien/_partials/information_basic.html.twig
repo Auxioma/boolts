@@ -1,0 +1,11 @@
+<section class="bt-property-head">
+    <h2 class="bt-section-title">
+        {{ property.typeBien.name }} à {{ property.typeTransaction.name }}, {{ property.district }},  {{ property.pays }}
+    </h2>
+    <p class="bt-property-head__subtitle">
+        {{ property.chambres }} chambres - {{ property.salleDeBains }} salle de bain
+    </p>
+    <p class="bt-property-head__subtitle__date">
+        Annonce publiée le {{ property.updatedAt|date('d M Y') }}
+    </p>
+</section>

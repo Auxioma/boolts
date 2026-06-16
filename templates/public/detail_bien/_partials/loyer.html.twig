@@ -1,0 +1,44 @@
+<section class="bt-cost-detail-card">
+    <h2 class="bt-cost-detail-title">Détails des coûts</h2>
+
+    <div class="d-flex flex-column gap-3">
+
+        {% if hasLoyer %}
+            <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="bt-cost-detail-label">
+                    Loyer charges comprises
+                </div>
+
+                <div class="bt-cost-detail-price">
+                    {% set total = property.montantLoyerHorsCharge + (property.montantDesCharges ?? 0) %}
+                    {{ total|number_format(0, ',', ' ') }}€
+                </div>
+            </div>
+        {% endif %}
+
+        {% if hasCharges %}
+            <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="bt-cost-detail-muted">
+                    dont charges
+                </div>
+
+                <div class="bt-cost-detail-muted">
+                    {{ property.montantDesCharges|number_format(0, ',', ' ') }}€
+                </div>
+            </div>
+        {% endif %}
+
+        {% if hasDepot %}
+            <div class="d-flex justify-content-between align-items-start gap-3">
+                <div class="bt-cost-detail-label">
+                    Dépôt de garantie à la charge du locataire
+                </div>
+
+                <div class="bt-cost-detail-price">
+                    {{ property.montantDepotDeGarantie|number_format(0, ',', ' ') }}€
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</section>

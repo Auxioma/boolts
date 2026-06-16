@@ -1,0 +1,27 @@
+<div class="d-flex align-items-center justify-content-between gap-3 mb-4">
+
+    {% set prixVente = property.prix %}
+    {% set loyerHorsCharge = property.montantLoyerHorsCharge %}
+    {% set charges = property.montantDesCharges|default(0) %}
+
+    {% set hasPrixVente = prixVente is not null and prixVente != '' %}
+    {% set hasLoyerAside = loyerHorsCharge is not null and loyerHorsCharge != '' %}
+
+    {% if hasPrixVente or hasLoyerAside %}
+        {% if hasPrixVente %}
+            <div class="bt-price">
+                {{ prixVente|number_format(0, ',', ' ') }} €
+            </div>
+        {% elseif hasLoyerAside %}
+            {% set location = loyerHorsCharge + charges %}
+
+            <div class="bt-price">
+                {{ location|number_format(0, ',', ' ') }} €
+            </div>
+
+            <div class="bt-charge-badge">
+                Charges comprises
+            </div>
+        {% endif %}
+    {% endif %}
+</div>

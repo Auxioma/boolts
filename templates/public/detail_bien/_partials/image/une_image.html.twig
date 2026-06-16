@@ -1,0 +1,30 @@
+{% set pictures = property.propertyImages|default([]) %}
+{% set firstPicture = pictures|first %}
+
+{% if pictures|length == 1 and firstPicture %}
+    <div class="bt-gallery bt-gallery--count-1 ratio ratio-21x9 overflow-hidden rounded-4 position-relative">
+
+        <img
+            src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+            class="bt-gallery__blur-bg position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+        >
+
+        <button
+            class="bt-gallery__item bt-gallery__item--single position-relative z-1 d-flex align-items-center justify-content-center w-100 h-100 border-0 p-0 bg-transparent"
+            type="button"
+            data-open-slider="0"
+            aria-label="Ouvrir la photo 1"
+        >
+            <img
+                src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+                class="js-bt-img bt-gallery__single-img h-100 object-fit-cover rounded-0"
+                alt="Photo 1"
+                loading="lazy"
+            >
+        </button>
+
+    </div>
+{% endif %}

@@ -1,0 +1,28 @@
+{% set pictures = property.propertyImages|default([])|slice(0, 3) %}
+
+{% if pictures|length == 3 %}
+    <div class="bt-gallery bt-gallery--count-3 row g-0 overflow-hidden">
+
+        {% for picture in pictures %}
+            <div class="col-4">
+                <button
+                    class="bt-gallery__item d-block w-100 h-100 border-0 p-0 bg-transparent overflow-hidden
+                        {% if loop.first %} bt-gallery__item--left{% endif %}
+                        {% if loop.last %} bt-gallery__item--right{% endif %}
+                    "
+                    type="button"
+                    data-open-slider="{{ loop.index0 }}"
+                    aria-label="Ouvrir la photo {{ loop.index }}"
+                >
+                    <img
+                        src="{{ vich_uploader_asset(picture, 'imageFile') }}"
+                        class="js-bt-img w-100 h-100 object-fit-cover d-block"
+                        alt="Photo {{ loop.index }}"
+                        loading="lazy"
+                    >
+                </button>
+            </div>
+        {% endfor %}
+
+    </div>
+{% endif %}

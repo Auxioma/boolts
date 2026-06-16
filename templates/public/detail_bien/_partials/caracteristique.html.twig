@@ -1,0 +1,19 @@
+{% if property.caracteristique is not empty %}
+    <section class="bt-info-section bt-info-section--border-bottom">
+        <h2 class="bt-section-title">Ce que le bien propose</h2>
+
+        <div class="row gy-4 mt-0">
+            {% for item in property.caracteristique %}
+                <div class="col-4">
+                    <div class="bt-feature d-flex align-items-center gap-2">
+                        {% if item.icone %}
+                            <i class="{{ item.icone }}"></i>
+                        {% endif %}
+
+                        <span>{{ item.nom }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}

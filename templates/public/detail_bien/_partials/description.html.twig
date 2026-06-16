@@ -1,0 +1,8 @@
+{% if property.descriptionLogement|trim is not empty %}
+    <section class="bt-info-section">
+        <h2 class="bt-section-title">Description du bien</h2>
+        <p class="bt-info-section__text">
+            {{ property.descriptionLogement }}
+        </p>
+    </section>
+{% endif %}

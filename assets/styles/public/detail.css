@@ -322,11 +322,13 @@
         }
 
         .bt-hero-responsive__image {
+            height: 100%;
             position: relative;
             z-index: 1;
-            height: 100%;
+            display: block;
             margin: 0 auto;
             object-fit: cover;
+            object-position: center center;
         }
 
         .bt-hero-responsive__actions {
@@ -849,7 +851,7 @@
             }
 
             .bt-hero-responsive__image {
-                width: 381px;
+                /*width: 381px;*/
             }
 
             .bt-annonce__title {
