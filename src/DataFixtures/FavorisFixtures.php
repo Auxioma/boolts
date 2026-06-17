@@ -69,7 +69,7 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
                 Property::class
             );
 
-            /**
+            /*
              * On évite qu'une agence mette en favori son propre bien.
              */
             if ($property->getUser() === $user) {

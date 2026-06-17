@@ -85,62 +85,38 @@
                         </h1>
                     {% endif %}
 
-                    {% if totalPictures > 5 %} +5
-                        {% include 'public/detail_bien/_partials/image/plus_cinq_image.html.twig' %}
-                    {% elseif totalPictures == 5 %}5
-                        {% include 'public/detail_bien/_partials/image/cinq_image.html.twig' %}
+                    {% if totalPictures > 5 %} +5 {{ totalPictures }}
+                        {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
+                    {% elseif totalPictures == 5 %}5 / {{ totalPictures }}
+                        {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
                     {% elseif totalPictures == 4 %}4
-                        {% include 'public/detail_bien/_partials/image/quatre_image.html.twig' %}
-                    {% elseif totalPictures == 3 %}3
-                        {% include 'public/detail_bien/_partials/image/trois_image.html.twig' %}
-                    {% elseif totalPictures == 2 %}2
-                        {% include 'public/detail_bien/_partials/image/deux_image.html.twig' %}
-                    {% elseif totalPictures == 1 %}1
-                        {% include 'public/detail_bien/_partials/image/une_image.html.twig' %}
+                        {{ include('public/detail_bien/_partials/image/quatre_image.html.twig') }}
+                    {% elseif totalPictures == 3 %}3/ {{ totalPictures }}
+                        {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
+                    {% elseif totalPictures == 2 %}2/ {{ totalPictures }}
+                        {{ include('public/detail_bien/_partials/image/deux_image.html.twig') }}
+                    {% elseif totalPictures == 1 %}1/ {{ totalPictures }}
+                        {{ include('public/detail_bien/_partials/image/une_image.html.twig') }}
                     {% endif %}
 
                     <div class="row g-4 align-items-start">
                         <div class="col-lg-8">
-                            {% include 'public/detail_bien/_partials/information_basic.html.twig' %}
-                            {% include 'public/detail_bien/_partials/description.html.twig' %}
+                            {{ include('public/detail_bien/_partials/information_basic.html.twig') }}
+                            {{ include('public/detail_bien/_partials/description.html.twig') }}
 
-                            {% include 'public/detail_bien/_partials/caracteristique.html.twig' %}
-                            {% include 'public/detail_bien/_partials/dpe.html.twig' %}
-
+                            {{ include('public/detail_bien/_partials/caracteristique.html.twig') }}
+                            {{ include('public/detail_bien/_partials/dpe.html.twig') }}
 
                             {% set hasLoyer = property.montantLoyerHorsCharge is not null %}
                             {% set hasCharges = property.montantDesCharges is not null %}
                             {% set hasDepot = property.montantDepotDeGarantie is not null %}
 
                             {% if hasLoyer or hasCharges or hasDepot %}
-                                {% include 'public/detail_bien/_partials/loyer.html.twig' %}
+                                {{ include('public/detail_bien/_partials/loyer.html.twig') }}
                             {% endif %}
 
-                            <section class="bt-related">
-                                <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-                                    <h2 class="bt-section-title">
-                                        Autres biens similaires à {{ property.ville }}
-                                    </h2>
+                           {{ include('public/detail_bien/_partials/slider.html.twig') }}
 
-                                    {# <div class="d-flex align-items-center gap-2 text-secondary">
-                                        <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Précédent">
-                                            <i class="bi bi-arrow-left-circle"></i>
-                                        </button>
-
-                                        <button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Suivant">
-                                            <i class="bi bi-arrow-right-circle"></i>
-                                        </button>
-                                    </div> #}
-                                </div>
-
-                                <div class="bt-related__viewport">
-                                    <div class="d-flex gap-4">
-                                        <div class="owl-carousel owl-theme">
-                                            {% include 'public/detail_bien/_partials/slider.html.twig' %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
                         </div>
 
                         <div class="col-lg-4">
@@ -149,7 +125,7 @@
 
                                     <div class="d-flex align-items-start gap-4 mb-4">
                                         <div class="bt-contact-card__avatar">
-                                            {% include 'public/detail_bien/_partials/composant/image_entreprise.html.twig' %}
+                                            {{ include('public/detail_bien/_partials/composant/image_entreprise.html.twig') }}
                                         </div>
                                         <div class="min-w-0">
                                             <p class="bt-contact-card__name">
@@ -185,9 +161,9 @@
                                         </div>
                                     </div>
 
-                                    {% include 'public/detail_bien/_partials/horaire.html.twig' %}
+                                    {{ include('public/detail_bien/_partials/horaire.html.twig') }}
 
-                                    {% include 'public/detail_bien/_partials/composant/loyer.html.twig' %}
+                                    {{ include('public/detail_bien/_partials/composant/loyer.html.twig') }}
 
                                     <div class="d-grid gap-3">
                                         {% if property.user.whatsApp is not empty %}
@@ -214,7 +190,7 @@
                                             Contacter par email
                                         </button>
                                     </div>
-                                    {% include 'public/detail_bien/_partials/composant/formulaire.html.twig' %}
+                                    {{ include('public/detail_bien/_partials/composant/formulaire.html.twig') }}
                                 </div>
                             </aside>
                         </div>
@@ -250,7 +226,6 @@
         </nav>
     </div>
 
-
     {# ========================= #}
     {# MODALE 1 : GRILLE PHOTOS #}
     {# ========================= #}
@@ -271,7 +246,6 @@
                 <div class="bt-media-grid d-flex flex-column gap-3 gap-md-4" id="btMediaGrid"></div>
             </div>
         </section>
-
 
         {# ========================= #}
         {# MODALE 2 : SLIDER IMAGE #}
@@ -320,7 +294,6 @@
             </div>
         </section>
     {% endif %}
-
 
     {# ========================= #}
     {# CSS #}
@@ -624,7 +597,6 @@
         }
     </style>
 
-
     {# ========================= #}
     {# JAVASCRIPT GALERIE #}
     {# ========================= #}
@@ -638,8 +610,8 @@
             {% set btPhotos = btPhotos|merge([
                 {
                     src: imageSrc,
-                    alt: 'Photo ' ~ loop.index ~ ' de l’annonce'
-                }
+                    alt: 'Photo ' ~ loop.index ~ ' de l’annonce',
+                },
             ]) %}
         {% endif %}
     {% endfor %}
@@ -914,81 +886,4 @@
         btRenderMediaGrid();
         btUpdateSlider();
     </script>
-{% endblock %}
-{% block js %}
-    {{ parent() }}
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="{{ asset('styles/plugin/owl/dist/owl.carousel.min.js') }}"></script>
-
-    <script>
-        (function ($) {
-            'use strict';
-
-            $(window).on('load', function () {
-                var $slider = $('.owl-carousel');
-
-                if (!$slider.length) {
-                    return;
-                }
-
-                $slider.owlCarousel({
-                    loop: false,
-                    margin: 20,
-                    dots: false,
-                    nav: true,
-                    rtl: false,
-                    center: false,
-                    autoplay: false,
-                    smartSpeed: 1200,
-                    navText: [
-                        '<i class="fa-solid fa-arrow-left"></i>',
-                        '<i class="fa-solid fa-arrow-right"></i>'
-                    ],
-                    responsive: {
-                        0: {
-                            items: 1,
-                            stagePadding: 50
-                        },
-                        768: {
-                            items: 2,
-                            stagePadding: 50
-                        },
-                        992: {
-                            items: 3
-                        },
-                        1200: {
-                            items: 2,
-                            stagePadding: 50
-                        }
-                    }
-                });
-
-                function updatePrevArrow(event) {
-                    var carousel = event.relatedTarget;
-
-                    if (!carousel) {
-                        return;
-                    }
-
-                    var index = carousel.current();
-
-                    if (index === 0) {
-                        $slider.find('.owl-prev').addClass('arrow-disabled');
-                    } else {
-                        $slider.find('.owl-prev').removeClass('arrow-disabled');
-                    }
-                }
-
-                $slider.on('initialized.owl.carousel changed.owl.carousel refreshed.owl.carousel', updatePrevArrow);
-
-                // État initial de la flèche gauche
-                $slider.find('.owl-prev').addClass('arrow-disabled');
-            });
-        })(jQuery);
-    </script>
-{% endblock %}
-{% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('styles/plugin/owl/dist/assets/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('styles/plugin/owl/dist/assets/owl.theme.default.min.css') }}">
 {% endblock %}

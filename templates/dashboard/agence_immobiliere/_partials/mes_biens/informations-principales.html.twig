@@ -40,8 +40,8 @@
                                 placeholder: 'Entrez un numéro et un nom de rue',
                                 autocomplete: 'off',
                                 'data-mes-biens--adresse-autocomplete-target': 'adresse',
-                                'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur'
-                            }
+                                'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur',
+                            },
                         }) }}
 
                         <div
@@ -62,8 +62,8 @@
                                 placeholder: 'Entrez un code postal',
                                 autocomplete: 'off',
                                 'data-mes-biens--adresse-autocomplete-target': 'codePostal',
-                                'data-mes-biens-required-field': 'true'
-                            }
+                                'data-mes-biens-required-field': 'true',
+                            },
                         }) }}
                     </div>
 
@@ -80,8 +80,8 @@
                                         placeholder: 'Choisissez une ville',
                                         autocomplete: 'off',
                                         'data-mes-biens--adresse-autocomplete-target': 'ville',
-                                        'data-mes-biens-required-field': 'true'
-                                    }
+                                        'data-mes-biens-required-field': 'true',
+                                    },
                                 }) }}
                             </div>
                         </div>
@@ -97,8 +97,8 @@
                                         class: 'form-control',
                                         autocomplete: 'off',
                                         'data-mes-biens--adresse-autocomplete-target': 'pays',
-                                        'data-mes-biens-required-field': 'true'
-                                    }
+                                        'data-mes-biens-required-field': 'true',
+                                    },
                                 }) }}
                             </div>
                         </div>
@@ -112,8 +112,8 @@
 
                             {{ form_widget(form.neighborhood, {
                                 attr: {
-                                    'data-mes-biens--adresse-autocomplete-target': 'neighborhood'
-                                }
+                                    'data-mes-biens--adresse-autocomplete-target': 'neighborhood',
+                                },
                             }) }}
                         </div>
 
@@ -124,8 +124,8 @@
 
                             {{ form_widget(form.locality, {
                                 attr: {
-                                    'data-mes-biens--adresse-autocomplete-target': 'locality'
-                                }
+                                    'data-mes-biens--adresse-autocomplete-target': 'locality',
+                                },
                             }) }}
 
                         </div>
@@ -135,50 +135,50 @@
 
                     {{ form_widget(form.mapboxId, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'mapboxId'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'mapboxId',
+                        },
                     }) }}
 
                     {{ form_widget(form.fullAddress, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'fullAddress'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'fullAddress',
+                        },
                     }) }}
 
                     {{ form_widget(form.featureType, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'featureType'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'featureType',
+                        },
                     }) }}
 
                     {{ form_widget(form.region, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'region'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'region',
+                        },
                     }) }}
 
                     {{ form_widget(form.district, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'district'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'district',
+                        },
                     }) }}
 
                     {{ form_widget(form.poi, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'poi'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'poi',
+                        },
                     }) }}
 
                     {{ form_widget(form.longitude, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'longitude'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'longitude',
+                        },
                     }) }}
 
                     {{ form_widget(form.latitude, {
                         attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'latitude'
-                        }
+                            'data-mes-biens--adresse-autocomplete-target': 'latitude',
+                        },
                     }) }}
 
                 </div>

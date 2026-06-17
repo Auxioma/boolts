@@ -1,18 +1,7 @@
 {% if totalPictures > 0 and firstPicture %}
     <div class="bt-gallery d-flex gap-3">
-        <div
-            class="bt-gallery__main"
-            role="button"
-            tabindex="0"
-            data-open-slider="0"
-            aria-label="Ouvrir la photo principale"
-        >
-            <img
-                src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
-                class="js-bt-img"
-                alt="Photo principale de l'appartement"
-                loading="lazy"
-            >
+        <div class="bt-gallery__main" role="button" tabindex="0" data-open-slider="0" aria-label="Ouvrir la photo principale">
+            <img src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}" class="js-bt-img" alt="Photo principale de l'appartement" loading="lazy">
         </div>
 
         {% set sidePictures = pictures|slice(1, 4) %}
@@ -25,29 +14,24 @@
 
                     {% if loop.index0 is even %}
                         <div class="bt-gallery__row d-flex">
-                    {% endif %}
+                        {% endif %}
 
-                    <div
-                        class="bt-gallery__thumb
-                                                {% if imageIndex == 2 %} bt-gallery__thumb--top-right{% endif %}
-                                                {% if imageIndex == 4 %} bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay{% endif %}
-                                                {% if loop.last and imageIndex < 4 %} bt-gallery__thumb--overlay{% endif %}
-                                            "
-                        role="button"
-                        tabindex="0"
-                        data-open-slider="{{ imageIndex }}"
-                        aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
-                    >
-                        <img
-                            src="{{ vich_uploader_asset(picture, 'imageFile') }}"
-                            class="js-bt-img"
-                            alt="Photo {{ imageIndex + 1 }}"
-                            loading="lazy"
-                        >
+                        <div class="bt-gallery__thumb
+{% if imageIndex == 2 %} bt-gallery__thumb--top-right{% endif %}
+{% if imageIndex == 4 %} bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay{% endif %}
+{% if loop.last and imageIndex < 4 %} bt-gallery__thumb--overlay{% endif %}
+" role="button" tabindex="0" data-open-slider="{{ imageIndex }}" aria-label="Ouvrir la photo {{ imageIndex + 1 }}">
+                            <img src="{{ vich_uploader_asset(picture, 'imageFile') }}" class="js-bt-img" alt="Photo {{ imageIndex + 1 }}" loading="lazy">
+                            {% if loop.last %}
+                                <span class="bt-gallery__open" role="button" tabindex="0" data-open-gallery>
+                                    Voir les
+                                    {{ totalPictures }}
+                                    photos
+                                </span>
+                            {% endif %}
+                        </div>
 
-                    </div>
-
-                    {% if loop.index0 is odd or loop.last %}
+                        {% if loop.index0 is odd or loop.last %}
                         </div>
                     {% endif %}
                 {% endfor %}

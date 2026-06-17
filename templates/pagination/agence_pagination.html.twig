@@ -14,7 +14,6 @@
             </a>
         {% endif %}
 
-
         {# Première page si elle est hors de la plage #}
         {% if first is defined and first not in pagesInRange %}
             <a href="{{ path(route, query|merge({(pageParameterName): first})) }}">{{ first }}</a>
@@ -23,7 +22,6 @@
                 <span>...</span>
             {% endif %}
         {% endif %}
-
 
         {# Pages visibles #}
         {% for page in pagesInRange %}
@@ -34,7 +32,6 @@
             {% endif %}
         {% endfor %}
 
-
         {# Dernière page si elle est hors de la plage #}
         {% if last is defined and last not in pagesInRange %}
             {% if pagesInRange|last < last - 1 %}
@@ -43,7 +40,6 @@
 
             <a href="{{ path(route, query|merge({(pageParameterName): last})) }}">{{ last }}</a>
         {% endif %}
-
 
         {# Flèche droite #}
         {% if next is defined %}

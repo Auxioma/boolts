@@ -1,380 +1,673 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Boolts - L’immobilier réinventé{% endblock %}
+{% block title %}Boolts - L’immobilier réinventé
+{% endblock %}
 
 {% block body %}
-    <div class="home-bt-page">
-        <main>
-            <section class="home-bt-top">
-                <div class="container-xl home-bt-container home-bt-hero-shell">
-                    <div class="home-bt-hero mx-auto">
-                        <div class="home-bt-hero-content">
-                            <h1 class="home-bt-hero-title">
-                                L’immobilier,<br>
-                                réinventé.
-                            </h1>
+	<div class="home-bt-page">
+		<main>
+			<section class="home-bt-top">
+				<div class="container-xl home-bt-container home-bt-hero-shell">
+					<div class="home-bt-hero mx-auto">
+						<div class="home-bt-hero-content">
+							<h1 class="home-bt-hero-title">
+								L’immobilier,<br>
+								réinventé.
+							</h1>
 
-                            <div class="home-bt-search-hero">
-                                <div class="home-bt-search-tabs">
-                                    <button type="button" class="home-bt-search-tab active">
-                                        <i class="bi bi-house-door"></i>
-                                        Acheter
-                                    </button> 
-
-                                    <button type="button" class="home-bt-search-tab">
-                                        <i class="bi bi-key"></i>
-                                        Louer
-                                    </button>
-
-                                    <button type="button" class="home-bt-search-tab">
-                                        <i class="bi bi-pencil"></i>
-                                        Vendre
-                                    </button>
-                                </div>
-
-{{ form_start(form, {
-    attr: {
-        class: 'home-bt-search-bar',
-        'data-controller': 'home-bt-mapbox-search',
-        'data-home-bt-mapbox-search-token-value': mapbox_public_token,
-        'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr')
-    }
-}) }}
-
-    <div class="home-bt-search-bar__field">
-        {{ form_widget(form.filter, {
-            attr: {
-                autocomplete: 'off',
-                'data-home-bt-mapbox-search-target': 'input',
-                'data-action': 'input->home-bt-mapbox-search#search'
-            }
-        }) }}
-
-        <button type="submit" aria-label="Rechercher">
-            <i class="bi bi-search"></i>
-        </button>
-    </div>
-
-    <ul
-        class="home-bt-search-bar__results"
-        data-home-bt-mapbox-search-target="results"
-    ></ul>
-
-    <input
-        type="text"
-        name="pays"
-        id="pays"
-        placeholder="Pays"
-        class="search-bar__input"
-        data-home-bt-mapbox-search-target="pays"
-    >
-
-    <input
-        type="text"
-        name="ville"
-        id="ville"
-        placeholder="Ville"
-        class="search-bar__input"
-        data-home-bt-mapbox-search-target="ville"
-    >
-
-    <input
-        type="text"
-        name="cp"
-        id="cp"
-        placeholder="Code postal"
-        class="search-bar__input"
-        data-home-bt-mapbox-search-target="cp"
-    >
-
-{{ form_end(form, { render_rest: false }) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="container-xl home-bt-container home-bt-resume-shell">
-                    <div class="home-bt-resume mx-auto">
-                        <div class="d-flex align-items-center justify-content-between gap-3 h-100">
-                            <div class="d-flex flex-column align-items-start gap-3">
-                                <h2 class="home-bt-resume-title">
-                                    Continuez votre recherche pour “Appartement à louer” à Paris
-                                </h2>
-
-                                <div class="d-flex align-items-center gap-3">
-                                    <a href="#" class="home-bt-button-primary">Reprendre la recherche</a>
-                                    <a href="#" class="home-bt-button-outline">Annuler</a>
-                                </div>
-                            </div>
-
-                            <div class="home-bt-resume-stack">
-                                <span></span>
-                                <span></span>
-                                <span></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="home-bt-listings">
-                <div class="container-xl home-bt-container">
-                    <div class="home-bt-search-header">
-                        <h2 class="home-bt-search-title">Explorez toutes les propritétés</h2>
-
-                        <div class="home-bt-main-tabs">
-                            <button type="button" class="home-bt-main-tab active" data-tab-button="location">En location</button>
-                            <button type="button" class="home-bt-main-tab" data-tab-button="vente">En vente</button>
-                        </div>
-                    </div>
-
-                    <div class="home-bt-tab-panel active" data-tab-panel="location">
-                        <section class="home-bt-slider">
-                            <div class="home-bt-slider-header">
-                                <h3 class="home-bt-slider-title">Logements populaires à <span>Paris</span> <i class="bi bi-chevron-right"></i></h3>
-
-                                <div class="home-bt-slider-nav">
-                                    <button type="button" data-slider-prev><i class="bi bi-arrow-left-circle"></i></button>
-                                    <button type="button" data-slider-next><i class="bi bi-arrow-right-circle"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="home-bt-slider-viewport">
-                                <div class="home-bt-slider-track">
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="home-bt-slider">
-                            <div class="home-bt-slider-header">
-                                <h3 class="home-bt-slider-title">Logements récemment<br class="d-md-none d-lg-none"> ajoutés à <span>Paris</span> <i class="bi bi-chevron-right"></i></h3>
-
-                                <div class="home-bt-slider-nav">
-                                    <button type="button" data-slider-prev><i class="bi bi-arrow-left-circle"></i></button>
-                                    <button type="button" data-slider-next><i class="bi bi-arrow-right-circle"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="home-bt-slider-viewport">
-                                <div class="home-bt-slider-track">
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-5);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-6);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-7);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-8);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section class="home-bt-slider">
-                            <div class="home-bt-slider-header">
-                                <h3 class="home-bt-slider-title">Logements récemment<br class="d-md-none d-lg-none"> ajoutés à <span>Paris</span> <i class="bi bi-chevron-right"></i></h3>
-
-                                <div class="home-bt-slider-nav">
-                                    <button type="button" data-slider-prev><i class="bi bi-arrow-left-circle"></i></button>
-                                    <button type="button" data-slider-next><i class="bi bi-arrow-right-circle"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="home-bt-slider-viewport">
-                                <div class="home-bt-slider-track">
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-9);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-10);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-11);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-12);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-
-                    <div class="home-bt-tab-panel" data-tab-panel="vente">
-                        <section class="home-bt-slider">
-                            <div class="home-bt-slider-header">
-                                <h3 class="home-bt-slider-title">Logements populaires à <span>Paris</span> <i class="bi bi-chevron-right"></i></h3>
-
-                                <div class="home-bt-slider-nav">
-                                    <button type="button" data-slider-prev><i class="bi bi-arrow-left-circle"></i></button>
-                                    <button type="button" data-slider-next><i class="bi bi-arrow-right-circle"></i></button>
-                                </div>
-                            </div>
-
-                            <div class="home-bt-slider-viewport">
-                                <div class="home-bt-slider-track">
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                    <article class="home-bt-card"><div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div><div class="home-bt-card-body"><div class="home-bt-card-head"><h4 class="home-bt-card-title">Appartement à louer</h4><button class="home-bt-card-fav"><i class="bi bi-heart"></i></button></div><div class="home-bt-card-price-line"><p class="home-bt-card-price">765€ <span>/mois</span></p><span class="home-bt-card-badge">Charges comprises</span></div><p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p><div class="home-bt-details"><p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p><p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p></div></div></article>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-            </section>
-
-            <section class="home-bt-content">
-                <div class="container-xl home-bt-container">
-                    <div class="home-bt-content-section row align-items-center gy-4">
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-text-block">
-                                <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-content-image"></div>
-                        </div>
-                    </div>
-
-                    <div class="home-bt-content-section is-second row align-items-center gy-4">
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-content-image is-second"></div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-text-block ms-md-auto">
-                                <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="home-bt-codes">
-                <div class="container-xl home-bt-container">
-                    <h2 class="home-bt-codes-title">Boolts redéfinit <span>les codes</span></h2>
-
-                    <div class="row g-4">
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-box-seam"></i>
-                                <h3>Transparence</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-globe2"></i>
-                                <h3>Fluidité</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-chat-dots"></i>
-                                <h3>Réactivité</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-diagram-3"></i>
-                                <h3>Écosystème</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="home-bt-app">
-                <div class="container-xl home-bt-container">
-                    <div class="home-bt-app-card">
-                        <div class="home-bt-app-mockup"></div>
-
-                        <div class="home-bt-app-text">
-                            <h2>Il y a vraiment plein de choses à voir sur notre application !</h2>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
-                            <a href="#" class="home-bt-app-btn">Télécharger l’application</a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+							{% include 'public/home/_partials/composant/search.html.twig' %}
 
 
-        <nav class="home-bt-mobile-tabbar">
-            <a href="#" class="active">
-                <i class="bi bi-search"></i>
-                Explorer
-            </a>
-            <a href="#">
-                <i class="bi bi-heart"></i>
-                Favoris
-            </a>
-            <a href="#">
-                <i class="bi bi-chat-dots"></i>
-                Messagerie
-            </a>
-            <a href="#">
-                <i class="bi bi-person"></i>
-                Compte
-            </a>
-        </nav>
-    </div>
+						</div>
+					</div>
+				</div>
 
-    <script>
-        document.querySelectorAll('[data-tab-button]').forEach((button) => {
-            button.addEventListener('click', () => {
-                const tab = button.dataset.tabButton;
+				<div class="container-xl home-bt-container home-bt-resume-shell">
+					<div class="home-bt-resume mx-auto">
+						<div class="d-flex align-items-center justify-content-between gap-3 h-100">
+							<div class="d-flex flex-column align-items-start gap-3">
+								<h2 class="home-bt-resume-title">
+									Continuez votre recherche pour “Appartement à louer” à Paris
+								</h2>
 
-                document.querySelectorAll('[data-tab-button]').forEach((item) => {
-                    item.classList.toggle('active', item.dataset.tabButton === tab);
-                });
+								<div class="d-flex align-items-center gap-3">
+									<a href="#" class="home-bt-button-primary">Reprendre la recherche</a>
+									<a href="#" class="home-bt-button-outline">Annuler</a>
+								</div>
+							</div>
 
-                document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
-                    panel.classList.toggle('active', panel.dataset.tabPanel === tab);
-                });
-            });
-        });
+							<div class="home-bt-resume-stack">
+								<span></span>
+								<span></span>
+								<span></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
 
-        document.querySelectorAll('.home-bt-slider').forEach((slider) => {
-            const track = slider.querySelector('.home-bt-slider-track');
-            const prev = slider.querySelector('[data-slider-prev]');
-            const next = slider.querySelector('[data-slider-next]');
+			<section class="home-bt-listings">
+				<div class="container-xl home-bt-container">
+					<div class="home-bt-search-header">
+						<h2 class="home-bt-search-title">Explorez toutes les propritétés</h2>
 
-            if (!track) {
-                return;
-            }
+						<div class="home-bt-main-tabs">
+							<button type="button" class="home-bt-main-tab active" data-tab-button="location">En location</button>
+							<button type="button" class="home-bt-main-tab" data-tab-button="vente">En vente</button>
+						</div>
+					</div>
 
-            const getScrollAmount = () => {
-                const card = track.querySelector('.home-bt-card');
+					<div class="home-bt-tab-panel active" data-tab-panel="location">
+						<section class="home-bt-slider">
+							<div class="home-bt-slider-header">
+								<h3 class="home-bt-slider-title">Logements populaires à
+									<span>Paris</span>
+									<i class="bi bi-chevron-right"></i>
+								</h3>
 
-                if (!card) {
-                    return 300;
-                }
+								<div class="home-bt-slider-nav">
+									<button type="button" data-slider-prev>
+										<i class="bi bi-arrow-left-circle"></i>
+									</button>
+									<button type="button" data-slider-next>
+										<i class="bi bi-arrow-right-circle"></i>
+									</button>
+								</div>
+							</div>
 
-                const styles = window.getComputedStyle(track);
-                const gap = parseFloat(styles.gap || '20');
+							<div class="home-bt-slider-viewport">
+								<div class="home-bt-slider-track">
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+								</div>
+							</div>
+						</section>
 
-                return card.getBoundingClientRect().width + (Number.isNaN(gap) ? 20 : gap);
-            };
+						<section class="home-bt-slider">
+							<div class="home-bt-slider-header">
+								<h3 class="home-bt-slider-title">Logements récemment<br class="d-md-none d-lg-none">
+									ajoutés à
+									<span>Paris</span>
+									<i class="bi bi-chevron-right"></i>
+								</h3>
 
-            if (prev) {
-                prev.addEventListener('click', () => {
-                    track.scrollBy({
-                        left: -getScrollAmount(),
-                        behavior: 'smooth',
-                    });
-                });
-            }
+								<div class="home-bt-slider-nav">
+									<button type="button" data-slider-prev>
+										<i class="bi bi-arrow-left-circle"></i>
+									</button>
+									<button type="button" data-slider-next>
+										<i class="bi bi-arrow-right-circle"></i>
+									</button>
+								</div>
+							</div>
 
-            if (next) {
-                next.addEventListener('click', () => {
-                    track.scrollBy({
-                        left: getScrollAmount(),
-                        behavior: 'smooth',
-                    });
-                });
-            }
-        });
-    </script>
+							<div class="home-bt-slider-viewport">
+								<div class="home-bt-slider-track">
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-5);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-6);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-7);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-8);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+								</div>
+							</div>
+						</section>
+
+						<section class="home-bt-slider">
+							<div class="home-bt-slider-header">
+								<h3 class="home-bt-slider-title">Logements récemment<br class="d-md-none d-lg-none">
+									ajoutés à
+									<span>Paris</span>
+									<i class="bi bi-chevron-right"></i>
+								</h3>
+
+								<div class="home-bt-slider-nav">
+									<button type="button" data-slider-prev>
+										<i class="bi bi-arrow-left-circle"></i>
+									</button>
+									<button type="button" data-slider-next>
+										<i class="bi bi-arrow-right-circle"></i>
+									</button>
+								</div>
+							</div>
+
+							<div class="home-bt-slider-viewport">
+								<div class="home-bt-slider-track">
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-9);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-10);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-11);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-12);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+								</div>
+							</div>
+						</section>
+					</div>
+
+					<div class="home-bt-tab-panel" data-tab-panel="vente">
+						<section class="home-bt-slider">
+							<div class="home-bt-slider-header">
+								<h3 class="home-bt-slider-title">Logements populaires à
+									<span>Paris</span>
+									<i class="bi bi-chevron-right"></i>
+								</h3>
+
+								<div class="home-bt-slider-nav">
+									<button type="button" data-slider-prev>
+										<i class="bi bi-arrow-left-circle"></i>
+									</button>
+									<button type="button" data-slider-next>
+										<i class="bi bi-arrow-right-circle"></i>
+									</button>
+								</div>
+							</div>
+
+							<div class="home-bt-slider-viewport">
+								<div class="home-bt-slider-track">
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+									<article class="home-bt-card">
+										<div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div>
+										<div class="home-bt-card-body">
+											<div class="home-bt-card-head">
+												<h4 class="home-bt-card-title">Appartement à louer</h4>
+												<button class="home-bt-card-fav">
+													<i class="bi bi-heart"></i>
+												</button>
+											</div>
+											<div class="home-bt-card-price-line">
+												<p class="home-bt-card-price">765€
+													<span>/mois</span>
+												</p>
+												<span class="home-bt-card-badge">Charges comprises</span>
+											</div>
+											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
+											<div class="home-bt-details">
+												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+											</div>
+										</div>
+									</article>
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+			</section>
+
+			<section class="home-bt-content">
+				<div class="container-xl home-bt-container">
+					<div class="home-bt-content-section row align-items-center gy-4">
+						<div class="col-12 col-md-6">
+							<div class="home-bt-text-block">
+								<h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+							</div>
+						</div>
+
+						<div class="col-12 col-md-6">
+							<div class="home-bt-content-image"></div>
+						</div>
+					</div>
+
+					<div class="home-bt-content-section is-second row align-items-center gy-4">
+						<div class="col-12 col-md-6">
+							<div class="home-bt-content-image is-second"></div>
+						</div>
+
+						<div class="col-12 col-md-6">
+							<div class="home-bt-text-block ms-md-auto">
+								<h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="home-bt-codes">
+				<div class="container-xl home-bt-container">
+					<h2 class="home-bt-codes-title">Boolts redéfinit
+						<span>les codes</span>
+					</h2>
+
+					<div class="row g-4">
+						<div class="col-6 col-md-3">
+							<div class="home-bt-feature">
+								<i class="bi bi-box-seam"></i>
+								<h3>Transparence</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur.</p>
+							</div>
+						</div>
+
+						<div class="col-6 col-md-3">
+							<div class="home-bt-feature">
+								<i class="bi bi-globe2"></i>
+								<h3>Fluidité</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur.</p>
+							</div>
+						</div>
+
+						<div class="col-6 col-md-3">
+							<div class="home-bt-feature">
+								<i class="bi bi-chat-dots"></i>
+								<h3>Réactivité</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur.</p>
+							</div>
+						</div>
+
+						<div class="col-6 col-md-3">
+							<div class="home-bt-feature">
+								<i class="bi bi-diagram-3"></i>
+								<h3>Écosystème</h3>
+								<p>Lorem ipsum dolor sit amet, consectetur.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="home-bt-app">
+				<div class="container-xl home-bt-container">
+					<div class="home-bt-app-card">
+						<div class="home-bt-app-mockup"></div>
+
+						<div class="home-bt-app-text">
+							<h2>Il y a vraiment plein de choses à voir sur notre application !</h2>
+							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+							<a href="#" class="home-bt-app-btn">Télécharger l’application</a>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<nav class="home-bt-mobile-tabbar">
+			<a href="#" class="active">
+				<i class="bi bi-search"></i>
+				Explorer
+			</a>
+			<a href="#">
+				<i class="bi bi-heart"></i>
+				Favoris
+			</a>
+			<a href="#">
+				<i class="bi bi-chat-dots"></i>
+				Messagerie
+			</a>
+			<a href="#">
+				<i class="bi bi-person"></i>
+				Compte
+			</a>
+		</nav>
+	</div>
+
+	<script>
+		document.querySelectorAll('[data-tab-button]').forEach((button) => {
+button.addEventListener('click', () => {
+const tab = button.dataset.tabButton;
+
+document.querySelectorAll('[data-tab-button]').forEach((item) => {
+item.classList.toggle('active', item.dataset.tabButton === tab);
+});
+
+document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
+panel.classList.toggle('active', panel.dataset.tabPanel === tab);
+});
+});
+});
+
+document.querySelectorAll('.home-bt-slider').forEach((slider) => {
+const track = slider.querySelector('.home-bt-slider-track');
+const prev = slider.querySelector('[data-slider-prev]');
+const next = slider.querySelector('[data-slider-next]');
+
+if (! track) {
+return;
+}
+
+const getScrollAmount = () => {
+const card = track.querySelector('.home-bt-card');
+
+if (! card) {
+return 300;
+}
+
+const styles = window.getComputedStyle(track);
+const gap = parseFloat(styles.gap || '20');
+
+return card.getBoundingClientRect().width + (Number.isNaN(gap) ? 20 : gap);
+};
+
+if (prev) {
+prev.addEventListener('click', () => {
+track.scrollBy({
+left: - getScrollAmount(),
+behavior: 'smooth'
+});
+});
+}
+
+if (next) {
+next.addEventListener('click', () => {
+track.scrollBy({left: getScrollAmount(), behavior: 'smooth'});
+});
+}
+});
+	</script>
 
 {% endblock %}

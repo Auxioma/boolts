@@ -451,8 +451,8 @@
                                     {{ form_widget(prototype.isOpen, {
                                         attr: {
                                             class: 'js-opening-toggle',
-                                            'data-action': 'change->opening-hours#toggle'
-                                        }
+                                            'data-action': 'change->opening-hours#toggle',
+                                        },
                                     }) }}
                                 {% endset %}
 
@@ -479,22 +479,22 @@
                                         <label class="opening-day__label">Lundi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({'__name__': '0'})|raw }}
+                                            {{ protoIsOpen|replace({__name__: '0'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
                                         <span class="js-opening-status">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({'__name__': '0'})|raw }}
+                                            {{ protoOuvertureMatin|replace({__name__: '0'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({'__name__': '0'})|raw }}
+                                            {{ protoFermetureMatin|replace({__name__: '0'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({'__name__': '0'})|raw }}
+                                            {{ protoOuvertureApresMidi|replace({__name__: '0'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({'__name__': '0'})|raw }}
+                                            {{ protoFermetureApresMidi|replace({__name__: '0'})|raw }}
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
@@ -507,29 +507,28 @@
                                             </button>
                                         </div>
                                     </div>
-
 
                                     {# Mardi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
                                         <label class="opening-day__label">Mardi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({'__name__': '1'})|raw }}
+                                            {{ protoIsOpen|replace({__name__: '1'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
                                         <span class="js-opening-status">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({'__name__': '1'})|raw }}
+                                            {{ protoOuvertureMatin|replace({__name__: '1'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({'__name__': '1'})|raw }}
+                                            {{ protoFermetureMatin|replace({__name__: '1'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({'__name__': '1'})|raw }}
+                                            {{ protoOuvertureApresMidi|replace({__name__: '1'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({'__name__': '1'})|raw }}
+                                            {{ protoFermetureApresMidi|replace({__name__: '1'})|raw }}
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
@@ -542,29 +541,28 @@
                                             </button>
                                         </div>
                                     </div>
-
 
                                     {# Mercredi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
                                         <label class="opening-day__label">Mercredi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({'__name__': '2'})|raw }}
+                                            {{ protoIsOpen|replace({__name__: '2'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
                                         <span class="js-opening-status">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({'__name__': '2'})|raw }}
+                                            {{ protoOuvertureMatin|replace({__name__: '2'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({'__name__': '2'})|raw }}
+                                            {{ protoFermetureMatin|replace({__name__: '2'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({'__name__': '2'})|raw }}
+                                            {{ protoOuvertureApresMidi|replace({__name__: '2'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({'__name__': '2'})|raw }}
+                                            {{ protoFermetureApresMidi|replace({__name__: '2'})|raw }}
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
@@ -577,29 +575,28 @@
                                             </button>
                                         </div>
                                     </div>
-
 
                                     {# Jeudi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
                                         <label class="opening-day__label">Jeudi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({'__name__': '3'})|raw }}
+                                            {{ protoIsOpen|replace({__name__: '3'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
                                         <span class="js-opening-status">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({'__name__': '3'})|raw }}
+                                            {{ protoOuvertureMatin|replace({__name__: '3'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({'__name__': '3'})|raw }}
+                                            {{ protoFermetureMatin|replace({__name__: '3'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({'__name__': '3'})|raw }}
+                                            {{ protoOuvertureApresMidi|replace({__name__: '3'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({'__name__': '3'})|raw }}
+                                            {{ protoFermetureApresMidi|replace({__name__: '3'})|raw }}
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
@@ -612,29 +609,28 @@
                                             </button>
                                         </div>
                                     </div>
-
 
                                     {# Vendredi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
                                         <label class="opening-day__label">Vendredi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({'__name__': '4'})|raw }}
+                                            {{ protoIsOpen|replace({__name__: '4'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
                                         <span class="js-opening-status">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({'__name__': '4'})|raw }}
+                                            {{ protoOuvertureMatin|replace({__name__: '4'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({'__name__': '4'})|raw }}
+                                            {{ protoFermetureMatin|replace({__name__: '4'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({'__name__': '4'})|raw }}
+                                            {{ protoOuvertureApresMidi|replace({__name__: '4'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({'__name__': '4'})|raw }}
+                                            {{ protoFermetureApresMidi|replace({__name__: '4'})|raw }}
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
@@ -647,29 +643,28 @@
                                             </button>
                                         </div>
                                     </div>
-
 
                                     {# Samedi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
                                         <label class="opening-day__label">Samedi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({'__name__': '5'})|raw }}
+                                            {{ protoIsOpen|replace({__name__: '5'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
                                         <span class="js-opening-status">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({'__name__': '5'})|raw }}
+                                            {{ protoOuvertureMatin|replace({__name__: '5'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({'__name__': '5'})|raw }}
+                                            {{ protoFermetureMatin|replace({__name__: '5'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({'__name__': '5'})|raw }}
+                                            {{ protoOuvertureApresMidi|replace({__name__: '5'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({'__name__': '5'})|raw }}
+                                            {{ protoFermetureApresMidi|replace({__name__: '5'})|raw }}
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
@@ -683,28 +678,27 @@
                                         </div>
                                     </div>
 
-
                                     {# Dimanche #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
                                         <label class="opening-day__label">Dimanche</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({'__name__': '6'})|raw }}
+                                            {{ protoIsOpen|replace({__name__: '6'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
                                         <span class="js-opening-status">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({'__name__': '6'})|raw }}
+                                            {{ protoOuvertureMatin|replace({__name__: '6'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({'__name__': '6'})|raw }}
+                                            {{ protoFermetureMatin|replace({__name__: '6'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({'__name__': '6'})|raw }}
+                                            {{ protoOuvertureApresMidi|replace({__name__: '6'})|raw }}
                                             <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({'__name__': '6'})|raw }}
+                                            {{ protoFermetureApresMidi|replace({__name__: '6'})|raw }}
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
@@ -733,7 +727,6 @@
                             </button>
                         </div>
                     </div>
-
 
                 </div>
             </div>
@@ -880,7 +873,7 @@
 
             </style>
             <div class="fiche-public mt-48">
-                <a href="{{ path('app_public_detail_agence', { slug: app.user.slug }) }} " target="_blank" class="btn btn-primary">
+                <a href="{{ path('app_public_detail_agence', {slug: app.user.slug}) }} " target="_blank" class="btn btn-primary">
                     <i class="icon-eye mr10"></i>
                     Voir la fiche publique
                 </a>

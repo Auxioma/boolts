@@ -323,7 +323,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 ->setMontantDepotDeGarantie($finance['montantDepotDeGarantie'])
                 ->setMontantDesCharges($finance['montantDesCharges'])
 
-                ->setReferenceInterne(sprintf('PROPERTY-%04d', $i))
+                ->setReferenceInterne(\sprintf('PROPERTY-%04d', $i))
                 ->setStatut($this->generateStatus($faker))
                 ->setCreatedAt($createdAt)
                 ->setUpdatedAt($updatedAt)
@@ -422,11 +422,11 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         try {
             $value = $faker->{$method}();
 
-            if (!is_scalar($value)) {
+            if (!\is_scalar($value)) {
                 return null;
             }
 
-            $value = trim((string) $value);
+            $value = mb_trim((string) $value);
 
             return '' !== $value ? $value : null;
         } catch (\Throwable) {
@@ -462,7 +462,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
     }
 
     /**
-     * @param array<string, string> $location
+     * @param array<string, string>                                      $location
      * @param array{chambres: int, salleDeBains: int, surfaceTotal: int} $stats
      */
     private function generateDescription(
@@ -480,7 +480,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             default => 'disponible',
         };
 
-        $intro = sprintf(
+        $intro = \sprintf(
             'Ce %s est %s dans le secteur de %s, à %s, %s.',
             $typeBienLabel,
             $transactionLabel,
@@ -489,14 +489,14 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             $location['pays']
         );
 
-        $details = sprintf(
+        $details = \sprintf(
             'Le bien dispose d’une surface totale de %d m², avec %d chambre(s) et %d salle(s) de bains.',
             $stats['surfaceTotal'],
             $stats['chambres'],
             $stats['salleDeBains']
         );
 
-        $environment = sprintf(
+        $environment = \sprintf(
             'L’adresse bénéficie d’un environnement recherché, proche de %s, avec un accès pratique aux commerces, transports et services du quartier.',
             $location['poi']
         );
@@ -701,7 +701,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
      */
     private function generateFullAddress(array $location): string
     {
-        return sprintf(
+        return \sprintf(
             '%s, %s %s, %s',
             $location['adresse'],
             $location['codePostal'],
@@ -715,18 +715,18 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
      */
     private function generateMapboxId(array $location, int $index): string
     {
-        $countrySlug = strtolower(
+        $countrySlug = mb_strtolower(
             preg_replace('/[^a-z0-9]+/i', '-', $location['pays']) ?? 'country'
         );
 
-        $citySlug = strtolower(
+        $citySlug = mb_strtolower(
             preg_replace('/[^a-z0-9]+/i', '-', $location['ville']) ?? 'city'
         );
 
-        return sprintf(
+        return \sprintf(
             'address.%s.%s.%d',
-            trim($countrySlug, '-'),
-            trim($citySlug, '-'),
+            mb_trim($countrySlug, '-'),
+            mb_trim($citySlug, '-'),
             $index
         );
     }
@@ -773,7 +773,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
         $numberOfCaracteristiques = $faker->numberBetween(
             0,
-            min(6, count($caracteristiques))
+            min(6, \count($caracteristiques))
         );
 
         if (0 === $numberOfCaracteristiques) {

@@ -14,23 +14,48 @@ namespace App\Controller\Public;
 
 use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
+use App\Repository\CategoryBienTransactionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
-    public function index(Request $request): Response
-    {
+    public function __construct(
+        #[Autowire('%env(MAPBOX_PUBLIC_TOKEN)%')]
+        private readonly string $mapboxPublicToken,
+    ) {
+    }
+
+    #[Route('/', name: 'app_home', methods: ['GET'])]
+    public function index(
+        CategoryBienTransactionRepository $categoryBienTransactionRepository,
+    ): Response {
+        $transactions = $categoryBienTransactionRepository->findBy([], [
+            'id' => 'ASC',
+        ]);
+
         $filter = new FilterCityCountry();
-        $form = $this->createForm(FilterCityCountryType::class, $filter);
-        $form->handleRequest($request); 
+
+        /*
+         * transactionType est un EntityType.
+         * Donc ici, on met directement l'objet CategoryBienTransaction,
+         * pas un slug, pas un id.
+         */
+        if ($transactions !== []) {
+            $filter->setTransactionType($transactions[0]);
+        }
+
+        $form = $this->createForm(FilterCityCountryType::class, $filter, [
+            'action' => $this->generateUrl('app_public_search'),
+            'method' => 'POST',
+        ]);
 
         return $this->render('public/home/index.html.twig', [
             'form' => $form->createView(),
-            'mapbox_public_token' => $_ENV['MAPBOX_PUBLIC_TOKEN'],
+            'transactions' => $transactions,
+            'mapbox_public_token' => $this->mapboxPublicToken,
         ]);
     }
 }

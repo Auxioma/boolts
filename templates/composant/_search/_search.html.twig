@@ -120,9 +120,9 @@
                     </div>
 
                     {% for field in [
-                        { id: 'rooms', label: 'Chambres' },
-                        { id: 'bathrooms', label: 'Salle de bain' },
-                        { id: 'year', label: 'Année de construction' }
+                        {id: 'rooms', label: 'Chambres'},
+                        {id: 'bathrooms', label: 'Salle de bain'},
+                        {id: 'year', label: 'Année de construction'},
                     ] %}
                         <div class="accordion-item">
                             <h3 class="accordion-header" id="heading-{{ field.id }}">
@@ -169,12 +169,12 @@
                             <div class="accordion-body">
                                 <div class="boolts-chip-list">
                                     {% for feature in [
-                                        { id: 'balcon', label: 'Balcon', checked: false },
-                                        { id: 'piscine', label: 'Piscine', checked: false },
-                                        { id: 'cheminee', label: 'Cheminée', checked: true },
-                                        { id: 'debarras', label: 'Débarras', checked: false },
-                                        { id: 'cave', label: 'Cave', checked: true },
-                                        { id: 'ascenseur', label: 'Ascenseur', checked: false }
+                                        {id: 'balcon', label: 'Balcon', checked: false},
+                                        {id: 'piscine', label: 'Piscine', checked: false},
+                                        {id: 'cheminee', label: 'Cheminée', checked: true},
+                                        {id: 'debarras', label: 'Débarras', checked: false},
+                                        {id: 'cave', label: 'Cave', checked: true},
+                                        {id: 'ascenseur', label: 'Ascenseur', checked: false},
                                     ] %}
                                         <input type="checkbox" class="btn-check" id="feature-{{ feature.id }}" name="features[]" value="{{ feature.id }}" {% if feature.checked %}checked{% endif %}>
                                         <label class="boolts-chip" for="feature-{{ feature.id }}"><i class="icon-plus"></i> {{ feature.label }}</label>
@@ -193,7 +193,7 @@
                         <div id="collapseEnergy" class="accordion-collapse collapse show" aria-labelledby="headingEnergy">
                             <div class="accordion-body">
                                 <div class="boolts-energy-list" aria-label="Performance énergétique">
-                                    {% for dpe in ['A','B','C','D','E','F','G'] %}
+                                    {% for dpe in ['A', 'B', 'C', 'D', 'E', 'F', 'G'] %}
                                         <label class="boolts-energy-row">
                                             <input type="checkbox" name="dpe[]" value="{{ dpe }}">
                                             <span class="boolts-energy-bar boolts-energy-{{ dpe|lower }}">{{ dpe }}</span>

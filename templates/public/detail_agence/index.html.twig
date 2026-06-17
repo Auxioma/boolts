@@ -5,21 +5,21 @@
 
 {% block body %}
 
-	{% set avatar = user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
-	{% set firstLetter = user.prenom ? user.prenom|first|upper : null %}
+    {% set avatar = user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
+    {% set firstLetter = user.prenom ? user.prenom|first|upper : null %}
 
-	{% set logo = 'https://placehold.co/600x400/000000/FFFFFF/png' %}
-	{% set agencyAvatar = 'https://placehold.co/600x400/000000/FFFFFF/png' %}
-	{% set propertyImageFallback = 'https://placehold.co/600x400/000000/FFFFFF/png' %}
+    {% set logo = 'https://placehold.co/600x400/000000/FFFFFF/png' %}
+    {% set agencyAvatar = 'https://placehold.co/600x400/000000/FFFFFF/png' %}
+    {% set propertyImageFallback = 'https://placehold.co/600x400/000000/FFFFFF/png' %}
 
-	<div
-		class="agence-page">
-		{# Barre retour mobile #}
-		<div class="agence-mobile-topbar d-flex d-md-none align-items-center">
-			<button type="button" class="agence-icon-btn">
-				<i class="icon-chevron-left"></i>
-			</button>
-		</div>
+    <div
+        class="agence-page">
+        {# Barre retour mobile #}
+        <div class="agence-mobile-topbar d-flex d-md-none align-items-center">
+            <button type="button" class="agence-icon-btn">
+                <i class="icon-chevron-left"></i>
+            </button>
+        </div>
 
         {% if app.user and is_granted('ROLE_AGENCE') %}
             {# Barre violette desktop uniquement #}
@@ -29,188 +29,188 @@
             </div>
         {% endif %}
 
-		<main class="agence-main">
-			<div class="container-fluid px-3 px-md-5 px-xl-0">
-				<div class="container-xl px-0">
+        <main class="agence-main">
+            <div class="container-fluid px-3 px-md-5 px-xl-0">
+                <div class="container-xl px-0">
 
-					<div class="row g-4 align-items-start">
+                    <div class="row g-4 align-items-start">
 
-						<div
-							class="col-12 col-lg-8">
+                        <div
+                            class="col-12 col-lg-8">
 
-							{# Profil agence #}
-							<section class="agence-profile d-flex align-items-center">
-								{% if avatar %}
-									<img src="{{ avatar }}" alt="{{ user.entreprise }}" class="agence-profile-avatar">
-								{% else %}
-									<img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ user.entreprise }}" class="agence-profile-avatar">
-								{% endif %}
-								<div class="agence-profile-content">
-									<h1>{{ user.entreprise }}</h1>
+                            {# Profil agence #}
+                            <section class="agence-profile d-flex align-items-center">
+                                {% if avatar %}
+                                    <img src="{{ avatar }}" alt="{{ user.entreprise }}" class="agence-profile-avatar">
+                                {% else %}
+                                    <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ user.entreprise }}" class="agence-profile-avatar">
+                                {% endif %}
+                                <div class="agence-profile-content">
+                                    <h1>{{ user.entreprise }}</h1>
 
-									<p class="agence-profile-description d-none d-lg-block">
-										{{ user.description|default('')|striptags|u.truncate(240, '...') }}
-									</p>
+                                    <p class="agence-profile-description d-none d-lg-block">
+                                        {{ user.description|default('')|striptags|u.truncate(240, '...') }}
+                                    </p>
 
-									<div class="agence-profile-infos">
-										<p>Agence immobilière -
-											{{ user.adresseContact }}
-											{{ user.codePostalContact }}
-											{{ user.villeContact }}</p>
-										<p class="d-md-none d-lg-none">+1 202 XXX XXXX</p>
-										<p>{{ user.emailContact }}</p>
-									</div>
-								</div>
-							</section>
+                                    <div class="agence-profile-infos">
+                                        <p>Agence immobilière -
+                                            {{ user.adresseContact }}
+                                            {{ user.codePostalContact }}
+                                            {{ user.villeContact }}</p>
+                                        <p class="d-md-none d-lg-none">+1 202 XXX XXXX</p>
+                                        <p>{{ user.emailContact }}</p>
+                                    </div>
+                                </div>
+                            </section>
 
-							{# Recherche #}
-							<section class="agence-search-section">
+                            {# Recherche #}
+                            <section class="agence-search-section">
                                 {#
-								<form class="agence-search">
-									<input type="search" placeholder="Rechercher un bien, une référence">
+                                <form class="agence-search">
+                                    <input type="search" placeholder="Rechercher un bien, une référence">
 
-									<button type="submit">
-										<i class="icon-search"></i>
-									</button>
-								</form>
+                                    <button type="submit">
+                                        <i class="icon-search"></i>
+                                    </button>
+                                </form>
                                 #}
-								<div class="d-flex flex-wrap gap-2">
-									<button type="button" class="agence-filter-btn">
-										<i class="icon-sliders-horizontal"></i>
-										Filtres
-									</button>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="button" class="agence-filter-btn">
+                                        <i class="icon-sliders-horizontal"></i>
+                                        Filtres
+                                    </button>
 
-									{% include 'public/detail_agence/_partials/tri.html.twig' %}
-								</div>
-							</section>
+                                    {{ include('public/detail_agence/_partials/tri.html.twig') }}
+                                </div>
+                            </section>
 
-							{# Liste des biens immobiliers #}
-							<section class="agence-properties">
-								<h2>Biens de l’agence récemment ajoutés</h2>
+                            {# Liste des biens immobiliers #}
+                            <section class="agence-properties">
+                                <h2>Biens de l’agence récemment ajoutés</h2>
 
-								<div class="row g-3 g-lg-4">
+                                <div class="row g-3 g-lg-4">
 
-									{% for bienImmobilier in properties %}
+                                    {% for bienImmobilier in properties %} 
 
-										{% set firstImage = bienImmobilier.propertyImages|first %}
+                                        {% set firstImage = bienImmobilier.propertyImages|first %}
 
-										{% if firstImage %}
-											{% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
-										{% endif %}
+                                        {% if firstImage %}
+                                            {% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
+                                        {% endif %}
 
-										{% set transactionName = '' %}
-										{% set transactionSlug = '' %}
+                                        {% set transactionName = '' %}
+                                        {% set transactionSlug = '' %}
 
-										{% if bienImmobilier.typeTransaction %}
-											{% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
-											{% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
-										{% endif %}
+                                        {% if bienImmobilier.typeTransaction %}
+                                            {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+                                            {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+                                        {% endif %}
 
-										{% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
+                                        {% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
 
-										{% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
-										{% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
-										{% set propertyPeriod = isLocation ? '/mois' : '' %}
-										{% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
+                                        {% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
+                                        {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
+                                        {% set propertyPeriod = isLocation ? '/mois' : '' %}
+                                        {% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
 
-										{% set details = [] %}
+                                        {% set details = [] %}
 
-										{% if bienImmobilier.typeBien %}
-											{% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
+                                        {% if bienImmobilier.typeBien %}
+                                            {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
 
-											{% if typeBienName is not empty %}
-												{% set details = details|merge([typeBienName]) %}
-											{% endif %}
-										{% endif %}
+                                            {% if typeBienName is not empty %}
+                                                {% set details = details|merge([typeBienName]) %}
+                                            {% endif %}
+                                        {% endif %}
 
-										{% if bienImmobilier.chambres is not empty %}
-											{% set details = details|merge([
+                                        {% if bienImmobilier.chambres is not empty %}
+                                            {% set details = details|merge([
                                             bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
                                         ]) %}
-										{% endif %}
+                                        {% endif %}
 
-										{% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
-											{% set details = details|merge([
+                                        {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
+                                            {% set details = details|merge([
                                             bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
                                         ]) %}
-										{% endif %}
+                                        {% endif %}
 
-										{% if bienImmobilier.surfaceTotal is not empty %}
-											{% set details = details|merge([
+                                        {% if bienImmobilier.surfaceTotal is not empty %}
+                                            {% set details = details|merge([
                                             bienImmobilier.surfaceTotal ~ 'm²',
                                         ]) %}
-										{% endif %}
+                                        {% endif %}
 
-										{% set addressParts = [] %}
+                                        {% set addressParts = [] %}
 
-										{% if bienImmobilier.adresse is not empty %}
-											{% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
-										{% endif %}
+                                        {% if bienImmobilier.adresse is not empty %}
+                                            {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                        {% endif %}
 
-										{% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
-											{% set addressParts = addressParts|merge([
+                                        {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                                            {% set addressParts = addressParts|merge([
                                             (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
                                         ]) %}
-										{% endif %}
+                                        {% endif %}
 
-										{% set detailUrl = path('app_public_detail_bien', {
-											slug: bienImmobilier.slug
-										}) %}
+                                        {% set detailUrl = path('app_public_detail_bien', {
+                                            slug: bienImmobilier.slug,
+                                        }) %}
 
-										<div class="col-12 col-md-6">
-											<twig:Property:Card
-												title="{{ propertyTitle }}"
-												price="{{ propertyPrice }}"
-												period="{{ propertyPeriod }}"
-												badge="{{ propertyBadge }}"
-												description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
-												details="{{ details|join(' ⸱ ') }}"
-												address="{{ addressParts|join(', ') }}"
-												image="{{ uploadedImage }}"
-												url="{{ detailUrl }}"
-												favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
-												favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
-												:isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
-											/>
-										</div>
+                                        <div class="col-12 col-md-6">
+                                            <twig:Property:Card
+                                                title="{{ propertyTitle }}"
+                                                price="{{ propertyPrice }}"
+                                                period="{{ propertyPeriod }}"
+                                                badge="{{ propertyBadge }}"
+                                                description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                                                details="{{ details|join(' ⸱ ') }}"
+                                                address="{{ addressParts|join(', ') }}"
+                                                image="{{ uploadedImage }}"
+                                                url="{{ detailUrl }}"
+                                                favoriteUrl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
+                                                favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                                                :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
+                                            />
+                                        </div>
 
-									{% else %}
+                                    {% else %}
 
-										<div class="col-12">
-											<div class="agence-empty-state">
-												Aucun bien n’est disponible pour le moment.
-											</div>
-										</div>
+                                        <div class="col-12">
+                                            <div class="agence-empty-state">
+                                                Aucun bien n’est disponible pour le moment.
+                                            </div>
+                                        </div>
 
-									{% endfor %}
+                                    {% endfor %}
 
-								</div>
-							</section>
+                                </div>
+                            </section>
 
-							{# Pagination #}
-							{{ knp_pagination_render(properties, 'pagination/agence_pagination.html.twig') }}
+                            {# Pagination #}
+                            {{ knp_pagination_render(properties, 'pagination/agence_pagination.html.twig') }}
 
-						</div>
+                        </div>
 
-						{# Contact desktop #}
-						<aside class="col-12 col-lg-4">
-							<div class="agence-contact-card" data-controller="agence-contact-form">
-								<div class="agence-contact-head d-flex gap-4">
-									{% if avatar %}
-										<img src="{{ avatar }}" alt="{{ user.entreprise }}">
-									{% else %}
-										<img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ user.entreprise }}">
-									{% endif %}
+                        {# Contact desktop #}
+                        <aside class="col-12 col-lg-4">
+                            <div class="agence-contact-card" data-controller="agence-contact-form">
+                                <div class="agence-contact-head d-flex gap-4">
+                                    {% if avatar %}
+                                        <img src="{{ avatar }}" alt="{{ user.entreprise }}">
+                                    {% else %}
+                                        <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ user.entreprise }}">
+                                    {% endif %}
 
-									<div>
-										<h3>{{ user.entreprise }}</h3>
+                                    <div>
+                                        <h3>{{ user.entreprise }}</h3>
 
-										<p>
-											Agence immobilière -
-											{{ user.adresseContact }}
-											{{ user.codePostalContact }}
-											{{ user.villeContact }}
-										</p>
+                                        <p>
+                                            Agence immobilière -
+                                            {{ user.adresseContact }}
+                                            {{ user.codePostalContact }}
+                                            {{ user.villeContact }}
+                                        </p>
 
                                         {% if user.numeroContact is not empty %}
                                             <button
@@ -231,11 +231,11 @@
                                             </a>
                                         {% endif %}
 
-										<a href="mailto:{{ user.emailContact }}" class="agence-contact-email d-lg-none">
-											{{ user.emailContact }}
-										</a>
-									</div>
-								</div>
+                                        <a href="mailto:{{ user.emailContact }}" class="agence-contact-email d-lg-none">
+                                            {{ user.emailContact }}
+                                        </a>
+                                    </div>
+                                </div>
 
                                 {% set horairesRenseignes = user.horaireOuvertures|filter(horaire =>
                                     horaire.open
@@ -243,29 +243,28 @@
                                     (horaire.ouvertureMatin and horaire.fermetureMatin)
                                     or
                                     (horaire.ouvertureApresMidi and horaire.fermetureApresMidi)
-                                    )
+                                    ),
                                     ) %}
 
                                 {% if horairesRenseignes|length > 0 %}
-                                    {% include 'public/detail_agence/_partials/horaire_ouverture.html.twig' %}
-                                    {% include 'public/detail_agence/_partials/liste_horaire_ouverture.html.twig' %}
+                                    {{ include('public/detail_agence/_partials/horaire_ouverture.html.twig') }}
+                                    {{ include('public/detail_agence/_partials/liste_horaire_ouverture.html.twig') }}
                                 {% endif %}
 
+                                <div class="agence-contact-actions">
+                                    {% if user.whatsApp is not empty %}
+                                        <a href="https://wa.me/{{ user.whatsApp }}" class="agence-btn agence-btn-whatsapp">
+                                            Contacter via Whatsapp
+                                        </a>
+                                    {% endif %}
+                                    {% if user.numeroContact is not empty %}
+                                        <a href="tel:{{ user.numeroContact }}" class="agence-btn agence-btn-primary">
+                                            <i class="icon-phone"></i>
+                                            Appeler l’agence
+                                        </a>
+                                    {% endif %}
 
-								<div class="agence-contact-actions">
-									{% if user.whatsApp is not empty %}
-										<a href="https://wa.me/{{ user.whatsApp }}" class="agence-btn agence-btn-whatsapp">
-											Contacter via Whatsapp
-										</a>
-									{% endif %}
-									{% if user.numeroContact is not empty %}
-										<a href="tel:{{ user.numeroContact }}" class="agence-btn agence-btn-primary">
-											<i class="icon-phone"></i>
-											Appeler l’agence
-										</a>
-									{% endif %}
-
-									<button
+                                    <button
                                         type="button"
                                         class="agence-btn agence-btn-outline"
                                         data-action="click->agence-contact-form#open"
@@ -273,99 +272,99 @@
                                         aria-controls="agency_contact_form"
                                         aria-expanded="false"
                                     >
-										<i class="icon-mail"></i>
-										Contacter par email
-									</button>
-								</div>
+                                        <i class="icon-mail"></i>
+                                        Contacter par email
+                                    </button>
+                                </div>
                                 {{ form_start(form, {
                                     attr: {
                                         id: 'agency_contact_form',
                                         class: 'agence-contact-form d-none flex-column',
-                                        'data-agence-contact-form-target': 'form'
-                                    }
+                                        'data-agence-contact-form-target': 'form',
+                                    },
                                 }) }}
-									<div class="agence-field">
-										<label for="contact_lastname">Votre nom*</label>
+                                    <div class="agence-field">
+                                        <label for="contact_lastname">Votre nom*</label>
                                         {{ form_widget(form.nom, {
                                             attr: {
                                                 id: 'contact_lastname',
                                                 placeholder: 'Veuillez saisir votre nom',
-                                                'data-agence-contact-form-target': 'firstField'
-                                            }
+                                                'data-agence-contact-form-target': 'firstField',
+                                            },
                                         }) }}
-									</div>
+                                    </div>
 
-									<div class="agence-field">
-										<label for="contact_firstname">Votre prénom*</label>
+                                    <div class="agence-field">
+                                        <label for="contact_firstname">Votre prénom*</label>
                                         {{ form_widget(form.prenom, {
                                             id: 'contact_firstname',
                                             attr: {
                                                 placeholder: 'Veuillez saisir votre prénom',
-                                                class: 'contact_firstname'
-                                            }
+                                                class: 'contact_firstname',
+                                            },
                                         }) }}
-									</div>
+                                    </div>
 
-									<div class="agence-field">
-										<label for="contact_email">Votre e-mail*</label>
+                                    <div class="agence-field">
+                                        <label for="contact_email">Votre e-mail*</label>
                                         {{ form_widget(form.email, {
                                             id: 'contact_email',
                                             attr: {
-                                                placeholder: 'Veuillez saisir votre e-mail'
-                                            }
+                                                placeholder: 'Veuillez saisir votre e-mail',
+                                            },
                                         }) }}
-									</div>
+                                    </div>
 
-									<div class="agence-field">
-										<label for="contact_message">Votre message*</label>
+                                    <div class="agence-field">
+                                        <label for="contact_message">Votre message*</label>
                                         {{ form_widget(form.message, {
                                             id: 'contact_message',
                                             attr: {
                                                 placeholder: 'Veuillez saisir votre message',
-                                                rows: 6
-                                            }
+                                                rows: 6,
+                                            },
                                         }) }}
-									</div>
+                                    </div>
 
-									<button type="submit" class="agence-btn agence-btn-primary w-100">
-										<i class="icon-mail"></i>
-										Envoyer le mail
-									</button>
+                                    <button type="submit" class="agence-btn agence-btn-primary w-100">
+                                        <i class="icon-mail"></i>
+                                        Envoyer le mail
+                                    </button>
                                 {{ form_end(form) }}
-							</div>
-						</aside>
+                            </div>
+                        </aside>
 
-					</div>
+                    </div>
 
-				</div>
-			</div>
-		</main>
+                </div>
+            </div>
+        </main>
 
-		{# Tab bar mobile #}
-		{% if app.user and is_granted('ROLE_AGENCE') %}
-		<nav class="agence-mobile-tabbar d-flex d-md-none">
-			<a href="#" class="active">
-				<i class="icon-search"></i>
-				Explorer
-			</a>
+        {# Tab bar mobile #}
+        {% if app.user and is_granted('ROLE_AGENCE') %}
+        <nav class="agence-mobile-tabbar d-flex d-md-none">
+            <a href="#" class="active">
+                <i class="icon-search"></i>
+                Explorer
+            </a>
 
-			<a href="#">
-				<i class="icon-heart"></i>
-				Favoris
-			</a>
+            <a href="#">
+                <i class="icon-heart"></i>
+                Favoris
+            </a>
 
-			<a href="#">
-				<i class="icon-message-circle"></i>
-				Messagerie
-			</a>
+            <a href="#">
+                <i class="icon-message-circle"></i>
+                Messagerie
+            </a>
 
-			<a href="#">
-				<i class="icon-user-round"></i>
-				Compte
-			</a>
-		</nav>
-		{% endif %}
+            <a href="#">
+                <i class="icon-user-round"></i>
+                Compte
+            </a>
+        </nav>
+        {% endif %}
 
-	</div>
+    </div>
 
 {% endblock %}

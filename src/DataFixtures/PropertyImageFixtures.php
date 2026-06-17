@@ -199,10 +199,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         $response = $this->httpClient->request('GET', $url);
 
         if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(\sprintf(
-                'Impossible de télécharger l’image placeholder : %s',
-                $url
-            ));
+            throw new \RuntimeException(\sprintf('Impossible de télécharger l’image placeholder : %s', $url));
         }
 
         file_put_contents($imagePath, $response->getContent());

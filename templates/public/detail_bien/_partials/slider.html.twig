@@ -1,45 +1,125 @@
-{% for i in 1..7 %}
-    <div class="item">
-        <div class="bt-property-card">
-            <div class="bt-property-card__image">
-                <img
-                    src="{{ asset('images/default-property.jpg') }}"
-                    class="js-bt-img"
-                    alt="Bien similaire {{ i }}"
-                >
-            </div>
+<section class="agence-properties bt-related" data-controller="splide">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+        <h2 class="bt-section-title">
+            Autres biens similaires à {{ property.ville }}
+        </h2>
 
-            <div class="bt-property-card__body">
-                <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                    <h3 class="bt-property-card__title">
-                        Appartement à louer
-                    </h3>
+        <div class="d-flex align-items-center gap-2 text-secondary">
+            <button
+                class="bt-icon-btn bt-icon-btn--small"
+                type="button"
+                aria-label="Précédent"
+                data-splide-target="previous"
+                data-action="click->splide#previous"
+            >
+                <i class="bi bi-arrow-left-circle"></i>
+            </button>
 
-                    <i class="bi bi-heart"></i>
-                </div>
-
-                <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                    <div class="bt-property-card__price">
-                        765€ <small>/mois</small>
-                    </div>
-
-                    <span class="bt-property-card__badge">
-                                                                    Charges comprises
-                                                                </span>
-                </div>
-
-                <p class="bt-property-card__text mb-3">
-                    Appartement très spacieux et lumineux...
-                </p>
-
-                <p class="bt-property-card__meta mb-1">
-                    2 pièces · 1 chambre · 50m2
-                </p>
-
-                <p class="bt-property-card__address">
-                    Rue de Courteneneuve, 76510 Saint Nicolas...
-                </p>
-            </div>
+            <button
+                class="bt-icon-btn bt-icon-btn--small"
+                type="button"
+                aria-label="Suivant"
+                data-splide-target="next"
+                data-action="click->splide#next"
+            >
+                <i class="bi bi-arrow-right-circle"></i>
+            </button> 
         </div>
     </div>
-{% endfor %}
+
+    <div
+        class="splide bt-related-slider"
+        data-splide-target="slider"
+        aria-label="Biens similaires"
+    >
+        <div class="splide__track">
+            <ul class="splide__list">
+                {% for bienImmobilier in properties %}
+
+                                                        {% set firstImage = bienImmobilier.propertyImages|first %}
+
+                                        {% if firstImage %}
+                                            {% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
+                                        {% endif %}
+
+                                        {% set transactionName = '' %}
+                                        {% set transactionSlug = '' %}
+
+                                        {% if bienImmobilier.typeTransaction %}
+                                            {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+                                            {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+                                        {% endif %}
+
+                                        {% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
+
+                                        {% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
+                                        {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
+                                        {% set propertyPeriod = isLocation ? '/mois' : '' %}
+                                        {% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
+
+                                        {% set details = [] %}
+
+                                        {% if bienImmobilier.typeBien %}
+                                            {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
+
+                                            {% if typeBienName is not empty %}
+                                                {% set details = details|merge([typeBienName]) %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.chambres is not empty %}
+                                            {% set details = details|merge([
+                                            bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
+                                            {% set details = details|merge([
+                                            bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.surfaceTotal is not empty %}
+                                            {% set details = details|merge([
+                                            bienImmobilier.surfaceTotal ~ 'm²',
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% set addressParts = [] %}
+
+                                        {% if bienImmobilier.adresse is not empty %}
+                                            {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                                            {% set addressParts = addressParts|merge([
+                                            (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% set detailUrl = path('app_public_detail_bien', {
+                                            slug: bienImmobilier.slug,
+                                        }) %}
+
+
+                    <li class="splide__slide">
+                        <twig:Property:Card
+                                                title="{{ propertyTitle }}"
+                                                price="{{ propertyPrice }}"
+                                                period="{{ propertyPeriod }}"
+                                                badge="{{ propertyBadge }}"
+                                                description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                                                details="{{ details|join(' ⸱ ') }}"
+                                                address="{{ addressParts|join(', ') }}"
+                                                image="{{ uploadedImage }}"
+                                                url="{{ detailUrl }}"
+                                                favoriteUrl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
+                                                favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                                                :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
+                        />
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>

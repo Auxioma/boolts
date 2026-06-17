@@ -1,7 +1,7 @@
 {% set routeName = app.request.attributes.get('_route') %}
                                     {% set routeParams = app.request.attributes.get('_route_params') %}
                                     {% set queryParams = app.request.query.all %}
-                                    {% set baseParams = routeParams|merge(queryParams)|merge({ page: 1 }) %}
+                                    {% set baseParams = routeParams|merge(queryParams)|merge({page: 1}) %}
 
                                     {% set currentSort = app.request.query.get('sort', 'p.createdAt') %}
                                     {% set currentDirection = app.request.query.get('direction', 'desc') %}
@@ -38,7 +38,7 @@
         aria-label="Trier les annonces"
     >
         <a
-            href="{{ path(routeName, baseParams|merge({ sort: 'p.createdAt', direction: 'desc' })) }}"
+            href="{{ path(routeName, baseParams|merge({sort: 'p.createdAt', direction: 'desc'})) }}"
             class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
@@ -46,7 +46,7 @@
         </a>
 
         <a
-            href="{{ path(routeName, baseParams|merge({ sort: 'p.createdAt', direction: 'asc' })) }}"
+            href="{{ path(routeName, baseParams|merge({sort: 'p.createdAt', direction: 'asc'})) }}"
             class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
@@ -54,7 +54,7 @@
         </a>
 
         <a
-            href="{{ path(routeName, baseParams|merge({ sort: 'p.views', direction: 'desc' })) }}"
+            href="{{ path(routeName, baseParams|merge({sort: 'p.views', direction: 'desc'})) }}"
             class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
@@ -62,7 +62,7 @@
         </a>
 
         <a
-            href="{{ path(routeName, baseParams|merge({ sort: 'p.views', direction: 'asc' })) }}"
+            href="{{ path(routeName, baseParams|merge({sort: 'p.views', direction: 'asc'})) }}"
             class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
@@ -70,7 +70,7 @@
         </a>
 
         <a
-            href="{{ path(routeName, baseParams|merge({ sort: 'favorisCount', direction: 'desc' })) }}"
+            href="{{ path(routeName, baseParams|merge({sort: 'favorisCount', direction: 'desc'})) }}"
             class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
@@ -78,7 +78,7 @@
         </a>
 
         <a
-            href="{{ path(routeName, baseParams|merge({ sort: 'favorisCount', direction: 'asc' })) }}"
+            href="{{ path(routeName, baseParams|merge({sort: 'favorisCount', direction: 'asc'})) }}"
             class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >

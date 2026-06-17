@@ -6,6 +6,7 @@
             tabindex="0"
             data-open-slider="0"
             aria-label="Ouvrir la photo principale"
+            style="--bt-hero-bg: url('{{ vich_uploader_asset(firstPicture, 'imageFile') }}');"
         >
             <img
                 src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
@@ -29,9 +30,9 @@
 
                     <div
                         class="bt-gallery__thumb
-                                                {% if imageIndex == 2 %} bt-gallery__thumb--top-right{% endif %}
-                                                {% if imageIndex == 4 %} bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay{% endif %}
-                                                {% if loop.last and imageIndex < 4 %} bt-gallery__thumb--overlay{% endif %}
+                            {% if imageIndex == 2 %} bt-gallery__thumb--top-right{% endif %}
+                            {% if imageIndex == 4 %} bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay{% endif %}
+                            {% if loop.last and imageIndex < 4 %} bt-gallery__thumb--overlay{% endif %}
                                             "
                         role="button"
                         tabindex="0"

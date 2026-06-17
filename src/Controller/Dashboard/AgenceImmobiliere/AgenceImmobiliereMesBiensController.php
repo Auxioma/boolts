@@ -15,13 +15,13 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 use App\Entity\Property;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Repository\PropertyRepository;
+use App\Service\NumericSlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\NumericSlugGenerator;
 
 #[Route('/mes/biens', name: 'agence_immobiliere_')]
 final class AgenceImmobiliereMesBiensController extends AbstractController

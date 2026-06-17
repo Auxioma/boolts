@@ -100,7 +100,7 @@
             </nav>
         </main>
 
-        {% include 'composant/_search/_search.html.twig' with { totalResults: totalResults } only %}
+        {{ include('composant/_search/_search.html.twig', {totalResults: totalResults}, false) }}
 
         <nav class="bt-mobile-tabbar d-md-none" aria-label="Navigation mobile">
             <a href="#" class="active"><i class="icon-search"></i><span>Explorer</span></a>

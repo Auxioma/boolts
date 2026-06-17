@@ -16,6 +16,7 @@ use App\Entity\FormContact\Contact;
 use App\Entity\Property;
 use App\Form\FormContact\ContactType;
 use App\Repository\PropertyRepository;
+use App\Service\ContactForm\ContactMailer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class DetailBienController extends AbstractController
 {
+    public function __construct(
+        private readonly ContactMailer $contactMailer,
+    ) {
+    }
+
     #[Route('/public/detail/bien/{slug}', name: 'app_public_detail_bien')]
     public function index(
         #[MapEntity(mapping: ['slug' => 'slug'])]
@@ -37,14 +43,30 @@ final class DetailBienController extends AbstractController
         $bienSimilaire = $propertyRepository->getBienSimilaire($property);
 
         /**
-         * FOrmulaire de contact.
+         * Formulaire de contact.
          */
         $contactForm = new Contact();
         $form = $this->createForm(ContactType::class, $contactForm);
         $form->handleRequest($request);
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->contactMailer->sendContactMessage(
+                contact: $contactForm,
+                agencyEmail: $user->getEmail()
+            );
+
+            /* enregistrement dans la base de donnée */
+            $contactForm->setAgence($user);
+            $entityManager->persist($contactForm);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre message a été envoyé avec succès !');
+
+        }
+
         return $this->render('public/detail_bien/index.html.twig', [
             'property' => $property,
+            'properties' => $bienSimilaire, /* Bien similaire */
             'form' => $form->createView(),
         ]);
     }

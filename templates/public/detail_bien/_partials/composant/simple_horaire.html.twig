@@ -1,10 +1,10 @@
-{% set horaires = user.horaireOuvertures|sort((a, b) => a.id <=> b.id) %}
+{% set horaires = property.user.horaireOuvertures|sort((a, b) => a.id <=> b.id) %}
 
 {% set numeroJourActuel = 'now'|date('N', 'Europe/Paris') + 0 %}
 {% set indexJourActuel = numeroJourActuel - 1 %}
 
 {% set horaireDuJour = horaires[indexJourActuel] ?? null %}
-{% set horairesPanelId = 'agence-horaires-liste-' ~ user.id %}
+{% set horairesPanelId = 'agence-horaires-liste-' ~ property.user.id %}
 
 {% if horaireDuJour %}
     <div

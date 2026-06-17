@@ -73,7 +73,7 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
-     * filtre des bien similaire
+     * filtre des bien similaire.
      */
     public function getBienSimilaire(Property $property, int $limit = 6): array
     {
@@ -90,12 +90,12 @@ class PropertyRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
         ;
 
-        if ($ville) {
+        /*if ($ville) {
             $qb
                 ->andWhere('p.ville = :ville')
                 ->setParameter('ville', $ville)
             ;
-        }
+        }*/
 
         if ($typeBien) {
             $qb
@@ -104,10 +104,10 @@ class PropertyRepository extends ServiceEntityRepository
             ;
         }
 
-        /**
+        /*
          * Si c'est une vente, on compare le prix avec une marge de 20%
          */
-        if ($prix) {
+        /*if ($prix) {
             $prixMin = $prix * 0.8;
             $prixMax = $prix * 1.2;
 
@@ -116,9 +116,9 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('prixMin', $prixMin)
                 ->setParameter('prixMax', $prixMax)
             ;
-        }
+        }*/
 
-        /**
+        /*
          * Si c'est une location, on compare le loyer hors charge avec une marge de 20%
          */
         if ($loyerHC) {
@@ -135,5 +135,14 @@ class PropertyRepository extends ServiceEntityRepository
         $qb->orderBy('p.createdAt', 'DESC');
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * filtre de recherche de des bien immobilier de la page d'acceuil.
+     */
+    public function findBySearch(?string $transactionType, ?string $ville, ?string $cp, ?string $pays): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        return $qb;
     }
 }
