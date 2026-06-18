@@ -41,3 +41,15 @@ services:
         arguments:
             $mailerFromEmail: '%env(MAILER_FROM_EMAIL)%'
             $mailerFromName: '%env(MAILER_FROM_NAME)%'
+
+    Aws\S3\S3Client:
+        arguments:
+            -
+                version: 'latest'
+                region: '%env(string:N0C_REGION)%'
+                endpoint: '%env(string:N0C_ENDPOINT)%'
+                use_path_style_endpoint: true
+                signature_version: 'v4'
+                credentials:
+                    key: '%env(string:N0C_ACCESS_KEY)%'
+                    secret: '%env(string:N0C_SECRET_KEY)%'

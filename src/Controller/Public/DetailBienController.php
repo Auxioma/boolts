@@ -61,7 +61,6 @@ final class DetailBienController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Votre message a été envoyé avec succès !');
-
         }
 
         return $this->render('public/detail_bien/index.html.twig', [

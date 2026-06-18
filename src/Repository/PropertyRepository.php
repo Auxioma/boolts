@@ -140,7 +140,45 @@ class PropertyRepository extends ServiceEntityRepository
     /**
      * filtre de recherche de des bien immobilier de la page d'acceuil.
      */
-    public function findBySearch(?string $transactionType, ?string $ville, ?string $cp, ?string $pays): array
+    public function findBySearchQueryBuilder(
+        ?int $transactionTypeId,
+        ?string $ville,
+        ?string $cp,
+        ?string $pays,
+    ): QueryBuilder {
+        $qb = $this->createQueryBuilder('p');
+
+        if (null === $transactionTypeId || empty($pays)) {
+            return $qb->andWhere('p.id IS NULL');
+        }
+
+        $qb
+            ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
+            ->setParameter('transactionTypeId', $transactionTypeId);
+
+        $qb
+            ->andWhere('p.pays = :pays')
+            ->setParameter('pays', mb_trim($pays));
+
+        if (!empty($ville)) {
+            $qb
+                ->andWhere('p.ville = :ville')
+                ->setParameter('ville', mb_trim($ville));
+        }
+
+        if (!empty($cp)) {
+            $qb
+                ->andWhere('p.codePostal = :cp')
+                ->setParameter('cp', mb_trim($cp));
+        }
+
+        return $qb->orderBy('p.createdAt', 'DESC');
+    }
+
+    /**
+     * logment les plus populaire a paris
+     */
+    public function logementPopulaire(): array
     {
         $qb = $this->createQueryBuilder('p');
         return $qb;

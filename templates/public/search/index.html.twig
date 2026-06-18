@@ -3,8 +3,7 @@
 {% block title %}Boolts - Recherche{% endblock %}
 
 {% block body %}
-    {% set totalResults = totalResults|default(287) %}
-    {% set propertyImage = propertyImage|default(asset('images/placeholders/property-card.jpg')) %}
+
 
     <div class="bt-research-page">
         <div class="bt-research-sticky-bar">
@@ -13,12 +12,136 @@
                     <i class="icon-chevron-left" aria-hidden="true"></i>
                 </button>
 
-                <form class="bt-research-search" action="#" method="get">
-                    <input type="search" name="q" value="Rouen (76)" aria-label="Lieu recherché">
-                    <button type="submit" aria-label="Rechercher">
-                        <i class="icon-search" aria-hidden="true"></i>
-                    </button>
-                </form>
+    {{ form_start(form, {
+        attr: {
+            class: 'home-bt-search-bar',
+            'data-controller': 'home-bt-mapbox-search',
+            'data-home-bt-mapbox-search-token-value': mapbox_public_token,
+            'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr')
+        }
+    }) }}
+
+        {# 
+            EntityType caché.
+
+            Le select reçoit l'id.
+            Symfony transforme ensuite automatiquement cet id
+            en objet CategoryBienTransaction.
+        #}
+        {{ form_widget(form.transactionType, {
+            attr: {
+                class: 'd-none',
+                'data-home-bt-transaction-input': ''
+            }
+        }) }}
+
+        <div class="home-bt-search-bar__field">
+            {{ form_widget(form.filter, {
+                attr: {
+                    autocomplete: 'off',
+                    placeholder: 'search.location.placeholder'|trans,
+                    'data-home-bt-mapbox-search-target': 'input',
+                    'data-action': 'input->home-bt-mapbox-search#search focus->home-bt-mapbox-search#search keydown->home-bt-mapbox-search#handleKeydown'
+                }
+            }) }}
+
+            <button type="submit" aria-label="{{ 'search.submit'|trans }}">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <path d="M20 20l-3.5-3.5"></path>
+                </svg>
+            </button>
+
+            <ul
+                class="home-bt-search-bar__results"
+                data-home-bt-mapbox-search-target="results"
+            ></ul>
+        </div>
+
+        {# =========================
+           CHAMPS CACHÉS MAPBOX
+           ========================= #}
+
+        {{ form_widget(form.selectedValue, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedValue'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedMapboxId, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedMapboxId'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedFeatureType, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedFeatureType'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedCountryName, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedCountryName'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedCountryCode, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedCountryCode'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedRegionName, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedRegionName'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedCityName, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedCityName'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedPostalCode, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedPostalCode'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedLatitude, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedLatitude'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedLongitude, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedLongitude'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedFullAddress, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedFullAddress'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedLocale, {
+            value: app.request.locale|default('fr'),
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedLocale'
+            }
+        }) }}
+
+        {{ form_widget(form.selectedLocationJson, {
+            attr: {
+                'data-home-bt-mapbox-search-target': 'selectedLocationJson'
+            }
+        }) }}
+
+    {{ form_end(form, { render_rest: false }) }}
 
                 <button
                     type="button"
@@ -31,7 +154,7 @@
                 </button>
 
                 <a href="#results" class="bt-research-primary-btn d-none d-md-inline-flex">
-                    Afficher les {{ totalResults }} logements
+                    Afficher les {{ search.getTotalItemCount }} logements
                 </a>
             </div>
         </div>
@@ -39,23 +162,103 @@
         <main class="bt-research-main" id="results">
             <section class="bt-results-section">
                 <div class="bt-research-container">
-                    <h1 class="bt-results-title">{{ totalResults }} logements trouvés</h1>
+                    <h1 class="bt-results-title">{{ search.getTotalItemCount }} logements trouvés</h1>
 
-                    <div class="row bt-results-grid">
-                        {% for i in 1..9 %}
-                            <div class="col-12 col-md-4">
-                                <twig:Property:Card
-                                    title="Appartement à louer"
-                                    price="765€"
-                                    period="/mois"
-                                    badge="Charges comprises"
-                                    description="Appartement très spacieux et lumineux et très agréable."
-                                    details="2 pièces · 1 chambre · 50m²"
-                                    address="Rue de Courteneneuve, 76510 Saint Nicolas d’Aliermont"
-                                    image="{{ propertyImage }}"
-                                />
-                            </div>
-                        {% endfor %}
+                    <div class="row bt-results-grid agence-properties">
+{% for bienImmobilier in search %} 
+
+                                        {% set firstImage = bienImmobilier.propertyImages|first %}
+
+                                        {% if firstImage %}
+                                            {% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
+                                        {% endif %}
+
+                                        {% set transactionName = '' %}
+                                        {% set transactionSlug = '' %}
+
+                                        {% if bienImmobilier.typeTransaction %}
+                                            {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+                                            {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+                                        {% endif %}
+
+                                        {% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
+
+                                        {% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
+                                        {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
+                                        {% set propertyPeriod = isLocation ? '/mois' : '' %}
+                                        {% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
+
+                                        {% set details = [] %}
+
+                                        {% if bienImmobilier.typeBien %}
+                                            {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
+
+                                            {% if typeBienName is not empty %}
+                                                {% set details = details|merge([typeBienName]) %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.chambres is not empty %}
+                                            {% set details = details|merge([
+                                            bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
+                                            {% set details = details|merge([
+                                            bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.surfaceTotal is not empty %}
+                                            {% set details = details|merge([
+                                            bienImmobilier.surfaceTotal ~ 'm²',
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% set addressParts = [] %}
+
+                                        {% if bienImmobilier.adresse is not empty %}
+                                            {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                                            {% set addressParts = addressParts|merge([
+                                            (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
+                                        ]) %}
+                                        {% endif %}
+
+                                        {% set detailUrl = path('app_public_detail_bien', {
+                                            slug: bienImmobilier.slug,
+                                        }) %}
+
+                                        <div class="col-12 col-md-4">
+                                            <twig:Property:Card
+                                                title="{{ propertyTitle }}"
+                                                price="{{ propertyPrice }}"
+                                                period="{{ propertyPeriod }}"
+                                                badge="{{ propertyBadge }}"
+                                                description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                                                details="{{ details|join(' ⸱ ') }}"
+                                                address="{{ addressParts|join(', ') }}"
+                                                image="{{ uploadedImage }}"
+                                                url="{{ detailUrl }}"
+                                                favoriteUrl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
+                                                favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                                                :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
+                                            />
+                                        </div>
+
+                                    {% else %}
+
+                                        <div class="col-12">
+                                            <div class="agence-empty-state">
+                                                Aucun bien n’est disponible pour le moment.
+                                            </div>
+                                        </div>
+
+                                    {% endfor %}
+
                     </div>
                 </div>
             </section>
@@ -79,7 +282,7 @@
                                         description="Appartement très spacieux et lumineux."
                                         details="2 pièces · 1 chambre · 50m²"
                                         address="Rue de Courteneneuve, 76510 Saint Nicolas d’Aliermont"
-                                        image="{{ propertyImage }}"
+                                        image="toto.png"
                                     />
                                 </div>
                             {% endfor %}
@@ -100,7 +303,7 @@
             </nav>
         </main>
 
-        {{ include('composant/_search/_search.html.twig', {totalResults: totalResults}, false) }}
+       
 
         <nav class="bt-mobile-tabbar d-md-none" aria-label="Navigation mobile">
             <a href="#" class="active"><i class="icon-search"></i><span>Explorer</span></a>

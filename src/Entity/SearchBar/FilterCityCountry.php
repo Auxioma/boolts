@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Entity\SearchBar;
 
 use App\Entity\CategoryBienTransaction;
@@ -43,7 +53,7 @@ class FilterCityCountry
 
     public function setFilter(?string $filter): self
     {
-        $this->filter = $filter ? trim($filter) : null;
+        $this->filter = $filter ? mb_trim($filter) : null;
 
         return $this;
     }
@@ -67,7 +77,7 @@ class FilterCityCountry
 
     public function setSelectedValue(?string $selectedValue): self
     {
-        $this->selectedValue = $selectedValue ? trim($selectedValue) : null;
+        $this->selectedValue = $selectedValue ? mb_trim($selectedValue) : null;
 
         return $this;
     }
@@ -79,7 +89,7 @@ class FilterCityCountry
 
     public function setSelectedMapboxId(?string $selectedMapboxId): self
     {
-        $this->selectedMapboxId = $selectedMapboxId ? trim($selectedMapboxId) : null;
+        $this->selectedMapboxId = $selectedMapboxId ? mb_trim($selectedMapboxId) : null;
 
         return $this;
     }
@@ -91,7 +101,7 @@ class FilterCityCountry
 
     public function setSelectedFeatureType(?string $selectedFeatureType): self
     {
-        $this->selectedFeatureType = $selectedFeatureType ? trim($selectedFeatureType) : null;
+        $this->selectedFeatureType = $selectedFeatureType ? mb_trim($selectedFeatureType) : null;
 
         return $this;
     }
@@ -103,7 +113,7 @@ class FilterCityCountry
 
     public function setSelectedCountryName(?string $selectedCountryName): self
     {
-        $this->selectedCountryName = $selectedCountryName ? trim($selectedCountryName) : null;
+        $this->selectedCountryName = $selectedCountryName ? mb_trim($selectedCountryName) : null;
 
         return $this;
     }
@@ -116,7 +126,7 @@ class FilterCityCountry
     public function setSelectedCountryCode(?string $selectedCountryCode): self
     {
         $this->selectedCountryCode = $selectedCountryCode
-            ? strtoupper(trim($selectedCountryCode))
+            ? mb_strtoupper(mb_trim($selectedCountryCode))
             : null;
 
         return $this;
@@ -129,7 +139,7 @@ class FilterCityCountry
 
     public function setSelectedRegionName(?string $selectedRegionName): self
     {
-        $this->selectedRegionName = $selectedRegionName ? trim($selectedRegionName) : null;
+        $this->selectedRegionName = $selectedRegionName ? mb_trim($selectedRegionName) : null;
 
         return $this;
     }
@@ -141,7 +151,7 @@ class FilterCityCountry
 
     public function setSelectedCityName(?string $selectedCityName): self
     {
-        $this->selectedCityName = $selectedCityName ? trim($selectedCityName) : null;
+        $this->selectedCityName = $selectedCityName ? mb_trim($selectedCityName) : null;
 
         return $this;
     }
@@ -153,7 +163,7 @@ class FilterCityCountry
 
     public function setSelectedPostalCode(?string $selectedPostalCode): self
     {
-        $this->selectedPostalCode = $selectedPostalCode ? trim($selectedPostalCode) : null;
+        $this->selectedPostalCode = $selectedPostalCode ? mb_trim($selectedPostalCode) : null;
 
         return $this;
     }
@@ -165,7 +175,7 @@ class FilterCityCountry
 
     public function setSelectedLatitude(?string $selectedLatitude): self
     {
-        $this->selectedLatitude = $selectedLatitude ? trim($selectedLatitude) : null;
+        $this->selectedLatitude = $selectedLatitude ? mb_trim($selectedLatitude) : null;
 
         return $this;
     }
@@ -177,7 +187,7 @@ class FilterCityCountry
 
     public function setSelectedLongitude(?string $selectedLongitude): self
     {
-        $this->selectedLongitude = $selectedLongitude ? trim($selectedLongitude) : null;
+        $this->selectedLongitude = $selectedLongitude ? mb_trim($selectedLongitude) : null;
 
         return $this;
     }
@@ -189,7 +199,7 @@ class FilterCityCountry
 
     public function setSelectedFullAddress(?string $selectedFullAddress): self
     {
-        $this->selectedFullAddress = $selectedFullAddress ? trim($selectedFullAddress) : null;
+        $this->selectedFullAddress = $selectedFullAddress ? mb_trim($selectedFullAddress) : null;
 
         return $this;
     }
@@ -201,7 +211,7 @@ class FilterCityCountry
 
     public function setSelectedLocale(?string $selectedLocale): self
     {
-        $this->selectedLocale = $selectedLocale ? trim($selectedLocale) : null;
+        $this->selectedLocale = $selectedLocale ? mb_trim($selectedLocale) : null;
 
         return $this;
     }
@@ -213,7 +223,7 @@ class FilterCityCountry
 
     public function setSelectedLocationJson(?string $selectedLocationJson): self
     {
-        $this->selectedLocationJson = $selectedLocationJson ? trim($selectedLocationJson) : null;
+        $this->selectedLocationJson = $selectedLocationJson ? mb_trim($selectedLocationJson) : null;
 
         return $this;
     }
@@ -226,7 +236,7 @@ class FilterCityCountry
 
         $location = json_decode($this->selectedLocationJson, true);
 
-        if (!is_array($location)) {
+        if (!\is_array($location)) {
             return [];
         }
 

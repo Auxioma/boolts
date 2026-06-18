@@ -4,670 +4,901 @@
 {% endblock %}
 
 {% block body %}
-	<div class="home-bt-page">
-		<main>
-			<section class="home-bt-top">
-				<div class="container-xl home-bt-container home-bt-hero-shell">
-					<div class="home-bt-hero mx-auto">
-						<div class="home-bt-hero-content">
-							<h1 class="home-bt-hero-title">
-								L’immobilier,<br>
-								réinventé.
-							</h1>
+    <style>
+        .home-bt-tab-panel {
+            display: none;
+        }
 
-							{% include 'public/home/_partials/composant/search.html.twig' %}
+        .home-bt-tab-panel.active {
+            display: block;
+        }
 
+        .home-bt-main-tab {
+            cursor: pointer;
+        }
+    </style>
 
-						</div>
-					</div>
-				</div>
+    <div class="home-bt-page">
+        <main>
+            <section class="home-bt-top">
+                <div class="container-xl home-bt-container home-bt-hero-shell">
+                    <div class="home-bt-hero mx-auto">
+                        <div class="home-bt-hero-content">
+                            <h1 class="home-bt-hero-title">
+                                L’immobilier,<br>
+                                réinventé.
+                            </h1>
 
-				<div class="container-xl home-bt-container home-bt-resume-shell">
-					<div class="home-bt-resume mx-auto">
-						<div class="d-flex align-items-center justify-content-between gap-3 h-100">
-							<div class="d-flex flex-column align-items-start gap-3">
-								<h2 class="home-bt-resume-title">
-									Continuez votre recherche pour “Appartement à louer” à Paris
-								</h2>
+                            {% include 'public/home/_partials/composant/search.html.twig' %}
+                        </div>
+                    </div>
+                </div>
 
-								<div class="d-flex align-items-center gap-3">
-									<a href="#" class="home-bt-button-primary">Reprendre la recherche</a>
-									<a href="#" class="home-bt-button-outline">Annuler</a>
-								</div>
-							</div>
+                <div class="container-xl home-bt-container home-bt-resume-shell">
+                    <div class="home-bt-resume mx-auto">
+                        <div class="d-flex align-items-center justify-content-between gap-3 h-100">
+                            <div class="d-flex flex-column align-items-start gap-3">
+                                <h2 class="home-bt-resume-title">
+                                    Continuez votre recherche pour “Appartement à louer” à Paris
+                                </h2>
 
-							<div class="home-bt-resume-stack">
-								<span></span>
-								<span></span>
-								<span></span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
+                                <div class="d-flex align-items-center gap-3">
+                                    <a href="#" class="home-bt-button-primary">Reprendre la recherche</a>
+                                    <a href="#" class="home-bt-button-outline">Annuler</a>
+                                </div>
+                            </div>
 
-			<section class="home-bt-listings">
-				<div class="container-xl home-bt-container">
-					<div class="home-bt-search-header">
-						<h2 class="home-bt-search-title">Explorez toutes les propritétés</h2>
+                            <div class="home-bt-resume-stack">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-						<div class="home-bt-main-tabs">
-							<button type="button" class="home-bt-main-tab active" data-tab-button="location">En location</button>
-							<button type="button" class="home-bt-main-tab" data-tab-button="vente">En vente</button>
-						</div>
-					</div>
+            <section class="home-bt-listings">
+                <div class="container-xl home-bt-container">
+                    <div class="home-bt-search-header">
+                        <h2 class="home-bt-search-title">Explorez toutes les propriétés</h2>
 
-					<div class="home-bt-tab-panel active" data-tab-panel="location">
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Logements populaires à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
+                        <div class="home-bt-main-tabs">
+                            <button type="button" class="home-bt-main-tab active" data-tab-button="location">Louer</button>
+                            <button type="button" class="home-bt-main-tab" data-tab-button="vente">Acheter</button>
+                        </div>
+                    </div>
 
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
+                    <div class="home-bt-tab-panel active" data-tab-panel="location">
+                        <section class="home-bt-slider">
+                            <div class="home-bt-slider-header">
+                                <h3 class="home-bt-slider-title">Logements populaires à
+                                    <span>Paris</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </h3>
 
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
+                                <div class="home-bt-slider-nav">
+                                    <button type="button" data-slider-prev>
+                                        <i class="bi bi-arrow-left-circle"></i>
+                                    </button>
+                                    <button type="button" data-slider-next>
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Logements récemment<br class="d-md-none d-lg-none">
-									ajoutés à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
+                            <div class="home-bt-slider-viewport">
+                                <div class="home-bt-slider-track">
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">765€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Charges comprises</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - logement populaire à Paris</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+                                                <p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">890€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Charges comprises</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - bien très demandé</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 65m2</p>
+                                                <p class="home-bt-card-address">Avenue Victor Hugo, 75016 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-5);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-6);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-7);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-8);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">690€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Charges comprises</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - proche transports</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 42m2</p>
+                                                <p class="home-bt-card-address">Rue Saint-Maur, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Logements récemment<br class="d-md-none d-lg-none">
-									ajoutés à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">1 050€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Charges comprises</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - très belle opportunité</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 82m2</p>
+                                                <p class="home-bt-card-address">Boulevard Voltaire, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
 
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
+                        <section class="home-bt-slider">
+                            <div class="home-bt-slider-header">
+                                <h3 class="home-bt-slider-title">Logements récemment<br class="d-md-none d-lg-none">
+                                    ajoutés à
+                                    <span>Paris</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </h3>
 
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-9);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-10);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-11);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-12);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
-					</div>
+                                <div class="home-bt-slider-nav">
+                                    <button type="button" data-slider-prev>
+                                        <i class="bi bi-arrow-left-circle"></i>
+                                    </button>
+                                    <button type="button" data-slider-next>
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-					<div class="home-bt-tab-panel" data-tab-panel="vente">
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Logements populaires à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
+                            <div class="home-bt-slider-viewport">
+                                <div class="home-bt-slider-track">
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-5);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">820€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - récemment ajouté</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 48m2</p>
+                                                <p class="home-bt-card-address">Rue Lafayette, 75010 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-6);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">940€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - nouvelle annonce disponible</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 70m2</p>
+                                                <p class="home-bt-card-address">Boulevard Voltaire, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">765€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Charges comprises</span>
-											</div>
-											<p class="home-bt-card-description">Appartement très spacieux et lumineux et t</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
-					</div>
-				</div>
-			</section>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-7);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">610€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - ajouté aujourd’hui</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">1 pièce ⸱ 1 chambre ⸱ 28m2</p>
+                                                <p class="home-bt-card-address">Rue de Rennes, 75006 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-			<section class="home-bt-content">
-				<div class="container-xl home-bt-container">
-					<div class="home-bt-content-section row align-items-center gy-4">
-						<div class="col-12 col-md-6">
-							<div class="home-bt-text-block">
-								<h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-							</div>
-						</div>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-8);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">1 120€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - bien récent</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 88m2</p>
+                                                <p class="home-bt-card-address">Rue Oberkampf, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
 
-						<div class="col-12 col-md-6">
-							<div class="home-bt-content-image"></div>
-						</div>
-					</div>
+                        <section class="home-bt-slider">
+                            <div class="home-bt-slider-header">
+                                <h3 class="home-bt-slider-title">Notre sélection de logements à
+                                    <span>Paris</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </h3>
 
-					<div class="home-bt-content-section is-second row align-items-center gy-4">
-						<div class="col-12 col-md-6">
-							<div class="home-bt-content-image is-second"></div>
-						</div>
+                                <div class="home-bt-slider-nav">
+                                    <button type="button" data-slider-prev>
+                                        <i class="bi bi-arrow-left-circle"></i>
+                                    </button>
+                                    <button type="button" data-slider-next>
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-						<div class="col-12 col-md-6">
-							<div class="home-bt-text-block ms-md-auto">
-								<h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
+                            <div class="home-bt-slider-viewport">
+                                <div class="home-bt-slider-track">
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-9);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">1 050€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - sélection Boolts</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 75m2</p>
+                                                <p class="home-bt-card-address">Rue Oberkampf, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-			<section class="home-bt-codes">
-				<div class="container-xl home-bt-container">
-					<h2 class="home-bt-codes-title">Boolts redéfinit
-						<span>les codes</span>
-					</h2>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-10);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">730€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - bon rapport qualité prix</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 45m2</p>
+                                                <p class="home-bt-card-address">Rue Ordener, 75018 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-					<div class="row g-4">
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-box-seam"></i>
-								<h3>Transparence</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-11);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">860€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - sélection spéciale location</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 60m2</p>
+                                                <p class="home-bt-card-address">Rue de Tolbiac, 75013 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-globe2"></i>
-								<h3>Fluidité</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-12);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à louer</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">1 250€
+                                                    <span>/mois</span>
+                                                </p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à louer - bien premium en location</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 92m2</p>
+                                                <p class="home-bt-card-address">Rue de Rivoli, 75001 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
 
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-chat-dots"></i>
-								<h3>Réactivité</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
+                    <div class="home-bt-tab-panel" data-tab-panel="vente">
+                        <section class="home-bt-slider">
+                            <div class="home-bt-slider-header">
+                                <h3 class="home-bt-slider-title">Biens populaires à acheter à
+                                    <span>Paris</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </h3>
 
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-diagram-3"></i>
-								<h3>Écosystème</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
+                                <div class="home-bt-slider-nav">
+                                    <button type="button" data-slider-prev>
+                                        <i class="bi bi-arrow-left-circle"></i>
+                                    </button>
+                                    <button type="button" data-slider-next>
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-			<section class="home-bt-app">
-				<div class="container-xl home-bt-container">
-					<div class="home-bt-app-card">
-						<div class="home-bt-app-mockup"></div>
+                            <div class="home-bt-slider-viewport">
+                                <div class="home-bt-slider-track">
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">245 000€</p>
+                                                <span class="home-bt-card-badge">À vendre</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - bien populaire à Paris</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
+                                                <p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-						<div class="home-bt-app-text">
-							<h2>Il y a vraiment plein de choses à voir sur notre application !</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
-							<a href="#" class="home-bt-app-btn">Télécharger l’application</a>
-						</div>
-					</div>
-				</div>
-			</section>
-		</main>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">389 000€</p>
+                                                <span class="home-bt-card-badge">À vendre</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - idéal pour un premier achat</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 68m2</p>
+                                                <p class="home-bt-card-address">Avenue Victor Hugo, 75016 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-		<nav class="home-bt-mobile-tabbar">
-			<a href="#" class="active">
-				<i class="bi bi-search"></i>
-				Explorer
-			</a>
-			<a href="#">
-				<i class="bi bi-heart"></i>
-				Favoris
-			</a>
-			<a href="#">
-				<i class="bi bi-chat-dots"></i>
-				Messagerie
-			</a>
-			<a href="#">
-				<i class="bi bi-person"></i>
-				Compte
-			</a>
-		</nav>
-	</div>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">520 000€</p>
+                                                <span class="home-bt-card-badge">À vendre</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - fort potentiel</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 85m2</p>
+                                                <p class="home-bt-card-address">Boulevard Voltaire, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-	<script>
-		document.querySelectorAll('[data-tab-button]').forEach((button) => {
-button.addEventListener('click', () => {
-const tab = button.dataset.tabButton;
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">610 000€</p>
+                                                <span class="home-bt-card-badge">À vendre</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - logement populaire</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 105m2</p>
+                                                <p class="home-bt-card-address">Rue Lafayette, 75010 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
 
-document.querySelectorAll('[data-tab-button]').forEach((item) => {
-item.classList.toggle('active', item.dataset.tabButton === tab);
-});
+                        <section class="home-bt-slider">
+                            <div class="home-bt-slider-header">
+                                <h3 class="home-bt-slider-title">Biens récemment ajoutés à
+                                    <span>Paris</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </h3>
 
-document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
-panel.classList.toggle('active', panel.dataset.tabPanel === tab);
-});
-});
-});
+                                <div class="home-bt-slider-nav">
+                                    <button type="button" data-slider-prev>
+                                        <i class="bi bi-arrow-left-circle"></i>
+                                    </button>
+                                    <button type="button" data-slider-next>
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-document.querySelectorAll('.home-bt-slider').forEach((slider) => {
-const track = slider.querySelector('.home-bt-slider-track');
-const prev = slider.querySelector('[data-slider-prev]');
-const next = slider.querySelector('[data-slider-next]');
+                            <div class="home-bt-slider-viewport">
+                                <div class="home-bt-slider-track">
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-5);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">310 000€</p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - récemment ajouté</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 64m2</p>
+                                                <p class="home-bt-card-address">Rue Lafayette, 75010 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-if (! track) {
-return;
-}
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-6);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">455 000€</p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - nouvelle annonce disponible</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 90m2</p>
+                                                <p class="home-bt-card-address">Rue de Rennes, 75006 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-const getScrollAmount = () => {
-const card = track.querySelector('.home-bt-card');
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-7);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">198 000€</p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - ajouté aujourd’hui</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">1 pièce ⸱ 1 chambre ⸱ 30m2</p>
+                                                <p class="home-bt-card-address">Rue Saint-Maur, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-if (! card) {
-return 300;
-}
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-8);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">735 000€</p>
+                                                <span class="home-bt-card-badge">Nouveau</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - bien récent</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 112m2</p>
+                                                <p class="home-bt-card-address">Rue Oberkampf, 75011 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
 
-const styles = window.getComputedStyle(track);
-const gap = parseFloat(styles.gap || '20');
+                        <section class="home-bt-slider">
+                            <div class="home-bt-slider-header">
+                                <h3 class="home-bt-slider-title">Notre sélection de biens à acheter à
+                                    <span>Paris</span>
+                                    <i class="bi bi-chevron-right"></i>
+                                </h3>
 
-return card.getBoundingClientRect().width + (Number.isNaN(gap) ? 20 : gap);
-};
+                                <div class="home-bt-slider-nav">
+                                    <button type="button" data-slider-prev>
+                                        <i class="bi bi-arrow-left-circle"></i>
+                                    </button>
+                                    <button type="button" data-slider-next>
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-if (prev) {
-prev.addEventListener('click', () => {
-track.scrollBy({
-left: - getScrollAmount(),
-behavior: 'smooth'
-});
-});
-}
+                            <div class="home-bt-slider-viewport">
+                                <div class="home-bt-slider-track">
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-9);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">275 000€</p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - sélection Boolts</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 45m2</p>
+                                                <p class="home-bt-card-address">Rue Ordener, 75018 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
-if (next) {
-next.addEventListener('click', () => {
-track.scrollBy({left: getScrollAmount(), behavior: 'smooth'});
-});
-}
-});
-	</script>
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-10);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">430 000€</p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - bon investissement</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 84m2</p>
+                                                <p class="home-bt-card-address">Rue de Tolbiac, 75013 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
 
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-11);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">595 000€</p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - sélection spéciale achat</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 105m2</p>
+                                                <p class="home-bt-card-address">Avenue de Clichy, 75017 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
+
+                                    <article class="home-bt-card">
+                                        <div class="home-bt-card-img" style="background-image: var(--card-img-12);"></div>
+                                        <div class="home-bt-card-body">
+                                            <div class="home-bt-card-head">
+                                                <h4 class="home-bt-card-title">Appartement à vendre</h4>
+                                                <button type="button" class="home-bt-card-fav">
+                                                    <i class="bi bi-heart"></i>
+                                                </button>
+                                            </div>
+                                            <div class="home-bt-card-price-line">
+                                                <p class="home-bt-card-price">760 000€</p>
+                                                <span class="home-bt-card-badge">Sélection</span>
+                                            </div>
+                                            <p class="home-bt-card-description">Appartement à vendre - bien premium</p>
+                                            <div class="home-bt-details">
+                                                <p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 120m2</p>
+                                                <p class="home-bt-card-address">Rue de Rivoli, 75001 Paris</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </section>
+
+            <section class="home-bt-content">
+                <div class="container-xl home-bt-container">
+                    <div class="home-bt-content-section row align-items-center gy-4">
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-text-block">
+                                <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-content-image"></div>
+                        </div>
+                    </div>
+
+                    <div class="home-bt-content-section is-second row align-items-center gy-4">
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-content-image is-second"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-text-block ms-md-auto">
+                                <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="home-bt-codes">
+                <div class="container-xl home-bt-container">
+                    <h2 class="home-bt-codes-title">Boolts redéfinit
+                        <span>les codes</span>
+                    </h2>
+
+                    <div class="row g-4">
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-box-seam"></i>
+                                <h3>Transparence</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-globe2"></i>
+                                <h3>Fluidité</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-chat-dots"></i>
+                                <h3>Réactivité</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-diagram-3"></i>
+                                <h3>Écosystème</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="home-bt-app">
+                <div class="container-xl home-bt-container">
+                    <div class="home-bt-app-card">
+                        <div class="home-bt-app-mockup"></div>
+
+                        <div class="home-bt-app-text">
+                            <h2>Il y a vraiment plein de choses à voir sur notre application !</h2>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
+                            <a href="#" class="home-bt-app-btn">Télécharger l’application</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="home-bt-mobile-tabbar">
+            <a href="#" class="active">
+                <i class="bi bi-search"></i>
+                Explorer
+            </a>
+            <a href="#">
+                <i class="bi bi-heart"></i>
+                Favoris
+            </a>
+            <a href="#">
+                <i class="bi bi-chat-dots"></i>
+                Messagerie
+            </a>
+            <a href="#">
+                <i class="bi bi-person"></i>
+                Compte
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-tab-button]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tabButton;
+
+                    document.querySelectorAll('[data-tab-button]').forEach((item) => {
+                        item.classList.toggle('active', item.dataset.tabButton === tab);
+                    });
+
+                    document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
+                        panel.classList.toggle('active', panel.dataset.tabPanel === tab);
+                    });
+                });
+            });
+
+            document.querySelectorAll('.home-bt-slider').forEach((slider) => {
+                const track = slider.querySelector('.home-bt-slider-track');
+                const prev = slider.querySelector('[data-slider-prev]');
+                const next = slider.querySelector('[data-slider-next]');
+
+                if (!track) {
+                    return;
+                }
+
+                const getScrollAmount = () => {
+                    const card = track.querySelector('.home-bt-card');
+
+                    if (!card) {
+                        return 300;
+                    }
+
+                    const styles = window.getComputedStyle(track);
+                    const gap = parseFloat(styles.gap || '20');
+
+                    return card.getBoundingClientRect().width + (Number.isNaN(gap) ? 20 : gap);
+                };
+
+                if (prev) {
+                    prev.addEventListener('click', () => {
+                        track.scrollBy({
+                            left: -getScrollAmount(),
+                            behavior: 'smooth',
+                        });
+                    });
+                }
+
+                if (next) {
+                    next.addEventListener('click', () => {
+                        track.scrollBy({
+                            left: getScrollAmount(),
+                            behavior: 'smooth',
+                        });
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}

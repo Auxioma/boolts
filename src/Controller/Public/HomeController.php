@@ -15,6 +15,7 @@ namespace App\Controller\Public;
 use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\CategoryBienTransactionRepository;
+use App\Repository\PropertyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,7 @@ final class HomeController extends AbstractController
     public function __construct(
         #[Autowire('%env(MAPBOX_PUBLIC_TOKEN)%')]
         private readonly string $mapboxPublicToken,
+        private readonly PropertyRepository $propertyRepository,
     ) {
     }
 
@@ -43,7 +45,7 @@ final class HomeController extends AbstractController
          * Donc ici, on met directement l'objet CategoryBienTransaction,
          * pas un slug, pas un id.
          */
-        if ($transactions !== []) {
+        if ([] !== $transactions) {
             $filter->setTransactionType($transactions[0]);
         }
 
@@ -51,6 +53,11 @@ final class HomeController extends AbstractController
             'action' => $this->generateUrl('app_public_search'),
             'method' => 'POST',
         ]);
+
+        /**
+         * Logement plus populaire a paris filtré par le nombre de vue
+         */
+        //$logementPopulaire = $this->propertyRepository->logementPopulaire();
 
         return $this->render('public/home/index.html.twig', [
             'form' => $form->createView(),
