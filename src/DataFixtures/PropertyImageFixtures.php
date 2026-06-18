@@ -83,12 +83,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         $properties = $this->propertyRepository->findAll();
 
         if ([] === $properties) {
-            throw new \RuntimeException('Aucun bien trouvé. Lance d\'abord les fixtures des biens.');
+            throw new \RuntimeException("Aucun bien trouvé. Lance d'abord les fixtures des biens.");
         }
 
         foreach ($properties as $property) {
             if (null === $property->getId()) {
-                throw new \RuntimeException('Impossible de créer les images : un bien n\'a pas encore d\'ID.');
+                throw new \RuntimeException("Impossible de créer les images : un bien n'a pas encore d'ID.");
             }
 
             $imagesCount = $this->getImagesCount($property->getId());
@@ -238,7 +238,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         ]);
 
         if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(\sprintf('Impossible de télécharger l'image placeholder : %s', $url));
+            throw new \RuntimeException(\sprintf("Impossible de télécharger l'image placeholder : %s", $url));
         }
 
         file_put_contents($imagePath, $response->getContent());
