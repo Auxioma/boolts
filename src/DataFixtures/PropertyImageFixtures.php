@@ -25,7 +25,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 {
     private const TEMP_DIRECTORY = '/var/fixtures/property-images';
-    private const UPLOAD_DIRECTORY = '/public/uploads/biens';
 
     private const PROPERTY_IMAGES_MIN = 3;
     private const PROPERTY_IMAGES_MAX = 6;
@@ -54,16 +53,13 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         $filesystem = new Filesystem();
 
         $projectDir = $this->kernel->getProjectDir();
-
         $tempDirectory = $projectDir.self::TEMP_DIRECTORY;
-        $uploadDirectory = $projectDir.self::UPLOAD_DIRECTORY;
 
         if ($filesystem->exists($tempDirectory)) {
             $filesystem->remove($tempDirectory);
         }
 
         $filesystem->mkdir($tempDirectory);
-        $filesystem->mkdir($uploadDirectory);
 
         $properties = $this->propertyRepository->findAll();
 
@@ -76,6 +72,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                 throw new \RuntimeException('Impossible de créer les images : un bien n’a pas encore d’ID.');
             }
 
+            $temporaryFiles = [];
             $imagesCount = $this->getImagesCount($property->getId());
 
             for ($position = 1; $position <= $imagesCount; ++$position) {
@@ -84,66 +81,65 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                     position: $position
                 );
 
-                $serverImagePath = $uploadDirectory.'/'.$imageName;
+                $temporaryImagePath = $this->downloadPlaceholderImage(
+                    tempDirectory: $tempDirectory,
+                    propertyId: $property->getId(),
+                    position: $position,
+                    imageName: $imageName
+                );
+
+                $temporaryFiles[] = $temporaryImagePath;
+
+                /*
+                 * Le dernier argument "true" indique que c’est un fichier de test.
+                 * Symfony accepte donc un fichier déjà présent sur le disque.
+                 */
+                $uploadedFile = new UploadedFile(
+                    path: $temporaryImagePath,
+                    originalName: $imageName,
+                    mimeType: 'image/jpeg',
+                    error: null,
+                    test: true
+                );
 
                 $propertyImage = new PropertyImage();
                 $propertyImage->setProperty($property);
                 $propertyImage->setPosition((string) $position);
+                $propertyImage->setImageFile($uploadedFile);
 
-                if ($filesystem->exists($serverImagePath)) {
-                    /*
-                     * L’image existe déjà sur le serveur.
-                     * On ne télécharge rien.
-                     * On ne demande pas à Vich de déplacer le fichier.
-                     * On insère seulement les informations en BDD.
-                     */
-                    $propertyImage->setImageName($imageName);
-                    $propertyImage->setImageSize(filesize($serverImagePath) ?: null);
-                } else {
-                    /*
-                     * L’image n’existe pas.
-                     * On la télécharge dans var/fixtures/property-images.
-                     */
-                    $temporaryImagePath = $this->downloadPlaceholderImage(
-                        tempDirectory: $tempDirectory,
-                        propertyId: $property->getId(),
-                        position: $position,
-                        imageName: $imageName
-                    );
-
-                    /*
-                     * On prépare un vrai UploadedFile pour VichUploader.
-                     * Le dernier argument "true" indique que c’est un fichier de test,
-                     * donc Symfony accepte un fichier déjà présent sur le disque.
-                     */
-                    $uploadedFile = new UploadedFile(
-                        path: $temporaryImagePath,
-                        originalName: $imageName,
-                        mimeType: 'image/jpeg',
-                        error: null,
-                        test: true
-                    );
-
-                    /*
-                     * VichUploader déplacera le fichier dans public/uploads/biens.
-                     */
-                    $propertyImage->setImageFile($uploadedFile);
-
-                    /*
-                     * Sécurité :
-                     * On renseigne aussi la BDD manuellement avec le même nom stable.
-                     */
-                    $propertyImage->setImageName($imageName);
-                    $propertyImage->setImageSize(filesize($temporaryImagePath) ?: null);
-                }
-
+                /*
+                 * Important :
+                 * Avec SmartUniqueNamer, Vich va générer le vrai nom final du fichier.
+                 * Donc on ne force pas setImageName($imageName) ici.
+                 *
+                 * Si tu forces setImageName(), tu risques d’avoir un nom en BDD
+                 * différent du nom réellement envoyé sur N0C S3.
+                 */
                 $manager->persist($propertyImage);
+            }
+
+            /*
+             * Très important sur PlanetHoster :
+             * On flush par bien pour éviter d’avoir trop de fichiers ouverts en même temps.
+             */
+            $manager->flush();
+
+            /*
+             * On détache uniquement les images pour libérer la mémoire.
+             * On ne clear pas les Property, sinon les biens peuvent devenir détachés.
+             */
+            $manager->clear(PropertyImage::class);
+
+            foreach ($temporaryFiles as $temporaryFile) {
+                if ($filesystem->exists($temporaryFile)) {
+                    $filesystem->remove($temporaryFile);
+                }
             }
         }
 
-        $manager->flush();
-
-        $filesystem->remove($tempDirectory);
+        if ($filesystem->exists($tempDirectory)) {
+            $filesystem->remove($tempDirectory);
+        }
     }
 
     private function getImagesCount(int $propertyId): int
