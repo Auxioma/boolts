@@ -19,7 +19,7 @@ flysystem:
             aws:
                 client: 'n0c.s3_client'
                 bucket: '%env(string:N0C_BUCKET)%'
-                prefix: 'public/images/avatar'
+                prefix: 'public/avatar'
                 streamReads: true
 
         biens.storage:
@@ -27,5 +27,5 @@ flysystem:
             aws:
                 client: 'n0c.s3_client'
                 bucket: '%env(string:N0C_BUCKET)%'
-                prefix: 'public/images/bien'
+                prefix: 'public/bien'
                 streamReads: true
