@@ -28,7 +28,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 {
     public const PROPERTY_REFERENCE_PREFIX = 'property_';
 
-    public const PROPERTY_COUNT = 1000;
+    public const PROPERTY_COUNT = 200;
 
     private const PROPERTIES = [
         ['typeBien' => 'maison', 'typeTransaction' => 'vente'],
