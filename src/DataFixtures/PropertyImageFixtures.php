@@ -3,7 +3,7 @@
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d'un projet développé par Auxioma Web Agency pour l'entreprise Pastelit Co.
  * Tous droits réservés.
  *
  * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
@@ -83,12 +83,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         $properties = $this->propertyRepository->findAll();
 
         if ([] === $properties) {
-            throw new \RuntimeException('Aucun bien trouvé. Lance d’abord les fixtures des biens.');
+            throw new \RuntimeException('Aucun bien trouvé. Lance d\'abord les fixtures des biens.');
         }
 
         foreach ($properties as $property) {
             if (null === $property->getId()) {
-                throw new \RuntimeException('Impossible de créer les images : un bien n’a pas encore d’ID.');
+                throw new \RuntimeException('Impossible de créer les images : un bien n\'a pas encore d\'ID.');
             }
 
             $imagesCount = $this->getImagesCount($property->getId());
@@ -133,18 +133,26 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                 /**
                  * Très important :
                  * On flush après chaque image.
-                 * C’est plus lent, mais beaucoup plus sûr sur PlanetHoster.
+                 * C'est plus lent, mais beaucoup plus sûr sur PlanetHoster.
                  */
                 $manager->flush();
 
                 /**
-                 * On détache uniquement PropertyImage.
-                 * On ne clear pas les Property pour éviter de détacher les biens.
+                 * On détache uniquement cette instance de PropertyImage.
+                 *
+                 * Fix ORM 3.x : clear() n'accepte plus d'argument de classe.
+                 * En ORM 3.x, clear(PropertyImage::class) vide silencieusement
+                 * tout l'Unit of Work, y compris les entités Property — elles
+                 * deviennent "detached" et Doctrine lève une erreur
+                 * "A new entity was found through the relationship" à l'itération
+                 * suivante, car il ne peut pas les persister sans cascade.
+                 * detach($propertyImage) ne cible que cette instance précise ;
+                 * les Property restent correctement tracées dans l'UoW.
                  */
-                $manager->clear(PropertyImage::class);
+                $manager->detach($propertyImage);
 
                 /**
-                 * Nettoyage du fichier temporaire si Vich ne l’a pas déjà déplacé/supprimé.
+                 * Nettoyage du fichier temporaire si Vich ne l'a pas déjà déplacé/supprimé.
                  */
                 if ($filesystem->exists($temporaryImagePath)) {
                     $filesystem->remove($temporaryImagePath);
@@ -230,7 +238,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         ]);
 
         if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(\sprintf('Impossible de télécharger l’image placeholder : %s', $url));
+            throw new \RuntimeException(\sprintf('Impossible de télécharger l'image placeholder : %s', $url));
         }
 
         file_put_contents($imagePath, $response->getContent());
