@@ -31,11 +31,6 @@ class PropertyImage
     #[ORM\Column]
     private ?int $id = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     #[Vich\UploadableField(mapping: 'biens', fileNameProperty: 'imageName', size: 'imageSize')]
     private ?File $imageFile = null;
 
@@ -49,17 +44,26 @@ class PropertyImage
     private ?string $position = null;
 
     #[ORM\ManyToOne(inversedBy: 'propertyImages')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Property $property = null;
 
-    public function setImageFile(?File $imageFile = null): void
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setImageFile(?File $imageFile = null): static
     {
         $this->imageFile = $imageFile;
 
         if (null !== $imageFile) {
-            // It is required that at least one field changes if you are using doctrine
-            // otherwise the event listeners won't be called and the file is lost
+            /*
+             * Obligatoire pour que Doctrine déclenche les events VichUploader.
+             */
             $this->updatedAt = new \DateTimeImmutable();
         }
+
+        return $this;
     }
 
     public function getImageFile(): ?File
@@ -67,9 +71,11 @@ class PropertyImage
         return $this->imageFile;
     }
 
-    public function setImageName(?string $imageName): void
+    public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
+
+        return $this;
     }
 
     public function getImageName(): ?string
@@ -77,9 +83,11 @@ class PropertyImage
         return $this->imageName;
     }
 
-    public function setImageSize(?int $imageSize): void
+    public function setImageSize(?int $imageSize): static
     {
         $this->imageSize = $imageSize;
+
+        return $this;
     }
 
     public function getImageSize(): ?int
