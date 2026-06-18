@@ -25,10 +25,20 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 {
     private const TEMP_DIRECTORY = '/var/fixtures/property-images';
-    private const UPLOAD_DIRECTORY = '/public/uploads/biens';
 
     private const PROPERTY_IMAGES_MIN = 3;
     private const PROPERTY_IMAGES_MAX = 6;
+
+    /**
+     * Pause après chaque image.
+     * 250000 = 0.25 seconde.
+     */
+    private const SLEEP_AFTER_IMAGE_MICROSECONDS = 250000;
+
+    /**
+     * Pause après chaque bien.
+     */
+    private const SLEEP_AFTER_PROPERTY_SECONDS = 1;
 
     /**
      * Photo iPhone verticale.
@@ -51,19 +61,24 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
     public function load(ObjectManager $manager): void
     {
+        if (\function_exists('set_time_limit')) {
+            @set_time_limit(0);
+        }
+
+        if (!\gc_enabled()) {
+            \gc_enable();
+        }
+
         $filesystem = new Filesystem();
 
         $projectDir = $this->kernel->getProjectDir();
-
         $tempDirectory = $projectDir.self::TEMP_DIRECTORY;
-        $uploadDirectory = $projectDir.self::UPLOAD_DIRECTORY;
 
         if ($filesystem->exists($tempDirectory)) {
             $filesystem->remove($tempDirectory);
         }
 
         $filesystem->mkdir($tempDirectory);
-        $filesystem->mkdir($uploadDirectory);
 
         $properties = $this->propertyRepository->findAll();
 
@@ -84,66 +99,79 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                     position: $position
                 );
 
-                $serverImagePath = $uploadDirectory.'/'.$imageName;
+                $temporaryImagePath = $this->downloadPlaceholderImage(
+                    tempDirectory: $tempDirectory,
+                    propertyId: $property->getId(),
+                    position: $position,
+                    imageName: $imageName
+                );
+
+                $uploadedFile = new UploadedFile(
+                    path: $temporaryImagePath,
+                    originalName: $imageName,
+                    mimeType: 'image/jpeg',
+                    error: null,
+                    test: true
+                );
 
                 $propertyImage = new PropertyImage();
                 $propertyImage->setProperty($property);
                 $propertyImage->setPosition((string) $position);
+                $propertyImage->setImageFile($uploadedFile);
 
-                if ($filesystem->exists($serverImagePath)) {
-                    /*
-                     * L’image existe déjà sur le serveur.
-                     * On ne télécharge rien.
-                     * On ne demande pas à Vich de déplacer le fichier.
-                     * On insère seulement les informations en BDD.
-                     */
-                    $propertyImage->setImageName($imageName);
-                    $propertyImage->setImageSize(filesize($serverImagePath) ?: null);
-                } else {
-                    /*
-                     * L’image n’existe pas.
-                     * On la télécharge dans var/fixtures/property-images.
-                     */
-                    $temporaryImagePath = $this->downloadPlaceholderImage(
-                        tempDirectory: $tempDirectory,
-                        propertyId: $property->getId(),
-                        position: $position,
-                        imageName: $imageName
-                    );
-
-                    /*
-                     * On prépare un vrai UploadedFile pour VichUploader.
-                     * Le dernier argument "true" indique que c’est un fichier de test,
-                     * donc Symfony accepte un fichier déjà présent sur le disque.
-                     */
-                    $uploadedFile = new UploadedFile(
-                        path: $temporaryImagePath,
-                        originalName: $imageName,
-                        mimeType: 'image/jpeg',
-                        error: null,
-                        test: true
-                    );
-
-                    /*
-                     * VichUploader déplacera le fichier dans public/uploads/biens.
-                     */
-                    $propertyImage->setImageFile($uploadedFile);
-
-                    /*
-                     * Sécurité :
-                     * On renseigne aussi la BDD manuellement avec le même nom stable.
-                     */
-                    $propertyImage->setImageName($imageName);
+                /**
+                 * Important :
+                 * Ne force pas setImageName($imageName) si tu utilises SmartUniqueNamer.
+                 * Vich va remplir imageName avec le vrai nom envoyé.
+                 */
+                if ($filesystem->exists($temporaryImagePath)) {
                     $propertyImage->setImageSize(filesize($temporaryImagePath) ?: null);
                 }
 
                 $manager->persist($propertyImage);
+
+                /**
+                 * Très important :
+                 * On flush après chaque image.
+                 * C’est plus lent, mais beaucoup plus sûr sur PlanetHoster.
+                 */
+                $manager->flush();
+
+                /**
+                 * On détache uniquement PropertyImage.
+                 * On ne clear pas les Property pour éviter de détacher les biens.
+                 */
+                $manager->clear(PropertyImage::class);
+
+                /**
+                 * Nettoyage du fichier temporaire si Vich ne l’a pas déjà déplacé/supprimé.
+                 */
+                if ($filesystem->exists($temporaryImagePath)) {
+                    $filesystem->remove($temporaryImagePath);
+                }
+
+                /**
+                 * Nettoyage mémoire / fichiers ouverts.
+                 */
+                unset($uploadedFile, $propertyImage);
+
+                \gc_collect_cycles();
+
+                /**
+                 * Petite pause pour éviter de saturer PlanetHoster / N0C.
+                 */
+                usleep(self::SLEEP_AFTER_IMAGE_MICROSECONDS);
             }
+
+            /**
+             * Pause plus longue après chaque bien.
+             */
+            sleep(self::SLEEP_AFTER_PROPERTY_SECONDS);
         }
 
-        $manager->flush();
-
-        $filesystem->remove($tempDirectory);
+        if ($filesystem->exists($tempDirectory)) {
+            $filesystem->remove($tempDirectory);
+        }
     }
 
     private function getImagesCount(int $propertyId): int
@@ -170,12 +198,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
     ): string {
         $seed = \sprintf('boolts-property-%d-image-%d', $propertyId, $position);
 
-        /*
+        /**
          * Répartition souhaitée :
          * 80% horizontal
          * 20% vertical
          *
-         * Le modulo 5 donne 1 image verticale sur 5.
+         * Le modulo 5 donne environ 1 image verticale sur 5.
          */
         $isPortrait = (($propertyId + $position) % 5) === 0;
 
@@ -196,13 +224,18 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
         $imagePath = $tempDirectory.'/'.$imageName;
 
-        $response = $this->httpClient->request('GET', $url);
+        $response = $this->httpClient->request('GET', $url, [
+            'timeout' => 30,
+            'max_duration' => 60,
+        ]);
 
         if (200 !== $response->getStatusCode()) {
             throw new \RuntimeException(\sprintf('Impossible de télécharger l’image placeholder : %s', $url));
         }
 
         file_put_contents($imagePath, $response->getContent());
+
+        unset($response);
 
         return $imagePath;
     }
