@@ -5,13 +5,3 @@ liip_imagine:
                 filesystem_service: "biens.storage"
 
     data_loader: biens_s3_loader
-
-    resolvers:
-        s3_cache:
-            flysystem:
-                filesystem_service: "liip_cache.storage"
-                root_url: "%env(string:N0C_PUBLIC_ROOT_URL)%"
-                cache_prefix: "media/cache"
-                visibility: public
-
-    cache: s3_cache

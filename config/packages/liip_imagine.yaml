@@ -1,5 +1,9 @@
 liip_imagine:
-    driver: "gd"
+    driver: "imagick"
+
+    resolvers:
+        default:
+            web_path: ~
 
     filter_sets:
         cache: ~
