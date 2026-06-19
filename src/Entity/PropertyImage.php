@@ -118,4 +118,34 @@ class PropertyImage
 
         return $this;
     }
+
+    public function getLiipPath(): ?string
+{
+    if ($this->imageName === null || $this->imageName === '') {
+        return null;
+    }
+
+    $imageName = ltrim($this->imageName, '/');
+
+    /*
+     * Si imageName contient déjà le dossier généré par PropertyDirectoryNamer,
+     * exemple : 8/property-008-image.jpg
+     */
+    if (str_contains($imageName, '/')) {
+        return $imageName;
+    }
+
+    /*
+     * Si Vich stocke seulement le nom du fichier,
+     * exemple : property-008-image.jpg,
+     * on ajoute le dossier du bien.
+     */
+    $propertyId = $this->property?->getId();
+
+    if ($propertyId === null) {
+        return $imageName;
+    }
+
+    return $propertyId . '/' . $imageName;
+}
 }
