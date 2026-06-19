@@ -5,3 +5,9 @@ liip_imagine:
                 data_root: "%kernel.project_dir%/public/images/bien"
 
     data_loader: biens_local_loader
+
+    resolvers:
+        default:
+            web_path: ~
+
+    cache: default
