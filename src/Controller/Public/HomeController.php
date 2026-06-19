@@ -57,12 +57,19 @@ final class HomeController extends AbstractController
         /**
          * Logement plus populaire a paris filtré par le nombre de vue
          */
-        //$logementPopulaire = $this->propertyRepository->logementPopulaire();
+        $logementPopulaire = $this->propertyRepository->logementPopulaire();
+
+        /**
+         * logement resament ajouter 
+         */
+        $logementAjouterResament = $this->propertyRepository->logemntRecementAjouter();
 
         return $this->render('public/home/index.html.twig', [
             'form' => $form->createView(),
             'transactions' => $transactions,
             'mapbox_public_token' => $this->mapboxPublicToken,
-        ]);
+            'logementPopulaire' => $logementPopulaire,
+            'logementAjouterResament' => $logementAjouterResament,
+        ]); 
     }
 }

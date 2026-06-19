@@ -1,0 +1,6 @@
+flysystem:
+    storages:
+        biens.storage:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/public/images/bien'

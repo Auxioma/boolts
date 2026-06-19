@@ -180,7 +180,28 @@ class PropertyRepository extends ServiceEntityRepository
      */
     public function logementPopulaire(): array
     {
-        $qb = $this->createQueryBuilder('p');
-        return $qb;
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.createdAt', 'DESC')
+            ->leftJoin('p.propertyViews', 'pv')
+            ->addSelect('COUNT(pv.id) AS HIDDEN viewsCount')
+            ->groupBy('p.id')
+            ->orderBy('viewsCount', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * Logement Ajouter Ressament, filtré par la date de update
+     */
+    public function logemntRecementAjouter(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.updatedAt', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+        ;
     }
 }
