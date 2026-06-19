@@ -1,7 +1,14 @@
 liip_imagine:
     loaders:
-        biens_local_loader:
-            filesystem:
-                data_root: "%kernel.project_dir%/public/images/bien"
+        biens_loader:
+            flysystem:
+                filesystem_service: "biens.storage"
 
-    data_loader: biens_local_loader
+    resolvers:
+        default:
+            web_path:
+                web_root: "%kernel.project_dir%/public"
+                cache_prefix: "media/cache"
+
+    data_loader: biens_loader
+    cache: default

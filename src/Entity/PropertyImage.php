@@ -121,31 +121,16 @@ class PropertyImage
 
     public function getLiipPath(): ?string
 {
-    if ($this->imageName === null || $this->imageName === '') {
+    if (!$this->imageName) {
         return null;
     }
 
-    $imageName = ltrim($this->imageName, '/');
+    $path = ltrim($this->imageName, '/');
 
-    /*
-     * Si imageName contient déjà le dossier généré par PropertyDirectoryNamer,
-     * exemple : 8/property-008-image.jpg
-     */
-    if (str_contains($imageName, '/')) {
-        return $imageName;
-    }
+    $path = preg_replace('#^images/bien/#', '', $path);
+    $path = preg_replace('#^bien/#', '', $path);
+    $path = preg_replace('#^public/bien/#', '', $path);
 
-    /*
-     * Si Vich stocke seulement le nom du fichier,
-     * exemple : property-008-image.jpg,
-     * on ajoute le dossier du bien.
-     */
-    $propertyId = $this->property?->getId();
-
-    if ($propertyId === null) {
-        return $imageName;
-    }
-
-    return $propertyId . '/' . $imageName;
+    return $path;
 }
 }

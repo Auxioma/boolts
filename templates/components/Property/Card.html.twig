@@ -15,6 +15,19 @@
     isFavorite = false
 -%}
 
+{% set imagePath = image %}
+
+{% if image is not empty %}
+    {% set imagePath = image|replace({
+        '/images/bien/': '',
+        'images/bien/': '',
+        '/bien/': '',
+        'bien/': '',
+        'public/bien/': ''
+    }) %}
+{% endif %}
+
+
 <a href="{{ url }}" class="property-card-link">
 <twig:Card class="property-card">
     <div class="property-card__media">
@@ -23,47 +36,47 @@
                 {# Mobile - WebP #}
                 <source
                     media="(max-width: 575px)"
-                    srcset="{{ image|imagine_filter('property_card_mobile_webp') }}"
+                    srcset="{{ imagePath|imagine_filter('property_card_mobile_webp') }}"
                     type="image/webp"
                 >
 
                 {# Mobile - PNG fallback #}
                 <source
                     media="(max-width: 575px)"
-                    srcset="{{ image|imagine_filter('property_card_mobile_png') }}"
+                    srcset="{{ imagePath|imagine_filter('property_card_mobile_png') }}"
                     type="image/png"
                 >
 
                 {# Tablette - WebP #}
                 <source
                     media="(min-width: 576px) and (max-width: 991px)"
-                    srcset="{{ image|imagine_filter('property_card_tablet_webp') }}"
+                    srcset="{{ imagePath|imagine_filter('property_card_tablet_webp') }}"
                     type="image/webp"
                 >
 
                 {# Tablette - PNG fallback #}
                 <source
                     media="(min-width: 576px) and (max-width: 991px)"
-                    srcset="{{ image|imagine_filter('property_card_tablet_png') }}"
+                    srcset="{{ imagePath|imagine_filter('property_card_tablet_png') }}"
                     type="image/png"
                 >
 
                 {# Desktop - WebP #}
                 <source
                     media="(min-width: 992px)"
-                    srcset="{{ image|imagine_filter('property_card_desktop_webp') }}"
+                    srcset="{{ imagePath|imagine_filter('property_card_desktop_webp') }}"
                     type="image/webp"
                 >
 
                 {# Desktop - PNG fallback #}
                 <source
                     media="(min-width: 992px)"
-                    srcset="{{ image|imagine_filter('property_card_desktop_png') }}"
+                    srcset="{{ imagePath|imagine_filter('property_card_desktop_png') }}"
                     type="image/png"
                 >
 
                 <img
-                    src="{{ image|imagine_filter('property_card_desktop_png') }}"
+                    src="{{ imagePath|imagine_filter('property_card_desktop_png') }}"
                     alt="{{ title }}"
                     class="property-card__image"
                     loading="lazy"

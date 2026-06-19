@@ -1,6 +1,11 @@
 flysystem:
     storages:
+        avatars.storage:
+            visibility: public
+            local:
+                directory: "%kernel.project_dir%/public/images/avatar"
+
         biens.storage:
-            adapter: 'local'
-            options:
-                directory: '%kernel.project_dir%/public/images/bien'
+            visibility: public
+            local:
+                directory: "%kernel.project_dir%/public/images/bien"

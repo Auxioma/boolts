@@ -1,7 +1,16 @@
 liip_imagine:
     loaders:
-        biens_s3_loader:
+        biens_loader:
             flysystem:
                 filesystem_service: "biens.storage"
 
-    data_loader: biens_s3_loader
+    resolvers:
+        biens_cache_resolver:
+            flysystem:
+                filesystem_service: "liip_cache.storage"
+                root_url: "%env(string:N0C_PUBLIC_URL)%"
+                cache_prefix: "media/cache"
+                visibility: public
+
+    data_loader: biens_loader
+    cache: biens_cache_resolver
