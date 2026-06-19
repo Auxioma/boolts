@@ -29,3 +29,11 @@ flysystem:
                 bucket: '%env(string:N0C_BUCKET)%'
                 prefix: 'public/bien'
                 streamReads: true
+
+        liip_cache.storage:
+            visibility: public
+            aws:
+                client: 'n0c.s3_client'
+                bucket: '%env(string:N0C_BUCKET)%'
+                prefix: 'public'
+                streamReads: true
