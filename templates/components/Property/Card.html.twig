@@ -15,28 +15,6 @@
     isFavorite = false
 -%}
 
-{% set rawImage = '' %}
-
-{% if image is not empty %}
-    {% if image.liipPath is defined and image.liipPath is not empty %}
-        {% set rawImage = image.liipPath %}
-    {% elseif image.imageName is defined and image.imageName is not empty %}
-        {% set rawImage = image.imageName %}
-    {% else %}
-        {% set rawImage = image %}
-    {% endif %}
-{% endif %}
-
-{% set liipPath = rawImage|replace({
-    'https://preprod.boolts.fr/images/bien/': '',
-    'http://preprod.boolts.fr/images/bien/': '',
-    '/images/bien/': '',
-    'images/bien/': '',
-    'public/bien/': '',
-    '/bien/': '',
-    'bien/': ''
-})|trim('/') %}
-
 <a href="{{ url }}" class="property-card-link">
 <twig:Card class="property-card">
     <div class="property-card__media">
@@ -85,7 +63,7 @@
                 >
 
                 <img
-                    src="{{ liipPath|imagine_filter('property_card_desktop_png') }}"
+                    src="{{ image|imagine_filter('property_card_desktop_png') }}"
                     alt="{{ title }}"
                     class="property-card__image"
                     loading="lazy"
