@@ -1,0 +1,7 @@
+liip_imagine:
+    loaders:
+        biens_s3_loader:
+            flysystem:
+                filesystem_service: "biens.storage"
+
+    data_loader: biens_s3_loader

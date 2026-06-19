@@ -1,0 +1,7 @@
+liip_imagine:
+    loaders:
+        biens_local_loader:
+            filesystem:
+                data_root: "%kernel.project_dir%/public/images/bien"
+
+    data_loader: biens_local_loader
