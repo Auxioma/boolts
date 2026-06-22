@@ -227,7 +227,7 @@
 
                 <div class="d-inline-block"></div>
 
-                <div class="connexion-securite mt-24">
+                <div class="connexion-securite mt-24 bg-white">
 
                     {# Adresse de contact #}
                     <div class="js-editable-field formulaire my-20">
@@ -434,6 +434,194 @@
                             </button>
                         </div>
                     </div>
+
+                    {# Langues parlées #}
+<div class="js-editable-field formulaire mt-20">
+    <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+        <div class="w-100">
+            <h3 class="mb-0">Langues parlées par l’agence*</h3>
+
+            <p class="mt-12 mb-0 js-field-value" id="langues-parlees-value">
+                {% if app.user.langueParlers is not empty %}
+                    {{ app.user.langueParlers|map(langue => langue.name)|join(', ') }}
+                {% else %}
+                    Définissez les langues parlées par l’agence
+                {% endif %}
+            </p>
+
+            <div class="mt-12 d-none js-field-input">
+                <div class="agency-languages" data-controller="languages">
+                    {{ form_widget(form.langueParlers, {
+                        attr: {
+                            class: 'agency-languages-select d-none',
+                            'data-languages-target': 'select'
+                        }
+                    }) }}
+
+                    <div class="agency-languages-search">
+                        <input
+                            type="text"
+                            class="form-control agency-languages-input w-75"
+                            placeholder="Rechercher une langue..."
+                            data-languages-target="search"
+                            data-action="input->languages#search"
+                        >
+
+                        <button
+                            type="button"
+                            class="agency-languages-add"
+                            data-action="click->languages#addFirstResult"
+                        >
+                            +
+                        </button>
+                    </div>
+
+                    <div
+                        class="agency-languages-results"
+                        data-languages-target="results"
+                    ></div>
+
+                    <div
+                        class="agency-languages-tags"
+                        data-languages-target="tags"
+                    ></div>
+                </div>
+            </div>
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+            data-action="click->field-save#handle"
+            data-field-save-field-param="langueParlers"
+            data-field-save-input-param="#{{ form.langueParlers.vars.id }}"
+            data-field-save-output-param="#langues-parlees-value"
+        >
+            Définir
+        </button>
+    </div>
+</div>
+
+<style>
+.agency-languages {
+    width: 100%;
+}
+
+.agency-languages-search {
+    position: relative;
+    margin-top: 24px;
+}
+
+.agency-languages-input {
+    height: 64px;
+    padding: 0 76px 0 32px;
+    border: 1px solid #e5e5e5;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.agency-languages-input::placeholder {
+    color: #8b8f98;
+}
+
+.agency-languages-input:focus {
+    border-color: #5d00ff;
+    box-shadow: 0 0 0 0.2rem rgba(93, 0, 255, 0.12);
+}
+
+.agency-languages-add {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 48px;
+    height: 48px;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 50%;
+    background: #5d00ff;
+    color: #ffffff;
+    font-size: 2rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.agency-languages-results {
+    position: absolute;
+    z-index: 20;
+    width: 100%;
+    margin-top: 8px;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.agency-languages-result {
+    width: 100%;
+    padding: 12px 22px;
+    border: 0;
+    background: #ffffff;
+    text-align: left;
+    font-weight: 600;
+    color: #212529;
+}
+
+.agency-languages-result:hover {
+    background: #f5f0ff;
+    color: #5d00ff;
+}
+
+.agency-languages-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 26px;
+}
+
+.agency-language-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 18px;
+    border: 2px solid #5d00ff;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #5d00ff;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.agency-language-tag span {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.agency-language-tag:hover {
+    background: #5d00ff;
+    color: #ffffff;
+}
+
+@media (max-width: 576px) {
+    .agency-languages-input {
+        height: 58px;
+        padding-left: 22px;
+    }
+
+    .agency-languages-add {
+        width: 44px;
+        height: 44px;
+    }
+
+    .agency-language-tag {
+        font-size: 0.95rem;
+    }
+}
+</style>
+
 
                     {# Horaire d'ouverture #}
                     <div class="js-editable-field formulaire my-20">

@@ -13,6 +13,7 @@
 namespace App\Form\Dashboard\AgenceImmobiliere;
 
 use App\Entity\FuseauHoraire;
+use App\Entity\LangueParler;
 use App\Entity\User;
 use App\Repository\FuseauHoraireRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -173,8 +174,22 @@ class ProfileAgenceType extends AbstractType
                 'label' => false,
                 'allow_add' => true,
                 'allow_delete' => true,
-                'by_reference' => false,
+                'by_reference' => false, 
             ])
+
+
+->add('langueParlers', EntityType::class, [
+    'class' => LangueParler::class,
+    'choice_label' => 'name',
+    'required' => false,
+    'multiple' => true,
+    'expanded' => false,
+    'placeholder' => 'Rechercher une langue...',
+    'attr' => [
+        'class' => 'agency-languages-select d-none',
+        'data-languages-target' => 'select',
+    ],
+])
         ;
     }
 

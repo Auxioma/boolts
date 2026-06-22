@@ -240,6 +240,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToMany(targetEntity: PropertyView::class, mappedBy: 'user')]
     private Collection $propertyViews;
 
+    /**
+     * @var Collection<int, LangueParler>
+     */
+    #[ORM\ManyToMany(targetEntity: LangueParler::class, mappedBy: 'user')]
+    private Collection $langueParlers;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
@@ -247,6 +253,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->favoris = new ArrayCollection();
         $this->horaireOuvertures = new ArrayCollection();
         $this->propertyViews = new ArrayCollection();
+        $this->langueParlers = new ArrayCollection();
     }
 
     /*
@@ -925,6 +932,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
             if ($propertyView->getUser() === $this) {
                 $propertyView->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LangueParler>
+     */
+    public function getLangueParlers(): Collection
+    {
+        return $this->langueParlers;
+    }
+
+    public function addLangueParler(LangueParler $langueParler): static
+    {
+        if (!$this->langueParlers->contains($langueParler)) {
+            $this->langueParlers->add($langueParler);
+            $langueParler->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLangueParler(LangueParler $langueParler): static
+    {
+        if ($this->langueParlers->removeElement($langueParler)) {
+            $langueParler->removeUser($this);
         }
 
         return $this;

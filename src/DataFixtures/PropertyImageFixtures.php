@@ -20,7 +20,6 @@ use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -29,32 +28,23 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
     private const PROPERTY_IMAGES_MIN = 3;
     private const PROPERTY_IMAGES_MAX = 6;
 
-    /**
-     * Pause après chaque image.
-     * 250000 = 0.25 seconde.
-     */
     private const SLEEP_AFTER_IMAGE_MICROSECONDS = 250000;
-
-    /**
-     * Pause après chaque bien.
-     */
     private const SLEEP_AFTER_PROPERTY_SECONDS = 1;
 
     /**
-     * Photo iPhone verticale.
+     * Photo horizontale.
      */
-    private const IMAGE_PORTRAIT_WIDTH = 3024;
-    private const IMAGE_PORTRAIT_HEIGHT = 4032;
+    private const IMAGE_LANDSCAPE_WIDTH = 1200;
+    private const IMAGE_LANDSCAPE_HEIGHT = 800;
 
     /**
-     * Photo iPhone horizontale.
+     * Photo verticale.
      */
-    private const IMAGE_LANDSCAPE_WIDTH = 4032;
-    private const IMAGE_LANDSCAPE_HEIGHT = 3024;
+    private const IMAGE_PORTRAIT_WIDTH = 800;
+    private const IMAGE_PORTRAIT_HEIGHT = 1200;
 
     public function __construct(
         private readonly KernelInterface $kernel,
-        private readonly HttpClientInterface $httpClient,
         private readonly PropertyRepository $propertyRepository,
     ) {
     }
@@ -67,6 +57,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
         if (!\gc_enabled()) {
             \gc_enable();
+        }
+
+        if (!\extension_loaded('gd')) {
+            throw new \RuntimeException(
+                "L'extension PHP GD est obligatoire pour générer les images locales."
+            );
         }
 
         $filesystem = new Filesystem();
@@ -99,7 +95,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                     position: $position
                 );
 
-                $temporaryImagePath = $this->downloadPlaceholderImage(
+                $temporaryImagePath = $this->createPlaceholderImage(
                     tempDirectory: $tempDirectory,
                     propertyId: $property->getId(),
                     position: $position,
@@ -119,61 +115,26 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
                 $propertyImage->setPosition((string) $position);
                 $propertyImage->setImageFile($uploadedFile);
 
-                /**
-                 * Important :
-                 * Ne force pas setImageName($imageName) si tu utilises SmartUniqueNamer.
-                 * Vich va remplir imageName avec le vrai nom envoyé.
-                 */
                 if ($filesystem->exists($temporaryImagePath)) {
                     $propertyImage->setImageSize(filesize($temporaryImagePath) ?: null);
                 }
 
                 $manager->persist($propertyImage);
-
-                /**
-                 * Très important :
-                 * On flush après chaque image.
-                 * C'est plus lent, mais beaucoup plus sûr sur PlanetHoster.
-                 */
                 $manager->flush();
 
-                /**
-                 * On détache uniquement cette instance de PropertyImage.
-                 *
-                 * Fix ORM 3.x : clear() n'accepte plus d'argument de classe.
-                 * En ORM 3.x, clear(PropertyImage::class) vide silencieusement
-                 * tout l'Unit of Work, y compris les entités Property — elles
-                 * deviennent "detached" et Doctrine lève une erreur
-                 * "A new entity was found through the relationship" à l'itération
-                 * suivante, car il ne peut pas les persister sans cascade.
-                 * detach($propertyImage) ne cible que cette instance précise ;
-                 * les Property restent correctement tracées dans l'UoW.
-                 */
                 $manager->detach($propertyImage);
 
-                /**
-                 * Nettoyage du fichier temporaire si Vich ne l'a pas déjà déplacé/supprimé.
-                 */
                 if ($filesystem->exists($temporaryImagePath)) {
                     $filesystem->remove($temporaryImagePath);
                 }
 
-                /**
-                 * Nettoyage mémoire / fichiers ouverts.
-                 */
                 unset($uploadedFile, $propertyImage);
 
                 \gc_collect_cycles();
 
-                /**
-                 * Petite pause pour éviter de saturer PlanetHoster / N0C.
-                 */
                 usleep(self::SLEEP_AFTER_IMAGE_MICROSECONDS);
             }
 
-            /**
-             * Pause plus longue après chaque bien.
-             */
             sleep(self::SLEEP_AFTER_PROPERTY_SECONDS);
         }
 
@@ -198,20 +159,14 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         );
     }
 
-    private function downloadPlaceholderImage(
+    private function createPlaceholderImage(
         string $tempDirectory,
         int $propertyId,
         int $position,
         string $imageName,
     ): string {
-        $seed = \sprintf('boolts-property-%d-image-%d', $propertyId, $position);
-
         /**
-         * Répartition souhaitée :
-         * 80% horizontal
-         * 20% vertical
-         *
-         * Le modulo 5 donne environ 1 image verticale sur 5.
+         * 80% horizontal / 20% vertical.
          */
         $isPortrait = (($propertyId + $position) % 5) === 0;
 
@@ -223,29 +178,87 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
             ? self::IMAGE_PORTRAIT_HEIGHT
             : self::IMAGE_LANDSCAPE_HEIGHT;
 
-        $url = \sprintf(
-            'https://picsum.photos/seed/%s/%d/%d',
-            rawurlencode($seed),
-            $width,
-            $height
-        );
-
         $imagePath = $tempDirectory.'/'.$imageName;
 
-        $response = $this->httpClient->request('GET', $url, [
-            'timeout' => 30,
-            'max_duration' => 60,
-        ]);
+        $image = imagecreatetruecolor($width, $height);
 
-        if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(\sprintf("Impossible de télécharger l'image placeholder : %s", $url));
+        if (false === $image) {
+            throw new \RuntimeException('Impossible de créer une image GD.');
         }
 
-        file_put_contents($imagePath, $response->getContent());
+        $backgroundColor = $this->getBackgroundColor($image, $propertyId, $position);
+        $primaryTextColor = imagecolorallocate($image, 45, 45, 45);
+        $secondaryTextColor = imagecolorallocate($image, 90, 90, 90);
+        $whiteColor = imagecolorallocate($image, 255, 255, 255);
 
-        unset($response);
+        imagefilledrectangle($image, 0, 0, $width, $height, $backgroundColor);
+
+        /**
+         * Effet simple : bande blanche en bas.
+         */
+        imagefilledrectangle($image, 0, $height - 170, $width, $height, $whiteColor);
+
+        /**
+         * Lignes décoratives pour donner un rendu moins vide.
+         */
+        for ($i = 0; $i < 8; ++$i) {
+            $lineColor = imagecolorallocate(
+                $image,
+                min(255, 160 + ($i * 8)),
+                min(255, 160 + ($i * 8)),
+                min(255, 160 + ($i * 8))
+            );
+
+            imageline(
+                $image,
+                0,
+                80 + ($i * 90),
+                $width,
+                30 + ($i * 120),
+                $lineColor
+            );
+        }
+
+        imagestring($image, 5, 40, $height - 135, 'Boolts Property', $primaryTextColor);
+        imagestring(
+            $image,
+            4,
+            40,
+            $height - 105,
+            \sprintf('Bien #%d - Image #%d', $propertyId, $position),
+            $secondaryTextColor
+        );
+        imagestring(
+            $image,
+            4,
+            40,
+            $height - 80,
+            \sprintf('%dx%d', $width, $height),
+            $secondaryTextColor
+        );
+
+        imagejpeg($image, $imagePath, 85);
+        imagedestroy($image);
 
         return $imagePath;
+    }
+
+    private function getBackgroundColor(\GdImage $image, int $propertyId, int $position): int
+    {
+        $colors = [
+            [226, 232, 240],
+            [221, 214, 254],
+            [219, 234, 254],
+            [220, 252, 231],
+            [254, 243, 199],
+            [255, 228, 230],
+            [224, 242, 254],
+            [237, 233, 254],
+        ];
+
+        $color = $colors[($propertyId + $position) % \count($colors)];
+
+        return imagecolorallocate($image, $color[0], $color[1], $color[2]);
     }
 
     public function getDependencies(): array
