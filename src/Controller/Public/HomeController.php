@@ -55,12 +55,12 @@ final class HomeController extends AbstractController
         ]);
 
         /**
-         * Logement plus populaire a paris filtré par le nombre de vue
+         * Logement plus populaire a paris filtré par le nombre de vue.
          */
         $logementPopulaire = $this->propertyRepository->logementPopulaire();
 
         /**
-         * logement resament ajouter 
+         * logement resament ajouter.
          */
         $logementAjouterResament = $this->propertyRepository->logemntRecementAjouter();
 
@@ -70,6 +70,6 @@ final class HomeController extends AbstractController
             'mapbox_public_token' => $this->mapboxPublicToken,
             'logementPopulaire' => $logementPopulaire,
             'logementAjouterResament' => $logementAjouterResament,
-        ]); 
+        ]);
     }
 }

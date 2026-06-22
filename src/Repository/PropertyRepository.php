@@ -176,7 +176,7 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
-     * logment les plus populaire a paris
+     * logment les plus populaire a paris.
      */
     public function logementPopulaire(): array
     {
@@ -193,7 +193,7 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
-     * Logement Ajouter Ressament, filtré par la date de update
+     * Logement Ajouter Ressament, filtré par la date de update.
      */
     public function logemntRecementAjouter(): array
     {

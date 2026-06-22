@@ -119,6 +119,15 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             |--------------------------------------------------------------------------
             */
             if (3 === $step) {
+
+                $locel = en
+
+                $proposer=langue(en)-adresse
+
+                $translate= maxbis====
+                tras fr
+                
+
                 $entityManager->flush();
 
                 $this->updateReachedStep($session, 4);

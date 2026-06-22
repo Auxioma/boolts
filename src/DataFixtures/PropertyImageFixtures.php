@@ -3,7 +3,7 @@
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d'un projet développé par Auxioma Web Agency pour l'entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
  * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
@@ -55,14 +55,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
             @set_time_limit(0);
         }
 
-        if (!\gc_enabled()) {
-            \gc_enable();
+        if (!gc_enabled()) {
+            gc_enable();
         }
 
         if (!\extension_loaded('gd')) {
-            throw new \RuntimeException(
-                "L'extension PHP GD est obligatoire pour générer les images locales."
-            );
+            throw new \RuntimeException("L'extension PHP GD est obligatoire pour générer les images locales.");
         }
 
         $filesystem = new Filesystem();
@@ -130,7 +128,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
                 unset($uploadedFile, $propertyImage);
 
-                \gc_collect_cycles();
+                gc_collect_cycles();
 
                 usleep(self::SLEEP_AFTER_IMAGE_MICROSECONDS);
             }
@@ -193,12 +191,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
 
         imagefilledrectangle($image, 0, 0, $width, $height, $backgroundColor);
 
-        /**
+        /*
          * Effet simple : bande blanche en bas.
          */
         imagefilledrectangle($image, 0, $height - 170, $width, $height, $whiteColor);
 
-        /**
+        /*
          * Lignes décoratives pour donner un rendu moins vide.
          */
         for ($i = 0; $i < 8; ++$i) {

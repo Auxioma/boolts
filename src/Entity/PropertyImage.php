@@ -120,17 +120,17 @@ class PropertyImage
     }
 
     public function getLiipPath(): ?string
-{
-    if (!$this->imageName) {
-        return null;
+    {
+        if (!$this->imageName) {
+            return null;
+        }
+
+        $path = mb_ltrim($this->imageName, '/');
+
+        $path = preg_replace('#^images/bien/#', '', $path);
+        $path = preg_replace('#^bien/#', '', $path);
+        $path = preg_replace('#^public/bien/#', '', $path);
+
+        return $path;
     }
-
-    $path = ltrim($this->imageName, '/');
-
-    $path = preg_replace('#^images/bien/#', '', $path);
-    $path = preg_replace('#^bien/#', '', $path);
-    $path = preg_replace('#^public/bien/#', '', $path);
-
-    return $path;
-}
 }
