@@ -42,10 +42,8 @@ final class HomeController extends AbstractController
         /**
          * Je récupere l'IP de l'utilisateur pour localisé les biens
          */
-        $local = $request->getLocale();
         $ip = $request->getClientIp();
-        $location = $ipLocationService->locate($ip, $local);
-        dd($location);
+        $location = $ipLocationService->locate($ip);
 
         $transactions = $categoryBienTransactionRepository->findBy([], [
             'id' => 'ASC',
