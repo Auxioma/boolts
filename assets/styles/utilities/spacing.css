@@ -213,6 +213,9 @@
 .pb-32 { padding-bottom: 32px; }
 .py-32 { padding-top: 32px; padding-bottom: 32px; }
 
+.pr-44 { padding-right: 44px !important; }
+.pl-44 { padding-left: 44px !important; }
+
 .pt-48 { padding-top: 48px; }
 .pb-48 { padding-bottom: 48px; }
 .py-48 { padding-top: 48px; padding-bottom: 48px; }
@@ -227,5 +230,6 @@
 .fz-16 { font-size: 16px; }
 
 .rounded-24 { border-radius: 24px; }
+.rounded-70 { border-radius: 70px!important; }
 
 .wh-75 { height: calc(100dvh - 72px) }

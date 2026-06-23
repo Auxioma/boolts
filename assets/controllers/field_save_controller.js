@@ -1,7 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-
     static values = {
         url: String,
         csrf: String
@@ -22,6 +21,7 @@ export default class extends Controller {
 
         const fieldName = button.dataset.fieldSaveFieldParam;
         const isOpeningHours = this.isOpeningHoursField(fieldName);
+        const isLanguages = fieldName === 'langueParlers';
 
         const outputSelector = button.dataset.fieldSaveOutputParam;
         const output = outputSelector ? document.querySelector(outputSelector) : null;
@@ -38,16 +38,15 @@ export default class extends Controller {
 
         const finalValue = isOpeningHours
             ? this.getOpeningHoursValue(openingHoursContainer)
-            : this.getFinalValue(field, input, isMultiple);
+            : isLanguages
+                ? this.getSelectedLanguagesValue(input)
+                : this.getFinalValue(field, input, isMultiple);
 
         const initialValue = field.dataset.initialValue ?? this.serializeValue(finalValue);
         const isEditing = field.dataset.editing === 'true';
 
         const errorMessage = field.querySelector('.js-field-error');
 
-        /**
-         * Premier clic : on affiche le champ
-         */
         if (!isEditing) {
             field.dataset.initialValue = this.serializeValue(finalValue);
 
@@ -76,9 +75,6 @@ export default class extends Controller {
 
         const whatsAppValue = this.getWhatsAppValue(button, finalValue);
 
-        /**
-         * Si rien n’a changé, on referme simplement
-         */
         if (
             this.serializeValue(finalValue) === initialValue
             && whatsAppValue === undefined
@@ -98,11 +94,6 @@ export default class extends Controller {
             return;
         }
 
-        /**
-         * Validation spéciale horaires :
-         * dès qu’un seul input type="time" est rempli,
-         * on peut enregistrer.
-         */
         if (isOpeningHours && !this.hasAtLeastOneOpeningHour(openingHoursContainer)) {
             this.showFieldError(
                 errorMessage,
@@ -160,7 +151,7 @@ export default class extends Controller {
                 }));
 
                 if (output) {
-                    output.textContent = this.formatOutput(finalValue, isMultiple, fieldName);
+                    output.textContent = this.formatOutput(finalValue, isMultiple, fieldName, input);
                 }
 
                 if (!isAppend && value) {
@@ -174,7 +165,6 @@ export default class extends Controller {
                 this.setButtonState(button, 'closed');
 
                 field.dataset.editing = 'false';
-
                 field.dataset.initialValue = this.serializeValue(finalValue);
 
                 if (input) {
@@ -205,7 +195,7 @@ export default class extends Controller {
 
             const fieldName = button.dataset.fieldSaveFieldParam;
             const isOpeningHours = this.isOpeningHoursField(fieldName);
-
+            const isLanguages = fieldName === 'langueParlers';
             const isMultiple = button.dataset.fieldSaveMultipleParam === 'true';
 
             const inputSelector = button.dataset.fieldSaveInputParam;
@@ -217,13 +207,17 @@ export default class extends Controller {
 
             const inputs = isOpeningHours
                 ? openingHoursContainer.querySelectorAll('input[type="time"], .js-opening-toggle')
-                : isMultiple
-                    ? field.querySelectorAll('input, textarea, select')
-                    : [input];
+                : isLanguages && input
+                    ? [input]
+                    : isMultiple
+                        ? field.querySelectorAll('input, textarea, select')
+                        : [input];
 
             const initialValue = isOpeningHours
                 ? this.getOpeningHoursValue(openingHoursContainer)
-                : this.getFinalValue(field, input, isMultiple);
+                : isLanguages
+                    ? this.getSelectedLanguagesValue(input)
+                    : this.getFinalValue(field, input, isMultiple);
 
             field.dataset.initialValue = this.serializeValue(initialValue);
 
@@ -242,28 +236,43 @@ export default class extends Controller {
                         const hasChanged = this.serializeValue(currentValue) !== field.dataset.initialValue;
                         const hasAtLeastOneHour = this.hasAtLeastOneOpeningHour(openingHoursContainer);
 
-                        if (hasChanged && hasAtLeastOneHour) {
-                            this.setButtonState(button, 'save');
-                        } else {
-                            this.setButtonState(button, 'editing');
-                        }
+                        this.setButtonState(button, hasChanged && hasAtLeastOneHour ? 'save' : 'editing');
 
                         return;
                     }
 
-                    const currentValue = this.getFinalValue(field, input, isMultiple);
+                    const currentValue = isLanguages
+                        ? this.getSelectedLanguagesValue(input)
+                        : this.getFinalValue(field, input, isMultiple);
 
-                    if (this.serializeValue(currentValue) !== field.dataset.initialValue) {
-                        this.setButtonState(button, 'save');
-                    } else {
-                        this.setButtonState(button, 'editing');
-                    }
+                    this.setButtonState(
+                        button,
+                        this.serializeValue(currentValue) !== field.dataset.initialValue
+                            ? 'save'
+                            : 'editing'
+                    );
                 };
 
                 item.addEventListener('input', refreshButtonState);
                 item.addEventListener('change', refreshButtonState);
             });
         });
+    }
+
+    getSelectedLanguagesValue(input) {
+        if (!input || input.tagName !== 'SELECT') {
+            return [];
+        }
+
+        return Array.from(input.selectedOptions).map((option) => option.value);
+    }
+
+    getSelectedLanguagesLabels(input) {
+        if (!input || input.tagName !== 'SELECT') {
+            return [];
+        }
+
+        return Array.from(input.selectedOptions).map((option) => option.textContent.trim());
     }
 
     isOpeningHoursField(fieldName) {
@@ -433,6 +442,11 @@ export default class extends Controller {
             field.querySelectorAll('input, textarea, select').forEach((item) => {
                 const name = item.dataset.name || item.name;
 
+                if (item.tagName === 'SELECT' && item.multiple) {
+                    values[name] = Array.from(item.selectedOptions).map((option) => option.value);
+                    return;
+                }
+
                 values[name] = item.dataset.fullPhoneValue ?? item.value;
             });
 
@@ -441,6 +455,10 @@ export default class extends Controller {
 
         if (!input) {
             return '';
+        }
+
+        if (input.tagName === 'SELECT' && input.multiple) {
+            return Array.from(input.selectedOptions).map((option) => option.value);
         }
 
         return input.dataset.fullPhoneValue ?? input.value;
@@ -452,7 +470,15 @@ export default class extends Controller {
             : String(value ?? '');
     }
 
-    formatOutput(value, isMultiple, fieldName = null) {
+    formatOutput(value, isMultiple, fieldName = null, input = null) {
+        if (fieldName === 'langueParlers') {
+            const labels = this.getSelectedLanguagesLabels(input);
+
+            return labels.length > 0
+                ? labels.join(', ')
+                : 'Définissez les langues parlées par l’agence';
+        }
+
         if (this.isOpeningHoursField(fieldName)) {
             return this.formatOpeningHoursOutput(value);
         }

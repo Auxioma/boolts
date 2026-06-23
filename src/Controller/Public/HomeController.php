@@ -16,8 +16,10 @@ use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\CategoryBienTransactionRepository;
 use App\Repository\PropertyRepository;
+use App\Service\IpLocationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -33,7 +35,17 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home', methods: ['GET'])]
     public function index(
         CategoryBienTransactionRepository $categoryBienTransactionRepository,
+        Request $request,
+        IpLocationService $ipLocationService
     ): Response {
+
+        /**
+         * Je récupere l'IP de l'utilisateur pour localisé les biens
+         */
+        $ip = $request->getClientIp();
+        $location = $ipLocationService->locate($ip);
+        dd($location);
+
         $transactions = $categoryBienTransactionRepository->findBy([], [
             'id' => 'ASC',
         ]);

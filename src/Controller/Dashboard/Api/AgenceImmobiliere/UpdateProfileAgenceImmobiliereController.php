@@ -15,6 +15,7 @@ namespace App\Controller\Dashboard\Api\AgenceImmobiliere;
 use App\Entity\HoraireOuverture;
 use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\ProfileAgenceType;
+use App\Repository\LangueParlerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -33,6 +34,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         EntityManagerInterface $entityManager,
         CsrfTokenManagerInterface $csrfTokenManager,
         UserPasswordHasherInterface $passwordHasher,
+        LangueParlerRepository $langueParlerRepository,
     ): JsonResponse {
         $user = $this->getUser();
 
@@ -131,13 +133,6 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             ]);
         }
 
-        /*
-         * Correction importante :
-         * gestion spéciale des horaires d'ouverture.
-         *
-         * Dès qu'un seul input horaire est rempli,
-         * on autorise l'enregistrement.
-         */
         if (\in_array($field, ['horaireOuvertures', 'openingHours', 'horaireOuverture'], true)) {
             if (!\is_array($value)) {
                 return $this->json([
@@ -160,6 +155,40 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             return $this->json([
                 'success' => true,
                 'message' => 'Les horaires ont été enregistrés avec succès !',
+                'field' => $field,
+                'value' => $value,
+            ]);
+        }
+
+        if ('langueParlers' === $field) {
+            if (!\is_array($value)) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Les langues sélectionnées sont invalides.',
+                ], 422);
+            }
+
+            foreach ($user->getLangueParlers()->toArray() as $langueParler) {
+                $user->removeLangueParler($langueParler);
+            }
+
+            foreach ($value as $langueId) {
+                if (!$langueId || !is_numeric($langueId)) {
+                    continue;
+                }
+
+                $langueParler = $langueParlerRepository->find((int) $langueId);
+
+                if ($langueParler) {
+                    $user->addLangueParler($langueParler);
+                }
+            }
+
+            $entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Les langues parlées ont été enregistrées avec succès !',
                 'field' => $field,
                 'value' => $value,
             ]);

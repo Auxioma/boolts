@@ -436,73 +436,74 @@
                     </div>
 
                     {# Langues parlées #}
-<div class="js-editable-field formulaire mt-20">
-    <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-        <div class="w-100">
-            <h3 class="mb-0">Langues parlées par l’agence*</h3>
+                    <div class="js-editable-field formulaire mt-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <h3 class="mb-0">Langues parlées par l’agence*</h3>
 
-            <p class="mt-12 mb-0 js-field-value" id="langues-parlees-value">
-                {% if app.user.langueParlers is not empty %}
-                    {{ app.user.langueParlers|map(langue => langue.name)|join(', ') }}
-                {% else %}
-                    Définissez les langues parlées par l’agence
-                {% endif %}
-            </p>
+                                <p class="mt-12 mb-0 js-field-value" id="langues-parlees-value">
+                                    {% if app.user.langueParlers is not empty %}
+                                        {{ app.user.langueParlers|map(langue => langue.name)|join(', ') }}
+                                    {% else %}
+                                        Définissez les langues parlées par l’agence
+                                    {% endif %}
+                                </p>
 
-            <div class="mt-12 d-none js-field-input">
-                <div class="agency-languages" data-controller="languages">
-                    {{ form_widget(form.langueParlers, {
-                        attr: {
-                            class: 'agency-languages-select d-none',
-                            'data-languages-target': 'select'
-                        }
-                    }) }}
+                                <div class="mt-12 d-none js-field-input">
+                                    <div class="agency-languages" data-controller="languages">
+                                        {{ form_widget(form.langueParlers, {
+                                            attr: {
+                                                class: 'agency-languages-select d-none',
+                                                'data-languages-target': 'select'
+                                            }
+                                        }) }}
 
-                    <div class="agency-languages-search">
-                        <input
-                            type="text"
-                            class="form-control agency-languages-input w-75"
-                            placeholder="Rechercher une langue..."
-                            data-languages-target="search"
-                            data-action="input->languages#search"
-                        >
+                                        <div class="agency-languages-search">
+                                            <input
+                                                type="text"
+                                                class="form-control agency-languages-input w-75 rounded-70 pl-44"
+                                                placeholder="Rechercher une langue..."
+                                                autocomplete="off"
+                                                data-languages-target="search"
+                                                data-action="input->languages#search"
+                                            >
 
-                        <button
-                            type="button"
-                            class="agency-languages-add"
-                            data-action="click->languages#addFirstResult"
-                        >
-                            +
-                        </button>
+                                            <i class="icon-search agency-languages-add"></i>
+                                        </div>
+
+                                        <div
+                                            class="agency-languages-results"
+                                            data-languages-target="results"
+                                        ></div>
+
+                                        <div
+                                            class="agency-languages-tags"
+                                            data-languages-target="tags"
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="langueParlers"
+                                data-field-save-input-param="#{{ form.langueParlers.vars.id }}"
+                                data-field-save-output-param="#langues-parlees-value"
+                                data-field-save-multiple-param="true"
+                            >
+                                Définir
+                            </button>
+                        </div>
+
+                        <p class="js-field-error text-danger mt-2 mb-0 d-none"></p>
                     </div>
 
-                    <div
-                        class="agency-languages-results"
-                        data-languages-target="results"
-                    ></div>
 
-                    <div
-                        class="agency-languages-tags"
-                        data-languages-target="tags"
-                    ></div>
-                </div>
-            </div>
-        </div>
 
-        <button
-            type="button"
-            class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-            data-action="click->field-save#handle"
-            data-field-save-field-param="langueParlers"
-            data-field-save-input-param="#{{ form.langueParlers.vars.id }}"
-            data-field-save-output-param="#langues-parlees-value"
-        >
-            Définir
-        </button>
-    </div>
-</div>
 
-<style>
+                    <style>
 .agency-languages {
     width: 100%;
 }
@@ -513,13 +514,13 @@
 }
 
 .agency-languages-input {
-    height: 64px;
+    /*height: 64px;
     padding: 0 76px 0 32px;
     border: 1px solid #e5e5e5;
     border-radius: 999px;
     font-size: 1rem;
     font-weight: 600;
-    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);*/
 }
 
 .agency-languages-input::placeholder {
@@ -534,14 +535,13 @@
 .agency-languages-add {
     position: absolute;
     top: 50%;
-    right: 8px;
-    width: 48px;
-    height: 48px;
+    left: 10px;
+    width: 24px;
+    height: 24px;
     transform: translateY(-50%);
     border: 0;
     border-radius: 50%;
-    background: #5d00ff;
-    color: #ffffff;
+    color: var(--color-gray-light);
     font-size: 2rem;
     line-height: 1;
     display: flex;

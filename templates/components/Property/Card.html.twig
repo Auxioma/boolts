@@ -43,40 +43,47 @@
                 {# Mobile - PNG fallback #}
                 <source
                     media="(max-width: 575px)"
-                    srcset="{{ imagePath|imagine_filter('property_card_mobile_png') }}"
+                    src="/{{ imagePath }}"
+                    {# srcset="{{ imagePath|imagine_filter('property_card_mobile_png') }}" #}
+
                     type="image/png"
                 >
 
                 {# Tablette - WebP #}
                 <source
                     media="(min-width: 576px) and (max-width: 991px)"
-                    srcset="{{ imagePath|imagine_filter('property_card_tablet_webp') }}"
+                    src="/{{ imagePath }}"
+                    {# srcset="{{ imagePath|imagine_filter('property_card_tablet_webp') }}" #}
                     type="image/webp"
                 >
 
                 {# Tablette - PNG fallback #}
                 <source
                     media="(min-width: 576px) and (max-width: 991px)"
-                    srcset="{{ imagePath|imagine_filter('property_card_tablet_png') }}"
+                    src="/{{ imagePath }}"
+                    {# srcset="{{ imagePath|imagine_filter('property_card_tablet_png') }}" #}
                     type="image/png"
                 >
 
                 {# Desktop - WebP #}
                 <source
                     media="(min-width: 992px)"
-                    srcset="{{ imagePath|imagine_filter('property_card_desktop_webp') }}"
+                    src="/{{ imagePath }}"
+                    {# srcset="{{ imagePath|imagine_filter('property_card_desktop_webp') }}" #}
                     type="image/webp"
                 >
 
                 {# Desktop - PNG fallback #}
                 <source
                     media="(min-width: 992px)"
-                    srcset="{{ imagePath|imagine_filter('property_card_desktop_png') }}"
+                    src="/{{ imagePath }}"
+                    {# srcset="{{ imagePath|imagine_filter('property_card_desktop_png') }}" #}
                     type="image/png"
                 >
 
                 <img
-                    src="{{ imagePath|imagine_filter('property_card_desktop_png') }}"
+                    src="/images/bien/{{ imagePath }}"
+                    {# src="{{ imagePath|imagine_filter('property_card_desktop_png') }}" #}
                     alt="{{ title }}"
                     class="property-card__image"
                     loading="lazy"
