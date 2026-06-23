@@ -17,12 +17,13 @@ class IpLocationService
             return null;
         }
 
-        $response = $this->httpClient->request('GET', 'http://ip-api.com/json/'.$ip, [
-            'query' => [
-                'fields' => 'status,message,query,country,countryCode,regionName,city,zip,lat,lon,timezone,isp',
-                'lang' => 'en',
-            ],
-        ]);
+$response = $this->httpClient->request('GET', 'http://ip-api.com/json/'.$ip, [
+    'query' => [
+        'fields' => 'status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,offset,currency,isp,org,as,asname,mobile,proxy,hosting,query',
+        'lang' => 'en',
+    ],
+]);
+
 
         $data = $response->toArray(false);
 
