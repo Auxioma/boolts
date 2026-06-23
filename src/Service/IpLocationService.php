@@ -17,31 +17,85 @@ class IpLocationService
             return null;
         }
 
-$response = $this->httpClient->request('GET', 'http://ip-api.com/json/'.$ip, [
-    'query' => [
-        'fields' => 'status,message,continent,continentCode,country,countryCode,region,regionName,city,district,zip,lat,lon,timezone,offset,currency,isp,org,as,asname,mobile,proxy,hosting,query',
-        'lang' => 'en',
-    ],
-]);
+        try {
+            $response = $this->httpClient->request(
+                'GET',
+                'http://ip-api.com/json/'.$ip,
+                [
+                    'query' => [
+                        'fields' => implode(',', [
+                            'status',
+                            'message',
+                            'continent',
+                            'continentCode',
+                            'country',
+                            'countryCode',
+                            'region',
+                            'regionName',
+                            'city',
+                            'district',
+                            'zip',
+                            'lat',
+                            'lon',
+                            'timezone',
+                            'offset',
+                            'currency',
+                            'isp',
+                            'org',
+                            'as',
+                            'asname',
+                            'mobile',
+                            'proxy',
+                            'hosting',
+                            'query',
+                        ]),
+                        'lang' => 'en',
+                    ],
+                ]
+            );
 
+            $data = $response->toArray(false);
 
-        $data = $response->toArray(false);
+            if (($data['status'] ?? null) !== 'success') {
+                return null;
+            }
 
-        if (($data['status'] ?? null) !== 'success') {
+            return [
+                'ip' => $data['query'] ?? null,
+
+                'continent' => $data['continent'] ?? null,
+                'continentCode' => $data['continentCode'] ?? null,
+
+                'country' => $data['country'] ?? null,
+                'countryCode' => $data['countryCode'] ?? null,
+
+                'region' => $data['region'] ?? null,
+                'regionName' => $data['regionName'] ?? null,
+
+                'city' => $data['city'] ?? null,
+                'district' => $data['district'] ?? null,
+                'zip' => $data['zip'] ?? null,
+
+                'latitude' => $data['lat'] ?? null,
+                'longitude' => $data['lon'] ?? null,
+
+                'timezone' => $data['timezone'] ?? null,
+                'offset' => $data['offset'] ?? null,
+
+                'currency' => $data['currency'] ?? null,
+
+                'isp' => $data['isp'] ?? null,
+                'org' => $data['org'] ?? null,
+
+                'as' => $data['as'] ?? null,
+                'asname' => $data['asname'] ?? null,
+
+                'mobile' => (bool) ($data['mobile'] ?? false),
+                'proxy' => (bool) ($data['proxy'] ?? false),
+                'hosting' => (bool) ($data['hosting'] ?? false),
+            ];
+        } catch (\Throwable $e) {
             return null;
         }
-
-        return [
-            'ip' => $data['query'] ?? $ip,
-            'pays' => $data['country'] ?? null,
-            'codePays' => $data['countryCode'] ?? null,
-            'region' => $data['regionName'] ?? null,
-            'ville' => $data['city'] ?? null,
-            'codePostal' => $data['zip'] ?? null,
-            'latitude' => $data['lat'] ?? null,
-            'longitude' => $data['lon'] ?? null,
-            'timezone' => $data['timezone'] ?? null,
-            'fournisseur' => $data['isp'] ?? null,
-        ];
     }
 }
