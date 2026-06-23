@@ -20,7 +20,7 @@ class IpLocationService
         $response = $this->httpClient->request('GET', 'http://ip-api.com/json/'.$ip, [
             'query' => [
                 'fields' => 'status,message,query,country,countryCode,regionName,city,zip,lat,lon,timezone,isp',
-                'lang' => 'fr',
+                'lang' => 'ru',
             ],
         ]);
 
