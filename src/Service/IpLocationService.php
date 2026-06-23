@@ -11,7 +11,7 @@ class IpLocationService
     ) {
     }
 
-    public function locate(?string $ip): ?array
+    public function locate(?string $ip, $local): ?array
     {
         if (!$ip || in_array($ip, ['127.0.0.1', '::1'], true)) {
             return null;
@@ -20,7 +20,7 @@ class IpLocationService
         $response = $this->httpClient->request('GET', 'http://ip-api.com/json/'.$ip, [
             'query' => [
                 'fields' => 'status,message,query,country,countryCode,regionName,city,zip,lat,lon,timezone,isp',
-                'lang' => 'ru',
+                'lang' => $local,
             ],
         ]);
 
