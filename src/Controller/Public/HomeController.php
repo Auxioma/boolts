@@ -44,7 +44,7 @@ final class HomeController extends AbstractController
          */
         $ip = $request->getClientIp();
         $location = $ipLocationService->locate($ip);
-dd($location);
+dd($location['country'] ?? null);
         $transactions = $categoryBienTransactionRepository->findBy([], [
             'id' => 'ASC',
         ]);
