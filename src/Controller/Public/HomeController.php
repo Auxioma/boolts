@@ -59,7 +59,7 @@ final class HomeController extends AbstractController
         } else {
             $country = $location['country'];
         }
-
+dd($country);
         $transactions = $categoryBienTransactionRepository->findBy([], [
             'id' => 'ASC',
         ]);
