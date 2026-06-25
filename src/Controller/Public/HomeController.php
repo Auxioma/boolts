@@ -88,7 +88,7 @@ final class HomeController extends AbstractController
 
         $logementPopulaireLocation = $this->propertyRepository->logementPopulaire($country, $request->getLocale(), '2');
         $logementAjouterRecementLocation = $this->propertyRepository->logemntRecementAjouter($country, $request->getLocale(), '2');
-
+dd($logementPopulaireVente, $logementAjouterRecementVente, $logementPopulaireLocation, $logementAjouterRecementLocation);
         /**
          * je vais vérifier si l'utilisateur a un cookie de session pour retrouver ses recherches récentes.
          * Si le cookie existe, je vais récupérer l'UUID  et le nom de la ville de la recherche et je vais vérifier si la recherche existe dans la base de données.
