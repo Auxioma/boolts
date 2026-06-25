@@ -145,8 +145,13 @@ class PropertyRepository extends ServiceEntityRepository
         ?string $ville,
         ?string $cp,
         ?string $pays,
+        ?string $locale,
     ): QueryBuilder {
-        $qb = $this->createQueryBuilder('p');
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.translations', 'pt')
+            ->andWhere('pt.locale = :locale')
+            ->setParameter('locale', $locale)
+        ;
 
         if (null === $transactionTypeId || empty($pays)) {
             return $qb->andWhere('p.id IS NULL');
@@ -157,12 +162,12 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('transactionTypeId', $transactionTypeId);
 
         $qb
-            ->andWhere('p.pays = :pays')
+            ->andWhere('pt.pays = :pays')
             ->setParameter('pays', mb_trim($pays));
 
         if (!empty($ville)) {
             $qb
-                ->andWhere('p.ville = :ville')
+                ->andWhere('pt.ville = :ville')
                 ->setParameter('ville', mb_trim($ville));
         }
 
@@ -178,26 +183,43 @@ class PropertyRepository extends ServiceEntityRepository
     /**
      * logment les plus populaire a paris.
      */
-    public function logementPopulaire(): array
+    public function logementPopulaire($country, $locale, $id): array
     {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.createdAt', 'DESC')
+        $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.propertyViews', 'pv')
+            ->leftJoin('p.translations', 'pt')
             ->addSelect('COUNT(pv.id) AS HIDDEN viewsCount')
+            ->andWhere('pt.locale = :locale')
+            ->setParameter('locale', $locale)
+            ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
+            ->setParameter('transactionTypeId', $id)
             ->groupBy('p.id')
             ->orderBy('viewsCount', 'DESC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+            ->addOrderBy('p.createdAt', 'DESC')
+            ->setMaxResults(10);
+
+        if ($country) {
+            $qb
+                ->andWhere('pt.pays = :country')
+                ->setParameter('country', $country);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
      * Logement Ajouter Ressament, filtré par la date de update.
      */
-    public function logemntRecementAjouter(): array
+    public function logemntRecementAjouter($country, $locale, $id): array
     {
         return $this->createQueryBuilder('p')
+            ->leftJoin('p.translations', 'pt')
+            ->andWhere('pt.locale = :locale')
+            ->setParameter('locale', $locale)
+            ->andWhere('pt.pays = :country')
+            ->setParameter('country', $country)
+            ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
+            ->setParameter('transactionTypeId', $id)
             ->orderBy('p.updatedAt', 'DESC')
             ->setMaxResults(10)
             ->getQuery()

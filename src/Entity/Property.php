@@ -20,14 +20,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
+use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PropertyRepository::class)]
 #[ORM\Table(name: 'property')]
 #[ORM\HasLifecycleCallbacks]
-class Property
+class Property implements TranslatableInterface
 {
     use CreatedAtTraits;
+    use TranslatableTrait;
     use UpdatedAtTraits;
 
     #[ORM\Id]
@@ -45,19 +48,7 @@ class Property
 
     #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $adresse = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $ville = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $pays = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 7, nullable: true)]
@@ -73,31 +64,7 @@ class Property
 
     #[Assert\NotBlank(groups: ['step_3'])]
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $fullAddress = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $featureType = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $region = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $district = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $locality = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $neighborhood = null;
-
-    #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $poi = null;
 
     #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -142,9 +109,6 @@ class Property
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dateIndexationEnergie = null;
 
-    /**
-     * @var Collection<int, PropertyImage>
-     */
     #[Assert\Count(min: 1, groups: ['step_6'])]
     #[ORM\OneToMany(
         targetEntity: PropertyImage::class,
@@ -153,14 +117,6 @@ class Property
         orphanRemoval: true
     )]
     private Collection $propertyImages;
-
-    #[Assert\NotBlank(groups: ['step_7'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $titreDuLogement = null;
-
-    #[Assert\NotBlank(groups: ['step_7'])]
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $descriptionLogement = null;
 
     #[Assert\NotBlank(groups: ['step_8'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -185,29 +141,27 @@ class Property
     #[ORM\Column(enumType: StatutAnnonceImmobiliere::class)]
     private StatutAnnonceImmobiliere $statut = StatutAnnonceImmobiliere::BROUILLON;
 
-    /**
-     * @var Collection<int, Caracteristique>
-     */
     #[ORM\ManyToMany(targetEntity: Caracteristique::class, inversedBy: 'properties')]
     private Collection $caracteristique;
 
     #[ORM\ManyToOne(inversedBy: 'properties')]
     private ?User $user = null;
 
-    /**
-     * @var Collection<int, Favoris>
-     */
     #[ORM\OneToMany(targetEntity: Favoris::class, mappedBy: 'property')]
     private Collection $favoris;
 
-    /**
-     * @var Collection<int, PropertyView>
-     */
     #[ORM\OneToMany(targetEntity: PropertyView::class, mappedBy: 'property')]
     private Collection $propertyViews;
 
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
+
+    #[Assert\NotBlank(groups: ['step_3'])]
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $sessionIdMapbox = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $showAdresse = null;
 
     public function __construct()
     {
@@ -220,6 +174,138 @@ class Property
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->translate()->getAdresse();
+    }
+
+    public function setAdresse(?string $adresse): static
+    {
+        $this->translate()->setAdresse($adresse);
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->translate()->getVille();
+    }
+
+    public function setVille(?string $ville): static
+    {
+        $this->translate()->setVille($ville);
+
+        return $this;
+    }
+
+    public function getPays(): ?string
+    {
+        return $this->translate()->getPays();
+    }
+
+    public function setPays(?string $pays): static
+    {
+        $this->translate()->setPays($pays);
+
+        return $this;
+    }
+
+    public function getFullAddress(): ?string
+    {
+        return $this->translate()->getFullAddress();
+    }
+
+    public function setFullAddress(?string $fullAddress): static
+    {
+        $this->translate()->setFullAddress($fullAddress);
+
+        return $this;
+    }
+
+    public function getRegion(): ?string
+    {
+        return $this->translate()->getRegion();
+    }
+
+    public function setRegion(?string $region): static
+    {
+        $this->translate()->setRegion($region);
+
+        return $this;
+    }
+
+    public function getDistrict(): ?string
+    {
+        return $this->translate()->getDistrict();
+    }
+
+    public function setDistrict(?string $district): static
+    {
+        $this->translate()->setDistrict($district);
+
+        return $this;
+    }
+
+    public function getLocality(): ?string
+    {
+        return $this->translate()->getLocality();
+    }
+
+    public function setLocality(?string $locality): static
+    {
+        $this->translate()->setLocality($locality);
+
+        return $this;
+    }
+
+    public function getNeighborhood(): ?string
+    {
+        return $this->translate()->getNeighborhood();
+    }
+
+    public function setNeighborhood(?string $neighborhood): static
+    {
+        $this->translate()->setNeighborhood($neighborhood);
+
+        return $this;
+    }
+
+    public function getPoi(): ?string
+    {
+        return $this->translate()->getPoi();
+    }
+
+    public function setPoi(?string $poi): static
+    {
+        $this->translate()->setPoi($poi);
+
+        return $this;
+    }
+
+    public function getTitreDuLogement(): ?string
+    {
+        return $this->translate()->getTitreDuLogement();
+    }
+
+    public function setTitreDuLogement(?string $titreDuLogement): static
+    {
+        $this->translate()->setTitreDuLogement($titreDuLogement);
+
+        return $this;
+    }
+
+    public function getDescriptionLogement(): ?string
+    {
+        return $this->translate()->getDescriptionLogement();
+    }
+
+    public function setDescriptionLogement(?string $descriptionLogement): static
+    {
+        $this->translate()->setDescriptionLogement($descriptionLogement);
+
+        return $this;
     }
 
     public function getTypeBien(): ?CategoryBien
@@ -246,18 +332,6 @@ class Property
         return $this;
     }
 
-    public function getAdresse(): ?string
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?string $adresse): static
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
     public function getCodePostal(): ?string
     {
         return $this->codePostal;
@@ -266,30 +340,6 @@ class Property
     public function setCodePostal(?string $codePostal): static
     {
         $this->codePostal = $codePostal;
-
-        return $this;
-    }
-
-    public function getVille(): ?string
-    {
-        return $this->ville;
-    }
-
-    public function setVille(?string $ville): static
-    {
-        $this->ville = $ville;
-
-        return $this;
-    }
-
-    public function getPays(): ?string
-    {
-        return $this->pays;
-    }
-
-    public function setPays(?string $pays): static
-    {
-        $this->pays = $pays;
 
         return $this;
     }
@@ -330,18 +380,6 @@ class Property
         return $this;
     }
 
-    public function getFullAddress(): ?string
-    {
-        return $this->fullAddress;
-    }
-
-    public function setFullAddress(?string $fullAddress): static
-    {
-        $this->fullAddress = $fullAddress;
-
-        return $this;
-    }
-
     public function getFeatureType(): ?string
     {
         return $this->featureType;
@@ -350,66 +388,6 @@ class Property
     public function setFeatureType(?string $featureType): static
     {
         $this->featureType = $featureType;
-
-        return $this;
-    }
-
-    public function getRegion(): ?string
-    {
-        return $this->region;
-    }
-
-    public function setRegion(?string $region): static
-    {
-        $this->region = $region;
-
-        return $this;
-    }
-
-    public function getDistrict(): ?string
-    {
-        return $this->district;
-    }
-
-    public function setDistrict(?string $district): static
-    {
-        $this->district = $district;
-
-        return $this;
-    }
-
-    public function getLocality(): ?string
-    {
-        return $this->locality;
-    }
-
-    public function setLocality(?string $locality): static
-    {
-        $this->locality = $locality;
-
-        return $this;
-    }
-
-    public function getNeighborhood(): ?string
-    {
-        return $this->neighborhood;
-    }
-
-    public function setNeighborhood(?string $neighborhood): static
-    {
-        $this->neighborhood = $neighborhood;
-
-        return $this;
-    }
-
-    public function getPoi(): ?string
-    {
-        return $this->poi;
-    }
-
-    public function setPoi(?string $poi): static
-    {
-        $this->poi = $poi;
 
         return $this;
     }
@@ -546,9 +524,6 @@ class Property
         return $this;
     }
 
-    /**
-     * @return Collection<int, PropertyImage>
-     */
     public function getPropertyImages(): Collection
     {
         return $this->propertyImages;
@@ -571,30 +546,6 @@ class Property
                 $propertyImage->setProperty(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getTitreDuLogement(): ?string
-    {
-        return $this->titreDuLogement;
-    }
-
-    public function setTitreDuLogement(?string $titreDuLogement): static
-    {
-        $this->titreDuLogement = $titreDuLogement;
-
-        return $this;
-    }
-
-    public function getDescriptionLogement(): ?string
-    {
-        return $this->descriptionLogement;
-    }
-
-    public function setDescriptionLogement(?string $descriptionLogement): static
-    {
-        $this->descriptionLogement = $descriptionLogement;
 
         return $this;
     }
@@ -671,9 +622,6 @@ class Property
         return $this;
     }
 
-    /**
-     * @return Collection<int, Caracteristique>
-     */
     public function getCaracteristique(): Collection
     {
         return $this->caracteristique;
@@ -707,9 +655,6 @@ class Property
         return $this;
     }
 
-    /**
-     * @return Collection<int, Favoris>
-     */
     public function getFavoris(): Collection
     {
         return $this->favoris;
@@ -736,9 +681,6 @@ class Property
         return $this;
     }
 
-    /**
-     * @return Collection<int, PropertyView>
-     */
     public function getPropertyViews(): Collection
     {
         return $this->propertyViews;
@@ -773,6 +715,30 @@ class Property
     public function setSlug(string $slug): static
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getSessionIdMapbox(): ?string
+    {
+        return $this->sessionIdMapbox;
+    }
+
+    public function setSessionIdMapbox(?string $sessionIdMapbox): static
+    {
+        $this->sessionIdMapbox = $sessionIdMapbox;
+
+        return $this;
+    }
+
+    public function isShowAdresse(): ?bool
+    {
+        return $this->showAdresse;
+    }
+
+    public function setShowAdresse(?bool $showAdresse): static
+    {
+        $this->showAdresse = $showAdresse;
 
         return $this;
     }

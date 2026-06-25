@@ -12,15 +12,19 @@
 
 namespace App\Controller\Public;
 
+use App\Entity\Search\PropertySearchSession;
 use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\PropertyRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Uid\Uuid;
 
 final class SearchController extends AbstractController
 {
@@ -29,6 +33,7 @@ final class SearchController extends AbstractController
         private readonly string $mapboxPublicToken,
         private readonly PropertyRepository $propertyRepository,
         private readonly PaginatorInterface $paginator,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -71,14 +76,54 @@ final class SearchController extends AbstractController
             'pays' => $pays,
         ]);
 
-        return $this->redirectToRoute('app_public_search_results', [
+        /**
+         * enregistrer la recherche dans la base de données pour un suivi ultérieur
+         * et pour permettre aux utilisateurs de retrouver leurs recherches récentes.
+         */
+        $sessionRecherche = new PropertySearchSession();
+        $sessionRecherche->setUuid(Uuid::v7());
+        $sessionRecherche->setTransactionTypeId($transactionType->getId());
+        $sessionRecherche->setVille($ville);
+        $sessionRecherche->setCp($cp);
+        $sessionRecherche->setPays($pays);
+        $sessionRecherche->setFilters([
+            'uuid' => $sessionRecherche->getUuid()->toRfc4122(),
+            'transactionType' => $transactionType->getName(),
+            'ville' => $ville,
+            'cp' => $cp,
+            'pays' => $pays,
+        ]);
+
+        $this->entityManager->persist($sessionRecherche);
+        $this->entityManager->flush();
+
+        /**
+         * je vais créer le cookie de session pour stocker l'UUID de la recherche afin que l'utilisateur puisse retrouver ses recherches récentes.
+         * Le cookie sera valide pour 30 jours.
+         * Le cookie sera accessible uniquement via HTTP (non accessible via JavaScript) pour des raisons de sécurité.
+         * Le cookie sera accessible uniquement sur le domaine principal et non sur les sous-domaines pour éviter les problèmes de sécurité liés aux cookies.
+         */
+        $reponse = $this->redirectToRoute('app_public_search_results', [
             'searchToken' => $searchToken,
         ]);
+
+        $reponse->headers->setCookie(
+            Cookie::create('property_search_token')
+                ->withValue($sessionRecherche->getUuid()->toRfc4122())
+                ->withExpires(new \DateTimeImmutable('+30 days'))
+                ->withPath('/')
+                ->withSecure($request->isSecure())
+                ->withHttpOnly(true)
+                ->withSameSite(Cookie::SAMESITE_LAX)
+        );
+
+        return $reponse;
     }
 
     #[Route('/public/search/{searchToken}', name: 'app_public_search_results', methods: ['GET'])]
     public function results(Request $request, string $searchToken): Response
     {
+        $local = $request->getLocale();
         $criteria = $request->getSession()->get('property_search_'.$searchToken);
 
         if (null === $criteria) {
@@ -96,7 +141,8 @@ final class SearchController extends AbstractController
             $criteria['transactionTypeId'],
             $criteria['ville'],
             $criteria['cp'],
-            $criteria['pays']
+            $criteria['pays'],
+            $local
         );
 
         $search = $this->paginator->paginate(

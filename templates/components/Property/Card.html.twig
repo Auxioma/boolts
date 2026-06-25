@@ -17,17 +17,6 @@
 
 {% set imagePath = image %}
 
-{% if image is not empty %}
-    {% set imagePath = image|replace({
-        '/images/bien/': '',
-        'images/bien/': '',
-        '/bien/': '',
-        'bien/': '',
-        'public/bien/': ''
-    }) %}
-{% endif %}
-
-
 <a href="{{ url }}" class="property-card-link">
 <twig:Card class="property-card">
     <div class="property-card__media">
@@ -82,7 +71,7 @@
                 >
 
                 <img
-                    src="/images/bien/{{ imagePath }}"
+                    src="{{ imagePath }}"
                     {# src="{{ imagePath|imagine_filter('property_card_desktop_png') }}" #}
                     alt="{{ title }}"
                     class="property-card__image"

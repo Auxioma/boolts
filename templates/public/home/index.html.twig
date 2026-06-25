@@ -1,867 +1,437 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Boolts - L’immobilier réinventé
-{% endblock %}
+{% block title %}Boolts - L’immobilier réinventé{% endblock %}
 
 {% block body %}
-	<style>
-		.home-bt-tab-panel {
-			display: none;
-		}
-
-		.home-bt-tab-panel.active {
-			display: block;
-		}
-
-		.home-bt-main-tab {
-			cursor: pointer;
-		}
-	</style>
-
-	<div class="home-bt-page">
-		<main>
-			<section class="home-bt-top">
-				<div class="container-xl home-bt-container home-bt-hero-shell">
-					<div class="home-bt-hero mx-auto">
-						<div class="home-bt-hero-content">
-							<h1 class="home-bt-hero-title">
-								L’immobilier,<br>
-								réinventé.
-							</h1>
-
-							{% include 'public/home/_partials/composant/search.html.twig' %}
-						</div>
-					</div>
-				</div>
-
-				<div class="container-xl home-bt-container home-bt-resume-shell">
-					<div class="home-bt-resume mx-auto">
-						<div class="d-flex align-items-center justify-content-between gap-3 h-100">
-							<div class="d-flex flex-column align-items-start gap-3">
-								<h2 class="home-bt-resume-title">
-									Continuez votre recherche pour “Appartement à louer” à Paris
-								</h2>
-
-								<div class="d-flex align-items-center gap-3">
-									<a href="#" class="home-bt-button-primary">Reprendre la recherche</a>
-									<a href="#" class="home-bt-button-outline">Annuler</a>
-								</div>
-							</div>
-
-							<div class="home-bt-resume-stack">
-								<span></span>
-								<span></span>
-								<span></span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="home-bt-listings">
-				<div class="container-xl home-bt-container">
-					<div class="home-bt-search-header">
-						<h2 class="home-bt-search-title">Explorez toutes les propriétés</h2>
-
-						<div class="home-bt-main-tabs">
-							<button type="button" class="home-bt-main-tab active" data-tab-button="location">Louer</button>
-							<button type="button" class="home-bt-main-tab" data-tab-button="vente">Acheter</button>
-						</div>
-					</div>
-
-					<div class="home-bt-tab-panel active" data-tab-panel="location">
-						<section class="agence-properties bt-related" data-controller="splide">
-							<div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-								<h2 class="bt-section-title">
-									Autres biens similaires à aaaa
-								</h2>
-
-								<div class="d-flex align-items-center gap-2 text-secondary">
-									<button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Précédent" data-splide-target="previous" data-action="click->splide#previous">
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-
-									<button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Suivant" data-splide-target="next" data-action="click->splide#next">
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="splide bt-related-slider" data-splide-target="slider" aria-label="Biens similaires">
-								<div class="splide__track">
-									<ul class="splide__list">
-										{% for bienImmobilier in logementAjouterResament %}
-
-											{% set firstImage = bienImmobilier.propertyImages|first %}
-
-											{% if firstImage %}
-												{% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
-											{% endif %}
-
-											{% set transactionName = '' %}
-											{% set transactionSlug = '' %}
-
-											{% if bienImmobilier.typeTransaction %}
-												{% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
-												{% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
-											{% endif %}
-
-											{% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
-
-											{% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
-											{% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
-											{% set propertyPeriod = isLocation ? '/mois' : '' %}
-											{% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
-
-											{% set details = [] %}
-
-											{% if bienImmobilier.typeBien %}
-												{% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
-
-												{% if typeBienName is not empty %}
-													{% set details = details|merge([typeBienName]) %}
-												{% endif %}
-											{% endif %}
-
-											{% if bienImmobilier.chambres is not empty %}
-												{% set details = details|merge([
-                                            bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
-                                        ]) %}
-											{% endif %}
-
-											{% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
-												{% set details = details|merge([
-                                            bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
-                                        ]) %}
-											{% endif %}
-
-											{% if bienImmobilier.surfaceTotal is not empty %}
-												{% set details = details|merge([
-                                            bienImmobilier.surfaceTotal ~ 'm²',
-                                        ]) %}
-											{% endif %}
-
-											{% set addressParts = [] %}
-
-											{% if bienImmobilier.adresse is not empty %}
-												{% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
-											{% endif %}
-
-											{% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
-												{% set addressParts = addressParts|merge([
-                                            (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
-                                        ]) %}
-											{% endif %}
-
-											{% set detailUrl = path('app_public_detail_bien', {
-                                            slug: bienImmobilier.slug,
-                                        }) %}
-
-
-											<li class="splide__slide">
-												<twig:Property:Card title="{{ propertyTitle }}" price="{{ propertyPrice }}" period="{{ propertyPeriod }}" badge="{{ propertyBadge }}" description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}" details="{{ details|join(' ⸱ ') }}" address="{{ addressParts|join(', ') }}" image="{{ uploadedImage }}" url="{{ detailUrl }}" favoriteurl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}" favoritetoken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}" :isfavorite="bienImmobilier.id in favoritePropertyIds|default([])"/>
-											</li>
-										{% endfor %}
-									</ul>
-								</div>
-							</div>
-						</section>
-
-
-						<section class="agence-properties bt-related" data-controller="splide">
-							<div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-								<h2 class="bt-section-title">
-									Autres biens similaires à aaaa
-								</h2>
-
-								<div class="d-flex align-items-center gap-2 text-secondary">
-									<button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Précédent" data-splide-target="previous" data-action="click->splide#previous">
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-
-									<button class="bt-icon-btn bt-icon-btn--small" type="button" aria-label="Suivant" data-splide-target="next" data-action="click->splide#next">
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="splide bt-related-slider" data-splide-target="slider" aria-label="Biens similaires">
-								<div class="splide__track">
-									<ul class="splide__list">
-										{% for bienImmobilier in logementPopulaire %}
-
-											{% set firstImage = bienImmobilier.propertyImages|first %}
-
-											{% if firstImage %}
-												{% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
-											{% endif %}
-
-											{% set transactionName = '' %}
-											{% set transactionSlug = '' %}
-
-											{% if bienImmobilier.typeTransaction %}
-												{% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
-												{% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
-											{% endif %}
-
-											{% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
-
-											{% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
-											{% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
-											{% set propertyPeriod = isLocation ? '/mois' : '' %}
-											{% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
-
-											{% set details = [] %}
-
-											{% if bienImmobilier.typeBien %}
-												{% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
-
-												{% if typeBienName is not empty %}
-													{% set details = details|merge([typeBienName]) %}
-												{% endif %}
-											{% endif %}
-
-											{% if bienImmobilier.chambres is not empty %}
-												{% set details = details|merge([
-                                            bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
-                                        ]) %}
-											{% endif %}
-
-											{% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
-												{% set details = details|merge([
-                                            bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
-                                        ]) %}
-											{% endif %}
-
-											{% if bienImmobilier.surfaceTotal is not empty %}
-												{% set details = details|merge([
-                                            bienImmobilier.surfaceTotal ~ 'm²',
-                                        ]) %}
-											{% endif %}
-
-											{% set addressParts = [] %}
-
-											{% if bienImmobilier.adresse is not empty %}
-												{% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
-											{% endif %}
-
-											{% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
-												{% set addressParts = addressParts|merge([
-                                            (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
-                                        ]) %}
-											{% endif %}
-
-											{% set detailUrl = path('app_public_detail_bien', {
-                                            slug: bienImmobilier.slug,
-                                        }) %}
-
-
-											<li class="splide__slide">
-												<twig:Property:Card title="{{ propertyTitle }}" price="{{ propertyPrice }}" period="{{ propertyPeriod }}" badge="{{ propertyBadge }}" description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}" details="{{ details|join(' ⸱ ') }}" address="{{ addressParts|join(', ') }}" image="{{ uploadedImage }}" url="{{ detailUrl }}" favoriteurl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}" favoritetoken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}" :isfavorite="bienImmobilier.id in favoritePropertyIds|default([])"/>
-											</li>
-										{% endfor %}
-									</ul>
-								</div>
-							</div>
-						</section>
-
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Notre sélection de logements à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
-
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-9);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">1 050€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à louer - sélection Boolts</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 75m2</p>
-												<p class="home-bt-card-address">Rue Oberkampf, 75011 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-10);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">730€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à louer - bon rapport qualité prix</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 45m2</p>
-												<p class="home-bt-card-address">Rue Ordener, 75018 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-11);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">860€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à louer - sélection spéciale location</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 60m2</p>
-												<p class="home-bt-card-address">Rue de Tolbiac, 75013 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-12);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à louer</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">1 250€
-													<span>/mois</span>
-												</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à louer - bien premium en location</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 92m2</p>
-												<p class="home-bt-card-address">Rue de Rivoli, 75001 Paris</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
-					</div>
-
-					<div class="home-bt-tab-panel" data-tab-panel="vente">
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Biens populaires à acheter à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
-
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-1);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">245 000€</p>
-												<span class="home-bt-card-badge">À vendre</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - bien populaire à Paris</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 50m2</p>
-												<p class="home-bt-card-address">Rue de Courteneneuve, 76510 Saint Nicolas d’aliermont</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-2);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">389 000€</p>
-												<span class="home-bt-card-badge">À vendre</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - idéal pour un premier achat</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 68m2</p>
-												<p class="home-bt-card-address">Avenue Victor Hugo, 75016 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-3);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">520 000€</p>
-												<span class="home-bt-card-badge">À vendre</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - fort potentiel</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 85m2</p>
-												<p class="home-bt-card-address">Boulevard Voltaire, 75011 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-4);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">610 000€</p>
-												<span class="home-bt-card-badge">À vendre</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - logement populaire</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 105m2</p>
-												<p class="home-bt-card-address">Rue Lafayette, 75010 Paris</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
-
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Biens récemment ajoutés à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
-
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-5);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">310 000€</p>
-												<span class="home-bt-card-badge">Nouveau</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - récemment ajouté</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">3 pièces ⸱ 2 chambres ⸱ 64m2</p>
-												<p class="home-bt-card-address">Rue Lafayette, 75010 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-6);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">455 000€</p>
-												<span class="home-bt-card-badge">Nouveau</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - nouvelle annonce disponible</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 90m2</p>
-												<p class="home-bt-card-address">Rue de Rennes, 75006 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-7);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">198 000€</p>
-												<span class="home-bt-card-badge">Nouveau</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - ajouté aujourd’hui</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">1 pièce ⸱ 1 chambre ⸱ 30m2</p>
-												<p class="home-bt-card-address">Rue Saint-Maur, 75011 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-8);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">735 000€</p>
-												<span class="home-bt-card-badge">Nouveau</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - bien récent</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 112m2</p>
-												<p class="home-bt-card-address">Rue Oberkampf, 75011 Paris</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
-
-						<section class="home-bt-slider">
-							<div class="home-bt-slider-header">
-								<h3 class="home-bt-slider-title">Notre sélection de biens à acheter à
-									<span>Paris</span>
-									<i class="bi bi-chevron-right"></i>
-								</h3>
-
-								<div class="home-bt-slider-nav">
-									<button type="button" data-slider-prev>
-										<i class="bi bi-arrow-left-circle"></i>
-									</button>
-									<button type="button" data-slider-next>
-										<i class="bi bi-arrow-right-circle"></i>
-									</button>
-								</div>
-							</div>
-
-							<div class="home-bt-slider-viewport">
-								<div class="home-bt-slider-track">
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-9);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">275 000€</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - sélection Boolts</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">2 pièces ⸱ 1 chambre ⸱ 45m2</p>
-												<p class="home-bt-card-address">Rue Ordener, 75018 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-10);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">430 000€</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - bon investissement</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">4 pièces ⸱ 3 chambres ⸱ 84m2</p>
-												<p class="home-bt-card-address">Rue de Tolbiac, 75013 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-11);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">595 000€</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - sélection spéciale achat</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 105m2</p>
-												<p class="home-bt-card-address">Avenue de Clichy, 75017 Paris</p>
-											</div>
-										</div>
-									</article>
-
-									<article class="home-bt-card">
-										<div class="home-bt-card-img" style="background-image: var(--card-img-12);"></div>
-										<div class="home-bt-card-body">
-											<div class="home-bt-card-head">
-												<h4 class="home-bt-card-title">Appartement à vendre</h4>
-												<button type="button" class="home-bt-card-fav">
-													<i class="bi bi-heart"></i>
-												</button>
-											</div>
-											<div class="home-bt-card-price-line">
-												<p class="home-bt-card-price">760 000€</p>
-												<span class="home-bt-card-badge">Sélection</span>
-											</div>
-											<p class="home-bt-card-description">Appartement à vendre - bien premium</p>
-											<div class="home-bt-details">
-												<p class="home-bt-card-details">5 pièces ⸱ 4 chambres ⸱ 120m2</p>
-												<p class="home-bt-card-address">Rue de Rivoli, 75001 Paris</p>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</section>
-					</div>
-				</div>
-			</section>
-
-			<section class="home-bt-content">
-				<div class="container-xl home-bt-container">
-					<div class="home-bt-content-section row align-items-center gy-4">
-						<div class="col-12 col-md-6">
-							<div class="home-bt-text-block">
-								<h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-							</div>
-						</div>
-
-						<div class="col-12 col-md-6">
-							<div class="home-bt-content-image"></div>
-						</div>
-					</div>
-
-					<div class="home-bt-content-section is-second row align-items-center gy-4">
-						<div class="col-12 col-md-6">
-							<div class="home-bt-content-image is-second"></div>
-						</div>
-
-						<div class="col-12 col-md-6">
-							<div class="home-bt-text-block ms-md-auto">
-								<h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2>
-								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="home-bt-codes">
-				<div class="container-xl home-bt-container">
-					<h2 class="home-bt-codes-title">Boolts redéfinit
-						<span>les codes</span>
-					</h2>
-
-					<div class="row g-4">
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-box-seam"></i>
-								<h3>Transparence</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
-
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-globe2"></i>
-								<h3>Fluidité</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
-
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-chat-dots"></i>
-								<h3>Réactivité</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
-
-						<div class="col-6 col-md-3">
-							<div class="home-bt-feature">
-								<i class="bi bi-diagram-3"></i>
-								<h3>Écosystème</h3>
-								<p>Lorem ipsum dolor sit amet, consectetur.</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="home-bt-app">
-				<div class="container-xl home-bt-container">
-					<div class="home-bt-app-card">
-						<div class="home-bt-app-mockup"></div>
-
-						<div class="home-bt-app-text">
-							<h2>Il y a vraiment plein de choses à voir sur notre application !</h2>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.</p>
-							<a href="#" class="home-bt-app-btn">Télécharger l’application</a>
-						</div>
-					</div>
-				</div>
-			</section>
-		</main>
-
-		<nav class="home-bt-mobile-tabbar">
-			<a href="#" class="active">
-				<i class="bi bi-search"></i>
-				Explorer
-			</a>
-			<a href="#">
-				<i class="bi bi-heart"></i>
-				Favoris
-			</a>
-			<a href="#">
-				<i class="bi bi-chat-dots"></i>
-				Messagerie
-			</a>
-			<a href="#">
-				<i class="bi bi-person"></i>
-				Compte
-			</a>
-		</nav>
-	</div>
-
-	<script>
-		document.addEventListener('DOMContentLoaded', () => {
-document.querySelectorAll('[data-tab-button]').forEach((button) => {
-button.addEventListener('click', () => {
-const tab = button.dataset.tabButton;
-
-document.querySelectorAll('[data-tab-button]').forEach((item) => {
-item.classList.toggle('active', item.dataset.tabButton === tab);
-});
-
-document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
-panel.classList.toggle('active', panel.dataset.tabPanel === tab);
-});
-});
-});
-
-document.querySelectorAll('.home-bt-slider').forEach((slider) => {
-const track = slider.querySelector('.home-bt-slider-track');
-const prev = slider.querySelector('[data-slider-prev]');
-const next = slider.querySelector('[data-slider-next]');
-
-if (! track) {
-return;
-}
-
-const getScrollAmount = () => {
-const card = track.querySelector('.home-bt-card');
-
-if (! card) {
-return 300;
-}
-
-const styles = window.getComputedStyle(track);
-const gap = parseFloat(styles.gap || '20');
-
-return card.getBoundingClientRect().width + (Number.isNaN(gap) ? 20 : gap);
-};
-
-if (prev) {
-prev.addEventListener('click', () => {
-track.scrollBy({
-left: - getScrollAmount(),
-behavior: 'smooth'
-});
-});
-}
-
-if (next) {
-next.addEventListener('click', () => {
-track.scrollBy({left: getScrollAmount(), behavior: 'smooth'});
-});
-}
-});
-});
-	</script>
+    <style>
+        .home-bt-tab-panel {
+            display: none;
+        }
+
+        .home-bt-tab-panel.active {
+            display: block;
+        }
+
+        .home-bt-main-tab {
+            cursor: pointer;
+        }
+    </style>
+
+    <div class="home-bt-page">
+        <main>
+            <section class="home-bt-top">
+                <div class="container-xl home-bt-container home-bt-hero-shell">
+                    <div class="home-bt-hero mx-auto">
+                        <div class="home-bt-hero-content">
+                            <h1 class="home-bt-hero-title">
+                                L’immobilier,<br>
+                                réinventé.
+                            </h1>
+
+                            {{ include('public/home/_partials/composant/search.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if lastSearchSession is not null %}
+                    <div class="container-xl home-bt-container home-bt-resume-shell">
+                        <div class="home-bt-resume mx-auto">
+                            <div class="d-flex align-items-center justify-content-between gap-3 h-100">
+                                <div class="d-flex flex-column align-items-start gap-3">
+                                    <h2 class="home-bt-resume-title">
+                                        Continuez votre recherche pour “Appartement à louer” à
+                                        {{ lastSearchSession.ville|default(lastSearchSession) }}
+                                    </h2>
+
+                                    <div class="d-flex align-items-center gap-3">
+                                        <a href="#" class="home-bt-button-primary">
+                                            Reprendre la recherche
+                                        </a>
+
+                                        <a href="#" class="home-bt-button-outline">
+                                            Annuler
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="home-bt-resume-stack">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="home-bt-listings">
+                <div class="container-xl home-bt-container">
+                    <div class="home-bt-search-header">
+                        <h2 class="home-bt-search-title">
+                            Explorez toutes les propriétés
+                        </h2>
+
+                        <div class="home-bt-main-tabs">
+                            <button
+                                type="button"
+                                class="home-bt-main-tab active"
+                                data-tab-button="location"
+                            >
+                                Louer
+                            </button>
+
+                            <button
+                                type="button"
+                                class="home-bt-main-tab"
+                                data-tab-button="vente"
+                            >
+                                Acheter
+                            </button>
+                        </div>
+                    </div>
+
+                    {% set panels = [
+                        {
+                            key: 'location',
+                            active: true,
+                            sections: [
+                                {
+                                    title: 'Logements populaires à louer',
+                                    emptyText: 'Aucun logement populaire en location pour le moment.',
+                                    items: logementPopulaireLocation|default([])
+                                },
+                                {
+                                    title: 'Logements récemment ajoutés à louer',
+                                    emptyText: 'Aucun logement récemment ajouté en location pour le moment.',
+                                    items: logementAjouterRecementLocation|default([])
+                                }
+                            ]
+                        },
+                        {
+                            key: 'vente',
+                            active: false,
+                            sections: [
+                                {
+                                    title: 'Biens populaires à acheter',
+                                    emptyText: 'Aucun bien populaire à acheter pour le moment.',
+                                    items: logementPopulaireVente|default([])
+                                },
+                                {
+                                    title: 'Biens récemment ajoutés à acheter',
+                                    emptyText: 'Aucun bien récemment ajouté à acheter pour le moment.',
+                                    items: logementAjouterRecementVente|default([])
+                                }
+                            ]
+                        }
+                    ] %}
+
+                    {% for panel in panels %}
+                        <div
+                            class="home-bt-tab-panel{{ panel.active ? ' active' : '' }}"
+                            data-tab-panel="{{ panel.key }}"
+                        >
+                            {% for section in panel.sections %}
+                                <section class="agence-properties bt-related" data-controller="splide">
+                                    <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+                                        <h2 class="bt-section-title">
+                                            {{ section.title }}
+                                        </h2>
+
+                                        {% if section.items|length > 0 %}
+                                            <div class="d-flex align-items-center gap-2 text-secondary">
+                                                <button
+                                                    class="bt-icon-btn bt-icon-btn--small"
+                                                    type="button"
+                                                    aria-label="Précédent"
+                                                    data-splide-target="previous"
+                                                    data-action="click->splide#previous"
+                                                >
+                                                    <i class="bi bi-arrow-left-circle"></i>
+                                                </button>
+
+                                                <button
+                                                    class="bt-icon-btn bt-icon-btn--small"
+                                                    type="button"
+                                                    aria-label="Suivant"
+                                                    data-splide-target="next"
+                                                    data-action="click->splide#next"
+                                                >
+                                                    <i class="bi bi-arrow-right-circle"></i>
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if section.items|length > 0 %}
+                                        <div
+                                            class="splide bt-related-slider"
+                                            data-splide-target="slider"
+                                            aria-label="{{ section.title }}"
+                                        >
+                                            <div class="splide__track">
+                                                <ul class="splide__list">
+                                                    {% for bienImmobilier in section.items %}
+                                                        {% set uploadedImage = null %}
+                                                        {% set firstImage = bienImmobilier.propertyImages|first %}
+
+                                                        {% if firstImage %}
+                                                            {% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
+                                                        {% endif %}
+
+                                                        {% set typeBienName = '' %}
+                                                        {% set transactionName = '' %}
+                                                        {% set transactionSlug = '' %}
+
+                                                        {% if bienImmobilier.typeBien %}
+                                                            {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
+                                                        {% endif %}
+
+                                                        {% if bienImmobilier.typeTransaction %}
+                                                            {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+                                                            {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+                                                        {% endif %}
+
+                                                        {% set isLocation = panel.key == 'location' %}
+                                                        {% set transactionLabel = isLocation ? 'louer' : 'vendre' %}
+
+                                                        {% if typeBienName is not empty %}
+                                                            {% set propertyTitle = typeBienName ~ ' à ' ~ transactionLabel %}
+                                                        {% else %}
+                                                            {% set propertyTitle = isLocation ? 'Logement à louer' : 'Bien à vendre' %}
+                                                        {% endif %}
+
+                                                        {% set propertyPrice = bienImmobilier.prix is not empty
+                                                            ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€'
+                                                            : 'Prix sur demande'
+                                                        %}
+
+                                                        {% set propertyPeriod = isLocation ? '/mois' : '' %}
+                                                        {% set propertyBadge = isLocation ? 'Charges comprises' : 'À vendre' %}
+
+                                                        {% set details = [] %}
+
+                                                        {% if typeBienName is not empty %}
+                                                            {% set details = details|merge([typeBienName]) %}
+                                                        {% endif %}
+
+                                                        {% if bienImmobilier.chambres is not empty %}
+                                                            {% set details = details|merge([
+                                                                bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : '')
+                                                            ]) %}
+                                                        {% endif %}
+
+                                                        {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
+                                                            {% set details = details|merge([
+                                                                bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains'
+                                                            ]) %}
+                                                        {% endif %}
+
+                                                        {% if bienImmobilier.surfaceTotal is not empty %}
+                                                            {% set details = details|merge([
+                                                                bienImmobilier.surfaceTotal ~ 'm²'
+                                                            ]) %}
+                                                        {% endif %}
+
+                                                        {% set addressParts = [] %}
+
+                                                        {% if bienImmobilier.showAdresse|default(false) %}
+                                                            {% if bienImmobilier.adresse is not empty %}
+                                                                {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                                            {% endif %}
+
+                                                            {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                                                                {% set addressParts = addressParts|merge([
+                                                                    (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim
+                                                                ]) %}
+                                                            {% endif %}
+                                                        {% endif %}
+
+                                                        {% set propertyAddress = addressParts|join(', ') %}
+
+                                                        {% set detailUrl = path('app_public_detail_bien', {
+                                                            slug: bienImmobilier.slug
+                                                        }) %}
+
+                                                        <li class="splide__slide">
+                                                            <twig:Property:Card
+                                                                title="{{ propertyTitle }}"
+                                                                price="{{ propertyPrice }}"
+                                                                period="{{ propertyPeriod }}"
+                                                                badge="{{ propertyBadge }}"
+                                                                description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                                                                details="{{ details|join(' ⸱ ') }}"
+                                                                address="{{ propertyAddress }}"
+                                                                image="{{ uploadedImage }}"
+                                                                url="{{ detailUrl }}"
+                                                                favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                                                                favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                                                                :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
+                                                            />
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <p class="text-muted mb-0">
+                                            {{ section.emptyText }}
+                                        </p>
+                                    {% endif %}
+                                </section>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="home-bt-content">
+                <div class="container-xl home-bt-container">
+                    <div class="home-bt-content-section row align-items-center gy-4">
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-text-block">
+                                <h2>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                </h2>
+
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-content-image"></div>
+                        </div>
+                    </div>
+
+                    <div class="home-bt-content-section is-second row align-items-center gy-4">
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-content-image is-second"></div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="home-bt-text-block ms-md-auto">
+                                <h2>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                </h2>
+
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="home-bt-codes">
+                <div class="container-xl home-bt-container">
+                    <h2 class="home-bt-codes-title">
+                        Boolts redéfinit
+                        <span>les codes</span>
+                    </h2>
+
+                    <div class="row g-4">
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-box-seam"></i>
+                                <h3>Transparence</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-globe2"></i>
+                                <h3>Fluidité</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-chat-dots"></i>
+                                <h3>Réactivité</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-3">
+                            <div class="home-bt-feature">
+                                <i class="bi bi-diagram-3"></i>
+                                <h3>Écosystème</h3>
+                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="home-bt-app">
+                <div class="container-xl home-bt-container">
+                    <div class="home-bt-app-card">
+                        <div class="home-bt-app-mockup"></div>
+
+                        <div class="home-bt-app-text">
+                            <h2>
+                                Il y a vraiment plein de choses à voir sur notre application !
+                            </h2>
+
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                Ut enim ad minim veniam, quis nostrud exercitation.
+                            </p>
+
+                            <a href="#" class="home-bt-app-btn">
+                                Télécharger l’application
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <nav class="home-bt-mobile-tabbar">
+            <a href="#" class="active">
+                <i class="bi bi-search"></i>
+                Explorer
+            </a>
+
+            <a href="#">
+                <i class="bi bi-heart"></i>
+                Favoris
+            </a>
+
+            <a href="#">
+                <i class="bi bi-chat-dots"></i>
+                Messagerie
+            </a>
+
+            <a href="#">
+                <i class="bi bi-person"></i>
+                Compte
+            </a>
+        </nav>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-tab-button]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tabButton;
+
+                    document.querySelectorAll('[data-tab-button]').forEach((item) => {
+                        item.classList.toggle('active', item.dataset.tabButton === tab);
+                    });
+
+                    document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
+                        panel.classList.toggle('active', panel.dataset.tabPanel === tab);
+                    });
+                });
+            });
+        });
+    </script>
 {% endblock %}

@@ -18,6 +18,7 @@ use App\Entity\CategoryBienTransaction;
 use App\Entity\Property;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
@@ -91,6 +92,8 @@ class MesBiensType extends AbstractType
                 ->add('poi', HiddenType::class)
                 ->add('longitude', HiddenType::class)
                 ->add('latitude', HiddenType::class)
+                ->add('sessionIdMapbox', HiddenType::class)
+                ->add('showAdresse', CheckboxType::class)
             ;
         }
 
@@ -172,7 +175,7 @@ class MesBiensType extends AbstractType
         }
 
         if (8 === $step) {
-            if ('location' === $typeTransaction) {
+            if ('2' === $typeTransaction) {
                 $builder
                     ->add('montantLoyerHorsCharge')
                     ->add('montantDepotDeGarantie')
@@ -180,7 +183,7 @@ class MesBiensType extends AbstractType
                 ;
             }
 
-            if ('vente' === $typeTransaction) {
+            if ('1' === $typeTransaction) {
                 $builder
                     ->add('prix')
                 ;

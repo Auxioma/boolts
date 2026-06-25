@@ -29,33 +29,94 @@ class CategoryBienFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $categories = [
-            ['name' => 'Maison', 'icone' => 'icon-house'],
-            ['name' => 'Appartement', 'icone' => 'icon-building-2'],
-            ['name' => 'Villa', 'icone' => 'icon-landmark'],
-            ['name' => 'Fond de commerce', 'icone' => 'icon-wallet'],
-            ['name' => 'Bureaux', 'icone' => 'icon-wallet'],
-            ['name' => 'Local commercial', 'icone' => 'icon-store'],
-            ['name' => 'Terrain', 'icone' => 'icon-hammer'],
-            ['name' => 'Ferme', 'icone' => 'icon-truck'],
-            ['name' => 'Parking/Garage/Box', 'icone' => 'icon-circle-parking'],
+            [
+                'icone' => 'icon-house',
+                'translations' => [
+                    'fr' => 'Maison',
+                    'en' => 'House',
+                ],
+            ],
+            [
+                'icone' => 'icon-building-2',
+                'translations' => [
+                    'fr' => 'Appartement',
+                    'en' => 'Apartment',
+                ],
+            ],
+            [
+                'icone' => 'icon-landmark',
+                'translations' => [
+                    'fr' => 'Villa',
+                    'en' => 'Villa',
+                ],
+            ],
+            [
+                'icone' => 'icon-wallet',
+                'translations' => [
+                    'fr' => 'Fond de commerce',
+                    'en' => 'Business assets',
+                ],
+            ],
+            [
+                'icone' => 'icon-wallet',
+                'translations' => [
+                    'fr' => 'Bureaux',
+                    'en' => 'Offices',
+                ],
+            ],
+            [
+                'icone' => 'icon-store',
+                'translations' => [
+                    'fr' => 'Local commercial',
+                    'en' => 'Commercial premises',
+                ],
+            ],
+            [
+                'icone' => 'icon-hammer',
+                'translations' => [
+                    'fr' => 'Terrain',
+                    'en' => 'Land',
+                ],
+            ],
+            [
+                'icone' => 'icon-truck',
+                'translations' => [
+                    'fr' => 'Ferme',
+                    'en' => 'Farm',
+                ],
+            ],
+            [
+                'icone' => 'icon-circle-parking',
+                'translations' => [
+                    'fr' => 'Parking/Garage/Box',
+                    'en' => 'Parking/Garage/Box',
+                ],
+            ],
         ];
 
         foreach ($categories as $categoryData) {
             $category = new CategoryBien();
+            $category->setIcone($categoryData['icone']);
 
-            $slug = mb_strtolower(
-                $this->slugger->slug($categoryData['name'])->toString()
-            );
+            foreach ($categoryData['translations'] as $locale => $name) {
+                $slug = mb_strtolower(
+                    $this->slugger->slug($name)->toString()
+                );
 
-            $category
-                ->setName($categoryData['name'])
-                ->setSlug($slug)
-                ->setIcone($categoryData['icone']);
+                $category->translate($locale)->setName($name);
+                $category->translate($locale)->setSlug($slug);
+            }
+
+            $category->mergeNewTranslations();
 
             $manager->persist($category);
 
+            $referenceSlug = mb_strtolower(
+                $this->slugger->slug($categoryData['translations']['fr'])->toString()
+            );
+
             $this->addReference(
-                self::CATEGORY_BIEN_REFERENCE_PREFIX.$slug,
+                self::CATEGORY_BIEN_REFERENCE_PREFIX.$referenceSlug,
                 $category
             );
         }

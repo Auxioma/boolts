@@ -17,7 +17,7 @@ use Knp\DoctrineBehaviors\Contract\Entity\TranslationInterface;
 use Knp\DoctrineBehaviors\Model\Translatable\TranslationTrait;
 
 #[ORM\Entity]
-class CategoryBienTranslation implements TranslationInterface
+class CaracteristiqueTranslation implements TranslationInterface
 {
     use TranslationTrait;
 
@@ -27,36 +27,21 @@ class CategoryBienTranslation implements TranslationInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $slug = null;
+    private ?string $nom = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getNom(): ?string
     {
-        return $this->name;
+        return $this->nom;
     }
 
-    public function setName(?string $name): static
+    public function setNom(?string $nom): static
     {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(?string $slug): static
-    {
-        $this->slug = $slug;
+        $this->nom = $nom;
 
         return $this;
     }

@@ -71,6 +71,9 @@
             "./.php-cs-fixer.dist.php"
         ]
     },
+    "knplabs/doctrine-behaviors": {
+        "version": "v3.1.0"
+    },
     "knplabs/knp-paginator-bundle": {
         "version": "v6.10.0"
     },

@@ -22,13 +22,11 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
-use Faker\Generator;
 
 class PropertyFixtures extends Fixture implements DependentFixtureInterface
 {
     public const PROPERTY_REFERENCE_PREFIX = 'property_';
-
-    public const PROPERTY_COUNT = 200;
+    public const PROPERTY_COUNT = 100;
 
     private const PROPERTIES = [
         ['typeBien' => 'maison', 'typeTransaction' => 'vente'],
@@ -42,141 +40,356 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         ['typeBien' => 'parking-garage-box', 'typeTransaction' => 'location'],
     ];
 
-    /**
-     * Faker internationaux.
-     *
-     * Les coordonnées sont volontairement bornées par pays
-     * pour éviter d’avoir une ville allemande avec une latitude au Brésil.
-     */
-    private const INTERNATIONAL_FAKER_PROFILES = [
+    private const ADDRESSES = [
         [
-            'locale' => 'fr_FR',
-            'pays' => 'France',
-            'latMin' => 41.0000000,
-            'latMax' => 51.0000000,
-            'lngMin' => -5.0000000,
-            'lngMax' => 9.0000000,
+            'codePostal' => '75018',
+            'latitude' => '48.8867040',
+            'longitude' => '2.3404520',
+            'mapboxId' => 'fixture-fr-paris-75018',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '12 Rue Lepic',
+                'ville' => 'Paris',
+                'pays' => 'France',
+                'region' => 'Île-de-France',
+                'district' => 'Paris',
+                'locality' => 'Paris',
+                'neighborhood' => 'Montmartre',
+                'poi' => null,
+                'fullAddress' => '12 Rue Lepic, 75018 Paris, France',
+            ],
+            'en' => [
+                'adresse' => '12 Lepic Street',
+                'ville' => 'Paris',
+                'pays' => 'France',
+                'region' => 'Île-de-France',
+                'district' => 'Paris',
+                'locality' => 'Paris',
+                'neighborhood' => 'Montmartre',
+                'poi' => null,
+                'fullAddress' => '12 Lepic Street, 75018 Paris, France',
+            ],
         ],
         [
-            'locale' => 'en_US',
-            'pays' => 'États-Unis',
-            'latMin' => 25.0000000,
-            'latMax' => 49.0000000,
-            'lngMin' => -124.0000000,
-            'lngMax' => -66.0000000,
+            'codePostal' => '69002',
+            'latitude' => '45.7612200',
+            'longitude' => '4.8356100',
+            'mapboxId' => 'fixture-fr-lyon-69002',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '25 Rue de la République',
+                'ville' => 'Lyon',
+                'pays' => 'France',
+                'region' => 'Auvergne-Rhône-Alpes',
+                'district' => 'Rhône',
+                'locality' => 'Lyon',
+                'neighborhood' => 'Presqu’île',
+                'poi' => null,
+                'fullAddress' => '25 Rue de la République, 69002 Lyon, France',
+            ],
+            'en' => [
+                'adresse' => '25 Republic Street',
+                'ville' => 'Lyon',
+                'pays' => 'France',
+                'region' => 'Auvergne-Rhône-Alpes',
+                'district' => 'Rhône',
+                'locality' => 'Lyon',
+                'neighborhood' => 'Presqu’île',
+                'poi' => null,
+                'fullAddress' => '25 Republic Street, 69002 Lyon, France',
+            ],
         ],
         [
-            'locale' => 'en_GB',
-            'pays' => 'Royaume-Uni',
-            'latMin' => 50.0000000,
-            'latMax' => 58.0000000,
-            'lngMin' => -6.0000000,
-            'lngMax' => 1.8000000,
+            'codePostal' => '13007',
+            'latitude' => '43.2849200',
+            'longitude' => '5.3516900',
+            'mapboxId' => 'fixture-fr-marseille-13007',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '45 Corniche Président John Fitzgerald Kennedy',
+                'ville' => 'Marseille',
+                'pays' => 'France',
+                'region' => 'Provence-Alpes-Côte d’Azur',
+                'district' => 'Bouches-du-Rhône',
+                'locality' => 'Marseille',
+                'neighborhood' => 'Endoume',
+                'poi' => null,
+                'fullAddress' => '45 Corniche Président John Fitzgerald Kennedy, 13007 Marseille, France',
+            ],
+            'en' => [
+                'adresse' => '45 President John Fitzgerald Kennedy Corniche',
+                'ville' => 'Marseille',
+                'pays' => 'France',
+                'region' => 'Provence-Alpes-Côte d’Azur',
+                'district' => 'Bouches-du-Rhône',
+                'locality' => 'Marseille',
+                'neighborhood' => 'Endoume',
+                'poi' => null,
+                'fullAddress' => '45 President John Fitzgerald Kennedy Corniche, 13007 Marseille, France',
+            ],
         ],
         [
-            'locale' => 'de_DE',
-            'pays' => 'Allemagne',
-            'latMin' => 47.0000000,
-            'latMax' => 55.0000000,
-            'lngMin' => 5.0000000,
-            'lngMax' => 15.0000000,
+            'codePostal' => '10001',
+            'latitude' => '40.7484400',
+            'longitude' => '-73.9856640',
+            'mapboxId' => 'fixture-us-new-york-10001',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '350 5e Avenue',
+                'ville' => 'New York',
+                'pays' => 'États-Unis',
+                'region' => 'État de New York',
+                'district' => 'Comté de New York',
+                'locality' => 'New York',
+                'neighborhood' => 'Manhattan',
+                'poi' => 'Empire State Building',
+                'fullAddress' => '350 5e Avenue, New York, NY 10001, États-Unis',
+            ],
+            'en' => [
+                'adresse' => '350 5th Avenue',
+                'ville' => 'New York',
+                'pays' => 'United States',
+                'region' => 'New York',
+                'district' => 'New York County',
+                'locality' => 'New York',
+                'neighborhood' => 'Manhattan',
+                'poi' => 'Empire State Building',
+                'fullAddress' => '350 5th Avenue, New York, NY 10001, United States',
+            ],
         ],
         [
-            'locale' => 'es_ES',
-            'pays' => 'Espagne',
-            'latMin' => 36.0000000,
-            'latMax' => 43.8000000,
-            'lngMin' => -9.5000000,
-            'lngMax' => 3.3000000,
+            'codePostal' => '90028',
+            'latitude' => '34.1022340',
+            'longitude' => '-118.3409650',
+            'mapboxId' => 'fixture-us-los-angeles-90028',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '6801 Boulevard Hollywood',
+                'ville' => 'Los Angeles',
+                'pays' => 'États-Unis',
+                'region' => 'Californie',
+                'district' => 'Comté de Los Angeles',
+                'locality' => 'Los Angeles',
+                'neighborhood' => 'Hollywood',
+                'poi' => null,
+                'fullAddress' => '6801 Boulevard Hollywood, Los Angeles, CA 90028, États-Unis',
+            ],
+            'en' => [
+                'adresse' => '6801 Hollywood Boulevard',
+                'ville' => 'Los Angeles',
+                'pays' => 'United States',
+                'region' => 'California',
+                'district' => 'Los Angeles County',
+                'locality' => 'Los Angeles',
+                'neighborhood' => 'Hollywood',
+                'poi' => null,
+                'fullAddress' => '6801 Hollywood Boulevard, Los Angeles, CA 90028, United States',
+            ],
         ],
         [
-            'locale' => 'it_IT',
-            'pays' => 'Italie',
-            'latMin' => 37.0000000,
-            'latMax' => 46.5000000,
-            'lngMin' => 7.0000000,
-            'lngMax' => 18.5000000,
+            'codePostal' => '33139',
+            'latitude' => '25.7906540',
+            'longitude' => '-80.1300450',
+            'mapboxId' => 'fixture-us-miami-33139',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '100 Ocean Drive',
+                'ville' => 'Miami Beach',
+                'pays' => 'États-Unis',
+                'region' => 'Floride',
+                'district' => 'Comté de Miami-Dade',
+                'locality' => 'Miami Beach',
+                'neighborhood' => 'South Beach',
+                'poi' => null,
+                'fullAddress' => '100 Ocean Drive, Miami Beach, FL 33139, États-Unis',
+            ],
+            'en' => [
+                'adresse' => '100 Ocean Drive',
+                'ville' => 'Miami Beach',
+                'pays' => 'United States',
+                'region' => 'Florida',
+                'district' => 'Miami-Dade County',
+                'locality' => 'Miami Beach',
+                'neighborhood' => 'South Beach',
+                'poi' => null,
+                'fullAddress' => '100 Ocean Drive, Miami Beach, FL 33139, United States',
+            ],
         ],
         [
-            'locale' => 'pt_PT',
-            'pays' => 'Portugal',
-            'latMin' => 37.0000000,
-            'latMax' => 42.2000000,
-            'lngMin' => -9.6000000,
-            'lngMax' => -6.0000000,
+            'codePostal' => 'H2Y 1C6',
+            'latitude' => '45.5045800',
+            'longitude' => '-73.5567900',
+            'mapboxId' => 'fixture-ca-montreal-h2y1c6',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '110 Rue Notre-Dame Ouest',
+                'ville' => 'Montréal',
+                'pays' => 'Canada',
+                'region' => 'Québec',
+                'district' => 'Montréal',
+                'locality' => 'Montréal',
+                'neighborhood' => 'Vieux-Montréal',
+                'poi' => null,
+                'fullAddress' => '110 Rue Notre-Dame Ouest, Montréal, QC H2Y 1C6, Canada',
+            ],
+            'en' => [
+                'adresse' => '110 Notre-Dame Street West',
+                'ville' => 'Montreal',
+                'pays' => 'Canada',
+                'region' => 'Quebec',
+                'district' => 'Montreal',
+                'locality' => 'Montreal',
+                'neighborhood' => 'Old Montreal',
+                'poi' => null,
+                'fullAddress' => '110 Notre-Dame Street West, Montreal, QC H2Y 1C6, Canada',
+            ],
         ],
         [
-            'locale' => 'nl_NL',
-            'pays' => 'Pays-Bas',
-            'latMin' => 51.0000000,
-            'latMax' => 53.7000000,
-            'lngMin' => 3.0000000,
-            'lngMax' => 7.3000000,
+            'codePostal' => 'M5V 2T6',
+            'latitude' => '43.6425660',
+            'longitude' => '-79.3870570',
+            'mapboxId' => 'fixture-ca-toronto-m5v2t6',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '301 Rue Front Ouest',
+                'ville' => 'Toronto',
+                'pays' => 'Canada',
+                'region' => 'Ontario',
+                'district' => 'Toronto',
+                'locality' => 'Toronto',
+                'neighborhood' => 'Centre-ville de Toronto',
+                'poi' => 'Tour CN',
+                'fullAddress' => '301 Rue Front Ouest, Toronto, ON M5V 2T6, Canada',
+            ],
+            'en' => [
+                'adresse' => '301 Front Street West',
+                'ville' => 'Toronto',
+                'pays' => 'Canada',
+                'region' => 'Ontario',
+                'district' => 'Toronto',
+                'locality' => 'Toronto',
+                'neighborhood' => 'Downtown Toronto',
+                'poi' => 'CN Tower',
+                'fullAddress' => '301 Front Street West, Toronto, ON M5V 2T6, Canada',
+            ],
         ],
         [
-            'locale' => 'pl_PL',
-            'pays' => 'Pologne',
-            'latMin' => 49.0000000,
-            'latMax' => 54.9000000,
-            'lngMin' => 14.0000000,
-            'lngMax' => 24.2000000,
+            'codePostal' => 'V6B 2W9',
+            'latitude' => '49.2827290',
+            'longitude' => '-123.1207380',
+            'mapboxId' => 'fixture-ca-vancouver-v6b2w9',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '800 Rue Robson',
+                'ville' => 'Vancouver',
+                'pays' => 'Canada',
+                'region' => 'Colombie-Britannique',
+                'district' => 'Vancouver',
+                'locality' => 'Vancouver',
+                'neighborhood' => 'Centre-ville de Vancouver',
+                'poi' => null,
+                'fullAddress' => '800 Rue Robson, Vancouver, BC V6B 2W9, Canada',
+            ],
+            'en' => [
+                'adresse' => '800 Robson Street',
+                'ville' => 'Vancouver',
+                'pays' => 'Canada',
+                'region' => 'British Columbia',
+                'district' => 'Vancouver',
+                'locality' => 'Vancouver',
+                'neighborhood' => 'Downtown Vancouver',
+                'poi' => null,
+                'fullAddress' => '800 Robson Street, Vancouver, BC V6B 2W9, Canada',
+            ],
         ],
         [
-            'locale' => 'ro_RO',
-            'pays' => 'Roumanie',
-            'latMin' => 43.5000000,
-            'latMax' => 48.5000000,
-            'lngMin' => 20.0000000,
-            'lngMax' => 29.8000000,
+            'codePostal' => '2000',
+            'latitude' => '-33.8599350',
+            'longitude' => '151.2090290',
+            'mapboxId' => 'fixture-au-sydney-2000',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '1 Rue Macquarie',
+                'ville' => 'Sydney',
+                'pays' => 'Australie',
+                'region' => 'Nouvelle-Galles du Sud',
+                'district' => 'Sydney',
+                'locality' => 'Sydney',
+                'neighborhood' => 'Centre-ville de Sydney',
+                'poi' => null,
+                'fullAddress' => '1 Rue Macquarie, Sydney NSW 2000, Australie',
+            ],
+            'en' => [
+                'adresse' => '1 Macquarie Street',
+                'ville' => 'Sydney',
+                'pays' => 'Australia',
+                'region' => 'New South Wales',
+                'district' => 'Sydney',
+                'locality' => 'Sydney',
+                'neighborhood' => 'Sydney CBD',
+                'poi' => null,
+                'fullAddress' => '1 Macquarie Street, Sydney NSW 2000, Australia',
+            ],
         ],
         [
-            'locale' => 'el_GR',
-            'pays' => 'Grèce',
-            'latMin' => 35.0000000,
-            'latMax' => 41.8000000,
-            'lngMin' => 19.0000000,
-            'lngMax' => 28.3000000,
+            'codePostal' => '3000',
+            'latitude' => '-37.8108500',
+            'longitude' => '144.9631400',
+            'mapboxId' => 'fixture-au-melbourne-3000',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '328 Rue Swanston',
+                'ville' => 'Melbourne',
+                'pays' => 'Australie',
+                'region' => 'Victoria',
+                'district' => 'Melbourne',
+                'locality' => 'Melbourne',
+                'neighborhood' => 'Centre-ville de Melbourne',
+                'poi' => null,
+                'fullAddress' => '328 Rue Swanston, Melbourne VIC 3000, Australie',
+            ],
+            'en' => [
+                'adresse' => '328 Swanston Street',
+                'ville' => 'Melbourne',
+                'pays' => 'Australia',
+                'region' => 'Victoria',
+                'district' => 'Melbourne',
+                'locality' => 'Melbourne',
+                'neighborhood' => 'Melbourne CBD',
+                'poi' => null,
+                'fullAddress' => '328 Swanston Street, Melbourne VIC 3000, Australia',
+            ],
         ],
         [
-            'locale' => 'ja_JP',
-            'pays' => 'Japon',
-            'latMin' => 31.0000000,
-            'latMax' => 45.5000000,
-            'lngMin' => 129.0000000,
-            'lngMax' => 145.8000000,
-        ],
-        [
-            'locale' => 'zh_CN',
-            'pays' => 'Chine',
-            'latMin' => 22.0000000,
-            'latMax' => 41.0000000,
-            'lngMin' => 100.0000000,
-            'lngMax' => 122.5000000,
-        ],
-        [
-            'locale' => 'en_AU',
-            'pays' => 'Australie',
-            'latMin' => -38.0000000,
-            'latMax' => -12.0000000,
-            'lngMin' => 113.0000000,
-            'lngMax' => 153.0000000,
-        ],
-        [
-            'locale' => 'en_CA',
-            'pays' => 'Canada',
-            'latMin' => 43.0000000,
-            'latMax' => 60.0000000,
-            'lngMin' => -123.0000000,
-            'lngMax' => -52.0000000,
+            'codePostal' => '4000',
+            'latitude' => '-27.4697700',
+            'longitude' => '153.0251310',
+            'mapboxId' => 'fixture-au-brisbane-4000',
+            'featureType' => 'address',
+            'fr' => [
+                'adresse' => '167 Rue Albert',
+                'ville' => 'Brisbane',
+                'pays' => 'Australie',
+                'region' => 'Queensland',
+                'district' => 'Brisbane',
+                'locality' => 'Brisbane',
+                'neighborhood' => 'Centre-ville de Brisbane',
+                'poi' => null,
+                'fullAddress' => '167 Rue Albert, Brisbane QLD 4000, Australie',
+            ],
+            'en' => [
+                'adresse' => '167 Albert Street',
+                'ville' => 'Brisbane',
+                'pays' => 'Australia',
+                'region' => 'Queensland',
+                'district' => 'Brisbane',
+                'locality' => 'Brisbane',
+                'neighborhood' => 'Brisbane CBD',
+                'poi' => null,
+                'fullAddress' => '167 Albert Street, Brisbane QLD 4000, Australia',
+            ],
         ],
     ];
-
-    /**
-     * Cache des Faker par locale.
-     *
-     * @var array<string, Generator>
-     */
-    private array $fakerByLocale = [];
 
     public function load(ObjectManager $manager): void
     {
@@ -191,27 +404,15 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             $agenceReferences[] = UserFixtures::USER_AGENCE_REFERENCE_PREFIX.$i;
         }
 
-        /**
-         * On prend les caractéristiques déjà existantes.
-         */
         $caracteristiques = $manager
             ->getRepository(Caracteristique::class)
             ->findAll();
 
-        /**
-         * Protection des slugs uniques pendant le chargement.
-         *
-         * @var array<string, bool> $usedSlugs
-         */
         $usedSlugs = [];
 
         for ($i = 1; $i <= self::PROPERTY_COUNT; ++$i) {
             $propertyData = $faker->randomElement(self::PROPERTIES);
-
-            $typeBien = $propertyData['typeBien'];
-            $typeTransaction = $propertyData['typeTransaction'];
-
-            $location = $this->generateInternationalLocation($faker);
+            $address = $faker->randomElement(self::ADDRESSES);
 
             /** @var User $user */
             $user = $this->getReference(
@@ -221,27 +422,16 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             /** @var CategoryBien $categoryBien */
             $categoryBien = $this->getReference(
-                CategoryBienFixtures::CATEGORY_BIEN_REFERENCE_PREFIX.$typeBien,
+                CategoryBienFixtures::CATEGORY_BIEN_REFERENCE_PREFIX.$propertyData['typeBien'],
                 CategoryBien::class
             );
 
             /** @var CategoryBienTransaction $categoryBienTransaction */
             $categoryBienTransaction = $this->getReference(
-                CategoryBienTransactionFixtures::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX.$typeTransaction,
+                CategoryBienTransactionFixtures::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX.$propertyData['typeTransaction'],
                 CategoryBienTransaction::class
             );
 
-            $createdAtMutable = $faker->dateTimeBetween('-1 year', 'now');
-            $updatedAtMutable = $faker->dateTimeBetween($createdAtMutable, 'now');
-            $dateIndexationEnergieMutable = $faker->dateTimeBetween('-3 years', 'now');
-
-            $createdAt = \DateTimeImmutable::createFromMutable($createdAtMutable);
-            $updatedAt = \DateTimeImmutable::createFromMutable($updatedAtMutable);
-            $dateIndexationEnergie = \DateTimeImmutable::createFromMutable($dateIndexationEnergieMutable);
-
-            $stats = $this->generatePropertyStats($typeBien, $faker);
-            $energy = $this->generateEnergyData($faker);
-            $finance = $this->generateFinanceData($typeBien, $typeTransaction, $faker);
             $slug = $this->generateUniqueNumericSlug($faker, $usedSlugs);
 
             $property = new Property();
@@ -250,90 +440,56 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 ->setUser($user)
                 ->setTypeBien($categoryBien)
                 ->setTypeTransaction($categoryBienTransaction)
-
-                /*
-                 * Adresse internationale générée avec Faker.
-                 */
-                ->setAdresse($location['adresse'])
-                ->setCodePostal($location['codePostal'])
-                ->setVille($location['ville'])
-                ->setPays($location['pays'])
-                ->setLatitude($location['latitude'])
-                ->setLongitude($location['longitude'])
-
-                /*
-                 * Données Mapbox simulées.
-                 */
-                ->setMapboxId($this->generateMapboxId($location, $i))
-                ->setFullAddress($this->generateFullAddress($location))
-                ->setFeatureType('address')
-                ->setRegion($location['region'])
-                ->setDistrict($location['district'])
-                ->setLocality($location['locality'])
-                ->setNeighborhood($location['neighborhood'])
-                ->setPoi($location['poi'])
-
-                /*
-                 * Caractéristiques principales.
-                 */
-                ->setAnneeConstruction((string) $faker->numberBetween(1900, 2026))
-                ->setChambres((string) $stats['chambres'])
-                ->setSalleDeBains((string) $stats['salleDeBains'])
-                ->setSurfaceTotal((string) $stats['surfaceTotal'])
-
-                /*
-                 * Données énergie.
-                 */
-                ->setDpe((string) $energy['dpe'])
-                ->setDpeLettre($energy['dpeLettre'])
-                ->setGes((string) $energy['ges'])
-                ->setGesLettre($energy['gesLettre'])
-                ->setDpeMin((string) $energy['dpeMin'])
-                ->setDpeMax((string) $energy['dpeMax'])
-                ->setDateIndexationEnergie($dateIndexationEnergie)
-
-                /*
-                 * Titre + description.
-                 */
-                ->setTitreDuLogement(
-                    $this->generateTitle(
-                        $typeBien,
-                        $typeTransaction,
-                        $location['ville'],
-                        $location['pays']
-                    )
-                )
-                ->setDescriptionLogement(
-                    $this->generateDescription(
-                        $typeBien,
-                        $typeTransaction,
-                        $location,
-                        $stats,
-                        $faker
-                    )
-                )
-
-                /*
-                 * Logique financière :
-                 * vente    => prix rempli, location null
-                 * location => prix null, loyer + charges + dépôt remplis
-                 */
-                ->setPrix($finance['prix'])
-                ->setMontantLoyerHorsCharge($finance['montantLoyerHorsCharge'])
-                ->setMontantDepotDeGarantie($finance['montantDepotDeGarantie'])
-                ->setMontantDesCharges($finance['montantDesCharges'])
-
-                ->setReferenceInterne(\sprintf('PROPERTY-%04d', $i))
-                ->setStatut($this->generateStatus($faker))
-                ->setCreatedAt($createdAt)
-                ->setUpdatedAt($updatedAt)
+                ->setCodePostal($address['codePostal'])
+                ->setLatitude($address['latitude'])
+                ->setLongitude($address['longitude'])
+                ->setMapboxId($address['mapboxId'])
+                ->setFeatureType($address['featureType'])
+                ->setShowAdresse((bool) $faker->numberBetween(0, 1))
+                ->setAnneeConstruction((string) $faker->numberBetween(1950, 2025))
+                ->setChambres((string) $faker->numberBetween(1, 8))
+                ->setSalleDeBains((string) $faker->numberBetween(1, 4))
+                ->setSurfaceTotal((string) $faker->numberBetween(25, 450))
+                ->setDpe((string) $faker->numberBetween(50, 350))
+                ->setDpeLettre($faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G']))
+                ->setGes((string) $faker->numberBetween(5, 80))
+                ->setGesLettre($faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G']))
+                ->setDpeMin((string) $faker->numberBetween(400, 900))
+                ->setDpeMax((string) $faker->numberBetween(901, 2200))
+                ->setDateIndexationEnergie(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 years', 'now')))
+                ->setPrix((string) $faker->numberBetween(90000, 2500000))
+                ->setReferenceInterne('BOOLTS-'.$faker->unique()->numberBetween(100000, 999999))
+                ->setMontantLoyerHorsCharge((string) $faker->numberBetween(500, 6500))
+                ->setMontantDepotDeGarantie((string) $faker->numberBetween(500, 12000))
+                ->setMontantDesCharges((string) $faker->numberBetween(50, 900))
+                ->setStatut($faker->randomElement([
+                    StatutAnnonceImmobiliere::PUBLIEE,
+                    StatutAnnonceImmobiliere::DISPONIBLE,
+                    StatutAnnonceImmobiliere::SOUS_OFFRE,
+                    StatutAnnonceImmobiliere::OFFRE_ACCEPTEE,
+                    StatutAnnonceImmobiliere::RESERVEE,
+                    StatutAnnonceImmobiliere::DOSSIER_EN_COURS,
+                ]))
                 ->setSlug($slug);
 
-            $this->addRandomCaracteristiques(
-                $property,
-                $caracteristiques,
-                $faker
-            );
+            $this->fillTranslation($property, 'fr', $address['fr'], $propertyData['typeBien']);
+            $this->fillTranslation($property, 'en', $address['en'], $propertyData['typeBien']);
+
+            if (method_exists($property, 'setCreatedAt')) {
+                $property->setCreatedAt(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 year', 'now')));
+            }
+
+            if (method_exists($property, 'setUpdatedAt')) {
+                $property->setUpdatedAt(new \DateTimeImmutable());
+            }
+
+            if ([] !== $caracteristiques) {
+                foreach ($faker->randomElements($caracteristiques, $faker->numberBetween(2, min(8, \count($caracteristiques)))) as $caracteristique) {
+                    $property->addCaracteristique($caracteristique);
+                }
+            }
+
+            $property->mergeNewTranslations();
 
             $manager->persist($property);
 
@@ -346,448 +502,82 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    /**
-     * Génère une adresse internationale avec un Faker adapté au pays.
-     *
-     * @return array{
-     *     pays: string,
-     *     ville: string,
-     *     codePostal: string,
-     *     adresse: string,
-     *     region: string,
-     *     district: string,
-     *     locality: string,
-     *     neighborhood: string,
-     *     poi: string,
-     *     latitude: string,
-     *     longitude: string
-     * }
-     */
-    private function generateInternationalLocation(Generator $mainFaker): array
+    private function fillTranslation(Property $property, string $locale, array $address, string $typeBien): void
     {
-        $profile = $mainFaker->randomElement(self::INTERNATIONAL_FAKER_PROFILES);
-
-        $faker = $this->getFakerByLocale($profile['locale']);
-
-        $ville = $this->fakerValue($faker, 'city') ?? $mainFaker->city();
-        $codePostal = $this->fakerValue($faker, 'postcode') ?? $mainFaker->postcode();
-        $adresse = $this->fakerValue($faker, 'streetAddress') ?? $mainFaker->streetAddress();
-
-        $region = $this->fakerValue($faker, 'state')
-            ?? $this->fakerValue($faker, 'region')
-            ?? $ville;
-
-        $district = $this->fakerValue($faker, 'citySuffix')
-            ?? $this->fakerValue($faker, 'secondaryAddress')
-            ?? $ville;
-
-        $neighborhood = $this->fakerValue($faker, 'streetName')
-            ?? $this->fakerValue($faker, 'streetSuffix')
-            ?? $ville;
-
-        $poi = $this->fakerValue($faker, 'company')
-            ?? $this->fakerValue($faker, 'catchPhrase')
-            ?? 'Centre-ville';
-
-        return [
-            'pays' => $profile['pays'],
-            'ville' => $ville,
-            'codePostal' => $codePostal,
-            'adresse' => $adresse,
-            'region' => $region,
-            'district' => $district,
-            'locality' => $ville,
-            'neighborhood' => $neighborhood,
-            'poi' => $poi,
-            'latitude' => $this->generateCoordinate($mainFaker, $profile['latMin'], $profile['latMax']),
-            'longitude' => $this->generateCoordinate($mainFaker, $profile['lngMin'], $profile['lngMax']),
+        $typeLabelFr = [
+            'maison' => 'maison',
+            'appartement' => 'appartement',
+            'villa' => 'villa',
+            'fond-de-commerce' => 'fonds de commerce',
+            'bureaux' => 'bureaux',
+            'local-commercial' => 'local commercial',
+            'terrain' => 'terrain',
+            'ferme' => 'ferme',
+            'parking-garage-box' => 'parking, garage ou box',
         ];
-    }
 
-    private function getFakerByLocale(string $locale): Generator
-    {
-        if (!isset($this->fakerByLocale[$locale])) {
-            try {
-                $this->fakerByLocale[$locale] = Factory::create($locale);
-            } catch (\Throwable) {
-                $this->fakerByLocale[$locale] = Factory::create('en_US');
-            }
+        $typeLabelEn = [
+            'maison' => 'house',
+            'appartement' => 'apartment',
+            'villa' => 'villa',
+            'fond-de-commerce' => 'business assets',
+            'bureaux' => 'office space',
+            'local-commercial' => 'commercial premises',
+            'terrain' => 'land',
+            'ferme' => 'farm',
+            'parking-garage-box' => 'parking space, garage or box',
+        ];
+
+        $translation = $property->translate($locale);
+
+        $translation->setAdresse($address['adresse']);
+        $translation->setVille($address['ville']);
+        $translation->setPays($address['pays']);
+        $translation->setFullAddress($address['fullAddress']);
+        $translation->setRegion($address['region']);
+        $translation->setDistrict($address['district']);
+        $translation->setLocality($address['locality']);
+        $translation->setNeighborhood($address['neighborhood']);
+        $translation->setPoi($address['poi']);
+
+        if ('fr' === $locale) {
+            $type = $typeLabelFr[$typeBien] ?? 'bien immobilier';
+
+            $translation->setTitreDuLogement(
+                ucfirst($type).' à '.$address['ville'].' - '.$address['neighborhood']
+            );
+
+            $translation->setDescriptionLogement(
+                'Découvrez ce '.$type.' situé à '.$address['ville'].', dans le secteur '.$address['neighborhood'].'. '.
+                'Ce bien bénéficie d’un emplacement recherché, proche des commodités, des transports et des services essentiels. '.
+                'Une opportunité idéale pour un projet immobilier local ou international.'
+            );
+
+            return;
         }
 
-        return $this->fakerByLocale[$locale];
-    }
+        $type = $typeLabelEn[$typeBien] ?? 'property';
 
-    private function fakerValue(Generator $faker, string $method): ?string
-    {
-        try {
-            $value = $faker->{$method}();
+        $translation->setTitreDuLogement(
+            ucfirst($type).' in '.$address['ville'].' - '.$address['neighborhood']
+        );
 
-            if (!\is_scalar($value)) {
-                return null;
-            }
-
-            $value = mb_trim((string) $value);
-
-            return '' !== $value ? $value : null;
-        } catch (\Throwable) {
-            return null;
-        }
-    }
-
-    private function generateCoordinate(Generator $faker, float $min, float $max): string
-    {
-        return number_format(
-            $faker->randomFloat(7, $min, $max),
-            7,
-            '.',
-            ''
+        $translation->setDescriptionLogement(
+            'Discover this '.$type.' located in '.$address['ville'].', in the '.$address['neighborhood'].' area. '.
+            'This property benefits from a sought-after location, close to amenities, transport and essential services. '.
+            'An ideal opportunity for a local or international real estate project.'
         );
     }
 
-    private function generateTitle(
-        string $typeBien,
-        string $typeTransaction,
-        string $ville,
-        string $pays,
-    ): string {
-        $typeBienLabel = str_replace('-', ' ', $typeBien);
-
-        $transactionLabel = match ($typeTransaction) {
-            'vente' => 'à vendre',
-            'location' => 'à louer',
-            default => '',
-        };
-
-        return ucfirst($typeBienLabel).' '.$transactionLabel.' à '.$ville.', '.$pays;
-    }
-
-    /**
-     * @param array<string, string>                                      $location
-     * @param array{chambres: int, salleDeBains: int, surfaceTotal: int} $stats
-     */
-    private function generateDescription(
-        string $typeBien,
-        string $typeTransaction,
-        array $location,
-        array $stats,
-        Generator $faker,
-    ): string {
-        $typeBienLabel = str_replace('-', ' ', $typeBien);
-
-        $transactionLabel = match ($typeTransaction) {
-            'vente' => 'proposé à la vente',
-            'location' => 'proposé à la location',
-            default => 'disponible',
-        };
-
-        $intro = \sprintf(
-            'Ce %s est %s dans le secteur de %s, à %s, %s.',
-            $typeBienLabel,
-            $transactionLabel,
-            $location['neighborhood'],
-            $location['ville'],
-            $location['pays']
-        );
-
-        $details = \sprintf(
-            'Le bien dispose d’une surface totale de %d m², avec %d chambre(s) et %d salle(s) de bains.',
-            $stats['surfaceTotal'],
-            $stats['chambres'],
-            $stats['salleDeBains']
-        );
-
-        $environment = \sprintf(
-            'L’adresse bénéficie d’un environnement recherché, proche de %s, avec un accès pratique aux commerces, transports et services du quartier.',
-            $location['poi']
-        );
-
-        return $intro."\n\n".$details."\n\n".$environment."\n\n".$faker->paragraphs(2, true);
-    }
-
-    /**
-     * Génère des données cohérentes selon le type de bien.
-     *
-     * @return array{chambres: int, salleDeBains: int, surfaceTotal: int}
-     */
-    private function generatePropertyStats(string $typeBien, Generator $faker): array
-    {
-        return match ($typeBien) {
-            'appartement' => [
-                'chambres' => $faker->numberBetween(0, 5),
-                'salleDeBains' => $faker->numberBetween(1, 3),
-                'surfaceTotal' => $faker->numberBetween(25, 180),
-            ],
-
-            'maison' => [
-                'chambres' => $faker->numberBetween(2, 7),
-                'salleDeBains' => $faker->numberBetween(1, 4),
-                'surfaceTotal' => $faker->numberBetween(80, 350),
-            ],
-
-            'villa' => [
-                'chambres' => $faker->numberBetween(3, 10),
-                'salleDeBains' => $faker->numberBetween(2, 8),
-                'surfaceTotal' => $faker->numberBetween(180, 900),
-            ],
-
-            'ferme' => [
-                'chambres' => $faker->numberBetween(2, 8),
-                'salleDeBains' => $faker->numberBetween(1, 4),
-                'surfaceTotal' => $faker->numberBetween(150, 1200),
-            ],
-
-            'terrain' => [
-                'chambres' => 0,
-                'salleDeBains' => 0,
-                'surfaceTotal' => $faker->numberBetween(300, 5000),
-            ],
-
-            'parking-garage-box' => [
-                'chambres' => 0,
-                'salleDeBains' => 0,
-                'surfaceTotal' => $faker->numberBetween(10, 40),
-            ],
-
-            'bureaux' => [
-                'chambres' => 0,
-                'salleDeBains' => $faker->numberBetween(1, 4),
-                'surfaceTotal' => $faker->numberBetween(40, 800),
-            ],
-
-            'local-commercial' => [
-                'chambres' => 0,
-                'salleDeBains' => $faker->numberBetween(1, 3),
-                'surfaceTotal' => $faker->numberBetween(30, 600),
-            ],
-
-            'fond-de-commerce' => [
-                'chambres' => 0,
-                'salleDeBains' => $faker->numberBetween(1, 4),
-                'surfaceTotal' => $faker->numberBetween(50, 1000),
-            ],
-
-            default => [
-                'chambres' => $faker->numberBetween(0, 5),
-                'salleDeBains' => $faker->numberBetween(0, 3),
-                'surfaceTotal' => $faker->numberBetween(20, 500),
-            ],
-        };
-    }
-
-    /**
-     * Vente :
-     * - prix rempli
-     * - location à null
-     *
-     * Location :
-     * - prix à null
-     * - loyer hors charge rempli
-     * - dépôt de garantie rempli
-     * - charges remplies
-     *
-     * @return array{
-     *     prix: ?string,
-     *     montantLoyerHorsCharge: ?string,
-     *     montantDepotDeGarantie: ?string,
-     *     montantDesCharges: ?string
-     * }
-     */
-    private function generateFinanceData(
-        string $typeBien,
-        string $typeTransaction,
-        Generator $faker,
-    ): array {
-        if ('vente' === $typeTransaction) {
-            return [
-                'prix' => (string) $this->generateSalePrice($typeBien, $faker),
-                'montantLoyerHorsCharge' => null,
-                'montantDepotDeGarantie' => null,
-                'montantDesCharges' => null,
-            ];
-        }
-
-        $loyerHorsCharge = $this->generateRentPrice($typeBien, $faker);
-        $charges = (int) round($loyerHorsCharge * $faker->numberBetween(5, 20) / 100);
-        $depotGarantie = $loyerHorsCharge * $faker->numberBetween(1, 3);
-
-        return [
-            'prix' => null,
-            'montantLoyerHorsCharge' => (string) $loyerHorsCharge,
-            'montantDepotDeGarantie' => (string) $depotGarantie,
-            'montantDesCharges' => (string) $charges,
-        ];
-    }
-
-    private function generateSalePrice(string $typeBien, Generator $faker): int
-    {
-        return match ($typeBien) {
-            'parking-garage-box' => $faker->numberBetween(8000, 85000),
-            'terrain' => $faker->numberBetween(30000, 900000),
-            'appartement' => $faker->numberBetween(90000, 1500000),
-            'maison' => $faker->numberBetween(150000, 2500000),
-            'villa' => $faker->numberBetween(500000, 6500000),
-            'ferme' => $faker->numberBetween(120000, 1800000),
-            'bureaux' => $faker->numberBetween(180000, 3500000),
-            'local-commercial' => $faker->numberBetween(120000, 2500000),
-            'fond-de-commerce' => $faker->numberBetween(50000, 1200000),
-            default => $faker->numberBetween(80000, 1500000),
-        };
-    }
-
-    private function generateRentPrice(string $typeBien, Generator $faker): int
-    {
-        return match ($typeBien) {
-            'parking-garage-box' => $faker->numberBetween(50, 450),
-            'appartement' => $faker->numberBetween(450, 5500),
-            'maison' => $faker->numberBetween(900, 7500),
-            'villa' => $faker->numberBetween(2500, 25000),
-            'bureaux' => $faker->numberBetween(700, 18000),
-            'local-commercial' => $faker->numberBetween(800, 22000),
-            'fond-de-commerce' => $faker->numberBetween(1200, 30000),
-            default => $faker->numberBetween(400, 8000),
-        };
-    }
-
-    /**
-     * @return array{
-     *     dpe: int,
-     *     dpeLettre: string,
-     *     ges: int,
-     *     gesLettre: string,
-     *     dpeMin: int,
-     *     dpeMax: int
-     * }
-     */
-    private function generateEnergyData(Generator $faker): array
-    {
-        $dpeLettre = $faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
-
-        [$dpeMin, $dpeMax] = match ($dpeLettre) {
-            'A' => [10, 69],
-            'B' => [70, 109],
-            'C' => [110, 179],
-            'D' => [180, 249],
-            'E' => [250, 329],
-            'F' => [330, 419],
-            'G' => [420, 650],
-        };
-
-        $dpe = $faker->numberBetween($dpeMin, $dpeMax);
-
-        $gesLettre = $faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G']);
-
-        $ges = match ($gesLettre) {
-            'A' => $faker->numberBetween(1, 5),
-            'B' => $faker->numberBetween(6, 10),
-            'C' => $faker->numberBetween(11, 20),
-            'D' => $faker->numberBetween(21, 35),
-            'E' => $faker->numberBetween(36, 55),
-            'F' => $faker->numberBetween(56, 80),
-            'G' => $faker->numberBetween(81, 120),
-        };
-
-        return [
-            'dpe' => $dpe,
-            'dpeLettre' => $dpeLettre,
-            'ges' => $ges,
-            'gesLettre' => $gesLettre,
-            'dpeMin' => $dpeMin,
-            'dpeMax' => $dpeMax,
-        ];
-    }
-
-    /**
-     * @param array<string, string> $location
-     */
-    private function generateFullAddress(array $location): string
-    {
-        return \sprintf(
-            '%s, %s %s, %s',
-            $location['adresse'],
-            $location['codePostal'],
-            $location['ville'],
-            $location['pays']
-        );
-    }
-
-    /**
-     * @param array<string, string> $location
-     */
-    private function generateMapboxId(array $location, int $index): string
-    {
-        $countrySlug = mb_strtolower(
-            preg_replace('/[^a-z0-9]+/i', '-', $location['pays']) ?? 'country'
-        );
-
-        $citySlug = mb_strtolower(
-            preg_replace('/[^a-z0-9]+/i', '-', $location['ville']) ?? 'city'
-        );
-
-        return \sprintf(
-            'address.%s.%s.%d',
-            mb_trim($countrySlug, '-'),
-            mb_trim($citySlug, '-'),
-            $index
-        );
-    }
-
-    private function generateStatus(Generator $faker): StatutAnnonceImmobiliere
-    {
-        return $faker->randomElement([
-            StatutAnnonceImmobiliere::PUBLIEE,
-            StatutAnnonceImmobiliere::PUBLIEE,
-            StatutAnnonceImmobiliere::PUBLIEE,
-            StatutAnnonceImmobiliere::VALIDATE,
-            StatutAnnonceImmobiliere::PENDING,
-            StatutAnnonceImmobiliere::BROUILLON,
-        ]);
-    }
-
-    /**
-     * Slug numérique unique.
-     *
-     * @param array<string, bool> $usedSlugs
-     */
-    private function generateUniqueNumericSlug(Generator $faker, array &$usedSlugs): string
+    private function generateUniqueNumericSlug(\Faker\Generator $faker, array &$usedSlugs): string
     {
         do {
-            $slug = (string) $faker->numberBetween(1000000000, 9999999999);
+            $slug = (string) $faker->numberBetween(100000000, 999999999);
         } while (isset($usedSlugs[$slug]));
 
         $usedSlugs[$slug] = true;
 
         return $slug;
-    }
-
-    /**
-     * @param Caracteristique[] $caracteristiques
-     */
-    private function addRandomCaracteristiques(
-        Property $property,
-        array $caracteristiques,
-        Generator $faker,
-    ): void {
-        if ([] === $caracteristiques) {
-            return;
-        }
-
-        $numberOfCaracteristiques = $faker->numberBetween(
-            0,
-            min(6, \count($caracteristiques))
-        );
-
-        if (0 === $numberOfCaracteristiques) {
-            return;
-        }
-
-        $randomCaracteristiques = $faker->randomElements(
-            $caracteristiques,
-            $numberOfCaracteristiques
-        );
-
-        foreach ($randomCaracteristiques as $caracteristique) {
-            $property->addCaracteristique($caracteristique);
-        }
     }
 
     public function getDependencies(): array
@@ -796,6 +586,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             UserFixtures::class,
             CategoryBienFixtures::class,
             CategoryBienTransactionFixtures::class,
+            CaracteristiqueFixtures::class,
         ];
     }
 }

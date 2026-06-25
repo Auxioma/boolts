@@ -16,24 +16,19 @@ use App\Repository\CategoryBienTransactionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
+use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
 
 #[ORM\Entity(repositoryClass: CategoryBienTransactionRepository::class)]
-class CategoryBienTransaction
+class CategoryBienTransaction implements TranslatableInterface
 {
+    use TranslatableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $slug = null;
-
-    /**
-     * @var Collection<int, Property>
-     */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'typeTransaction')]
     private Collection $properties;
 
@@ -52,31 +47,40 @@ class CategoryBienTransaction
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->translate()->getName();
     }
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->translate()->setName($name);
 
         return $this;
     }
 
     public function getSlug(): ?string
     {
-        return $this->slug;
+        return $this->translate()->getSlug();
     }
 
     public function setSlug(string $slug): static
     {
-        $this->slug = $slug;
+        $this->translate()->setSlug($slug);
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Property>
-     */
+    public function getIcone(): ?string
+    {
+        return $this->icone;
+    }
+
+    public function setIcone(string $icone): static
+    {
+        $this->icone = $icone;
+
+        return $this;
+    }
+
     public function getProperties(): Collection
     {
         return $this->properties;
@@ -95,23 +99,10 @@ class CategoryBienTransaction
     public function removeProperty(Property $property): static
     {
         if ($this->properties->removeElement($property)) {
-            // set the owning side to null (unless already changed)
             if ($property->getTypeTransaction() === $this) {
                 $property->setTypeTransaction(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getIcone(): ?string
-    {
-        return $this->icone;
-    }
-
-    public function setIcone(string $icone): static
-    {
-        $this->icone = $icone;
 
         return $this;
     }

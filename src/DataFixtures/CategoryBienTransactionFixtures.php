@@ -29,26 +29,46 @@ class CategoryBienTransactionFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $transactions = [
-            ['name' => 'Vente', 'icone' => 'icon-pencil-line'],
-            ['name' => 'Location', 'icone' => 'icon-key-round'],
+            [
+                'icone' => 'icon-pencil-line',
+                'translations' => [
+                    'fr' => 'Vente',
+                    'en' => 'Sale',
+                ],
+            ],
+            [
+                'icone' => 'icon-key-round',
+                'translations' => [
+                    'fr' => 'Location',
+                    'en' => 'Rent',
+                ],
+            ],
         ];
 
         foreach ($transactions as $transactionData) {
             $transaction = new CategoryBienTransaction();
+            $transaction->setIcone($transactionData['icone']);
 
-            $slug = mb_strtolower(
-                $this->slugger->slug($transactionData['name'])->toString()
-            );
+            foreach ($transactionData['translations'] as $locale => $name) {
+                $slug = mb_strtolower(
+                    $this->slugger->slug($name)->toString()
+                );
 
-            $transaction
-                ->setName($transactionData['name'])
-                ->setIcone($transactionData['icone'])
-                ->setSlug($slug);
+                $translation = $transaction->translate($locale);
+                $translation->setName($name);
+                $translation->setSlug($slug);
+            }
+
+            $transaction->mergeNewTranslations();
 
             $manager->persist($transaction);
 
+            $referenceSlug = mb_strtolower(
+                $this->slugger->slug($transactionData['translations']['fr'])->toString()
+            );
+
             $this->addReference(
-                self::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX.$slug,
+                self::CATEGORY_BIEN_TRANSACTION_REFERENCE_PREFIX.$referenceSlug,
                 $transaction
             );
         }

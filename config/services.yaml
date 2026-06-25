@@ -53,3 +53,7 @@ services:
                 credentials:
                     key: '%env(string:N0C_ACCESS_KEY)%'
                     secret: '%env(string:N0C_SECRET_KEY)%'
+
+    App\Service\MapboxAddressTranslator:
+        arguments:
+            $mapboxToken: '%env(MAPBOX_PUBLIC_TOKEN)%'

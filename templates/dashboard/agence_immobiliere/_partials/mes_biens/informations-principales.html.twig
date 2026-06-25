@@ -1,16 +1,9 @@
-{% set supportedMapboxLanguages = ['fr', 'en', 'de', 'es', 'it', 'nl', 'pt'] %}
-{% set browserLanguage = app.request.getPreferredLanguage(supportedMapboxLanguages) %}
-
-{% if browserLanguage is empty %}
-    {% set browserLanguage = 'fr' %}
-{% endif %}
-
 <div
     class="js-tab-content mes-biens-immobilier formulaire"
     id="cat3"
     data-controller="mes-biens--adresse-autocomplete"
     data-mes-biens--adresse-autocomplete-token-value="{{ mapbox_public_token|e('html_attr') }}"
-    data-mes-biens--adresse-autocomplete-language-value="ar"
+    data-mes-biens--adresse-autocomplete-language-value="{{ app.request.locale }}"
     data-mes-biens--adresse-autocomplete-limit-value="10"
     data-mes-biens--adresse-autocomplete-types-value="address,poi,street,place,locality,neighborhood,postcode,region,country"
 >
@@ -27,7 +20,7 @@
     <div class="mt-48">
         <div class="row">
             <div class="col-12">
-                <div class="row">
+                <div class="row"> 
 
                     <div class="js-address-autocomplete-field position-relative">
                         <label for="adresse" class="mb-16">
@@ -44,12 +37,97 @@
                             },
                         }) }}
 
+                        <small class="form-text text-muted">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12.0004 9.00022V13.0002M12.0004 17.0002H12.0104M21.7304 18.0002L13.7304 4.00022C13.556 3.69243 13.303 3.43641 12.9973 3.25829C12.6917 3.08017 12.3442 2.98633 11.9904 2.98633C11.6366 2.98633 11.2892 3.08017 10.9835 3.25829C10.6778 3.43641 10.4249 3.69243 10.2504 4.00022L2.25042 18.0002C2.0741 18.3056 1.98165 18.6521 1.98243 19.0047C1.98321 19.3573 2.0772 19.7035 2.25486 20.008C2.43253 20.3126 2.68757 20.5648 2.99411 20.7391C3.30066 20.9133 3.64783 21.0034 4.00042 21.0002H20.0004C20.3513 20.9999 20.6959 20.9072 20.9997 20.7315C21.3035 20.5558 21.5556 20.3033 21.7309 19.9993C21.9062 19.6954 21.9985 19.3506 21.9984 18.9997C21.9983 18.6488 21.9059 18.3041 21.7304 18.0002Z" stroke="#DC3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            L’adresse est utilisée pour enrichir les informations du bien (quartier,  arrondissement, code postal) et ne sera pas affichée publiquement par défaut.
+                        </small>
+
                         <div
                             class="mapbox-autocomplete-results list-group shadow"
                             data-mes-biens--adresse-autocomplete-target="results"
                             hidden
                         ></div>
                     </div>
+
+<div class="affiche_addr_fo_wrapper mt-32">
+    <div class="affiche_addr_fo_label">
+        Afficher publiquement l’adresseaaa
+    </div>
+
+    <label class="affiche_addr_fo_switch">
+        {{ form_widget(form.showAdresse, {
+            attr: {
+                class: 'affiche_addr_fo_input',
+            }
+        }) }}
+
+        <span class="affiche_addr_fo_slider"></span>
+    </label>
+</div>
+
+<style>
+.affiche_addr_fo_wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+}
+
+.affiche_addr_fo_label {
+    font-size: 14px;
+    font-weight: 400;
+    color: #222;
+}
+
+.affiche_addr_fo_switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex: 0 0 auto;
+}
+
+.affiche_addr_fo_input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.affiche_addr_fo_slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #e5e5e5;
+    border: 2px solid #777;
+    border-radius: 999px;
+    transition: 0.25s ease;
+}
+
+.affiche_addr_fo_slider::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: 0.25s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.affiche_addr_fo_input:checked + .affiche_addr_fo_slider {
+    background-color: #21b26f;
+    border-color: #21b26f;
+}
+
+.affiche_addr_fo_input:checked + .affiche_addr_fo_slider::before {
+    transform: translateX(20px);
+}
+</style>
 
                     <div class="mt-32">
                         <label for="codePostal" class="mb-16">
@@ -178,6 +256,12 @@
                     {{ form_widget(form.latitude, {
                         attr: {
                             'data-mes-biens--adresse-autocomplete-target': 'latitude',
+                        },
+                    }) }}
+
+                    {{ form_widget(form.sessionIdMapbox, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'sessionIdMapbox',
                         },
                     }) }}
 

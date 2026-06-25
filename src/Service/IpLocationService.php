@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -7,13 +17,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class IpLocationService
 {
     public function __construct(
-        private HttpClientInterface $httpClient
+        private HttpClientInterface $httpClient,
     ) {
     }
 
     public function locate(?string $ip): ?array
     {
-        if (!$ip || in_array($ip, ['127.0.0.1', '::1'], true)) {
+        if (!$ip || \in_array($ip, ['127.0.0.1', '::1'], true)) {
             return null;
         }
 

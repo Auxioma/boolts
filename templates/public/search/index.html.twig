@@ -4,7 +4,6 @@
 
 {% block body %}
 
-
     <div class="bt-research-page">
         <div class="bt-research-sticky-bar">
             <div class="bt-research-sticky-inner">
@@ -17,11 +16,11 @@
             class: 'home-bt-search-bar',
             'data-controller': 'home-bt-mapbox-search',
             'data-home-bt-mapbox-search-token-value': mapbox_public_token,
-            'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr')
-        }
+            'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr'),
+        },
     }) }}
 
-        {# 
+        {#
             EntityType caché.
 
             Le select reçoit l'id.
@@ -31,8 +30,8 @@
         {{ form_widget(form.transactionType, {
             attr: {
                 class: 'd-none',
-                'data-home-bt-transaction-input': ''
-            }
+                'data-home-bt-transaction-input': '',
+            },
         }) }}
 
         <div class="home-bt-search-bar__field">
@@ -41,8 +40,8 @@
                     autocomplete: 'off',
                     placeholder: 'search.location.placeholder'|trans,
                     'data-home-bt-mapbox-search-target': 'input',
-                    'data-action': 'input->home-bt-mapbox-search#search focus->home-bt-mapbox-search#search keydown->home-bt-mapbox-search#handleKeydown'
-                }
+                    'data-action': 'input->home-bt-mapbox-search#search focus->home-bt-mapbox-search#search keydown->home-bt-mapbox-search#handleKeydown',
+                },
             }) }}
 
             <button type="submit" aria-label="{{ 'search.submit'|trans }}">
@@ -64,84 +63,84 @@
 
         {{ form_widget(form.selectedValue, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedValue'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedValue',
+            },
         }) }}
 
         {{ form_widget(form.selectedMapboxId, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedMapboxId'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedMapboxId',
+            },
         }) }}
 
         {{ form_widget(form.selectedFeatureType, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedFeatureType'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedFeatureType',
+            },
         }) }}
 
         {{ form_widget(form.selectedCountryName, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedCountryName'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedCountryName',
+            },
         }) }}
 
         {{ form_widget(form.selectedCountryCode, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedCountryCode'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedCountryCode',
+            },
         }) }}
 
         {{ form_widget(form.selectedRegionName, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedRegionName'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedRegionName',
+            },
         }) }}
 
         {{ form_widget(form.selectedCityName, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedCityName'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedCityName',
+            },
         }) }}
 
         {{ form_widget(form.selectedPostalCode, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedPostalCode'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedPostalCode',
+            },
         }) }}
 
         {{ form_widget(form.selectedLatitude, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedLatitude'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedLatitude',
+            },
         }) }}
 
         {{ form_widget(form.selectedLongitude, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedLongitude'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedLongitude',
+            },
         }) }}
 
         {{ form_widget(form.selectedFullAddress, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedFullAddress'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedFullAddress',
+            },
         }) }}
 
         {{ form_widget(form.selectedLocale, {
             value: app.request.locale|default('fr'),
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedLocale'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedLocale',
+            },
         }) }}
 
         {{ form_widget(form.selectedLocationJson, {
             attr: {
-                'data-home-bt-mapbox-search-target': 'selectedLocationJson'
-            }
+                'data-home-bt-mapbox-search-target': 'selectedLocationJson',
+            },
         }) }}
 
-    {{ form_end(form, { render_rest: false }) }}
+    {{ form_end(form, {render_rest: false}) }}
 
                 <button
                     type="button"
@@ -165,7 +164,7 @@
                     <h1 class="bt-results-title">{{ search.getTotalItemCount }} logements trouvés</h1>
 
                     <div class="row bt-results-grid agence-properties">
-{% for bienImmobilier in search %} 
+{% for bienImmobilier in search %}
 
                                         {% set firstImage = bienImmobilier.propertyImages|first %}
 
@@ -302,8 +301,6 @@
                 <a href="#" aria-label="Page suivante"><i class="icon-chevron-right"></i></a>
             </nav>
         </main>
-
-       
 
         <nav class="bt-mobile-tabbar d-md-none" aria-label="Navigation mobile">
             <a href="#" class="active"><i class="icon-search"></i><span>Explorer</span></a>

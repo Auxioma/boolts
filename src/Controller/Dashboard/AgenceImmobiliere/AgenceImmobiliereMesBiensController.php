@@ -15,6 +15,7 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 use App\Entity\Property;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Repository\PropertyRepository;
+use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,6 +33,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         PropertyRepository $propertyRepository,
         EntityManagerInterface $entityManager,
         NumericSlugGenerator $numericSlugGenerator,
+        MapboxAddressTranslator $mapboxAddressTranslator,
     ): Response {
         $session = $request->getSession();
         $step = $request->query->getInt('step', 1);
@@ -87,7 +89,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 2,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName() ?? '',
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId() ?? '',
                 ]);
             }
 
@@ -102,14 +104,14 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $transaction = $mesBiens->getTypeTransaction();
 
                 if ($transaction) {
-                    $session->set('typeTransaction', mb_strtolower($transaction->getName()));
+                    $session->set('typeTransaction', mb_strtolower($transaction->getId()));
                 }
 
                 $this->updateReachedStep($session, 3);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 3,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                 ]);
             }
 
@@ -119,13 +121,45 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             |--------------------------------------------------------------------------
             */
             if (3 === $step) {
+                $currentLocale = $request->getLocale();
+                $mapboxId = $mesBiens->getMapboxId();
+                $sessionToken = $mesBiens->getSessionIdMapbox();
+
+                if ($mapboxId) {
+                    foreach (['fr', 'en'] as $locale) {
+                        $address = $mapboxAddressTranslator->translateByMapboxId(
+                            mapboxId: $mapboxId,
+                            sessionToken: $sessionToken,
+                            locale: $locale
+                        );
+
+                        if (null === $address) {
+                            continue;
+                        }
+
+                        $translation = $mesBiens->translate($locale);
+
+                        $translation->setAdresse($address['adresse']);
+                        $translation->setVille($address['ville']);
+                        $translation->setPays($address['pays']);
+                        $translation->setFullAddress($address['fullAddress']);
+                        $translation->setRegion($address['region']);
+                        $translation->setDistrict($address['district']);
+                        $translation->setLocality($address['locality']);
+                        $translation->setNeighborhood($address['neighborhood']);
+                        $translation->setPoi($address['poi']);
+                    }
+
+                    $mesBiens->mergeNewTranslations();
+                }
+
                 $entityManager->flush();
 
                 $this->updateReachedStep($session, 4);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 4,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                 ]);
             }
 
@@ -147,7 +181,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                     return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                         'step' => 6,
-                        'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                        'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                     ]);
                 }
 
@@ -155,7 +189,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 5,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                 ]);
             }
 
@@ -171,7 +205,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 6,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                 ]);
             }
 
@@ -193,7 +227,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 7,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                 ]);
             }
 
@@ -203,6 +237,17 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             |--------------------------------------------------------------------------
             */
             if (7 === $step) {
+                /*
+                 * traduit le titre et description
+                 */
+                $mesBiens->translate('fr')->setTitreDuLogement($form->get('titreDuLogement')->getData());
+                $mesBiens->translate('fr')->setDescriptionLogement($form->get('descriptionLogement')->getData());
+
+                $mesBiens->translate('en')->setTitreDuLogement($form->get('titreDuLogement')->getData());
+                $mesBiens->translate('en')->setDescriptionLogement($form->get('descriptionLogement')->getData());
+
+                $mesBiens->mergeNewTranslations();
+
                 $entityManager->flush();
 
                 $typeTransaction = $session->get('typeTransaction');
@@ -217,7 +262,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens', [
                     'step' => 8,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                 ]);
             }
 
@@ -232,7 +277,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $this->clearMesBiensSession($session);
 
                 return $this->redirectToRoute('agence_immobiliere_mes_biens_status', [
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getName(),
+                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
                 ]);
             }
         }

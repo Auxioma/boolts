@@ -16,17 +16,18 @@ use App\Repository\CaracteristiqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
+use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
 
 #[ORM\Entity(repositoryClass: CaracteristiqueRepository::class)]
-class Caracteristique
+class Caracteristique implements TranslatableInterface
 {
+    use TranslatableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
     private ?string $icone = null;
@@ -49,12 +50,12 @@ class Caracteristique
 
     public function getNom(): ?string
     {
-        return $this->nom;
+        return $this->translate()->getNom();
     }
 
-    public function setNom(string $nom): static
+    public function setNom(?string $nom): static
     {
-        $this->nom = $nom;
+        $this->translate()->setNom($nom);
 
         return $this;
     }

@@ -10,6 +10,8 @@ export default class extends Controller {
         'longitude',
         'results',
 
+        'sessionIdMapbox',
+
         'mapboxId',
         'fullAddress',
         'featureType',
@@ -43,6 +45,8 @@ export default class extends Controller {
         this.suggestions = [];
         this.sessionToken = this.createSessionToken();
         this.isSelecting = false;
+
+        this.setTargetValue('sessionIdMapbox', this.sessionToken);
 
         this.hideResults();
     }
@@ -85,7 +89,6 @@ export default class extends Controller {
         }
 
         this.abortCurrentRequest();
-
         this.abortController = new AbortController();
 
         const url = new URL('https://api.mapbox.com/search/searchbox/v1/suggest');
@@ -116,8 +119,6 @@ export default class extends Controller {
             }
 
             const data = await response.json();
-
-            console.log('Mapbox suggest complet :', data);
 
             this.suggestions = Array.isArray(data.suggestions)
                 ? data.suggestions
@@ -162,7 +163,6 @@ export default class extends Controller {
             button.addEventListener('click', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
-
                 this.selectSuggestion(index);
             });
 
@@ -213,8 +213,6 @@ export default class extends Controller {
         this.clearPendingSearch();
         this.hideResults();
 
-        console.log('Suggestion Mapbox sélectionnée :', suggestion);
-
         const mapboxId = suggestion.mapbox_id || suggestion.id || '';
 
         if (!mapboxId) {
@@ -228,10 +226,11 @@ export default class extends Controller {
 
     async retrieveFeature(mapboxId, suggestion = null) {
         this.abortCurrentRequest();
-
         this.abortController = new AbortController();
 
-        const url = new URL(`https://api.mapbox.com/search/searchbox/v1/retrieve/${encodeURIComponent(mapboxId)}`);
+        const url = new URL(
+            `https://api.mapbox.com/search/searchbox/v1/retrieve/${encodeURIComponent(mapboxId)}`
+        );
 
         url.searchParams.set('access_token', this.tokenValue);
         url.searchParams.set('session_token', this.sessionToken);
@@ -253,9 +252,6 @@ export default class extends Controller {
             }
 
             const data = await response.json();
-
-            console.log('Mapbox retrieve complet :', data);
-
             const feature = this.getFirstFeature(data);
 
             if (!feature) {
@@ -268,6 +264,7 @@ export default class extends Controller {
 
             this.clearSuggestions();
             this.hideResults();
+
             this.resetSessionToken();
 
             setTimeout(() => {
@@ -327,19 +324,12 @@ export default class extends Controller {
         const locality = this.getContextName(context, 'locality');
         const neighborhood = this.getContextName(context, 'neighborhood');
 
-        const poi = featureType === 'poi'
-            ? name
-            : '';
+        const poi = featureType === 'poi' ? name : '';
 
         this.setTargetValue('adresse', fullAddress || name);
         this.setTargetValue('codePostal', postcode);
         this.setTargetValue('ville', place || locality || district || neighborhood || name);
 
-        /**
-         * Important :
-         * pays est un select Symfony.
-         * On ne fait pas this.setTargetValue('pays', country).
-         */
         this.setSelectValueByTextOrValue('pays', country, countryCode);
 
         this.setTargetValue('latitude', latitude);
@@ -353,23 +343,6 @@ export default class extends Controller {
         this.setTargetValue('locality', locality);
         this.setTargetValue('neighborhood', neighborhood);
         this.setTargetValue('poi', poi);
-
-        console.log('Données finales enregistrées dans les inputs :', {
-            adresse: this.getTargetValue('adresse'),
-            codePostal: this.getTargetValue('codePostal'),
-            ville: this.getTargetValue('ville'),
-            pays: this.getTargetValue('pays'),
-            latitude: this.getTargetValue('latitude'),
-            longitude: this.getTargetValue('longitude'),
-            mapboxId: this.getTargetValue('mapboxId'),
-            fullAddress: this.getTargetValue('fullAddress'),
-            featureType: this.getTargetValue('featureType'),
-            region: this.getTargetValue('region'),
-            district: this.getTargetValue('district'),
-            locality: this.getTargetValue('locality'),
-            neighborhood: this.getTargetValue('neighborhood'),
-            poi: this.getTargetValue('poi'),
-        });
     }
 
     getFirstFeature(data) {
@@ -399,10 +372,6 @@ export default class extends Controller {
 
         if (context[key]?.text) {
             return context[key].text;
-        }
-
-        if (context[key]?.id) {
-            return context[key].name || context[key].text || '';
         }
 
         if (Array.isArray(context)) {
@@ -482,17 +451,12 @@ export default class extends Controller {
             console.warn('Aucune option trouvée dans le select pays pour :', {
                 searchedText,
                 searchedCode,
-                options: options.map((option) => ({
-                    value: option.value,
-                    text: option.textContent.trim(),
-                })),
             });
 
             return;
         }
 
         element.value = matchingOption.value;
-
         this.dispatchChangeEvent(element);
     }
 
@@ -511,26 +475,14 @@ export default class extends Controller {
 
         if (event.key === 'ArrowDown') {
             event.preventDefault();
-
-            this.activeIndex += 1;
-
-            if (this.activeIndex >= items.length) {
-                this.activeIndex = 0;
-            }
-
+            this.activeIndex = this.activeIndex + 1 >= items.length ? 0 : this.activeIndex + 1;
             this.updateActiveItem(items);
             return;
         }
 
         if (event.key === 'ArrowUp') {
             event.preventDefault();
-
-            this.activeIndex -= 1;
-
-            if (this.activeIndex < 0) {
-                this.activeIndex = items.length - 1;
-            }
-
+            this.activeIndex = this.activeIndex - 1 < 0 ? items.length - 1 : this.activeIndex - 1;
             this.updateActiveItem(items);
             return;
         }
@@ -651,6 +603,7 @@ export default class extends Controller {
 
     resetSessionToken() {
         this.sessionToken = this.createSessionToken();
+        this.setTargetValue('sessionIdMapbox', this.sessionToken);
     }
 
     createSessionToken() {

@@ -20,9 +20,10 @@ use App\Entity\Traits\UpdatedAtTraits;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
+use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -35,35 +36,18 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[ORM\Index(name: 'IDX_USER_VERIFIED', columns: ['is_verified'])]
 #[Vich\Uploadable]
 #[ORM\HasLifecycleCallbacks]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFactorInterface, TranslatableInterface
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Traits de dates
-    |--------------------------------------------------------------------------
-    */
-
     use CreatedAtTraits;
     use DeletedAtTraits;
     use LastLoginAtTraits;
+    use TranslatableTrait;
     use UpdatedAtTraits;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Identifiant principal
-    |--------------------------------------------------------------------------
-    */
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Authentification Symfony
-    |--------------------------------------------------------------------------
-    */
 
     #[ORM\Column(length: 250)]
     private ?string $email = null;
@@ -76,12 +60,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\Column]
     private bool $isVerified = false;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Double authentification par email
-    |--------------------------------------------------------------------------
-    */
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $emailAuthCode = null;
@@ -98,12 +76,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $emailAuthEnabled = false;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Informations personnelles
-    |--------------------------------------------------------------------------
-    */
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
@@ -112,12 +84,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\Column(length: 20, nullable: true)]
     private ?string $telephone = null;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Avatar utilisateur
-    |--------------------------------------------------------------------------
-    */
 
     #[Vich\UploadableField(mapping: 'avatars', fileNameProperty: 'imageName', size: 'imageSize')]
     private ?File $imageFile = null;
@@ -128,44 +94,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Adresse utilisateur
-    |--------------------------------------------------------------------------
-    */
-
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Pays $pays = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $adresse = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $adresseComplement = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostal = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $ville = null;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Informations professionnelles
-    |--------------------------------------------------------------------------
-    */
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $entreprise = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Informations de contact public
-    |--------------------------------------------------------------------------
-    */
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $emailContact = null;
@@ -174,28 +110,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private ?string $numeroContact = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $adresseContact = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $codePostalContact = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $villeContact = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $paysContact = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $adresseComplementContact = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsApp = null;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Préférences utilisateur
-    |--------------------------------------------------------------------------
-    */
 
     #[ORM\ManyToOne]
     private ?Langues $langues = null;
@@ -206,9 +124,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\ManyToOne]
     private ?FuseauHoraire $fuseauHoraire = null;
 
-    /**
-     * @var Collection<int, Property>
-     */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'user')]
     private Collection $properties;
 
@@ -216,33 +131,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $slug = null;
 
-    /**
-     * @var Collection<int, Contact>
-     */
     #[ORM\OneToMany(targetEntity: Contact::class, mappedBy: 'agence')]
     private Collection $contacts;
 
-    /**
-     * @var Collection<int, Favoris>
-     */
     #[ORM\OneToMany(targetEntity: Favoris::class, mappedBy: 'user')]
     private Collection $favoris;
 
-    /**
-     * @var Collection<int, HoraireOuverture>
-     */
     #[ORM\OneToMany(targetEntity: HoraireOuverture::class, mappedBy: 'agence')]
     private Collection $horaireOuvertures;
 
-    /**
-     * @var Collection<int, PropertyView>
-     */
     #[ORM\OneToMany(targetEntity: PropertyView::class, mappedBy: 'user')]
     private Collection $propertyViews;
 
-    /**
-     * @var Collection<int, LangueParler>
-     */
     #[ORM\ManyToMany(targetEntity: LangueParler::class, mappedBy: 'user')]
     private Collection $langueParlers;
 
@@ -256,22 +156,106 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->langueParlers = new ArrayCollection();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Identifiant
-    |--------------------------------------------------------------------------
-    */
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Authentification Symfony
-    |--------------------------------------------------------------------------
-    */
+    public function getAdresse(): ?string
+    {
+        return $this->translate()->getAdresse();
+    }
+
+    public function setAdresse(?string $adresse): static
+    {
+        $this->translate()->setAdresse($adresse);
+
+        return $this;
+    }
+
+    public function getAdresseComplement(): ?string
+    {
+        return $this->translate()->getAdresseComplement();
+    }
+
+    public function setAdresseComplement(?string $adresseComplement): static
+    {
+        $this->translate()->setAdresseComplement($adresseComplement);
+
+        return $this;
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->translate()->getVille();
+    }
+
+    public function setVille(?string $ville): static
+    {
+        $this->translate()->setVille($ville);
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->translate()->getDescription();
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->translate()->setDescription($description);
+
+        return $this;
+    }
+
+    public function getAdresseContact(): ?string
+    {
+        return $this->translate()->getAdresseContact();
+    }
+
+    public function setAdresseContact(?string $adresseContact): static
+    {
+        $this->translate()->setAdresseContact($adresseContact);
+
+        return $this;
+    }
+
+    public function getVilleContact(): ?string
+    {
+        return $this->translate()->getVilleContact();
+    }
+
+    public function setVilleContact(?string $villeContact): static
+    {
+        $this->translate()->setVilleContact($villeContact);
+
+        return $this;
+    }
+
+    public function getPaysContact(): ?string
+    {
+        return $this->translate()->getPaysContact();
+    }
+
+    public function setPaysContact(?string $paysContact): static
+    {
+        $this->translate()->setPaysContact($paysContact);
+
+        return $this;
+    }
+
+    public function getAdresseComplementContact(): ?string
+    {
+        return $this->translate()->getAdresseComplementContact();
+    }
+
+    public function setAdresseComplementContact(?string $adresseComplementContact): static
+    {
+        $this->translate()->setAdresseComplementContact($adresseComplementContact);
+
+        return $this;
+    }
 
     public function getEmail(): ?string
     {
@@ -338,12 +322,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->roles = $data['roles'] ?? [];
         $this->password = $data['password'] ?? null;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Double authentification email
-    |--------------------------------------------------------------------------
-    */
 
     public function isEmailAuthEnabled(): bool
     {
@@ -429,12 +407,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Vérification du compte
-    |--------------------------------------------------------------------------
-    */
-
     public function isVerified(): bool
     {
         return $this->isVerified;
@@ -446,12 +418,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return $this;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Informations personnelles
-    |--------------------------------------------------------------------------
-    */
 
     public function getNom(): ?string
     {
@@ -489,12 +455,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Avatar utilisateur
-    |--------------------------------------------------------------------------
-    */
-
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;
@@ -529,12 +489,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->imageSize;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Adresse utilisateur
-    |--------------------------------------------------------------------------
-    */
-
     public function getPays(): ?Pays
     {
         return $this->pays;
@@ -543,30 +497,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setPays(?Pays $pays): static
     {
         $this->pays = $pays;
-
-        return $this;
-    }
-
-    public function getAdresse(): ?string
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?string $adresse): static
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
-    public function getAdresseComplement(): ?string
-    {
-        return $this->adresseComplement;
-    }
-
-    public function setAdresseComplement(?string $adresseComplement): static
-    {
-        $this->adresseComplement = $adresseComplement;
 
         return $this;
     }
@@ -582,24 +512,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return $this;
     }
-
-    public function getVille(): ?string
-    {
-        return $this->ville;
-    }
-
-    public function setVille(?string $ville): static
-    {
-        $this->ville = $ville;
-
-        return $this;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Informations professionnelles
-    |--------------------------------------------------------------------------
-    */
 
     public function getEntreprise(): ?string
     {
@@ -618,24 +530,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return $this;
     }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Informations de contact public
-    |--------------------------------------------------------------------------
-    */
 
     public function getEmailContact(): ?string
     {
@@ -661,18 +555,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    public function getAdresseContact(): ?string
-    {
-        return $this->adresseContact;
-    }
-
-    public function setAdresseContact(?string $adresseContact): static
-    {
-        $this->adresseContact = $adresseContact;
-
-        return $this;
-    }
-
     public function getCodePostalContact(): ?string
     {
         return $this->codePostalContact;
@@ -681,42 +563,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setCodePostalContact(?string $codePostalContact): static
     {
         $this->codePostalContact = $codePostalContact;
-
-        return $this;
-    }
-
-    public function getVilleContact(): ?string
-    {
-        return $this->villeContact;
-    }
-
-    public function setVilleContact(?string $villeContact): static
-    {
-        $this->villeContact = $villeContact;
-
-        return $this;
-    }
-
-    public function getPaysContact(): ?string
-    {
-        return $this->paysContact;
-    }
-
-    public function setPaysContact(?string $paysContact): static
-    {
-        $this->paysContact = $paysContact;
-
-        return $this;
-    }
-
-    public function getAdresseComplementContact(): ?string
-    {
-        return $this->adresseComplementContact;
-    }
-
-    public function setAdresseComplementContact(?string $adresseComplementContact): static
-    {
-        $this->adresseComplementContact = $adresseComplementContact;
 
         return $this;
     }
@@ -732,12 +578,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return $this;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Getters / Setters - Préférences utilisateur
-    |--------------------------------------------------------------------------
-    */
 
     public function getLangues(): ?Langues
     {
@@ -775,9 +615,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    /**
-     * @return Collection<int, Property>
-     */
     public function getProperties(): Collection
     {
         return $this->properties;
@@ -795,11 +632,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function removeProperty(Property $property): static
     {
-        if ($this->properties->removeElement($property)) {
-            // set the owning side to null (unless already changed)
-            if ($property->getUser() === $this) {
-                $property->setUser(null);
-            }
+        if ($this->properties->removeElement($property) && $property->getUser() === $this) {
+            $property->setUser(null);
         }
 
         return $this;
@@ -810,16 +644,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this->slug;
     }
 
-    public function setSlug(string $slug): static
+    public function setSlug(?string $slug): static
     {
         $this->slug = $slug;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Contact>
-     */
     public function getContacts(): Collection
     {
         return $this->contacts;
@@ -837,19 +668,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function removeContact(Contact $contact): static
     {
-        if ($this->contacts->removeElement($contact)) {
-            // set the owning side to null (unless already changed)
-            if ($contact->getAgence() === $this) {
-                $contact->setAgence(null);
-            }
+        if ($this->contacts->removeElement($contact) && $contact->getAgence() === $this) {
+            $contact->setAgence(null);
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Favoris>
-     */
     public function getFavoris(): Collection
     {
         return $this->favoris;
@@ -867,19 +692,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function removeFavori(Favoris $favori): static
     {
-        if ($this->favoris->removeElement($favori)) {
-            // set the owning side to null (unless already changed)
-            if ($favori->getUser() === $this) {
-                $favori->setUser(null);
-            }
+        if ($this->favoris->removeElement($favori) && $favori->getUser() === $this) {
+            $favori->setUser(null);
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, HoraireOuverture>
-     */
     public function getHoraireOuvertures(): Collection
     {
         return $this->horaireOuvertures;
@@ -897,19 +716,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function removeHoraireOuverture(HoraireOuverture $horaireOuverture): static
     {
-        if ($this->horaireOuvertures->removeElement($horaireOuverture)) {
-            // set the owning side to null (unless already changed)
-            if ($horaireOuverture->getAgence() === $this) {
-                $horaireOuverture->setAgence(null);
-            }
+        if ($this->horaireOuvertures->removeElement($horaireOuverture) && $horaireOuverture->getAgence() === $this) {
+            $horaireOuverture->setAgence(null);
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, PropertyView>
-     */
     public function getPropertyViews(): Collection
     {
         return $this->propertyViews;
@@ -927,19 +740,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function removePropertyView(PropertyView $propertyView): static
     {
-        if ($this->propertyViews->removeElement($propertyView)) {
-            // set the owning side to null (unless already changed)
-            if ($propertyView->getUser() === $this) {
-                $propertyView->setUser(null);
-            }
+        if ($this->propertyViews->removeElement($propertyView) && $propertyView->getUser() === $this) {
+            $propertyView->setUser(null);
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, LangueParler>
-     */
     public function getLangueParlers(): Collection
     {
         return $this->langueParlers;

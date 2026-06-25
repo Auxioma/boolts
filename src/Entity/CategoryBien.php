@@ -16,27 +16,22 @@ use App\Repository\CategoryBienRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
+use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
 
 #[ORM\Entity(repositoryClass: CategoryBienRepository::class)]
-class CategoryBien
+class CategoryBien implements TranslatableInterface
 {
+    use TranslatableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $slug = null;
-
-    #[ORM\Column(length: 255)]
     private ?string $icone = null;
 
-    /**
-     * @var Collection<int, Property>
-     */
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'typeBien')]
     private Collection $properties;
 
@@ -52,24 +47,24 @@ class CategoryBien
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->translate()->getName();
     }
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->translate()->setName($name);
 
         return $this;
     }
 
     public function getSlug(): ?string
     {
-        return $this->slug;
+        return $this->translate()->getSlug();
     }
 
     public function setSlug(string $slug): static
     {
-        $this->slug = $slug;
+        $this->translate()->setSlug($slug);
 
         return $this;
     }
@@ -86,9 +81,6 @@ class CategoryBien
         return $this;
     }
 
-    /**
-     * @return Collection<int, Property>
-     */
     public function getProperties(): Collection
     {
         return $this->properties;
@@ -107,7 +99,6 @@ class CategoryBien
     public function removeProperty(Property $property): static
     {
         if ($this->properties->removeElement($property)) {
-            // set the owning side to null (unless already changed)
             if ($property->getTypeBien() === $this) {
                 $property->setTypeBien(null);
             }

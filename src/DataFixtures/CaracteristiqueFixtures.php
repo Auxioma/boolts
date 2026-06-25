@@ -23,68 +23,89 @@ class CaracteristiqueFixtures extends Fixture
     private const CARACTERISTIQUES = [
         [
             'reference' => 'stationnement',
-            'nom' => 'Stationnement',
             'icone' => 'icon-circle-parking',
+            'translations' => [
+                'fr' => 'Stationnement',
+                'en' => 'Parking',
+            ],
         ],
         [
             'reference' => 'terrasse',
-            'nom' => 'Terrasse',
             'icone' => 'icon-fence',
+            'translations' => [
+                'fr' => 'Terrasse',
+                'en' => 'Terrace',
+            ],
         ],
         [
             'reference' => 'balcon',
-            'nom' => 'Balcon',
             'icone' => 'icon-house',
+            'translations' => [
+                'fr' => 'Balcon',
+                'en' => 'Balcony',
+            ],
         ],
         [
             'reference' => 'jardin',
-            'nom' => 'Jardin',
             'icone' => 'icon-birdhouse',
+            'translations' => [
+                'fr' => 'Jardin',
+                'en' => 'Garden',
+            ],
         ],
         [
             'reference' => 'piscine',
-            'nom' => 'Piscine',
             'icone' => 'icon-waves-ladder',
+            'translations' => [
+                'fr' => 'Piscine',
+                'en' => 'Swimming pool',
+            ],
         ],
         [
             'reference' => 'cave-debarras',
-            'nom' => 'Cave/débarras',
             'icone' => 'icon-brick-wall',
+            'translations' => [
+                'fr' => 'Cave/débarras',
+                'en' => 'Cellar/storage room',
+            ],
         ],
         [
             'reference' => 'climatisation',
-            'nom' => 'Climatisation',
             'icone' => 'icon-air-vent',
+            'translations' => [
+                'fr' => 'Climatisation',
+                'en' => 'Air conditioning',
+            ],
         ],
         [
             'reference' => 'chauffage',
-            'nom' => 'Chauffage',
             'icone' => 'icon-brick-wall-fire',
+            'translations' => [
+                'fr' => 'Chauffage',
+                'en' => 'Heating',
+            ],
         ],
         [
             'reference' => 'ascenseur',
-            'nom' => 'Ascenseur',
             'icone' => 'icon-door-closed',
+            'translations' => [
+                'fr' => 'Ascenseur',
+                'en' => 'Elevator',
+            ],
         ],
     ];
 
     public function load(ObjectManager $manager): void
     {
-        $repository = $manager->getRepository(Caracteristique::class);
-
         foreach (self::CARACTERISTIQUES as $data) {
-            $caracteristique = $repository->findOneBy([
-                'nom' => $data['nom'],
-            ]);
+            $caracteristique = new Caracteristique();
+            $caracteristique->setIcone($data['icone']);
 
-            if (!$caracteristique instanceof Caracteristique) {
-                $caracteristique = new Caracteristique();
+            foreach ($data['translations'] as $locale => $nom) {
+                $caracteristique->translate($locale)->setNom($nom);
             }
 
-            $caracteristique
-                ->setNom($data['nom'])
-                ->setIcone($data['icone'])
-            ;
+            $caracteristique->mergeNewTranslations();
 
             $manager->persist($caracteristique);
 

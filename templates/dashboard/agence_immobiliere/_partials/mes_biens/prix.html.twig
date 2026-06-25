@@ -13,12 +13,13 @@
 
     <div class="mt-48 caracteristique-logements">
         <div class="row">
+
             {% set step = app.request.query.get('step') %}
             {% set typeTransaction = app.request.query.get('typeTransaction') %}
 
-            {% if step == 8 and typeTransaction == 'Vente' %}
+            {% if step == 8 and typeTransaction == '1' %}
                 {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/achat.html.twig') }}
-            {% elseif step == 8 and typeTransaction == 'Location' %}
+            {% elseif step == 8 and typeTransaction == '2' %}
                 {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/location.html.twig') }}
             {% endif %}
 
