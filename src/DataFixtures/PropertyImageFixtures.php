@@ -28,9 +28,6 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
     private const PROPERTY_IMAGES_MIN = 3;
     private const PROPERTY_IMAGES_MAX = 6;
 
-    private const SLEEP_AFTER_IMAGE_MICROSECONDS = 250000;
-    private const SLEEP_AFTER_PROPERTY_SECONDS = 1;
-
     /**
      * Photo horizontale.
      */
@@ -80,64 +77,80 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
             throw new \RuntimeException("Aucun bien trouvé. Lance d'abord les fixtures des biens.");
         }
 
-        foreach ($properties as $property) {
-            if (null === $property->getId()) {
-                throw new \RuntimeException("Impossible de créer les images : un bien n'a pas encore d'ID.");
-            }
-
-            $imagesCount = $this->getImagesCount($property->getId());
-
-            for ($position = 1; $position <= $imagesCount; ++$position) {
-                $imageName = $this->getImageName(
-                    propertyId: $property->getId(),
-                    position: $position
-                );
-
-                $temporaryImagePath = $this->createPlaceholderImage(
-                    tempDirectory: $tempDirectory,
-                    propertyId: $property->getId(),
-                    position: $position,
-                    imageName: $imageName
-                );
-
-                $uploadedFile = new UploadedFile(
-                    path: $temporaryImagePath,
-                    originalName: $imageName,
-                    mimeType: 'image/jpeg',
-                    error: null,
-                    test: true
-                );
-
-                $propertyImage = new PropertyImage();
-                $propertyImage->setProperty($property);
-                $propertyImage->setPosition((string) $position);
-                $propertyImage->setImageFile($uploadedFile);
-
-                if ($filesystem->exists($temporaryImagePath)) {
-                    $propertyImage->setImageSize(filesize($temporaryImagePath) ?: null);
+        try {
+            foreach ($properties as $property) {
+                if (null === $property->getId()) {
+                    throw new \RuntimeException("Impossible de créer les images : un bien n'a pas encore d'ID.");
                 }
 
-                $manager->persist($propertyImage);
+                $propertyImages = [];
+                $temporaryImagePaths = [];
+
+                $imagesCount = $this->getImagesCount($property->getId());
+
+                for ($position = 1; $position <= $imagesCount; ++$position) {
+                    $imageName = $this->getImageName(
+                        propertyId: $property->getId(),
+                        position: $position
+                    );
+
+                    $temporaryImagePath = $this->createPlaceholderImage(
+                        tempDirectory: $tempDirectory,
+                        propertyId: $property->getId(),
+                        position: $position,
+                        imageName: $imageName
+                    );
+
+                    $temporaryImagePaths[] = $temporaryImagePath;
+
+                    $uploadedFile = new UploadedFile(
+                        path: $temporaryImagePath,
+                        originalName: $imageName,
+                        mimeType: 'image/jpeg',
+                        error: null,
+                        test: true
+                    );
+
+                    $propertyImage = new PropertyImage();
+                    $propertyImage->setProperty($property);
+                    $propertyImage->setPosition((string) $position);
+                    $propertyImage->setImageFile($uploadedFile);
+
+                    if ($filesystem->exists($temporaryImagePath)) {
+                        $propertyImage->setImageSize(filesize($temporaryImagePath) ?: null);
+                    }
+
+                    $manager->persist($propertyImage);
+
+                    $propertyImages[] = $propertyImage;
+                }
+
+                /*
+                 * Important :
+                 * On flush après toutes les images du bien.
+                 * Cela permet à VichUploader de traiter les UploadedFile
+                 * sans faire un flush très lent image par image.
+                 */
                 $manager->flush();
 
-                $manager->detach($propertyImage);
-
-                if ($filesystem->exists($temporaryImagePath)) {
-                    $filesystem->remove($temporaryImagePath);
+                foreach ($propertyImages as $propertyImage) {
+                    $manager->detach($propertyImage);
                 }
 
-                unset($uploadedFile, $propertyImage);
+                foreach ($temporaryImagePaths as $temporaryImagePath) {
+                    if ($filesystem->exists($temporaryImagePath)) {
+                        $filesystem->remove($temporaryImagePath);
+                    }
+                }
+
+                unset($propertyImages, $temporaryImagePaths);
 
                 gc_collect_cycles();
-
-                usleep(self::SLEEP_AFTER_IMAGE_MICROSECONDS);
             }
-
-            sleep(self::SLEEP_AFTER_PROPERTY_SECONDS);
-        }
-
-        if ($filesystem->exists($tempDirectory)) {
-            $filesystem->remove($tempDirectory);
+        } finally {
+            if ($filesystem->exists($tempDirectory)) {
+                $filesystem->remove($tempDirectory);
+            }
         }
     }
 
@@ -151,7 +164,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
     private function getImageName(int $propertyId, int $position): string
     {
         return \sprintf(
-            'property-%03d-image-%02d.jpg',
+            'property-%06d-image-%02d.jpg',
             $propertyId,
             $position
         );
@@ -163,7 +176,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         int $position,
         string $imageName,
     ): string {
-        /**
+        /*
          * 80% horizontal / 20% vertical.
          */
         $isPortrait = (($propertyId + $position) % 5) === 0;
@@ -192,12 +205,12 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         imagefilledrectangle($image, 0, 0, $width, $height, $backgroundColor);
 
         /*
-         * Effet simple : bande blanche en bas.
+         * Bande blanche en bas.
          */
         imagefilledrectangle($image, 0, $height - 170, $width, $height, $whiteColor);
 
         /*
-         * Lignes décoratives pour donner un rendu moins vide.
+         * Lignes décoratives.
          */
         for ($i = 0; $i < 8; ++$i) {
             $lineColor = imagecolorallocate(
@@ -218,6 +231,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
         }
 
         imagestring($image, 5, 40, $height - 135, 'Boolts Property', $primaryTextColor);
+
         imagestring(
             $image,
             4,
@@ -226,6 +240,7 @@ class PropertyImageFixtures extends Fixture implements DependentFixtureInterface
             \sprintf('Bien #%d - Image #%d', $propertyId, $position),
             $secondaryTextColor
         );
+
         imagestring(
             $image,
             4,

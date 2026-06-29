@@ -226,4 +226,45 @@ class PropertyRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+public function findBySearchAndMapBoundsQueryBuilder(
+    int $transactionTypeId,
+    ?string $ville,
+    ?string $cp,
+    string $pays,
+    string $locale,
+    float $north,
+    float $south,
+    float $east,
+    float $west
+): QueryBuilder {
+    $queryBuilder = $this->findBySearchQueryBuilder(
+        $transactionTypeId,
+        $ville,
+        $cp,
+        $pays,
+        $locale
+    );
+
+    $queryBuilder
+        ->andWhere('p.latitude IS NOT NULL')
+        ->andWhere('p.longitude IS NOT NULL')
+        ->andWhere('p.latitude BETWEEN :south AND :north')
+        ->setParameter('south', $south)
+        ->setParameter('north', $north);
+
+    if ($west <= $east) {
+        $queryBuilder
+            ->andWhere('p.longitude BETWEEN :west AND :east')
+            ->setParameter('west', $west)
+            ->setParameter('east', $east);
+    } else {
+        $queryBuilder
+            ->andWhere('(p.longitude >= :west OR p.longitude <= :east)')
+            ->setParameter('west', $west)
+            ->setParameter('east', $east);
+    }
+
+    return $queryBuilder;
+}
 }

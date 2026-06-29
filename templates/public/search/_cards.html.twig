@@ -1,0 +1,278 @@
+
+{% if search is defined and search|length > 0 %}
+
+    {% for bienImmobilier in search %}
+
+        {% set imageUrls = [] %}
+
+        {% if bienImmobilier.propertyImages is defined and bienImmobilier.propertyImages|length > 0 %}
+            {% for propertyImage in bienImmobilier.propertyImages %}
+                {% set currentImageUrl = vich_uploader_asset(propertyImage, 'imageFile') %}
+
+                {% if currentImageUrl is not empty %}
+                    {% set imageUrls = imageUrls|merge([currentImageUrl]) %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {% set uploadedImage = imageUrls|first|default(null) %}
+
+        {% set typeBienName = '' %}
+
+        {% if bienImmobilier.typeBien %}
+            {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
+        {% endif %}
+
+        {% set transactionName = '' %}
+        {% set transactionSlug = '' %}
+
+        {% if bienImmobilier.typeTransaction %}
+            {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+            {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+        {% endif %}
+
+        {% set transactionNameLower = transactionName|lower %}
+        {% set transactionSlugLower = transactionSlug|lower %}
+
+        {% set isLocation = transactionSlugLower == 'location'
+            or transactionSlugLower == 'louer'
+            or transactionSlugLower == 'rent'
+            or transactionNameLower == 'location'
+            or transactionNameLower == 'louer'
+            or transactionNameLower == 'rent'
+        %}
+
+        {% set propertyTitle = typeBienName is not empty and transactionName is not empty
+            ? typeBienName ~ ' à ' ~ transactionName
+            : (typeBienName is not empty ? typeBienName : 'Logement')
+        %}
+
+        {% set prixVente = bienImmobilier.prix|default(null) %}
+        {% set loyerHorsCharge = bienImmobilier.montantLoyerHorsCharge|default(null) %}
+        {% set charges = bienImmobilier.montantDesCharges|default(null) %}
+
+        {% set prixVenteNumber = prixVente is not empty ? prixVente + 0 : null %}
+        {% set loyerHorsChargeNumber = loyerHorsCharge is not empty ? loyerHorsCharge + 0 : null %}
+        {% set chargesNumber = charges is not empty ? charges + 0 : 0 %}
+
+        {% if isLocation and loyerHorsChargeNumber is not null %}
+            {% set propertyPriceNumber = loyerHorsChargeNumber + chargesNumber %}
+            {% set propertyPrice = propertyPriceNumber|number_format(0, ',', ' ') ~ '€' %}
+            {% set propertyPeriod = '/mois' %}
+            {% set propertyBadge = chargesNumber > 0 ? 'Charges comprises' : 'Hors charges' %}
+        {% elseif prixVenteNumber is not null %}
+            {% set propertyPriceNumber = prixVenteNumber %}
+            {% set propertyPrice = prixVenteNumber|number_format(0, ',', ' ') ~ '€' %}
+            {% set propertyPeriod = '' %}
+            {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'Vente' %}
+        {% else %}
+            {% set propertyPriceNumber = null %}
+            {% set propertyPrice = 'Prix sur demande' %}
+            {% set propertyPeriod = '' %}
+            {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : '' %}
+        {% endif %}
+
+        {% set details = [] %}
+
+        {% if typeBienName is not empty %}
+            {% set details = details|merge([typeBienName]) %}
+        {% endif %}
+
+        {% if bienImmobilier.chambres is not empty %}
+            {% set details = details|merge([
+                bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : '')
+            ]) %}
+        {% endif %}
+
+        {% if bienImmobilier.salleDeBains is not empty %}
+            {% set details = details|merge([
+                bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains'
+            ]) %}
+        {% endif %}
+
+        {% if bienImmobilier.surfaceTotal is not empty %}
+            {% set details = details|merge([
+                bienImmobilier.surfaceTotal ~ 'm²'
+            ]) %}
+        {% endif %}
+
+        {% set detailsText = details|join(' ⸱ ') %}
+
+        {% set adresse = bienImmobilier.adresse|default('') %}
+        {% set codePostal = bienImmobilier.codePostal|default('') %}
+        {% set ville = bienImmobilier.ville|default('') %}
+        {% set pays = bienImmobilier.pays|default('') %}
+        {% set fullAddress = bienImmobilier.fullAddress|default('') %}
+        {% set mapboxId = bienImmobilier.mapboxId|default('') %}
+        {% set featureType = bienImmobilier.featureType|default('') %}
+
+        {% set addressParts = [] %}
+
+        {% if adresse is not empty %}
+            {% set addressParts = addressParts|merge([adresse]) %}
+        {% endif %}
+
+        {% if codePostal is not empty or ville is not empty %}
+            {% set addressParts = addressParts|merge([
+                (codePostal ~ ' ' ~ ville)|trim
+            ]) %}
+        {% endif %}
+
+        {% if pays is not empty %}
+            {% set addressParts = addressParts|merge([pays]) %}
+        {% endif %}
+
+        {% set addressText = fullAddress is not empty ? fullAddress : addressParts|join(', ') %}
+
+        {% if addressText is empty %}
+            {% set addressText = 'Adresse non renseignée' %}
+        {% endif %}
+
+        {% set slug = bienImmobilier.slug|default('') %}
+
+        {% set detailUrl = slug is not empty
+            ? path('app_public_detail_bien', { slug: slug })
+            : '#'
+        %}
+
+        {% set latitudeRaw = bienImmobilier.latitude|default(null) %}
+        {% set longitudeRaw = bienImmobilier.longitude|default(null) %}
+
+        {% set latitudeClean = latitudeRaw is not empty ? latitudeRaw|replace({',': '.'}) : null %}
+        {% set longitudeClean = longitudeRaw is not empty ? longitudeRaw|replace({',': '.'}) : null %}
+
+        {% set latitudeNumber = latitudeClean is not empty ? latitudeClean + 0 : null %}
+        {% set longitudeNumber = longitudeClean is not empty ? longitudeClean + 0 : null %}
+
+        {% set descriptionText = bienImmobilier.descriptionLogement|default('Appartement très spacieux et lumineux.')|striptags|u.truncate(120, '...') %}
+        {% set isFavorite = bienImmobilier.id in favoritePropertyIds|default([]) %}
+
+        {% set mapProperty = {
+            id: bienImmobilier.id,
+            slug: slug,
+            url: detailUrl,
+            title: propertyTitle,
+            description: descriptionText,
+            image: uploadedImage ?: '',
+            images: imageUrls,
+            price: propertyPrice,
+            period: propertyPeriod,
+            badge: propertyBadge,
+            priceNumber: propertyPriceNumber,
+            details: detailsText,
+            address: addressText,
+            adresse: adresse,
+            codePostal: codePostal,
+            ville: ville,
+            pays: pays,
+            mapboxId: mapboxId,
+            featureType: featureType,
+            lat: latitudeNumber,
+            lng: longitudeNumber,
+            latitude: latitudeRaw,
+            longitude: longitudeRaw,
+            chambres: bienImmobilier.chambres|default(''),
+            salleDeBains: bienImmobilier.salleDeBains|default(''),
+            surfaceTotal: bienImmobilier.surfaceTotal|default(''),
+            dpeLettre: bienImmobilier.dpeLettre|default(''),
+            gesLettre: bienImmobilier.gesLettre|default(''),
+            referenceInterne: bienImmobilier.referenceInterne|default(''),
+            favorite: isFavorite
+        } %}
+
+        <div class="col-12 col-md-6">
+            <article
+                class="search-card-item h-100"
+            data-property-id="{{ bienImmobilier.id }}"
+            data-map-property="{{ mapProperty|json_encode(constant('JSON_UNESCAPED_UNICODE'))|e('html_attr') }}"
+        >
+
+            <a href="{{ detailUrl }}" class="search-card-link">
+
+                <div class="search-card-media">
+                    {% if uploadedImage %}
+                        <img
+                            src="{{ uploadedImage }}"
+                            alt="{{ propertyTitle }}"
+                            class="search-card-image"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                    {% else %}
+                        <div class="search-card-image-placeholder"></div>
+                    {% endif %}
+                </div>
+
+                <div class="search-card-body">
+
+                    <div class="search-card-header">
+                        <h2 class="search-card-card-title">
+                            {{ propertyTitle }}
+                        </h2>
+                    </div>
+
+                    <div class="search-card-price-row">
+                        <p class="search-card-price">
+                            {{ propertyPrice }}
+                            <span class="search-card-price-period">
+                                {{ propertyPeriod }}
+                            </span>
+                        </p>
+
+                        {% if propertyBadge is not empty %}
+                            <span class="search-card-badge">
+                                {{ propertyBadge }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="search-card-description">
+                        {{ descriptionText|u.truncate(80, '...') }}
+                    </p>
+
+                    {% if detailsText is not empty %}
+                        <p class="search-card-details">
+                            {{ detailsText }}
+                        </p>
+                    {% endif %}
+
+                    {% if addressText is not empty %}
+                        <p class="search-card-address">
+                            {{ addressText }}
+                        </p>
+                    {% endif %}
+
+                </div>
+            </a>
+
+            {% if not is_granted('ROLE_AGENCE') %}
+                <button
+                    type="button"
+                    class="search-card-favorite {{ isFavorite ? 'search-card-is-favorite' : '' }}"
+                    aria-label="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                    aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
+                    data-controller="favorite"
+                    data-action="click->favorite#toggle"
+                    data-favorite-url-value="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                    data-favorite-token-value="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                >
+                    <svg class="search-card-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M2 9.5C2 8.39 2.34 7.3 2.97 6.38C3.6 5.47 4.49 4.76 5.53 4.36C6.57 3.97 7.71 3.89 8.79 4.15C9.87 4.41 10.85 5 11.59 5.82C11.64 5.88 11.71 5.92 11.78 5.96C11.85 5.99 11.92 6 12 6C12.08 6 12.15 5.99 12.22 5.96C12.29 5.92 12.36 5.88 12.41 5.82C13.15 4.99 14.13 4.4 15.21 4.14C16.3 3.88 17.43 3.95 18.47 4.35C19.52 4.75 20.41 5.45 21.04 6.37C21.67 7.29 22 8.38 22 9.5C22 11.79 20.5 13.5 19 15L13.51 20.31C13.32 20.53 13.09 20.7 12.83 20.82C12.58 20.94 12.3 21 12.01 21C11.73 21 11.45 20.94 11.19 20.83C10.93 20.71 10.7 20.54 10.51 20.33L5 15C3.5 13.5 2 11.8 2 9.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            {% endif %}
+
+            </article>
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="col-12">
+        <div class="search-card-empty">
+        Aucun logement trouvé dans cette zone de la carte.
+        </div>
+    </div>
+
+{% endif %}

@@ -1,695 +1,88 @@
-{% set resultsCount = totalResults|default(search is defined and search ? search|length : 0) %}
-
-<section class="search-card-page">
-    <main class="search-card-main">
-        <div class="container-xxl search-card-container">
-
-            <h1 class="search-card-title">
-                {{ resultsCount }}
-                logement{{ resultsCount > 1 ? 's' : '' }}
-                trouvé{{ resultsCount > 1 ? 's' : '' }}
-            </h1>
-
-            <div class="row g-4 align-items-start">
-
-                <section class="col-12 col-lg-6" aria-label="Liste des logements">
-                    <div class="row g-4">
-
-                        {% if search is defined and search|length > 0 %}
-
-                            {% for bienImmobilier in search %}
-
-                                {# =========================
-                                   Images
-                                   ========================= #}
-                                {% set imageUrls = [] %}
-
-                                {% if bienImmobilier.propertyImages is defined and bienImmobilier.propertyImages|length > 0 %}
-                                    {% for propertyImage in bienImmobilier.propertyImages %}
-                                        {% set currentImageUrl = vich_uploader_asset(propertyImage, 'imageFile') %}
-
-                                        {% if currentImageUrl is not empty %}
-                                            {% set imageUrls = imageUrls|merge([currentImageUrl]) %}
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-
-                                {% set uploadedImage = imageUrls|first|default(null) %}
-
-                                {# =========================
-                                   Type de bien
-                                   ========================= #}
-                                {% set typeBienId = '' %}
-                                {% set typeBienName = '' %}
-                                {% set typeBienNom = '' %}
-                                {% set typeBienSlug = '' %}
-                                {% set typeBienIcon = '' %}
-
-                                {% if bienImmobilier.typeBien %}
-                                    {% set typeBienId = bienImmobilier.typeBien.id|default('') %}
-                                    {% set typeBienName = bienImmobilier.typeBien.name|default('') %}
-                                    {% set typeBienNom = bienImmobilier.typeBien.nom|default('') %}
-                                    {% set typeBienSlug = bienImmobilier.typeBien.slug|default('') %}
-                                    {% set typeBienIcon = bienImmobilier.typeBien.icon|default('') %}
-
-                                    {% if typeBienName is empty and typeBienNom is not empty %}
-                                        {% set typeBienName = typeBienNom %}
-                                    {% endif %}
-                                {% endif %}
-
-                                {# =========================
-                                   Type de transaction
-                                   ========================= #}
-                                {% set transactionId = '' %}
-                                {% set transactionName = '' %}
-                                {% set transactionNom = '' %}
-                                {% set transactionSlug = '' %}
-                                {% set transactionIcon = '' %}
-
-                                {% if bienImmobilier.typeTransaction %}
-                                    {% set transactionId = bienImmobilier.typeTransaction.id|default('') %}
-                                    {% set transactionName = bienImmobilier.typeTransaction.name|default('') %}
-                                    {% set transactionNom = bienImmobilier.typeTransaction.nom|default('') %}
-                                    {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
-                                    {% set transactionIcon = bienImmobilier.typeTransaction.icon|default('') %}
-
-                                    {% if transactionName is empty and transactionNom is not empty %}
-                                        {% set transactionName = transactionNom %}
-                                    {% endif %}
-                                {% endif %}
-
-                                {% set transactionNameLower = transactionName|lower %}
-                                {% set transactionSlugLower = transactionSlug|lower %}
-
-                                {% set isLocation = transactionSlugLower == 'location'
-                                    or transactionSlugLower == 'louer'
-                                    or transactionSlugLower == 'rent'
-                                    or transactionNameLower == 'location'
-                                    or transactionNameLower == 'louer'
-                                    or transactionNameLower == 'rent'
-                                %}
-
-                                {% set isVente = transactionSlugLower == 'vente'
-                                    or transactionSlugLower == 'vendre'
-                                    or transactionSlugLower == 'acheter'
-                                    or transactionSlugLower == 'sale'
-                                    or transactionNameLower == 'vente'
-                                    or transactionNameLower == 'vendre'
-                                    or transactionNameLower == 'acheter'
-                                    or transactionNameLower == 'sale'
-                                %}
-
-                                {% set propertyTitle = typeBienName is not empty and transactionName is not empty
-                                    ? typeBienName ~ ' à ' ~ transactionName
-                                    : (typeBienName is not empty ? typeBienName : 'Logement')
-                                %}
-
-                                {# =========================
-                                   Prix
-                                   ========================= #}
-                                {% set prixVente = bienImmobilier.prix|default(null) %}
-                                {% set loyerHorsCharge = bienImmobilier.montantLoyerHorsCharge|default(null) %}
-                                {% set charges = bienImmobilier.montantDesCharges|default(null) %}
-                                {% set depotGarantie = bienImmobilier.montantDepotDeGarantie|default(null) %}
-
-                                {% set prixVenteNumber = prixVente is not empty ? prixVente + 0 : null %}
-                                {% set loyerHorsChargeNumber = loyerHorsCharge is not empty ? loyerHorsCharge + 0 : null %}
-                                {% set chargesNumber = charges is not empty ? charges + 0 : 0 %}
-                                {% set depotGarantieNumber = depotGarantie is not empty ? depotGarantie + 0 : null %}
-
-                                {% if isLocation and loyerHorsChargeNumber is not null %}
-                                    {% set propertyPriceNumber = loyerHorsChargeNumber + chargesNumber %}
-                                    {% set propertyPrice = propertyPriceNumber|number_format(0, ',', ' ') ~ '€' %}
-                                    {% set propertyPeriod = '/mois' %}
-                                    {% set propertyBadge = chargesNumber > 0 ? 'Charges comprises' : 'Hors charges' %}
-                                {% elseif prixVenteNumber is not null %}
-                                    {% set propertyPriceNumber = prixVenteNumber %}
-                                    {% set propertyPrice = prixVenteNumber|number_format(0, ',', ' ') ~ '€' %}
-                                    {% set propertyPeriod = '' %}
-                                    {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'Vente' %}
-                                {% else %}
-                                    {% set propertyPriceNumber = null %}
-                                    {% set propertyPrice = 'Prix sur demande' %}
-                                    {% set propertyPeriod = '' %}
-                                    {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : '' %}
-                                {% endif %}
-
-                                {# =========================
-                                   Caractéristiques
-                                   ========================= #}
-                                {% set details = [] %}
-
-                                {% if typeBienName is not empty %}
-                                    {% set details = details|merge([typeBienName]) %}
-                                {% endif %}
-
-                                {% if bienImmobilier.chambres is not empty %}
-                                    {% set details = details|merge([
-                                        bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : '')
-                                    ]) %}
-                                {% endif %}
-
-                                {% if bienImmobilier.salleDeBains is not empty %}
-                                    {% set details = details|merge([
-                                        bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains'
-                                    ]) %}
-                                {% endif %}
-
-                                {% if bienImmobilier.surfaceTotal is not empty %}
-                                    {% set details = details|merge([
-                                        bienImmobilier.surfaceTotal ~ 'm²'
-                                    ]) %}
-                                {% endif %}
-
-                                {% set detailsText = details|join(' ⸱ ') %}
-
-                                {# =========================
-                                   Adresse et Mapbox
-                                   ========================= #}
-                                {% set adresse = bienImmobilier.adresse|default('') %}
-                                {% set codePostal = bienImmobilier.codePostal|default('') %}
-                                {% set ville = bienImmobilier.ville|default('') %}
-                                {% set pays = bienImmobilier.pays|default('') %}
-                                {% set fullAddress = bienImmobilier.fullAddress|default('') %}
-                                {% set region = bienImmobilier.region|default('') %}
-                                {% set district = bienImmobilier.district|default('') %}
-                                {% set locality = bienImmobilier.locality|default('') %}
-                                {% set neighborhood = bienImmobilier.neighborhood|default('') %}
-                                {% set poi = bienImmobilier.poi|default('') %}
-                                {% set mapboxId = bienImmobilier.mapboxId|default('') %}
-                                {% set featureType = bienImmobilier.featureType|default('') %}
-
-                                {% set addressParts = [] %}
-
-                                {% if adresse is not empty %}
-                                    {% set addressParts = addressParts|merge([adresse]) %}
-                                {% endif %}
-
-                                {% if codePostal is not empty or ville is not empty %}
-                                    {% set addressParts = addressParts|merge([
-                                        (codePostal ~ ' ' ~ ville)|trim
-                                    ]) %}
-                                {% endif %}
-
-                                {% if pays is not empty %}
-                                    {% set addressParts = addressParts|merge([pays]) %}
-                                {% endif %}
-
-                                {% set addressText = fullAddress is not empty ? fullAddress : addressParts|join(', ') %}
-
-                                {% if addressText is empty %}
-                                    {% set addressText = codePostal is not empty ? codePostal : 'Adresse non renseignée' %}
-                                {% endif %}
-
-                                {# =========================
-                                   URL détail
-                                   ========================= #}
-                                {% set slug = bienImmobilier.slug|default('') %}
-
-                                {% set detailUrl = slug is not empty
-                                    ? path('app_public_detail_bien', { slug: slug })
-                                    : '#'
-                                %}
-
-                                {# =========================
-                                   Coordonnées réelles
-                                   Mapbox attend : [longitude, latitude]
-                                   ========================= #}
-                                {% set latitudeRaw = bienImmobilier.latitude|default(null) %}
-                                {% set longitudeRaw = bienImmobilier.longitude|default(null) %}
-
-                                {% set latitudeClean = latitudeRaw is not empty ? latitudeRaw|replace({',': '.'}) : null %}
-                                {% set longitudeClean = longitudeRaw is not empty ? longitudeRaw|replace({',': '.'}) : null %}
-
-                                {% set latitudeNumber = latitudeClean is not empty ? latitudeClean + 0 : null %}
-                                {% set longitudeNumber = longitudeClean is not empty ? longitudeClean + 0 : null %}
-
-                                {# =========================
-                                   Énergie et référence
-                                   ========================= #}
-                                {% set anneeConstruction = bienImmobilier.anneeConstruction|default('') %}
-                                {% set chambres = bienImmobilier.chambres|default('') %}
-                                {% set salleDeBains = bienImmobilier.salleDeBains|default('') %}
-                                {% set surfaceTotal = bienImmobilier.surfaceTotal|default('') %}
-                                {% set dpe = bienImmobilier.dpe|default('') %}
-                                {% set dpeLettre = bienImmobilier.dpeLettre|default('') %}
-                                {% set ges = bienImmobilier.ges|default('') %}
-                                {% set gesLettre = bienImmobilier.gesLettre|default('') %}
-                                {% set dpeMin = bienImmobilier.dpeMin|default('') %}
-                                {% set dpeMax = bienImmobilier.dpeMax|default('') %}
-                                {% set referenceInterne = bienImmobilier.referenceInterne|default('') %}
-
-                                {% set dateIndexationEnergie = '' %}
-
-                                {% if bienImmobilier.dateIndexationEnergie is defined and bienImmobilier.dateIndexationEnergie is not empty %}
-                                    {% set dateIndexationEnergie = bienImmobilier.dateIndexationEnergie|date('Y-m-d') %}
-                                {% endif %}
-
-                                {% set descriptionText = bienImmobilier.descriptionLogement|default('Appartement très spacieux et lumineux.')|striptags|u.truncate(120, '...') %}
-                                {% set isFavorite = bienImmobilier.id in favoritePropertyIds|default([]) %}
-
-                                {# =========================
-                                   Données complètes écrites sur la card.
-                                   Le JS relit la boucle réelle : 1 card = 1 bien.
-                                   ========================= #}
-                                {% set mapProperty = {
-                                    id: bienImmobilier.id,
-                                    slug: slug,
-                                    url: detailUrl,
-
-                                    title: propertyTitle,
-                                    description: descriptionText,
-                                    image: uploadedImage ?: '',
-                                    images: imageUrls,
-
-                                    typeBienId: typeBienId,
-                                    typeBienName: typeBienName,
-                                    typeBienNom: typeBienNom,
-                                    typeBienSlug: typeBienSlug,
-                                    typeBienIcon: typeBienIcon,
-
-                                    typeTransactionId: transactionId,
-                                    typeTransactionName: transactionName,
-                                    typeTransactionNom: transactionNom,
-                                    typeTransactionSlug: transactionSlug,
-                                    typeTransactionIcon: transactionIcon,
-                                    isLocation: isLocation,
-                                    isVente: isVente,
-
-                                    price: propertyPrice,
-                                    period: propertyPeriod,
-                                    badge: propertyBadge,
-                                    priceNumber: propertyPriceNumber,
-                                    prix: prixVente,
-                                    prixNumber: prixVenteNumber,
-                                    montantLoyerHorsCharge: loyerHorsCharge,
-                                    montantLoyerHorsChargeNumber: loyerHorsChargeNumber,
-                                    montantDesCharges: charges,
-                                    montantDesChargesNumber: chargesNumber,
-                                    montantDepotDeGarantie: depotGarantie,
-                                    montantDepotDeGarantieNumber: depotGarantieNumber,
-
-                                    details: detailsText,
-                                    adresse: adresse,
-                                    address: addressText,
-                                    codePostal: codePostal,
-                                    ville: ville,
-                                    pays: pays,
-                                    fullAddress: fullAddress,
-                                    region: region,
-                                    district: district,
-                                    locality: locality,
-                                    neighborhood: neighborhood,
-                                    poi: poi,
-
-                                    mapboxId: mapboxId,
-                                    featureType: featureType,
-                                    lat: latitudeNumber,
-                                    lng: longitudeNumber,
-                                    latitude: latitudeRaw,
-                                    longitude: longitudeRaw,
-
-                                    anneeConstruction: anneeConstruction,
-                                    chambres: chambres,
-                                    salleDeBains: salleDeBains,
-                                    surfaceTotal: surfaceTotal,
-                                    dpe: dpe,
-                                    dpeLettre: dpeLettre,
-                                    ges: ges,
-                                    gesLettre: gesLettre,
-                                    dpeMin: dpeMin,
-                                    dpeMax: dpeMax,
-                                    dateIndexationEnergie: dateIndexationEnergie,
-
-                                    referenceInterne: referenceInterne,
-                                    favorite: isFavorite
-                                } %}
-
-                                <div class="col-12 col-md-6">
-                                    <article
-                                        class="search-card-item h-100"
-                                        data-property-id="{{ bienImmobilier.id }}"
-                                        data-map-property="{{ mapProperty|json_encode(constant('JSON_UNESCAPED_UNICODE'))|e('html_attr') }}"
-                                    >
-                                        <a href="{{ detailUrl }}" class="search-card-link">
-
-                                            <div class="search-card-media">
-                                                {% if uploadedImage %}
-                                                    <img
-                                                        src="{{ uploadedImage }}"
-                                                        alt="{{ propertyTitle }}"
-                                                        class="search-card-image"
-                                                        loading="lazy"
-                                                        decoding="async"
-                                                    >
-                                                {% else %}
-                                                    <div class="search-card-image-placeholder"></div>
-                                                {% endif %}
-                                            </div>
-
-                                            <div class="search-card-body">
-
-                                                <div class="search-card-header">
-                                                    <h2 class="search-card-card-title">
-                                                        {{ propertyTitle }} {{ latitudeRaw }} {{ longitudeRaw  }}  
-                                                    </h2>
-                                                </div>
-
-                                                <div class="search-card-price-row">
-                                                    <p class="search-card-price">
-                                                        {{ propertyPrice }}
-                                                        <span class="search-card-price-period">
-                                                            {{ propertyPeriod }}
-                                                        </span>
-                                                    </p>
-
-                                                    {% if propertyBadge is not empty %}
-                                                        <span class="search-card-badge">
-                                                            {{ propertyBadge }}
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-
-                                                <p class="search-card-description">
-                                                    {{ descriptionText|u.truncate(80, '...') }}
-                                                </p>
-
-                                                {% if detailsText is not empty %}
-                                                    <p class="search-card-details">
-                                                        {{ detailsText }}
-                                                    </p>
-                                                {% endif %}
-
-                                                {% if addressText is not empty %}
-                                                    <p class="search-card-address">
-                                                        {{ addressText }}
-                                                    </p>
-                                                {% endif %}
-
-                                            </div>
-                                        </a>
-
-                                        {% if not is_granted('ROLE_AGENCE') %}
-                                            <button
-                                                type="button"
-                                                class="search-card-favorite {{ isFavorite ? 'search-card-is-favorite' : '' }}"
-                                                aria-label="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
-                                                aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
-                                                data-controller="favorite"
-                                                data-action="click->favorite#toggle"
-                                                data-favorite-url-value="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
-                                                data-favorite-token-value="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
-                                            >
-                                                <svg class="search-card-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                                    <path d="M2 9.5C2 8.39 2.34 7.3 2.97 6.38C3.6 5.47 4.49 4.76 5.53 4.36C6.57 3.97 7.71 3.89 8.79 4.15C9.87 4.41 10.85 5 11.59 5.82C11.64 5.88 11.71 5.92 11.78 5.96C11.85 5.99 11.92 6 12 6C12.08 6 12.15 5.99 12.22 5.96C12.29 5.92 12.36 5.88 12.41 5.82C13.15 4.99 14.13 4.4 15.21 4.14C16.3 3.88 17.43 3.95 18.47 4.35C19.52 4.75 20.41 5.45 21.04 6.37C21.67 7.29 22 8.38 22 9.5C22 11.79 20.5 13.5 19 15L13.51 20.31C13.32 20.53 13.09 20.7 12.83 20.82C12.58 20.94 12.3 21 12.01 21C11.73 21 11.45 20.94 11.19 20.83C10.93 20.71 10.7 20.54 10.51 20.33L5 15C3.5 13.5 2 11.8 2 9.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>
-                                            </button>
-                                        {% endif %}
-
-                                    </article>
+{% set resultsCount = totalResults|default(search is defined and search is not null ? search.getTotalItemCount : 0) %}
+
+<section class="search-card-map-results">
+    <div class="container-xxl search-card-container">
+
+        <h1 class="search-card-title" id="search-card-total-results">
+            {{ resultsCount }}
+            logement{{ resultsCount > 1 ? 's' : '' }}
+            trouvé{{ resultsCount > 1 ? 's' : '' }}
+        </h1>
+
+        <div class="row g-4 align-items-start">
+
+            <section class="col-12 col-lg-6" aria-label="Liste des logements">
+                <div
+                    class="row g-4"
+                    id="search-card-results-grid"
+                >
+                    {% include 'public/search/_cards.html.twig' with {
+                        search: search,
+                        favoritePropertyIds: favoritePropertyIds|default([])
+                    } only %}
+                </div>
+            </section>
+
+            <aside class="col-12 col-lg-6" aria-label="Carte des logements">
+                <div class="search-card-map-panel">
+
+                    <div
+                        id="search-card-mapbox"
+                        class="search-card-mapbox"
+                        data-mapbox-token="{{ mapboxPublicTokenCard|default(mapboxPublicToken|default(''))|e('html_attr') }}"
+                        data-map-bounds-url="{{ path('app_public_search_map_bounds', { searchToken: searchToken }) }}"
+                    ></div>
+
+                    <div id="search-card-map-error" class="search-card-map-error" hidden></div>
+
+                    <button
+                        type="button"
+                        class="search-card-map-fit"
+                        id="search-card-map-fit"
+                        aria-label="Recentrer la carte"
+                    >
+                        Recentrer
+                    </button>
+
+                    <article
+                        id="search-card-map-preview"
+                        class="search-card-map-preview search-card-desktop-only"
+                        hidden
+                    >
+                        <a href="#" class="search-card-map-preview-link" id="search-card-map-preview-link">
+                            <div class="search-card-map-preview-media" id="search-card-map-preview-media"></div>
+
+                            <div class="search-card-map-preview-body">
+                                <h2 id="search-card-map-preview-title"></h2>
+
+                                <div class="search-card-map-preview-price">
+                                    <strong id="search-card-map-preview-price"></strong>
+                                    <span id="search-card-map-preview-period"></span>
+                                    <em id="search-card-map-preview-badge"></em>
                                 </div>
 
-                            {% endfor %}
-
-                        {% else %}
-
-                            <div class="col-12">
-                                <div class="search-card-empty">
-                                    Aucun logement trouvé.
-                                </div>
+                                <p id="search-card-map-preview-description"></p>
+                                <p id="search-card-map-preview-details"></p>
+                                <p id="search-card-map-preview-address"></p>
+                                <p id="search-card-map-preview-reference" class="search-card-map-preview-reference"></p>
+                                <p id="search-card-map-preview-mapbox" class="search-card-map-preview-mapbox"></p>
+                                <p id="search-card-map-preview-energy" class="search-card-map-preview-energy"></p>
                             </div>
+                        </a>
+                    </article>
 
-                        {% endif %}
-
-                    </div>
-                </section>
-
-                <aside class="col-12 col-lg-6" aria-label="Carte des logements">
-                    <div class="search-card-map-panel">
-
-                        <div
-                            id="search-card-mapbox"
-                            class="search-card-mapbox"
-                            data-mapbox-token="{{ mapboxPublicTokenCard|default(mapboxPublicToken|default(''))|e('html_attr') }}"
-                        ></div>
-
-                        <div id="search-card-map-error" class="search-card-map-error" hidden></div>
-
-                        <button
-                            type="button"
-                            class="search-card-map-fit"
-                            id="search-card-map-fit"
-                            aria-label="Recentrer la carte"
-                        >
-                            Recentrer
-                        </button>
-
-                        <article
-                            id="search-card-map-preview"
-                            class="search-card-map-preview search-card-desktop-only"
-                            hidden
-                        >
-                            <a href="#" class="search-card-map-preview-link" id="search-card-map-preview-link">
-                                <div class="search-card-map-preview-media" id="search-card-map-preview-media"></div>
-
-                                <div class="search-card-map-preview-body">
-                                    <h2 id="search-card-map-preview-title">Appartement à louer</h2>
-
-                                    <div class="search-card-map-preview-price">
-                                        <strong id="search-card-map-preview-price">765€</strong>
-                                        <span id="search-card-map-preview-period">/mois</span>
-                                        <em id="search-card-map-preview-badge">Charges comprises</em>
-                                    </div>
-
-                                    <p id="search-card-map-preview-description"></p>
-                                    <p id="search-card-map-preview-details"></p>
-                                    <p id="search-card-map-preview-address"></p>
-                                    <p id="search-card-map-preview-reference" class="search-card-map-preview-reference"></p>
-                                    <p id="search-card-map-preview-mapbox" class="search-card-map-preview-mapbox"></p>
-                                    <p id="search-card-map-preview-energy" class="search-card-map-preview-energy"></p>
-                                </div>
-                            </a>
-                        </article>
-
-                    </div>
-                </aside>
-
-            </div>
+                </div>
+            </aside>
 
         </div>
-    </main>
+
+    </div>
 </section>
 
 <style>
-.search-card-page {
-    --search-card-page-max: 1240px;
-    --search-card-toolbar-height: 85px;
-    --search-card-primary: #5D00FF;
-    --search-card-primary-soft: #DFCBFF;
-    --search-card-text: #0B0F14;
-    --search-card-muted: #858789;
-    --search-card-border: #EBECEC;
-    --search-card-light: #F8F8F8;
-    --search-card-white: #FFFFFF;
-
-    min-height: 100vh;
-    background: var(--search-card-white);
-    color: var(--search-card-text);
-    font-family: var(--font-family-base, 'Eudoxus Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
-    overflow-x: hidden;
-}
-
-.search-card-main {
-    padding-top: 44px;
-}
-
-.search-card-container {
-    max-width: var(--search-card-page-max);
-}
-
-.search-card-title {
-    margin: 0 0 44px;
-    color: var(--search-card-text);
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 24px;
-}
-
-.search-card-item {
-    --search-card-media-height: 222px;
-
-    position: relative;
-    height: 410px;
-    min-height: 410px;
-    border: 2px solid var(--search-card-border);
-    border-radius: 24px;
-    background: var(--search-card-white);
-    overflow: hidden;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-}
-
-.search-card-item:hover,
-.search-card-item.is-map-active {
-    border-color: rgba(93, 0, 255, 0.45);
-    box-shadow: 0 18px 42px rgba(11, 15, 20, 0.10);
-    transform: translateY(-2px);
-}
-
-.search-card-link {
-    display: block;
-    height: 100%;
-    color: inherit;
-    text-decoration: none;
-}
-
-.search-card-media {
-    height: var(--search-card-media-height);
-    border-bottom: 2px solid var(--search-card-border);
-    background: linear-gradient(135deg, #F8F8F8 0%, #EBECEC 100%);
-    overflow: hidden;
-}
-
-.search-card-image,
-.search-card-image-placeholder {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.search-card-image {
-    object-fit: cover;
-}
-
-.search-card-image-placeholder {
-    background:
-        linear-gradient(135deg, rgba(11, 15, 20, 0.08), rgba(11, 15, 20, 0)),
-        linear-gradient(135deg, #DAD7D2, #F2EFE8);
-}
-
-.search-card-body {
-    padding: 16px;
-}
-
-.search-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-    padding-right: 30px;
-}
-
-.search-card-card-title {
-    margin: 0;
-    color: var(--search-card-text);
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.search-card-favorite {
-    position: absolute;
-    top: calc(var(--search-card-media-height) + 16px);
-    right: 16px;
-    z-index: 3;
-    width: 24px;
-    height: 24px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border: 0;
-    background: transparent;
-    color: var(--search-card-muted);
-    padding: 0;
-    cursor: pointer;
-}
-
-.search-card-favorite.search-card-is-favorite {
-    color: var(--search-card-primary);
-}
-
-.search-card-icon {
-    width: 24px;
-    height: 24px;
-    display: block;
-    flex: 0 0 24px;
-}
-
-.search-card-price-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.search-card-price {
-    margin: 0;
-    color: var(--search-card-text);
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    white-space: nowrap;
-}
-
-.search-card-price-period {
-    color: var(--search-card-muted);
-    font-size: 12px;
-    font-weight: 500;
-}
-
-.search-card-badge {
-    min-height: 28px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 10px;
-    border: 1px solid var(--search-card-border);
-    border-radius: 55px;
-    color: var(--search-card-muted);
-    background: var(--search-card-white);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    white-space: nowrap;
-}
-
-.search-card-description,
-.search-card-address {
-    margin: 0 0 12px;
-    color: var(--search-card-muted);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.search-card-details {
-    margin: 0 0 6px;
-    color: var(--search-card-text);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-}
-
-.search-card-empty {
-    padding: 32px;
-    border: 2px dashed var(--search-card-border);
-    border-radius: 24px;
-    color: var(--search-card-muted);
-    text-align: center;
-    font-size: 14px;
-    font-weight: 500;
-}
-
 .search-card-map-panel {
     position: sticky;
-    top: calc(var(--search-card-toolbar-height) + 20px);
+    top: calc(var(--search-card-toolbar-height, 85px) + 20px);
     width: 100%;
     height: 622px;
     border-radius: 30px;
@@ -727,10 +120,10 @@
     align-items: center;
     justify-content: center;
     padding: 0 16px;
-    border: 2px solid var(--search-card-border);
+    border: 2px solid var(--search-card-border, #EBECEC);
     border-radius: 50px;
-    color: var(--search-card-text);
-    background: var(--search-card-white);
+    color: var(--search-card-text, #0B0F14);
+    background: #FFFFFF;
     font-size: 13px;
     font-weight: 700;
     line-height: 20px;
@@ -743,10 +136,10 @@
     align-items: center;
     justify-content: center;
     padding: 3px 10px;
-    border: 2px solid var(--search-card-white);
+    border: 2px solid #FFFFFF;
     border-radius: 31px;
-    color: var(--search-card-white);
-    background: var(--search-card-primary);
+    color: #FFFFFF;
+    background: var(--search-card-primary, #5D00FF);
     font-size: 14px;
     font-weight: 700;
     line-height: 20px;
@@ -762,19 +155,15 @@
     box-shadow: 0 10px 28px rgba(93, 0, 255, 0.35);
 }
 
-.search-card-desktop-only {
-    display: flex;
-}
-
 .search-card-map-preview {
     position: absolute;
     right: 22px;
     bottom: 16px;
     z-index: 14;
     width: 280px;
-    border: 2px solid var(--search-card-border);
+    border: 2px solid var(--search-card-border, #EBECEC);
     border-radius: 24px;
-    background: var(--search-card-white);
+    background: #FFFFFF;
     overflow: hidden;
     box-shadow: 0 18px 40px rgba(11, 15, 20, 0.18);
 }
@@ -787,7 +176,7 @@
 
 .search-card-map-preview-media {
     height: 195px;
-    border-bottom: 2px solid var(--search-card-border);
+    border-bottom: 2px solid var(--search-card-border, #EBECEC);
     background:
         linear-gradient(135deg, rgba(11, 15, 20, 0.08), rgba(11, 15, 20, 0)),
         linear-gradient(135deg, #DAD7D2, #F2EFE8);
@@ -801,7 +190,7 @@
 
 .search-card-map-preview-body h2 {
     margin: 0 0 12px;
-    color: var(--search-card-text);
+    color: var(--search-card-text, #0B0F14);
     font-size: 14px;
     font-weight: 700;
     line-height: 16px;
@@ -818,24 +207,26 @@
 }
 
 .search-card-map-preview-price strong {
-    color: var(--search-card-text);
+    color: var(--search-card-text, #0B0F14);
     font-size: 14px;
     font-weight: 700;
     line-height: 16px;
 }
 
-.search-card-map-preview-price span {
-    color: var(--search-card-muted);
+.search-card-map-preview-price span,
+.search-card-map-preview-body p {
+    color: var(--search-card-muted, #858789);
     font-size: 12px;
     font-weight: 500;
+    line-height: 16px;
 }
 
 .search-card-map-preview-price em {
     margin-left: auto;
     padding: 2px 10px;
-    border: 1px solid var(--search-card-border);
+    border: 1px solid var(--search-card-border, #EBECEC);
     border-radius: 55px;
-    color: var(--search-card-muted);
+    color: var(--search-card-muted, #858789);
     font-size: 12px;
     font-style: normal;
     font-weight: 500;
@@ -845,109 +236,33 @@
 
 .search-card-map-preview-body p {
     margin: 0 0 6px;
-    color: var(--search-card-muted);
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 16px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.search-card-map-preview-body #search-card-map-preview-details {
-    color: var(--search-card-text);
-}
-
-.search-card-map-preview-reference {
-    color: var(--search-card-primary) !important;
-    font-weight: 700 !important;
-}
-
-.search-card-map-preview-mapbox,
-.search-card-map-preview-energy {
-    color: var(--search-card-muted) !important;
-}
-
-@media (max-width: 1199.98px) {
-    .search-card-map-panel {
-        height: 560px;
-    }
+.search-card-grid-is-loading {
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
 }
 
 @media (max-width: 991.98px) {
-    .search-card-main {
-        padding-top: 32px;
-    }
-
-    .search-card-title {
-        margin-bottom: 24px;
-    }
-
     .search-card-map-panel {
         position: relative;
         top: auto;
         height: 520px;
     }
-
-    .search-card-item {
-        --search-card-media-height: 210px;
-
-        height: 398px;
-        min-height: 398px;
-    }
-
-    .search-card-card-title,
-    .search-card-price {
-        font-size: 14px;
-        line-height: 16px;
-    }
-
-    .search-card-badge,
-    .search-card-description,
-    .search-card-details,
-    .search-card-address {
-        font-size: 12px;
-        line-height: 16px;
-    }
 }
 
 @media (max-width: 767.98px) {
-    .search-card-desktop-only {
-        display: none;
-    }
-
-    .search-card-main {
-        padding-top: 28px;
-    }
-
     .search-card-map-panel {
         height: 420px;
         border-radius: 24px;
     }
 
-    .search-card-item {
-        --search-card-media-height: 258px;
-
-        height: 440px;
-        min-height: 440px;
-    }
-}
-
-@media (max-width: 575.98px) {
-    .search-card-title {
-        font-size: 18px;
-        line-height: 24px;
-    }
-
-    .search-card-map-panel {
-        height: 360px;
-    }
-
-    .search-card-item {
-        --search-card-media-height: 250px;
-
-        height: 430px;
-        min-height: 430px;
+    .search-card-desktop-only {
+        display: none;
     }
 }
 </style>
@@ -1014,17 +329,13 @@
                     return;
                 }
 
-                loadScriptWithFallback(urls, index + 1)
-                    .then(resolve)
-                    .catch(reject);
+                loadScriptWithFallback(urls, index + 1).then(resolve).catch(reject);
             };
 
             script.onerror = function () {
                 script.remove();
 
-                loadScriptWithFallback(urls, index + 1)
-                    .then(resolve)
-                    .catch(reject);
+                loadScriptWithFallback(urls, index + 1).then(resolve).catch(reject);
             };
 
             document.head.appendChild(script);
@@ -1070,9 +381,13 @@
     }
 
     function isValidMarkerProperty(property) {
-        return property
-            && Number.isFinite(property.lat)
-            && Number.isFinite(property.lng);
+        return property && Number.isFinite(property.lat) && Number.isFinite(property.lng);
+    }
+
+    function formatResultsCount(total) {
+        const count = Number(total) || 0;
+
+        return `${count} logement${count > 1 ? 's' : ''} trouvé${count > 1 ? 's' : ''}`;
     }
 
     function initSearchMap() {
@@ -1083,6 +398,9 @@
         }
 
         const token = mapElement.dataset.mapboxToken || '';
+        const mapBoundsUrl = mapElement.dataset.mapBoundsUrl || '';
+        const resultsGrid = document.getElementById('search-card-results-grid');
+        const totalResultsElement = document.getElementById('search-card-total-results');
 
         if (!token || !token.startsWith('pk.')) {
             showMapError('Token Mapbox manquant ou invalide. Il doit commencer par pk.');
@@ -1094,22 +412,12 @@
             return;
         }
 
-        const allProperties = getPropertiesFromCards();
-        const markerProperties = allProperties.filter(isValidMarkerProperty);
-
-        console.info('[Mapbox] biens trouvés dans la boucle Twig :', allProperties.length);
-        console.info('[Mapbox] biens affichables sur la carte :', markerProperties.length);
-
-        allProperties.forEach(function (property) {
-            if (!isValidMarkerProperty(property)) {
-                console.warn('[Mapbox] bien ignoré, latitude/longitude invalide ou vide :', property);
-            }
-        });
-
         window.mapboxgl.accessToken = token;
 
-        const center = markerProperties.length > 0
-            ? [markerProperties[0].lng, markerProperties[0].lat]
+        let currentProperties = getPropertiesFromCards().filter(isValidMarkerProperty);
+
+        const center = currentProperties.length > 0
+            ? [currentProperties[0].lng, currentProperties[0].lat]
             : [2.3522, 48.8566];
 
         let map;
@@ -1119,7 +427,7 @@
                 container: mapElement,
                 style: 'mapbox://styles/mapbox/streets-v12',
                 center: center,
-                zoom: markerProperties.length > 0 ? 11 : 5
+                zoom: currentProperties.length > 0 ? 11 : 5
             });
         } catch (error) {
             showMapError('Erreur pendant l’initialisation de Mapbox : ' + error.message);
@@ -1132,14 +440,6 @@
             }),
             'top-right'
         );
-
-        if (markerProperties.length === 0) {
-            showMapError('Aucun logement avec latitude / longitude valide pour afficher la carte.');
-            return;
-        }
-
-        const bounds = new window.mapboxgl.LngLatBounds();
-        const markerElements = new Map();
 
         const preview = document.getElementById('search-card-map-preview');
         const previewLink = document.getElementById('search-card-map-preview-link');
@@ -1155,6 +455,17 @@
         const previewMapbox = document.getElementById('search-card-map-preview-mapbox');
         const previewEnergy = document.getElementById('search-card-map-preview-energy');
 
+        if (preview) {
+            preview.hidden = true;
+        }
+
+        const markerObjects = new Map();
+        const markerElements = new Map();
+
+        let boundsRequestController = null;
+        let boundsRequestTimeout = null;
+        let initialMapFitDone = false;
+
         function clearActiveState() {
             markerElements.forEach(function (element) {
                 element.classList.remove('is-active');
@@ -1163,6 +474,14 @@
             document.querySelectorAll('.search-card-item.is-map-active').forEach(function (card) {
                 card.classList.remove('is-map-active');
             });
+        }
+
+        function hidePreview() {
+            if (preview) {
+                preview.hidden = true;
+            }
+
+            clearActiveState();
         }
 
         function showPreview(property) {
@@ -1190,24 +509,30 @@
 
             if (previewBadge) {
                 previewBadge.textContent = property.badge || '';
+                previewBadge.hidden = !property.badge;
             }
 
             if (previewDescription) {
                 previewDescription.textContent = property.description || '';
+                previewDescription.hidden = !property.description;
             }
 
             if (previewDetails) {
                 previewDetails.textContent = property.details || '';
+                previewDetails.hidden = !property.details;
             }
 
             if (previewAddress) {
                 previewAddress.textContent = property.address || '';
+                previewAddress.hidden = !property.address;
             }
 
             if (previewReference) {
                 previewReference.textContent = property.referenceInterne
                     ? `Référence : ${property.referenceInterne}`
                     : '';
+
+                previewReference.hidden = !property.referenceInterne;
             }
 
             if (previewMapbox) {
@@ -1226,6 +551,7 @@
                 }
 
                 previewMapbox.textContent = parts.join(' · ');
+                previewMapbox.hidden = parts.length === 0;
             }
 
             if (previewEnergy) {
@@ -1252,14 +578,17 @@
                 }
 
                 previewEnergy.textContent = parts.join(' · ');
+                previewEnergy.hidden = parts.length === 0;
             }
 
             if (previewMedia) {
-                previewMedia.style.backgroundImage = property.image ? `url("${property.image}")` : '';
+                previewMedia.style.backgroundImage = property.image
+                    ? `url("${property.image}")`
+                    : '';
             }
         }
 
-        function activateProperty(property, fly = true) {
+        function activateProperty(property) {
             clearActiveState();
 
             const markerElement = markerElements.get(property.id);
@@ -1273,52 +602,193 @@
             }
 
             showPreview(property);
-
-            if (fly) {
-                map.flyTo({
-                    center: [property.lng, property.lat],
-                    zoom: 13.5,
-                    speed: 0.9,
-                    curve: 1.2,
-                    essential: true
-                });
-            }
         }
 
-        markerProperties.forEach(function (property) {
-            const markerElement = document.createElement('button');
-            markerElement.type = 'button';
-            markerElement.className = 'search-card-mapbox-marker';
-            markerElement.textContent = property.price || 'Voir';
-            markerElement.setAttribute('aria-label', property.title || 'Voir le logement');
-
-            markerElement.addEventListener('click', function () {
-                activateProperty(property, true);
+        function clearMarkers() {
+            markerObjects.forEach(function (marker) {
+                marker.remove();
             });
 
-            new window.mapboxgl.Marker({
-                element: markerElement,
-                anchor: 'bottom'
-            })
-                .setLngLat([property.lng, property.lat])
-                .addTo(map);
+            markerObjects.clear();
+            markerElements.clear();
+        }
 
-            markerElements.set(property.id, markerElement);
-            bounds.extend([property.lng, property.lat]);
-        });
+        function renderMarkers(properties) {
+            clearMarkers();
+
+            properties.forEach(function (property) {
+                const markerElement = document.createElement('button');
+
+                markerElement.type = 'button';
+                markerElement.className = 'search-card-mapbox-marker';
+                markerElement.textContent = property.price || 'Voir';
+                markerElement.setAttribute('aria-label', property.title || 'Voir le logement');
+
+                markerElement.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    activateProperty(property);
+                });
+
+                const marker = new window.mapboxgl.Marker({
+                    element: markerElement,
+                    anchor: 'bottom'
+                })
+                    .setLngLat([property.lng, property.lat])
+                    .addTo(map);
+
+                markerObjects.set(property.id, marker);
+                markerElements.set(property.id, markerElement);
+            });
+        }
+
+        function fitPropertiesOnMap(properties, animate = true) {
+            if (!properties || properties.length === 0) {
+                return;
+            }
+
+            if (properties.length === 1) {
+                if (animate) {
+                    map.flyTo({
+                        center: [properties[0].lng, properties[0].lat],
+                        zoom: 13,
+                        speed: 0.8,
+                        curve: 1.2,
+                        essential: true
+                    });
+                } else {
+                    map.setCenter([properties[0].lng, properties[0].lat]);
+                    map.setZoom(13);
+                }
+
+                return;
+            }
+
+            const bounds = new window.mapboxgl.LngLatBounds();
+
+            properties.forEach(function (property) {
+                bounds.extend([property.lng, property.lat]);
+            });
+
+            map.fitBounds(bounds, {
+                padding: 80,
+                maxZoom: 13,
+                duration: animate ? 700 : 0
+            });
+        }
+
+        function replacePagination(html) {
+            const paginationElement = document.getElementById('search-card-pagination');
+
+            if (!paginationElement) {
+                return;
+            }
+
+            paginationElement.outerHTML = html || '<nav id="search-card-pagination" class="search-card-pagination" aria-label="Pagination"></nav>';
+        }
+
+        function refreshCardsFromCurrentMapBounds(page = 1) {
+            if (!mapBoundsUrl || !resultsGrid || !totalResultsElement) {
+                return;
+            }
+
+            const bounds = map.getBounds();
+
+            if (!bounds) {
+                return;
+            }
+
+            const url = new URL(mapBoundsUrl, window.location.origin);
+
+            url.searchParams.set('north', bounds.getNorth());
+            url.searchParams.set('south', bounds.getSouth());
+            url.searchParams.set('east', bounds.getEast());
+            url.searchParams.set('west', bounds.getWest());
+            url.searchParams.set('page', page);
+
+            if (boundsRequestController) {
+                boundsRequestController.abort();
+            }
+
+            boundsRequestController = new AbortController();
+
+            resultsGrid.classList.add('search-card-grid-is-loading');
+
+            fetch(url.toString(), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                signal: boundsRequestController.signal
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Erreur pendant le chargement des logements visibles.');
+                    }
+
+                    return response.json();
+                })
+                .then(function (payload) {
+                    if (!payload.success) {
+                        throw new Error(payload.message || 'Erreur pendant le chargement des logements visibles.');
+                    }
+
+                    totalResultsElement.textContent = formatResultsCount(payload.total);
+                    resultsGrid.innerHTML = payload.html || '';
+                    replacePagination(payload.pagination || '');
+
+                    hidePreview();
+
+                    currentProperties = getPropertiesFromCards().filter(isValidMarkerProperty);
+                    renderMarkers(currentProperties);
+                })
+                .catch(function (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+
+                    console.error(error);
+                })
+                .finally(function () {
+                    resultsGrid.classList.remove('search-card-grid-is-loading');
+                });
+        }
+
+        function refreshCardsFromCurrentMapBoundsDebounced() {
+            window.clearTimeout(boundsRequestTimeout);
+
+            boundsRequestTimeout = window.setTimeout(function () {
+                refreshCardsFromCurrentMapBounds(1);
+            }, 350);
+        }
 
         map.on('load', function () {
             map.resize();
 
-            if (markerProperties.length > 1) {
-                map.fitBounds(bounds, {
-                    padding: 80,
-                    maxZoom: 13,
-                    duration: 900
-                });
+            currentProperties = getPropertiesFromCards().filter(isValidMarkerProperty);
+            renderMarkers(currentProperties);
+
+            if (currentProperties.length > 0) {
+                fitPropertiesOnMap(currentProperties, false);
             }
 
-            activateProperty(markerProperties[0], false);
+            hidePreview();
+
+            initialMapFitDone = true;
+        });
+
+        map.on('moveend', function () {
+            if (!initialMapFitDone) {
+                return;
+            }
+
+            refreshCardsFromCurrentMapBoundsDebounced();
+        });
+
+        map.on('click', function () {
+            hidePreview();
         });
 
         map.on('error', function (event) {
@@ -1328,24 +798,15 @@
         });
 
         document.getElementById('search-card-map-fit')?.addEventListener('click', function () {
-            if (markerProperties.length > 1) {
-                map.fitBounds(bounds, {
-                    padding: 80,
-                    maxZoom: 13,
-                    duration: 700
-                });
-            }
+            currentProperties = getPropertiesFromCards().filter(isValidMarkerProperty);
+            fitPropertiesOnMap(currentProperties, true);
+            hidePreview();
         });
 
-        allProperties.forEach(function (property) {
-            if (!property.card || !isValidMarkerProperty(property)) {
-                return;
-            }
-
-            property.card.addEventListener('mouseenter', function () {
-                activateProperty(property, false);
-            });
-        });
+        /*
+         * Pagination carte : aucun AJAX ici.
+         * Les liens générés contiennent ?page=... et laissent Symfony recharger la page.
+         */
     }
 
     document.addEventListener('DOMContentLoaded', function () {

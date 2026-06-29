@@ -15,8 +15,8 @@
             criteria: criteria|default(null),
             searchToken: searchToken,
             currentView: currentView,
-            mapbox_public_token: mapbox_public_token
-        }  %}
+            mapbox_public_token: mapboxPublicToken|default('')
+        } only %}
 
         <main class="{{ currentView == 'map' ? 'search-card-main' : 'bt-research-main' }}" id="results">
 
@@ -26,8 +26,13 @@
                     search: search,
                     totalResults: totalResults,
                     criteria: criteria|default(null),
-                    favoritePropertyIds: favoritePropertyIds|default([])
-                }  %}
+                    favoritePropertyIds: favoritePropertyIds|default([]),
+                    searchToken: searchToken,
+                    currentView: currentView,
+                    mapboxPublicToken: mapboxPublicToken|default(''),
+                    mapboxPublicTokenCard: mapboxPublicTokenCard|default(''),
+                    mapBounds: mapBounds|default(null)
+                } only %}
 
             {% else %}
 
@@ -36,15 +41,16 @@
                     totalResults: totalResults,
                     criteria: criteria|default(null),
                     favoritePropertyIds: favoritePropertyIds|default([])
-                }  %}
+                } only %}
 
             {% endif %}
 
             {% include 'public/search/_pagination.html.twig' with {
                 search: search,
                 searchToken: searchToken,
-                currentView: currentView
-            }  %}
+                currentView: currentView,
+                mapBounds: mapBounds|default(null)
+            } only %}
 
         </main>
 

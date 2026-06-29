@@ -1,3 +1,5 @@
+{% set currentView = currentView|default('list') %}
+{% set mapbox_public_token = mapbox_public_token|default('') %}
 {% set totalResults = search is defined and search is not null ? search.getTotalItemCount : 0 %}
 
 <section class="{{ currentView == 'map' ? 'search-card-toolbar' : 'bt-research-sticky-bar' }}" aria-label="Recherche et filtres">

@@ -1,9 +1,121 @@
+{% set currentView = currentView|default('list') %}
+{% set mapBounds = mapBounds|default(null) %}
+
 {% if search is defined and search is not null %}
 
-    <nav class="{{ currentView == 'map' ? 'search-card-pagination' : 'bt-research-pagination' }}" aria-label="Pagination">
+    {% if currentView == 'map' %}
 
-        {{ knp_pagination_render(search) }}
+        {% set paginationData = search.paginationData %}
 
-    </nav>
+        <nav
+            id="search-card-pagination"
+            class="search-card-pagination"
+            aria-label="Pagination des logements sur la carte"
+        >
+
+            {% if paginationData.pageCount is defined and paginationData.pageCount > 1 %}
+
+                {% set commonParams = {
+                    searchToken: searchToken,
+                    page: 1,
+                    view: 'map'
+                } %}
+
+                {% if mapBounds is iterable %}
+                    {% set commonParams = commonParams|merge({
+                        north: mapBounds.north,
+                        south: mapBounds.south,
+                        east: mapBounds.east,
+                        west: mapBounds.west
+                    }) %}
+                {% endif %}
+
+                <ul class="pagination justify-content-center flex-wrap gap-2 mb-0">
+
+                    {% if paginationData.previous is defined %}
+                        {% set previousParams = commonParams|merge({ page: paginationData.previous }) %}
+
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('app_public_search_results', previousParams) }}" rel="prev">
+                                Précédent
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled" aria-disabled="true">
+                            <span class="page-link">Précédent</span>
+                        </li>
+                    {% endif %}
+
+                    {% if paginationData.startPage is defined and paginationData.startPage > 1 %}
+                        {% set firstParams = commonParams|merge({ page: 1 }) %}
+
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('app_public_search_results', firstParams) }}">1</a>
+                        </li>
+
+                        {% if paginationData.startPage > 2 %}
+                            <li class="page-item disabled" aria-disabled="true">
+                                <span class="page-link">…</span>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for page in paginationData.pagesInRange %}
+                        {% set pageParams = commonParams|merge({ page: page }) %}
+
+                        <li class="page-item {{ page == paginationData.current ? 'active' : '' }}">
+                            {% if page == paginationData.current %}
+                                <span class="page-link">{{ page }}</span>
+                            {% else %}
+                                <a class="page-link" href="{{ path('app_public_search_results', pageParams) }}">{{ page }}</a>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+
+                    {% if paginationData.endPage is defined and paginationData.pageCount is defined and paginationData.endPage < paginationData.pageCount %}
+                        {% if paginationData.endPage < paginationData.pageCount - 1 %}
+                            <li class="page-item disabled" aria-disabled="true">
+                                <span class="page-link">…</span>
+                            </li>
+                        {% endif %}
+
+                        {% set lastParams = commonParams|merge({ page: paginationData.pageCount }) %}
+
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('app_public_search_results', lastParams) }}">{{ paginationData.pageCount }}</a>
+                        </li>
+                    {% endif %}
+
+                    {% if paginationData.next is defined %}
+                        {% set nextParams = commonParams|merge({ page: paginationData.next }) %}
+
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('app_public_search_results', nextParams) }}" rel="next">
+                                Suivant
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled" aria-disabled="true">
+                            <span class="page-link">Suivant</span>
+                        </li>
+                    {% endif %}
+
+                </ul>
+
+            {% endif %}
+
+        </nav>
+
+    {% else %}
+
+        <nav
+            id="bt-research-pagination"
+            class="bt-research-pagination"
+            aria-label="Pagination"
+        >
+            {{ knp_pagination_render(search) }}
+        </nav>
+
+    {% endif %}
 
 {% endif %}
