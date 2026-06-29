@@ -1,0 +1,121 @@
+<section class="bt-results-section">
+    <div class="bt-research-container">
+
+        <h1 class="bt-results-title">
+            {{ totalResults }} logement{{ totalResults > 1 ? 's' : '' }} trouvé{{ totalResults > 1 ? 's' : '' }}
+        </h1>
+
+        <div class="row bt-results-grid agence-properties">
+
+            {% for bienImmobilier in search %}
+
+                {% set uploadedImage = null %}
+                {% set firstImage = bienImmobilier.propertyImages|first %}
+
+                {% if firstImage %}
+                    {% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
+                {% endif %}
+
+                {% set transactionName = '' %}
+                {% set transactionSlug = '' %}
+
+                {% if bienImmobilier.typeTransaction %}
+                    {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+                    {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+                {% endif %}
+
+                {% set isLocation = transactionSlug == 'location'
+                    or transactionSlug == 'louer'
+                    or transactionName|lower == 'location'
+                %}
+
+                {% set propertyTitle = bienImmobilier.typeBien and bienImmobilier.typeTransaction
+                    ? bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name
+                    : 'Logement disponible'
+                %}
+
+                {% set propertyPrice = bienImmobilier.prix is not empty
+                    ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€'
+                    : 'Prix sur demande'
+                %}
+
+                {% set propertyPeriod = isLocation ? '/mois' : '' %}
+                {% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
+
+                {% set details = [] %}
+
+                {% if bienImmobilier.typeBien %}
+                    {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
+
+                    {% if typeBienName is not empty %}
+                        {% set details = details|merge([typeBienName]) %}
+                    {% endif %}
+                {% endif %}
+
+                {% if bienImmobilier.chambres is not empty %}
+                    {% set details = details|merge([
+                        bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                    ]) %}
+                {% endif %}
+
+                {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
+                    {% set details = details|merge([
+                        bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                    ]) %}
+                {% endif %}
+
+                {% if bienImmobilier.surfaceTotal is not empty %}
+                    {% set details = details|merge([
+                        bienImmobilier.surfaceTotal ~ 'm²',
+                    ]) %}
+                {% endif %}
+
+                {% set addressParts = [] %}
+
+                {% if bienImmobilier.adresse is not empty %}
+                    {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                {% endif %}
+
+                {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                    {% set addressParts = addressParts|merge([
+                        (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
+                    ]) %}
+                {% endif %}
+
+                {% set detailUrl = bienImmobilier.slug is not empty
+                    ? path('app_public_detail_bien', { slug: bienImmobilier.slug })
+                    : '#'
+                %}
+
+                <div class="col-12 col-md-4">
+
+                    <twig:Property:Card
+                        title="{{ propertyTitle }}"
+                        price="{{ propertyPrice }}"
+                        period="{{ propertyPeriod }}"
+                        badge="{{ propertyBadge }}"
+                        description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                        details="{{ details|join(' ⸱ ') }}"
+                        address="{{ addressParts|join(', ') }}"
+                        image="{{ uploadedImage }}"
+                        url="{{ detailUrl }}"
+                        favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                        favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                        :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
+                    />
+
+                </div>
+
+            {% else %}
+
+                <div class="col-12">
+                    <div class="agence-empty-state">
+                        Aucun bien n’est disponible pour le moment.
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+    </div>
+</section>

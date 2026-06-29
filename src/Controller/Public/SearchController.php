@@ -31,6 +31,10 @@ final class SearchController extends AbstractController
     public function __construct(
         #[Autowire('%env(MAPBOX_PUBLIC_TOKEN)%')]
         private readonly string $mapboxPublicToken,
+
+        #[Autowire('%env(MAPBOX_PUBLIC_TOKEN_CARD)%')]
+        private readonly string $mapboxPublicTokenCard,
+
         private readonly PropertyRepository $propertyRepository,
         private readonly PaginatorInterface $paginator,
         private readonly EntityManagerInterface $entityManager,
@@ -48,13 +52,6 @@ final class SearchController extends AbstractController
         ]);
 
         $form->handleRequest($request);
-
-        /*if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->render('public/search/index.html.twig', [
-                'form' => $form->createView(),
-                'search' => null,
-            ]);
-        }*/
 
         $transactionType = $filter->getTransactionType();
         $ville = $filter->getSelectedCityName();
@@ -76,10 +73,6 @@ final class SearchController extends AbstractController
             'pays' => $pays,
         ]);
 
-        /**
-         * enregistrer la recherche dans la base de données pour un suivi ultérieur
-         * et pour permettre aux utilisateurs de retrouver leurs recherches récentes.
-         */
         $sessionRecherche = new PropertySearchSession();
         $sessionRecherche->setUuid(Uuid::v7());
         $sessionRecherche->setTransactionTypeId($transactionType->getId());
@@ -97,17 +90,11 @@ final class SearchController extends AbstractController
         $this->entityManager->persist($sessionRecherche);
         $this->entityManager->flush();
 
-        /**
-         * je vais créer le cookie de session pour stocker l'UUID de la recherche afin que l'utilisateur puisse retrouver ses recherches récentes.
-         * Le cookie sera valide pour 30 jours.
-         * Le cookie sera accessible uniquement via HTTP (non accessible via JavaScript) pour des raisons de sécurité.
-         * Le cookie sera accessible uniquement sur le domaine principal et non sur les sous-domaines pour éviter les problèmes de sécurité liés aux cookies.
-         */
-        $reponse = $this->redirectToRoute('app_public_search_results', [
+        $response = $this->redirectToRoute('app_public_search_results', [
             'searchToken' => $searchToken,
         ]);
 
-        $reponse->headers->setCookie(
+        $response->headers->setCookie(
             Cookie::create('property_search_token')
                 ->withValue($sessionRecherche->getUuid()->toRfc4122())
                 ->withExpires(new \DateTimeImmutable('+30 days'))
@@ -117,13 +104,20 @@ final class SearchController extends AbstractController
                 ->withSameSite(Cookie::SAMESITE_LAX)
         );
 
-        return $reponse;
+        return $response;
     }
 
     #[Route('/public/search/{searchToken}', name: 'app_public_search_results', methods: ['GET'])]
     public function results(Request $request, string $searchToken): Response
     {
-        $local = $request->getLocale();
+        $view = $request->query->get('view', 'list');
+
+        if (!in_array($view, ['list', 'map'], true)) {
+            $view = 'list';
+        }
+
+        $locale = $request->getLocale();
+
         $criteria = $request->getSession()->get('property_search_'.$searchToken);
 
         if (null === $criteria) {
@@ -142,7 +136,7 @@ final class SearchController extends AbstractController
             $criteria['ville'],
             $criteria['cp'],
             $criteria['pays'],
-            $local
+            $locale
         );
 
         $search = $this->paginator->paginate(
@@ -156,6 +150,15 @@ final class SearchController extends AbstractController
             'search' => $search,
             'criteria' => $criteria,
             'searchToken' => $searchToken,
+            'view' => $view,
+
+            // Token Mapbox principal : autocomplete / recherche adresse
+            'mapboxPublicToken' => $this->mapboxPublicToken,
+
+            // Token Mapbox dédié à la carte des cards / résultats
+            'mapboxPublicTokenCard' => $this->mapboxPublicTokenCard,
+
+            'totalResults' => $search->getTotalItemCount(),
         ]);
     }
 }

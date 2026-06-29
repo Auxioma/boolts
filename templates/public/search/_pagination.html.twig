@@ -1,0 +1,9 @@
+{% if search is defined and search is not null %}
+
+    <nav class="{{ currentView == 'map' ? 'search-card-pagination' : 'bt-research-pagination' }}" aria-label="Pagination">
+
+        {{ knp_pagination_render(search) }}
+
+    </nav>
+
+{% endif %}
