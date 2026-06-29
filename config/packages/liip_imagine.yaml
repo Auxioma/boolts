@@ -1,59 +1,69 @@
 liip_imagine:
-    driver: "gd"
+    driver: imagick
+
+    resolvers:
+        default:
+            web_path:
+                web_root: '%kernel.project_dir%/public'
+                cache_prefix: 'media/cache'
+
+    cache: default
 
     filter_sets:
         cache: ~
 
         property_card_mobile_webp:
-            quality: 80
-            format: webp
-            filters:
-                thumbnail:
-                    size: [351, 264]
-                    mode: outbound
-                    allow_upscale: false
-
-        property_card_tablet_webp:
             quality: 82
             format: webp
             filters:
                 thumbnail:
-                    size: [360, 270]
+                    size: [420, 280]
                     mode: outbound
-                    allow_upscale: false
+
+        property_card_tablet_webp:
+            quality: 84
+            format: webp
+            filters:
+                thumbnail:
+                    size: [640, 430]
+                    mode: outbound
 
         property_card_desktop_webp:
+            quality: 86
+            format: webp
+            filters:
+                thumbnail:
+                    size: [900, 600]
+                    mode: outbound
+
+        property_card_mobile_png:
+            quality: 85
+            format: png
+            filters:
+                thumbnail:
+                    size: [420, 280]
+                    mode: outbound
+
+        property_card_tablet_png:
+            quality: 85
+            format: png
+            filters:
+                thumbnail:
+                    size: [640, 430]
+                    mode: outbound
+
+        property_card_desktop_png:
+            quality: 85
+            format: png
+            filters:
+                thumbnail:
+                    size: [900, 600]
+                    mode: outbound
+
+        avatar_small_webp:
             quality: 85
             format: webp
             filters:
                 thumbnail:
-                    size: [360, 270]
+                    size: [120, 120]
                     mode: outbound
-                    allow_upscale: false
-
-        property_card_mobile_png:
-            format: png
-            png_compression_level: 8
-            filters:
-                thumbnail:
-                    size: [351, 264]
-                    mode: outbound
-                    allow_upscale: false
-
-        property_card_tablet_png:
-            format: png
-            png_compression_level: 8
-            filters:
-                thumbnail:
-                    size: [360, 270]
-                    mode: outbound
-                    allow_upscale: false
-
-        property_card_desktop_png:
-            format: png
-            png_compression_level: 8
-            filters:
-                thumbnail:
-                    size: [356, 267]
-                    mode: outbound
-                    allow_upscale: false
