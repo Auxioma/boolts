@@ -12,6 +12,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\FuseauHoraire;
+use App\Entity\LangueParler;
+use App\Entity\Langues;
 use App\Entity\Pays;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -29,6 +32,123 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     public const USER_AGENCE_REFERENCE_PREFIX = 'user_agence_';
     public const USER_REFERENCE_PREFIX = 'user_';
     public const USER_COUNT = 54;
+
+    private const COUNTRY_TIMEZONE = [
+        'FR' => 'Europe/Paris',
+        'BE' => 'Europe/Brussels',
+        'CH' => 'Europe/Paris',
+        'LU' => 'Europe/Paris',
+        'MC' => 'Europe/Paris',
+
+        'GB' => 'Europe/London',
+        'IE' => 'Europe/London',
+
+        'ES' => 'Europe/Madrid',
+        'IT' => 'Europe/Rome',
+        'DE' => 'Europe/Berlin',
+        'NL' => 'Europe/Amsterdam',
+        'PT' => 'Europe/Lisbon',
+        'PL' => 'Europe/Warsaw',
+
+        'BY' => 'Europe/Minsk',
+        'RU' => 'Europe/Minsk',
+
+        'US' => 'America/New_York',
+        'CA' => 'America/Toronto',
+        'MX' => 'America/Mexico_City',
+        'BR' => 'America/Sao_Paulo',
+
+        'MA' => 'Africa/Casablanca',
+        'DZ' => 'Africa/Algiers',
+        'TN' => 'Africa/Tunis',
+        'SN' => 'Africa/Dakar',
+        'CI' => 'Africa/Abidjan',
+        'CM' => 'Africa/Douala',
+
+        'AE' => 'Asia/Dubai',
+        'CN' => 'Asia/Shanghai',
+        'JP' => 'Asia/Tokyo',
+        'KR' => 'Asia/Seoul',
+        'TH' => 'Asia/Bangkok',
+        'IN' => 'Asia/Kolkata',
+
+        'AU' => 'Australia/Sydney',
+    ];
+
+    private const COUNTRY_DEFAULT_LANGUAGE = [
+        'FR' => 'fr',
+        'BE' => 'fr',
+        'CH' => 'fr',
+        'LU' => 'fr',
+        'MC' => 'fr',
+
+        'GB' => 'en',
+        'IE' => 'en',
+        'US' => 'en',
+        'CA' => 'en',
+        'AU' => 'en',
+
+        'ES' => 'es',
+        'MX' => 'es',
+
+        'IT' => 'it',
+        'DE' => 'de',
+        'NL' => 'nl',
+        'PT' => 'pt',
+        'PL' => 'pl',
+
+        'BY' => 'ru',
+        'RU' => 'ru',
+
+        'MA' => 'ar',
+        'DZ' => 'ar',
+        'TN' => 'ar',
+        'AE' => 'ar',
+
+        'CN' => 'zh',
+    ];
+
+    private const COUNTRY_SPOKEN_LANGUAGES = [
+        'FR' => ['fr', 'en'],
+        'BE' => ['fr', 'nl', 'en'],
+        'CH' => ['fr', 'de', 'it', 'en'],
+        'LU' => ['fr', 'de', 'en'],
+        'MC' => ['fr', 'en'],
+
+        'GB' => ['en'],
+        'IE' => ['en'],
+        'US' => ['en'],
+        'CA' => ['en', 'fr'],
+        'AU' => ['en'],
+
+        'ES' => ['es', 'en'],
+        'MX' => ['es', 'en'],
+
+        'IT' => ['it', 'en'],
+        'DE' => ['de', 'en'],
+        'NL' => ['nl', 'en'],
+        'PT' => ['pt', 'en'],
+        'PL' => ['pl', 'en'],
+
+        'BY' => ['ru', 'be', 'en'],
+        'RU' => ['ru', 'en'],
+
+        'MA' => ['ar', 'fr'],
+        'DZ' => ['ar', 'fr'],
+        'TN' => ['ar', 'fr'],
+        'SN' => ['fr'],
+        'CI' => ['fr'],
+        'CM' => ['fr', 'en'],
+
+        'AE' => ['ar', 'en'],
+        'CN' => ['zh', 'en'],
+        'JP' => ['en'],
+        'KR' => ['en'],
+        'TH' => ['en'],
+        'IN' => ['en'],
+
+        'BR' => ['pt', 'en'],
+    ];
 
     private const AGENCY_ADDRESSES = [
         [
@@ -286,13 +406,26 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     ): User {
         $user = new User();
 
+        $iso = $pays->getIso() ?? 'FR';
+        $defaultLanguageCode = self::COUNTRY_DEFAULT_LANGUAGE[$iso] ?? 'fr';
+        $spokenLanguageCodes = self::COUNTRY_SPOKEN_LANGUAGES[$iso] ?? [$defaultLanguageCode, 'en'];
+
         $user
             ->setEmail($email)
             ->setRoles($roles)
             ->setIsVerified(true)
             ->setNom($nom)
             ->setPrenom($prenom)
-            ->setPays($pays);
+            ->setPays($pays)
+            ->setDevise($pays->getDevise())
+            ->setFuseauHoraire($this->getFuseauHoraireByCountryIso($iso))
+            ->setLangues($this->getLanguesReference($defaultLanguageCode));
+
+        foreach ($spokenLanguageCodes as $spokenLanguageCode) {
+            $user->addLangueParler(
+                $this->getLangueParlerReference($spokenLanguageCode)
+            );
+        }
 
         $user->setPassword(
             $this->passwordHasher->hashPassword($user, $password)
@@ -359,10 +492,39 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         );
     }
 
+    private function getFuseauHoraireByCountryIso(string $iso): FuseauHoraire
+    {
+        $timezone = self::COUNTRY_TIMEZONE[$iso] ?? 'Europe/Paris';
+
+        return $this->getReference(
+            FuseauHoraireFixtures::FUSEAU_HORAIRE_REFERENCE_PREFIX.$timezone,
+            FuseauHoraire::class
+        );
+    }
+
+    private function getLanguesReference(string $code): Langues
+    {
+        return $this->getReference(
+            LanguesFixtures::LANGUES_REFERENCE_PREFIX.$code,
+            Langues::class
+        );
+    }
+
+    private function getLangueParlerReference(string $code): LangueParler
+    {
+        return $this->getReference(
+            LangueParlerFixtures::LANGUE_PARLER_REFERENCE_PREFIX.$code,
+            LangueParler::class
+        );
+    }
+
     public function getDependencies(): array
     {
         return [
             PaysFixtures::class,
+            FuseauHoraireFixtures::class,
+            LanguesFixtures::class,
+            LangueParlerFixtures::class,
         ];
     }
 }

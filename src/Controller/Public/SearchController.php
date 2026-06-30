@@ -12,8 +12,10 @@
 
 namespace App\Controller\Public;
 
+use App\Entity\Filter\ModalFilter;
 use App\Entity\Search\PropertySearchSession;
 use App\Entity\SearchBar\FilterCityCountry;
+use App\Form\Filter\ModalFilterType;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\PropertyRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -160,11 +162,24 @@ final class SearchController extends AbstractController
         $search = $this->paginator->paginate(
             $queryBuilder,
             max(1, $request->query->getInt('page', 1)),
-            12
+            8
         );
+
+        /**
+         * Filtre de recherche de la modal
+         */
+        $FiltreModal = new ModalFilter();
+        $formModal = $this->createForm(ModalFilterType::class, $FiltreModal, [
+            'action' => $this->generateUrl('app_public_search_results', [
+                'searchToken' => $searchToken, 
+                'view' => $view
+            ]),
+            'method' => 'GET',
+        ]);
 
         return $this->render('public/search/index.html.twig', [
             'form' => $form->createView(),
+            'formModal' => $formModal->createView(),
             'search' => $search,
             'criteria' => $criteria,
             'searchToken' => $searchToken,

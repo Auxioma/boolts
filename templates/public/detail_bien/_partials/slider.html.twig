@@ -53,7 +53,7 @@
                                         {% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
 
                                         {% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
-                                        {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
+                                        {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe : ' ' %}
                                         {% set propertyPeriod = isLocation ? '/mois' : '' %}
                                         {% set propertyBadge = isLocation ? 'Charges comprises' : transactionName|capitalize %}
 

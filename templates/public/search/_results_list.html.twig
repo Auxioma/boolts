@@ -35,8 +35,8 @@
                 %}
 
                 {% set propertyPrice = bienImmobilier.prix is not empty
-                    ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€'
-                    : 'Prix sur demande'
+                    ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe
+                    : ''
                 %}
 
                 {% set propertyPeriod = isLocation ? '/mois' : '' %}

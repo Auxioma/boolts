@@ -11,7 +11,7 @@
 
                 <div class="bt-cost-detail-price">
                     {% set total = property.montantLoyerHorsCharge + (property.montantDesCharges ?? 0) %}
-                    {{ total|number_format(0, ',', ' ') }}€
+                    {{ total|number_format(0, ',', ' ') }} {{ property.user.devise.signe }}
                 </div>
             </div>
         {% endif %}
@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="bt-cost-detail-muted">
-                    {{ property.montantDesCharges|number_format(0, ',', ' ') }}€
+                    {{ property.montantDesCharges|number_format(0, ',', ' ') }} {{ property.user.devise.signe }}
                 </div>
             </div>
         {% endif %}
@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="bt-cost-detail-price">
-                    {{ property.montantDepotDeGarantie|number_format(0, ',', ' ') }}€
+                    {{ property.montantDepotDeGarantie|number_format(0, ',', ' ') }} {{ property.user.devise.signe }}
                 </div>
             </div>
         {% endif %}

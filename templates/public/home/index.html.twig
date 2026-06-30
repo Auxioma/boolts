@@ -172,6 +172,7 @@
                                             <div class="splide__track">
                                                 <ul class="splide__list">
                                                     {% for bienImmobilier in section.items %}
+                                                       
                                                         {% set uploadedImage = null %}
                                                         {% set firstImage = bienImmobilier.propertyImages|first %}
 
@@ -202,12 +203,12 @@
                                                         {% endif %}
 
                                                         {% set propertyPrice = bienImmobilier.prix is not empty
-                                                            ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€'
-                                                            : 'Prix sur demande'
+                                                            ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe
+                                                            : ''
                                                         %}
 
                                                         {% set propertyPeriod = isLocation ? '/mois' : '' %}
-                                                        {% set propertyBadge = isLocation ? 'Charges comprises' : 'À vendre' %}
+                                                        {% set propertyBadge = isLocation ? 'Charges comprises' : '' %}
 
                                                         {% set details = [] %}
 
@@ -237,7 +238,7 @@
 
                                                         {% if bienImmobilier.showAdresse|default(false) %}
                                                             {% if bienImmobilier.adresse is not empty %}
-                                                                {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                                                {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
                                                             {% endif %}
 
                                                             {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}

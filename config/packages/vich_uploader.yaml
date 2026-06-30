@@ -7,15 +7,15 @@ vich_uploader:
 
     mappings:
         avatars:
-            uri_prefix: /uploads/avatars
-            upload_destination: '%kernel.project_dir%/public/uploads/avatars'
+            uri_prefix: /images/avatars
+            upload_destination: '%kernel.project_dir%/public/images/avatars'
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
             delete_on_update: true
             delete_on_remove: true
 
         biens:
-            uri_prefix: /uploads/biens
-            upload_destination: '%kernel.project_dir%/public/uploads/biens'
+            uri_prefix: /images/biens
+            upload_destination: '%kernel.project_dir%/public/images/biens'
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
             delete_on_update: true
             delete_on_remove: true

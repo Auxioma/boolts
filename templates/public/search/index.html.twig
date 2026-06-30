@@ -3,6 +3,7 @@
 {% block title %}Boolts - Recherche{% endblock %}
 
 {% block body %}
+{% include 'composant/_search/_search.html.twig' %}
 
     {% set currentView = view|default('list') %}
     {% set totalResults = search is defined and search is not null ? search.getTotalItemCount : 0 %}

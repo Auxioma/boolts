@@ -57,12 +57,12 @@
 
         {% if isLocation and loyerHorsChargeNumber is not null %}
             {% set propertyPriceNumber = loyerHorsChargeNumber + chargesNumber %}
-            {% set propertyPrice = propertyPriceNumber|number_format(0, ',', ' ') ~ '€' %}
+            {% set propertyPrice = propertyPriceNumber|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe %}
             {% set propertyPeriod = '/mois' %}
             {% set propertyBadge = chargesNumber > 0 ? 'Charges comprises' : 'Hors charges' %}
         {% elseif prixVenteNumber is not null %}
             {% set propertyPriceNumber = prixVenteNumber %}
-            {% set propertyPrice = prixVenteNumber|number_format(0, ',', ' ') ~ '€' %}
+            {% set propertyPrice = prixVenteNumber|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe %}
             {% set propertyPeriod = '' %}
             {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'Vente' %}
         {% else %}
