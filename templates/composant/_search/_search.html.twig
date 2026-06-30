@@ -132,105 +132,141 @@
 				</div>
 
 				{# Localisation #}
-				<div class="accordion-item boolts-filter-item" data-controller="boolts-location" data-boolts-location-country-url-value="{{ path('app_geo_country_autocomplete') }}" data-boolts-location-city-url-value="{{ path('app_geo_city_autocomplete') }}" data-boolts-location-district-url-value="{{ path('app_geo_district_autocomplete') }}">
-					<h3 class="accordion-header" id="headingLocation">
-						<button class="accordion-button boolts-filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocation" aria-expanded="true" aria-controls="collapseLocation">
-							Localisation
-						</button>
-					</h3>
+<div
+    class="accordion-item boolts-filter-item"
+    data-controller="boolts-location"
+    data-boolts-location-country-url-value="{{ path('app_geo_country_autocomplete') }}"
+    data-boolts-location-city-url-value="{{ path('app_geo_city_autocomplete') }}"
+    data-boolts-location-district-url-value="{{ path('app_geo_district_autocomplete') }}"
+>
+    <h3 class="accordion-header" id="headingLocation">
+        <button
+            class="accordion-button boolts-filter-toggle"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseLocation"
+            aria-expanded="true"
+            aria-controls="collapseLocation"
+        >
+            Localisation
+        </button>
+    </h3>
 
-					<div id="collapseLocation" class="accordion-collapse collapse show" aria-labelledby="headingLocation">
-						<div class="accordion-body boolts-filter-panel">
-							<div class="boolts-location-group">
-								<label class="boolts-location-label" for="country-search">
-									Pays
-								</label>
+    <div
+        id="collapseLocation"
+        class="accordion-collapse collapse show"
+        aria-labelledby="headingLocation"
+    >
+        <div class="accordion-body boolts-filter-panel">
 
-								<div class="boolts-search-control">
-									<i class="icon-search" aria-hidden="true"></i>
+            {# =========================
+               PAYS
+            ========================== #}
+            <div class="boolts-location-group">
+                <label class="boolts-location-label" for="country-search">
+                    Pays
+                </label>
 
+                <div class="boolts-search-control">
+                    <i class="icon-search" aria-hidden="true"></i>
 
-    {{ form_widget(formModal.paysSearch, {
-        attr: {
-            id: 'country-search',
-            autocomplete: 'off',
-            placeholder: 'Rechercher un pays',
-            'data-boolts-location-target': 'countryInput',
-            'data-action': 'input->boolts-location#searchCountry keydown->boolts-location#keyboardCountry'
-        }
-    }) }}
+                    {{ form_widget(formModal.paysSearch, {
+                        attr: {
+                            id: 'country-search',
+                            class: 'boolts-location-input',
+                            autocomplete: 'off',
+                            placeholder: 'Rechercher un pays',
+                            'data-boolts-location-target': 'countryInput',
+                            'data-action': 'input->boolts-location#searchCountry keydown->boolts-location#keyboardCountry'
+                        }
+                    }) }}
+                </div>
 
+                {{ form_widget(formModal.pays, {
+                    attr: {
+                        'data-boolts-location-target': 'countryHidden'
+                    }
+                }) }}
 
+                <div
+                    class="boolts-selected-list"
+                    data-boolts-location-target="countryList"
+                ></div>
+            </div>
 
-    {{ form_widget(formModal.pays, {
-        attr: {
-            'data-boolts-location-target': 'countryHidden'
-        }
-    }) }}
+            {# =========================
+               VILLE
+            ========================== #}
+            <div class="boolts-location-group">
+                <label class="boolts-location-label is-muted" for="city-search">
+                    Ville
+                </label>
 
-								</div>
+                <div class="boolts-search-control">
+                    <i class="icon-search" aria-hidden="true"></i>
 
-								<div class="boolts-selected-list" data-boolts-location-target="countryList"></div>
-							</div>
+                    {{ form_widget(formModal.villeSearch, {
+                        attr: {
+                            id: 'city-search',
+                            class: 'boolts-location-input',
+                            autocomplete: 'off',
+                            placeholder: 'Rechercher une ville',
+                            'data-boolts-location-target': 'cityInput',
+                            'data-action': 'input->boolts-location#searchCity keydown->boolts-location#keyboardCity'
+                        }
+                    }) }}
+                </div>
 
-							<div class="boolts-location-group">
-								<label class="boolts-location-label is-muted" for="city-search">
-									Ville
-								</label>
+                {{ form_widget(formModal.ville, {
+                    attr: {
+                        'data-boolts-location-target': 'cityHidden'
+                    }
+                }) }}
 
-								<div class="boolts-search-control">
-									<i class="icon-search" aria-hidden="true"></i>
-    {{ form_widget(formModal.villeSearch, {
-        attr: {
-            id: 'city-search',
-            autocomplete: 'off',
-            placeholder: 'Rechercher une ville',
-            'data-boolts-location-target': 'cityInput',
-            'data-action': 'input->boolts-location#searchCity keydown->boolts-location#keyboardCity'
-        }
-    }) }}
+                <div
+                    class="boolts-selected-list"
+                    data-boolts-location-target="cityList"
+                ></div>
+            </div>
 
-    {{ form_widget(formModal.ville, {
-        attr: {
-            'data-boolts-location-target': 'cityHidden'
-        }
-    }) }}
+            {# =========================
+               QUARTIER
+            ========================== #}
+            <div class="boolts-location-group mb-0">
+                <label class="boolts-location-label is-muted" for="district-search">
+                    Quartier
+                </label>
 
-								</div>
+                <div class="boolts-search-control">
+                    <i class="icon-search" aria-hidden="true"></i>
 
-								<div class="boolts-selected-list" data-boolts-location-target="cityList"></div>
-							</div>
+                    {{ form_widget(formModal.quartierSearch, {
+                        attr: {
+                            id: 'district-search',
+                            class: 'boolts-location-input',
+                            autocomplete: 'off',
+                            placeholder: 'Rechercher un quartier',
+                            'data-boolts-location-target': 'districtInput',
+                            'data-action': 'input->boolts-location#searchDistrict keydown->boolts-location#keyboardDistrict'
+                        }
+                    }) }}
+                </div>
 
-							<div class="boolts-location-group mb-0">
-								<label class="boolts-location-label is-muted" for="district-search">
-									Quartier
-								</label>
+                {{ form_widget(formModal.quartier, {
+                    attr: {
+                        'data-boolts-location-target': 'districtHidden'
+                    }
+                }) }}
 
-								<div class="boolts-search-control">
-									<i class="icon-search" aria-hidden="true"></i>
-    {{ form_widget(formModal.quartierSearch, {
-        attr: {
-            id: 'district-search',
-            autocomplete: 'off',
-            placeholder: 'Rechercher un quartier',
-            'data-boolts-location-target': 'districtInput',
-            'data-action': 'input->boolts-location#searchDistrict keydown->boolts-location#keyboardDistrict'
-        }
-    }) }}
+                <div
+                    class="boolts-selected-list"
+                    data-boolts-location-target="districtList"
+                ></div>
+            </div>
 
-    {{ form_widget(formModal.quartier, {
-        attr: {
-            'data-boolts-location-target': 'districtHidden'
-        }
-    }) }}
-
-								</div>
-
-								<div class="boolts-selected-list" data-boolts-location-target="districtList"></div>
-							</div>
-						</div>
-					</div>
-				</div>
+        </div>
+    </div>
+</div>
 
 				{# Champs min / max #}
 				{% set rangeFilters = [
