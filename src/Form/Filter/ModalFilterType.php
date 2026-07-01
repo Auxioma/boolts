@@ -1,18 +1,26 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Form\Filter;
 
+use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
 use App\Entity\Filter\ModalFilter;
-use App\Repository\CategoryBienTransactionRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -22,31 +30,32 @@ class ModalFilterType extends AbstractType
     {
         $builder
             ->add('natureDeLaPropriete', EntityType::class, [
-                    'class' => CategoryBienTransaction::class,
-                    'choice_label' => 'name',
-                    'choice_attr' => static function (CategoryBienTransaction $categoryBienTransaction) {
-                        return [
-                            'icon' => $categoryBienTransaction->getIcone(),
-                            'name' => $categoryBienTransaction->getName(),
-                        ];
-                    },
-                ])
-
-  /*          ->add('typeDePropriete', ChoiceType::class, [
-                'label' => false,
-                'required' => false,
-                'expanded' => true,
-                'multiple' => true,
-                'choices' => [
-                    'Maison' => 'maison',
-                    'Appartement' => 'appartement',
-                    'Villa' => 'villa',
-                    'Local' => 'local',
-                    'Terrain' => 'terrain',
-                    'Bureau' => 'bureau',
-                ],
+                'class' => CategoryBienTransaction::class,
+                'choice_label' => 'name',
+                'choice_attr' => static function (CategoryBienTransaction $categoryBienTransaction) {
+                    return [
+                        'icon' => $categoryBienTransaction->getIcone(),
+                        'name' => $categoryBienTransaction->getName(),
+                    ];
+                },
             ])
-*/
+
+->add('typeDePropriete', EntityType::class, [
+    'class' => CategoryBien::class,
+    'choice_label' => 'name',
+    'required' => false,
+
+    'expanded' => true,
+    'multiple' => true,
+
+    'choice_attr' => static function (CategoryBien $categoryBien): array {
+        return [
+            'icon' => $categoryBien->getIcone(),
+            'name' => $categoryBien->getName(),
+        ];
+    },
+])
+
 ->add('paysSearch', SearchType::class, [
     'label' => false,
     'mapped' => false,
@@ -73,7 +82,6 @@ class ModalFilterType extends AbstractType
     'data' => '[]',
 ])
 
-
 ->add('quartierSearch', SearchType::class, [
     'label' => false,
     'mapped' => false,
@@ -86,7 +94,7 @@ class ModalFilterType extends AbstractType
     'required' => false,
     'data' => '[]',
 ])
-/*
+
             ->add('minChambres', IntegerType::class, [
                 'label' => false,
                 'required' => false,
@@ -146,7 +154,7 @@ class ModalFilterType extends AbstractType
                     'F' => 'F',
                     'G' => 'G',
                 ],
-            ])*/
+            ])
         ;
     }
 

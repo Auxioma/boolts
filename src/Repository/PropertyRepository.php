@@ -227,44 +227,347 @@ class PropertyRepository extends ServiceEntityRepository
         ;
     }
 
-public function findBySearchAndMapBoundsQueryBuilder(
-    int $transactionTypeId,
-    ?string $ville,
-    ?string $cp,
-    string $pays,
-    string $locale,
-    float $north,
-    float $south,
-    float $east,
-    float $west
-): QueryBuilder {
-    $queryBuilder = $this->findBySearchQueryBuilder(
-        $transactionTypeId,
-        $ville,
-        $cp,
-        $pays,
-        $locale
-    );
+    public function findBySearchAndMapBoundsQueryBuilder(
+        int $transactionTypeId,
+        ?string $ville,
+        ?string $cp,
+        string $pays,
+        string $locale,
+        float $north,
+        float $south,
+        float $east,
+        float $west,
+    ): QueryBuilder {
+        $queryBuilder = $this->findBySearchQueryBuilder(
+            $transactionTypeId,
+            $ville,
+            $cp,
+            $pays,
+            $locale
+        );
 
-    $queryBuilder
-        ->andWhere('p.latitude IS NOT NULL')
-        ->andWhere('p.longitude IS NOT NULL')
-        ->andWhere('p.latitude BETWEEN :south AND :north')
-        ->setParameter('south', $south)
-        ->setParameter('north', $north);
+        $queryBuilder
+            ->andWhere('p.latitude IS NOT NULL')
+            ->andWhere('p.longitude IS NOT NULL')
+            ->andWhere('p.latitude BETWEEN :south AND :north')
+            ->setParameter('south', $south)
+            ->setParameter('north', $north);
 
-    if ($west <= $east) {
-        $queryBuilder
-            ->andWhere('p.longitude BETWEEN :west AND :east')
-            ->setParameter('west', $west)
-            ->setParameter('east', $east);
-    } else {
-        $queryBuilder
-            ->andWhere('(p.longitude >= :west OR p.longitude <= :east)')
-            ->setParameter('west', $west)
-            ->setParameter('east', $east);
+        if ($west <= $east) {
+            $queryBuilder
+                ->andWhere('p.longitude BETWEEN :west AND :east')
+                ->setParameter('west', $west)
+                ->setParameter('east', $east);
+        } else {
+            $queryBuilder
+                ->andWhere('(p.longitude >= :west OR p.longitude <= :east)')
+                ->setParameter('west', $west)
+                ->setParameter('east', $east);
+        }
+
+        return $queryBuilder;
     }
 
-    return $queryBuilder;
+    public function countForPublicSearch(array $filters, ?string $locale = null): int
+{
+    $qb = $this->createQueryBuilder('p')
+        ->select('COUNT(DISTINCT p.id)')
+        ->leftJoin('p.translations', 'pt')
+        ->andWhere('p.statut = :statut')
+        ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE);
+
+    if (null !== $locale && '' !== trim($locale)) {
+        $qb
+            ->andWhere('pt.locale = :locale')
+            ->setParameter('locale', $locale);
+    }
+
+    /*
+     * Nature de la propriété :
+     * Formulaire : natureDeLaPropriete
+     * Entity Property : typeTransaction
+     */
+    $natureDeLaPropriete = $this->normalizeSingleValue($filters['natureDeLaPropriete'] ?? null);
+
+    if (null !== $natureDeLaPropriete) {
+        $qb
+            ->andWhere('IDENTITY(p.typeTransaction) = :natureDeLaPropriete')
+            ->setParameter('natureDeLaPropriete', (int) $natureDeLaPropriete);
+    }
+
+    /*
+     * Type de propriété :
+     * Formulaire : typeDePropriete
+     * Entity Property : typeBien
+     *
+     * Correction importante :
+     * p.typeDePropriete n'existe pas.
+     */
+    $typesDePropriete = $this->normalizeArrayValue($filters['typeDePropriete'] ?? []);
+
+    if ([] !== $typesDePropriete) {
+        $qb
+            ->andWhere('IDENTITY(p.typeBien) IN (:typesDePropriete)')
+            ->setParameter('typesDePropriete', array_map('intval', $typesDePropriete));
+    }
+
+    /*
+     * Localisation.
+     *
+     * Ton URL envoie :
+     * modal_filter[pays]=[{"label":"France","code":"FR", ... }]
+     *
+     * normalizeArrayValue() transforme ça automatiquement en :
+     * ['France']
+     */
+    $pays = $this->normalizeArrayValue($filters['pays'] ?? []);
+    $villes = $this->normalizeArrayValue($filters['ville'] ?? []);
+    $quartiers = $this->normalizeArrayValue($filters['quartier'] ?? []);
+
+    $this->addTextFilter($qb, 'pt.pays', 'pays', $pays);
+    $this->addTextFilter($qb, 'pt.ville', 'ville', $villes);
+
+    /*
+     * Quartier.
+     * On teste plusieurs noms possibles pour éviter les erreurs Doctrine.
+     */
+    if ([] !== $quartiers) {
+        if ($this->getClassMetadata()->hasField('quartier')) {
+            $this->addTextFilter($qb, 'p.quartier', 'quartier', $quartiers);
+        } elseif ($this->getClassMetadata()->hasField('neighborhood')) {
+            $this->addTextFilter($qb, 'p.neighborhood', 'quartier', $quartiers);
+        } elseif ($this->getClassMetadata()->hasField('district')) {
+            $this->addTextFilter($qb, 'p.district', 'quartier', $quartiers);
+        }
+    }
+
+    /*
+     * Filtres min / max.
+     */
+    if ($this->getClassMetadata()->hasField('chambres')) {
+        $this->addRangeFilter($qb, 'p.chambres', $filters, 'minChambres', 'maxChambres');
+    }
+
+    if ($this->getClassMetadata()->hasField('salleDeBains')) {
+        $this->addRangeFilter($qb, 'p.salleDeBains', $filters, 'minSallesDeBain', 'maxSallesDeBain');
+    }
+
+    if ($this->getClassMetadata()->hasField('surfaceTotal')) {
+        $this->addRangeFilter($qb, 'p.surfaceTotal', $filters, 'minSurface', 'maxSurface');
+    }
+
+    if ($this->getClassMetadata()->hasField('anneeConstruction')) {
+        $this->addRangeFilter($qb, 'p.anneeConstruction', $filters, 'minAnneeConstruction', 'maxAnneeConstruction');
+    }
+
+    /*
+     * Prix.
+     *
+     * Vente : p.prix
+     * Location : p.montantLoyerHorsCharge
+     */
+    $this->addRangeFilter(
+        $qb,
+        'COALESCE(p.prix, p.montantLoyerHorsCharge)',
+        $filters,
+        'minPrix',
+        'maxPrix'
+    );
+
+    /*
+     * DPE.
+     */
+    $dpe = $this->normalizeArrayValue($filters['dpe'] ?? []);
+
+    if ([] !== $dpe && $this->getClassMetadata()->hasField('dpeLettre')) {
+        $qb
+            ->andWhere('UPPER(p.dpeLettre) IN (:dpe)')
+            ->setParameter('dpe', array_map('strtoupper', $dpe));
+    }
+
+    return (int) $qb->getQuery()->getSingleScalarResult();
+}
+
+private function addTextFilter(
+    QueryBuilder $qb,
+    string $field,
+    string $parameterPrefix,
+    array $values,
+): void {
+    if ([] === $values) {
+        return;
+    }
+
+    $orX = $qb->expr()->orX();
+
+    foreach ($values as $index => $value) {
+        $parameterName = $parameterPrefix.'_'.$index;
+
+        $orX->add(\sprintf('LOWER(%s) LIKE :%s', $field, $parameterName));
+
+        $qb->setParameter(
+            $parameterName,
+            '%'.mb_strtolower(trim((string) $value)).'%'
+        );
+    }
+
+    $qb->andWhere($orX);
+}
+
+private function addRangeFilter(
+    QueryBuilder $qb,
+    string $field,
+    array $filters,
+    string $minKey,
+    string $maxKey,
+): void {
+    $min = $this->normalizeSingleValue($filters[$minKey] ?? null);
+    $max = $this->normalizeSingleValue($filters[$maxKey] ?? null);
+
+    if (null !== $min) {
+        $qb
+            ->andWhere(\sprintf('%s >= :%s', $field, $minKey))
+            ->setParameter($minKey, (float) $min);
+    }
+
+    if (null !== $max) {
+        $qb
+            ->andWhere(\sprintf('%s <= :%s', $field, $maxKey))
+            ->setParameter($maxKey, (float) $max);
+    }
+}
+
+private function normalizeSingleValue(mixed $value): ?string
+{
+    if (\is_array($value)) {
+        $value = reset($value);
+    }
+
+    if (null === $value) {
+        return null;
+    }
+
+    /*
+     * Si la valeur est encore un tableau ou un objet JSON décodé,
+     * on extrait une valeur propre.
+     */
+    $value = $this->extractStringValue($value);
+
+    if (null === $value) {
+        return null;
+    }
+
+    $value = trim($value);
+
+    return '' === $value ? null : $value;
+}
+
+private function normalizeArrayValue(mixed $value): array
+{
+    if (null === $value || '' === $value) {
+        return [];
+    }
+
+    /*
+     * Cas JSON :
+     * [{"label":"France","code":"FR","country_name":"France"}]
+     */
+    if (\is_string($value)) {
+        $decoded = json_decode($value, true);
+
+        if (\JSON_ERROR_NONE === json_last_error() && \is_array($decoded)) {
+            $value = $decoded;
+        } else {
+            $value = explode(',', $value);
+        }
+    }
+
+    if (!\is_array($value)) {
+        $value = [$value];
+    }
+
+    $values = [];
+
+    foreach ($value as $item) {
+        $item = $this->extractStringValue($item);
+
+        if (null === $item) {
+            continue;
+        }
+
+        $item = trim($item);
+
+        if ('' === $item) {
+            continue;
+        }
+
+        $values[] = $item;
+    }
+
+    return array_values(array_unique($values));
+}
+
+private function extractStringValue(mixed $item): ?string
+{
+    if (null === $item) {
+        return null;
+    }
+
+    /*
+     * Valeur simple :
+     * "France", "Paris", "2", "A"
+     */
+    if (\is_scalar($item)) {
+        return (string) $item;
+    }
+
+    /*
+     * Objet JSON décodé en tableau.
+     *
+     * Exemple :
+     * [
+     *     "label" => "France",
+     *     "code" => "FR",
+     *     "country_name" => "France",
+     *     "raw" => [...]
+     * ]
+     */
+    if (\is_array($item)) {
+        $preferredKeys = [
+            'country_name',
+            'city_name',
+            'district_name',
+            'neighborhood',
+            'quartier',
+            'ville',
+            'pays',
+            'name',
+            'label',
+            'value',
+            'postal_code',
+            'postcode',
+            'code',
+        ];
+
+        foreach ($preferredKeys as $key) {
+            if (isset($item[$key]) && \is_scalar($item[$key])) {
+                return (string) $item[$key];
+            }
+        }
+
+        /*
+         * Cas de ton URL :
+         * raw.country_name = France
+         */
+        if (isset($item['raw']) && \is_array($item['raw'])) {
+            foreach ($preferredKeys as $key) {
+                if (isset($item['raw'][$key]) && \is_scalar($item['raw'][$key])) {
+                    return (string) $item['raw'][$key];
+                }
+            }
+        }
+    }
+
+    return null;
 }
 }

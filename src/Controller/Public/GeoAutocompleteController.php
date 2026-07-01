@@ -1,10 +1,17 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Controller\Public;
 
-use Normalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +20,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Throwable;
 
 #[Route('/geo/autocomplete')]
 final class GeoAutocompleteController extends AbstractController
@@ -41,7 +47,7 @@ final class GeoAutocompleteController extends AbstractController
     #[Route('/pays', name: 'app_geo_country_autocomplete', methods: ['GET'])]
     public function countries(Request $request): JsonResponse
     {
-        $q = trim((string) $request->query->get('q', ''));
+        $q = mb_trim((string) $request->query->get('q', ''));
 
         if (mb_strlen($q) < self::MIN_QUERY_LENGTH) {
             return $this->jsonResults([]);
@@ -60,11 +66,11 @@ final class GeoAutocompleteController extends AbstractController
     #[Route('/villes', name: 'app_geo_city_autocomplete', methods: ['GET'])]
     public function cities(Request $request): JsonResponse
     {
-        $q = trim((string) $request->query->get('q', ''));
-        $countryCode = strtoupper(trim((string) $request->query->get('country_code', '')));
-        $countryName = trim((string) $request->query->get('country_name', ''));
+        $q = mb_trim((string) $request->query->get('q', ''));
+        $countryCode = mb_strtoupper(mb_trim((string) $request->query->get('country_code', '')));
+        $countryName = mb_trim((string) $request->query->get('country_name', ''));
 
-        if ($countryCode === '' || mb_strlen($q) < self::MIN_QUERY_LENGTH) {
+        if ('' === $countryCode || mb_strlen($q) < self::MIN_QUERY_LENGTH) {
             return $this->jsonResults([]);
         }
 
@@ -82,21 +88,21 @@ final class GeoAutocompleteController extends AbstractController
     #[Route('/quartiers', name: 'app_geo_district_autocomplete', methods: ['GET'])]
     public function districts(Request $request): JsonResponse
     {
-        $q = trim((string) $request->query->get('q', ''));
-        $cityName = trim((string) $request->query->get('city_name', ''));
-        $countryCode = strtoupper(trim((string) $request->query->get('country_code', '')));
-        $countryName = trim((string) $request->query->get('country_name', ''));
+        $q = mb_trim((string) $request->query->get('q', ''));
+        $cityName = mb_trim((string) $request->query->get('city_name', ''));
+        $countryCode = mb_strtoupper(mb_trim((string) $request->query->get('country_code', '')));
+        $countryName = mb_trim((string) $request->query->get('country_name', ''));
 
         $cityLat = $this->nullableFloat($request->query->get('city_lat'));
         $cityLng = $this->nullableFloat(
             $request->query->get('city_lng', $request->query->get('city_lon'))
         );
 
-        $adminCode1 = trim((string) $request->query->get('admin_code_1', ''));
-        $adminCode2 = trim((string) $request->query->get('admin_code_2', ''));
-        $adminCode3 = trim((string) $request->query->get('admin_code_3', ''));
+        $adminCode1 = mb_trim((string) $request->query->get('admin_code_1', ''));
+        $adminCode2 = mb_trim((string) $request->query->get('admin_code_2', ''));
+        $adminCode3 = mb_trim((string) $request->query->get('admin_code_3', ''));
 
-        if ($countryCode === '' || $cityName === '' || mb_strlen($q) < self::MIN_QUERY_LENGTH) {
+        if ('' === $countryCode || '' === $cityName || mb_strlen($q) < self::MIN_QUERY_LENGTH) {
             return $this->jsonResults([]);
         }
 
@@ -140,9 +146,9 @@ final class GeoAutocompleteController extends AbstractController
     #[Route('/debug-live', name: 'app_geo_autocomplete_debug_live', methods: ['GET'])]
     public function debugLive(Request $request): JsonResponse
     {
-        $q = trim((string) $request->query->get('q', 'rou'));
-        $cityName = trim((string) $request->query->get('city_name', 'Rouen'));
-        $countryCode = strtoupper(trim((string) $request->query->get('country_code', 'FR')));
+        $q = mb_trim((string) $request->query->get('q', 'rou'));
+        $cityName = mb_trim((string) $request->query->get('city_name', 'Rouen'));
+        $countryCode = mb_strtoupper(mb_trim((string) $request->query->get('country_code', 'FR')));
 
         $cityParams = [
             'name_startsWith' => $q,
@@ -170,18 +176,18 @@ final class GeoAutocompleteController extends AbstractController
 
         return $this->json([
             'env' => [
-                'geonames_username_present' => $this->geonamesUsername() !== '',
-                'geonames_username' => $this->geonamesUsername() !== '' ? 'OK' : 'VIDE',
+                'geonames_username_present' => '' !== $this->geonamesUsername(),
+                'geonames_username' => '' !== $this->geonamesUsername() ? 'OK' : 'VIDE',
                 'app_url' => $this->appReferer(),
             ],
             'city_test' => [
-                'url' => self::GEONAMES_BASE_URL . '/searchJSON?' . http_build_query($cityParams),
+                'url' => self::GEONAMES_BASE_URL.'/searchJSON?'.http_build_query($cityParams),
                 'raw' => $this->geonamesRaw('/searchJSON', $cityParams),
                 'parsed_results' => $this->searchCitiesWorldwide($q, $countryCode, ''),
             ],
             'district_test' => [
                 'city_name' => $cityName,
-                'url' => self::GEONAMES_BASE_URL . '/searchJSON?' . http_build_query($districtParams),
+                'url' => self::GEONAMES_BASE_URL.'/searchJSON?'.http_build_query($districtParams),
                 'raw' => $this->geonamesRaw('/searchJSON', $districtParams),
                 'parsed_results' => $this->searchDistrictsWorldwide(
                     $q,
@@ -201,7 +207,7 @@ final class GeoAutocompleteController extends AbstractController
     private function jsonResults(array $results): JsonResponse
     {
         $response = new JsonResponse([
-            'results' => array_slice($results, 0, self::MAX_RESULTS),
+            'results' => \array_slice($results, 0, self::MAX_RESULTS),
         ]);
 
         $response->setPublic();
@@ -217,31 +223,31 @@ final class GeoAutocompleteController extends AbstractController
 
         $encodedParams = json_encode($params);
 
-        if ($encodedParams === false) {
+        if (false === $encodedParams) {
             $encodedParams = serialize($params);
         }
 
-        $cacheKey = 'geo_autocomplete_' . $prefix . '_' . hash('sha256', $encodedParams);
+        $cacheKey = 'geo_autocomplete_'.$prefix.'_'.hash('sha256', $encodedParams);
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($callback): array {
+        return $this->cache->get($cacheKey, static function (ItemInterface $item) use ($callback): array {
             $item->expiresAfter(self::CACHE_TTL_SECONDS);
 
             $results = $callback();
 
-            if (!is_array($results) || $results === []) {
+            if (!\is_array($results) || [] === $results) {
                 $item->expiresAfter(self::EMPTY_CACHE_TTL_SECONDS);
 
                 return [];
             }
 
-            return array_slice($results, 0, self::MAX_RESULTS);
+            return \array_slice($results, 0, self::MAX_RESULTS);
         });
     }
 
     /**
      * ==========================================================================
      * PAYS
-     * ==========================================================================
+     * ==========================================================================.
      */
     private function searchCountries(string $q, string $locale = 'fr'): array
     {
@@ -264,7 +270,7 @@ final class GeoAutocompleteController extends AbstractController
         foreach ($locales as $currentLocale) {
             try {
                 foreach (Countries::getNames($currentLocale) as $code => $name) {
-                    $code = strtoupper((string) $code);
+                    $code = mb_strtoupper((string) $code);
 
                     if (!isset($countries[$code])) {
                         $countries[$code] = [
@@ -275,7 +281,7 @@ final class GeoAutocompleteController extends AbstractController
 
                     $countries[$code]['names'][] = $name;
                 }
-            } catch (Throwable) {
+            } catch (\Throwable) {
                 continue;
             }
         }
@@ -315,7 +321,7 @@ final class GeoAutocompleteController extends AbstractController
                 'country_code' => $code,
                 'country_name' => $label,
                 'label' => $label,
-                'display_name' => $label . ' — ' . $code,
+                'display_name' => $label.' — '.$code,
             ];
         }
 
@@ -333,13 +339,13 @@ final class GeoAutocompleteController extends AbstractController
             return strcasecmp((string) $a['label'], (string) $b['label']);
         });
 
-        return array_slice($results, 0, self::MAX_RESULTS);
+        return \array_slice($results, 0, self::MAX_RESULTS);
     }
 
     /**
      * ==========================================================================
      * VILLES MONDE
-     * ==========================================================================
+     * ==========================================================================.
      */
     private function searchCitiesWorldwide(string $q, string $countryCode, string $countryName = ''): array
     {
@@ -361,7 +367,7 @@ final class GeoAutocompleteController extends AbstractController
             $items[] = $item;
         }
 
-        if ($items === [] && mb_strlen($q) >= 3) {
+        if ([] === $items && mb_strlen($q) >= 3) {
             $fallbackParams = [
                 'q' => $q,
                 'country' => $countryCode,
@@ -381,9 +387,9 @@ final class GeoAutocompleteController extends AbstractController
         $results = [];
 
         foreach ($items as $item) {
-            $cityName = trim((string) ($item['name'] ?? $item['toponymName'] ?? ''));
+            $cityName = mb_trim((string) ($item['name'] ?? $item['toponymName'] ?? ''));
 
-            if ($cityName === '') {
+            if ('' === $cityName) {
                 continue;
             }
 
@@ -391,9 +397,9 @@ final class GeoAutocompleteController extends AbstractController
                 continue;
             }
 
-            $resultCountryCode = strtoupper((string) ($item['countryCode'] ?? ''));
+            $resultCountryCode = mb_strtoupper((string) ($item['countryCode'] ?? ''));
 
-            if ($resultCountryCode !== strtoupper($countryCode)) {
+            if ($resultCountryCode !== mb_strtoupper($countryCode)) {
                 continue;
             }
 
@@ -432,7 +438,7 @@ final class GeoAutocompleteController extends AbstractController
             ];
         }
 
-        $results = $this->dedupe($results, function (array $item): string {
+        $results = $this->dedupe($results, static function (array $item): string {
             return implode('|', [
                 $item['city_name'] ?? '',
                 $item['admin_code_1'] ?? '',
@@ -452,13 +458,13 @@ final class GeoAutocompleteController extends AbstractController
             return strcasecmp((string) ($a['city_name'] ?? ''), (string) ($b['city_name'] ?? ''));
         });
 
-        return array_slice($results, 0, self::MAX_RESULTS);
+        return \array_slice($results, 0, self::MAX_RESULTS);
     }
 
     /**
      * ==========================================================================
      * QUARTIERS MONDE
-     * ==========================================================================
+     * ==========================================================================.
      */
     private function searchDistrictsWorldwide(
         string $q,
@@ -469,7 +475,7 @@ final class GeoAutocompleteController extends AbstractController
         ?float $cityLng,
         string $adminCode1,
         string $adminCode2,
-        string $adminCode3
+        string $adminCode3,
     ): array {
         $items = [];
 
@@ -485,15 +491,15 @@ final class GeoAutocompleteController extends AbstractController
             'username' => $this->geonamesUsername(),
         ];
 
-        if ($adminCode1 !== '') {
+        if ('' !== $adminCode1) {
             $startsParams['adminCode1'] = $adminCode1;
         }
 
-        if ($adminCode2 !== '') {
+        if ('' !== $adminCode2) {
             $startsParams['adminCode2'] = $adminCode2;
         }
 
-        if ($adminCode3 !== '') {
+        if ('' !== $adminCode3) {
             $startsParams['adminCode3'] = $adminCode3;
         }
 
@@ -501,9 +507,9 @@ final class GeoAutocompleteController extends AbstractController
             $items[] = $item;
         }
 
-        if ($items === [] && mb_strlen($q) >= 3) {
+        if ([] === $items && mb_strlen($q) >= 3) {
             $fallbackParams = [
-                'q' => $q . ' ' . $cityName,
+                'q' => $q.' '.$cityName,
                 'country' => $countryCode,
                 'featureClass' => 'P',
                 'maxRows' => self::MAX_EXTERNAL_RESULTS,
@@ -521,9 +527,9 @@ final class GeoAutocompleteController extends AbstractController
         $results = [];
 
         foreach ($items as $item) {
-            $name = trim((string) ($item['name'] ?? $item['toponymName'] ?? ''));
+            $name = mb_trim((string) ($item['name'] ?? $item['toponymName'] ?? ''));
 
-            if ($name === '') {
+            if ('' === $name) {
                 continue;
             }
 
@@ -531,9 +537,9 @@ final class GeoAutocompleteController extends AbstractController
                 continue;
             }
 
-            $resultCountryCode = strtoupper((string) ($item['countryCode'] ?? ''));
+            $resultCountryCode = mb_strtoupper((string) ($item['countryCode'] ?? ''));
 
-            if ($resultCountryCode !== strtoupper($countryCode)) {
+            if ($resultCountryCode !== mb_strtoupper($countryCode)) {
                 continue;
             }
 
@@ -556,7 +562,7 @@ final class GeoAutocompleteController extends AbstractController
 
             $distanceKm = null;
 
-            if ($cityLat !== null && $cityLng !== null && $lat !== null && $lng !== null) {
+            if (null !== $cityLat && null !== $cityLng && null !== $lat && null !== $lng) {
                 $distanceKm = $this->haversineDistanceKm($cityLat, $cityLng, $lat, $lng);
 
                 if ($distanceKm > self::MAX_DISTRICT_DISTANCE_KM) {
@@ -583,9 +589,9 @@ final class GeoAutocompleteController extends AbstractController
                 'geoname_id' => $item['geonameId'] ?? null,
                 'feature_class' => $item['fcl'] ?? null,
                 'feature_code' => $featureCode,
-                'lat' => $lat !== null ? (string) $lat : null,
-                'lng' => $lng !== null ? (string) $lng : null,
-                'lon' => $lng !== null ? (string) $lng : null,
+                'lat' => null !== $lat ? (string) $lat : null,
+                'lng' => null !== $lng ? (string) $lng : null,
+                'lon' => null !== $lng ? (string) $lng : null,
                 'distance_km' => $distanceKm,
                 'exact_match' => $this->normalizeSearchText($name) === $this->normalizeSearchText($q),
                 'display_name' => $this->buildDisplayName([
@@ -598,7 +604,7 @@ final class GeoAutocompleteController extends AbstractController
             ];
         }
 
-        $results = $this->dedupe($results, function (array $item): string {
+        $results = $this->dedupe($results, static function (array $item): string {
             return implode('|', [
                 $item['name'] ?? '',
                 $item['city_name'] ?? '',
@@ -626,17 +632,17 @@ final class GeoAutocompleteController extends AbstractController
             return strcasecmp((string) ($a['name'] ?? ''), (string) ($b['name'] ?? ''));
         });
 
-        return array_slice($results, 0, self::MAX_RESULTS);
+        return \array_slice($results, 0, self::MAX_RESULTS);
     }
 
     /**
      * ==========================================================================
      * GEONAMES
-     * ==========================================================================
+     * ==========================================================================.
      */
     private function geonamesSearch(array $params): array
     {
-        if ($this->geonamesUsername() === '') {
+        if ('' === $this->geonamesUsername()) {
             return [];
         }
 
@@ -648,13 +654,13 @@ final class GeoAutocompleteController extends AbstractController
 
         $items = $data['geonames'] ?? [];
 
-        return is_array($items) ? $items : [];
+        return \is_array($items) ? $items : [];
     }
 
     private function geonamesJson(string $endpoint, array $params): array
     {
-        $url = self::GEONAMES_BASE_URL . $endpoint . '?' . http_build_query($params);
-        $cacheKey = 'geonames_http_' . hash('sha256', $url);
+        $url = self::GEONAMES_BASE_URL.$endpoint.'?'.http_build_query($params);
+        $cacheKey = 'geonames_http_'.hash('sha256', $url);
 
         return $this->cache->get($cacheKey, function (ItemInterface $item) use ($url): array {
             $item->expiresAfter(self::CACHE_TTL_SECONDS);
@@ -680,18 +686,18 @@ final class GeoAutocompleteController extends AbstractController
 
                 $data = $response->toArray(false);
 
-                if (!is_array($data)) {
+                if (!\is_array($data)) {
                     $item->expiresAfter(self::EMPTY_CACHE_TTL_SECONDS);
 
                     return [];
                 }
 
-                if ($data === [] || isset($data['status'])) {
+                if ([] === $data || isset($data['status'])) {
                     $item->expiresAfter(self::EMPTY_CACHE_TTL_SECONDS);
                 }
 
                 return $data;
-            } catch (Throwable) {
+            } catch (\Throwable) {
                 $item->expiresAfter(self::EMPTY_CACHE_TTL_SECONDS);
 
                 return [];
@@ -701,7 +707,7 @@ final class GeoAutocompleteController extends AbstractController
 
     private function geonamesRaw(string $endpoint, array $params): array
     {
-        $url = self::GEONAMES_BASE_URL . $endpoint . '?' . http_build_query($params);
+        $url = self::GEONAMES_BASE_URL.$endpoint.'?'.http_build_query($params);
 
         try {
             $response = $this->httpClient->request('GET', $url, [
@@ -722,7 +728,7 @@ final class GeoAutocompleteController extends AbstractController
                 'json' => json_decode($content, true),
                 'raw' => $content,
             ];
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             return [
                 'error' => true,
                 'message' => $exception->getMessage(),
@@ -733,15 +739,15 @@ final class GeoAutocompleteController extends AbstractController
     /**
      * ==========================================================================
      * FILTRES
-     * ==========================================================================
+     * ==========================================================================.
      */
     private function isAllowedDistrictFeatureCode(string $featureCode): bool
     {
-        if ($featureCode === '') {
+        if ('' === $featureCode) {
             return true;
         }
 
-        return in_array($featureCode, [
+        return \in_array($featureCode, [
             'PPLX',
             'PPLL',
             'PPL',
@@ -765,7 +771,7 @@ final class GeoAutocompleteController extends AbstractController
         $name = $this->normalizeSearchText($name);
         $q = $this->normalizeSearchText($q);
 
-        if ($name === '' || $q === '') {
+        if ('' === $name || '' === $q) {
             return true;
         }
 
@@ -777,7 +783,7 @@ final class GeoAutocompleteController extends AbstractController
         $a = $this->normalizeSearchText($a);
         $b = $this->normalizeSearchText($b);
 
-        if ($a === '' || $b === '') {
+        if ('' === $a || '' === $b) {
             return false;
         }
 
@@ -786,9 +792,9 @@ final class GeoAutocompleteController extends AbstractController
 
     private function cleanCityName(string $name, string $countryCode): string
     {
-        $name = trim($name);
+        $name = mb_trim($name);
 
-        if (strtoupper($countryCode) === 'FR') {
+        if ('FR' === mb_strtoupper($countryCode)) {
             $normalized = $this->normalizeSearchText($name);
 
             if (str_contains($normalized, 'paris')) {
@@ -809,7 +815,7 @@ final class GeoAutocompleteController extends AbstractController
 
     private function cleanDistrictName(string $name): string
     {
-        $name = trim($name);
+        $name = mb_trim($name);
 
         $patterns = [
             '/^Quartier\s+des\s+/iu',
@@ -828,7 +834,7 @@ final class GeoAutocompleteController extends AbstractController
             $name = preg_replace($pattern, '', $name) ?? $name;
         }
 
-        return trim($name);
+        return mb_trim($name);
     }
 
     private function dedupe(array $items, callable $keyCallback): array
@@ -838,7 +844,7 @@ final class GeoAutocompleteController extends AbstractController
         foreach ($items as $item) {
             $key = $this->normalizeSearchText((string) $keyCallback($item));
 
-            if ($key === '') {
+            if ('' === $key) {
                 continue;
             }
 
@@ -869,12 +875,12 @@ final class GeoAutocompleteController extends AbstractController
     /**
      * ==========================================================================
      * HELPERS GÉNÉRAUX
-     * ==========================================================================
+     * ==========================================================================.
      */
     private function buildDisplayName(array $parts): string
     {
         $parts = array_filter($parts, static function ($value): bool {
-            return $value !== null && trim((string) $value) !== '';
+            return null !== $value && '' !== mb_trim((string) $value);
         });
 
         return implode(' — ', array_unique(array_map('strval', $parts)));
@@ -882,17 +888,17 @@ final class GeoAutocompleteController extends AbstractController
 
     private function normalizeSearchText(string $value): string
     {
-        $value = mb_strtolower(trim($value));
+        $value = mb_strtolower(mb_trim($value));
 
-        if (class_exists(Normalizer::class)) {
-            $value = Normalizer::normalize($value, Normalizer::FORM_D) ?: $value;
+        if (class_exists(\Normalizer::class)) {
+            $value = \Normalizer::normalize($value, \Normalizer::FORM_D) ?: $value;
         }
 
         $value = preg_replace('/[\x{0300}-\x{036f}]/u', '', $value) ?? $value;
         $value = str_replace(['’', "'", '-', '_', '.', ',', ';', ':', '(', ')', '[', ']'], ' ', $value);
         $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
 
-        return trim($value);
+        return mb_trim($value);
     }
 
     private function haversineDistanceKm(float $lat1, float $lng1, float $lat2, float $lng2): float
@@ -915,7 +921,7 @@ final class GeoAutocompleteController extends AbstractController
 
     private function nullableFloat(mixed $value): ?float
     {
-        if ($value === null || $value === '' || !is_numeric($value)) {
+        if (null === $value || '' === $value || !is_numeric($value)) {
             return null;
         }
 
@@ -924,21 +930,21 @@ final class GeoAutocompleteController extends AbstractController
 
     private function isEmptyValue(mixed $value): bool
     {
-        return $value === null || $value === '' || $value === [];
+        return null === $value || '' === $value || [] === $value;
     }
 
     private function countryNameFromCode(string $countryCode): string
     {
         try {
-            return Countries::getName(strtoupper($countryCode), 'fr');
-        } catch (Throwable) {
-            return strtoupper($countryCode);
+            return Countries::getName(mb_strtoupper($countryCode), 'fr');
+        } catch (\Throwable) {
+            return mb_strtoupper($countryCode);
         }
     }
 
     private function geonamesUsername(): string
     {
-        return trim((string) (
+        return mb_trim((string) (
             $_ENV['GEONAMES_USERNAME']
             ?? $_SERVER['GEONAMES_USERNAME']
             ?? getenv('GEONAMES_USERNAME')
@@ -948,7 +954,7 @@ final class GeoAutocompleteController extends AbstractController
 
     private function appReferer(): string
     {
-        return trim((string) (
+        return mb_trim((string) (
             $_ENV['APP_URL']
             ?? $_SERVER['APP_URL']
             ?? getenv('APP_URL')

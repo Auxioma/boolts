@@ -1,392 +1,670 @@
 {# templates/public/research/_filters_modal.html.twig #}
 
+{# 
+    Modal Bootstrap des filtres.
+    Ce formulaire utilise formModal en méthode GET pour envoyer les filtres dans l'URL.
+#}
 <div class="modal fade boolts-filter-modal" id="booltsFiltersModal" tabindex="-1" aria-labelledby="booltsFiltersModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable boolts-filter-dialog">
-		{{ form_start(formModal, {
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable boolts-filter-dialog">
+
+        {# Début du formulaire Symfony formModal #}
+        {{ form_start(formModal, {
             method: 'GET',
             attr: {
-                class: 'modal-content boolts-filter-content'
+                class: 'modal-content boolts-filter-content',
+                'data-controller': 'boolts-filter-count',
+                'data-boolts-filter-count-url-value': path('app_public_search_count'),
+                'data-action': '
+                    input->boolts-filter-count#refresh
+                    change->boolts-filter-count#refresh
+                    reset->boolts-filter-count#refreshAfterReset
+                    boolts-location:changed@window->boolts-filter-count#refresh
+                '
             }
         }) }}
-		<div class="modal-header boolts-filter-header">
-			<h2 id="booltsFiltersModalLabel" class="boolts-filter-title">
-				Filtres
-			</h2>
 
-			<button type="button" class="boolts-filter-close" data-bs-dismiss="modal" aria-label="Fermer">
-				<span aria-hidden="true">&times;</span>
-			</button>
-		</div>
+        {# Header de la modal #}
+        <div class="modal-header boolts-filter-header">
+            <h2 id="booltsFiltersModalLabel" class="boolts-filter-title">
+                Filtres
+            </h2>
 
-		<div class="boolts-filter-reset-wrapper">
-			<button type="reset" class="boolts-filter-reset">
-				Réinitialiser les filtres
-			</button>
-		</div>
-
-		<div class="modal-body boolts-filter-body">
-			<div
-				class="accordion accordion-flush boolts-filter-accordion" id="booltsFilterAccordion">
-
-				{# Nature de la propriété #}
-				<div class="accordion-item boolts-filter-item">
-					<h3 class="accordion-header" id="headingNature">
-						<button class="accordion-button boolts-filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNature" aria-expanded="true" aria-controls="collapseNature">
-							Nature de la propriété*
-						</button>
-					</h3>
-
-					<div id="collapseNature" class="accordion-collapse collapse show" aria-labelledby="headingNature">
-						<div class="accordion-body boolts-filter-panel">
-							<div
-								class="boolts-choice-list">
-
-								{# Transactions depuis CategoryBienTransaction #}
-								{% for choice in formModal.natureDeLaPropriete.vars.choices %}
-
-									{% set isChecked = formModal.natureDeLaPropriete.vars.value == choice.value %}
-									{% set inputId = 'filter-transaction-' ~ choice.value %}
-									{% set iconClass = choice.attr['data-icon']|default('') %}
-
-									<input type="radio" class="btn-check" name="{{ formModal.natureDeLaPropriete.vars.full_name }}" id="{{ inputId }}" value="{{ choice.value }}" {% if isChecked %} checked {% endif %}>
-
-									<label class="boolts-choice" for="{{ inputId }}">
-
-										<i class="{{ choice.attr.icon }}" aria-hidden="true"></i>
-
-
-										{{ choice.label }}
-									</label>
-
-								{% endfor %}
-
-								{# Toutes #}
-								<input type="radio" class="btn-check" name="{{ formModal.natureDeLaPropriete.vars.full_name }}" id="filter-all-transactions" value="" {% if formModal.natureDeLaPropriete.vars.value is empty %} checked {% endif %}>
-
-								<label class="boolts-choice" for="filter-all-transactions">
-									Toutes
-								</label>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				{# Type de propriété #}
-				<div class="accordion-item boolts-filter-item">
-					<h3 class="accordion-header" id="headingPropertyType">
-						<button class="accordion-button boolts-filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePropertyType" aria-expanded="true" aria-controls="collapsePropertyType">
-							Type de propriété*
-						</button>
-					</h3>
-
-					<div id="collapsePropertyType" class="accordion-collapse collapse show" aria-labelledby="headingPropertyType">
-						<div class="accordion-body boolts-filter-panel">
-							<div class="boolts-choice-list">
-								<input type="checkbox" class="btn-check" id="type-maison" name="propertyType[]" value="maison" checked>
-								<label class="boolts-choice" for="type-maison">
-									<i class="icon-house" aria-hidden="true"></i>
-									Maison
-									<span class="boolts-choice-remove" aria-hidden="true">&times;</span>
-								</label>
-
-								<input type="checkbox" class="btn-check" id="type-appartement" name="propertyType[]" value="appartement">
-								<label class="boolts-choice" for="type-appartement">
-									<i class="icon-building-2" aria-hidden="true"></i>
-									Appartement
-								</label>
-
-								<input type="checkbox" class="btn-check" id="type-villa" name="propertyType[]" value="villa">
-								<label class="boolts-choice" for="type-villa">
-									<i class="icon-landmark" aria-hidden="true"></i>
-									Villa
-								</label>
-							</div>
-
-							<div class="collapse" id="propertyTypeMore">
-								<div class="boolts-choice-list mt-3">
-									<input type="checkbox" class="btn-check" id="type-local" name="propertyType[]" value="local">
-									<label class="boolts-choice" for="type-local">
-										<i class="icon-store" aria-hidden="true"></i>
-										Local
-									</label>
-
-									<input type="checkbox" class="btn-check" id="type-terrain" name="propertyType[]" value="terrain">
-									<label class="boolts-choice" for="type-terrain">
-										<i class="icon-map" aria-hidden="true"></i>
-										Terrain
-									</label>
-
-									<input type="checkbox" class="btn-check" id="type-bureau" name="propertyType[]" value="bureau">
-									<label class="boolts-choice" for="type-bureau">
-										<i class="icon-briefcase" aria-hidden="true"></i>
-										Bureau
-									</label>
-								</div>
-							</div>
-
-							<button type="button" class="boolts-filter-more" data-bs-toggle="collapse" data-bs-target="#propertyTypeMore" aria-expanded="false" aria-controls="propertyTypeMore">
-								Voir plus
-							</button>
-						</div>
-					</div>
-				</div>
-
-				{# Localisation #}
-<div
-    class="accordion-item boolts-filter-item"
-    data-controller="boolts-location"
-    data-boolts-location-country-url-value="{{ path('app_geo_country_autocomplete') }}"
-    data-boolts-location-city-url-value="{{ path('app_geo_city_autocomplete') }}"
-    data-boolts-location-district-url-value="{{ path('app_geo_district_autocomplete') }}"
->
-    <h3 class="accordion-header" id="headingLocation">
-        <button
-            class="accordion-button boolts-filter-toggle"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#collapseLocation"
-            aria-expanded="true"
-            aria-controls="collapseLocation"
-        >
-            Localisation
-        </button>
-    </h3>
-
-    <div
-        id="collapseLocation"
-        class="accordion-collapse collapse show"
-        aria-labelledby="headingLocation"
-    >
-        <div class="accordion-body boolts-filter-panel">
-
-            {# =========================
-               PAYS
-            ========================== #}
-            <div class="boolts-location-group">
-                <label class="boolts-location-label" for="country-search">
-                    Pays
-                </label>
-
-                <div class="boolts-search-control">
-                    <i class="icon-search" aria-hidden="true"></i>
-
-                    {{ form_widget(formModal.paysSearch, {
-                        attr: {
-                            id: 'country-search',
-                            class: 'boolts-location-input',
-                            autocomplete: 'off',
-                            placeholder: 'Rechercher un pays',
-                            'data-boolts-location-target': 'countryInput',
-                            'data-action': 'input->boolts-location#searchCountry keydown->boolts-location#keyboardCountry'
-                        }
-                    }) }}
-                </div>
-
-                {{ form_widget(formModal.pays, {
-                    attr: {
-                        'data-boolts-location-target': 'countryHidden'
-                    }
-                }) }}
-
-                <div
-                    class="boolts-selected-list"
-                    data-boolts-location-target="countryList"
-                ></div>
-            </div>
-
-            {# =========================
-               VILLE
-            ========================== #}
-            <div class="boolts-location-group">
-                <label class="boolts-location-label is-muted" for="city-search">
-                    Ville
-                </label>
-
-                <div class="boolts-search-control">
-                    <i class="icon-search" aria-hidden="true"></i>
-
-                    {{ form_widget(formModal.villeSearch, {
-                        attr: {
-                            id: 'city-search',
-                            class: 'boolts-location-input',
-                            autocomplete: 'off',
-                            placeholder: 'Rechercher une ville',
-                            'data-boolts-location-target': 'cityInput',
-                            'data-action': 'input->boolts-location#searchCity keydown->boolts-location#keyboardCity'
-                        }
-                    }) }}
-                </div>
-
-                {{ form_widget(formModal.ville, {
-                    attr: {
-                        'data-boolts-location-target': 'cityHidden'
-                    }
-                }) }}
-
-                <div
-                    class="boolts-selected-list"
-                    data-boolts-location-target="cityList"
-                ></div>
-            </div>
-
-            {# =========================
-               QUARTIER
-            ========================== #}
-            <div class="boolts-location-group mb-0">
-                <label class="boolts-location-label is-muted" for="district-search">
-                    Quartier
-                </label>
-
-                <div class="boolts-search-control">
-                    <i class="icon-search" aria-hidden="true"></i>
-
-                    {{ form_widget(formModal.quartierSearch, {
-                        attr: {
-                            id: 'district-search',
-                            class: 'boolts-location-input',
-                            autocomplete: 'off',
-                            placeholder: 'Rechercher un quartier',
-                            'data-boolts-location-target': 'districtInput',
-                            'data-action': 'input->boolts-location#searchDistrict keydown->boolts-location#keyboardDistrict'
-                        }
-                    }) }}
-                </div>
-
-                {{ form_widget(formModal.quartier, {
-                    attr: {
-                        'data-boolts-location-target': 'districtHidden'
-                    }
-                }) }}
-
-                <div
-                    class="boolts-selected-list"
-                    data-boolts-location-target="districtList"
-                ></div>
-            </div>
-
+            {# Bouton de fermeture de la modal #}
+            <button type="button" class="boolts-filter-close" data-bs-dismiss="modal" aria-label="Fermer">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
+
+        {# Bouton reset HTML : réinitialise les champs visibles du formulaire #}
+        <div class="boolts-filter-reset-wrapper">
+            <button type="reset" class="boolts-filter-reset">
+                Réinitialiser les filtres
+            </button>
+        </div>
+
+        <div class="modal-body boolts-filter-body">
+            <div class="accordion accordion-flush boolts-filter-accordion" id="booltsFilterAccordion">
+
+                {# ============================================================
+                   NATURE DE LA PROPRIÉTÉ
+                   Exemple : Vente, Location, etc.
+                   Champ Symfony : formModal.natureDeLaPropriete
+                   Type attendu : choix unique, donc input radio
+                ============================================================ #}
+                <div class="accordion-item boolts-filter-item">
+                    <h3 class="accordion-header" id="headingNature">
+                        <button
+                            class="accordion-button boolts-filter-toggle"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseNature"
+                            aria-expanded="true"
+                            aria-controls="collapseNature"
+                        >
+                            Nature de la propriété*
+                        </button>
+                    </h3>
+
+                    <div id="collapseNature" class="accordion-collapse collapse show" aria-labelledby="headingNature">
+                        <div class="accordion-body boolts-filter-panel">
+                            <div class="boolts-choice-list">
+
+                                {# 
+                                    Boucle sur les choix Symfony du champ natureDeLaPropriete.
+                                    On utilise vars.choices pour rendre les boutons manuellement.
+                                #}
+                                {% for choice in formModal.natureDeLaPropriete.vars.choices %}
+
+                                    {# Vérifie si le choix actuel est sélectionné #}
+                                    {% set isChecked = formModal.natureDeLaPropriete.vars.value == choice.value %}
+
+                                    {# ID unique pour relier le input radio au label #}
+                                    {% set inputId = 'filter-transaction-' ~ choice.value %}
+
+                                    <input
+                                        type="radio"
+                                        class="btn-check"
+                                        name="{{ formModal.natureDeLaPropriete.vars.full_name }}"
+                                        id="{{ inputId }}"
+                                        value="{{ choice.value }}"
+                                        {% if isChecked %}checked{% endif %}
+                                    >
+
+                                    <label class="boolts-choice" for="{{ inputId }}">
+                                        {# Icône venant du choice_attr côté FormType #}
+                                        <i class="{{ choice.attr.icon }}" aria-hidden="true"></i>
+
+                                        {{ choice.label }}
+                                    </label>
+
+                                {% endfor %}
+
+                                {# 
+                                    Option "Toutes".
+                                    Valeur vide = aucun filtre spécifique sur la nature.
+                                #}
+                                <input
+                                    type="radio"
+                                    class="btn-check"
+                                    name="{{ formModal.natureDeLaPropriete.vars.full_name }}"
+                                    id="filter-all-transactions"
+                                    value=""
+                                    {% if formModal.natureDeLaPropriete.vars.value is empty %}checked{% endif %}
+                                >
+
+                                <label class="boolts-choice" for="filter-all-transactions">
+                                    Toutes
+                                </label>
+                            </div>
+                        </div>
+                        {# 
+                            Indique à Symfony que ce champ est déjà rendu manuellement.
+                            Cela évite qu'il soit réaffiché automatiquement par form_rest/form_end.
+                        #}
+                        {% do formModal.natureDeLaPropriete.setRendered %}
+                    </div>
+                </div>
+
+                {# ============================================================
+                   TYPE DE PROPRIÉTÉ
+                   Exemple : Maison, Appartement, Villa, Terrain, Bureau...
+                   Champ Symfony : formModal.typeDePropriete
+                   Type attendu : EntityType multiple => true
+                   Donc input checkbox avec name="...[]"
+                ============================================================ #}
+                <div class="accordion-item boolts-filter-item">
+                    <h3 class="accordion-header" id="headingPropertyType">
+                        <button
+                            class="accordion-button boolts-filter-toggle"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapsePropertyType"
+                            aria-expanded="true"
+                            aria-controls="collapsePropertyType"
+                        >
+                            Type de propriété*
+                        </button>
+                    </h3>
+
+                    <div
+                        id="collapsePropertyType"
+                        class="accordion-collapse collapse show"
+                        aria-labelledby="headingPropertyType"
+                    >
+                        <div class="accordion-body boolts-filter-panel">
+
+                            {# 
+                                Récupère les valeurs déjà sélectionnées.
+                                Comme le champ est multiple, vars.value doit être un tableau.
+                            #}
+                            {% set selectedTypes = formModal.typeDePropriete.vars.value|default([]) %}
+
+                            {# Nombre total de types disponibles #}
+                            {% set choicesCount = formModal.typeDePropriete.vars.choices|length %}
+
+                            {# Liste principale : on affiche seulement les 3 premiers choix #}
+                            <div class="boolts-choice-list">
+
+                                {% for choice in formModal.typeDePropriete.vars.choices %}
+
+                                    {% if loop.index <= 3 %}
+
+                                        {# Vérifie si ce type est déjà sélectionné #}
+                                        {% set isChecked = choice.value in selectedTypes %}
+
+                                        {# ID unique du checkbox #}
+                                        {% set inputId = 'filter-property-' ~ choice.value %}
+
+                                        <input
+                                            type="checkbox"
+                                            class="btn-check"
+                                            name="{{ formModal.typeDePropriete.vars.full_name }}[]"
+                                            id="{{ inputId }}"
+                                            value="{{ choice.value }}"
+                                            {% if isChecked %}checked{% endif %}
+                                        >
+
+                                        <label class="boolts-choice" for="{{ inputId }}">
+                                            {# Icône venant du choice_attr de ton EntityType #}
+                                            {% if choice.attr.icon is defined and choice.attr.icon is not empty %}
+                                                <i class="{{ choice.attr.icon }}" aria-hidden="true"></i>
+                                            {% endif %}
+
+                                            {{ choice.label }}
+
+                                            {# Affiche une croix seulement si le choix est sélectionné #}
+                                            {% if isChecked %}
+                                                <span class="boolts-choice-remove" aria-hidden="true">&times;</span>
+                                            {% endif %}
+                                        </label>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </div>
+
+                            {# 
+                                Si on a plus de 3 types de propriété,
+                                les autres sont placés dans une zone Bootstrap collapse.
+                            #}
+                            {% if choicesCount > 3 %}
+                                <div class="collapse" id="propertyTypeMore">
+                                    <div class="boolts-choice-list mt-3">
+
+                                        {% for choice in formModal.typeDePropriete.vars.choices %}
+
+                                            {% if loop.index > 3 %}
+
+                                                {% set isChecked = choice.value in selectedTypes %}
+                                                {% set inputId = 'filter-property-more-' ~ choice.value %}
+
+                                                <input
+                                                    type="checkbox"
+                                                    class="btn-check"
+                                                    name="{{ formModal.typeDePropriete.vars.full_name }}[]"
+                                                    id="{{ inputId }}"
+                                                    value="{{ choice.value }}"
+                                                    {% if isChecked %}checked{% endif %}
+                                                >
+
+                                                <label class="boolts-choice" for="{{ inputId }}">
+                                                    {% if choice.attr.icon is defined and choice.attr.icon is not empty %}
+                                                        <i class="{{ choice.attr.icon }}" aria-hidden="true"></i>
+                                                    {% endif %}
+
+                                                    {{ choice.label }}
+
+                                                    {% if isChecked %}
+                                                        <span class="boolts-choice-remove" aria-hidden="true">&times;</span>
+                                                    {% endif %}
+                                                </label>
+
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+
+                                {# Bouton qui ouvre/ferme les types supplémentaires #}
+                                <button
+                                    type="button"
+                                    class="boolts-filter-more"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#propertyTypeMore"
+                                    aria-expanded="false"
+                                    aria-controls="propertyTypeMore"
+                                >
+                                    Voir plus
+                                </button>
+                            {% endif %}
+
+                            {# 
+                                Indique à Symfony que ce champ est déjà rendu manuellement.
+                                Cela évite qu'il soit réaffiché automatiquement par form_rest/form_end.
+                            #}
+                            {% do formModal.typeDePropriete.setRendered %}
+
+                        </div>
+                    </div>
+                </div>
+
+                {# ============================================================
+                   LOCALISATION
+                   Autocomplétion pays / ville / quartier avec Stimulus
+                   Controller JS : boolts-location
+                ============================================================ #}
+                <div
+                    class="accordion-item boolts-filter-item"
+                    data-controller="boolts-location"
+                    data-boolts-location-country-url-value="{{ path('app_geo_country_autocomplete') }}"
+                    data-boolts-location-city-url-value="{{ path('app_geo_city_autocomplete') }}"
+                    data-boolts-location-district-url-value="{{ path('app_geo_district_autocomplete') }}"
+                >
+                    <h3 class="accordion-header" id="headingLocation">
+                        <button
+                            class="accordion-button boolts-filter-toggle"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseLocation"
+                            aria-expanded="true"
+                            aria-controls="collapseLocation"
+                        >
+                            Localisation
+                        </button>
+                    </h3>
+
+                    <div
+                        id="collapseLocation"
+                        class="accordion-collapse collapse show"
+                        aria-labelledby="headingLocation"
+                    >
+                        <div class="accordion-body boolts-filter-panel">
+
+                            {# =========================
+                               PAYS
+                               Champ visible : paysSearch
+                               Champ caché : pays
+                            ========================== #}
+                            <div class="boolts-location-group">
+                                <label class="boolts-location-label" for="country-search">
+                                    Pays
+                                </label>
+
+                                <div class="boolts-search-control">
+                                    <i class="icon-search" aria-hidden="true"></i>
+
+                                    {# Input visible pour rechercher un pays #}
+                                    {{ form_widget(formModal.paysSearch, {
+                                        attr: {
+                                            id: 'country-search',
+                                            class: 'boolts-location-input',
+                                            autocomplete: 'off',
+                                            placeholder: 'Rechercher un pays',
+                                            'data-boolts-location-target': 'countryInput',
+                                            'data-action': 'input->boolts-location#searchCountry keydown->boolts-location#keyboardCountry'
+                                        }
+                                    }) }}
+                                </div>
+
+                                {# Champ caché contenant la vraie valeur envoyée au serveur #}
+                                {{ form_widget(formModal.pays, {
+                                    attr: {
+                                        'data-boolts-location-target': 'countryHidden'
+                                    }
+                                }) }}
+
+                                {# Liste des pays sélectionnés, remplie par Stimulus #}
+                                <div
+                                    class="boolts-selected-list"
+                                    data-boolts-location-target="countryList"
+                                ></div>
+                            </div>
+
+                            {# =========================
+                               VILLE
+                               Champ visible : villeSearch
+                               Champ caché : ville
+                            ========================== #}
+                            <div class="boolts-location-group">
+                                <label class="boolts-location-label is-muted" for="city-search">
+                                    Ville
+                                </label>
+
+                                <div class="boolts-search-control">
+                                    <i class="icon-search" aria-hidden="true"></i>
+
+                                    {{ form_widget(formModal.villeSearch, {
+                                        attr: {
+                                            id: 'city-search',
+                                            class: 'boolts-location-input',
+                                            autocomplete: 'off',
+                                            placeholder: 'Rechercher une ville',
+                                            'data-boolts-location-target': 'cityInput',
+                                            'data-action': 'input->boolts-location#searchCity keydown->boolts-location#keyboardCity'
+                                        }
+                                    }) }}
+                                </div>
+
+                                {{ form_widget(formModal.ville, {
+                                    attr: {
+                                        'data-boolts-location-target': 'cityHidden'
+                                    }
+                                }) }}
+
+                                <div
+                                    class="boolts-selected-list"
+                                    data-boolts-location-target="cityList"
+                                ></div>
+                            </div>
+
+                            {# =========================
+                               QUARTIER
+                               Champ visible : quartierSearch
+                               Champ caché : quartier
+                            ========================== #}
+                            <div class="boolts-location-group mb-0">
+                                <label class="boolts-location-label is-muted" for="district-search">
+                                    Quartier
+                                </label>
+
+                                <div class="boolts-search-control">
+                                    <i class="icon-search" aria-hidden="true"></i>
+
+                                    {{ form_widget(formModal.quartierSearch, {
+                                        attr: {
+                                            id: 'district-search',
+                                            class: 'boolts-location-input',
+                                            autocomplete: 'off',
+                                            placeholder: 'Rechercher un quartier',
+                                            'data-boolts-location-target': 'districtInput',
+                                            'data-action': 'input->boolts-location#searchDistrict keydown->boolts-location#keyboardDistrict'
+                                        }
+                                    }) }}
+                                </div>
+
+                                {{ form_widget(formModal.quartier, {
+                                    attr: {
+                                        'data-boolts-location-target': 'districtHidden'
+                                    }
+                                }) }}
+
+                                <div
+                                    class="boolts-selected-list"
+                                    data-boolts-location-target="districtList"
+                                ></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                {# ============================================================
+                   CHAMPS MIN / MAX
+                   Génération dynamique des blocs :
+                   - Chambres
+                   - Salle de bain
+                   - Surface
+                   - Année de construction
+                   - Prix
+                ============================================================ #}
+                {% set rangeFilters = [
+                    {
+                        id: 'chambres',
+                        label: 'Chambres',
+                        minField: 'minChambres',
+                        maxField: 'maxChambres',
+                        unit: ''
+                    },
+                    {
+                        id: 'salles-de-bain',
+                        label: 'Salle de bain',
+                        minField: 'minSallesDeBain',
+                        maxField: 'maxSallesDeBain',
+                        unit: ''
+                    },
+                    {
+                        id: 'surface',
+                        label: 'Surface',
+                        minField: 'minSurface',
+                        maxField: 'maxSurface',
+                        unit: 'm²'
+                    },
+                    {
+                        id: 'annee-construction',
+                        label: 'Année de construction',
+                        minField: 'minAnneeConstruction',
+                        maxField: 'maxAnneeConstruction',
+                        unit: ''
+                    },
+                    {
+                        id: 'prix',
+                        label: 'Fourchette de prix',
+                        minField: 'minPrix',
+                        maxField: 'maxPrix',
+                        unit: '€'
+                    }
+                ] %}
+
+                {# Boucle sur chaque groupe min/max #}
+                {% for filter in rangeFilters %}
+
+                    {# 
+                        Protection : on affiche le bloc uniquement si les deux champs existent.
+                        Cela évite les erreurs Twig si un champ manque dans le FormType.
+                    #}
+                    {% if formModal[filter.minField] is defined and formModal[filter.maxField] is defined %}
+
+                        <div class="accordion-item boolts-filter-item">
+                            <h3 class="accordion-header" id="heading-{{ filter.id }}">
+                                <button
+                                    class="accordion-button boolts-filter-toggle"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-{{ filter.id }}"
+                                    aria-expanded="true"
+                                    aria-controls="collapse-{{ filter.id }}"
+                                >
+                                    {{ filter.label }}
+                                </button>
+                            </h3>
+
+                            <div
+                                id="collapse-{{ filter.id }}"
+                                class="accordion-collapse collapse show"
+                                aria-labelledby="heading-{{ filter.id }}"
+                            >
+                                <div class="accordion-body boolts-filter-panel">
+                                    <div class="row g-4">
+
+                                        {# Champ minimum #}
+                                        <div class="col-6">
+                                            <label
+                                                class="boolts-filter-label"
+                                                for="{{ formModal[filter.minField].vars.id }}"
+                                            >
+                                                Minimum
+                                            </label>
+
+                                            <div class="boolts-field-with-suffix">
+                                                {{ form_widget(formModal[filter.minField], {
+                                                    attr: {
+                                                        class: 'boolts-filter-input',
+                                                        inputmode: 'numeric',
+                                                        min: 0
+                                                    }
+                                                }) }}
+
+                                                {# Affiche l'unité seulement si elle existe #}
+                                                {% if filter.unit is not empty %}
+                                                    <span>{{ filter.unit }}</span>
+                                                {% endif %}
+                                            </div>
+
+                                            {{ form_errors(formModal[filter.minField]) }}
+                                        </div>
+
+                                        {# Champ maximum #}
+                                        <div class="col-6">
+                                            <label
+                                                class="boolts-filter-label"
+                                                for="{{ formModal[filter.maxField].vars.id }}"
+                                            >
+                                                Maximum
+                                            </label>
+
+                                            <div class="boolts-field-with-suffix">
+                                                {{ form_widget(formModal[filter.maxField], {
+                                                    attr: {
+                                                        class: 'boolts-filter-input',
+                                                        inputmode: 'numeric',
+                                                        min: 0
+                                                    }
+                                                }) }}
+
+                                                {% if filter.unit is not empty %}
+                                                    <span>{{ filter.unit }}</span>
+                                                {% endif %}
+                                            </div>
+
+                                            {{ form_errors(formModal[filter.maxField]) }}
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endif %}
+
+                {% endfor %}
+
+                {# ============================================================
+                   PERFORMANCE ÉNERGÉTIQUE / DPE
+                   Champ Symfony : formModal.dpe
+                   Type attendu : ChoiceType expanded => true, multiple => true
+                ============================================================ #}
+                {% if formModal.dpe is defined %}
+
+                    <div class="accordion-item boolts-filter-item border-0">
+                        <h3 class="accordion-header" id="headingEnergy">
+                            <button
+                                class="accordion-button boolts-filter-toggle"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapseEnergy"
+                                aria-expanded="true"
+                                aria-controls="collapseEnergy"
+                            >
+                                Performance énergétique
+                            </button>
+                        </h3>
+
+                        <div
+                            id="collapseEnergy"
+                            class="accordion-collapse collapse show"
+                            aria-labelledby="headingEnergy"
+                        >
+                            <div class="accordion-body boolts-filter-panel">
+                                <div class="boolts-energy-list">
+
+                                    {# Données d'affichage pour chaque lettre DPE #}
+                                    {% set dpeItems = {
+                                        'A': {text: '< 71', class: 'a'},
+                                        'B': {text: '71 - 110', class: 'b'},
+                                        'C': {text: '111 - 180', class: 'c'},
+                                        'D': {text: '181 - 250', class: 'd'},
+                                        'E': {text: '251 - 330', class: 'e'},
+                                        'F': {text: '331 - 420', class: 'f'},
+                                        'G': {text: '> 420', class: 'g'}
+                                    } %}
+
+                                    {# Boucle sur les checkbox générées par Symfony pour le champ DPE #}
+                                    {% for dpeField in formModal.dpe %}
+
+                                        {# Lettre actuelle : A, B, C, D, E, F ou G #}
+                                        {% set letter = dpeField.vars.value %}
+
+                                        {# Récupère les infos d'affichage associées à cette lettre #}
+                                        {% set dpe = dpeItems[letter] %}
+
+                                        <div class="boolts-energy-row">
+
+                                            {# Checkbox Symfony du DPE #}
+                                            {{ form_widget(dpeField, {
+                                                attr: {
+                                                    class: 'form-check-input boolts-energy-check'
+                                                }
+                                            }) }}
+
+                                            <label
+                                                class="boolts-energy-label"
+                                                for="{{ dpeField.vars.id }}"
+                                            >
+                                                <span class="boolts-energy-letter">
+                                                    {{ letter }}
+                                                </span>
+
+                                                <span class="boolts-energy-bar boolts-energy-{{ dpe.class }}">
+                                                    {{ dpe.text }}
+                                                </span>
+                                            </label>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                    {{ form_errors(formModal.dpe) }}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endif %}
+
+            </div>
+        </div>
+
+        {# Footer de la modal avec le bouton de validation #}
+        <div class="modal-footer boolts-filter-footer">
+            <button
+                type="submit"
+                class="bt-research-primary-btn boolts-filter-submit w-100"
+                data-boolts-filter-count-target="button"
+            >
+                Afficher les
+                <span data-boolts-filter-count-target="count">
+                    {{ totalResults|default(0) }}
+                </span>
+                <span data-boolts-filter-count-target="label">
+                    {{ totalResults|default(0) == 1 ? 'logement' : 'logements' }}
+                </span>
+            </button>
+        </div>
+
+        {# Fin du formulaire Symfony #}
+        {{ form_end(formModal) }}
     </div>
-</div>
-
-				{# Champs min / max #}
-				{% set rangeFilters = [
-                        {id: 'rooms', label: 'Chambres', type: 'select', unit: ''},
-                        {id: 'bathrooms', label: 'Salle de bain', type: 'select', unit: ''},
-                        {id: 'surface', label: 'Surface', type: 'number', unit: 'm²'},
-                        {id: 'year', label: 'Année de construction', type: 'number', unit: ''},
-                        {id: 'price', label: 'Fourchette de prix', type: 'number', unit: '€'},
-                    ] %}
-
-				{% for filter in rangeFilters %}
-					<div class="accordion-item boolts-filter-item">
-						<h3 class="accordion-header" id="heading-{{ filter.id }}">
-							<button class="accordion-button boolts-filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ filter.id }}" aria-expanded="true" aria-controls="collapse-{{ filter.id }}">
-								{{ filter.label }}
-							</button>
-						</h3>
-
-						<div id="collapse-{{ filter.id }}" class="accordion-collapse collapse show" aria-labelledby="heading-{{ filter.id }}">
-							<div class="accordion-body boolts-filter-panel">
-								<div class="row g-4">
-									<div class="col-6">
-										<label class="boolts-filter-label" for="{{ filter.id }}-min">
-											Minimum
-										</label>
-
-										{% if filter.type == 'select' %}
-											<select id="{{ filter.id }}-min" name="{{ filter.id }}Min" class="boolts-filter-select">
-												<option value=""></option>
-												<option value="1">1</option>
-												<option value="2">2</option>
-												<option value="3">3</option>
-												<option value="4">4+</option>
-											</select>
-										{% else %}
-											<div class="boolts-field-with-suffix">
-												<input id="{{ filter.id }}-min" type="number" name="{{ filter.id }}Min" inputmode="numeric">
-												{% if filter.unit %}
-													<span>{{ filter.unit }}</span>
-												{% endif %}
-											</div>
-										{% endif %}
-									</div>
-
-									<div class="col-6">
-										<label class="boolts-filter-label" for="{{ filter.id }}-max">
-											Maximum
-										</label>
-
-										{% if filter.type == 'select' %}
-											<select id="{{ filter.id }}-max" name="{{ filter.id }}Max" class="boolts-filter-select">
-												<option value=""></option>
-												<option value="1">1</option>
-												<option value="2">2</option>
-												<option value="3">3</option>
-												<option value="4">4+</option>
-											</select>
-										{% else %}
-											<div class="boolts-field-with-suffix">
-												<input id="{{ filter.id }}-max" type="number" name="{{ filter.id }}Max" inputmode="numeric">
-												{% if filter.unit %}
-													<span>{{ filter.unit }}</span>
-												{% endif %}
-											</div>
-										{% endif %}
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				{% endfor %}
-
-				{# Performance énergétique #}
-				<div class="accordion-item boolts-filter-item border-0">
-					<h3 class="accordion-header" id="headingEnergy">
-						<button class="accordion-button boolts-filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEnergy" aria-expanded="true" aria-controls="collapseEnergy">
-							Performance énergétique
-						</button>
-					</h3>
-
-					<div id="collapseEnergy" class="accordion-collapse collapse show" aria-labelledby="headingEnergy">
-						<div class="accordion-body boolts-filter-panel">
-							<div class="boolts-energy-list">
-								{% set dpeItems = [
-                                        {letter: 'A', text: '< 71', class: 'a'},
-                                        {letter: 'B', text: '71 - 110', class: 'b'},
-                                        {letter: 'C', text: '111 - 180', class: 'c'},
-                                        {letter: 'D', text: '181 - 250', class: 'd'},
-                                        {letter: 'E', text: '251 - 330', class: 'e'},
-                                        {letter: 'F', text: '331 - 420', class: 'f'},
-                                        {letter: 'G', text: '> 420', class: 'g'},
-                                    ] %}
-
-								{% for dpe in dpeItems %}
-									<div class="boolts-energy-row">
-										<input class="form-check-input boolts-energy-check" type="checkbox" name="dpe[]" value="{{ dpe.letter }}" id="dpe-{{ dpe.class }}">
-
-										<label class="boolts-energy-label" for="dpe-{{ dpe.class }}">
-											<span class="boolts-energy-letter">{{ dpe.letter }}</span>
-											<span class="boolts-energy-bar boolts-energy-{{ dpe.class }}">
-												{{ dpe.text }}
-											</span>
-										</label>
-									</div>
-								{% endfor %}
-							</div>
-						</div>
-					</div>
-				</div>
-
-			</div>
-		</div>
-
-		<div class="modal-footer boolts-filter-footer">
-			<button type="submit" class="bt-research-primary-btn boolts-filter-submit w-100">
-				Afficher les
-				{{ totalResults|default(287) }}
-				logements
-			</button>
-		</div>
-		{{ form_end(formModal) }}
-	</div>
 </div>

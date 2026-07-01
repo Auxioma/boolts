@@ -12,6 +12,7 @@
 
 namespace App\Controller\Public;
 
+use App\Entity\CategoryBienTransaction;
 use App\Entity\Filter\ModalFilter;
 use App\Entity\Search\PropertySearchSession;
 use App\Entity\SearchBar\FilterCityCountry;
@@ -56,12 +57,17 @@ final class SearchController extends AbstractController
 
         $form->handleRequest($request);
 
-        $transactionType = $filter->getTransactionType();
-        $ville = $filter->getSelectedCityName();
-        $cp = $filter->getSelectedPostalCode();
-        $pays = $filter->getSelectedCountryName();
+        if (!$form->isSubmitted()) {
+            return $this->redirectToRoute('app_home');
+        }
 
-        if (null === $transactionType || empty($pays)) {
+        $transactionType = $filter->getTransactionType();
+
+        $ville = $this->cleanValue($filter->getSelectedCityName());
+        $cp = $this->cleanValue($filter->getSelectedPostalCode());
+        $pays = $this->cleanValue($filter->getSelectedCountryName());
+
+        if (null === $transactionType || null === $pays) {
             $this->addFlash('warning', 'Veuillez sélectionner un type de transaction et un pays.');
 
             return $this->redirectToRoute('app_home');
@@ -69,12 +75,9 @@ final class SearchController extends AbstractController
 
         $searchToken = bin2hex(random_bytes(16));
 
-        $request->getSession()->set('property_search_'.$searchToken, [
-            'transactionTypeId' => $transactionType->getId(),
-            'ville' => $ville,
-            'cp' => $cp,
-            'pays' => $pays,
-        ]);
+        $criteria = $this->buildCriteriaFromFilter($filter);
+
+        $request->getSession()->set('property_search_'.$searchToken, $criteria);
 
         $sessionRecherche = new PropertySearchSession();
         $sessionRecherche->setUuid(Uuid::v7());
@@ -84,10 +87,20 @@ final class SearchController extends AbstractController
         $sessionRecherche->setPays($pays);
         $sessionRecherche->setFilters([
             'uuid' => $sessionRecherche->getUuid()->toRfc4122(),
+            'transactionTypeId' => $transactionType->getId(),
             'transactionType' => $transactionType->getName(),
+            'filter' => $criteria['filter'],
+            'selectedValue' => $criteria['selectedValue'],
             'ville' => $ville,
             'cp' => $cp,
             'pays' => $pays,
+            'selectedCountryCode' => $criteria['selectedCountryCode'],
+            'selectedRegionName' => $criteria['selectedRegionName'],
+            'selectedLatitude' => $criteria['selectedLatitude'],
+            'selectedLongitude' => $criteria['selectedLongitude'],
+            'selectedFullAddress' => $criteria['selectedFullAddress'],
+            'selectedMapboxId' => $criteria['selectedMapboxId'],
+            'selectedFeatureType' => $criteria['selectedFeatureType'],
         ]);
 
         $this->entityManager->persist($sessionRecherche);
@@ -116,7 +129,7 @@ final class SearchController extends AbstractController
     {
         $view = $request->query->get('view', 'list');
 
-        if (!in_array($view, ['list', 'map'], true)) {
+        if (!\in_array($view, ['list', 'map'], true)) {
             $view = 'list';
         }
 
@@ -128,8 +141,15 @@ final class SearchController extends AbstractController
             throw $this->createNotFoundException('Cette recherche est introuvable ou expirée.');
         }
 
-        $filter = new FilterCityCountry();
+        /**
+         * Ici on reconstruit l'objet FilterCityCountry
+         * avec les valeurs sauvegardées en session grâce au token.
+         */
+        $filter = $this->buildFilterFromCriteria($criteria);
 
+        /**
+         * Le formulaire garde donc les anciennes valeurs.
+         */
         $form = $this->createForm(FilterCityCountryType::class, $filter, [
             'action' => $this->generateUrl('app_public_search'),
             'method' => 'POST',
@@ -166,13 +186,14 @@ final class SearchController extends AbstractController
         );
 
         /**
-         * Filtre de recherche de la modal
+         * Filtre de recherche de la modal.
          */
-        $FiltreModal = new ModalFilter();
-        $formModal = $this->createForm(ModalFilterType::class, $FiltreModal, [
+        $filtreModal = new ModalFilter();
+
+        $formModal = $this->createForm(ModalFilterType::class, $filtreModal, [
             'action' => $this->generateUrl('app_public_search_results', [
-                'searchToken' => $searchToken, 
-                'view' => $view
+                'searchToken' => $searchToken,
+                'view' => $view,
             ]),
             'method' => 'GET',
         ]);
@@ -258,6 +279,105 @@ final class SearchController extends AbstractController
         ]);
     }
 
+    /**
+     * Construit les critères de recherche à sauvegarder en session.
+     *
+     * Ces données permettent de recharger la recherche avec un token :
+     * /public/search/{searchToken}
+     *
+     * @return array{
+     *     transactionTypeId: int|null,
+     *     filter: string|null,
+     *     selectedValue: string|null,
+     *     ville: string|null,
+     *     cp: string|null,
+     *     pays: string|null,
+     *     selectedCountryCode: string|null,
+     *     selectedRegionName: string|null,
+     *     selectedLatitude: string|null,
+     *     selectedLongitude: string|null,
+     *     selectedFullAddress: string|null,
+     *     selectedMapboxId: string|null,
+     *     selectedFeatureType: string|null
+     * }
+     */
+    private function buildCriteriaFromFilter(FilterCityCountry $filter): array
+    {
+        $transactionType = $filter->getTransactionType();
+
+        return [
+            'transactionTypeId' => $transactionType?->getId(),
+
+            /*
+             * Champ visible du formulaire.
+             */
+            'filter' => $this->cleanValue($filter->getFilter()),
+
+            /*
+             * Valeur sélectionnée par ton Stimulus.
+             */
+            'selectedValue' => $this->cleanValue($filter->getSelectedValue()),
+
+            /*
+             * Valeurs principales utilisées par la recherche Doctrine.
+             */
+            'ville' => $this->cleanValue($filter->getSelectedCityName()),
+            'cp' => $this->cleanValue($filter->getSelectedPostalCode()),
+            'pays' => $this->cleanValue($filter->getSelectedCountryName()),
+
+            /*
+             * Valeurs cachées utiles pour recharger proprement le formulaire.
+             */
+            'selectedCountryCode' => $this->cleanValue($filter->getSelectedCountryCode()),
+            'selectedRegionName' => $this->cleanValue($filter->getSelectedRegionName()),
+            'selectedLatitude' => $this->cleanValue($filter->getSelectedLatitude()),
+            'selectedLongitude' => $this->cleanValue($filter->getSelectedLongitude()),
+            'selectedFullAddress' => $this->cleanValue($filter->getSelectedFullAddress()),
+            'selectedMapboxId' => $this->cleanValue($filter->getSelectedMapboxId()),
+            'selectedFeatureType' => $this->cleanValue($filter->getSelectedFeatureType()),
+        ];
+    }
+
+    /**
+     * Reconstruit l'objet FilterCityCountry depuis les critères stockés en session.
+     */
+    private function buildFilterFromCriteria(array $criteria): FilterCityCountry
+    {
+        $filter = new FilterCityCountry();
+
+        $transactionType = null;
+
+        if (!empty($criteria['transactionTypeId'])) {
+            $transactionType = $this->entityManager->find(
+                CategoryBienTransaction::class,
+                $criteria['transactionTypeId']
+            );
+        }
+
+        $filter->setTransactionType($transactionType);
+
+        /*
+         * Champ visible.
+         */
+        $filter->setFilter($criteria['filter'] ?? null);
+
+        /*
+         * Champs cachés.
+         */
+        $filter->setSelectedValue($criteria['selectedValue'] ?? null);
+        $filter->setSelectedCityName($criteria['ville'] ?? null);
+        $filter->setSelectedPostalCode($criteria['cp'] ?? null);
+        $filter->setSelectedCountryName($criteria['pays'] ?? null);
+        $filter->setSelectedCountryCode($criteria['selectedCountryCode'] ?? null);
+        $filter->setSelectedRegionName($criteria['selectedRegionName'] ?? null);
+        $filter->setSelectedLatitude($criteria['selectedLatitude'] ?? null);
+        $filter->setSelectedLongitude($criteria['selectedLongitude'] ?? null);
+        $filter->setSelectedFullAddress($criteria['selectedFullAddress'] ?? null);
+        $filter->setSelectedMapboxId($criteria['selectedMapboxId'] ?? null);
+        $filter->setSelectedFeatureType($criteria['selectedFeatureType'] ?? null);
+
+        return $filter;
+    }
 
     /**
      * Retourne les limites visibles de la carte Mapbox si elles sont présentes et valides.
@@ -273,14 +393,14 @@ final class SearchController extends AbstractController
         $west = $request->query->get('west');
 
         if (
-            null === $north ||
-            null === $south ||
-            null === $east ||
-            null === $west ||
-            !is_numeric($north) ||
-            !is_numeric($south) ||
-            !is_numeric($east) ||
-            !is_numeric($west)
+            null === $north
+            || null === $south
+            || null === $east
+            || null === $west
+            || !is_numeric($north)
+            || !is_numeric($south)
+            || !is_numeric($east)
+            || !is_numeric($west)
         ) {
             return null;
         }
@@ -291,5 +411,20 @@ final class SearchController extends AbstractController
             'east' => (float) $east,
             'west' => (float) $west,
         ];
+    }
+
+    private function cleanValue(mixed $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        $value = mb_trim((string) $value);
+
+        if ('' === $value) {
+            return null;
+        }
+
+        return $value;
     }
 }
