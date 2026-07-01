@@ -1,12 +1,22 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\DataFixtures\Faker;
 
 use Faker\Factory;
 use Faker\Generator;
 use Faker\Provider\Base;
 
-final class RealEstateCityProvider extends Base
+final class RealEstateLocationProvider extends Base
 {
     private const COUNTRIES = [
         'fr' => [
@@ -198,7 +208,7 @@ final class RealEstateCityProvider extends Base
             'ville' => $city,
             'adresse' => $adresse,
             'codePostal' => $codePostal,
-            'fullAddress' => sprintf(
+            'fullAddress' => \sprintf(
                 '%s, %s %s, %s',
                 $adresse,
                 $codePostal,
@@ -210,11 +220,11 @@ final class RealEstateCityProvider extends Base
 
     private function normalizeCountryCode(?string $countryCode): string
     {
-        if (null === $countryCode || '' === trim($countryCode)) {
+        if (null === $countryCode || '' === mb_trim($countryCode)) {
             return $this->realEstateCountryCode();
         }
 
-        $countryCode = mb_strtolower(trim($countryCode));
+        $countryCode = mb_strtolower(mb_trim($countryCode));
 
         $countryCode = match ($countryCode) {
             'us', 'usa', 'united-states', 'etats-unis', 'états-unis' => 'usa',
@@ -226,15 +236,15 @@ final class RealEstateCityProvider extends Base
             default => $countryCode,
         };
 
-        return array_key_exists($countryCode, self::COUNTRIES) ? $countryCode : 'fr';
+        return \array_key_exists($countryCode, self::COUNTRIES) ? $countryCode : 'fr';
     }
 
     private function generateStreetAddress(Generator $faker): string
     {
         try {
-            return trim((string) $faker->streetAddress());
+            return mb_trim((string) $faker->streetAddress());
         } catch (\Throwable) {
-            return trim($faker->buildingNumber().' '.$faker->streetName());
+            return mb_trim($faker->buildingNumber().' '.$faker->streetName());
         }
     }
 
@@ -245,7 +255,7 @@ final class RealEstateCityProvider extends Base
         }
 
         try {
-            return trim((string) $faker->postcode());
+            return mb_trim((string) $faker->postcode());
         } catch (\Throwable) {
             return (string) $faker->numberBetween(10000, 99999);
         }

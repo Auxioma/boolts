@@ -1462,7 +1462,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                     ->setCodePostal($location['codePostal'])
                     ->setLatitude($randomGps['latitude'])
                     ->setLongitude($randomGps['longitude'])
-                    ->setMapboxId(sprintf('%s-%06d', $location['mapboxId'], $propertyReferenceIndex))
+                    ->setMapboxId(\sprintf('%s-%06d', $location['mapboxId'], $propertyReferenceIndex))
                     ->setFeatureType('address')
                     ->setShowAdresse((bool) $faker->numberBetween(0, 1))
                     ->setAnneeConstruction((string) $faker->numberBetween(1950, 2025))
@@ -1532,7 +1532,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
     private function buildUniqueLocalizedAddress(
         \Faker\Generator $faker,
         array $location,
-        array &$usedFullAddresses
+        array &$usedFullAddresses,
     ): array {
         $attempts = 0;
 
@@ -1544,7 +1544,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             $adresse = $streetNumber.' '.$street;
 
-            $fullAddress = sprintf(
+            $fullAddress = \sprintf(
                 '%s, %s %s, France',
                 $adresse,
                 $location['codePostal'],
@@ -1553,15 +1553,11 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             $region = $location['region'] ?? 'Île-de-France';
 
-            $key = strtolower($fullAddress);
+            $key = mb_strtolower($fullAddress);
         } while (isset($usedFullAddresses[$key]) && $attempts < 200);
 
         if (isset($usedFullAddresses[$key])) {
-            throw new \RuntimeException(sprintf(
-                'Impossible de générer une adresse unique pour %s %s.',
-                $location['codePostal'],
-                $location['ville']
-            ));
+            throw new \RuntimeException(\sprintf('Impossible de générer une adresse unique pour %s %s.', $location['codePostal'], $location['ville']));
         }
 
         $usedFullAddresses[$key] = true;
@@ -1664,7 +1660,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         float $longitude,
         float $radiusKm,
         \Faker\Generator $faker,
-        array &$usedGps
+        array &$usedGps,
     ): array {
         $attempts = 0;
 
@@ -1694,7 +1690,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         float $latitude,
         float $longitude,
         float $radiusKm,
-        \Faker\Generator $faker
+        \Faker\Generator $faker,
     ): array {
         $distanceKm = $radiusKm * sqrt($faker->randomFloat(6, 0, 1));
         $bearing = deg2rad($faker->randomFloat(6, 0, 360));
@@ -1714,7 +1710,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             cos($angularDistance) - sin($lat1) * sin($lat2)
         );
 
-        $lon2 = fmod($lon2 + 3 * M_PI, 2 * M_PI) - M_PI;
+        $lon2 = fmod($lon2 + 3 * \M_PI, 2 * \M_PI) - \M_PI;
 
         return [
             'latitude' => number_format(rad2deg($lat2), 7, '.', ''),

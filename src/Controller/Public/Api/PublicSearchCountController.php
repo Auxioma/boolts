@@ -34,6 +34,8 @@ final class PublicSearchCountController extends AbstractController
          */
         $filters = $this->extractFormFilters($request);
 
+        // dd($filters);
+
         /*
          * On demande au repository de compter les biens
          * selon les filtres reçus.

@@ -57,15 +57,30 @@ final class SearchController extends AbstractController
 
         $form->handleRequest($request);
 
-        if (!$form->isSubmitted()) {
+        /*if (!$form->isSubmitted()) {
             return $this->redirectToRoute('app_home');
-        }
+        }*/
+
+        /*if (!$form->isValid()) {
+            $this->addFlash('warning', 'Recherche invalide.');
+
+            return $this->redirectToRoute('app_home');
+        }*/
 
         $transactionType = $filter->getTransactionType();
 
-        $ville = $this->cleanValue($filter->getSelectedCityName());
-        $cp = $this->cleanValue($filter->getSelectedPostalCode());
-        $pays = $this->cleanValue($filter->getSelectedCountryName());
+        /**
+         * On construit les critères une seule fois.
+         *
+         * Important :
+         * Si selectedCityName est vide mais que selectedValue vaut "Le Havre",
+         * alors criteria['ville'] vaudra bien "Le Havre".
+         */
+        $criteria = $this->buildCriteriaFromFilter($filter);
+
+        $ville = $criteria['ville'];
+        $cp = $criteria['cp'];
+        $pays = $criteria['pays'];
 
         if (null === $transactionType || null === $pays) {
             $this->addFlash('warning', 'Veuillez sélectionner un type de transaction et un pays.');
@@ -74,8 +89,6 @@ final class SearchController extends AbstractController
         }
 
         $searchToken = bin2hex(random_bytes(16));
-
-        $criteria = $this->buildCriteriaFromFilter($filter);
 
         $request->getSession()->set('property_search_'.$searchToken, $criteria);
 
@@ -142,7 +155,7 @@ final class SearchController extends AbstractController
         }
 
         /**
-         * Ici on reconstruit l'objet FilterCityCountry
+         * Ici, on reconstruit l'objet FilterCityCountry
          * avec les valeurs sauvegardées en session grâce au token.
          */
         $filter = $this->buildFilterFromCriteria($criteria);
@@ -305,6 +318,26 @@ final class SearchController extends AbstractController
     {
         $transactionType = $filter->getTransactionType();
 
+        $selectedValue = $this->cleanValue($filter->getSelectedValue());
+        $selectedCityName = $this->cleanValue($filter->getSelectedCityName());
+        $selectedPostalCode = $this->cleanValue($filter->getSelectedPostalCode());
+        $selectedCountryName = $this->cleanValue($filter->getSelectedCountryName());
+
+        /**
+         * Correction importante.
+         *
+         * Cas Mapbox / Stimulus :
+         * selectedCityName peut être vide.
+         *
+         * Exemple :
+         * selectedValue: "Le Havre"
+         * selectedCityName: null
+         *
+         * Dans ce cas, on veut bien enregistrer :
+         * ville = "Le Havre"
+         */
+        $ville = $selectedCityName ?: $selectedValue;
+
         return [
             'transactionTypeId' => $transactionType?->getId(),
 
@@ -316,14 +349,14 @@ final class SearchController extends AbstractController
             /*
              * Valeur sélectionnée par ton Stimulus.
              */
-            'selectedValue' => $this->cleanValue($filter->getSelectedValue()),
+            'selectedValue' => $selectedValue,
 
             /*
              * Valeurs principales utilisées par la recherche Doctrine.
              */
-            'ville' => $this->cleanValue($filter->getSelectedCityName()),
-            'cp' => $this->cleanValue($filter->getSelectedPostalCode()),
-            'pays' => $this->cleanValue($filter->getSelectedCountryName()),
+            'ville' => $ville,
+            'cp' => $selectedPostalCode,
+            'pays' => $selectedCountryName,
 
             /*
              * Valeurs cachées utiles pour recharger proprement le formulaire.
