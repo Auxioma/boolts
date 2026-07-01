@@ -445,7 +445,7 @@ class PropertyRepository extends ServiceEntityRepository
                 $this->addTextFilter($qb, 'p.district', 'quartier', $quartiers);
             }
         }
-dd($pays, $villes, $quartiers);
+
         /*
          * Filtres min / max.
          */
