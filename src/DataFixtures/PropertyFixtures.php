@@ -28,1354 +28,1381 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
     public const PROPERTY_REFERENCE_PREFIX = 'property_';
 
     /**
-     * Conservé uniquement si d’autres fixtures l’utilisent encore.
-     * Le nombre réel de biens est maintenant dynamique :
-     * chaque ville génère entre 10 et 30 biens.
+     * Conservé pour les fixtures dépendantes.
+     * Le vrai volume est dynamique :
+     * 100 villes x 6 à 12 biens = environ 600 à 1200 annonces réalistes.
      */
     public const PROPERTY_COUNT = 2000;
 
-    private const MIN_PROPERTIES_PER_LOCATION = 10;
-    private const MAX_PROPERTIES_PER_LOCATION = 30;
+    private const MIN_PROPERTIES_PER_LOCATION = 6;
+    private const MAX_PROPERTIES_PER_LOCATION = 12;
 
     /**
      * Rayon GPS autour du centre de la ville.
-     *
-     * Pour rester cohérent avec une ville ou une commune,
-     * 2.5 km évite d’éparpiller les biens trop loin du centre.
+     * 2.5 km permet de rester cohérent avec la commune/le quartier.
      */
     private const GPS_RANDOM_RADIUS_KM = 2.5;
-
     private const EARTH_RADIUS_KM = 6371.0088;
 
-    private const PROPERTIES = [
-        ['typeBien' => 'maison', 'typeTransaction' => 'vente'],
-        ['typeBien' => 'appartement', 'typeTransaction' => 'location'],
-        ['typeBien' => 'villa', 'typeTransaction' => 'vente'],
-        ['typeBien' => 'fond-de-commerce', 'typeTransaction' => 'vente'],
-        ['typeBien' => 'bureaux', 'typeTransaction' => 'location'],
-        ['typeBien' => 'local-commercial', 'typeTransaction' => 'location'],
-        ['typeBien' => 'terrain', 'typeTransaction' => 'vente'],
-        ['typeBien' => 'ferme', 'typeTransaction' => 'vente'],
-        ['typeBien' => 'parking-garage-box', 'typeTransaction' => 'location'],
+    /**
+     * Profils réalistes, proches de ce que l’on voit sur SeLoger / PAP :
+     * - beaucoup d’appartements et maisons,
+     * - quelques biens pros,
+     * - terrains, fermes et parkings plus rares.
+     */
+    private const PROPERTY_PROFILES = [
+        ['typeBien' => 'appartement', 'typeTransaction' => 'vente', 'weight' => 22],
+        ['typeBien' => 'appartement', 'typeTransaction' => 'location', 'weight' => 22],
+        ['typeBien' => 'maison', 'typeTransaction' => 'vente', 'weight' => 18],
+        ['typeBien' => 'maison', 'typeTransaction' => 'location', 'weight' => 6],
+        ['typeBien' => 'villa', 'typeTransaction' => 'vente', 'weight' => 5],
+        ['typeBien' => 'terrain', 'typeTransaction' => 'vente', 'weight' => 5],
+        ['typeBien' => 'ferme', 'typeTransaction' => 'vente', 'weight' => 3],
+        ['typeBien' => 'bureaux', 'typeTransaction' => 'location', 'weight' => 6],
+        ['typeBien' => 'bureaux', 'typeTransaction' => 'vente', 'weight' => 3],
+        ['typeBien' => 'local-commercial', 'typeTransaction' => 'location', 'weight' => 4],
+        ['typeBien' => 'local-commercial', 'typeTransaction' => 'vente', 'weight' => 2],
+        ['typeBien' => 'fond-de-commerce', 'typeTransaction' => 'vente', 'weight' => 2],
+        ['typeBien' => 'parking-garage-box', 'typeTransaction' => 'location', 'weight' => 2],
     ];
 
-    private const LOCATIONS = [
+    /**
+     * Facteurs de marché approximatifs pour rendre les prix plus crédibles selon la ville.
+     */
+    private const MARKET_FACTORS = [
+        'Paris' => 2.65,
+        'Lyon' => 1.55,
+        'Nice' => 1.65,
+        'Bordeaux' => 1.45,
+        'Annecy' => 1.75,
+        'Biarritz' => 1.85,
+        'Aix-en-Provence' => 1.55,
+        'La Rochelle' => 1.45,
+        'Nantes' => 1.25,
+        'Montpellier' => 1.25,
+        'Strasbourg' => 1.20,
+        'Lille' => 1.18,
+        'Rennes' => 1.15,
+        'Bayonne' => 1.35,
+        'Le Havre' => 0.82,
+
+        'Toronto' => 1.95,
+        'Vancouver' => 2.15,
+        'Montréal' => 1.45,
+        'Calgary' => 1.30,
+        'Ottawa' => 1.32,
+        'Victoria' => 1.70,
+        'Mississauga' => 1.55,
+        'Oakville' => 1.75,
+        'Richmond' => 1.65,
+        'Burnaby' => 1.55,
+        'Surrey' => 1.35,
+        'Banff' => 1.85,
+    ];
+
+    private const FRANCE_LOCATIONS = [
         [
-            'codePostal' => '75001',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Louvre',
-            'latitude' => '48.8647160',
-            'longitude' => '2.3490140',
-            'mapboxId' => 'fixture-idf-paris-75001',
-            'streets' => ['Rue de Rivoli', 'Rue Saint-Honoré', 'Place Vendôme'],
-        ],
-        [
-            'codePostal' => '75002',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Bourse',
-            'latitude' => '48.8682790',
-            'longitude' => '2.3428030',
-            'mapboxId' => 'fixture-idf-paris-75002',
-            'streets' => ['Rue Montmartre', 'Rue Réaumur', 'Rue Vivienne'],
-        ],
-        [
-            'codePostal' => '75003',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Temple',
-            'latitude' => '48.8635000',
-            'longitude' => '2.3590000',
-            'mapboxId' => 'fixture-idf-paris-75003',
-            'streets' => ['Rue de Bretagne', 'Rue Vieille-du-Temple', 'Rue des Archives'],
-        ],
-        [
-            'codePostal' => '75004',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Marais',
-            'latitude' => '48.8566000',
-            'longitude' => '2.3522000',
-            'mapboxId' => 'fixture-idf-paris-75004',
-            'streets' => ['Rue Saint-Antoine', 'Rue de Rivoli', 'Rue du Roi de Sicile'],
-        ],
-        [
-            'codePostal' => '75005',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Quartier Latin',
-            'latitude' => '48.8462000',
-            'longitude' => '2.3445000',
-            'mapboxId' => 'fixture-idf-paris-75005',
-            'streets' => ['Boulevard Saint-Michel', 'Rue Monge', 'Rue Mouffetard'],
-        ],
-        [
-            'codePostal' => '75006',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Saint-Germain-des-Prés',
-            'latitude' => '48.8493000',
-            'longitude' => '2.3327000',
-            'mapboxId' => 'fixture-idf-paris-75006',
-            'streets' => ['Boulevard Saint-Germain', 'Rue de Rennes', 'Rue Bonaparte'],
-        ],
-        [
-            'codePostal' => '75007',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Invalides',
-            'latitude' => '48.8565000',
-            'longitude' => '2.3126000',
-            'mapboxId' => 'fixture-idf-paris-75007',
-            'streets' => ['Avenue de la Motte-Picquet', 'Rue de Grenelle', 'Rue Saint-Dominique'],
-        ],
-        [
-            'codePostal' => '75008',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Champs-Élysées',
-            'latitude' => '48.8729000',
-            'longitude' => '2.3116000',
-            'mapboxId' => 'fixture-idf-paris-75008',
-            'streets' => ['Avenue des Champs-Élysées', 'Rue du Faubourg Saint-Honoré', 'Avenue Montaigne'],
-        ],
-        [
-            'codePostal' => '75009',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Opéra',
-            'latitude' => '48.8790000',
-            'longitude' => '2.3370000',
-            'mapboxId' => 'fixture-idf-paris-75009',
-            'streets' => ['Rue de Maubeuge', 'Rue de Châteaudun', 'Rue Lafayette'],
-        ],
-        [
-            'codePostal' => '75010',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Canal Saint-Martin',
-            'latitude' => '48.8763000',
-            'longitude' => '2.3599000',
-            'mapboxId' => 'fixture-idf-paris-75010',
-            'streets' => ['Rue du Faubourg Saint-Martin', 'Quai de Valmy', 'Rue de Lancry'],
-        ],
-        [
-            'codePostal' => '75011',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Bastille',
-            'latitude' => '48.8575000',
-            'longitude' => '2.3795000',
-            'mapboxId' => 'fixture-idf-paris-75011',
-            'streets' => ['Rue Oberkampf', 'Rue de la Roquette', 'Boulevard Voltaire'],
-        ],
-        [
-            'codePostal' => '75012',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Bercy',
-            'latitude' => '48.8396000',
-            'longitude' => '2.3958000',
-            'mapboxId' => 'fixture-idf-paris-75012',
-            'streets' => ['Rue de Charenton', 'Avenue Daumesnil', 'Cour Saint-Émilion'],
-        ],
-        [
-            'codePostal' => '75013',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Butte-aux-Cailles',
-            'latitude' => '48.8322000',
-            'longitude' => '2.3556000',
-            'mapboxId' => 'fixture-idf-paris-75013',
-            'streets' => ['Avenue d’Italie', 'Rue de Tolbiac', 'Boulevard Vincent-Auriol'],
-        ],
-        [
-            'codePostal' => '75014',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Montparnasse',
-            'latitude' => '48.8331000',
-            'longitude' => '2.3264000',
-            'mapboxId' => 'fixture-idf-paris-75014',
-            'streets' => ['Avenue du Maine', 'Rue d’Alésia', 'Boulevard Raspail'],
-        ],
-        [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '75015',
             'ville' => 'Paris',
+            'region' => 'Île-de-France',
             'department' => 'Paris',
             'neighborhood' => 'Vaugirard',
-            'latitude' => '48.8414000',
-            'longitude' => '2.3003000',
-            'mapboxId' => 'fixture-idf-paris-75015',
+            'latitude' => '48.8414',
+            'longitude' => '2.3003',
+            'mapboxId' => 'fixture-fr-paris-75015',
             'streets' => ['Rue de Vaugirard', 'Rue Lecourbe', 'Boulevard de Grenelle'],
         ],
         [
-            'codePostal' => '75016',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Passy',
-            'latitude' => '48.8637000',
-            'longitude' => '2.2769000',
-            'mapboxId' => 'fixture-idf-paris-75016',
-            'streets' => ['Rue de Passy', 'Avenue Victor Hugo', 'Boulevard Suchet'],
-        ],
-        [
-            'codePostal' => '75017',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Batignolles',
-            'latitude' => '48.8835000',
-            'longitude' => '2.3219000',
-            'mapboxId' => 'fixture-idf-paris-75017',
-            'streets' => ['Rue des Batignolles', 'Avenue de Clichy', 'Boulevard Malesherbes'],
-        ],
-        [
-            'codePostal' => '75018',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Montmartre',
-            'latitude' => '48.8867040',
-            'longitude' => '2.3404520',
-            'mapboxId' => 'fixture-idf-paris-75018',
-            'streets' => ['Rue Lepic', 'Rue Caulaincourt', 'Rue des Abbesses'],
-        ],
-        [
-            'codePostal' => '75019',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Buttes-Chaumont',
-            'latitude' => '48.8838000',
-            'longitude' => '2.3817000',
-            'mapboxId' => 'fixture-idf-paris-75019',
-            'streets' => ['Avenue Jean-Jaurès', 'Rue de Crimée', 'Rue Manin'],
-        ],
-        [
-            'codePostal' => '75020',
-            'ville' => 'Paris',
-            'department' => 'Paris',
-            'neighborhood' => 'Belleville',
-            'latitude' => '48.8647000',
-            'longitude' => '2.3984000',
-            'mapboxId' => 'fixture-idf-paris-75020',
-            'streets' => ['Rue de Belleville', 'Rue des Pyrénées', 'Boulevard de Charonne'],
-        ],
-
-        [
-            'codePostal' => '92100',
-            'ville' => 'Boulogne-Billancourt',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Centre-ville',
-            'latitude' => '48.8397000',
-            'longitude' => '2.2399000',
-            'mapboxId' => 'fixture-idf-boulogne-billancourt-92100',
-            'streets' => ['Avenue Jean-Baptiste Clément', 'Route de la Reine', 'Rue Gallieni'],
-        ],
-        [
-            'codePostal' => '92000',
-            'ville' => 'Nanterre',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8924000',
-            'longitude' => '2.2153000',
-            'mapboxId' => 'fixture-idf-nanterre-92000',
-            'streets' => ['Avenue Georges Clemenceau', 'Rue Maurice Thorez', 'Boulevard du Couchant'],
-        ],
-        [
-            'codePostal' => '92400',
-            'ville' => 'Courbevoie',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Bécon',
-            'latitude' => '48.8967000',
-            'longitude' => '2.2567000',
-            'mapboxId' => 'fixture-idf-courbevoie-92400',
-            'streets' => ['Avenue Marceau', 'Rue de Bezons', 'Boulevard Saint-Denis'],
-        ],
-        [
-            'codePostal' => '92700',
-            'ville' => 'Colombes',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9221000',
-            'longitude' => '2.2548000',
-            'mapboxId' => 'fixture-idf-colombes-92700',
-            'streets' => ['Rue Saint-Denis', 'Boulevard Charles de Gaulle', 'Avenue Henri Barbusse'],
-        ],
-        [
-            'codePostal' => '92600',
-            'ville' => 'Asnières-sur-Seine',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9146000',
-            'longitude' => '2.2854000',
-            'mapboxId' => 'fixture-idf-asnieres-sur-seine-92600',
-            'streets' => ['Rue des Bourguignons', 'Grande Rue Charles de Gaulle', 'Avenue d’Argenteuil'],
-        ],
-        [
-            'codePostal' => '92300',
-            'ville' => 'Levallois-Perret',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8932000',
-            'longitude' => '2.2879000',
-            'mapboxId' => 'fixture-idf-levallois-perret-92300',
-            'streets' => ['Rue du Président Wilson', 'Rue Anatole France', 'Rue Baudin'],
-        ],
-        [
-            'codePostal' => '92200',
-            'ville' => 'Neuilly-sur-Seine',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Sablons',
-            'latitude' => '48.8846000',
-            'longitude' => '2.2697000',
-            'mapboxId' => 'fixture-idf-neuilly-sur-seine-92200',
-            'streets' => ['Avenue Charles de Gaulle', 'Rue de Chartres', 'Boulevard Bineau'],
-        ],
-        [
-            'codePostal' => '92110',
-            'ville' => 'Clichy',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9045000',
-            'longitude' => '2.3048000',
-            'mapboxId' => 'fixture-idf-clichy-92110',
-            'streets' => ['Rue Martre', 'Boulevard Jean Jaurès', 'Rue de Paris'],
-        ],
-        [
-            'codePostal' => '92130',
-            'ville' => 'Issy-les-Moulineaux',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Corentin Celton',
-            'latitude' => '48.8245000',
-            'longitude' => '2.2743000',
-            'mapboxId' => 'fixture-idf-issy-les-moulineaux-92130',
-            'streets' => ['Rue Ernest Renan', 'Avenue Victor Cresson', 'Boulevard Gallieni'],
-        ],
-        [
-            'codePostal' => '92500',
-            'ville' => 'Rueil-Malmaison',
-            'department' => 'Hauts-de-Seine',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8760000',
-            'longitude' => '2.1811000',
-            'mapboxId' => 'fixture-idf-rueil-malmaison-92500',
-            'streets' => ['Avenue Paul Doumer', 'Rue Hervet', 'Boulevard Richelieu'],
-        ],
-
-        [
-            'codePostal' => '93200',
-            'ville' => 'Saint-Denis',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9362000',
-            'longitude' => '2.3574000',
-            'mapboxId' => 'fixture-idf-saint-denis-93200',
-            'streets' => ['Rue de la République', 'Boulevard Carnot', 'Rue Gabriel Péri'],
-        ],
-        [
-            'codePostal' => '93100',
-            'ville' => 'Montreuil',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Croix de Chavaux',
-            'latitude' => '48.8638000',
-            'longitude' => '2.4485000',
-            'mapboxId' => 'fixture-idf-montreuil-93100',
-            'streets' => ['Rue de Paris', 'Boulevard Rouget de Lisle', 'Avenue de la Résistance'],
-        ],
-        [
-            'codePostal' => '93300',
-            'ville' => 'Aubervilliers',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9146000',
-            'longitude' => '2.3822000',
-            'mapboxId' => 'fixture-idf-aubervilliers-93300',
-            'streets' => ['Avenue Victor Hugo', 'Rue du Moutier', 'Rue de la Commune de Paris'],
-        ],
-        [
-            'codePostal' => '93500',
-            'ville' => 'Pantin',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Église',
-            'latitude' => '48.8956000',
-            'longitude' => '2.4093000',
-            'mapboxId' => 'fixture-idf-pantin-93500',
-            'streets' => ['Avenue Jean Lolive', 'Rue Hoche', 'Rue Cartier-Bresson'],
-        ],
-        [
-            'codePostal' => '93000',
-            'ville' => 'Bobigny',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9086000',
-            'longitude' => '2.4397000',
-            'mapboxId' => 'fixture-idf-bobigny-93000',
-            'streets' => ['Avenue Jean Jaurès', 'Rue de la République', 'Avenue Henri Barbusse'],
-        ],
-        [
-            'codePostal' => '93700',
-            'ville' => 'Drancy',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9258000',
-            'longitude' => '2.4453000',
-            'mapboxId' => 'fixture-idf-drancy-93700',
-            'streets' => ['Avenue Henri Barbusse', 'Rue Anatole France', 'Avenue Jean Jaurès'],
-        ],
-        [
-            'codePostal' => '93160',
-            'ville' => 'Noisy-le-Grand',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Mont d’Est',
-            'latitude' => '48.8498000',
-            'longitude' => '2.5529000',
-            'mapboxId' => 'fixture-idf-noisy-le-grand-93160',
-            'streets' => ['Avenue Aristide Briand', 'Boulevard du Mont d’Est', 'Rue Pierre Brossolette'],
-        ],
-        [
-            'codePostal' => '93600',
-            'ville' => 'Aulnay-sous-Bois',
-            'department' => 'Seine-Saint-Denis',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9381000',
-            'longitude' => '2.4940000',
-            'mapboxId' => 'fixture-idf-aulnay-sous-bois-93600',
-            'streets' => ['Boulevard de Strasbourg', 'Rue Anatole France', 'Avenue Dumont'],
-        ],
-
-        [
-            'codePostal' => '94000',
-            'ville' => 'Créteil',
-            'department' => 'Val-de-Marne',
-            'neighborhood' => 'Préfecture',
-            'latitude' => '48.7904000',
-            'longitude' => '2.4556000',
-            'mapboxId' => 'fixture-idf-creteil-94000',
-            'streets' => ['Avenue du Général de Gaulle', 'Rue de Paris', 'Avenue Pierre Brossolette'],
-        ],
-        [
-            'codePostal' => '94400',
-            'ville' => 'Vitry-sur-Seine',
-            'department' => 'Val-de-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.7872000',
-            'longitude' => '2.4033000',
-            'mapboxId' => 'fixture-idf-vitry-sur-seine-94400',
-            'streets' => ['Avenue Paul Vaillant-Couturier', 'Rue Gabriel Péri', 'Avenue Rouget de Lisle'],
-        ],
-        [
-            'codePostal' => '94100',
-            'ville' => 'Saint-Maur-des-Fossés',
-            'department' => 'Val-de-Marne',
-            'neighborhood' => 'La Varenne',
-            'latitude' => '48.7993000',
-            'longitude' => '2.4994000',
-            'mapboxId' => 'fixture-idf-saint-maur-des-fosses-94100',
-            'streets' => ['Avenue du Bac', 'Boulevard de Créteil', 'Rue Baratte Cholet'],
-        ],
-        [
-            'codePostal' => '94500',
-            'ville' => 'Champigny-sur-Marne',
-            'department' => 'Val-de-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8172000',
-            'longitude' => '2.5150000',
-            'mapboxId' => 'fixture-idf-champigny-sur-marne-94500',
-            'streets' => ['Rue Louis Talamoni', 'Avenue Roger Salengro', 'Boulevard de Stalingrad'],
-        ],
-        [
-            'codePostal' => '94200',
-            'ville' => 'Ivry-sur-Seine',
-            'department' => 'Val-de-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8131000',
-            'longitude' => '2.3882000',
-            'mapboxId' => 'fixture-idf-ivry-sur-seine-94200',
-            'streets' => ['Avenue Georges Gosnat', 'Rue Marat', 'Avenue Danielle Casanova'],
-        ],
-        [
-            'codePostal' => '94300',
-            'ville' => 'Vincennes',
-            'department' => 'Val-de-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8478000',
-            'longitude' => '2.4392000',
-            'mapboxId' => 'fixture-idf-vincennes-94300',
-            'streets' => ['Rue de Montreuil', 'Avenue de Paris', 'Rue Raymond du Temple'],
-        ],
-        [
-            'codePostal' => '94130',
-            'ville' => 'Nogent-sur-Marne',
-            'department' => 'Val-de-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8367000',
-            'longitude' => '2.4825000',
-            'mapboxId' => 'fixture-idf-nogent-sur-marne-94130',
-            'streets' => ['Grande Rue Charles de Gaulle', 'Boulevard de Strasbourg', 'Rue Jacques Kablé'],
-        ],
-
-        [
-            'codePostal' => '78000',
-            'ville' => 'Versailles',
-            'department' => 'Yvelines',
-            'neighborhood' => 'Notre-Dame',
-            'latitude' => '48.8049000',
-            'longitude' => '2.1204000',
-            'mapboxId' => 'fixture-idf-versailles-78000',
-            'streets' => ['Avenue de Paris', 'Rue de la Paroisse', 'Boulevard de la Reine'],
-        ],
-        [
-            'codePostal' => '78100',
-            'ville' => 'Saint-Germain-en-Laye',
-            'department' => 'Yvelines',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8964000',
-            'longitude' => '2.0904000',
-            'mapboxId' => 'fixture-idf-saint-germain-en-laye-78100',
-            'streets' => ['Rue de Paris', 'Rue au Pain', 'Avenue Foch'],
-        ],
-        [
-            'codePostal' => '78200',
-            'ville' => 'Mantes-la-Jolie',
-            'department' => 'Yvelines',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9905000',
-            'longitude' => '1.7169000',
-            'mapboxId' => 'fixture-idf-mantes-la-jolie-78200',
-            'streets' => ['Rue Nationale', 'Boulevard Victor Duhamel', 'Rue Porte aux Saints'],
-        ],
-        [
-            'codePostal' => '78300',
-            'ville' => 'Poissy',
-            'department' => 'Yvelines',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9290000',
-            'longitude' => '2.0490000',
-            'mapboxId' => 'fixture-idf-poissy-78300',
-            'streets' => ['Rue du Général de Gaulle', 'Avenue Maurice Berteaux', 'Boulevard Robespierre'],
-        ],
-        [
-            'codePostal' => '78500',
-            'ville' => 'Sartrouville',
-            'department' => 'Yvelines',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9482000',
-            'longitude' => '2.1917000',
-            'mapboxId' => 'fixture-idf-sartrouville-78500',
-            'streets' => ['Avenue Jean Jaurès', 'Rue Léon Jouhaux', 'Boulevard de Bezons'],
-        ],
-
-        [
-            'codePostal' => '91000',
-            'ville' => 'Évry-Courcouronnes',
-            'department' => 'Essonne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.6238000',
-            'longitude' => '2.4293000',
-            'mapboxId' => 'fixture-idf-evry-courcouronnes-91000',
-            'streets' => ['Boulevard des Coquibus', 'Cours Blaise Pascal', 'Avenue de la République'],
-        ],
-        [
-            'codePostal' => '91300',
-            'ville' => 'Massy',
-            'department' => 'Essonne',
-            'neighborhood' => 'Atlantis',
-            'latitude' => '48.7309000',
-            'longitude' => '2.2713000',
-            'mapboxId' => 'fixture-idf-massy-91300',
-            'streets' => ['Avenue Carnot', 'Rue de Paris', 'Avenue Raymond Aron'],
-        ],
-        [
-            'codePostal' => '91120',
-            'ville' => 'Palaiseau',
-            'department' => 'Essonne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.7145000',
-            'longitude' => '2.2469000',
-            'mapboxId' => 'fixture-idf-palaiseau-91120',
-            'streets' => ['Rue de Paris', 'Avenue du 8 Mai 1945', 'Rue Lazare Carnot'],
-        ],
-        [
-            'codePostal' => '91100',
-            'ville' => 'Corbeil-Essonnes',
-            'department' => 'Essonne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.6138000',
-            'longitude' => '2.4820000',
-            'mapboxId' => 'fixture-idf-corbeil-essonnes-91100',
-            'streets' => ['Boulevard Jean Jaurès', 'Rue Saint-Spire', 'Avenue Darblay'],
-        ],
-        [
-            'codePostal' => '91600',
-            'ville' => 'Savigny-sur-Orge',
-            'department' => 'Essonne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.6760000',
-            'longitude' => '2.3486000',
-            'mapboxId' => 'fixture-idf-savigny-sur-orge-91600',
-            'streets' => ['Boulevard Aristide Briand', 'Rue Charles Rossignol', 'Avenue Gabriel Péri'],
-        ],
-
-        [
-            'codePostal' => '77000',
-            'ville' => 'Melun',
-            'department' => 'Seine-et-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.5399000',
-            'longitude' => '2.6608000',
-            'mapboxId' => 'fixture-idf-melun-77000',
-            'streets' => ['Rue Saint-Aspais', 'Boulevard Gambetta', 'Avenue Thiers'],
-        ],
-        [
-            'codePostal' => '77100',
-            'ville' => 'Meaux',
-            'department' => 'Seine-et-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9603000',
-            'longitude' => '2.8883000',
-            'mapboxId' => 'fixture-idf-meaux-77100',
-            'streets' => ['Rue du Général Leclerc', 'Avenue Salvador Allende', 'Cours Raoult'],
-        ],
-        [
-            'codePostal' => '77500',
-            'ville' => 'Chelles',
-            'department' => 'Seine-et-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8833000',
-            'longitude' => '2.6000000',
-            'mapboxId' => 'fixture-idf-chelles-77500',
-            'streets' => ['Avenue de la Résistance', 'Rue Gambetta', 'Boulevard Chilpéric'],
-        ],
-        [
-            'codePostal' => '77300',
-            'ville' => 'Fontainebleau',
-            'department' => 'Seine-et-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.4047000',
-            'longitude' => '2.7016000',
-            'mapboxId' => 'fixture-idf-fontainebleau-77300',
-            'streets' => ['Rue Grande', 'Boulevard Magenta', 'Rue de France'],
-        ],
-        [
-            'codePostal' => '77200',
-            'ville' => 'Torcy',
-            'department' => 'Seine-et-Marne',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.8502000',
-            'longitude' => '2.6508000',
-            'mapboxId' => 'fixture-idf-torcy-77200',
-            'streets' => ['Avenue Jean Moulin', 'Rue de Paris', 'Promenade du Belvédère'],
-        ],
-
-        [
-            'codePostal' => '95100',
-            'ville' => 'Argenteuil',
-            'department' => 'Val-d’Oise',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9472000',
-            'longitude' => '2.2467000',
-            'mapboxId' => 'fixture-idf-argenteuil-95100',
-            'streets' => ['Boulevard Héloïse', 'Avenue Gabriel Péri', 'Rue Paul Vaillant-Couturier'],
-        ],
-        [
-            'codePostal' => '95000',
-            'ville' => 'Cergy',
-            'department' => 'Val-d’Oise',
-            'neighborhood' => 'Préfecture',
-            'latitude' => '49.0365000',
-            'longitude' => '2.0761000',
-            'mapboxId' => 'fixture-idf-cergy-95000',
-            'streets' => ['Boulevard de l’Oise', 'Avenue Bernard Hirsch', 'Rue des Chauffours'],
-        ],
-        [
-            'codePostal' => '95300',
-            'ville' => 'Pontoise',
-            'department' => 'Val-d’Oise',
-            'neighborhood' => 'Centre',
-            'latitude' => '49.0500000',
-            'longitude' => '2.1000000',
-            'mapboxId' => 'fixture-idf-pontoise-95300',
-            'streets' => ['Rue de l’Hôtel de Ville', 'Rue de Gisors', 'Boulevard Jean Jaurès'],
-        ],
-        [
-            'codePostal' => '95200',
-            'ville' => 'Sarcelles',
-            'department' => 'Val-d’Oise',
-            'neighborhood' => 'Village',
-            'latitude' => '48.9974000',
-            'longitude' => '2.3787000',
-            'mapboxId' => 'fixture-idf-sarcelles-95200',
-            'streets' => ['Avenue Paul Valéry', 'Boulevard Henri Poincaré', 'Rue Pierre Brossolette'],
-        ],
-        [
-            'codePostal' => '95140',
-            'ville' => 'Garges-lès-Gonesse',
-            'department' => 'Val-d’Oise',
-            'neighborhood' => 'Centre',
-            'latitude' => '48.9719000',
-            'longitude' => '2.3980000',
-            'mapboxId' => 'fixture-idf-garges-les-gonesse-95140',
-            'streets' => ['Avenue de Stalingrad', 'Rue Jean Goujon', 'Boulevard de la Muette'],
-        ],
-        [
-            'codePostal' => '13001',
+            'countryCode' => 'FR',
+            'country' => 'France',
+            'codePostal' => '13006',
             'ville' => 'Marseille',
             'region' => 'Provence-Alpes-Côte d’Azur',
             'department' => 'Bouches-du-Rhône',
-            'neighborhood' => 'Vieux-Port',
-            'latitude' => '43.2965000',
-            'longitude' => '5.3698000',
-            'mapboxId' => 'fixture-france-marseille-13001',
-            'streets' => ['La Canebière', 'Rue Paradis', 'Rue Saint-Ferréol'],
+            'neighborhood' => 'Castellane',
+            'latitude' => '43.2854',
+            'longitude' => '5.3820',
+            'mapboxId' => 'fixture-fr-marseille-13006',
+            'streets' => ['Rue Paradis', 'Avenue du Prado', 'Rue Breteuil'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '69002',
             'ville' => 'Lyon',
             'region' => 'Auvergne-Rhône-Alpes',
             'department' => 'Rhône',
             'neighborhood' => 'Presqu’île',
-            'latitude' => '45.7640000',
-            'longitude' => '4.8357000',
-            'mapboxId' => 'fixture-france-lyon-69002',
+            'latitude' => '45.7640',
+            'longitude' => '4.8357',
+            'mapboxId' => 'fixture-fr-lyon-69002',
             'streets' => ['Rue de la République', 'Rue Victor Hugo', 'Quai Saint-Antoine'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '31000',
             'ville' => 'Toulouse',
             'region' => 'Occitanie',
             'department' => 'Haute-Garonne',
             'neighborhood' => 'Capitole',
-            'latitude' => '43.6047000',
-            'longitude' => '1.4442000',
-            'mapboxId' => 'fixture-france-toulouse-31000',
+            'latitude' => '43.6047',
+            'longitude' => '1.4442',
+            'mapboxId' => 'fixture-fr-toulouse-31000',
             'streets' => ['Rue d’Alsace-Lorraine', 'Rue de Metz', 'Boulevard de Strasbourg'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '06000',
             'ville' => 'Nice',
             'region' => 'Provence-Alpes-Côte d’Azur',
             'department' => 'Alpes-Maritimes',
             'neighborhood' => 'Jean-Médecin',
-            'latitude' => '43.7102000',
-            'longitude' => '7.2620000',
-            'mapboxId' => 'fixture-france-nice-06000',
+            'latitude' => '43.7102',
+            'longitude' => '7.2620',
+            'mapboxId' => 'fixture-fr-nice-06000',
             'streets' => ['Avenue Jean Médecin', 'Rue Masséna', 'Boulevard Victor Hugo'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '44000',
             'ville' => 'Nantes',
             'region' => 'Pays de la Loire',
             'department' => 'Loire-Atlantique',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '47.2184000',
-            'longitude' => '-1.5536000',
-            'mapboxId' => 'fixture-france-nantes-44000',
+            'latitude' => '47.2184',
+            'longitude' => '-1.5536',
+            'mapboxId' => 'fixture-fr-nantes-44000',
             'streets' => ['Rue Crébillon', 'Cours des 50 Otages', 'Rue de Strasbourg'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '34000',
             'ville' => 'Montpellier',
             'region' => 'Occitanie',
             'department' => 'Hérault',
             'neighborhood' => 'Écusson',
-            'latitude' => '43.6108000',
-            'longitude' => '3.8767000',
-            'mapboxId' => 'fixture-france-montpellier-34000',
+            'latitude' => '43.6108',
+            'longitude' => '3.8767',
+            'mapboxId' => 'fixture-fr-montpellier-34000',
             'streets' => ['Rue de la Loge', 'Boulevard du Jeu de Paume', 'Rue Foch'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '67000',
             'ville' => 'Strasbourg',
             'region' => 'Grand Est',
             'department' => 'Bas-Rhin',
             'neighborhood' => 'Grande Île',
-            'latitude' => '48.5734000',
-            'longitude' => '7.7521000',
-            'mapboxId' => 'fixture-france-strasbourg-67000',
+            'latitude' => '48.5734',
+            'longitude' => '7.7521',
+            'mapboxId' => 'fixture-fr-strasbourg-67000',
             'streets' => ['Grand Rue', 'Rue des Grandes Arcades', 'Quai des Bateliers'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '33000',
             'ville' => 'Bordeaux',
             'region' => 'Nouvelle-Aquitaine',
             'department' => 'Gironde',
             'neighborhood' => 'Chartrons',
-            'latitude' => '44.8378000',
-            'longitude' => '-0.5792000',
-            'mapboxId' => 'fixture-france-bordeaux-33000',
+            'latitude' => '44.8378',
+            'longitude' => '-0.5792',
+            'mapboxId' => 'fixture-fr-bordeaux-33000',
             'streets' => ['Cours de l’Intendance', 'Rue Sainte-Catherine', 'Quai des Chartrons'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '59000',
             'ville' => 'Lille',
             'region' => 'Hauts-de-France',
             'department' => 'Nord',
             'neighborhood' => 'Vieux-Lille',
-            'latitude' => '50.6292000',
-            'longitude' => '3.0573000',
-            'mapboxId' => 'fixture-france-lille-59000',
+            'latitude' => '50.6292',
+            'longitude' => '3.0573',
+            'mapboxId' => 'fixture-fr-lille-59000',
             'streets' => ['Rue Nationale', 'Rue de la Monnaie', 'Boulevard de la Liberté'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '35000',
             'ville' => 'Rennes',
             'region' => 'Bretagne',
             'department' => 'Ille-et-Vilaine',
             'neighborhood' => 'Centre',
-            'latitude' => '48.1173000',
-            'longitude' => '-1.6778000',
-            'mapboxId' => 'fixture-france-rennes-35000',
+            'latitude' => '48.1173',
+            'longitude' => '-1.6778',
+            'mapboxId' => 'fixture-fr-rennes-35000',
             'streets' => ['Rue de la Monnaie', 'Rue Le Bastard', 'Quai Duguay-Trouin'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '51100',
             'ville' => 'Reims',
             'region' => 'Grand Est',
             'department' => 'Marne',
             'neighborhood' => 'Cathédrale',
-            'latitude' => '49.2583000',
-            'longitude' => '4.0317000',
-            'mapboxId' => 'fixture-france-reims-51100',
+            'latitude' => '49.2583',
+            'longitude' => '4.0317',
+            'mapboxId' => 'fixture-fr-reims-51100',
             'streets' => ['Rue de Vesle', 'Cours Jean-Baptiste Langlet', 'Boulevard Lundy'],
         ],
         [
-            'codePostal' => '42000',
-            'ville' => 'Saint-Étienne',
-            'region' => 'Auvergne-Rhône-Alpes',
-            'department' => 'Loire',
-            'neighborhood' => 'Centre-ville',
-            'latitude' => '45.4397000',
-            'longitude' => '4.3872000',
-            'mapboxId' => 'fixture-france-saint-etienne-42000',
-            'streets' => ['Rue des Martyrs de Vingré', 'Cours Fauriel', 'Rue Michelet'],
-        ],
-        [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '83000',
             'ville' => 'Toulon',
             'region' => 'Provence-Alpes-Côte d’Azur',
             'department' => 'Var',
             'neighborhood' => 'Centre',
-            'latitude' => '43.1242000',
-            'longitude' => '5.9280000',
-            'mapboxId' => 'fixture-france-toulon-83000',
+            'latitude' => '43.1242',
+            'longitude' => '5.9280',
+            'mapboxId' => 'fixture-fr-toulon-83000',
             'streets' => ['Avenue de la République', 'Rue d’Alger', 'Boulevard de Strasbourg'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '38000',
             'ville' => 'Grenoble',
             'region' => 'Auvergne-Rhône-Alpes',
             'department' => 'Isère',
             'neighborhood' => 'Hyper-centre',
-            'latitude' => '45.1885000',
-            'longitude' => '5.7245000',
-            'mapboxId' => 'fixture-france-grenoble-38000',
+            'latitude' => '45.1885',
+            'longitude' => '5.7245',
+            'mapboxId' => 'fixture-fr-grenoble-38000',
             'streets' => ['Cours Jean Jaurès', 'Rue Lesdiguières', 'Boulevard Gambetta'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '21000',
             'ville' => 'Dijon',
             'region' => 'Bourgogne-Franche-Comté',
             'department' => 'Côte-d’Or',
             'neighborhood' => 'Centre historique',
-            'latitude' => '47.3220000',
-            'longitude' => '5.0415000',
-            'mapboxId' => 'fixture-france-dijon-21000',
+            'latitude' => '47.3220',
+            'longitude' => '5.0415',
+            'mapboxId' => 'fixture-fr-dijon-21000',
             'streets' => ['Rue de la Liberté', 'Rue Monge', 'Place Darcy'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '49000',
             'ville' => 'Angers',
             'region' => 'Pays de la Loire',
             'department' => 'Maine-et-Loire',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '47.4784000',
-            'longitude' => '-0.5632000',
-            'mapboxId' => 'fixture-france-angers-49000',
+            'latitude' => '47.4784',
+            'longitude' => '-0.5632',
+            'mapboxId' => 'fixture-fr-angers-49000',
             'streets' => ['Rue Saint-Aubin', 'Boulevard Foch', 'Rue Plantagenêt'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '30000',
             'ville' => 'Nîmes',
             'region' => 'Occitanie',
             'department' => 'Gard',
             'neighborhood' => 'Écusson',
-            'latitude' => '43.8367000',
-            'longitude' => '4.3601000',
-            'mapboxId' => 'fixture-france-nimes-30000',
+            'latitude' => '43.8367',
+            'longitude' => '4.3601',
+            'mapboxId' => 'fixture-fr-nimes-30000',
             'streets' => ['Boulevard Victor Hugo', 'Rue de la Madeleine', 'Rue Général Perrier'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '69100',
             'ville' => 'Villeurbanne',
             'region' => 'Auvergne-Rhône-Alpes',
             'department' => 'Rhône',
             'neighborhood' => 'Gratte-Ciel',
-            'latitude' => '45.7719000',
-            'longitude' => '4.8902000',
-            'mapboxId' => 'fixture-france-villeurbanne-69100',
+            'latitude' => '45.7719',
+            'longitude' => '4.8902',
+            'mapboxId' => 'fixture-fr-villeurbanne-69100',
             'streets' => ['Cours Émile Zola', 'Avenue Henri Barbusse', 'Rue Anatole France'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '63000',
             'ville' => 'Clermont-Ferrand',
             'region' => 'Auvergne-Rhône-Alpes',
             'department' => 'Puy-de-Dôme',
             'neighborhood' => 'Jaude',
-            'latitude' => '45.7772000',
-            'longitude' => '3.0870000',
-            'mapboxId' => 'fixture-france-clermont-ferrand-63000',
+            'latitude' => '45.7772',
+            'longitude' => '3.0870',
+            'mapboxId' => 'fixture-fr-clermont-ferrand-63000',
             'streets' => ['Avenue des États-Unis', 'Rue Blatin', 'Boulevard Desaix'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '72000',
             'ville' => 'Le Mans',
             'region' => 'Pays de la Loire',
             'department' => 'Sarthe',
             'neighborhood' => 'Centre',
-            'latitude' => '48.0061000',
-            'longitude' => '0.1996000',
-            'mapboxId' => 'fixture-france-le-mans-72000',
+            'latitude' => '48.0061',
+            'longitude' => '0.1996',
+            'mapboxId' => 'fixture-fr-le-mans-72000',
             'streets' => ['Rue Nationale', 'Avenue du Général Leclerc', 'Rue des Minimes'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '13100',
             'ville' => 'Aix-en-Provence',
             'region' => 'Provence-Alpes-Côte d’Azur',
             'department' => 'Bouches-du-Rhône',
             'neighborhood' => 'Mazarin',
-            'latitude' => '43.5297000',
-            'longitude' => '5.4474000',
-            'mapboxId' => 'fixture-france-aix-en-provence-13100',
+            'latitude' => '43.5297',
+            'longitude' => '5.4474',
+            'mapboxId' => 'fixture-fr-aix-en-provence-13100',
             'streets' => ['Cours Mirabeau', 'Rue d’Italie', 'Rue Espariat'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '29200',
             'ville' => 'Brest',
             'region' => 'Bretagne',
             'department' => 'Finistère',
             'neighborhood' => 'Recouvrance',
-            'latitude' => '48.3904000',
-            'longitude' => '-4.4861000',
-            'mapboxId' => 'fixture-france-brest-29200',
+            'latitude' => '48.3904',
+            'longitude' => '-4.4861',
+            'mapboxId' => 'fixture-fr-brest-29200',
             'streets' => ['Rue de Siam', 'Rue Jean Jaurès', 'Avenue Georges Clemenceau'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '37000',
             'ville' => 'Tours',
             'region' => 'Centre-Val de Loire',
             'department' => 'Indre-et-Loire',
             'neighborhood' => 'Vieux Tours',
-            'latitude' => '47.3941000',
-            'longitude' => '0.6848000',
-            'mapboxId' => 'fixture-france-tours-37000',
+            'latitude' => '47.3941',
+            'longitude' => '0.6848',
+            'mapboxId' => 'fixture-fr-tours-37000',
             'streets' => ['Rue Nationale', 'Boulevard Béranger', 'Rue Colbert'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '80000',
             'ville' => 'Amiens',
             'region' => 'Hauts-de-France',
             'department' => 'Somme',
             'neighborhood' => 'Saint-Leu',
-            'latitude' => '49.8941000',
-            'longitude' => '2.2958000',
-            'mapboxId' => 'fixture-france-amiens-80000',
+            'latitude' => '49.8941',
+            'longitude' => '2.2958',
+            'mapboxId' => 'fixture-fr-amiens-80000',
             'streets' => ['Rue des Trois Cailloux', 'Boulevard de Belfort', 'Rue Saint-Leu'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '87000',
             'ville' => 'Limoges',
             'region' => 'Nouvelle-Aquitaine',
             'department' => 'Haute-Vienne',
             'neighborhood' => 'Centre',
-            'latitude' => '45.8336000',
-            'longitude' => '1.2611000',
-            'mapboxId' => 'fixture-france-limoges-87000',
+            'latitude' => '45.8336',
+            'longitude' => '1.2611',
+            'mapboxId' => 'fixture-fr-limoges-87000',
             'streets' => ['Rue Jean Jaurès', 'Boulevard Louis Blanc', 'Rue du Clocher'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '74000',
             'ville' => 'Annecy',
             'region' => 'Auvergne-Rhône-Alpes',
             'department' => 'Haute-Savoie',
             'neighborhood' => 'Vieille Ville',
-            'latitude' => '45.8992000',
-            'longitude' => '6.1294000',
-            'mapboxId' => 'fixture-france-annecy-74000',
+            'latitude' => '45.8992',
+            'longitude' => '6.1294',
+            'mapboxId' => 'fixture-fr-annecy-74000',
             'streets' => ['Rue Carnot', 'Rue Royale', 'Quai de l’Évêché'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '66000',
             'ville' => 'Perpignan',
             'region' => 'Occitanie',
             'department' => 'Pyrénées-Orientales',
             'neighborhood' => 'Centre historique',
-            'latitude' => '42.6887000',
-            'longitude' => '2.8948000',
-            'mapboxId' => 'fixture-france-perpignan-66000',
+            'latitude' => '42.6887',
+            'longitude' => '2.8948',
+            'mapboxId' => 'fixture-fr-perpignan-66000',
             'streets' => ['Quai Vauban', 'Rue de l’Ange', 'Avenue du Général Leclerc'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '57000',
             'ville' => 'Metz',
             'region' => 'Grand Est',
             'department' => 'Moselle',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '49.1193000',
-            'longitude' => '6.1757000',
-            'mapboxId' => 'fixture-france-metz-57000',
+            'latitude' => '49.1193',
+            'longitude' => '6.1757',
+            'mapboxId' => 'fixture-fr-metz-57000',
             'streets' => ['Rue Serpenoise', 'Rue des Clercs', 'Avenue Foch'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '25000',
             'ville' => 'Besançon',
             'region' => 'Bourgogne-Franche-Comté',
             'department' => 'Doubs',
             'neighborhood' => 'Boucle',
-            'latitude' => '47.2378000',
-            'longitude' => '6.0241000',
-            'mapboxId' => 'fixture-france-besancon-25000',
+            'latitude' => '47.2378',
+            'longitude' => '6.0241',
+            'mapboxId' => 'fixture-fr-besancon-25000',
             'streets' => ['Grande Rue', 'Rue des Granges', 'Quai Vauban'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '45000',
             'ville' => 'Orléans',
             'region' => 'Centre-Val de Loire',
             'department' => 'Loiret',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '47.9029000',
-            'longitude' => '1.9093000',
-            'mapboxId' => 'fixture-france-orleans-45000',
+            'latitude' => '47.9029',
+            'longitude' => '1.9093',
+            'mapboxId' => 'fixture-fr-orleans-45000',
             'streets' => ['Rue Jeanne d’Arc', 'Rue Royale', 'Boulevard Alexandre Martin'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '68100',
             'ville' => 'Mulhouse',
             'region' => 'Grand Est',
             'department' => 'Haut-Rhin',
             'neighborhood' => 'Centre historique',
-            'latitude' => '47.7508000',
-            'longitude' => '7.3359000',
-            'mapboxId' => 'fixture-france-mulhouse-68100',
+            'latitude' => '47.7508',
+            'longitude' => '7.3359',
+            'mapboxId' => 'fixture-fr-mulhouse-68100',
             'streets' => ['Rue du Sauvage', 'Avenue de Colmar', 'Rue de la Sinne'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '76000',
             'ville' => 'Rouen',
             'region' => 'Normandie',
             'department' => 'Seine-Maritime',
             'neighborhood' => 'Vieux-Marché',
-            'latitude' => '49.4432000',
-            'longitude' => '1.0993000',
-            'mapboxId' => 'fixture-france-rouen-76000',
+            'latitude' => '49.4432',
+            'longitude' => '1.0993',
+            'mapboxId' => 'fixture-fr-rouen-76000',
             'streets' => ['Rue du Gros-Horloge', 'Rue Jeanne d’Arc', 'Quai de Paris'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '14000',
             'ville' => 'Caen',
             'region' => 'Normandie',
             'department' => 'Calvados',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '49.1829000',
-            'longitude' => '-0.3707000',
-            'mapboxId' => 'fixture-france-caen-14000',
+            'latitude' => '49.1829',
+            'longitude' => '-0.3707',
+            'mapboxId' => 'fixture-fr-caen-14000',
             'streets' => ['Rue Saint-Pierre', 'Avenue du Six Juin', 'Boulevard Maréchal Leclerc'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '54000',
             'ville' => 'Nancy',
             'region' => 'Grand Est',
             'department' => 'Meurthe-et-Moselle',
             'neighborhood' => 'Centre',
-            'latitude' => '48.6921000',
-            'longitude' => '6.1844000',
-            'mapboxId' => 'fixture-france-nancy-54000',
+            'latitude' => '48.6921',
+            'longitude' => '6.1844',
+            'mapboxId' => 'fixture-fr-nancy-54000',
             'streets' => ['Rue Saint-Jean', 'Rue Stanislas', 'Boulevard Albert 1er'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '84000',
             'ville' => 'Avignon',
             'region' => 'Provence-Alpes-Côte d’Azur',
             'department' => 'Vaucluse',
             'neighborhood' => 'Intra-muros',
-            'latitude' => '43.9493000',
-            'longitude' => '4.8055000',
-            'mapboxId' => 'fixture-france-avignon-84000',
+            'latitude' => '43.9493',
+            'longitude' => '4.8055',
+            'mapboxId' => 'fixture-fr-avignon-84000',
             'streets' => ['Rue de la République', 'Rue Joseph Vernet', 'Cours Jean Jaurès'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '86000',
             'ville' => 'Poitiers',
             'region' => 'Nouvelle-Aquitaine',
             'department' => 'Vienne',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '46.5802000',
-            'longitude' => '0.3404000',
-            'mapboxId' => 'fixture-france-poitiers-86000',
+            'latitude' => '46.5802',
+            'longitude' => '0.3404',
+            'mapboxId' => 'fixture-fr-poitiers-86000',
             'streets' => ['Rue de la Marne', 'Grand Rue', 'Boulevard de Verdun'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '64000',
             'ville' => 'Pau',
             'region' => 'Nouvelle-Aquitaine',
             'department' => 'Pyrénées-Atlantiques',
             'neighborhood' => 'Centre',
-            'latitude' => '43.2951000',
-            'longitude' => '-0.3708000',
-            'mapboxId' => 'fixture-france-pau-64000',
+            'latitude' => '43.2951',
+            'longitude' => '-0.3708',
+            'mapboxId' => 'fixture-fr-pau-64000',
             'streets' => ['Boulevard des Pyrénées', 'Rue Maréchal Joffre', 'Rue Serviez'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '17000',
             'ville' => 'La Rochelle',
             'region' => 'Nouvelle-Aquitaine',
             'department' => 'Charente-Maritime',
             'neighborhood' => 'Vieux-Port',
-            'latitude' => '46.1603000',
-            'longitude' => '-1.1511000',
-            'mapboxId' => 'fixture-france-la-rochelle-17000',
+            'latitude' => '46.1603',
+            'longitude' => '-1.1511',
+            'mapboxId' => 'fixture-fr-la-rochelle-17000',
             'streets' => ['Rue Saint-Yon', 'Rue du Palais', 'Quai Duperré'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '56100',
             'ville' => 'Lorient',
             'region' => 'Bretagne',
             'department' => 'Morbihan',
             'neighborhood' => 'Centre',
-            'latitude' => '47.7483000',
-            'longitude' => '-3.3702000',
-            'mapboxId' => 'fixture-france-lorient-56100',
+            'latitude' => '47.7483',
+            'longitude' => '-3.3702',
+            'mapboxId' => 'fixture-fr-lorient-56100',
             'streets' => ['Rue de Liège', 'Cours de Chazelles', 'Rue du Port'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '56000',
             'ville' => 'Vannes',
             'region' => 'Bretagne',
             'department' => 'Morbihan',
             'neighborhood' => 'Intra-muros',
-            'latitude' => '47.6582000',
-            'longitude' => '-2.7608000',
-            'mapboxId' => 'fixture-france-vannes-56000',
+            'latitude' => '47.6582',
+            'longitude' => '-2.7608',
+            'mapboxId' => 'fixture-fr-vannes-56000',
             'streets' => ['Rue Saint-Vincent', 'Rue Thiers', 'Place des Lices'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '64100',
             'ville' => 'Bayonne',
             'region' => 'Nouvelle-Aquitaine',
             'department' => 'Pyrénées-Atlantiques',
             'neighborhood' => 'Grand Bayonne',
-            'latitude' => '43.4929000',
-            'longitude' => '-1.4748000',
-            'mapboxId' => 'fixture-france-bayonne-64100',
+            'latitude' => '43.4929',
+            'longitude' => '-1.4748',
+            'mapboxId' => 'fixture-fr-bayonne-64100',
             'streets' => ['Rue d’Espagne', 'Rue Victor Hugo', 'Quai Amiral Dubourdieu'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '64200',
             'ville' => 'Biarritz',
             'region' => 'Nouvelle-Aquitaine',
             'department' => 'Pyrénées-Atlantiques',
             'neighborhood' => 'Centre',
-            'latitude' => '43.4832000',
-            'longitude' => '-1.5586000',
-            'mapboxId' => 'fixture-france-biarritz-64200',
+            'latitude' => '43.4832',
+            'longitude' => '-1.5586',
+            'mapboxId' => 'fixture-fr-biarritz-64200',
             'streets' => ['Avenue Édouard VII', 'Rue Gambetta', 'Avenue de Verdun'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '73000',
             'ville' => 'Chambéry',
             'region' => 'Auvergne-Rhône-Alpes',
             'department' => 'Savoie',
             'neighborhood' => 'Centre historique',
-            'latitude' => '45.5646000',
-            'longitude' => '5.9178000',
-            'mapboxId' => 'fixture-france-chambery-73000',
+            'latitude' => '45.5646',
+            'longitude' => '5.9178',
+            'mapboxId' => 'fixture-fr-chambery-73000',
             'streets' => ['Rue de Boigne', 'Rue Croix d’Or', 'Avenue des Ducs de Savoie'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '26000',
             'ville' => 'Valence',
             'region' => 'Auvergne-Rhône-Alpes',
             'department' => 'Drôme',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '44.9334000',
-            'longitude' => '4.8924000',
-            'mapboxId' => 'fixture-france-valence-26000',
+            'latitude' => '44.9334',
+            'longitude' => '4.8924',
+            'mapboxId' => 'fixture-fr-valence-26000',
             'streets' => ['Boulevard Bancel', 'Rue Madier de Montjau', 'Avenue Victor Hugo'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '34500',
             'ville' => 'Béziers',
             'region' => 'Occitanie',
             'department' => 'Hérault',
             'neighborhood' => 'Centre',
-            'latitude' => '43.3442000',
-            'longitude' => '3.2158000',
-            'mapboxId' => 'fixture-france-beziers-34500',
+            'latitude' => '43.3442',
+            'longitude' => '3.2158',
+            'mapboxId' => 'fixture-fr-beziers-34500',
             'streets' => ['Allées Paul Riquet', 'Rue de la République', 'Avenue Saint-Saëns'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '11100',
             'ville' => 'Narbonne',
             'region' => 'Occitanie',
             'department' => 'Aude',
             'neighborhood' => 'Centre',
-            'latitude' => '43.1843000',
-            'longitude' => '3.0031000',
-            'mapboxId' => 'fixture-france-narbonne-11100',
+            'latitude' => '43.1843',
+            'longitude' => '3.0031',
+            'mapboxId' => 'fixture-fr-narbonne-11100',
             'streets' => ['Cours de la République', 'Rue Droite', 'Boulevard Gambetta'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '11000',
             'ville' => 'Carcassonne',
             'region' => 'Occitanie',
             'department' => 'Aude',
             'neighborhood' => 'Bastide',
-            'latitude' => '43.2130000',
-            'longitude' => '2.3491000',
-            'mapboxId' => 'fixture-france-carcassonne-11000',
+            'latitude' => '43.2130',
+            'longitude' => '2.3491',
+            'mapboxId' => 'fixture-fr-carcassonne-11000',
             'streets' => ['Rue de Verdun', 'Boulevard Omer Sarraut', 'Rue Courtejaire'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '81000',
             'ville' => 'Albi',
             'region' => 'Occitanie',
             'department' => 'Tarn',
             'neighborhood' => 'Centre historique',
-            'latitude' => '43.9298000',
-            'longitude' => '2.1480000',
-            'mapboxId' => 'fixture-france-albi-81000',
+            'latitude' => '43.9298',
+            'longitude' => '2.1480',
+            'mapboxId' => 'fixture-fr-albi-81000',
             'streets' => ['Rue Mariès', 'Lices Georges Pompidou', 'Rue Croix Verte'],
         ],
         [
+            'countryCode' => 'FR',
+            'country' => 'France',
             'codePostal' => '82000',
             'ville' => 'Montauban',
             'region' => 'Occitanie',
             'department' => 'Tarn-et-Garonne',
             'neighborhood' => 'Centre',
-            'latitude' => '44.0221000',
-            'longitude' => '1.3528000',
-            'mapboxId' => 'fixture-france-montauban-82000',
+            'latitude' => '44.0221',
+            'longitude' => '1.3528',
+            'mapboxId' => 'fixture-fr-montauban-82000',
             'streets' => ['Rue de la République', 'Faubourg Lacapelle', 'Boulevard Gustave Garrisson'],
         ],
         [
-            'codePostal' => '47000',
-            'ville' => 'Agen',
-            'region' => 'Nouvelle-Aquitaine',
-            'department' => 'Lot-et-Garonne',
-            'neighborhood' => 'Centre',
-            'latitude' => '44.2031000',
-            'longitude' => '0.6164000',
-            'mapboxId' => 'fixture-france-agen-47000',
-            'streets' => ['Boulevard de la République', 'Rue Molinier', 'Cours Victor Hugo'],
+            'countryCode' => 'FR',
+            'country' => 'France',
+            'codePostal' => '76600',
+            'ville' => 'Le Havre',
+            'region' => 'Normandie',
+            'department' => 'Seine-Maritime',
+            'neighborhood' => 'Centre reconstruit',
+            'latitude' => '49.4944',
+            'longitude' => '0.1079',
+            'mapboxId' => 'fixture-fr-le-havre-76600',
+            'streets' => ['Avenue Foch', 'Rue de Paris', 'Boulevard François 1er'],
+        ],
+    ];
+
+    private const CANADA_LOCATIONS = [
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'M5V 2T6',
+            'ville' => 'Toronto',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'King West',
+            'latitude' => '43.6532',
+            'longitude' => '-79.3832',
+            'mapboxId' => 'fixture-ca-toronto-m5v-2t6',
+            'streets' => ['King Street West', 'Queen Street West', 'Front Street West'],
         ],
         [
-            'codePostal' => '35400',
-            'ville' => 'Saint-Malo',
-            'region' => 'Bretagne',
-            'department' => 'Ille-et-Vilaine',
-            'neighborhood' => 'Intra-muros',
-            'latitude' => '48.6493000',
-            'longitude' => '-2.0257000',
-            'mapboxId' => 'fixture-france-saint-malo-35400',
-            'streets' => ['Rue Ville Pépin', 'Rue Saint-Vincent', 'Chaussée du Sillon'],
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'H2Y 1C6',
+            'ville' => 'Montréal',
+            'region' => 'Québec',
+            'department' => 'Québec',
+            'neighborhood' => 'Vieux-Montréal',
+            'latitude' => '45.5017',
+            'longitude' => '-73.5673',
+            'mapboxId' => 'fixture-ca-montreal-h2y-1c6',
+            'streets' => ['Rue Saint-Paul', 'Rue Notre-Dame', 'Boulevard Saint-Laurent'],
         ],
         [
-            'codePostal' => '29000',
-            'ville' => 'Quimper',
-            'region' => 'Bretagne',
-            'department' => 'Finistère',
-            'neighborhood' => 'Centre historique',
-            'latitude' => '47.9960000',
-            'longitude' => '-4.1025000',
-            'mapboxId' => 'fixture-france-quimper-29000',
-            'streets' => ['Rue Kéréon', 'Rue du Parc', 'Boulevard Amiral de Kerguélen'],
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V6B 1A1',
+            'ville' => 'Vancouver',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'Yaletown',
+            'latitude' => '49.2827',
+            'longitude' => '-123.1207',
+            'mapboxId' => 'fixture-ca-vancouver-v6b-1a1',
+            'streets' => ['Robson Street', 'Pacific Boulevard', 'West Georgia Street'],
         ],
         [
-            'codePostal' => '85000',
-            'ville' => 'La Roche-sur-Yon',
-            'region' => 'Pays de la Loire',
-            'department' => 'Vendée',
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'T2P 1J9',
+            'ville' => 'Calgary',
+            'region' => 'Alberta',
+            'department' => 'Alberta',
+            'neighborhood' => 'Downtown',
+            'latitude' => '51.0447',
+            'longitude' => '-114.0719',
+            'mapboxId' => 'fixture-ca-calgary-t2p-1j9',
+            'streets' => ['Stephen Avenue', '17 Avenue SW', 'Centre Street S'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'T5J 0N3',
+            'ville' => 'Edmonton',
+            'region' => 'Alberta',
+            'department' => 'Alberta',
+            'neighborhood' => 'Downtown',
+            'latitude' => '53.5461',
+            'longitude' => '-113.4938',
+            'mapboxId' => 'fixture-ca-edmonton-t5j-0n3',
+            'streets' => ['Jasper Avenue', '104 Street NW', 'Whyte Avenue'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'K1P 5J6',
+            'ville' => 'Ottawa',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Centretown',
+            'latitude' => '45.4215',
+            'longitude' => '-75.6972',
+            'mapboxId' => 'fixture-ca-ottawa-k1p-5j6',
+            'streets' => ['Bank Street', 'Elgin Street', 'Queen Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'R3C 0A5',
+            'ville' => 'Winnipeg',
+            'region' => 'Manitoba',
+            'department' => 'Manitoba',
+            'neighborhood' => 'Exchange District',
+            'latitude' => '49.8951',
+            'longitude' => '-97.1384',
+            'mapboxId' => 'fixture-ca-winnipeg-r3c-0a5',
+            'streets' => ['Portage Avenue', 'Main Street', 'Broadway'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'G1R 4P5',
+            'ville' => 'Québec',
+            'region' => 'Québec',
+            'department' => 'Québec',
+            'neighborhood' => 'Vieux-Québec',
+            'latitude' => '46.8139',
+            'longitude' => '-71.2080',
+            'mapboxId' => 'fixture-ca-quebec-g1r-4p5',
+            'streets' => ['Rue Saint-Jean', 'Grande Allée', 'Rue Saint-Louis'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L8P 1A1',
+            'ville' => 'Hamilton',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Durand',
+            'latitude' => '43.2557',
+            'longitude' => '-79.8711',
+            'mapboxId' => 'fixture-ca-hamilton-l8p-1a1',
+            'streets' => ['James Street North', 'King Street East', 'Main Street West'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'N2G 1A1',
+            'ville' => 'Kitchener',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Downtown',
+            'latitude' => '43.4516',
+            'longitude' => '-80.4925',
+            'mapboxId' => 'fixture-ca-kitchener-n2g-1a1',
+            'streets' => ['King Street West', 'Victoria Street North', 'Duke Street West'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'N6A 1A1',
+            'ville' => 'London',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Downtown',
+            'latitude' => '42.9849',
+            'longitude' => '-81.2453',
+            'mapboxId' => 'fixture-ca-london-n6a-1a1',
+            'streets' => ['Richmond Street', 'Dundas Street', 'Oxford Street East'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V8W 1A1',
+            'ville' => 'Victoria',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'James Bay',
+            'latitude' => '48.4284',
+            'longitude' => '-123.3656',
+            'mapboxId' => 'fixture-ca-victoria-v8w-1a1',
+            'streets' => ['Government Street', 'Douglas Street', 'Belleville Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'B3J 1A1',
+            'ville' => 'Halifax',
+            'region' => 'Nouvelle-Écosse',
+            'department' => 'Nova Scotia',
+            'neighborhood' => 'Downtown Halifax',
+            'latitude' => '44.6488',
+            'longitude' => '-63.5752',
+            'mapboxId' => 'fixture-ca-halifax-b3j-1a1',
+            'streets' => ['Barrington Street', 'Spring Garden Road', 'Gottingen Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L1H 1A1',
+            'ville' => 'Oshawa',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Central Oshawa',
+            'latitude' => '43.8971',
+            'longitude' => '-78.8658',
+            'mapboxId' => 'fixture-ca-oshawa-l1h-1a1',
+            'streets' => ['King Street West', 'Simcoe Street North', 'Bond Street East'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'N9A 1A1',
+            'ville' => 'Windsor',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Downtown',
+            'latitude' => '42.3149',
+            'longitude' => '-83.0364',
+            'mapboxId' => 'fixture-ca-windsor-n9a-1a1',
+            'streets' => ['Ouellette Avenue', 'Riverside Drive', 'Wyandotte Street East'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'S7K 1A1',
+            'ville' => 'Saskatoon',
+            'region' => 'Saskatchewan',
+            'department' => 'Saskatchewan',
+            'neighborhood' => 'Nutana',
+            'latitude' => '52.1332',
+            'longitude' => '-106.6700',
+            'mapboxId' => 'fixture-ca-saskatoon-s7k-1a1',
+            'streets' => ['Broadway Avenue', 'Idylwyld Drive', '20th Street West'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'S4P 1A1',
+            'ville' => 'Regina',
+            'region' => 'Saskatchewan',
+            'department' => 'Saskatchewan',
+            'neighborhood' => 'Cathedral',
+            'latitude' => '50.4452',
+            'longitude' => '-104.6189',
+            'mapboxId' => 'fixture-ca-regina-s4p-1a1',
+            'streets' => ['Albert Street', 'Victoria Avenue', 'Broad Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'A1C 1A1',
+            'ville' => 'St. John’s',
+            'region' => 'Terre-Neuve-et-Labrador',
+            'department' => 'Newfoundland and Labrador',
+            'neighborhood' => 'Downtown',
+            'latitude' => '47.5615',
+            'longitude' => '-52.7126',
+            'mapboxId' => 'fixture-ca-st-john-s-a1c-1a1',
+            'streets' => ['Water Street', 'Duckworth Street', 'Harbour Drive'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V1Y 1A1',
+            'ville' => 'Kelowna',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'Downtown',
+            'latitude' => '49.8880',
+            'longitude' => '-119.4960',
+            'mapboxId' => 'fixture-ca-kelowna-v1y-1a1',
+            'streets' => ['Bernard Avenue', 'Water Street', 'Pandosy Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L4M 1A1',
+            'ville' => 'Barrie',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'City Centre',
+            'latitude' => '44.3894',
+            'longitude' => '-79.6903',
+            'mapboxId' => 'fixture-ca-barrie-l4m-1a1',
+            'streets' => ['Dunlop Street East', 'Bayfield Street', 'Collier Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'J1H 1A1',
+            'ville' => 'Sherbrooke',
+            'region' => 'Québec',
+            'department' => 'Québec',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '46.6705000',
-            'longitude' => '-1.4264000',
-            'mapboxId' => 'fixture-france-la-roche-sur-yon-85000',
-            'streets' => ['Rue Clemenceau', 'Boulevard Aristide Briand', 'Rue du Maréchal Joffre'],
+            'latitude' => '45.4042',
+            'longitude' => '-71.8929',
+            'mapboxId' => 'fixture-ca-sherbrooke-j1h-1a1',
+            'streets' => ['Rue King Ouest', 'Rue Wellington Nord', 'Boulevard Jacques-Cartier'],
         ],
         [
-            'codePostal' => '49300',
-            'ville' => 'Cholet',
-            'region' => 'Pays de la Loire',
-            'department' => 'Maine-et-Loire',
-            'neighborhood' => 'Centre',
-            'latitude' => '47.0611000',
-            'longitude' => '-0.8798000',
-            'mapboxId' => 'fixture-france-cholet-49300',
-            'streets' => ['Rue Nationale', 'Avenue Maudet', 'Boulevard Gustave Richard'],
-        ],
-        [
-            'codePostal' => '79000',
-            'ville' => 'Niort',
-            'region' => 'Nouvelle-Aquitaine',
-            'department' => 'Deux-Sèvres',
-            'neighborhood' => 'Centre',
-            'latitude' => '46.3237000',
-            'longitude' => '-0.4648000',
-            'mapboxId' => 'fixture-france-niort-79000',
-            'streets' => ['Rue Victor Hugo', 'Avenue de Paris', 'Rue Ricard'],
-        ],
-        [
-            'codePostal' => '18000',
-            'ville' => 'Bourges',
-            'region' => 'Centre-Val de Loire',
-            'department' => 'Cher',
-            'neighborhood' => 'Centre historique',
-            'latitude' => '47.0810000',
-            'longitude' => '2.3988000',
-            'mapboxId' => 'fixture-france-bourges-18000',
-            'streets' => ['Rue Moyenne', 'Boulevard de la République', 'Rue Bourbonnoux'],
-        ],
-        [
-            'codePostal' => '36000',
-            'ville' => 'Châteauroux',
-            'region' => 'Centre-Val de Loire',
-            'department' => 'Indre',
-            'neighborhood' => 'Centre',
-            'latitude' => '46.8114000',
-            'longitude' => '1.6868000',
-            'mapboxId' => 'fixture-france-chateauroux-36000',
-            'streets' => ['Rue Grande', 'Boulevard George Sand', 'Rue de la Poste'],
-        ],
-        [
-            'codePostal' => '10000',
-            'ville' => 'Troyes',
-            'region' => 'Grand Est',
-            'department' => 'Aube',
-            'neighborhood' => 'Bouchon de Champagne',
-            'latitude' => '48.2973000',
-            'longitude' => '4.0744000',
-            'mapboxId' => 'fixture-france-troyes-10000',
-            'streets' => ['Rue Émile Zola', 'Rue Champeaux', 'Boulevard du 14 Juillet'],
-        ],
-        [
-            'codePostal' => '68000',
-            'ville' => 'Colmar',
-            'region' => 'Grand Est',
-            'department' => 'Haut-Rhin',
-            'neighborhood' => 'Petite Venise',
-            'latitude' => '48.0794000',
-            'longitude' => '7.3585000',
-            'mapboxId' => 'fixture-france-colmar-68000',
-            'streets' => ['Grand Rue', 'Rue des Marchands', 'Avenue de la République'],
-        ],
-        [
-            'codePostal' => '62100',
-            'ville' => 'Calais',
-            'region' => 'Hauts-de-France',
-            'department' => 'Pas-de-Calais',
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'G9A 1A1',
+            'ville' => 'Trois-Rivières',
+            'region' => 'Québec',
+            'department' => 'Québec',
             'neighborhood' => 'Centre-ville',
-            'latitude' => '50.9513000',
-            'longitude' => '1.8587000',
-            'mapboxId' => 'fixture-france-calais-62100',
-            'streets' => ['Boulevard Jacquard', 'Rue Royale', 'Avenue Wilson'],
+            'latitude' => '46.3432',
+            'longitude' => '-72.5430',
+            'mapboxId' => 'fixture-ca-trois-rivieres-g9a-1a1',
+            'streets' => ['Rue des Forges', 'Boulevard du Saint-Maurice', 'Rue Notre-Dame Centre'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'J8X 1A1',
+            'ville' => 'Gatineau',
+            'region' => 'Québec',
+            'department' => 'Québec',
+            'neighborhood' => 'Hull',
+            'latitude' => '45.4765',
+            'longitude' => '-75.7013',
+            'mapboxId' => 'fixture-ca-gatineau-j8x-1a1',
+            'streets' => ['Boulevard Maisonneuve', 'Rue Eddy', 'Boulevard Saint-Joseph'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'H7N 1A1',
+            'ville' => 'Laval',
+            'region' => 'Québec',
+            'department' => 'Québec',
+            'neighborhood' => 'Centropolis',
+            'latitude' => '45.6066',
+            'longitude' => '-73.7124',
+            'mapboxId' => 'fixture-ca-laval-h7n-1a1',
+            'streets' => ['Boulevard Saint-Martin', 'Boulevard Daniel-Johnson', 'Boulevard de l’Avenir'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'J4K 1A1',
+            'ville' => 'Longueuil',
+            'region' => 'Québec',
+            'department' => 'Québec',
+            'neighborhood' => 'Vieux-Longueuil',
+            'latitude' => '45.5312',
+            'longitude' => '-73.5181',
+            'mapboxId' => 'fixture-ca-longueuil-j4k-1a1',
+            'streets' => ['Rue Saint-Charles Ouest', 'Chemin de Chambly', 'Boulevard Roland-Therrien'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V3T 1A1',
+            'ville' => 'Surrey',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'City Centre',
+            'latitude' => '49.1913',
+            'longitude' => '-122.8490',
+            'mapboxId' => 'fixture-ca-surrey-v3t-1a1',
+            'streets' => ['King George Boulevard', '104 Avenue', 'University Drive'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V5H 1A1',
+            'ville' => 'Burnaby',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'Metrotown',
+            'latitude' => '49.2488',
+            'longitude' => '-122.9805',
+            'mapboxId' => 'fixture-ca-burnaby-v5h-1a1',
+            'streets' => ['Kingsway', 'Willingdon Avenue', 'Nelson Avenue'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V6Y 1A1',
+            'ville' => 'Richmond',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'Brighouse',
+            'latitude' => '49.1666',
+            'longitude' => '-123.1336',
+            'mapboxId' => 'fixture-ca-richmond-v6y-1a1',
+            'streets' => ['No. 3 Road', 'Granville Avenue', 'Westminster Highway'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L3R 1A1',
+            'ville' => 'Markham',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Unionville',
+            'latitude' => '43.8561',
+            'longitude' => '-79.3370',
+            'mapboxId' => 'fixture-ca-markham-l3r-1a1',
+            'streets' => ['Main Street Unionville', 'Highway 7', 'Kennedy Road'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L5B 1A1',
+            'ville' => 'Mississauga',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'City Centre',
+            'latitude' => '43.5890',
+            'longitude' => '-79.6441',
+            'mapboxId' => 'fixture-ca-mississauga-l5b-1a1',
+            'streets' => ['Hurontario Street', 'Burnhamthorpe Road', 'Duke of York Boulevard'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L6Y 1A1',
+            'ville' => 'Brampton',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Downtown',
+            'latitude' => '43.7315',
+            'longitude' => '-79.7624',
+            'mapboxId' => 'fixture-ca-brampton-l6y-1a1',
+            'streets' => ['Main Street North', 'Queen Street West', 'Kennedy Road South'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L6J 1A1',
+            'ville' => 'Oakville',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Old Oakville',
+            'latitude' => '43.4675',
+            'longitude' => '-79.6877',
+            'mapboxId' => 'fixture-ca-oakville-l6j-1a1',
+            'streets' => ['Lakeshore Road East', 'Trafalgar Road', 'Navy Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L7R 1A1',
+            'ville' => 'Burlington',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Downtown Waterfront',
+            'latitude' => '43.3255',
+            'longitude' => '-79.7990',
+            'mapboxId' => 'fixture-ca-burlington-l7r-1a1',
+            'streets' => ['Brant Street', 'Lakeshore Road', 'New Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'K7L 1A1',
+            'ville' => 'Kingston',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Sydenham',
+            'latitude' => '44.2312',
+            'longitude' => '-76.4860',
+            'mapboxId' => 'fixture-ca-kingston-k7l-1a1',
+            'streets' => ['Princess Street', 'King Street East', 'Ontario Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'N1H 1A1',
+            'ville' => 'Guelph',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Downtown',
+            'latitude' => '43.5448',
+            'longitude' => '-80.2482',
+            'mapboxId' => 'fixture-ca-guelph-n1h-1a1',
+            'streets' => ['Wyndham Street North', 'Woolwich Street', 'Carden Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'N1R 1A1',
+            'ville' => 'Cambridge',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Galt',
+            'latitude' => '43.3616',
+            'longitude' => '-80.3144',
+            'mapboxId' => 'fixture-ca-cambridge-n1r-1a1',
+            'streets' => ['Main Street', 'Ainslie Street North', 'Water Street North'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'L2E 1A1',
+            'ville' => 'Niagara Falls',
+            'region' => 'Ontario',
+            'department' => 'Ontario',
+            'neighborhood' => 'Fallsview',
+            'latitude' => '43.0896',
+            'longitude' => '-79.0849',
+            'mapboxId' => 'fixture-ca-niagara-falls-l2e-1a1',
+            'streets' => ['Clifton Hill', 'Fallsview Boulevard', 'Queen Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'E1C 1A1',
+            'ville' => 'Moncton',
+            'region' => 'Nouveau-Brunswick',
+            'department' => 'New Brunswick',
+            'neighborhood' => 'Downtown',
+            'latitude' => '46.0878',
+            'longitude' => '-64.7782',
+            'mapboxId' => 'fixture-ca-moncton-e1c-1a1',
+            'streets' => ['Main Street', 'St. George Street', 'Assomption Boulevard'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'E3B 1A1',
+            'ville' => 'Fredericton',
+            'region' => 'Nouveau-Brunswick',
+            'department' => 'New Brunswick',
+            'neighborhood' => 'Downtown',
+            'latitude' => '45.9636',
+            'longitude' => '-66.6431',
+            'mapboxId' => 'fixture-ca-fredericton-e3b-1a1',
+            'streets' => ['Queen Street', 'King Street', 'Regent Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'C1A 1A1',
+            'ville' => 'Charlottetown',
+            'region' => 'Île-du-Prince-Édouard',
+            'department' => 'Prince Edward Island',
+            'neighborhood' => 'Downtown',
+            'latitude' => '46.2382',
+            'longitude' => '-63.1311',
+            'mapboxId' => 'fixture-ca-charlottetown-c1a-1a1',
+            'streets' => ['Queen Street', 'Great George Street', 'Water Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'T4N 1A1',
+            'ville' => 'Red Deer',
+            'region' => 'Alberta',
+            'department' => 'Alberta',
+            'neighborhood' => 'Downtown',
+            'latitude' => '52.2681',
+            'longitude' => '-113.8112',
+            'mapboxId' => 'fixture-ca-red-deer-t4n-1a1',
+            'streets' => ['Ross Street', 'Gaetz Avenue', 'Taylor Drive'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'T1J 1A1',
+            'ville' => 'Lethbridge',
+            'region' => 'Alberta',
+            'department' => 'Alberta',
+            'neighborhood' => 'London Road',
+            'latitude' => '49.6956',
+            'longitude' => '-112.8451',
+            'mapboxId' => 'fixture-ca-lethbridge-t1j-1a1',
+            'streets' => ['3 Avenue South', '13 Street North', 'Mayor Magrath Drive'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'T1A 1A1',
+            'ville' => 'Medicine Hat',
+            'region' => 'Alberta',
+            'department' => 'Alberta',
+            'neighborhood' => 'Riverside',
+            'latitude' => '50.0405',
+            'longitude' => '-110.6765',
+            'mapboxId' => 'fixture-ca-medicine-hat-t1a-1a1',
+            'streets' => ['2 Street SE', 'South Railway Street', 'Kingsway Avenue SE'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V9R 1A1',
+            'ville' => 'Nanaimo',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'Old City',
+            'latitude' => '49.1659',
+            'longitude' => '-123.9401',
+            'mapboxId' => 'fixture-ca-nanaimo-v9r-1a1',
+            'streets' => ['Commercial Street', 'Front Street', 'Terminal Avenue'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V2C 1A1',
+            'ville' => 'Kamloops',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'City Centre',
+            'latitude' => '50.6745',
+            'longitude' => '-120.3273',
+            'mapboxId' => 'fixture-ca-kamloops-v2c-1a1',
+            'streets' => ['Victoria Street', 'Lansdowne Street', 'Tranquille Road'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'V2L 1A1',
+            'ville' => 'Prince George',
+            'region' => 'Colombie-Britannique',
+            'department' => 'British Columbia',
+            'neighborhood' => 'Downtown',
+            'latitude' => '53.9171',
+            'longitude' => '-122.7497',
+            'mapboxId' => 'fixture-ca-prince-george-v2l-1a1',
+            'streets' => ['George Street', '3rd Avenue', 'Victoria Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'Y1A 1A1',
+            'ville' => 'Whitehorse',
+            'region' => 'Yukon',
+            'department' => 'Yukon',
+            'neighborhood' => 'Downtown',
+            'latitude' => '60.7212',
+            'longitude' => '-135.0568',
+            'mapboxId' => 'fixture-ca-whitehorse-y1a-1a1',
+            'streets' => ['Main Street', '2nd Avenue', 'Front Street'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'X1A 1A1',
+            'ville' => 'Yellowknife',
+            'region' => 'Territoires du Nord-Ouest',
+            'department' => 'Northwest Territories',
+            'neighborhood' => 'Downtown',
+            'latitude' => '62.4540',
+            'longitude' => '-114.3718',
+            'mapboxId' => 'fixture-ca-yellowknife-x1a-1a1',
+            'streets' => ['Franklin Avenue', '49 Street', 'Range Lake Road'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'X0A 0H0',
+            'ville' => 'Iqaluit',
+            'region' => 'Nunavut',
+            'department' => 'Nunavut',
+            'neighborhood' => 'Centre-ville',
+            'latitude' => '63.7467',
+            'longitude' => '-68.5170',
+            'mapboxId' => 'fixture-ca-iqaluit-x0a-0h0',
+            'streets' => ['Federal Road', 'Queen Elizabeth Way', 'Niaqunngusiariaq Road'],
+        ],
+        [
+            'countryCode' => 'CA',
+            'country' => 'Canada',
+            'codePostal' => 'T1L 1A1',
+            'ville' => 'Banff',
+            'region' => 'Alberta',
+            'department' => 'Alberta',
+            'neighborhood' => 'Town Centre',
+            'latitude' => '51.1784',
+            'longitude' => '-115.5708',
+            'mapboxId' => 'fixture-ca-banff-t1l-1a1',
+            'streets' => ['Banff Avenue', 'Bear Street', 'Buffalo Street'],
         ],
     ];
 
@@ -1407,17 +1434,18 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         $usedSlugs = [];
         $usedGps = [];
         $usedFullAddresses = [];
+        $usedReferences = [];
 
         $propertyReferenceIndex = 1;
 
-        foreach (self::LOCATIONS as $location) {
+        foreach ($this->getLocations() as $location) {
             $numberOfPropertiesForLocation = $faker->numberBetween(
                 self::MIN_PROPERTIES_PER_LOCATION,
                 self::MAX_PROPERTIES_PER_LOCATION
             );
 
             for ($i = 1; $i <= $numberOfPropertiesForLocation; ++$i) {
-                $propertyData = $faker->randomElement(self::PROPERTIES);
+                $propertyData = $this->pickPropertyProfile($faker);
 
                 $randomGps = $this->generateUniqueRandomGpsAround(
                     (float) $location['latitude'],
@@ -1432,6 +1460,10 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                     $location,
                     $usedFullAddresses
                 );
+
+                $metrics = $this->buildRealisticMetrics($faker, $propertyData, $location);
+                $referenceInterne = $this->generateUniqueReference($location, $propertyReferenceIndex, $usedReferences);
+                $slug = $this->generateUniqueNumericSlug($faker, $usedSlugs);
 
                 /** @var User $user */
                 $user = $this->getReference(
@@ -1451,8 +1483,6 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                     CategoryBienTransaction::class
                 );
 
-                $slug = $this->generateUniqueNumericSlug($faker, $usedSlugs);
-
                 $property = new Property();
 
                 $property
@@ -1464,49 +1494,51 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                     ->setLongitude($randomGps['longitude'])
                     ->setMapboxId(\sprintf('%s-%06d', $location['mapboxId'], $propertyReferenceIndex))
                     ->setFeatureType('address')
-                    ->setShowAdresse((bool) $faker->numberBetween(0, 1))
-                    ->setAnneeConstruction((string) $faker->numberBetween(1950, 2025))
-                    ->setChambres((string) $faker->numberBetween(1, 8))
-                    ->setSalleDeBains((string) $faker->numberBetween(1, 4))
-                    ->setSurfaceTotal((string) $faker->numberBetween(25, 450))
-                    ->setDpe((string) $faker->numberBetween(50, 350))
-                    ->setDpeLettre($faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G']))
-                    ->setGes((string) $faker->numberBetween(5, 80))
-                    ->setGesLettre($faker->randomElement(['A', 'B', 'C', 'D', 'E', 'F', 'G']))
-                    ->setDpeMin((string) $faker->numberBetween(400, 900))
-                    ->setDpeMax((string) $faker->numberBetween(901, 2200))
+                    ->setShowAdresse($faker->boolean(78))
+                    ->setAnneeConstruction((string) $metrics['anneeConstruction'])
+                    ->setChambres((string) $metrics['chambres'])
+                    ->setSalleDeBains((string) $metrics['salleDeBains'])
+                    ->setSurfaceTotal((string) $metrics['surfaceTotal'])
+                    ->setDpe((string) $metrics['dpe'])
+                    ->setDpeLettre($metrics['dpeLettre'])
+                    ->setGes((string) $metrics['ges'])
+                    ->setGesLettre($metrics['gesLettre'])
+                    ->setDpeMin((string) $metrics['dpeMin'])
+                    ->setDpeMax((string) $metrics['dpeMax'])
                     ->setDateIndexationEnergie(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 years', 'now')))
-                    ->setPrix((string) $faker->numberBetween(90000, 2500000))
-                    ->setReferenceInterne('BOOLTS-'.$faker->unique()->numberBetween(100000, 999999))
-                    ->setMontantLoyerHorsCharge((string) $faker->numberBetween(500, 6500))
-                    ->setMontantDepotDeGarantie((string) $faker->numberBetween(500, 12000))
-                    ->setMontantDesCharges((string) $faker->numberBetween(50, 900))
-                    ->setStatut($faker->randomElement([
-                        StatutAnnonceImmobiliere::PUBLIEE,
-                        StatutAnnonceImmobiliere::DISPONIBLE,
-                        StatutAnnonceImmobiliere::SOUS_OFFRE,
-                        StatutAnnonceImmobiliere::OFFRE_ACCEPTEE,
-                        StatutAnnonceImmobiliere::RESERVEE,
-                        StatutAnnonceImmobiliere::DOSSIER_EN_COURS,
-                    ]))
+                    ->setReferenceInterne($referenceInterne)
+                    ->setStatut(StatutAnnonceImmobiliere::PUBLIEE)
                     ->setSlug($slug);
 
-                $this->fillTranslation($property, 'fr', $localizedAddress['fr'], $propertyData['typeBien']);
-                $this->fillTranslation($property, 'en', $localizedAddress['en'], $propertyData['typeBien']);
+                if ('vente' === $propertyData['typeTransaction']) {
+                    $property->setPrix((string) $metrics['prix']);
+                }
+
+                if ('location' === $propertyData['typeTransaction']) {
+                    $property
+                        ->setMontantLoyerHorsCharge((string) $metrics['loyerHorsCharges'])
+                        ->setMontantDepotDeGarantie((string) $metrics['depotGarantie'])
+                        ->setMontantDesCharges((string) $metrics['charges']);
+                }
+
+                $this->fillTranslation($property, 'fr', $localizedAddress['fr'], $propertyData, $metrics, $faker);
+                $this->fillTranslation($property, 'en', $localizedAddress['en'], $propertyData, $metrics, $faker);
+
+                $createdAt = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-10 months', '-2 days'));
 
                 if (method_exists($property, 'setCreatedAt')) {
-                    $property->setCreatedAt(
-                        \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 year', 'now'))
-                    );
+                    $property->setCreatedAt($createdAt);
                 }
 
                 if (method_exists($property, 'setUpdatedAt')) {
-                    $property->setUpdatedAt(new \DateTimeImmutable());
+                    $property->setUpdatedAt(
+                        $createdAt->modify('+'.$faker->numberBetween(1, 45).' days')
+                    );
                 }
 
                 if ([] !== $caracteristiques) {
-                    $maxCaracteristiques = min(8, \count($caracteristiques));
-                    $numberOfCaracteristiques = $faker->numberBetween(1, $maxCaracteristiques);
+                    $maxCaracteristiques = min(9, \count($caracteristiques));
+                    $numberOfCaracteristiques = $faker->numberBetween(2, $maxCaracteristiques);
 
                     foreach ($faker->randomElements($caracteristiques, $numberOfCaracteristiques) as $caracteristique) {
                         $property->addCaracteristique($caracteristique);
@@ -1529,6 +1561,328 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
+    private function getLocations(): array
+    {
+        return array_merge(self::FRANCE_LOCATIONS, self::CANADA_LOCATIONS);
+    }
+
+    private function pickPropertyProfile(\Faker\Generator $faker): array
+    {
+        $totalWeight = 0;
+
+        foreach (self::PROPERTY_PROFILES as $profile) {
+            $totalWeight += $profile['weight'];
+        }
+
+        $pick = $faker->numberBetween(1, $totalWeight);
+        $current = 0;
+
+        foreach (self::PROPERTY_PROFILES as $profile) {
+            $current += $profile['weight'];
+
+            if ($pick <= $current) {
+                return $profile;
+            }
+        }
+
+        return self::PROPERTY_PROFILES[0];
+    }
+
+    private function buildRealisticMetrics(\Faker\Generator $faker, array $propertyData, array $location): array
+    {
+        $typeBien = $propertyData['typeBien'];
+        $typeTransaction = $propertyData['typeTransaction'];
+
+        $surface = 0;
+        $pieces = 0;
+        $chambres = 0;
+        $salleDeBains = 0;
+
+        switch ($typeBien) {
+            case 'appartement':
+                $surface = $faker->numberBetween(24, 125);
+                $pieces = max(1, min(6, (int) round($surface / $faker->numberBetween(22, 32))));
+                $chambres = max(0, $pieces - 1);
+                $salleDeBains = $surface > 85 ? $faker->numberBetween(1, 2) : 1;
+                break;
+
+            case 'maison':
+                $surface = $faker->numberBetween(75, 230);
+                $pieces = $faker->numberBetween(4, 8);
+                $chambres = $faker->numberBetween(2, min(6, $pieces - 1));
+                $salleDeBains = $faker->numberBetween(1, 3);
+                break;
+
+            case 'villa':
+                $surface = $faker->numberBetween(130, 380);
+                $pieces = $faker->numberBetween(5, 10);
+                $chambres = $faker->numberBetween(3, min(7, $pieces - 1));
+                $salleDeBains = $faker->numberBetween(2, 5);
+                break;
+
+            case 'terrain':
+                $surface = $faker->numberBetween(350, 2500);
+                $pieces = 0;
+                $chambres = 0;
+                $salleDeBains = 0;
+                break;
+
+            case 'ferme':
+                $surface = $faker->numberBetween(140, 520);
+                $pieces = $faker->numberBetween(5, 12);
+                $chambres = $faker->numberBetween(3, min(8, $pieces - 1));
+                $salleDeBains = $faker->numberBetween(1, 4);
+                break;
+
+            case 'bureaux':
+                $surface = $faker->numberBetween(35, 650);
+                $pieces = $faker->numberBetween(1, 12);
+                $chambres = 0;
+                $salleDeBains = $faker->numberBetween(1, 3);
+                break;
+
+            case 'local-commercial':
+                $surface = $faker->numberBetween(35, 360);
+                $pieces = $faker->numberBetween(1, 6);
+                $chambres = 0;
+                $salleDeBains = $faker->numberBetween(1, 2);
+                break;
+
+            case 'fond-de-commerce':
+                $surface = $faker->numberBetween(45, 260);
+                $pieces = $faker->numberBetween(1, 5);
+                $chambres = 0;
+                $salleDeBains = $faker->numberBetween(1, 2);
+                break;
+
+            case 'parking-garage-box':
+                $surface = $faker->numberBetween(12, 28);
+                $pieces = 0;
+                $chambres = 0;
+                $salleDeBains = 0;
+                break;
+        }
+
+        $anneeConstruction = $this->buildConstructionYear($faker, $typeBien);
+        $energy = $this->buildEnergyData($faker, $anneeConstruction, $typeBien, $location);
+        $marketFactor = $this->getMarketFactor($location);
+
+        $prix = null;
+        $loyerHorsCharges = null;
+        $charges = null;
+        $depotGarantie = null;
+
+        if ('vente' === $typeTransaction) {
+            $prix = $this->buildSalePrice($faker, $typeBien, $surface, $marketFactor, $location);
+        }
+
+        if ('location' === $typeTransaction) {
+            $loyerHorsCharges = $this->buildRentPrice($faker, $typeBien, $surface, $marketFactor, $location);
+            $charges = $this->buildCharges($faker, $typeBien, $surface, $loyerHorsCharges);
+            $depotGarantie = $this->roundToNearest($loyerHorsCharges + $charges, 10);
+        }
+
+        return [
+            'surfaceTotal' => $surface,
+            'pieces' => $pieces,
+            'chambres' => $chambres,
+            'salleDeBains' => $salleDeBains,
+            'anneeConstruction' => $anneeConstruction,
+            'dpe' => $energy['dpe'],
+            'dpeLettre' => $energy['dpeLettre'],
+            'ges' => $energy['ges'],
+            'gesLettre' => $energy['gesLettre'],
+            'dpeMin' => $energy['dpeMin'],
+            'dpeMax' => $energy['dpeMax'],
+            'prix' => $prix,
+            'loyerHorsCharges' => $loyerHorsCharges,
+            'charges' => $charges,
+            'depotGarantie' => $depotGarantie,
+        ];
+    }
+
+    private function buildConstructionYear(\Faker\Generator $faker, string $typeBien): int
+    {
+        if (\in_array($typeBien, ['terrain', 'parking-garage-box', 'fond-de-commerce'], true)) {
+            return $faker->numberBetween(1980, 2025);
+        }
+
+        return $faker->randomElement([
+            $faker->numberBetween(1900, 1949),
+            $faker->numberBetween(1950, 1979),
+            $faker->numberBetween(1980, 2005),
+            $faker->numberBetween(2006, 2025),
+        ]);
+    }
+
+    private function buildEnergyData(\Faker\Generator $faker, int $anneeConstruction, string $typeBien, array $location): array
+    {
+        if (\in_array($typeBien, ['terrain', 'parking-garage-box'], true)) {
+            return [
+                'dpe' => 0,
+                'dpeLettre' => 'A',
+                'ges' => 0,
+                'gesLettre' => 'A',
+                'dpeMin' => 0,
+                'dpeMax' => 0,
+            ];
+        }
+
+        if ($anneeConstruction >= 2013) {
+            $letter = $faker->randomElement(['A', 'B', 'B', 'C']);
+            $dpe = $faker->numberBetween(45, 145);
+            $ges = $faker->numberBetween(3, 18);
+        } elseif ($anneeConstruction >= 1990) {
+            $letter = $faker->randomElement(['C', 'C', 'D', 'D']);
+            $dpe = $faker->numberBetween(120, 230);
+            $ges = $faker->numberBetween(12, 38);
+        } elseif ($anneeConstruction >= 1970) {
+            $letter = $faker->randomElement(['D', 'E', 'E']);
+            $dpe = $faker->numberBetween(190, 330);
+            $ges = $faker->numberBetween(25, 58);
+        } else {
+            $letter = $faker->randomElement(['D', 'E', 'F', 'G']);
+            $dpe = $faker->numberBetween(230, 420);
+            $ges = $faker->numberBetween(35, 82);
+        }
+
+        if ('CA' === $location['countryCode']) {
+            $letter = $faker->randomElement(['B', 'C', 'C', 'D', 'D', 'E']);
+            $dpe = $faker->numberBetween(95, 285);
+            $ges = $faker->numberBetween(8, 55);
+        }
+
+        return [
+            'dpe' => $dpe,
+            'dpeLettre' => $letter,
+            'ges' => $ges,
+            'gesLettre' => $this->buildGesLetter($ges),
+            'dpeMin' => $faker->numberBetween(520, 980),
+            'dpeMax' => $faker->numberBetween(990, 2450),
+        ];
+    }
+
+    private function buildGesLetter(int $ges): string
+    {
+        return match (true) {
+            $ges <= 5 => 'A',
+            $ges <= 10 => 'B',
+            $ges <= 20 => 'C',
+            $ges <= 35 => 'D',
+            $ges <= 55 => 'E',
+            $ges <= 80 => 'F',
+            default => 'G',
+        };
+    }
+
+    private function buildSalePrice(
+        \Faker\Generator $faker,
+        string $typeBien,
+        int $surface,
+        float $marketFactor,
+        array $location,
+    ): int {
+        $basePriceM2 = [
+            'appartement' => 4300,
+            'maison' => 3150,
+            'villa' => 5200,
+            'terrain' => 260,
+            'ferme' => 1850,
+            'bureaux' => 3600,
+            'local-commercial' => 3400,
+            'fond-de-commerce' => 2100,
+            'parking-garage-box' => 1450,
+        ];
+
+        if ('CA' === $location['countryCode']) {
+            $basePriceM2 = [
+                'appartement' => 5600,
+                'maison' => 3900,
+                'villa' => 6200,
+                'terrain' => 330,
+                'ferme' => 2300,
+                'bureaux' => 4100,
+                'local-commercial' => 3800,
+                'fond-de-commerce' => 2500,
+                'parking-garage-box' => 1900,
+            ];
+        }
+
+        if ('parking-garage-box' === $typeBien) {
+            return $this->roundToNearest($faker->numberBetween(12000, 55000) * $marketFactor, 1000);
+        }
+
+        if ('fond-de-commerce' === $typeBien) {
+            return $this->roundToNearest(($surface * $basePriceM2[$typeBien] * $marketFactor) + $faker->numberBetween(25000, 220000), 1000);
+        }
+
+        $variation = $faker->randomFloat(2, 0.88, 1.16);
+
+        return $this->roundToNearest($surface * $basePriceM2[$typeBien] * $marketFactor * $variation, 1000);
+    }
+
+    private function buildRentPrice(
+        \Faker\Generator $faker,
+        string $typeBien,
+        int $surface,
+        float $marketFactor,
+        array $location,
+    ): int {
+        $baseRentM2 = [
+            'appartement' => 17,
+            'maison' => 13,
+            'villa' => 19,
+            'bureaux' => 21,
+            'local-commercial' => 24,
+            'parking-garage-box' => 8,
+        ];
+
+        if ('CA' === $location['countryCode']) {
+            $baseRentM2 = [
+                'appartement' => 23,
+                'maison' => 18,
+                'villa' => 26,
+                'bureaux' => 28,
+                'local-commercial' => 30,
+                'parking-garage-box' => 10,
+            ];
+        }
+
+        if ('parking-garage-box' === $typeBien) {
+            return $this->roundToNearest($faker->numberBetween(60, 260) * $marketFactor, 10);
+        }
+
+        $base = $baseRentM2[$typeBien] ?? 18;
+        $variation = $faker->randomFloat(2, 0.88, 1.20);
+
+        return max(380, $this->roundToNearest($surface * $base * $marketFactor * $variation, 10));
+    }
+
+    private function buildCharges(\Faker\Generator $faker, string $typeBien, int $surface, int $loyerHorsCharges): int
+    {
+        if ('parking-garage-box' === $typeBien) {
+            return $faker->numberBetween(5, 35);
+        }
+
+        if (\in_array($typeBien, ['bureaux', 'local-commercial'], true)) {
+            return $this->roundToNearest(max(80, $surface * $faker->numberBetween(3, 7)), 10);
+        }
+
+        return $this->roundToNearest(max(35, $loyerHorsCharges * $faker->randomFloat(2, 0.08, 0.18)), 10);
+    }
+
+    private function getMarketFactor(array $location): float
+    {
+        $cityFactor = self::MARKET_FACTORS[$location['ville']] ?? ('CA' === $location['countryCode'] ? 1.12 : 1.00);
+
+        return (float) $cityFactor;
+    }
+
+    private function roundToNearest(float|int $value, int $nearest): int
+    {
+        return (int) (round($value / $nearest) * $nearest);
+    }
+
     private function buildUniqueLocalizedAddress(
         \Faker\Generator $faker,
         array $location,
@@ -1541,20 +1895,27 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
             $street = $faker->randomElement($location['streets']);
             $streetNumber = $faker->numberBetween(1, 220);
-
             $adresse = $streetNumber.' '.$street;
 
-            $fullAddress = \sprintf(
-                '%s, %s %s, France',
-                $adresse,
-                $location['codePostal'],
-                $location['ville']
-            );
+            if ('CA' === $location['countryCode']) {
+                $fullAddress = \sprintf(
+                    '%s, %s, %s %s, Canada',
+                    $adresse,
+                    $location['ville'],
+                    $location['region'],
+                    $location['codePostal']
+                );
+            } else {
+                $fullAddress = \sprintf(
+                    '%s, %s %s, France',
+                    $adresse,
+                    $location['codePostal'],
+                    $location['ville']
+                );
+            }
 
-            $region = $location['region'] ?? 'Île-de-France';
-
-            $key = mb_strtolower($fullAddress);
-        } while (isset($usedFullAddresses[$key]) && $attempts < 200);
+            $key = mb_strtolower($location['countryCode'].'|'.$fullAddress);
+        } while (isset($usedFullAddresses[$key]) && $attempts < 250);
 
         if (isset($usedFullAddresses[$key])) {
             throw new \RuntimeException(\sprintf('Impossible de générer une adresse unique pour %s %s.', $location['codePostal'], $location['ville']));
@@ -1562,58 +1923,33 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
         $usedFullAddresses[$key] = true;
 
+        $base = [
+            'adresse' => $adresse,
+            'ville' => $location['ville'],
+            'pays' => $location['country'],
+            'region' => $location['region'],
+            'district' => $location['department'],
+            'locality' => $location['ville'],
+            'neighborhood' => $location['neighborhood'],
+            'poi' => null,
+            'fullAddress' => $fullAddress,
+            'countryCode' => $location['countryCode'],
+        ];
+
         return [
-            'fr' => [
-                'adresse' => $adresse,
-                'ville' => $location['ville'],
-                'pays' => 'France',
-                'region' => $region,
-                'district' => $location['department'],
-                'locality' => $location['ville'],
-                'neighborhood' => $location['neighborhood'],
-                'poi' => null,
-                'fullAddress' => $fullAddress,
-            ],
-            'en' => [
-                'adresse' => $adresse,
-                'ville' => $location['ville'],
-                'pays' => 'France',
-                'region' => $region,
-                'district' => $location['department'],
-                'locality' => $location['ville'],
-                'neighborhood' => $location['neighborhood'],
-                'poi' => null,
-                'fullAddress' => $fullAddress,
-            ],
+            'fr' => $base,
+            'en' => $base,
         ];
     }
 
-    private function fillTranslation(Property $property, string $locale, array $address, string $typeBien): void
-    {
-        $typeLabelFr = [
-            'maison' => 'maison',
-            'appartement' => 'appartement',
-            'villa' => 'villa',
-            'fond-de-commerce' => 'fonds de commerce',
-            'bureaux' => 'bureaux',
-            'local-commercial' => 'local commercial',
-            'terrain' => 'terrain',
-            'ferme' => 'ferme',
-            'parking-garage-box' => 'parking, garage ou box',
-        ];
-
-        $typeLabelEn = [
-            'maison' => 'house',
-            'appartement' => 'apartment',
-            'villa' => 'villa',
-            'fond-de-commerce' => 'business assets',
-            'bureaux' => 'office space',
-            'local-commercial' => 'commercial premises',
-            'terrain' => 'land',
-            'ferme' => 'farm',
-            'parking-garage-box' => 'parking space, garage or box',
-        ];
-
+    private function fillTranslation(
+        Property $property,
+        string $locale,
+        array $address,
+        array $propertyData,
+        array $metrics,
+        \Faker\Generator $faker,
+    ): void {
         $translation = $property->translate($locale);
 
         $translation->setAdresse($address['adresse']);
@@ -1627,32 +1963,264 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         $translation->setPoi($address['poi']);
 
         if ('fr' === $locale) {
-            $type = $typeLabelFr[$typeBien] ?? 'bien immobilier';
-
             $translation->setTitreDuLogement(
-                ucfirst($type).' à '.$address['ville'].' - '.$address['neighborhood']
+                $this->buildTitleFr($address, $propertyData, $metrics, $faker)
             );
 
             $translation->setDescriptionLogement(
-                'Découvrez ce '.$type.' situé à '.$address['ville'].', dans le secteur '.$address['neighborhood'].'. '.
-                'Ce bien bénéficie d’un emplacement recherché dans la région '.$address['region'].', proche des commodités, des transports et des services essentiels. '.
-                'Une opportunité idéale pour un projet immobilier local ou un investissement en France.'
+                $this->buildDescriptionFr($address, $propertyData, $metrics, $faker)
             );
 
             return;
         }
 
-        $type = $typeLabelEn[$typeBien] ?? 'property';
-
         $translation->setTitreDuLogement(
-            ucfirst($type).' in '.$address['ville'].' - '.$address['neighborhood']
+            $this->buildTitleEn($address, $propertyData, $metrics, $faker)
         );
 
         $translation->setDescriptionLogement(
-            'Discover this '.$type.' located in '.$address['ville'].', in the '.$address['neighborhood'].' area. '.
-            'This property benefits from a sought-after location in the '.$address['region'].' region, close to amenities, transport and essential services. '.
-            'An ideal opportunity for a local real estate project or an investment in France.'
+            $this->buildDescriptionEn($address, $propertyData, $metrics, $faker)
         );
+    }
+
+    private function buildTitleFr(array $address, array $propertyData, array $metrics, \Faker\Generator $faker): string
+    {
+        $type = $this->getTypeLabelFr($propertyData['typeBien']);
+
+        if ('terrain' === $propertyData['typeBien']) {
+            return \sprintf('Terrain constructible %d m² - %s %s', $metrics['surfaceTotal'], $address['ville'], $address['neighborhood']);
+        }
+
+        if ('parking-garage-box' === $propertyData['typeBien']) {
+            return \sprintf('Parking / box sécurisé - %s %s', $address['ville'], $address['neighborhood']);
+        }
+
+        if (\in_array($propertyData['typeBien'], ['bureaux', 'local-commercial', 'fond-de-commerce'], true)) {
+            return \sprintf('%s %d m² - %s %s', ucfirst($type), $metrics['surfaceTotal'], $address['ville'], $address['neighborhood']);
+        }
+
+        $extra = $faker->randomElement([
+            'lumineux',
+            'rénové',
+            'avec extérieur',
+            'au calme',
+            'proche centre',
+            'familial',
+        ]);
+
+        return \sprintf(
+            '%s %d pièces %d m² %s - %s %s',
+            ucfirst($type),
+            $metrics['pieces'],
+            $metrics['surfaceTotal'],
+            $extra,
+            $address['ville'],
+            $address['neighborhood']
+        );
+    }
+
+    private function buildTitleEn(array $address, array $propertyData, array $metrics, \Faker\Generator $faker): string
+    {
+        $type = $this->getTypeLabelEn($propertyData['typeBien']);
+
+        if ('terrain' === $propertyData['typeBien']) {
+            return \sprintf('Building land %d sqm - %s %s', $metrics['surfaceTotal'], $address['ville'], $address['neighborhood']);
+        }
+
+        if ('parking-garage-box' === $propertyData['typeBien']) {
+            return \sprintf('Secure parking / garage - %s %s', $address['ville'], $address['neighborhood']);
+        }
+
+        if (\in_array($propertyData['typeBien'], ['bureaux', 'local-commercial', 'fond-de-commerce'], true)) {
+            return \sprintf('%s %d sqm - %s %s', ucfirst($type), $metrics['surfaceTotal'], $address['ville'], $address['neighborhood']);
+        }
+
+        $extra = $faker->randomElement([
+            'bright',
+            'renovated',
+            'with outdoor space',
+            'quiet',
+            'near the centre',
+            'family-friendly',
+        ]);
+
+        return \sprintf(
+            '%s %d rooms %d sqm, %s - %s %s',
+            ucfirst($type),
+            $metrics['pieces'],
+            $metrics['surfaceTotal'],
+            $extra,
+            $address['ville'],
+            $address['neighborhood']
+        );
+    }
+
+    private function buildDescriptionFr(array $address, array $propertyData, array $metrics, \Faker\Generator $faker): string
+    {
+        $type = $this->getTypeLabelFr($propertyData['typeBien']);
+        $transaction = 'vente' === $propertyData['typeTransaction'] ? 'à la vente' : 'à la location';
+
+        $qualities = $faker->randomElements([
+            'belle luminosité',
+            'plan optimisé',
+            'séjour agréable',
+            'quartier recherché',
+            'accès rapide aux transports',
+            'commerces à proximité',
+            'environnement calme',
+            'bonne performance énergétique',
+            'adresse pratique au quotidien',
+        ], 3);
+
+        if ('terrain' === $propertyData['typeBien']) {
+            return \sprintf(
+                'À %s, secteur %s, terrain de %d m² proposé à la vente. La parcelle offre un beau potentiel pour un projet de construction, avec un environnement résidentiel et un accès simple aux commodités. Emplacement cohérent pour une résidence principale, une maison familiale ou un investissement patrimonial.',
+                $address['ville'],
+                $address['neighborhood'],
+                $metrics['surfaceTotal']
+            );
+        }
+
+        if ('parking-garage-box' === $propertyData['typeBien']) {
+            return \sprintf(
+                'À louer à %s, secteur %s, emplacement de stationnement sécurisé et facile d’accès. Solution idéale pour un résident du quartier, un professionnel ou un second véhicule. Accès simple, secteur pratique et forte demande locale.',
+                $address['ville'],
+                $address['neighborhood']
+            );
+        }
+
+        if (\in_array($propertyData['typeBien'], ['bureaux', 'local-commercial', 'fond-de-commerce'], true)) {
+            return \sprintf(
+                '%s de %d m² situé à %s, dans le secteur %s. Ce bien professionnel bénéficie d’une adresse visible, d’un agencement exploitable et d’un environnement dynamique. Points forts : %s. Idéal pour développer une activité, installer une équipe ou sécuriser un emplacement commercial.',
+                ucfirst($type),
+                $metrics['surfaceTotal'],
+                $address['ville'],
+                $address['neighborhood'],
+                implode(', ', $qualities)
+            );
+        }
+
+        return \sprintf(
+            'Situé à %s, dans le secteur %s, ce %s %s développe %d m² avec %d pièces, dont %d chambre(s), et %d salle(s) de bain. Le bien se distingue par sa %s, son %s et son %s. L’adresse permet de profiter des commerces, écoles, services et transports du quartier. Une annonce réaliste, pensée comme une vraie fiche immobilière avec informations essentielles, localisation cohérente et descriptif exploitable.',
+            $address['ville'],
+            $address['neighborhood'],
+            $type,
+            $transaction,
+            $metrics['surfaceTotal'],
+            $metrics['pieces'],
+            $metrics['chambres'],
+            $metrics['salleDeBains'],
+            $qualities[0],
+            $qualities[1],
+            $qualities[2]
+        );
+    }
+
+    private function buildDescriptionEn(array $address, array $propertyData, array $metrics, \Faker\Generator $faker): string
+    {
+        $type = $this->getTypeLabelEn($propertyData['typeBien']);
+        $transaction = 'vente' === $propertyData['typeTransaction'] ? 'for sale' : 'for rent';
+
+        $qualities = $faker->randomElements([
+            'good natural light',
+            'efficient layout',
+            'comfortable living area',
+            'sought-after neighbourhood',
+            'easy access to transport',
+            'nearby shops and services',
+            'quiet surroundings',
+            'solid energy profile',
+            'practical everyday address',
+        ], 3);
+
+        if ('terrain' === $propertyData['typeBien']) {
+            return \sprintf(
+                'Located in %s, in the %s area, this %d sqm building plot is offered for sale. The land provides strong potential for a construction project, with a residential environment and easy access to local amenities.',
+                $address['ville'],
+                $address['neighborhood'],
+                $metrics['surfaceTotal']
+            );
+        }
+
+        if ('parking-garage-box' === $propertyData['typeBien']) {
+            return \sprintf(
+                'Secure parking space for rent in %s, %s area. A practical solution for a local resident, a professional or a second vehicle. Easy access and convenient neighbourhood location.',
+                $address['ville'],
+                $address['neighborhood']
+            );
+        }
+
+        if (\in_array($propertyData['typeBien'], ['bureaux', 'local-commercial', 'fond-de-commerce'], true)) {
+            return \sprintf(
+                '%s of %d sqm located in %s, in the %s area. This professional property benefits from a visible address, usable layout and dynamic surroundings. Highlights include %s. Suitable for a business, team office or commercial location.',
+                ucfirst($type),
+                $metrics['surfaceTotal'],
+                $address['ville'],
+                $address['neighborhood'],
+                implode(', ', $qualities)
+            );
+        }
+
+        return \sprintf(
+            'Located in %s, in the %s area, this %s %s offers %d sqm with %d rooms, including %d bedroom(s), and %d bathroom(s). The property stands out for its %s, %s and %s. The address gives easy access to shops, schools, services and transport. A realistic listing designed like a professional real estate advert.',
+            $address['ville'],
+            $address['neighborhood'],
+            $type,
+            $transaction,
+            $metrics['surfaceTotal'],
+            $metrics['pieces'],
+            $metrics['chambres'],
+            $metrics['salleDeBains'],
+            $qualities[0],
+            $qualities[1],
+            $qualities[2]
+        );
+    }
+
+    private function getTypeLabelFr(string $typeBien): string
+    {
+        return [
+            'maison' => 'maison',
+            'appartement' => 'appartement',
+            'villa' => 'villa',
+            'fond-de-commerce' => 'fonds de commerce',
+            'bureaux' => 'bureaux',
+            'local-commercial' => 'local commercial',
+            'terrain' => 'terrain',
+            'ferme' => 'ferme',
+            'parking-garage-box' => 'parking, garage ou box',
+        ][$typeBien] ?? 'bien immobilier';
+    }
+
+    private function getTypeLabelEn(string $typeBien): string
+    {
+        return [
+            'maison' => 'house',
+            'appartement' => 'apartment',
+            'villa' => 'villa',
+            'fond-de-commerce' => 'business assets',
+            'bureaux' => 'office space',
+            'local-commercial' => 'commercial premises',
+            'terrain' => 'land',
+            'ferme' => 'farm',
+            'parking-garage-box' => 'parking space, garage or box',
+        ][$typeBien] ?? 'property';
+    }
+
+    private function generateUniqueReference(array $location, int $propertyReferenceIndex, array &$usedReferences): string
+    {
+        do {
+            $reference = \sprintf(
+                'TM-%s-%s-%06d',
+                $location['countryCode'],
+                preg_replace('/[^A-Z0-9]/', '', mb_strtoupper(substr($location['ville'], 0, 4))),
+                $propertyReferenceIndex
+            );
+        } while (isset($usedReferences[$reference]));
+
+        $usedReferences[$reference] = true;
+
+        return $reference;
     }
 
     private function generateUniqueRandomGpsAround(
@@ -1675,7 +2243,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             );
 
             $key = $gps['latitude'].'|'.$gps['longitude'];
-        } while (isset($usedGps[$key]) && $attempts < 200);
+        } while (isset($usedGps[$key]) && $attempts < 250);
 
         if (isset($usedGps[$key])) {
             throw new \RuntimeException('Impossible de générer des coordonnées GPS uniques.');

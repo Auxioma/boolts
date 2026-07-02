@@ -24,55 +24,89 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
 {
     public const FAVORIS_REFERENCE_PREFIX = 'favoris_';
 
-    public const FAVORIS_COUNT = 3000;
+    public const FAVORIS_COUNT = 30;
 
-    private const BATCH_SIZE = 500;
+    private const BATCH_SIZE = 50;
 
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
 
         /**
+         * On récupère les vrais utilisateurs créés en base.
+         * Comme ça, on évite les erreurs de références inexistantes.
+         *
+         * Exemple d'erreur évitée :
+         * Reference to "property_1525" does not exist
+         */
+        $users = $manager
+            ->getRepository(User::class)
+            ->findAll();
+
+        /**
+         * On récupère les vrais biens créés en base.
+         * Important :
+         * PropertyFixtures crée un nombre dynamique de biens.
+         * Il ne faut donc pas utiliser PropertyFixtures::PROPERTY_COUNT ici.
+         */
+        $properties = $manager
+            ->getRepository(Property::class)
+            ->findAll();
+
+        if ([] === $users || [] === $properties) {
+            return;
+        }
+
+        /**
          * Tableau anti-doublon.
          *
-         * Important :
-         * On ne doit jamais le vider pendant la fixture,
-         * sinon Doctrine peut recréer le même couple user/property.
+         * Clé utilisée :
+         * userId_propertyId
+         *
+         * Exemple :
+         * 12_458
          */
         $existingFavoris = [];
 
         $favorisCreated = 0;
         $attempts = 0;
-        $maxAttempts = self::FAVORIS_COUNT * 20;
+
+        /**
+         * Sécurité pour éviter une boucle infinie.
+         *
+         * On met large, car certains couples peuvent être refusés :
+         * - doublon user/property
+         * - agence qui veut mettre son propre bien en favori
+         */
+        $maxAttempts = self::FAVORIS_COUNT * 100;
 
         while ($favorisCreated < self::FAVORIS_COUNT && $attempts < $maxAttempts) {
             ++$attempts;
 
-            $userIndex = $faker->numberBetween(1, UserFixtures::USER_COUNT);
-            $propertyIndex = $faker->numberBetween(1, PropertyFixtures::PROPERTY_COUNT);
+            /** @var User $user */
+            $user = $faker->randomElement($users);
 
-            $uniqueKey = $userIndex.'_'.$propertyIndex;
+            /** @var Property $property */
+            $property = $faker->randomElement($properties);
 
-            if (isset($existingFavoris[$uniqueKey])) {
+            if (null === $user->getId() || null === $property->getId()) {
                 continue;
             }
 
-            /** @var User $user */
-            $user = $this->getReference(
-                UserFixtures::USER_REFERENCE_PREFIX.$userIndex,
-                User::class
-            );
-
-            /** @var Property $property */
-            $property = $this->getReference(
-                PropertyFixtures::PROPERTY_REFERENCE_PREFIX.$propertyIndex,
-                Property::class
-            );
-
-            /*
+            /**
              * On évite qu'une agence mette en favori son propre bien.
              */
-            if ($property->getUser() === $user) {
+            if (
+                null !== $property->getUser()
+                && null !== $property->getUser()->getId()
+                && $property->getUser()->getId() === $user->getId()
+            ) {
+                continue;
+            }
+
+            $uniqueKey = $user->getId().'_'.$property->getId();
+
+            if (isset($existingFavoris[$uniqueKey])) {
                 continue;
             }
 
