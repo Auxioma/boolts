@@ -270,16 +270,6 @@ class PropertyRepository extends ServiceEntityRepository
 
     public function countForPublicSearch(array $filters, ?string $locale = null): int
     {
-        /*
-         * Sécurité :
-         * Si jamais le contrôleur envoie tout le query string :
-         *
-         * [
-         *     'modal_filter' => [...]
-         * ]
-         *
-         * alors on récupère automatiquement le tableau modal_filter.
-         */
         if (isset($filters['modal_filter']) && \is_array($filters['modal_filter'])) {
             $filters = $filters['modal_filter'];
         }
@@ -296,11 +286,6 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('locale', $locale);
         }
 
-        /*
-         * Nature de la propriété :
-         * Formulaire : natureDeLaPropriete
-         * Entity Property : typeTransaction
-         */
         $natureDeLaPropriete = $this->normalizeSingleValue(
             $filters['natureDeLaPropriete'] ?? null,
             [
@@ -318,14 +303,6 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('natureDeLaPropriete', (int) $natureDeLaPropriete);
         }
 
-        /*
-         * Type de propriété :
-         * Formulaire : typeDePropriete
-         * Entity Property : typeBien
-         *
-         * Correction importante :
-         * p.typeDePropriete n'existe pas.
-         */
         $typesDePropriete = $this->normalizeArrayValue(
             $filters['typeDePropriete'] ?? [],
             [
@@ -343,48 +320,6 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('typesDePropriete', array_map('intval', $typesDePropriete));
         }
 
-        /*
-         * Localisation.
-         *
-         * IMPORTANT :
-         * On n'utilise PAS le même ordre de clés pour pays, ville et quartier.
-         *
-         * Exemple pays :
-         * modal_filter[pays]=[
-         *     {
-         *         "label": "France",
-         *         "country_name": "France",
-         *         "country_code": "FR"
-         *     }
-         * ]
-         *
-         * Résultat attendu :
-         * $pays = ['France']
-         *
-         * Exemple ville :
-         * modal_filter[ville]=[
-         *     {
-         *         "city_name": "Paris",
-         *         "country_name": "France"
-         *     }
-         * ]
-         *
-         * Résultat attendu :
-         * $villes = ['Paris']
-         *
-         * Exemple quartier :
-         * modal_filter[quartier]=[
-         *     {
-         *         "name": "Montorgueil",
-         *         "district_name": "Montorgueil",
-         *         "city_name": "Paris",
-         *         "country_name": "France"
-         *     }
-         * ]
-         *
-         * Résultat attendu :
-         * $quartiers = ['Montorgueil']
-         */
         $pays = $this->normalizeArrayValue(
             $filters['pays'] ?? [],
             [
@@ -426,16 +361,9 @@ class PropertyRepository extends ServiceEntityRepository
             ]
         );
 
-        
-
         $this->addTextFilter($qb, 'pt.pays', 'pays', $pays);
         $this->addTextFilter($qb, 'pt.ville', 'ville', $villes);
 
-        /*
-         * Quartier.
-         *
-         * On teste plusieurs noms possibles pour éviter les erreurs Doctrine.
-         */
         if ([] !== $quartiers) {
             if ($this->getClassMetadata()->hasField('quartier')) {
                 $this->addTextFilter($qb, 'p.quartier', 'quartier', $quartiers);
@@ -446,9 +374,6 @@ class PropertyRepository extends ServiceEntityRepository
             }
         }
 
-        /*
-         * Filtres min / max.
-         */
         if ($this->getClassMetadata()->hasField('chambres')) {
             $this->addRangeFilter($qb, 'p.chambres', $filters, 'minChambres', 'maxChambres');
         }
@@ -465,12 +390,6 @@ class PropertyRepository extends ServiceEntityRepository
             $this->addRangeFilter($qb, 'p.anneeConstruction', $filters, 'minAnneeConstruction', 'maxAnneeConstruction');
         }
 
-        /*
-         * Prix.
-         *
-         * Vente : p.prix
-         * Location : p.montantLoyerHorsCharge
-         */
         if (
             $this->getClassMetadata()->hasField('prix')
             && $this->getClassMetadata()->hasField('montantLoyerHorsCharge')
@@ -500,9 +419,6 @@ class PropertyRepository extends ServiceEntityRepository
             );
         }
 
-        /*
-         * DPE.
-         */
         $dpe = $this->normalizeArrayValue(
             $filters['dpe'] ?? [],
             [
@@ -767,5 +683,185 @@ class PropertyRepository extends ServiceEntityRepository
         }
 
         return null;
+    }
+
+
+    /**
+     * Retourne les biens immobiliers correspondant aux filtres publics.
+     *
+     * @return array<int, Property>
+     */
+    public function findForPublicSearch(array $filters, ?string $locale = null): array
+    {
+        if (isset($filters['modal_filter']) && \is_array($filters['modal_filter'])) {
+            $filters = $filters['modal_filter'];
+        }
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('DISTINCT p')
+            ->leftJoin('p.translations', 'pt')
+            ->addSelect('pt')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE);
+
+        if (null !== $locale && '' !== trim($locale)) {
+            $qb
+                ->andWhere('pt.locale = :locale')
+                ->setParameter('locale', $locale);
+        }
+
+        $natureDeLaPropriete = $this->normalizeSingleValue(
+            $filters['natureDeLaPropriete'] ?? null,
+            [
+                'id',
+                'value',
+                'code',
+                'name',
+                'label',
+            ]
+        );
+
+        if (null !== $natureDeLaPropriete) {
+            $qb
+                ->andWhere('IDENTITY(p.typeTransaction) = :natureDeLaPropriete')
+                ->setParameter('natureDeLaPropriete', (int) $natureDeLaPropriete);
+        }
+
+        $typesDePropriete = $this->normalizeArrayValue(
+            $filters['typeDePropriete'] ?? [],
+            [
+                'id',
+                'value',
+                'code',
+                'name',
+                'label',
+            ]
+        );
+
+        if ([] !== $typesDePropriete) {
+            $qb
+                ->andWhere('IDENTITY(p.typeBien) IN (:typesDePropriete)')
+                ->setParameter('typesDePropriete', array_map('intval', $typesDePropriete));
+        }
+
+        $pays = $this->normalizeArrayValue(
+            $filters['pays'] ?? [],
+            [
+                'country_name',
+                'pays',
+                'country',
+                'label',
+                'name',
+                'value',
+                'country_code',
+                'code',
+            ]
+        );
+
+        $villes = $this->normalizeArrayValue(
+            $filters['ville'] ?? [],
+            [
+                'city_name',
+                'ville',
+                'locality',
+                'name',
+                'label',
+                'value',
+                'postal_code',
+                'postcode',
+            ]
+        );
+
+        $quartiers = $this->normalizeArrayValue(
+            $filters['quartier'] ?? [],
+            [
+                'district_name',
+                'neighborhood',
+                'quartier',
+                'district',
+                'name',
+                'label',
+                'value',
+            ]
+        );
+
+        $this->addTextFilter($qb, 'pt.pays', 'pays', $pays);
+        $this->addTextFilter($qb, 'pt.ville', 'ville', $villes);
+
+        if ([] !== $quartiers) {
+            if ($this->getClassMetadata()->hasField('quartier')) {
+                $this->addTextFilter($qb, 'p.quartier', 'quartier', $quartiers);
+            } elseif ($this->getClassMetadata()->hasField('neighborhood')) {
+                $this->addTextFilter($qb, 'p.neighborhood', 'quartier', $quartiers);
+            } elseif ($this->getClassMetadata()->hasField('district')) {
+                $this->addTextFilter($qb, 'p.district', 'quartier', $quartiers);
+            }
+        }
+
+        if ($this->getClassMetadata()->hasField('chambres')) {
+            $this->addRangeFilter($qb, 'p.chambres', $filters, 'minChambres', 'maxChambres');
+        }
+
+        if ($this->getClassMetadata()->hasField('salleDeBains')) {
+            $this->addRangeFilter($qb, 'p.salleDeBains', $filters, 'minSallesDeBain', 'maxSallesDeBain');
+        }
+
+        if ($this->getClassMetadata()->hasField('surfaceTotal')) {
+            $this->addRangeFilter($qb, 'p.surfaceTotal', $filters, 'minSurface', 'maxSurface');
+        }
+
+        if ($this->getClassMetadata()->hasField('anneeConstruction')) {
+            $this->addRangeFilter($qb, 'p.anneeConstruction', $filters, 'minAnneeConstruction', 'maxAnneeConstruction');
+        }
+
+        if (
+            $this->getClassMetadata()->hasField('prix')
+            && $this->getClassMetadata()->hasField('montantLoyerHorsCharge')
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'COALESCE(p.prix, p.montantLoyerHorsCharge)',
+                $filters,
+                'minPrix',
+                'maxPrix'
+            );
+        } elseif ($this->getClassMetadata()->hasField('prix')) {
+            $this->addRangeFilter(
+                $qb,
+                'p.prix',
+                $filters,
+                'minPrix',
+                'maxPrix'
+            );
+        } elseif ($this->getClassMetadata()->hasField('montantLoyerHorsCharge')) {
+            $this->addRangeFilter(
+                $qb,
+                'p.montantLoyerHorsCharge',
+                $filters,
+                'minPrix',
+                'maxPrix'
+            );
+        }
+
+        $dpe = $this->normalizeArrayValue(
+            $filters['dpe'] ?? [],
+            [
+                'value',
+                'label',
+                'name',
+                'code',
+            ]
+        );
+
+        if ([] !== $dpe && $this->getClassMetadata()->hasField('dpeLettre')) {
+            $qb
+                ->andWhere('UPPER(p.dpeLettre) IN (:dpe)')
+                ->setParameter('dpe', array_map('strtoupper', $dpe));
+        }
+
+        return $qb
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

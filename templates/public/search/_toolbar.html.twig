@@ -142,7 +142,8 @@
                 <a
                     href="{{ path('app_public_search_results', {
                         searchToken: searchToken,
-                        view: 'list'
+                        view: 'list',
+                        modal_filter: modal_filter
                     }) }}"
                     class="search-card-switch-item {{ currentView == 'list' ? 'search-card-is-active' : '' }}"
                 >
@@ -153,7 +154,8 @@
                 <a
                     href="{{ path('app_public_search_results', {
                         searchToken: searchToken,
-                        view: 'map'
+                        view: 'map',
+                        modal_filter: modal_filter
                     }) }}"
                     class="search-card-switch-item {{ currentView == 'map' ? 'search-card-is-active' : '' }}"
                 >
@@ -172,8 +174,6 @@
                 <i class="icon-sliders-horizontal" aria-hidden="true"></i>
                 <span class="d-none d-md-inline">Filtres</span>
             </button>
-
         </div>
-
     </div>
 </section>

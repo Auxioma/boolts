@@ -57,25 +57,8 @@ final class SearchController extends AbstractController
 
         $form->handleRequest($request);
 
-        /*if (!$form->isSubmitted()) {
-            return $this->redirectToRoute('app_home');
-        }*/
-
-        /*if (!$form->isValid()) {
-            $this->addFlash('warning', 'Recherche invalide.');
-
-            return $this->redirectToRoute('app_home');
-        }*/
-
         $transactionType = $filter->getTransactionType();
 
-        /**
-         * On construit les critères une seule fois.
-         *
-         * Important :
-         * Si selectedCityName est vide mais que selectedValue vaut "Le Havre",
-         * alors criteria['ville'] vaudra bien "Le Havre".
-         */
         $criteria = $this->buildCriteriaFromFilter($filter);
 
         $ville = $criteria['ville'];
@@ -89,9 +72,7 @@ final class SearchController extends AbstractController
         }
 
         $searchToken = bin2hex(random_bytes(16));
-
         $request->getSession()->set('property_search_'.$searchToken, $criteria);
-
         $sessionRecherche = new PropertySearchSession();
         $sessionRecherche->setUuid(Uuid::v7());
         $sessionRecherche->setTransactionTypeId($transactionType->getId());
@@ -140,13 +121,12 @@ final class SearchController extends AbstractController
     #[Route('/public/search/{searchToken}', name: 'app_public_search_results', methods: ['GET'])]
     public function results(Request $request, string $searchToken): Response
     {
+        $locale = $request->getLocale();
         $view = $request->query->get('view', 'list');
 
         if (!\in_array($view, ['list', 'map'], true)) {
             $view = 'list';
         }
-
-        $locale = $request->getLocale();
 
         $criteria = $request->getSession()->get('property_search_'.$searchToken);
 
@@ -154,53 +134,13 @@ final class SearchController extends AbstractController
             throw $this->createNotFoundException('Cette recherche est introuvable ou expirée.');
         }
 
-        /**
-         * Ici, on reconstruit l'objet FilterCityCountry
-         * avec les valeurs sauvegardées en session grâce au token.
-         */
         $filter = $this->buildFilterFromCriteria($criteria);
 
-        /**
-         * Le formulaire garde donc les anciennes valeurs.
-         */
         $form = $this->createForm(FilterCityCountryType::class, $filter, [
             'action' => $this->generateUrl('app_public_search'),
             'method' => 'POST',
         ]);
 
-        $mapBounds = $this->getValidMapBoundsFromRequest($request);
-
-        if ('map' === $view && null !== $mapBounds) {
-            $queryBuilder = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
-                $criteria['transactionTypeId'],
-                $criteria['ville'],
-                $criteria['cp'],
-                $criteria['pays'],
-                $locale,
-                $mapBounds['north'],
-                $mapBounds['south'],
-                $mapBounds['east'],
-                $mapBounds['west']
-            );
-        } else {
-            $queryBuilder = $this->propertyRepository->findBySearchQueryBuilder(
-                $criteria['transactionTypeId'],
-                $criteria['ville'],
-                $criteria['cp'],
-                $criteria['pays'],
-                $locale
-            );
-        }
-
-        $search = $this->paginator->paginate(
-            $queryBuilder,
-            max(1, $request->query->getInt('page', 1)),
-            8
-        );
-
-        /**
-         * Filtre de recherche de la modal.
-         */
         $filtreModal = new ModalFilter();
 
         $formModal = $this->createForm(ModalFilterType::class, $filtreModal, [
@@ -211,6 +151,58 @@ final class SearchController extends AbstractController
             'method' => 'GET',
         ]);
 
+        $formModal->handleRequest($request);
+
+        $mapBounds = $this->getValidMapBoundsFromRequest($request);
+
+        if ($request->query->has('modal_filter')) {
+            $uri = $request->query->all('modal_filter');
+            $filters = $this->extractFormFilters($request);
+
+            if ('map' === $view && null !== $mapBounds) {
+                $queryBuilder = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
+                    $criteria['transactionTypeId'],
+                    $criteria['ville'],
+                    $criteria['cp'],
+                    $criteria['pays'],
+                    $locale,
+                    $mapBounds['north'],
+                    $mapBounds['south'],
+                    $mapBounds['east'],
+                    $mapBounds['west']);
+            } else {
+                $queryBuilder = $this->propertyRepository->findForPublicSearch($filters);
+            }
+        } else {
+            if ('map' === $view && null !== $mapBounds) {
+                $queryBuilder = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
+                    $criteria['transactionTypeId'],
+                    $criteria['ville'],
+                    $criteria['cp'],
+                    $criteria['pays'],
+                    $locale,
+                    $mapBounds['north'],
+                    $mapBounds['south'],
+                    $mapBounds['east'],
+                    $mapBounds['west']
+                );
+            } else {
+                $queryBuilder = $this->propertyRepository->findBySearchQueryBuilder(
+                    $criteria['transactionTypeId'],
+                    $criteria['ville'],
+                    $criteria['cp'],
+                    $criteria['pays'],
+                    $locale
+                );
+            }
+        }
+
+        $search = $this->paginator->paginate(
+            $queryBuilder,
+            max(1, $request->query->getInt('page', 1)),
+            9
+        );
+
         return $this->render('public/search/index.html.twig', [
             'form' => $form->createView(),
             'formModal' => $formModal->createView(),
@@ -219,12 +211,11 @@ final class SearchController extends AbstractController
             'searchToken' => $searchToken,
             'view' => $view,
             'mapBounds' => $mapBounds,
-
             'mapboxPublicToken' => $this->mapboxPublicToken,
             'mapboxPublicTokenCard' => $this->mapboxPublicTokenCard,
-
             'totalResults' => $search->getTotalItemCount(),
             'favoritePropertyIds' => [],
+            'modal_filter' => $uri ?? '',
         ]);
     }
 
@@ -292,28 +283,6 @@ final class SearchController extends AbstractController
         ]);
     }
 
-    /**
-     * Construit les critères de recherche à sauvegarder en session.
-     *
-     * Ces données permettent de recharger la recherche avec un token :
-     * /public/search/{searchToken}
-     *
-     * @return array{
-     *     transactionTypeId: int|null,
-     *     filter: string|null,
-     *     selectedValue: string|null,
-     *     ville: string|null,
-     *     cp: string|null,
-     *     pays: string|null,
-     *     selectedCountryCode: string|null,
-     *     selectedRegionName: string|null,
-     *     selectedLatitude: string|null,
-     *     selectedLongitude: string|null,
-     *     selectedFullAddress: string|null,
-     *     selectedMapboxId: string|null,
-     *     selectedFeatureType: string|null
-     * }
-     */
     private function buildCriteriaFromFilter(FilterCityCountry $filter): array
     {
         $transactionType = $filter->getTransactionType();
@@ -323,19 +292,6 @@ final class SearchController extends AbstractController
         $selectedPostalCode = $this->cleanValue($filter->getSelectedPostalCode());
         $selectedCountryName = $this->cleanValue($filter->getSelectedCountryName());
 
-        /**
-         * Correction importante.
-         *
-         * Cas Mapbox / Stimulus :
-         * selectedCityName peut être vide.
-         *
-         * Exemple :
-         * selectedValue: "Le Havre"
-         * selectedCityName: null
-         *
-         * Dans ce cas, on veut bien enregistrer :
-         * ville = "Le Havre"
-         */
         $ville = $selectedCityName ?: $selectedValue;
 
         return [
@@ -459,5 +415,18 @@ final class SearchController extends AbstractController
         }
 
         return $value;
+    }
+
+    private function extractFormFilters(Request $request): array
+    {
+        $query = $request->query->all();
+
+        foreach ($query as $value) {
+            if (\is_array($value)) {
+                return $value;
+            }
+        }
+
+        return $query;
     }
 }

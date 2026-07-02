@@ -16,7 +16,8 @@
             criteria: criteria|default(null),
             searchToken: searchToken,
             currentView: currentView,
-            mapbox_public_token: mapboxPublicToken|default('')
+            mapbox_public_token: mapboxPublicToken|default(''),
+            modal_filter: modal_filter
         } only %}
 
         <main class="{{ currentView == 'map' ? 'search-card-main' : 'bt-research-main' }}" id="results">

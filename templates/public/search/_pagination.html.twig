@@ -1,6 +1,19 @@
 {% set currentView = currentView|default('list') %}
 {% set mapBounds = mapBounds|default(null) %}
 
+{#
+On récupère modal_filter :
+1. depuis la variable Twig modal_filter si elle existe
+2. sinon depuis l'URL actuelle
+#}
+{% set requestQuery = app.request.query.all %}
+{% set modalFilter = modal_filter|default(requestQuery.modal_filter|default({})) %}
+
+{# Sécurité : modal_filter doit être un tableau #}
+{% if modalFilter is not iterable %}
+    {% set modalFilter = {} %}
+{% endif %}
+
 {% if search is defined and search is not null %}
 
     {% if currentView == 'map' %}
@@ -18,7 +31,8 @@
                 {% set commonParams = {
                     searchToken: searchToken,
                     page: 1,
-                    view: 'map'
+                    view: 'map',
+                    modal_filter: modalFilter
                 } %}
 
                 {% if mapBounds is iterable %}
@@ -113,7 +127,10 @@
             class="bt-research-pagination"
             aria-label="Pagination"
         >
-            {{ knp_pagination_render(search) }}
+            {{ knp_pagination_render(search, null, {
+                modal_filter: modalFilter,
+                view: currentView
+            }) }}
         </nav>
 
     {% endif %}
