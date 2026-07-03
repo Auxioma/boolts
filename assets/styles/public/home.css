@@ -30,6 +30,15 @@
     --content-img-1: url("https://www.figma.com/api/mcp/asset/95b471a4-61ea-4fc6-9b09-fb27d6091a12");
     --content-img-2: url("https://www.figma.com/api/mcp/asset/589ca372-867e-4d28-8717-81dbf7702cdd");
     --mockup-img: url("https://www.figma.com/api/mcp/asset/c1c03f19-6e3c-4d90-84d6-48e788d0b76a");
+
+    /* Nouveaux assets Figma (à télécharger en local : les URLs expirent sous 7 jours) */
+    --icon-flame: url("https://www.figma.com/api/mcp/asset/49ddd3d9-d539-4136-a65b-45b5cf8670b5");
+    --arrow-doodle-1: url("https://www.figma.com/api/mcp/asset/e8e0eae8-33ff-4a9b-b27e-7575f23c0d32");
+    --arrow-doodle-2: url("https://www.figma.com/api/mcp/asset/2436bfb8-50fb-43d9-bd10-2f697592b89b");
+    --app-ellipse: url("https://www.figma.com/api/mcp/asset/94fe8ebe-a98c-4068-8ea8-d2874c47b57c");
+    --app-cursor: url("https://www.figma.com/api/mcp/asset/6fbde44f-3ec7-429f-ae86-eadf6d6e2681");
+
+    --color-une-bg: #F9F5FF;
 }
 
 * {
@@ -1157,3 +1166,633 @@ input {
         display: flex;
     }
 }
+
+/* =========================================================
+   AJOUTS FIGMA — sliders (classes réellement utilisées
+   par le Twig : bt-related / bt-section-title / bt-icon-btn
+   / splide), section "À la Une", décors et responsive.
+   Placé en fin de fichier : ces règles gagnent la cascade.
+   ========================================================= */
+
+/* -------- En-tête de slider -------- */
+
+.home-bt-page .bt-related + .bt-related {
+    margin-top: 32px;
+}
+
+.home-bt-page .bt-related-head {
+    min-height: 30px;
+    margin-bottom: 18px;
+}
+
+.home-bt-page .bt-section-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    color: var(--color-text);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.home-bt-page .bt-section-title-text {
+    display: inline;
+}
+
+/* Mot mis en avant en violet (ex. "Une", ville) */
+.home-bt-page .bt-section-title-accent,
+.home-bt-page .bt-section-title span.bt-section-title-accent {
+    color: var(--color-primary);
+}
+
+/* Chevron gris 30px après le titre */
+.home-bt-page .bt-section-chevron {
+    color: var(--color-gray);
+    font-size: 30px;
+    line-height: 30px;
+}
+
+/* Flèches de navigation : 30px, suivant en noir,
+   précédent grisé (état désactivé sur la maquette) */
+.home-bt-page .bt-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 30px;
+    line-height: 1;
+}
+
+.home-bt-page .bt-icon-btn--prev,
+.home-bt-page .bt-icon-btn:disabled,
+.home-bt-page .bt-icon-btn.is-disabled {
+    color: var(--color-gray);
+}
+
+.home-bt-page .bt-icon-btn--prev:hover:not(:disabled) {
+    color: var(--color-text);
+}
+
+/* -------- Slides (Splide) --------
+   Desktop : 4 cartes visibles, gouttière 20px */
+.home-bt-page .bt-related-slider {
+    width: 100%;
+}
+
+.home-bt-page .bt-related-slider .splide__list {
+    display: flex;
+}
+
+.home-bt-page .bt-related-slider .splide__slide {
+    width: calc((100% - 60px) / 4);
+    margin-right: 20px;
+}
+
+.home-bt-page .bt-related-slider .splide__slide:last-child {
+    margin-right: 0;
+}
+
+/* La carte remplit son slide */
+.home-bt-page .bt-related-slider .home-bt-card {
+    width: 100%;
+    flex-basis: auto;
+}
+
+/* =========================================================
+   SECTION "LOGEMENTS À LA UNE"
+   Desktop : bandeau lavande pleine largeur (#F9F5FF),
+   padding vertical 22px, 3 grandes cartes de 450px.
+   ========================================================= */
+
+.home-bt-une {
+    position: relative;
+    padding: 22px 0;
+}
+
+/* Fond pleine largeur qui déborde du container (1440px sur la maquette) */
+.home-bt-une::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    background: var(--color-une-bg);
+    pointer-events: none;
+}
+
+.home-bt-une > * {
+    position: relative;
+    z-index: 1;
+}
+
+.home-bt-une + .bt-related {
+    margin-top: 32px;
+}
+
+/* Icône flamme 24px avant le titre (desktop uniquement) */
+.home-bt-une .home-bt-flame {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 24px;
+    height: 24px;
+    background: var(--icon-flame) center / contain no-repeat;
+}
+
+/* Sur desktop, pas de chevron pour "À la Une" */
+.home-bt-une .bt-section-chevron {
+    display: none;
+}
+
+.home-bt-une .bt-related-head {
+    margin-bottom: 32px;
+}
+
+/* 3 grandes cartes : 450px de haut, image extensible */
+.home-bt-une .bt-related-slider .splide__slide {
+    width: calc((100% - 40px) / 3);
+}
+
+.home-bt-une .home-bt-card {
+    display: flex;
+    flex-direction: column;
+    height: 450px;
+}
+
+.home-bt-une .home-bt-card-img {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+}
+
+.home-bt-une .home-bt-card-body {
+    flex: 0 0 auto;
+}
+
+/* =========================================================
+   DÉCORS — flèches griffonnées des sections de contenu
+   ========================================================= */
+
+.home-bt-content-section {
+    position: relative;
+}
+
+.home-bt-content-section::after {
+    content: "";
+    position: absolute;
+    top: 18px;
+    right: -58px;
+    width: 189px;
+    height: 509px;
+    background: var(--arrow-doodle-1) center / contain no-repeat;
+    pointer-events: none;
+}
+
+.home-bt-content-section.is-second::after {
+    top: 11px;
+    right: auto;
+    left: -64px;
+    width: 169px;
+    height: 505px;
+    background-image: var(--arrow-doodle-2);
+}
+
+/* =========================================================
+   DÉCORS — carte violette de l'application
+   Ellipse en trait + petit curseur
+   ========================================================= */
+
+.home-bt-app-card::before {
+    content: "";
+    position: absolute;
+    left: 134px;
+    top: -100px;
+    width: 403px;
+    height: 395px;
+    background: var(--app-ellipse) center / contain no-repeat;
+    pointer-events: none;
+}
+
+.home-bt-app-card::after {
+    content: "";
+    position: absolute;
+    left: 1180px;
+    top: 330px;
+    width: 20px;
+    height: 36px;
+    background: var(--app-cursor) center / contain no-repeat;
+    pointer-events: none;
+}
+
+.home-bt-app-mockup,
+.home-bt-app-text {
+    z-index: 1;
+}
+
+/* =========================================================
+   TABLETTE (< 1200px)
+   "À la Une" redevient un slider classique :
+   pas de bandeau, pas de flamme, chevron visible,
+   cartes 291.5px / 409px.
+   ========================================================= */
+
+@media (max-width: 1199.98px) {
+    .home-bt-page .bt-related-slider .splide__slide {
+        width: 291.5px;
+    }
+
+    .home-bt-une {
+        padding: 0;
+    }
+
+    .home-bt-une::before {
+        display: none;
+    }
+
+    .home-bt-une .home-bt-flame {
+        display: none;
+    }
+
+    .home-bt-une .bt-section-chevron {
+        display: inline-flex;
+    }
+
+    .home-bt-une .bt-related-head {
+        margin-bottom: 18px;
+    }
+
+    .home-bt-une .bt-related-slider .splide__slide {
+        width: 291.5px;
+    }
+
+    .home-bt-une .home-bt-card {
+        height: 409px;
+    }
+
+    .home-bt-une .home-bt-card-img {
+        flex: 0 0 auto;
+        height: 221px;
+    }
+
+    /* Décors : seule la petite flèche de la 2e section subsiste */
+    .home-bt-content-section::after {
+        display: none;
+    }
+
+    .home-bt-content-section.is-second::after {
+        display: block;
+        top: auto;
+        bottom: -140px;
+        left: 62px;
+        width: 91px;
+        height: 272px;
+    }
+}
+
+/* =========================================================
+   MOBILE (< 768px)
+   Cartes 245.5px / 407px, navigation masquée,
+   slider en pleine largeur d'écran.
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+    .home-bt-page .bt-related + .bt-related,
+    .home-bt-une + .bt-related {
+        margin-top: 24px;
+    }
+
+    .home-bt-page .bt-related-head {
+        margin-bottom: 20px;
+    }
+
+    .home-bt-page .bt-related-head .bt-icon-btn {
+        display: none;
+    }
+
+    .home-bt-page .bt-related-slider {
+        width: 100vw;
+        margin-left: -12px;
+        padding-left: 12px;
+    }
+
+    .home-bt-page .bt-related-slider .splide__slide,
+    .home-bt-une .bt-related-slider .splide__slide {
+        width: 245.5px;
+    }
+
+    .home-bt-page .home-bt-card,
+    .home-bt-une .home-bt-card {
+        height: 407px;
+    }
+
+    .home-bt-une .home-bt-card-img {
+        height: 221px;
+    }
+
+    /* Aucune flèche décorative sur mobile */
+    .home-bt-content-section::after,
+    .home-bt-content-section.is-second::after {
+        display: none;
+    }
+
+    /* Ellipse de la carte app repositionnée (maquette mobile) */
+    .home-bt-app-card::before {
+        left: 90px;
+        top: 311px;
+        width: 261px;
+        height: 256px;
+    }
+
+    .home-bt-app-card::after {
+        display: none;
+    }
+}
+
+/* =========================================================
+   ESPACEMENTS DES PANNEAUX (valeurs exactes maquette) :
+   en-tête → listings : 44px desktop, 0 tablette, 16px mobile
+   ========================================================= */
+
+.home-bt-tab-panel {
+    padding-top: 44px;
+}
+
+@media (max-width: 1199.98px) {
+    .home-bt-tab-panel {
+        padding-top: 0;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .home-bt-tab-panel {
+        padding-top: 16px;
+    }
+}
+/* =========================================================
+   SEARCH HERO — valeurs exactes de la maquette Figma
+   Carte blanche : radius 24, padding 24, gap 16
+   ========================================================= */
+
+.home-bt-search-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 24px;
+    background: #FFFFFF;
+    border-radius: 24px;
+}
+
+/* =========================
+   ONGLETS (Acheter / Louer / Vendre)
+   ========================= */
+
+.home-bt-search-tabs {
+    width: 100%;
+    max-width: 300px;
+    margin: 0;
+}
+
+.home-bt-search-tabs.nav-tabs {
+    display: grid;
+    grid-template-columns: repeat(var(--home-bt-tabs-count, 3), 1fr);
+    align-items: end;
+    justify-items: center;
+    border-bottom: 0;
+}
+
+.home-bt-search-tabs .nav-item {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+}
+
+.home-bt-search-tabs .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+
+    width: 100%;
+    padding: 0;
+
+    color: #858789;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+.home-bt-search-tabs .nav-link svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.home-bt-search-tabs .nav-link i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    color: currentColor;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.home-bt-search-tabs .nav-link:hover {
+    color: #0B0F14;
+    background: transparent;
+    border: 0;
+}
+
+.home-bt-search-tabs .nav-link.active {
+    color: #0B0F14;
+    background: transparent;
+    border: 0;
+}
+
+/* Soulignement violet : 29.073 x 3, radius 50 */
+.home-bt-search-tabs .nav-link::after {
+    content: "";
+    display: block;
+    width: 29.073px;
+    height: 3px;
+    border-radius: 50px;
+    background: transparent;
+}
+
+.home-bt-search-tabs .nav-link.active::after {
+    background: #5D00FF;
+}
+
+/* =========================
+   BARRE DE RECHERCHE
+   Hauteur 60, bordure 2px #EBECEC, radius 70,
+   bouton violet 44x44
+   ========================= */
+
+.home-bt-search-bar {
+    position: relative;
+    width: 100%;
+}
+
+.home-bt-search-bar__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.home-bt-search-bar__field input {
+    width: 100%;
+    height: 60px;
+    padding: 0 60px 0 32px;
+
+    color: #0B0F14;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+
+    background: #FFFFFF;
+    border: 2px solid #EBECEC;
+    border-radius: 70px;
+    outline: none;
+}
+
+.home-bt-search-bar__field input::placeholder {
+    color: #858789;
+    font-weight: 700;
+}
+
+.home-bt-search-bar__field input:focus {
+    border-color: #EBECEC;
+    box-shadow: 0 0 0 4px rgba(93, 0, 255, 0.08);
+}
+
+.home-bt-search-bar__field button[type="submit"] {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+
+    color: #FFFFFF;
+    background: #5D00FF;
+    border: 0;
+    border-radius: 50px;
+
+    transform: translateY(-50%);
+}
+
+.home-bt-search-bar__field button[type="submit"] svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* =========================
+   RÉSULTATS (autocomplete Mapbox)
+   ========================= */
+
+.home-bt-search-bar__results {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+
+    display: none;
+    padding: 8px;
+    margin: 0;
+
+    list-style: none;
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+}
+
+.home-bt-search-bar__results.is-active {
+    display: block;
+}
+
+.home-bt-search-bar__result {
+    width: 100%;
+    padding: 12px 14px;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+.home-bt-search-bar__result:hover,
+.home-bt-search-bar__result.is-selected {
+    background: #F8F8F8;
+}
+
+.home-bt-search-bar__result-title {
+    display: block;
+    font-weight: 700;
+    color: #0B0F14;
+}
+
+.home-bt-search-bar__result-subtitle {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    color: #858789;
+}
+
+/* =========================
+   MOBILE (< 576px) — la maquette mobile
+   conserve la carte à padding 24 et la barre à 60px
+   ========================= */
+
+@media (max-width: 575px) {
+    .home-bt-search-hero {
+        padding: 24px;
+        border-radius: 24px;
+    }
+
+    .home-bt-search-bar__field input {
+        padding-left: 32px;
+        padding-right: 56px;
+    }
+}
+
+        .home-bt-tab-panel {
+            display: none;
+        }
+
+        .home-bt-tab-panel.active {
+            display: block;
+        }
+
+        .home-bt-main-tab {
+            cursor: pointer;
+        }

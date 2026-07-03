@@ -3,20 +3,6 @@
 {% block title %}Boolts - L’immobilier réinventé{% endblock %}
 
 {% block body %}
-    <style>
-        .home-bt-tab-panel {
-            display: none;
-        }
-
-        .home-bt-tab-panel.active {
-            display: block;
-        }
-
-        .home-bt-main-tab {
-            cursor: pointer;
-        }
-    </style>
-
     <div class="home-bt-page">
         <main>
             <section class="home-bt-top">
@@ -78,7 +64,7 @@
                                 class="home-bt-main-tab active"
                                 data-tab-button="location"
                             >
-                                Louer
+                                En location
                             </button>
 
                             <button
@@ -86,16 +72,28 @@
                                 class="home-bt-main-tab"
                                 data-tab-button="vente"
                             >
-                                Acheter
+                                En vente
                             </button>
                         </div>
                     </div>
 
+                    {#
+                        featured: true  -> section "À la Une" : bandeau lavande pleine largeur
+                                           sur desktop, slider classique sur tablette/mobile.
+                        highlight       -> partie du titre affichée en violet (comme sur Figma).
+                    #}
                     {% set panels = [
                         {
                             key: 'location',
                             active: true,
                             sections: [
+                                {
+                                    title: 'Logements à la',
+                                    highlight: 'Une',
+                                    featured: true,
+                                    emptyText: '',
+                                    items: logementALaUneLocation|default([])
+                                },
                                 {
                                     title: 'Logements populaires à louer',
                                     emptyText: 'Aucun logement populaire en location pour le moment.',
@@ -112,6 +110,13 @@
                             key: 'vente',
                             active: false,
                             sections: [
+                                {
+                                    title: 'Biens à la',
+                                    highlight: 'Une',
+                                    featured: true,
+                                    emptyText: '',
+                                    items: logementALaUneVente|default([])
+                                },
                                 {
                                     title: 'Biens populaires à acheter',
                                     emptyText: 'Aucun bien populaire à acheter pour le moment.',
@@ -132,154 +137,173 @@
                             data-tab-panel="{{ panel.key }}"
                         >
                             {% for section in panel.sections %}
-                                <section class="agence-properties bt-related" data-controller="splide">
-                                    <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-                                        <h2 class="bt-section-title">
-                                            {{ section.title }}
-                                        </h2>
+                                {% set isFeatured = section.featured|default(false) %}
+
+                                {# La section "À la Une" est masquée si vide (pas de bandeau vide) #}
+                                {% if not isFeatured or section.items|length > 0 %}
+                                    <section
+                                        class="agence-properties bt-related{{ isFeatured ? ' home-bt-une' : '' }}"
+                                        data-controller="splide"
+                                    >
+                                        <div class="bt-related-head d-flex align-items-end justify-content-between gap-3">
+                                            <h2 class="bt-section-title">
+                                                {% if isFeatured %}
+                                                    <span class="home-bt-flame" aria-hidden="true"></span>
+                                                {% endif %}
+
+                                                <span class="bt-section-title-text">
+                                                    {{ section.title }}
+                                                    {%- if section.highlight is defined %}
+                                                        <span class="bt-section-title-accent">{{ section.highlight }}</span>
+                                                    {%- endif %}
+                                                </span>
+
+                                                <i class="bi bi-chevron-right bt-section-chevron" aria-hidden="true"></i>
+                                            </h2>
+
+                                            {% if section.items|length > 0 %}
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <button
+                                                        class="bt-icon-btn bt-icon-btn--small bt-icon-btn--prev"
+                                                        type="button"
+                                                        aria-label="Précédent"
+                                                        data-splide-target="previous"
+                                                        data-action="click->splide#previous"
+                                                    >
+                                                        <i class="bi bi-arrow-left-circle"></i>
+                                                    </button>
+
+                                                    <button
+                                                        class="bt-icon-btn bt-icon-btn--small"
+                                                        type="button"
+                                                        aria-label="Suivant"
+                                                        data-splide-target="next"
+                                                        data-action="click->splide#next"
+                                                    >
+                                                        <i class="bi bi-arrow-right-circle"></i>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                        </div>
 
                                         {% if section.items|length > 0 %}
-                                            <div class="d-flex align-items-center gap-2 text-secondary">
-                                                <button
-                                                    class="bt-icon-btn bt-icon-btn--small"
-                                                    type="button"
-                                                    aria-label="Précédent"
-                                                    data-splide-target="previous"
-                                                    data-action="click->splide#previous"
-                                                >
-                                                    <i class="bi bi-arrow-left-circle"></i>
-                                                </button>
+                                            <div
+                                                class="splide bt-related-slider"
+                                                data-splide-target="slider"
+                                                aria-label="{{ section.title }}"
+                                            >
+                                                <div class="splide__track">
+                                                    <ul class="splide__list">
+                                                        {% for bienImmobilier in section.items %}
 
-                                                <button
-                                                    class="bt-icon-btn bt-icon-btn--small"
-                                                    type="button"
-                                                    aria-label="Suivant"
-                                                    data-splide-target="next"
-                                                    data-action="click->splide#next"
-                                                >
-                                                    <i class="bi bi-arrow-right-circle"></i>
-                                                </button>
-                                            </div>
-                                        {% endif %}
-                                    </div>
+                                                            {% set uploadedImage = null %}
+                                                            {% set firstImage = bienImmobilier.propertyImages|first %}
 
-                                    {% if section.items|length > 0 %}
-                                        <div
-                                            class="splide bt-related-slider"
-                                            data-splide-target="slider"
-                                            aria-label="{{ section.title }}"
-                                        >
-                                            <div class="splide__track">
-                                                <ul class="splide__list">
-                                                    {% for bienImmobilier in section.items %}
-                                                       
-                                                        {% set uploadedImage = null %}
-                                                        {% set firstImage = bienImmobilier.propertyImages|first %}
-
-                                                        {% if firstImage %}
-                                                            {% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
-                                                        {% endif %}
-
-                                                        {% set typeBienName = '' %}
-                                                        {% set transactionName = '' %}
-                                                        {% set transactionSlug = '' %}
-
-                                                        {% if bienImmobilier.typeBien %}
-                                                            {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
-                                                        {% endif %}
-
-                                                        {% if bienImmobilier.typeTransaction %}
-                                                            {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
-                                                            {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
-                                                        {% endif %}
-
-                                                        {% set isLocation = panel.key == 'location' %}
-                                                        {% set transactionLabel = isLocation ? 'louer' : 'vendre' %}
-
-                                                        {% if typeBienName is not empty %}
-                                                            {% set propertyTitle = typeBienName ~ ' à ' ~ transactionLabel %}
-                                                        {% else %}
-                                                            {% set propertyTitle = isLocation ? 'Logement à louer' : 'Bien à vendre' %}
-                                                        {% endif %}
-
-                                                        {% set propertyPrice = bienImmobilier.prix is not empty
-                                                            ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe
-                                                            : ''
-                                                        %}
-
-                                                        {% set propertyPeriod = isLocation ? '/mois' : '' %}
-                                                        {% set propertyBadge = isLocation ? 'Charges comprises' : '' %}
-
-                                                        {% set details = [] %}
-
-                                                        {% if typeBienName is not empty %}
-                                                            {% set details = details|merge([typeBienName]) %}
-                                                        {% endif %}
-
-                                                        {% if bienImmobilier.chambres is not empty %}
-                                                            {% set details = details|merge([
-                                                                bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : '')
-                                                            ]) %}
-                                                        {% endif %}
-
-                                                        {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
-                                                            {% set details = details|merge([
-                                                                bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains'
-                                                            ]) %}
-                                                        {% endif %}
-
-                                                        {% if bienImmobilier.surfaceTotal is not empty %}
-                                                            {% set details = details|merge([
-                                                                bienImmobilier.surfaceTotal ~ 'm²'
-                                                            ]) %}
-                                                        {% endif %}
-
-                                                        {% set addressParts = [] %}
-
-                                                        {% if bienImmobilier.showAdresse|default(false) %}
-                                                            {% if bienImmobilier.adresse is not empty %}
-                                                                {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
+                                                            {% if firstImage %}
+                                                                {% set uploadedImage = vich_uploader_asset(firstImage, 'imageFile') %}
                                                             {% endif %}
 
-                                                            {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
-                                                                {% set addressParts = addressParts|merge([
-                                                                    (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim
+                                                            {% set typeBienName = '' %}
+                                                            {% set transactionName = '' %}
+                                                            {% set transactionSlug = '' %}
+
+                                                            {% if bienImmobilier.typeBien %}
+                                                                {% set typeBienName = bienImmobilier.typeBien.name|default(bienImmobilier.typeBien.nom|default('')) %}
+                                                            {% endif %}
+
+                                                            {% if bienImmobilier.typeTransaction %}
+                                                                {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+                                                                {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+                                                            {% endif %}
+
+                                                            {% set isLocation = panel.key == 'location' %}
+                                                            {% set transactionLabel = isLocation ? 'louer' : 'vendre' %}
+
+                                                            {% if typeBienName is not empty %}
+                                                                {% set propertyTitle = typeBienName ~ ' à ' ~ transactionLabel %}
+                                                            {% else %}
+                                                                {% set propertyTitle = isLocation ? 'Logement à louer' : 'Bien à vendre' %}
+                                                            {% endif %}
+
+                                                            {% set propertyPrice = bienImmobilier.prix is not empty
+                                                                ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe
+                                                                : ''
+                                                            %}
+
+                                                            {% set propertyPeriod = isLocation ? '/mois' : '' %}
+                                                            {% set propertyBadge = isLocation ? 'Charges comprises' : '' %}
+
+                                                            {% set details = [] %}
+
+                                                            {% if typeBienName is not empty %}
+                                                                {% set details = details|merge([typeBienName]) %}
+                                                            {% endif %}
+
+                                                            {% if bienImmobilier.chambres is not empty %}
+                                                                {% set details = details|merge([
+                                                                    bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : '')
                                                                 ]) %}
                                                             {% endif %}
-                                                        {% endif %}
 
-                                                        {% set propertyAddress = addressParts|join(', ') %}
+                                                            {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
+                                                                {% set details = details|merge([
+                                                                    bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains'
+                                                                ]) %}
+                                                            {% endif %}
 
-                                                        {% set detailUrl = path('app_public_detail_bien', {
-                                                            slug: bienImmobilier.slug
-                                                        }) %}
+                                                            {% if bienImmobilier.surfaceTotal is not empty %}
+                                                                {% set details = details|merge([
+                                                                    bienImmobilier.surfaceTotal ~ 'm²'
+                                                                ]) %}
+                                                            {% endif %}
 
-                                                        <li class="splide__slide">
-                                                            <twig:Property:Card
-                                                                title="{{ propertyTitle }}"
-                                                                price="{{ propertyPrice }}"
-                                                                period="{{ propertyPeriod }}"
-                                                                badge="{{ propertyBadge }}"
-                                                                description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
-                                                                details="{{ details|join(' ⸱ ') }}"
-                                                                address="{{ propertyAddress }}"
-                                                                image="{{ uploadedImage }}"
-                                                                url="{{ detailUrl }}"
-                                                                favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
-                                                                favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
-                                                                :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
-                                                            />
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
+                                                            {% set addressParts = [] %}
+
+                                                            {% if bienImmobilier.showAdresse|default(false) %}
+                                                                {% if bienImmobilier.adresse is not empty %}
+                                                                    {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
+                                                                {% endif %}
+
+                                                                {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                                                                    {% set addressParts = addressParts|merge([
+                                                                        (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim
+                                                                    ]) %}
+                                                                {% endif %}
+                                                            {% endif %}
+
+                                                            {% set propertyAddress = addressParts|join(', ') %}
+
+                                                            {% set detailUrl = path('app_public_detail_bien', {
+                                                                slug: bienImmobilier.slug
+                                                            }) %}
+
+                                                            <li class="splide__slide">
+                                                                <twig:Property:Card
+                                                                    title="{{ propertyTitle }}"
+                                                                    price="{{ propertyPrice }}"
+                                                                    period="{{ propertyPeriod }}"
+                                                                    badge="{{ propertyBadge }}"
+                                                                    description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                                                                    details="{{ details|join(' ⸱ ') }}"
+                                                                    address="{{ propertyAddress }}"
+                                                                    image="{{ uploadedImage }}"
+                                                                    url="{{ detailUrl }}"
+                                                                    favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                                                                    favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                                                                    :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
+                                                                />
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
-                                    {% else %}
-                                        <p class="text-muted mb-0">
-                                            {{ section.emptyText }}
-                                        </p>
-                                    {% endif %}
-                                </section>
+                                        {% else %}
+                                            <p class="text-muted mb-0">
+                                                {{ section.emptyText }}
+                                            </p>
+                                        {% endif %}
+                                    </section>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     {% endfor %}
