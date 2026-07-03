@@ -7,7 +7,22 @@
         <main>
             <section class="home-bt-top">
                 <div class="container-xl home-bt-container home-bt-hero-shell">
-                    <div class="home-bt-hero mx-auto">
+                
+                    <div class="home-bt-hero mx-auto">                      
+                        <video 
+                                id="videoBg"
+                                autoplay
+                                muted
+                                loop
+                                playsinline
+                                webkit-playsinline
+                                x-webkit-airplay="deny"
+                                preload="auto"
+                            >
+                                <source src="{{ asset('video/01.mp4') }}" type="video/mp4">
+                                <source src="{{ asset('video/01.webm') }}" type="video/webm">
+                                Votre navigateur ne supporte pas la lecture vidéo.
+                            </video>
                         <div class="home-bt-hero-content">
                             <h1 class="home-bt-hero-title">
                                 L’immobilier,<br>
@@ -18,6 +33,7 @@
                         </div>
                     </div>
                 </div>
+                
 
                 {% if lastSearchSession is not null %}
                     <div class="container-xl home-bt-container home-bt-resume-shell">

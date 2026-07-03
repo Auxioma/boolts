@@ -19,33 +19,49 @@
         class="nav nav-tabs home-bt-search-tabs"
         role="tablist"
         aria-label="{{ 'search.tabs.label'|trans }}"
-        style="--home-bt-tabs-count: {{ transactions|length|default(3) }};"
+        style="--home-bt-tabs-count: 3;"
     >
-        {% for transaction in transactions %}
-            <li class="nav-item" role="presentation">
-                <button
-                    type="button"
-                    class="nav-link home-bt-search-tab {{ currentTransactionId ~ '' == transaction.id ~ '' ? 'active' : '' }}"
-                    data-home-bt-transaction-id="{{ transaction.id }}"
-                    data-home-bt-transaction-name="{{ transaction.name }}"
-                    data-home-bt-transaction-icone="{{ transaction.icone }}"
-                    role="tab"
-                    aria-selected="{{ currentTransactionId ~ '' == transaction.id ~ '' ? 'true' : 'false' }}"
-                >
-                    {% if transaction.icone %}
-                        <i class="{{ transaction.icone }}" aria-hidden="true"></i>
-                    {% else %}
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M3 10.5L12 3l9 7.5"></path>
-                            <path d="M5 10v10h14V10"></path>
-                            <path d="M9 20v-6h6v6"></path>
-                        </svg>
-                    {% endif %}
+{% for transaction in transactions %}
+    <li class="nav-item" role="presentation">
+        <button
+            type="button"
+            class="nav-link home-bt-search-tab {{ currentTransactionId ~ '' == transaction.id ~ '' ? 'active' : '' }}"
+            data-home-bt-transaction-id="{{ transaction.id }}"
+            data-home-bt-transaction-name="{{ transaction.name }}"
+            data-home-bt-transaction-icone="{{ transaction.icone }}"
+            role="tab"
+            aria-selected="{{ currentTransactionId ~ '' == transaction.id ~ '' ? 'true' : 'false' }}"
+        >
+            {% if transaction.icone %}
+                <i class="{{ transaction.icone }}" aria-hidden="true"></i>
+            {% else %}
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M3 10.5L12 3l9 7.5"></path>
+                    <path d="M5 10v10h14V10"></path>
+                    <path d="M9 20v-6h6v6"></path>
+                </svg>
+            {% endif %}
 
-                    <span>{{ transaction.name }}</span>
-                </button>
-            </li>
-        {% endfor %}
+            <span>{{ transaction.name }}</span>
+        </button>
+    </li>
+{% endfor %}
+
+{# Onglet statique #}
+<li class="nav-item" role="presentation">
+    <button
+        type="button"
+        class="nav-link home-bt-search-tab"
+        data-home-bt-transaction-id="vendre"
+        data-home-bt-transaction-name="Vendre"
+        data-home-bt-transaction-icone="icon-pencil-line"
+        role="tab"
+        aria-selected="false"
+    >
+        <i class="icon-pencil-line" aria-hidden="true"></i>
+        <span>Vendre</span>
+    </button>
+</li>
     </ul>
 
     {{ form_start(form, {
