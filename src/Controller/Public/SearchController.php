@@ -73,6 +73,7 @@ final class SearchController extends AbstractController
 
         $searchToken = bin2hex(random_bytes(16));
         $request->getSession()->set('property_search_'.$searchToken, $criteria);
+
         $sessionRecherche = new PropertySearchSession();
         $sessionRecherche->setUuid(Uuid::v7());
         $sessionRecherche->setTransactionTypeId($transactionType->getId());
@@ -154,28 +155,23 @@ final class SearchController extends AbstractController
         $formModal->handleRequest($request);
 
         $mapBounds = $this->getValidMapBoundsFromRequest($request);
+        $modalFilter = $request->query->has('modal_filter')
+            ? $request->query->all('modal_filter')
+            : [];
 
         if ($request->query->has('modal_filter')) {
-            $uri = $request->query->all('modal_filter');
             $filters = $this->extractFormFilters($request);
 
+            $properties = $this->propertyRepository->findForPublicSearch($filters, $locale);
+
             if ('map' === $view && null !== $mapBounds) {
-                $queryBuilder = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
-                    $criteria['transactionTypeId'],
-                    $criteria['ville'],
-                    $criteria['cp'],
-                    $criteria['pays'],
-                    $locale,
-                    $mapBounds['north'],
-                    $mapBounds['south'],
-                    $mapBounds['east'],
-                    $mapBounds['west']);
-            } else {
-                $queryBuilder = $this->propertyRepository->findForPublicSearch($filters);
+                $properties = $this->filterPropertiesByMapBounds($properties, $mapBounds);
             }
+
+            $paginationTarget = $properties;
         } else {
             if ('map' === $view && null !== $mapBounds) {
-                $queryBuilder = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
+                $paginationTarget = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
                     $criteria['transactionTypeId'],
                     $criteria['ville'],
                     $criteria['cp'],
@@ -187,7 +183,7 @@ final class SearchController extends AbstractController
                     $mapBounds['west']
                 );
             } else {
-                $queryBuilder = $this->propertyRepository->findBySearchQueryBuilder(
+                $paginationTarget = $this->propertyRepository->findBySearchQueryBuilder(
                     $criteria['transactionTypeId'],
                     $criteria['ville'],
                     $criteria['cp'],
@@ -198,7 +194,7 @@ final class SearchController extends AbstractController
         }
 
         $search = $this->paginator->paginate(
-            $queryBuilder,
+            $paginationTarget,
             max(1, $request->query->getInt('page', 1)),
             9
         );
@@ -215,7 +211,7 @@ final class SearchController extends AbstractController
             'mapboxPublicTokenCard' => $this->mapboxPublicTokenCard,
             'totalResults' => $search->getTotalItemCount(),
             'favoritePropertyIds' => [],
-            'modal_filter' => $uri ?? '',
+            'modal_filter' => $modalFilter,
         ]);
     }
 
@@ -248,20 +244,31 @@ final class SearchController extends AbstractController
         $page = max(1, $request->query->getInt('page', 1));
         $locale = $request->getLocale();
 
-        $queryBuilder = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
-            $criteria['transactionTypeId'],
-            $criteria['ville'],
-            $criteria['cp'],
-            $criteria['pays'],
-            $locale,
-            $north,
-            $south,
-            $east,
-            $west
-        );
+        $modalFilter = $request->query->has('modal_filter')
+            ? $request->query->all('modal_filter')
+            : [];
+
+        if ($request->query->has('modal_filter')) {
+            $filters = $this->extractFormFilters($request);
+
+            $properties = $this->propertyRepository->findForPublicSearch($filters, $locale);
+            $paginationTarget = $this->filterPropertiesByMapBounds($properties, $mapBounds);
+        } else {
+            $paginationTarget = $this->propertyRepository->findBySearchAndMapBoundsQueryBuilder(
+                $criteria['transactionTypeId'],
+                $criteria['ville'],
+                $criteria['cp'],
+                $criteria['pays'],
+                $locale,
+                $north,
+                $south,
+                $east,
+                $west
+            );
+        }
 
         $search = $this->paginator->paginate(
-            $queryBuilder,
+            $paginationTarget,
             $page,
             12
         );
@@ -279,6 +286,7 @@ final class SearchController extends AbstractController
                 'searchToken' => $searchToken,
                 'currentView' => 'map',
                 'mapBounds' => $mapBounds,
+                'modal_filter' => $modalFilter,
             ]),
         ]);
     }
@@ -402,6 +410,46 @@ final class SearchController extends AbstractController
         ];
     }
 
+    /**
+     * Garde seulement les biens qui sont dans la zone visible de la carte.
+     *
+     * @param array<int, object> $properties
+     * @param array{north: float, south: float, east: float, west: float} $mapBounds
+     *
+     * @return array<int, object>
+     */
+    private function filterPropertiesByMapBounds(array $properties, array $mapBounds): array
+    {
+        return array_values(array_filter($properties, function (object $property) use ($mapBounds): bool {
+            if (
+                !method_exists($property, 'getLatitude')
+                || !method_exists($property, 'getLongitude')
+            ) {
+                return false;
+            }
+
+            $latitude = $property->getLatitude();
+            $longitude = $property->getLongitude();
+
+            if (null === $latitude || null === $longitude) {
+                return false;
+            }
+
+            $latitude = (float) str_replace(',', '.', (string) $latitude);
+            $longitude = (float) str_replace(',', '.', (string) $longitude);
+
+            if ($latitude < $mapBounds['south'] || $latitude > $mapBounds['north']) {
+                return false;
+            }
+
+            if ($mapBounds['west'] <= $mapBounds['east']) {
+                return $longitude >= $mapBounds['west'] && $longitude <= $mapBounds['east'];
+            }
+
+            return $longitude >= $mapBounds['west'] || $longitude <= $mapBounds['east'];
+        }));
+    }
+
     private function cleanValue(mixed $value): ?string
     {
         if (null === $value) {
@@ -419,6 +467,10 @@ final class SearchController extends AbstractController
 
     private function extractFormFilters(Request $request): array
     {
+        if ($request->query->has('modal_filter')) {
+            return $request->query->all('modal_filter');
+        }
+
         $query = $request->query->all();
 
         foreach ($query as $value) {

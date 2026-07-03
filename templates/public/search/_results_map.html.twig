@@ -1,10 +1,16 @@
 {% set resultsCount = totalResults|default(search is defined and search is not null ? search.getTotalItemCount : 0) %}
 
+{% set mapBoundsUrl = path('app_public_search_map_bounds', { searchToken: searchToken }) %}
+
+{% if app.request.queryString is not empty %}
+    {% set mapBoundsUrl = mapBoundsUrl ~ '?' ~ app.request.queryString %}
+{% endif %}
+
 <section
     class="search-card-map-results"
     data-controller="search-card-map"
     data-search-card-map-token-value="{{ mapboxPublicTokenCard|default(mapboxPublicToken|default(''))|e('html_attr') }}"
-    data-search-card-map-bounds-url-value="{{ path('app_public_search_map_bounds', { searchToken: searchToken }) }}"
+    data-search-card-map-bounds-url-value="{{ mapBoundsUrl|e('html_attr') }}"
 >
     <div class="container-xxl search-card-container">
 

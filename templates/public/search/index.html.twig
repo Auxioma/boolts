@@ -17,7 +17,7 @@
             searchToken: searchToken,
             currentView: currentView,
             mapbox_public_token: mapboxPublicToken|default(''),
-            modal_filter: modal_filter
+            modal_filter: modal_filter|default({})
         } only %}
 
         <main class="{{ currentView == 'map' ? 'search-card-main' : 'bt-research-main' }}" id="results">
@@ -33,7 +33,8 @@
                     currentView: currentView,
                     mapboxPublicToken: mapboxPublicToken|default(''),
                     mapboxPublicTokenCard: mapboxPublicTokenCard|default(''),
-                    mapBounds: mapBounds|default(null)
+                    mapBounds: mapBounds|default(null),
+                    modal_filter: modal_filter|default({})
                 } only %}
 
             {% else %}
@@ -51,7 +52,8 @@
                 search: search,
                 searchToken: searchToken,
                 currentView: currentView,
-                mapBounds: mapBounds|default(null)
+                mapBounds: mapBounds|default(null),
+                modal_filter: modal_filter|default({})
             } only %}
 
         </main>
