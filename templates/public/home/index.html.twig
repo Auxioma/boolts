@@ -7,22 +7,22 @@
         <main>
             <section class="home-bt-top">
                 <div class="container-xl home-bt-container home-bt-hero-shell">
-                
-                    <div class="home-bt-hero mx-auto">                      
-                        <video 
-                                id="videoBg"
-                                autoplay
-                                muted
-                                loop
-                                playsinline
-                                webkit-playsinline
-                                x-webkit-airplay="deny"
-                                preload="auto"
-                            >
-                                <source src="{{ asset('video/01.mp4') }}" type="video/mp4">
-                                <source src="{{ asset('video/01.webm') }}" type="video/webm">
-                                Votre navigateur ne supporte pas la lecture vidéo.
-                            </video>
+
+                    <div class="home-bt-hero mx-auto">
+                        <video
+                            id="videoBg"
+                            autoplay
+                            muted
+                            loop
+                            playsinline
+                            webkit-playsinline
+                            x-webkit-airplay="deny"
+                            preload="auto"
+                        >
+                            <source src="{{ asset('video/01.mp4') }}" type="video/mp4">
+                            <source src="{{ asset('video/01.webm') }}" type="video/webm">
+                            Votre navigateur ne supporte pas la lecture vidéo.
+                        </video>
                         <div class="home-bt-hero-content">
                             <h1 class="home-bt-hero-title">
                                 L’immobilier,<br>
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                 </div>
-                
+
 
                 {% if lastSearchSession is not null %}
                     <div class="container-xl home-bt-container home-bt-resume-shell">
@@ -94,56 +94,57 @@
                     </div>
 
                     {#
-                        featured: true  -> section "À la Une" : bandeau lavande pleine largeur
-                                           sur desktop, slider classique sur tablette/mobile.
-                        highlight       -> partie du titre affichée en violet (comme sur Figma).
+                    featured: true  -> section "À la Une" : bandeau lavande pleine largeur
+                                       sur desktop, slider classique sur tablette/mobile.
+                    highlight       -> partie du titre affichée en violet.
                     #}
+
                     {% set panels = [
                         {
                             key: 'location',
                             active: true,
                             sections: [
-                                {
-                                    title: 'Logements à la',
-                                    highlight: 'Une',
-                                    featured: true,
-                                    emptyText: '',
-                                    items: logementALaUneLocation|default([])
-                                },
-                                {
-                                    title: 'Logements populaires à louer',
-                                    emptyText: 'Aucun logement populaire en location pour le moment.',
-                                    items: logementPopulaireLocation|default([])
-                                },
-                                {
-                                    title: 'Logements récemment ajoutés à louer',
-                                    emptyText: 'Aucun logement récemment ajouté en location pour le moment.',
-                                    items: logementAjouterRecementLocation|default([])
-                                }
-                            ]
+                            {
+                                title: 'Logements à la',
+                                highlight: 'Une',
+                                featured: true,
+                                emptyText: '',
+                                items: aLaUneLocation|default([])
+                            },
+                            {
+                                title: 'Logements populaires à louer',
+                                emptyText: 'Aucun logement populaire en location pour le moment.',
+                                items: logementPopulaireLocation|default([])
+                            },
+                            {
+                                title: 'Logements récemment ajoutés à louer',
+                                emptyText: 'Aucun logement récemment ajouté en location pour le moment.',
+                                items: logementAjouterRecementLocation|default([])
+                            }
+                        ]
                         },
                         {
                             key: 'vente',
                             active: false,
                             sections: [
-                                {
-                                    title: 'Biens à la',
-                                    highlight: 'Une',
-                                    featured: true,
-                                    emptyText: '',
-                                    items: logementALaUneVente|default([])
-                                },
-                                {
-                                    title: 'Biens populaires à acheter',
-                                    emptyText: 'Aucun bien populaire à acheter pour le moment.',
-                                    items: logementPopulaireVente|default([])
-                                },
-                                {
-                                    title: 'Biens récemment ajoutés à acheter',
-                                    emptyText: 'Aucun bien récemment ajouté à acheter pour le moment.',
-                                    items: logementAjouterRecementVente|default([])
-                                }
-                            ]
+                            {
+                                title: 'Biens à la',
+                                highlight: 'Une',
+                                featured: true,
+                                emptyText: '',
+                                items: aLaUneVente|default([])
+                            },
+                            {
+                                title: 'Biens populaires à acheter',
+                                emptyText: 'Aucun bien populaire à acheter pour le moment.',
+                                items: logementPopulaireVente|default([])
+                            },
+                            {
+                                title: 'Biens récemment ajoutés à acheter',
+                                emptyText: 'Aucun bien récemment ajouté à acheter pour le moment.',
+                                items: logementAjouterRecementVente|default([])
+                            }
+                        ]
                         }
                     ] %}
 
@@ -155,7 +156,7 @@
                             {% for section in panel.sections %}
                                 {% set isFeatured = section.featured|default(false) %}
 
-                                {# La section "À la Une" est masquée si vide (pas de bandeau vide) #}
+                                {# La section "À la Une" est masquée si elle est vide #}
                                 {% if not isFeatured or section.items|length > 0 %}
                                     <section
                                         class="agence-properties bt-related{{ isFeatured ? ' home-bt-une' : '' }}"
@@ -168,11 +169,13 @@
                                                 {% endif %}
 
                                                 <span class="bt-section-title-text">
-                                                    {{ section.title }}
-                                                    {%- if section.highlight is defined %}
-                                                        <span class="bt-section-title-accent">{{ section.highlight }}</span>
-                                                    {%- endif %}
-                                                </span>
+                                {{ section.title }}
+                                                    {% if section.highlight is defined %}
+                                                        <span class="bt-section-title-accent">
+                                        {{ section.highlight }}
+                                    </span>
+                                                    {% endif %}
+                            </span>
 
                                                 <i class="bi bi-chevron-right bt-section-chevron" aria-hidden="true"></i>
                                             </h2>
@@ -186,7 +189,7 @@
                                                         data-splide-target="previous"
                                                         data-action="click->splide#previous"
                                                     >
-                                                        <i class="bi bi-arrow-left-circle"></i>
+                                                        <i class="icon-circle-arrow-left"></i>
                                                     </button>
 
                                                     <button
@@ -196,7 +199,7 @@
                                                         data-splide-target="next"
                                                         data-action="click->splide#next"
                                                     >
-                                                        <i class="bi bi-arrow-right-circle"></i>
+                                                        <i class="icon-circle-arrow-right"></i>
                                                     </button>
                                                 </div>
                                             {% endif %}
@@ -233,27 +236,63 @@
                                                             {% endif %}
 
                                                             {% set isLocation = panel.key == 'location' %}
-                                                            {% set transactionLabel = isLocation ? 'louer' : 'vendre' %}
 
-                                                            {% if typeBienName is not empty %}
+                                                            {% set transactionLabel = transactionName is not empty
+                                                                ? transactionName|lower
+                                                                : ''
+                                                            %}
+
+                                                            {% if typeBienName is not empty and transactionLabel is not empty %}
                                                                 {% set propertyTitle = typeBienName ~ ' à ' ~ transactionLabel %}
+                                                            {% elseif typeBienName is not empty %}
+                                                                {% set propertyTitle = typeBienName %}
                                                             {% else %}
-                                                                {% set propertyTitle = isLocation ? 'Logement à louer' : 'Bien à vendre' %}
+                                                                {% set propertyTitle = transactionLabel is not empty
+                                                                    ? 'Bien à ' ~ transactionLabel
+                                                                    : 'Bien immobilier'
+                                                                %}
                                                             {% endif %}
 
-                                                            {% set propertyPrice = bienImmobilier.prix is not empty
-                                                                ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe
+                                                            {#
+                                                            Prix :
+                                                            - Vente    => prix seul
+                                                            - Location => prix + charges
+                                                            #}
+                                                            {% set deviseSigne = bienImmobilier.user.devise.signe|default('€') %}
+
+                                                            {# Vente : prix #}
+                                                            {% set prixVente = bienImmobilier.prix|default('0')|replace({
+                                                                ' ': '',
+                                                                ',': '.'
+                                                            }) + 0 %}
+
+                                                            {# Location : loyer hors charges + charges #}
+                                                            {% set loyerHorsCharge = bienImmobilier.montantLoyerHorsCharge|default('0')|replace({
+                                                                ' ': '',
+                                                                ',': '.'
+                                                            }) + 0 %}
+
+                                                            {% set montantCharges = bienImmobilier.montantDesCharges|default('0')|replace({
+                                                                ' ': '',
+                                                                ',': '.'
+                                                            }) + 0 %}
+
+                                                            {% set prixTotal = isLocation
+                                                                ? loyerHorsCharge + montantCharges
+                                                                : prixVente
+                                                            %}
+
+                                                            {% set propertyPrice = prixTotal > 0
+                                                                ? prixTotal|number_format(0, ',', ' ') ~ ' ' ~ deviseSigne
                                                                 : ''
                                                             %}
 
                                                             {% set propertyPeriod = isLocation ? '/mois' : '' %}
-                                                            {% set propertyBadge = isLocation ? 'Charges comprises' : '' %}
+                                                            {% set propertyBadge = isLocation and montantCharges > 0 ? 'Charges comprises' : '' %}
 
                                                             {% set details = [] %}
 
-                                                            {% if typeBienName is not empty %}
-                                                                {% set details = details|merge([typeBienName]) %}
-                                                            {% endif %}
+
 
                                                             {% if bienImmobilier.chambres is not empty %}
                                                                 {% set details = details|merge([
@@ -276,7 +315,7 @@
                                                             {% set addressParts = [] %}
 
                                                             {% if bienImmobilier.showAdresse|default(false) %}
-                                                                {% if bienImmobilier.adresse is not empty %}
+                                                                {% if bienImmobilier.neighborhood is not empty %}
                                                                     {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
                                                                 {% endif %}
 
@@ -323,116 +362,126 @@
                             {% endfor %}
                         </div>
                     {% endfor %}
-                </div>
-            </section>
 
-            <section class="home-bt-content">
-                <div class="container-xl home-bt-container">
-                    <div class="home-bt-content-section row align-items-center gy-4">
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-text-block">
-                                <h2>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                </h2>
+                    <section class="home-bt-content">
+                        <div class="container-xl home-bt-container">
+                            <div class="home-bt-content-section row align-items-center gy-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="home-bt-text-block">
+                                        <h2>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                        </h2>
 
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                </p>
+                                        <p>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <div class="home-bt-content-image"></div>
+                                </div>
+                            </div>
+
+                            <div class="home-bt-content-section is-second row align-items-center gy-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="home-bt-content-image is-second"></div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <div class="home-bt-text-block ms-md-auto">
+                                        <h2>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                        </h2>
+
+                                        <p>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </section>
 
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-content-image"></div>
-                        </div>
-                    </div>
-
-                    <div class="home-bt-content-section is-second row align-items-center gy-4">
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-content-image is-second"></div>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-text-block ms-md-auto">
-                                <h2>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                </h2>
-
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="home-bt-codes">
-                <div class="container-xl home-bt-container">
-                    <h2 class="home-bt-codes-title">
-                        Boolts redéfinit
-                        <span>les codes</span>
-                    </h2>
-
-                    <div class="row g-4">
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-box-seam"></i>
-                                <h3>Transparence</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-globe2"></i>
-                                <h3>Fluidité</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-chat-dots"></i>
-                                <h3>Réactivité</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-3">
-                            <div class="home-bt-feature">
-                                <i class="bi bi-diagram-3"></i>
-                                <h3>Écosystème</h3>
-                                <p>Lorem ipsum dolor sit amet, consectetur.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="home-bt-app">
-                <div class="container-xl home-bt-container">
-                    <div class="home-bt-app-card">
-                        <div class="home-bt-app-mockup"></div>
-
-                        <div class="home-bt-app-text">
-                            <h2>
-                                Il y a vraiment plein de choses à voir sur notre application !
+                    <section class="home-bt-codes">
+                        <div class="container-xl home-bt-container">
+                            <h2 class="home-bt-codes-title">
+                                Boolts redéfinit
+                                <span>les codes</span>
                             </h2>
 
-                            <p>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                Ut enim ad minim veniam, quis nostrud exercitation.
-                            </p>
+                            <div class="row g-4">
+                                <div class="col-6 col-md-3">
+                                    <div class="home-bt-feature">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                            <path d="M34.5 34.5V39H12.75C10.9598 39 9.2429 38.2888 7.97703 37.023C6.71116 35.7571 6 34.0402 6 32.25C6 30.4598 6.71116 28.7429 7.97703 27.477C9.2429 26.2112 10.9598 25.5 12.75 25.5H13.5V22.5H12.75C10.1641 22.5 7.68419 23.5272 5.85571 25.3557C4.02723 27.1842 3 29.6641 3 32.25C3 34.8359 4.02723 37.3158 5.85571 39.1443C7.68419 40.9728 10.1641 42 12.75 42H34.5V46.5H46.5V34.5H34.5ZM43.5 43.5H37.5V37.5H43.5V43.5Z" fill="#858789"/>
+                                            <path d="M31.5 33H28.5V28.5H19.5V33H16.5V28.5C16.5 27.7044 16.8161 26.9413 17.3787 26.3787C17.9413 25.8161 18.7044 25.5 19.5 25.5H28.5C29.2956 25.5 30.0587 25.8161 30.6213 26.3787C31.1839 26.9413 31.5 27.7044 31.5 28.5V33ZM24 24C23.11 24 22.24 23.7361 21.4999 23.2416C20.7599 22.7471 20.1831 22.0443 19.8425 21.2221C19.5019 20.3998 19.4128 19.495 19.5865 18.6221C19.7601 17.7492 20.1887 16.9474 20.818 16.318C21.4474 15.6887 22.2492 15.2601 23.1221 15.0865C23.995 14.9128 24.8998 15.0019 25.7221 15.3425C26.5443 15.6831 27.2471 16.2599 27.7416 16.9999C28.2361 17.74 28.5 18.61 28.5 19.5C28.4988 20.6931 28.0243 21.837 27.1807 22.6807C26.337 23.5243 25.1931 23.9988 24 24ZM24 18C23.7033 18 23.4133 18.088 23.1666 18.2528C22.92 18.4176 22.7277 18.6519 22.6142 18.926C22.5006 19.2001 22.4709 19.5017 22.5288 19.7926C22.5867 20.0836 22.7296 20.3509 22.9393 20.5607C23.1491 20.7704 23.4164 20.9133 23.7074 20.9712C23.9983 21.0291 24.2999 20.9994 24.574 20.8858C24.8481 20.7723 25.0824 20.58 25.2472 20.3334C25.412 20.0867 25.5 19.7967 25.5 19.5C25.5 19.1022 25.342 18.7206 25.0607 18.4393C24.7794 18.158 24.3978 18 24 18Z" fill="#858789"/>
+                                            <path d="M35.25 6H13.5V1.5H1.5V13.5H13.5V9H35.25C37.0402 9 38.7571 9.71116 40.023 10.977C41.2888 12.2429 42 13.9598 42 15.75C42 17.5402 41.2888 19.2571 40.023 20.523C38.7571 21.7888 37.0402 22.5 35.25 22.5H34.5V25.5H35.25C37.8359 25.5 40.3158 24.4728 42.1443 22.6443C43.9728 20.8158 45 18.3359 45 15.75C45 13.1641 43.9728 10.6842 42.1443 8.85571C40.3158 7.02723 37.8359 6 35.25 6ZM10.5 10.5H4.5V4.5H10.5V10.5Z" fill="#858789"/>
+                                        </svg>
+                                        <h3>Transparence</h3>
+                                        <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                                    </div>
+                                </div>
 
-                            <a href="#" class="home-bt-app-btn">
-                                Télécharger l’application
-                            </a>
+                                <div class="col-6 col-md-3">
+                                    <div class="home-bt-feature">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44" fill="none">
+                                            <path d="M32.8167 31.8817C32.34 30.415 30.965 29.3333 29.3334 29.3333H27.5V23.8333C27.5 23.3471 27.3069 22.8808 26.963 22.537C26.6192 22.1931 26.1529 22 25.6667 22H14.6667V18.3333H18.3334C18.8196 18.3333 19.2859 18.1402 19.6297 17.7964C19.9735 17.4525 20.1667 16.9862 20.1667 16.5V12.8333H23.8334C24.8058 12.8333 25.7384 12.447 26.4261 11.7594C27.1137 11.0717 27.5 10.1391 27.5 9.16666V8.41499C29.6936 9.29933 31.6401 10.702 33.1731 12.503C34.7061 14.304 35.7799 16.4497 36.3025 18.7563C36.8251 21.0629 36.781 23.4618 36.1739 25.7477C35.5668 28.0336 34.4149 30.1383 32.8167 31.8817ZM20.1667 36.5383C12.925 35.64 7.33335 29.48 7.33335 22C7.33335 20.8633 7.48002 19.7633 7.71835 18.7183L16.5 27.5V29.3333C16.5 30.3058 16.8863 31.2384 17.574 31.926C18.2616 32.6137 19.1942 33 20.1667 33M22 3.66666C19.5925 3.66666 17.2085 4.14086 14.9842 5.0622C12.7599 5.98353 10.7388 7.33396 9.0364 9.03637C5.59823 12.4745 3.66669 17.1377 3.66669 22C3.66669 26.8623 5.59823 31.5254 9.0364 34.9636C10.7388 36.666 12.7599 38.0164 14.9842 38.9378C17.2085 39.8591 19.5925 40.3333 22 40.3333C26.8623 40.3333 31.5255 38.4018 34.9636 34.9636C38.4018 31.5254 40.3334 26.8623 40.3334 22C40.3334 19.5924 39.8591 17.2084 38.9378 14.9841C38.0165 12.7598 36.6661 10.7388 34.9636 9.03637C33.2612 7.33396 31.2402 5.98353 29.0159 5.0622C26.7916 4.14086 24.4076 3.66666 22 3.66666Z" fill="#858789"/>
+                                        </svg>
+                                        <h3>Fluidité</h3>
+                                        <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3">
+                                    <div class="home-bt-feature">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44" fill="none">
+                                            <path d="M22 27.5H14.6667C12.2355 27.5 9.90393 28.4658 8.18484 30.1848C6.46576 31.9039 5.49998 34.2355 5.49998 36.6667V38.5H22.0917M29.3223 35.761C29.9241 34.9654 30.2499 33.9951 30.2503 32.9976C30.2506 32 29.9254 31.0295 29.3242 30.2335M34.4391 39.633C35.8832 37.7238 36.6651 35.3956 36.6661 33.0018C36.6671 30.608 35.8871 28.2792 34.4447 26.3688M29.3333 13.75C29.3333 15.938 28.4641 18.0365 26.9169 19.5836C25.3698 21.1308 23.2714 22 21.0833 22C18.8953 22 16.7969 21.1308 15.2497 19.5836C13.7025 18.0365 12.8333 15.938 12.8333 13.75C12.8333 11.562 13.7025 9.46354 15.2497 7.91637C16.7969 6.36919 18.8953 5.5 21.0833 5.5C23.2714 5.5 25.3698 6.36919 26.9169 7.91637C28.4641 9.46354 29.3333 11.562 29.3333 13.75ZM24.6291 180.536C117.065 171.163 184.4 88.6308 175.028 -3.80486C165.655 -96.2405 83.1225 -163.576 -9.3132 -154.203C-101.749 -144.83 -169.085 -62.2983 -159.712 30.1374C-150.339 122.573 -67.8066 189.909 24.6291 180.536Z" stroke="#858789" stroke-width="3.66667" stroke-linecap="square"/>
+                                        </svg>
+                                        <h3>Réactivité</h3>
+                                        <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-md-3">
+                                    <div class="home-bt-feature">
+                                        <svg width="44" height="43" viewBox="0 0 44 43" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.5 11.3152C7.27624 11.3202 8.04475 11.1609 8.755 10.8477L13.595 15.7702C14.2946 14.8332 15.1505 14.0239 16.125 13.3777L11.34 8.56516C11.7688 7.83051 11.9965 6.99581 12 6.14516C11.9498 4.73485 11.3428 3.40188 10.312 2.43806C9.2812 1.47425 7.91051 0.958121 6.5 1.00266C5.08949 0.958121 3.7188 1.47425 2.68798 2.43806C1.65717 3.40188 1.05022 4.73485 1 6.14516C1.02134 6.84587 1.18056 7.5355 1.46858 8.17463C1.75659 8.81377 2.16774 9.38988 2.67853 9.87002C3.18932 10.3502 3.78974 10.7249 4.44545 10.9729C5.10116 11.2209 5.79931 11.3372 6.5 11.3152ZM6.5 4.44016C6.99778 4.4014 7.49114 4.55755 7.87596 4.87567C8.26078 5.19379 8.50695 5.64898 8.5625 6.14516C8.51361 6.64632 8.2703 7.10836 7.88474 7.43223C7.49918 7.7561 7.00207 7.91601 6.5 7.87766C5.99793 7.91601 5.50082 7.7561 5.11526 7.43223C4.7297 7.10836 4.48639 6.64632 4.4375 6.14516C4.49305 5.64898 4.73922 5.19379 5.12404 4.87567C5.50886 4.55755 6.00222 4.4014 6.5 4.44016ZM36.75 31.2527C35.9738 31.2476 35.2053 31.4069 34.495 31.7202L29.655 26.7702C28.9401 27.68 28.0751 28.4612 27.0975 29.0802L31.8825 33.8652C31.4621 34.602 31.2439 35.4369 31.25 36.2852C31.25 37.7439 31.8295 39.1428 32.8609 40.1743C33.8924 41.2057 35.2913 41.7852 36.75 41.7852C38.2087 41.7852 39.6076 41.2057 40.6391 40.1743C41.6705 39.1428 42.25 37.7439 42.25 36.2852C42.1717 34.8943 41.5526 33.5892 40.5248 32.6489C39.4971 31.7085 38.1423 31.2074 36.75 31.2527ZM36.75 38.1277C36.2479 38.166 35.7508 38.0061 35.3653 37.6822C34.9797 37.3584 34.7364 36.8963 34.6875 36.3952C34.7677 35.906 35.0191 35.4612 35.3969 35.1402C35.7747 34.8193 36.2543 34.6431 36.75 34.6431C37.2457 34.6431 37.7253 34.8193 38.1031 35.1402C38.4809 35.4612 38.7323 35.906 38.8125 36.3952C38.7636 36.8963 38.5203 37.3584 38.1347 37.6822C37.7492 38.0061 37.2521 38.166 36.75 38.1277Z" fill="#858789"/>
+                                            <path d="M29.7344 21.3926C29.7363 19.859 29.2334 18.3665 28.3017 17.1408L31.8969 13.611C32.5995 13.9016 33.352 14.0559 34.1134 14.0656C34.8022 14.087 35.4884 13.9739 36.133 13.7328C36.7775 13.4917 37.3677 13.1273 37.8698 12.6604C38.3718 12.1935 38.776 11.6333 39.0591 11.0118C39.3422 10.3903 39.4987 9.71972 39.5197 9.03836C39.5197 7.61995 38.9501 6.25962 37.9362 5.25665C36.9224 4.25368 35.5473 3.69022 34.1134 3.69022C32.6796 3.69022 31.3045 4.25368 30.2906 5.25665C29.2768 6.25962 28.7072 7.61995 28.7072 9.03836C28.7106 9.86552 28.9344 10.6772 29.3559 11.3915L25.7608 14.9481C24.497 14.2483 23.0733 13.8801 21.625 13.8784C19.8368 13.8541 18.0907 14.4151 16.6583 15.4742C15.2259 16.5334 14.1875 18.0312 13.7048 19.7347H11.8397C11.4314 18.736 10.7279 17.8826 9.8211 17.2862C8.91433 16.6898 7.84663 16.3781 6.75781 16.3921C5.37135 16.3488 4.02402 16.8506 3.01077 17.7878C1.99753 18.725 1.40092 20.0212 1.35156 21.3926C1.37253 22.0739 1.52905 22.7445 1.81215 23.366C2.09525 23.9875 2.4994 24.5477 3.00148 25.0146C3.50357 25.4815 4.09375 25.8459 4.73828 26.087C5.38282 26.3281 6.06907 26.4412 6.75781 26.4198C7.84663 26.4338 8.91433 26.1221 9.8211 25.5257C10.7279 24.9293 11.4314 24.0759 11.8397 23.0772H13.7048C14.1875 24.7807 15.2259 26.2785 16.6583 27.3377C18.0907 28.3968 19.8368 28.9578 21.625 28.9335C22.6581 28.9656 23.6875 28.7959 24.6543 28.4342C25.6211 28.0726 26.5064 27.5259 27.2595 26.8256C28.0126 26.1253 28.6188 25.285 29.0435 24.3527C29.4681 23.4205 29.7029 22.4146 29.7344 21.3926ZM34.1134 7.38044C34.6042 7.33573 35.093 7.48501 35.4728 7.79567C35.8527 8.10633 36.0929 8.5531 36.1408 9.03836C36.062 9.51406 35.8149 9.94656 35.4435 10.2586C35.0721 10.5707 34.6007 10.7421 34.1134 10.7421C33.6262 10.7421 33.1548 10.5707 32.7834 10.2586C32.412 9.94656 32.1649 9.51406 32.0861 9.03836C32.1407 8.55588 32.3827 8.11326 32.7609 7.80392C33.1392 7.49459 33.6241 7.34274 34.1134 7.38044ZM6.75781 23.0772C6.2643 23.1145 5.77566 22.959 5.39668 22.6441C5.01769 22.3292 4.77853 21.8799 4.73047 21.3926C4.78508 20.9101 5.02705 20.4675 5.40531 20.1581C5.78357 19.8488 6.26852 19.697 6.75781 19.7347C7.2471 19.697 7.73206 19.8488 8.11032 20.1581C8.48858 20.4675 8.73055 20.9101 8.78516 21.3926C8.7371 21.8799 8.49794 22.3292 8.11895 22.6441C7.73996 22.959 7.25133 23.1145 6.75781 23.0772ZM21.625 25.5909C20.4363 25.6493 19.2723 25.241 18.3864 24.4547C17.5005 23.6685 16.9643 22.5679 16.8945 21.3926C16.9642 20.2194 17.5014 19.1215 18.3881 18.3395C19.2749 17.5575 20.4389 17.1553 21.625 17.221C22.8093 17.1624 23.9694 17.5671 24.8545 18.3476C25.7397 19.1282 26.2788 20.222 26.3555 21.3926C26.2788 22.5654 25.7406 23.6618 24.8563 24.4467C23.9719 25.2315 22.8119 25.6423 21.625 25.5909Z" fill="#858789"/>
+                                        </svg>
+
+                                        <h3>Écosystème</h3>
+                                        <p>Lorem ipsum dolor sit amet, consectetur.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
+
+                    <section class="home-bt-app">
+                        <div class="container-xl home-bt-container">
+                            <div class="home-bt-app-card">
+                                <div class="home-bt-app-mockup"></div>
+
+                                <div class="home-bt-app-text">
+                                    <h2>
+                                        Il y a vraiment plein de choses à voir sur notre application !
+                                    </h2>
+
+                                    <p>
+                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                                        Ut enim ad minim veniam, quis nostrud exercitation.
+                                    </p>
+
+                                    <a href="#" class="home-bt-app-btn">
+                                        Télécharger l’application
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
         </main>
 
         <nav class="home-bt-mobile-tabbar">

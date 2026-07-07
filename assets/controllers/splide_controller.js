@@ -11,7 +11,7 @@ export default class extends Controller {
 
         this.splide = new Splide(this.sliderTarget, {
             type: 'slide',
-            fixedWidth: '310px',
+            fixedWidth: '315px',
             perMove: 1,
             gap: '20px',
 
@@ -26,7 +26,7 @@ export default class extends Controller {
 
             breakpoints: {
                 1200: {
-                    fixedWidth: '290px',
+                    fixedWidth: '330px',
                 },
                 992: {
                     fixedWidth: '270px',

@@ -9,8 +9,9 @@
     --hero-desktop: url("https://www.figma.com/api/mcp/asset/42e7dc83-36f9-4ddf-9e68-c9955c814459");
     --hero-mobile: url("https://www.figma.com/api/mcp/asset/c509ee7e-a710-4d28-a030-41c75858842c");
 
-    --resume-img-1: url("https://www.figma.com/api/mcp/asset/0450ab73-6cfc-480f-83d9-6bfb9ea3f510");
-    --resume-img-2: url("https://www.figma.com/api/mcp/asset/049171ec-e6bf-45a2-8417-32133827237d");
+    --resume-img-1: url("../../images/home/cookies/01.png");
+    --resume-img-2: url("../../images/home/cookies/02.png");
+    --resume-img-3: url("../../images/home/cookies/03.png");
     --resume-mobile-img-1: url("https://www.figma.com/api/mcp/asset/ea73bdb0-aa1b-49a0-ba5a-b08a3d598d49");
     --resume-mobile-img-2: url("https://www.figma.com/api/mcp/asset/b4b22a55-6045-43a0-9220-a0072230b7d5");
 
@@ -27,9 +28,9 @@
     --card-img-11: url("https://www.figma.com/api/mcp/asset/d9e3c023-078a-45cf-ba0f-4394944f8fda");
     --card-img-12: url("https://www.figma.com/api/mcp/asset/3cd1b1b4-7a23-428e-9d7b-bfcc72cdb1a1");
 
-    --content-img-1: url("https://www.figma.com/api/mcp/asset/95b471a4-61ea-4fc6-9b09-fb27d6091a12");
-    --content-img-2: url("https://www.figma.com/api/mcp/asset/589ca372-867e-4d28-8717-81dbf7702cdd");
-    --mockup-img: url("https://www.figma.com/api/mcp/asset/c1c03f19-6e3c-4d90-84d6-48e788d0b76a");
+    --content-img-1: url("../../images/home/cookies/04.png");
+    --content-img-2: url("../../images/home/cookies/05.png");
+    --mockup-img: url("../../images/home/cookies/06.png");
 
     /* Nouveaux assets Figma (à télécharger en local : les URLs expirent sous 7 jours) */
     --icon-flame: url("https://www.figma.com/api/mcp/asset/49ddd3d9-d539-4136-a65b-45b5cf8670b5");
@@ -148,7 +149,7 @@ input {
 
 .home-bt-hero {
     position: relative;
-    width: 1116px;
+    /*width: 1116px;*/
     max-width: 100%;
     height: 418px;
     border-radius: 50px;
@@ -258,7 +259,7 @@ input {
 }
 
 .home-bt-resume {
-    width: 1116px;
+    /*width: 1116px;*/
     max-width: 100%;
     height: 167.797px;
     margin-top: 24px;
@@ -620,6 +621,8 @@ input {
     height: 354.288px;
     border-radius: 11.233px;
     background: var(--content-img-1) center / cover no-repeat, var(--color-gray-light);
+    position: relative;
+    z-index: 9;
 }
 
 .home-bt-content-image.is-second {
@@ -649,7 +652,7 @@ input {
     text-align: center;
 }
 
-.home-bt-feature i {
+.home-bt-feature svg {
     display: inline-flex;
     margin-bottom: 24px;
     color: var(--color-text);
@@ -675,7 +678,7 @@ input {
 }
 
 .home-bt-app {
-    padding-top: 80px;
+    padding: 80px 0;
 }
 
 .home-bt-app-card {
@@ -1375,7 +1378,7 @@ input {
     pointer-events: none;
 }
 
-.home-bt-app-card::after {
+/*.home-bt-app-card::after {
     content: "";
     position: absolute;
     left: 1180px;
@@ -1384,7 +1387,7 @@ input {
     height: 36px;
     background: var(--app-cursor) center / contain no-repeat;
     pointer-events: none;
-}
+}*/
 
 .home-bt-app-mockup,
 .home-bt-app-text {
@@ -1729,13 +1732,13 @@ input {
     margin: 0;
     list-style: none;
     background: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 16px;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
 }
 
 .home-bt-search-bar__results.is-active {
     display: block;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .home-bt-search-bar__result {
