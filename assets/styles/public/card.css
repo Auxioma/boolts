@@ -37,7 +37,7 @@
     position: sticky;
     top: 0;
     z-index: 60;
-    height: var(--search-card-toolbar-height);
+    /*height: var(--search-card-toolbar-height);*/
     background: var(--search-card-white);
     box-shadow: 0 16px 14px rgba(0, 0, 0, 0.06);
 }
@@ -76,7 +76,7 @@
 .search-card-form {
     flex: 1 1 auto;
     min-width: 0;
-    max-width: 814px;
+    max-width: 100%;
     position: relative;
 }
 
@@ -153,9 +153,9 @@
     align-items: center;
     gap: 8px;
     padding: 8px;
-    border: 2px solid var(--search-card-border);
+    border: 2px solid #EBECEC;
     border-radius: 60px;
-    background: var(--search-card-white);
+    background: #FFF;
 }
 
 .search-card-switch-item {
@@ -166,7 +166,7 @@
     justify-content: center;
     gap: 6px;
     border-radius: 50px;
-    color: var(--search-card-muted);
+    color: #858789;
     font-size: 16px;
     font-weight: 700;
     line-height: 20px;
@@ -185,8 +185,8 @@
 }
 
 .search-card-switch-item.search-card-is-active {
-    background: var(--search-card-primary);
-    color: var(--search-card-white);
+    background: #5D00FF;
+    color: #FFF;
 }
 
 .search-card-filter {
@@ -196,10 +196,10 @@
     justify-content: center;
     gap: 10px;
     padding: 10px 16px;
-    border: 2px solid var(--search-card-border);
+    border: 2px solid #EBECEC;
     border-radius: 50px;
-    background: var(--search-card-white);
-    color: var(--search-card-muted);
+    background: #FFF;
+    color: #858789;
     font-size: 16px;
     font-weight: 700;
     line-height: 20px;
@@ -212,8 +212,8 @@
 }
 
 .search-card-container {
-    width: min(100% - 200px, var(--search-card-page-max));
-    margin-inline: auto;
+    /*width: min(100% - 200px, var(--search-card-page-max));
+    margin-inline: auto;*/
 }
 
 .search-card-title {
@@ -870,4 +870,17 @@
     .search-card-pagination span {
         display: none;
     }
+}
+.mapboxgl-ctrl-top-right {
+    top:76px !important;
+}
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+    height: 90px;
+    padding: 16px 10px!important;
+}
+.mapboxgl-ctrl-group {
+    border-radius: 50px!important;
+}
+.mapboxgl-ctrl-group button + button {
+    border-top: initial!important;
 }

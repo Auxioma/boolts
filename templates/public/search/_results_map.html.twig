@@ -25,7 +25,6 @@
         </h1>
 
         <div class="row g-4 align-items-start">
-
             <section class="col-12 col-lg-6" aria-label="Liste des logements">
                 <div
                     class="row g-4"
@@ -38,7 +37,6 @@
                     } only %}
                 </div>
             </section>
-
             <aside class="col-12 col-lg-6" aria-label="Carte des logements">
                 <div class="search-card-map-panel">
 
@@ -47,24 +45,21 @@
                         class="search-card-mapbox"
                         data-search-card-map-target="mapbox"
                     ></div>
-
                     <div
                         id="search-card-map-error"
                         class="search-card-map-error"
                         data-search-card-map-target="error"
                         hidden
                     ></div>
-
                     <button
                         type="button"
                         class="search-card-map-fit"
                         id="search-card-map-fit"
-                        aria-label="Recentrer la carte"
-                        data-action="click->search-card-map#fitMap"
+                        aria-label="Agrandir la carte"
+                        data-action="click->search-card-map#openMapModal"
                     >
-                        Recentrer
+                        <i class="icon-maximize-2"></i>
                     </button>
-
                     <article
                         id="search-card-map-preview"
                         class="search-card-map-preview search-card-desktop-only"
@@ -141,11 +136,44 @@
                             </div>
                         </a>
                     </article>
-
                 </div>
             </aside>
-
         </div>
+    </div>
+    <div
+        class="modal fade search-card-map-modal"
+        id="search-card-map-modal"
+        tabindex="-1"
+        aria-labelledby="search-card-map-modal-title"
+        aria-hidden="true"
+        data-search-card-map-target="mapModal"
+    >
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
 
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="search-card-map-modal-title">
+                        Carte des logements
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Fermer"
+                    ></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container-fluid p-3">
+                        <div
+                            class="search-card-map-modal-host"
+                            data-search-card-map-target="mapModalHost"
+                        ></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </section>

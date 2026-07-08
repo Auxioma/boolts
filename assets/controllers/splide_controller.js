@@ -22,7 +22,19 @@ export default class extends Controller {
             autoplay: false,
             speed: 800,
             rewind: false,
-            trimSpace: false,
+
+            /*
+             * IMPORTANT :
+             * true = Splide empêche le dernier item de se coller à gauche
+             * s'il y a de l'espace vide à droite.
+             */
+            trimSpace: true,
+
+            /*
+             * Évite que Splide considère des déplacements inutiles
+             * quand il n'y a plus assez de contenu à afficher.
+             */
+            omitEnd: true,
 
             breakpoints: {
                 1200: {
@@ -32,13 +44,13 @@ export default class extends Controller {
                     fixedWidth: '270px',
                 },
                 768: {
-                    fixedWidth: '245px',
+                    fixedWidth: '292px',
                     padding: {
                         right: '55px',
                     },
                 },
                 576: {
-                    fixedWidth: '225px',
+                    fixedWidth: '255px',
                     gap: '16px',
                     padding: {
                         right: '45px',

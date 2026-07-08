@@ -829,13 +829,13 @@ input {
     }
 
     .home-bt-hero {
-        width: 776px;
+        /*width: 776px;*/
         height: 410px;
         padding: 38px 67px;
     }
 
     .home-bt-resume {
-        width: 776px;
+        /*width: 776px;*/
         height: 167.797px;
     }
 
@@ -844,7 +844,7 @@ input {
     }
 
     .home-bt-search-header {
-        width: 385px;
+        width: auto;
     }
 
     .home-bt-tab-panel {
@@ -882,18 +882,21 @@ input {
     }
 
     .home-bt-text-block {
-        max-width: 376px;
+        /*max-width: 376px;*/
     }
 
+    .home-bt-content-section.is-second::after {
+        display: none!important;
+    }
     .home-bt-content-image {
         height: 250px;
         border-radius: 8px;
     }
 
     .home-bt-content-image.is-second {
-        width: 329.941px;
+        /*width: 329.941px;*/
         height: 213.52px;
-        margin-left: 46px;
+       /* margin-left: 46px;*/
         border-radius: 12.472px;
     }
 
@@ -906,7 +909,7 @@ input {
     }
 
     .home-bt-app-text {
-        right: -287px;
+        right: 100px;
         top: 89px;
     }
 }
@@ -943,21 +946,29 @@ input {
     }
 
     .home-bt-hero-content {
-        gap: 24px;
+        gap: 12px;
     }
 
     .home-bt-hero-title {
-        font-size: 40px;
+        font-size: 38px;
         line-height: 60px;
+    }
+    .home-bt-hero video {
+        clip-path: initial!important;
+    }
+
+    .home-bt-search-tabs .nav-link {
+        font-size: 14px!important;
     }
 
     .home-bt-search-hero {
-        padding: 24px;
+        gap: 12px!important;
+        padding: 16px!important;
     }
 
     .home-bt-search-bar {
         height: 60px;
-        padding-left: 32px;
+        /*padding-left: 32px;*/
     }
 
     .home-bt-resume-shell {
@@ -1018,8 +1029,12 @@ input {
     }
 
     .home-bt-search-header {
-        width: 355px;
-        margin-left: -2px;
+        width: auto;
+        /*margin-left: -2px;*/
+    }
+
+    .home-bt-search-title {
+        font-size: 24px!important;
     }
 
     .home-bt-tab-panel {
@@ -1104,7 +1119,7 @@ input {
 
     .home-bt-content-image,
     .home-bt-content-image.is-second {
-        width: 351px;
+        width: 100%;
         height: 227.148px;
         margin: 0;
         border-radius: 8px;
@@ -1114,14 +1129,18 @@ input {
         height: 203px;
     }
 
+    .home-bt-text-block h2 {
+        font-size: 24px!important;
+    }
+
+
     .home-bt-codes {
         padding-top: 48px;
     }
 
     .home-bt-codes-title {
-        width: 417.5px;
-        max-width: none;
-        margin: 0 0 16px -33.25px;
+        width: auto;
+        margin-bottom: 16px;
     }
 
     .home-bt-feature p {
@@ -1133,7 +1152,7 @@ input {
     }
 
     .home-bt-app-card {
-        width: 351px;
+        width: auto;
         height: 542px;
     }
 
@@ -1227,7 +1246,7 @@ input {
     line-height: 1;
 }
 
-.home-bt-page .bt-icon-btn--prev,
+
 .home-bt-page .bt-icon-btn:disabled,
 .home-bt-page .bt-icon-btn.is-disabled {
     color: var(--color-gray);
@@ -1731,7 +1750,6 @@ input {
     padding: 8px;
     margin: 0;
     list-style: none;
-    background: #FFFFFF;
     border-radius: 16px;
 }
 
@@ -1739,6 +1757,7 @@ input {
     display: block;
     box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
     border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #FFFFFF;
 }
 
 .home-bt-search-bar__result {

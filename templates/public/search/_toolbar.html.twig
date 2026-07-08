@@ -2,178 +2,182 @@
 {% set mapbox_public_token = mapbox_public_token|default('') %}
 {% set totalResults = search is defined and search is not null ? search.getTotalItemCount : 0 %}
 
-<section class="{{ currentView == 'map' ? 'search-card-toolbar' : 'bt-research-sticky-bar' }}" aria-label="Recherche et filtres">
-    <div class="{{ currentView == 'map' ? 'search-card-toolbar-inner' : 'bt-research-sticky-inner' }}">
+<section class="{{ currentView == 'map' ? 'search-card-toolbar' : 'bt-research-sticky-bar' }} py-14" aria-label="Recherche et filtres">
+    <div class="container">
+        <div class="row">
 
-        <button type="button" class="{{ currentView == 'map' ? 'search-card-back search-card-mobile-only' : 'bt-research-back-btn d-md-none' }}" aria-label="Retour">
-            <i class="icon-chevron-left" aria-hidden="true"></i>
-        </button>
-
-        {{ form_start(form, {
-            attr: {
-                class: currentView == 'map' ? 'search-card-form' : 'home-bt-search-bar',
-                'data-controller': 'home-bt-mapbox-search',
-                'data-home-bt-mapbox-search-token-value': mapbox_public_token|default(''),
-                'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr'),
-            },
-        }) }}
-
-            {{ form_widget(form.transactionType, {
-                attr: {
-                    class: 'd-none',
-                    'data-home-bt-transaction-input': '',
-                },
-            }) }}
-
-            <div class="{{ currentView == 'map' ? 'search-card-field' : 'home-bt-search-bar__field' }}">
-
-                {{ form_widget(form.filter, {
-                    attr: {
-                        class: currentView == 'map' ? 'search-card-input' : '',
-                        autocomplete: 'off',
-                        placeholder: 'search.location.placeholder'|trans,
-                        'data-home-bt-mapbox-search-target': 'input',
-                        'data-action': 'input->home-bt-mapbox-search#search focus->home-bt-mapbox-search#search keydown->home-bt-mapbox-search#handleKeydown',
-                    },
-                }) }}
-
-                <button type="submit" class="{{ currentView == 'map' ? 'search-card-submit' : '' }}" aria-label="{{ 'search.submit'|trans }}">
-                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="{{ currentView == 'map' ? 'search-card-icon' : '' }}">
-                        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
-                        <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
-                    </svg>
-                </button>
-
-                <ul
-                    class="{{ currentView == 'map' ? 'search-card-results' : 'home-bt-search-bar__results' }}"
-                    data-home-bt-mapbox-search-target="results"
-                ></ul>
-            </div>
-
-            {{ form_widget(form.selectedValue, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedValue',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedMapboxId, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedMapboxId',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedFeatureType, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedFeatureType',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedCountryName, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedCountryName',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedCountryCode, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedCountryCode',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedRegionName, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedRegionName',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedCityName, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedCityName',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedPostalCode, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedPostalCode',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedLatitude, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedLatitude',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedLongitude, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedLongitude',
-                },
-            }) }}
-
-            {{ form_widget(form.selectedFullAddress, {
-                attr: {
-                    'data-home-bt-mapbox-search-target': 'selectedFullAddress',
-                },
-            }) }}
-
-            {% if form.selectedLocale is defined %}
-                {{ form_widget(form.selectedLocale, {
-                    value: app.request.locale|default('fr'),
-                    attr: {
-                        'data-home-bt-mapbox-search-target': 'selectedLocale',
-                    },
-                }) }}
-            {% endif %}
-
-            {% if form.selectedLocationJson is defined %}
-                {{ form_widget(form.selectedLocationJson, {
-                    attr: {
-                        'data-home-bt-mapbox-search-target': 'selectedLocationJson',
-                    },
-                }) }}
-            {% endif %}
-
-        {{ form_end(form, { render_rest: false }) }}
-
-        <div class="{{ currentView == 'map' ? 'search-card-actions' : '' }}">
-
-            <div class="search-card-switch search-card-desktop-only d-none d-md-flex" aria-label="Choisir l'affichage">
-
-                <a
-                    href="{{ path('app_public_search_results', {
-                        searchToken: searchToken,
-                        view: 'list',
-                        modal_filter: modal_filter
-                    }) }}"
-                    class="search-card-switch-item {{ currentView == 'list' ? 'search-card-is-active' : '' }}"
-                >
-                    <i class="icon-list" aria-hidden="true"></i>
-                    <span>Liste</span>
-                </a>
-
-                <a
-                    href="{{ path('app_public_search_results', {
-                        searchToken: searchToken,
-                        view: 'map',
-                        modal_filter: modal_filter
-                    }) }}"
-                    class="search-card-switch-item {{ currentView == 'map' ? 'search-card-is-active' : '' }}"
-                >
-                    <i class="icon-map" aria-hidden="true"></i>
-                    <span>Carte</span>
-                </a>
-
-            </div>
-
-            <button
-                type="button"
-                class="{{ currentView == 'map' ? 'search-card-filter' : 'bt-research-filter-btn' }}"
-                data-bs-toggle="modal"
-                data-bs-target="#booltsFiltersModal"
-            >
-                <i class="icon-sliders-horizontal" aria-hidden="true"></i>
-                <span class="d-none d-md-inline">Filtres</span>
+            <button type="button" class="{{ currentView == 'map' ? 'search-card-back search-card-mobile-only' : 'bt-research-back-btn d-md-none' }}" aria-label="Retour">
+                <i class="icon-chevron-left" aria-hidden="true"></i>
             </button>
+
+            <div class="col-8">
+                {{ form_start(form, {
+                    attr: {
+                        class: currentView == 'map' ? 'search-card-form' : 'home-bt-search-bar',
+                        'data-controller': 'home-bt-mapbox-search',
+                        'data-home-bt-mapbox-search-token-value': mapbox_public_token|default(''),
+                        'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr'),
+                    },
+                }) }}
+
+                {{ form_widget(form.transactionType, {
+                    attr: {
+                        class: 'd-none',
+                        'data-home-bt-transaction-input': '',
+                    },
+                }) }}
+
+                <div class="{{ currentView == 'map' ? 'search-card-field' : 'home-bt-search-bar__field' }}">
+
+                    {{ form_widget(form.filter, {
+                        attr: {
+                            class: currentView == 'map' ? 'search-card-input' : '',
+                            autocomplete: 'off',
+                            placeholder: 'search.location.placeholder'|trans,
+                            'data-home-bt-mapbox-search-target': 'input',
+                            'data-action': 'input->home-bt-mapbox-search#search focus->home-bt-mapbox-search#search keydown->home-bt-mapbox-search#handleKeydown',
+                        },
+                    }) }}
+
+                    <button type="submit" class="{{ currentView == 'map' ? 'search-card-submit' : '' }}" aria-label="{{ 'search.submit'|trans }}">
+                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="{{ currentView == 'map' ? 'search-card-icon' : '' }}">
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                            <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+                        </svg>
+                    </button>
+
+                    <ul
+                        class="{{ currentView == 'map' ? 'search-card-results' : 'home-bt-search-bar__results' }}"
+                        data-home-bt-mapbox-search-target="results"
+                    ></ul>
+                </div>
+
+                {{ form_widget(form.selectedValue, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedValue',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedMapboxId, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedMapboxId',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedFeatureType, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedFeatureType',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedCountryName, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedCountryName',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedCountryCode, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedCountryCode',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedRegionName, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedRegionName',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedCityName, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedCityName',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedPostalCode, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedPostalCode',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedLatitude, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedLatitude',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedLongitude, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedLongitude',
+                    },
+                }) }}
+
+                {{ form_widget(form.selectedFullAddress, {
+                    attr: {
+                        'data-home-bt-mapbox-search-target': 'selectedFullAddress',
+                    },
+                }) }}
+
+                {% if form.selectedLocale is defined %}
+                    {{ form_widget(form.selectedLocale, {
+                        value: app.request.locale|default('fr'),
+                        attr: {
+                            'data-home-bt-mapbox-search-target': 'selectedLocale',
+                        },
+                    }) }}
+                {% endif %}
+
+                {% if form.selectedLocationJson is defined %}
+                    {{ form_widget(form.selectedLocationJson, {
+                        attr: {
+                            'data-home-bt-mapbox-search-target': 'selectedLocationJson',
+                        },
+                    }) }}
+                {% endif %}
+
+                {{ form_end(form, { render_rest: false }) }}
+            </div>
+
+            <div class="col-4 d-flex justify-content-center">
+                <div class="search-card-actions d-flex align-items-center justify-content-center gap-2">
+                    <div class="search-card-switch search-card-desktop-only d-none d-md-flex gap-1" aria-label="Choisir l'affichage">
+                        <a
+                            href="{{ path('app_public_search_results', {
+                                searchToken: searchToken,
+                                view: 'list',
+                                modal_filter: modal_filter
+                            }) }}"
+                            class="search-card-switch-item {{ currentView == 'list' ? 'search-card-is-active' : '' }}"
+                        >
+                            <i class="icon-list" aria-hidden="true"></i>
+                            <span>Liste</span>
+                        </a>
+
+                        <a
+                            href="{{ path('app_public_search_results', {
+                                searchToken: searchToken,
+                                view: 'map',
+                                modal_filter: modal_filter
+                            }) }}"
+                            class="search-card-switch-item {{ currentView == 'map' ? 'search-card-is-active' : '' }}"
+                        >
+                            <i class="icon-map" aria-hidden="true"></i>
+                            <span>Carte</span>
+                        </a>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="search-card-filter"
+                        data-bs-toggle="modal"
+                        data-bs-target="#booltsFiltersModal"
+                    >
+                        <i class="icon-sliders-horizontal" aria-hidden="true"></i>
+                        <span class="d-none d-md-inline">Filtres</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </section>
