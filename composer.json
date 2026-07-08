@@ -12,6 +12,7 @@
         "doctrine/orm": "^3.6.3",
         "easycorp/easyadmin-bundle": "^5.0",
         "gedmo/doctrine-extensions": "*",
+        "geoip2/geoip2": "^3.3",
         "knplabs/doctrine-behaviors": "^3.1",
         "knplabs/knp-paginator-bundle": "^6.10",
         "knpuniversity/oauth2-client-bundle": "^2.20",

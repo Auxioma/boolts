@@ -45,3 +45,7 @@ services:
     App\Service\MapboxAddressTranslator:
         arguments:
             $mapboxToken: '%env(MAPBOX_PUBLIC_TOKEN)%'
+
+    App\Service\GeoIpLocationService:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
