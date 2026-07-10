@@ -1,6 +1,12 @@
-{% set resultsCount = totalResults|default(search is defined and search is not null ? search.getTotalItemCount : 0) %}
+{% set resultsCount = totalResults|default(
+    search is defined and search is not null
+    ? search.getTotalItemCount
+    : 0
+) %}
 
-{% set mapBoundsUrl = path('app_public_search_map_bounds', { searchToken: searchToken }) %}
+{% set mapBoundsUrl = path('app_public_search_map_bounds', {
+    searchToken: searchToken
+}) %}
 
 {% if app.request.queryString is not empty %}
     {% set mapBoundsUrl = mapBoundsUrl ~ '?' ~ app.request.queryString %}
@@ -17,15 +23,22 @@
         <h1
             class="search-card-title"
             id="search-card-total-results"
-            data-search-card-map-target="totalResults"
+            data-search-card-map-target="title totalResults"
         >
             {{ resultsCount }}
             logement{{ resultsCount > 1 ? 's' : '' }}
             trouvé{{ resultsCount > 1 ? 's' : '' }}
         </h1>
 
-        <div class="row g-4 align-items-start">
-            <section class="col-12 col-lg-6" aria-label="Liste des logements">
+        <div
+            class="row g-4 align-items-start search-card-map-layout"
+            data-search-card-map-target="layout"
+        >
+            <section
+                class="col-12 col-lg-6 search-card-list-column"
+                aria-label="Liste des logements"
+                data-search-card-map-target="listColumn"
+            >
                 <div
                     class="row g-4"
                     id="search-card-results-grid"
@@ -37,35 +50,70 @@
                     } only %}
                 </div>
             </section>
-            <aside class="col-12 col-lg-6" aria-label="Carte des logements">
-                <div class="search-card-map-panel">
 
+            <aside
+                class="col-12 col-lg-6 search-card-map-column"
+                aria-label="Carte des logements"
+                data-search-card-map-target="mapColumn"
+            >
+                <div
+                    class="search-card-map-panel"
+                    data-search-card-map-target="mapPanel"
+                >
                     <div
                         id="search-card-mapbox"
                         class="search-card-mapbox"
                         data-search-card-map-target="mapbox"
                     ></div>
+
                     <div
                         id="search-card-map-error"
                         class="search-card-map-error"
                         data-search-card-map-target="error"
                         hidden
                     ></div>
+
                     <button
                         type="button"
                         class="search-card-map-fit"
                         id="search-card-map-fit"
                         aria-label="Agrandir la carte"
+                        aria-expanded="false"
                         data-action="click->search-card-map#openMapModal"
+                        data-search-card-map-target="expandButton"
                     >
-                        <i class="icon-maximize-2"></i>
+                        <i
+                            class="icon-maximize-2"
+                            aria-hidden="true"
+                            data-search-card-map-target="expandIcon"
+                        ></i>
+
+                        <span
+                            class="search-card-map-fit-label"
+                            data-search-card-map-target="expandLabel"
+                        >
+
+                        </span>
                     </button>
+
                     <article
                         id="search-card-map-preview"
                         class="search-card-map-preview search-card-desktop-only"
                         data-search-card-map-target="preview"
                         hidden
                     >
+                        <button
+                            type="button"
+                            class="search-card-map-preview-close"
+                            aria-label="Fermer l’aperçu"
+                            data-action="click->search-card-map#hidePreview"
+                        >
+                            <i
+                                class="icon-x"
+                                aria-hidden="true"
+                            ></i>
+                        </button>
+
                         <a
                             href="#"
                             class="search-card-map-preview-link"
@@ -138,42 +186,6 @@
                     </article>
                 </div>
             </aside>
-        </div>
-    </div>
-    <div
-        class="modal fade search-card-map-modal"
-        id="search-card-map-modal"
-        tabindex="-1"
-        aria-labelledby="search-card-map-modal-title"
-        aria-hidden="true"
-        data-search-card-map-target="mapModal"
-    >
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h2 class="modal-title fs-5" id="search-card-map-modal-title">
-                        Carte des logements
-                    </h2>
-
-                    <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Fermer"
-                    ></button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="container-fluid p-3">
-                        <div
-                            class="search-card-map-modal-host"
-                            data-search-card-map-target="mapModalHost"
-                        ></div>
-                    </div>
-                </div>
-
-            </div>
         </div>
     </div>
 </section>

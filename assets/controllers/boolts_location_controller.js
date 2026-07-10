@@ -925,17 +925,15 @@ export default class extends Controller {
             }
 
             .boolts-selected-chip {
-                display: inline-flex;
+                display: flex;
+                height: 44px;
+                padding: 10px 16px;
+                justify-content: center;
                 align-items: center;
-                gap: 8px;
-                border: 1px solid rgba(93, 0, 255, .18);
-                border-radius: 999px;
-                background: rgba(93, 0, 255, .08);
-                color: #5D00FF;
-                padding: 7px 11px;
-                font-size: 13px;
-                font-weight: 700;
-                cursor: pointer;
+                gap: 10px;
+                border-radius: 50px;
+                border: 2px solid #5D00FF;
+                background: #FFF;
             }
 
             .boolts-selected-chip:hover {

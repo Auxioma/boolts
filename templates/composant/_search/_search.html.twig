@@ -1,6 +1,6 @@
 {# templates/public/research/_filters_modal.html.twig #}
 
-{# 
+{#
     Modal Bootstrap des filtres.
     Ce formulaire utilise formModal en méthode GET pour envoyer les filtres dans l'URL.
 #}
@@ -11,7 +11,7 @@
         {{ form_start(formModal, {
             method: 'GET',
             attr: {
-                class: 'modal-content boolts-filter-content',
+                class: 'modal-content boolts-filter-content formulaire',
                 'data-controller': 'boolts-filter-count',
                 'data-boolts-filter-count-url-value': path('app_public_search_count'),
                 'data-action': '
@@ -31,7 +31,11 @@
 
             {# Bouton de fermeture de la modal #}
             <button type="button" class="boolts-filter-close" data-bs-dismiss="modal" aria-label="Fermer">
-                <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M18 6L6 18M6 6L18 18" stroke="#858789" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
             </button>
         </div>
 
@@ -69,7 +73,7 @@
                         <div class="accordion-body boolts-filter-panel">
                             <div class="boolts-choice-list">
 
-                                {# 
+                                {#
                                     Boucle sur les choix Symfony du champ natureDeLaPropriete.
                                     On utilise vars.choices pour rendre les boutons manuellement.
                                 #}
@@ -99,7 +103,7 @@
 
                                 {% endfor %}
 
-                                {# 
+                                {#
                                     Option "Toutes".
                                     Valeur vide = aucun filtre spécifique sur la nature.
                                 #}
@@ -117,7 +121,7 @@
                                 </label>
                             </div>
                         </div>
-                        {# 
+                        {#
                             Indique à Symfony que ce champ est déjà rendu manuellement.
                             Cela évite qu'il soit réaffiché automatiquement par form_rest/form_end.
                         #}
@@ -153,7 +157,7 @@
                     >
                         <div class="accordion-body boolts-filter-panel">
 
-                            {# 
+                            {#
                                 Récupère les valeurs déjà sélectionnées.
                                 Comme le champ est multiple, vars.value doit être un tableau.
                             #}
@@ -204,7 +208,7 @@
 
                             </div>
 
-                            {# 
+                            {#
                                 Si on a plus de 3 types de propriété,
                                 les autres sont placés dans une zone Bootstrap collapse.
                             #}
@@ -260,7 +264,7 @@
                                 </button>
                             {% endif %}
 
-                            {# 
+                            {#
                                 Indique à Symfony que ce champ est déjà rendu manuellement.
                                 Cela évite qu'il soit réaffiché automatiquement par form_rest/form_end.
                             #}
@@ -470,7 +474,7 @@
                 {# Boucle sur chaque groupe min/max #}
                 {% for filter in rangeFilters %}
 
-                    {# 
+                    {#
                         Protection : on affiche le bloc uniquement si les deux champs existent.
                         Cela évite les erreurs Twig si un champ manque dans le FormType.
                     #}

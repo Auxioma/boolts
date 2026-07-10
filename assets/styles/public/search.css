@@ -337,11 +337,11 @@
 
 .boolts-filter-dialog {
     max-width: 640px;
-    margin: 54px auto;
+    margin: 205px auto auto auto;
 }
 
 .boolts-filter-content {
-    max-height: calc(100vh - 108px);
+    /*max-height: calc(100vh - 108px);*/
     border: 0;
     border-radius: 44px;
     padding: 44px;
@@ -353,15 +353,16 @@
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 36px;
+    /*margin-bottom: 36px;*/
 }
 
 .boolts-filter-header h2 {
-    margin: 0;
-    color: var(--color-text);
-    font-size: var(--font-size-h2);
+    color: #0B0F14;
+    text-align: center;
+    font-size: 30px;
+    font-style: normal;
     font-weight: 700;
-    line-height: var(--line-height-h2);
+    line-height: 34px;
 }
 
 .boolts-filter-close {
@@ -407,9 +408,9 @@
 
 .boolts-filter-block h3,
 .boolts-filter-accordion .accordion-button {
-    margin: 0 0 24px;
-    color: var(--color-text);
+    color: #0B0F14!important;
     font-size: 20px;
+    font-style: normal;
     font-weight: 700;
     line-height: 24px;
 }
@@ -568,7 +569,7 @@
     min-width: 72px;
     height: 22px;
     padding: 0 12px;
-    border-radius: 3px 12px 12px 3px;
+    /*border-radius: 3px 12px 12px 3px;*/
     color: var(--color-white);
     font-size: 12px;
     font-weight: 700;
@@ -661,8 +662,8 @@
     }
 
     .boolts-filter-dialog {
-        max-width: 640px;
-        margin: 24px auto;
+        /*max-width: 640px;
+        margin: 24px auto;*/
     }
 
     .boolts-filter-content {
@@ -762,7 +763,7 @@
     }
 
     .boolts-filter-content {
-        height: calc(100svh - 16px);
+        /*height: calc(100svh - 16px);*/
         max-height: none;
         border-radius: 24px 24px 0 0;
         padding: 24px 16px 16px;
@@ -856,20 +857,21 @@
 }
 
 .boolts-filter-content {
-    height: min(698px, calc(100dvh - 24px));
+    /*height: 698px;
     overflow: hidden;
     border: 0;
     border-radius: 44px;
     background: var(--bt-filter-white);
-    font-family: "Eudoxus Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: "Eudoxus Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;*/
 }
 
 .boolts-filter-header {
     flex: 0 0 auto;
-    padding: 44px 44px 32px;
-    border-bottom: 1px solid var(--bt-filter-border);
+    padding: 0 44px 32px;
+    border-bottom: initial;
+    /*border-bottom: 1px solid var(--bt-filter-border);
     background: var(--bt-filter-white);
-    box-shadow: 0 5px 26.8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 5px 26.8px rgba(0, 0, 0, 0.08);*/
 }
 
 .boolts-filter-title {
@@ -902,20 +904,17 @@
 
 .boolts-filter-reset-wrapper {
     flex: 0 0 auto;
-    padding: 32px 44px 18px;
-    background: var(--bt-filter-white);
+    padding: 32px 0;
+    text-align: center;
+    /*background: var(--bt-filter-white);*/
 }
 
 .boolts-filter-reset {
-    width: 100%;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--bt-filter-brand);
+    color: #5D00FF;
     font-size: 16px;
+    font-style: normal;
     font-weight: 700;
     line-height: 20px;
-    text-align: center;
 }
 
 .boolts-filter-body {
@@ -979,18 +978,18 @@
 }
 
 .boolts-filter-toggle::after {
-    width: 12px;
+    /*width: 12px;
     height: 12px;
     margin-left: auto;
     background-image: none;
     border-right: 2px solid var(--bt-filter-muted);
     border-bottom: 2px solid var(--bt-filter-muted);
     transform: rotate(225deg);
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease;*/
 }
 
 .boolts-filter-toggle.collapsed::after {
-    transform: rotate(45deg);
+    /*transform: rotate(45deg);*/
 }
 
 .boolts-filter-panel {
@@ -1006,26 +1005,19 @@
 
 .boolts-choice {
     min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
     padding: 10px 16px;
     border: 2px solid var(--bt-filter-border);
     border-radius: 50px;
     background: var(--bt-filter-white);
-    color: var(--bt-filter-muted);
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
     cursor: pointer;
     user-select: none;
-    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    /*transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;*/
 }
 
 .boolts-choice i {
     font-size: 22px;
     line-height: 1;
+    margin-right: 10px;
 }
 
 .btn-check:checked + .boolts-choice {
@@ -1034,7 +1026,7 @@
 }
 
 .btn-check:focus + .boolts-choice {
-    box-shadow: 0 0 0 0.2rem rgba(93, 0, 255, 0.15);
+    /*box-shadow: 0 0 0 0.2rem rgba(93, 0, 255, 0.15);*/
 }
 
 .boolts-choice-remove {
@@ -1136,9 +1128,10 @@
 }
 
 .boolts-selected-chip span {
-    font-size: 24px;
-    font-weight: 300;
-    line-height: 1;
+    color: #5D00FF;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
 }
 
 .boolts-filter-select,
@@ -1207,9 +1200,9 @@
 .boolts-energy-check {
     width: 24px;
     height: 24px;
-    margin: 0;
     border: 2px solid var(--bt-filter-border);
     border-radius: 5px;
+    margin-right: 24px;
 }
 
 .boolts-energy-check:checked {
@@ -1364,6 +1357,7 @@
 
     .boolts-filter-body {
         padding: 0 24px 24px;
+        height:365px !important;
     }
 
     .boolts-filter-footer {
