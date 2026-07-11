@@ -28,6 +28,18 @@ class ModalFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /*
+         * Préremplissage de la localisation (pays / ville / quartier).
+         * Fourni par le contrôleur à partir de la recherche Mapbox
+         * de la page d'accueil, au format JSON attendu par le Stimulus
+         * "boolts-location" (parseJsonValue au connect()).
+         */
+        $locationPrefill = $options['location_prefill'] ?? [];
+
+        $paysPrefill = $locationPrefill['pays'] ?? '[]';
+        $villePrefill = $locationPrefill['ville'] ?? '[]';
+        $quartierPrefill = $locationPrefill['quartier'] ?? '[]';
+
         $builder
             ->add('natureDeLaPropriete', EntityType::class, [
                 'class' => CategoryBienTransaction::class,
@@ -40,60 +52,60 @@ class ModalFilterType extends AbstractType
                 },
             ])
 
-->add('typeDePropriete', EntityType::class, [
-    'class' => CategoryBien::class,
-    'choice_label' => 'name',
-    'required' => false,
+            ->add('typeDePropriete', EntityType::class, [
+                'class' => CategoryBien::class,
+                'choice_label' => 'name',
+                'required' => false,
 
-    'expanded' => true,
-    'multiple' => true,
+                'expanded' => true,
+                'multiple' => true,
 
-    'choice_attr' => static function (CategoryBien $categoryBien): array {
-        return [
-            'icon' => $categoryBien->getIcone(),
-            'name' => $categoryBien->getName(),
-        ];
-    },
-])
+                'choice_attr' => static function (CategoryBien $categoryBien): array {
+                    return [
+                        'icon' => $categoryBien->getIcone(),
+                        'name' => $categoryBien->getName(),
+                    ];
+                },
+            ])
 
-->add('paysSearch', SearchType::class, [
-    'label' => false,
-    'mapped' => false,
-    'required' => false,
-])
+            ->add('paysSearch', SearchType::class, [
+                'label' => false,
+                'mapped' => false,
+                'required' => false,
+            ])
 
-->add('pays', HiddenType::class, [
-    'label' => false,
-    'mapped' => false,
-    'required' => false,
-    'data' => '[]',
-])
+            ->add('pays', HiddenType::class, [
+                'label' => false,
+                'mapped' => false,
+                'required' => false,
+                'data' => $paysPrefill,
+            ])
 
-->add('villeSearch', SearchType::class, [
-    'label' => false,
-    'mapped' => false,
-    'required' => false,
-])
+            ->add('villeSearch', SearchType::class, [
+                'label' => false,
+                'mapped' => false,
+                'required' => false,
+            ])
 
-->add('ville', HiddenType::class, [
-    'label' => false,
-    'mapped' => false,
-    'required' => false,
-    'data' => '[]',
-])
+            ->add('ville', HiddenType::class, [
+                'label' => false,
+                'mapped' => false,
+                'required' => false,
+                'data' => $villePrefill,
+            ])
 
-->add('quartierSearch', SearchType::class, [
-    'label' => false,
-    'mapped' => false,
-    'required' => false,
-])
+            ->add('quartierSearch', SearchType::class, [
+                'label' => false,
+                'mapped' => false,
+                'required' => false,
+            ])
 
-->add('quartier', HiddenType::class, [
-    'label' => false,
-    'mapped' => false,
-    'required' => false,
-    'data' => '[]',
-])
+            ->add('quartier', HiddenType::class, [
+                'label' => false,
+                'mapped' => false,
+                'required' => false,
+                'data' => $quartierPrefill,
+            ])
 
             ->add('minChambres', IntegerType::class, [
                 'label' => false,
@@ -165,7 +177,15 @@ class ModalFilterType extends AbstractType
             'method' => 'GET',
             'csrf_protection' => false,
             'allow_extra_fields' => true,
+
+            /*
+             * Préremplissage optionnel de la localisation :
+             * ['pays' => '[...json...]', 'ville' => '[...]', 'quartier' => '[...]']
+             */
+            'location_prefill' => null,
         ]);
+
+        $resolver->setAllowedTypes('location_prefill', ['null', 'array']);
     }
 
     public function getBlockPrefix(): string

@@ -144,7 +144,22 @@ final class SearchController extends AbstractController
 
         $filtreModal = new ModalFilter();
 
+        /*
+         * Préremplissage de la localisation de la modale (pays / ville / quartier)
+         * à partir de la recherche Mapbox de la page d'accueil.
+         *
+         * Injecté via l'option "location_prefill" du FormType : les champs
+         * cachés étant "mapped => false" avec une option "data", c'est le seul
+         * canal fiable. On ne préremplit que si l'utilisateur n'a pas encore
+         * soumis la modale : si "modal_filter" est présent dans l'URL,
+         * ce sont ses choix qui priment.
+         */
+        $locationPrefill = $request->query->has('modal_filter')
+            ? null
+            : $this->buildModalLocationPrefill($criteria);
+
         $formModal = $this->createForm(ModalFilterType::class, $filtreModal, [
+            'location_prefill' => $locationPrefill,
             'action' => $this->generateUrl('app_public_search_results', [
                 'searchToken' => $searchToken,
                 'view' => $view,
@@ -374,6 +389,134 @@ final class SearchController extends AbstractController
         $filter->setSelectedFeatureType($criteria['selectedFeatureType'] ?? null);
 
         return $filter;
+    }
+
+    /**
+     * Construit les valeurs JSON de préremplissage de la modale
+     * (pays / ville / quartier) à partir des critères Mapbox stockés en session.
+     *
+     * Les champs cibles sont des HiddenType "mapped => false" : ils attendent
+     * des chaînes JSON, exactement comme celles produites par syncHiddenFields()
+     * du Stimulus "boolts-location". Ce dernier les lit au connect()
+     * (parseJsonValue) et affiche automatiquement les puces sélectionnées.
+     *
+     * Correspondance des featureType Mapbox :
+     *  - country                 → pays uniquement
+     *  - region / postcode       → pays uniquement (une région n'est pas une ville)
+     *  - district                → pays uniquement (district administratif Mapbox = département, PAS un quartier)
+     *  - place / address / poi   → pays + ville
+     *  - neighborhood / locality → pays + ville + quartier
+     *
+     * @return array{pays: string, ville: string, quartier: string}
+     */
+    private function buildModalLocationPrefill(array $criteria): array
+    {
+        $countryName = $this->cleanValue($criteria['pays'] ?? null);
+        $countryCode = $this->cleanValue($criteria['selectedCountryCode'] ?? null);
+        $cityName = $this->cleanValue($criteria['ville'] ?? null);
+        $regionName = $this->cleanValue($criteria['selectedRegionName'] ?? null);
+        $latitude = $this->cleanValue($criteria['selectedLatitude'] ?? null);
+        $longitude = $this->cleanValue($criteria['selectedLongitude'] ?? null);
+        $selectedValue = $this->cleanValue($criteria['selectedValue'] ?? null);
+        $featureType = mb_strtolower((string) $this->cleanValue($criteria['selectedFeatureType'] ?? null));
+
+        /*
+         * GeoNames utilise des codes ISO2 en MAJUSCULES,
+         * alors que Mapbox renvoie souvent "fr" en minuscules.
+         */
+        $countryCode = null !== $countryCode ? mb_strtoupper($countryCode) : null;
+
+        /*
+         * ================= PAYS =================
+         * Structure attendue par getCountryLabel() / getCountryCode() du JS.
+         */
+        $countries = [];
+
+        if (null !== $countryName || null !== $countryCode) {
+            $countries[] = [
+                'label' => $countryName ?? $countryCode,
+                'code' => $countryCode ?? mb_strtoupper((string) $countryName),
+                'country_code' => $countryCode ?? mb_strtoupper((string) $countryName),
+                'country_name' => $countryName ?? $countryCode,
+            ];
+        }
+
+        /*
+         * ================= VILLE =================
+         * Uniquement si la recherche Mapbox descend au moins au niveau ville.
+         * lat/lng sont indispensables : le JS les renvoie ensuite à l'API
+         * GeoNames (city_lat / city_lng) pour chercher les quartiers.
+         */
+        $cities = [];
+
+        $isCityLevel = null !== $cityName
+            && [] !== $countries
+            && !\in_array($featureType, ['country', 'region', 'postcode', 'district'], true);
+
+        if ($isCityLevel) {
+            $cities[] = [
+                'city_name' => $cityName,
+                'name' => $cityName,
+                'country_code' => $countries[0]['code'],
+                'country_name' => $countries[0]['label'],
+                'admin_name_1' => $regionName ?? '',
+                'lat' => $latitude ?? '',
+                'lng' => $longitude ?? '',
+            ];
+        }
+
+        /*
+         * ================= QUARTIER =================
+         * Seulement si Mapbox a identifié un quartier (neighborhood/locality)
+         * et que sa valeur est différente du nom de la ville.
+         */
+        $districts = [];
+
+        $isDistrictLevel = $isCityLevel
+            && null !== $selectedValue
+            && \in_array($featureType, ['neighborhood', 'locality'], true)
+            && $this->normalizeLocationKey($selectedValue) !== $this->normalizeLocationKey($cityName);
+
+        if ($isDistrictLevel) {
+            $districts[] = [
+                'name' => $selectedValue,
+                'district_name' => $selectedValue,
+                'city_name' => $cityName,
+                'country_code' => $countries[0]['code'],
+                'country_name' => $countries[0]['label'],
+                'lat' => $latitude ?? '',
+                'lng' => $longitude ?? '',
+            ];
+        }
+
+        /*
+         * Les HiddenType attendent des chaînes JSON (parseJsonValue côté JS).
+         * JSON_UNESCAPED_UNICODE conserve les accents lisibles ("Genève" et non "Gen\u00e8ve").
+         * Valeur vide = '[]' pour rester cohérent avec le "data" par défaut du FormType.
+         */
+        return [
+            'pays' => json_encode($countries, \JSON_UNESCAPED_UNICODE) ?: '[]',
+            'ville' => json_encode($cities, \JSON_UNESCAPED_UNICODE) ?: '[]',
+            'quartier' => json_encode($districts, \JSON_UNESCAPED_UNICODE) ?: '[]',
+        ];
+    }
+
+    /**
+     * Normalisation identique à normalizeKey() du Stimulus boolts-location :
+     * trim + minuscules + suppression des accents + espaces multiples.
+     */
+    private function normalizeLocationKey(?string $value): string
+    {
+        $value = mb_strtolower(mb_trim((string) $value));
+
+        $transliterated = \Transliterator::create('NFD; [:Nonspacing Mark:] Remove; NFC')
+            ?->transliterate($value);
+
+        if (\is_string($transliterated)) {
+            $value = $transliterated;
+        }
+
+        return preg_replace('/\s+/', ' ', $value) ?? $value;
     }
 
     /**
