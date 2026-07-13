@@ -24,7 +24,7 @@
         }) }}
 
         {# Header de la modal #}
-        <div class="modal-header boolts-filter-header">
+        <div class="modal-header boolts-filter-header px-24 pt-44">
             <h2 id="booltsFiltersModalLabel" class="boolts-filter-title">
                 Filtres
             </h2>
@@ -36,7 +36,7 @@
         </div>
 
         {# Bouton reset HTML : réinitialise les champs visibles du formulaire #}
-        <div class="boolts-filter-reset-wrapper">
+        <div class="boolts-filter-reset-wrapper px-24">
             <button type="reset" class="boolts-filter-reset">
                 Réinitialiser les filtres
             </button>
@@ -654,10 +654,10 @@
                 class="bt-research-primary-btn boolts-filter-submit w-100"
                 data-boolts-filter-count-target="button"
             >
-                Afficher les
+                Afficher les &nbsp;
                 <span data-boolts-filter-count-target="count">
                     {{ totalResults|default(0) }}
-                </span>
+                </span>&nbsp;
                 <span data-boolts-filter-count-target="label">
                     {{ totalResults|default(0) == 1 ? 'logement' : 'logements' }}
                 </span>

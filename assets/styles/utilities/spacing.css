@@ -215,6 +215,9 @@
 
 .pr-44 { padding-right: 44px !important; }
 .pl-44 { padding-left: 44px !important; }
+.px-44 { padding-left: 44px !important; }
+.pt-44 { padding-top: 44px !important; }
+.pb-44 { padding-bottom: 44px !important; }
 
 .pt-48 { padding-top: 48px; }
 .pb-48 { padding-bottom: 48px; }
