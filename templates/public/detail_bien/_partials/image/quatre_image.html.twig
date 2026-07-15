@@ -1,14 +1,14 @@
-{% set pictures = property.propertyImages|default([])|slice(0, 3) %}
+{% set pictures = property.propertyImages|default([])|slice(0, 4) %}
 
-{% if pictures|length == 3 %}
-    <div class="bt-gallery bt-gallery--count-3 row g-0 overflow-hidden">
+{% if pictures|length == 4 %}
+    <div class="bt-gallery bt-gallery--count-4 row row-cols-2 row-cols-lg-4 g-3">
 
         {% for picture in pictures %}
-            <div class="col-4">
+            <div class="col">
                 <button
-                    class="bt-gallery__item d-block w-100 h-100 border-0 p-0 bg-transparent overflow-hidden
-                        {% if loop.first %} bt-gallery__item--left{% endif %}
-                        {% if loop.last %} bt-gallery__item--right{% endif %}
+                    class="bt-gallery__item d-block w-100 border-0 p-0 bg-transparent overflow-hidden ratio ratio-4x3
+                        {% if loop.first %} rounded-start-4{% endif %}
+                        {% if loop.last %} rounded-end-4{% endif %}
                     "
                     type="button"
                     data-open-slider="{{ loop.index0 }}"
@@ -16,7 +16,7 @@
                 >
                     <img
                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"
-                        class="js-bt-img w-100 h-100 object-fit-cover d-block"
+                        class="js-bt-img w-100 h-100 object-fit-cover"
                         alt="Photo {{ loop.index }}"
                         loading="lazy"
                     >

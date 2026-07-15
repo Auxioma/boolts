@@ -89,7 +89,7 @@
                         {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
                     {% elseif totalPictures == 5 %}5 / {{ totalPictures }}
                         {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
-                    {% elseif totalPictures == 4 %}4
+                    {% elseif totalPictures == 4 %} 4 / {{ totalPictures }}
                         {{ include('public/detail_bien/_partials/image/quatre_image.html.twig') }}
                     {% elseif totalPictures == 3 %}3/ {{ totalPictures }}
                         {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
@@ -119,7 +119,7 @@
 
                         </div>
 
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 bt-contact-sticky-wrapper">
                             <aside class="bt-contact-sticky">
                                 <div class="bt-contact-card" data-controller="agence-contact-form">
 
@@ -595,6 +595,30 @@
                 font-size: 14px;
             }
         }
+
+
+        @media (min-width: 992px) {
+            .bt-contact-sticky-wrapper {
+                align-self: stretch;
+            }
+
+            .bt-contact-sticky {
+                position: sticky;
+                top: 90px;
+                max-height: calc(100vh - 110px);
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 991.98px) {
+            .bt-contact-sticky {
+                position: static;
+                top: auto;
+                max-height: none;
+                overflow: visible;
+            }
+        }
+        
     </style>
 
     {# ========================= #}
