@@ -26,89 +26,123 @@
 
 
 
-<button type="button" id="detect-location">
-    Me géolocaliser
+
+
+<button type="button" id="detect-city">
+    Détecter ma ville
 </button>
 
-<div id="location-result">
-    <p>
-        Latitude :
-        <strong id="latitude">Non détectée</strong>
-    </p>
-
-    <p>
-        Longitude :
-        <strong id="longitude">Non détectée</strong>
-    </p>
-
-    <p id="location-message"></p>
-</div>
+<p id="city-result"></p>
 
 <script>
-const detectButton = document.getElementById('detect-location');
-const latitudeElement = document.getElementById('latitude');
-const longitudeElement = document.getElementById('longitude');
-const messageElement = document.getElementById('location-message');
+const button = document.getElementById('detect-city');
+const result = document.getElementById('city-result');
 
-detectButton.addEventListener('click', () => {
-    if (!navigator.geolocation) {
-        messageElement.textContent =
-            'La géolocalisation n’est pas disponible sur ce navigateur.';
+button.addEventListener('click', async () => {
+    result.textContent = 'Détection de votre ville…';
 
-        return;
+    try {
+        const city = await getUserCity();
+
+        result.textContent = city
+            ? `Votre ville : ${city}`
+            : 'Ville introuvable.';
+    } catch (error) {
+        console.error(error);
+        result.textContent = error.message;
+    }
+});
+
+function getUserCoordinates() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            reject(new Error(
+                'La géolocalisation n’est pas disponible sur ce navigateur.'
+            ));
+
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                resolve({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+            },
+            error => {
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        reject(new Error(
+                            'Vous avez refusé l’accès à votre position.'
+                        ));
+                        break;
+
+                    case error.POSITION_UNAVAILABLE:
+                        reject(new Error(
+                            'Votre position est actuellement indisponible.'
+                        ));
+                        break;
+
+                    case error.TIMEOUT:
+                        reject(new Error(
+                            'La détection de votre position a expiré.'
+                        ));
+                        break;
+
+                    default:
+                        reject(new Error(
+                            'Impossible de détecter votre position.'
+                        ));
+                }
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000
+            }
+        );
+    });
+}
+
+async function getUserCity() {
+    const { latitude, longitude } = await getUserCoordinates();
+
+    const url = new URL(
+        'https://nominatim.openstreetmap.org/reverse'
+    );
+
+    url.searchParams.set('format', 'jsonv2');
+    url.searchParams.set('lat', latitude);
+    url.searchParams.set('lon', longitude);
+    url.searchParams.set('addressdetails', '1');
+    url.searchParams.set('accept-language', 'fr');
+
+    const response = await fetch(url, {
+        headers: {
+            Accept: 'application/json'
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            'Impossible de convertir votre position en ville.'
+        );
     }
 
-    messageElement.textContent = 'Localisation en cours…';
+    const data = await response.json();
+    const address = data.address ?? {};
 
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            latitudeElement.textContent = latitude.toFixed(6);
-            longitudeElement.textContent = longitude.toFixed(6);
-
-            messageElement.textContent =
-                'Votre position a été détectée avec succès.';
-
-            console.log('Latitude :', latitude);
-            console.log('Longitude :', longitude);
-        },
-        (error) => {
-            latitudeElement.textContent = 'Non détectée';
-            longitudeElement.textContent = 'Non détectée';
-
-            switch (error.code) {
-                case error.PERMISSION_DENIED:
-                    messageElement.textContent =
-                        'Vous avez refusé l’accès à votre position.';
-                    break;
-
-                case error.POSITION_UNAVAILABLE:
-                    messageElement.textContent =
-                        'Votre position est actuellement indisponible.';
-                    break;
-
-                case error.TIMEOUT:
-                    messageElement.textContent =
-                        'La demande de géolocalisation a expiré.';
-                    break;
-
-                default:
-                    messageElement.textContent =
-                        'Impossible de récupérer votre position.';
-            }
-        },
-        {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 300000
-        }
+    return (
+        address.city
+        ?? address.town
+        ?? address.village
+        ?? address.municipality
+        ?? address.city_district
+        ?? null
     );
-});
+}
 </script>
-
-
 
 
 
