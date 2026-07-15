@@ -21,6 +21,104 @@
         {% endif %}
     </head>
     <body>
+
+
+
+
+
+<button type="button" id="detect-location">
+    Me géolocaliser
+</button>
+
+<div id="location-result">
+    <p>
+        Latitude :
+        <strong id="latitude">Non détectée</strong>
+    </p>
+
+    <p>
+        Longitude :
+        <strong id="longitude">Non détectée</strong>
+    </p>
+
+    <p id="location-message"></p>
+</div>
+
+<script>
+const detectButton = document.getElementById('detect-location');
+const latitudeElement = document.getElementById('latitude');
+const longitudeElement = document.getElementById('longitude');
+const messageElement = document.getElementById('location-message');
+
+detectButton.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+        messageElement.textContent =
+            'La géolocalisation n’est pas disponible sur ce navigateur.';
+
+        return;
+    }
+
+    messageElement.textContent = 'Localisation en cours…';
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            latitudeElement.textContent = latitude.toFixed(6);
+            longitudeElement.textContent = longitude.toFixed(6);
+
+            messageElement.textContent =
+                'Votre position a été détectée avec succès.';
+
+            console.log('Latitude :', latitude);
+            console.log('Longitude :', longitude);
+        },
+        (error) => {
+            latitudeElement.textContent = 'Non détectée';
+            longitudeElement.textContent = 'Non détectée';
+
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    messageElement.textContent =
+                        'Vous avez refusé l’accès à votre position.';
+                    break;
+
+                case error.POSITION_UNAVAILABLE:
+                    messageElement.textContent =
+                        'Votre position est actuellement indisponible.';
+                    break;
+
+                case error.TIMEOUT:
+                    messageElement.textContent =
+                        'La demande de géolocalisation a expiré.';
+                    break;
+
+                default:
+                    messageElement.textContent =
+                        'Impossible de récupérer votre position.';
+            }
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 300000
+        }
+    );
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
         {{ include('composant/__header/_navbar.html.twig') }}
         {% block body %}{% endblock %}
         {{ include('composant/_footer/_footer.html.twig') }}
