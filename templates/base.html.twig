@@ -22,34 +22,26 @@
     </head>
     <body>
 
+        {{ include('composant/__header/_navbar.html.twig') }}
+        {% block body %}{% endblock %}
+        {{ include('composant/_footer/_footer.html.twig') }}
 
+        {% if app.user %}
+            <div
+                data-controller="browser-preferences"
+                data-browser-preferences-url-value="{{ path('app_user_browser_preferences') }}"
+                data-browser-preferences-token-value="{{ csrf_token('browser_preferences') }}"
+            ></div>
+        {% endif %}
 
-
-
-
-
-<button type="button" id="detect-city">
-    Détecter ma ville
-</button>
-
-<p id="city-result"></p>
-
-<script>
-const button = document.getElementById('detect-city');
-const result = document.getElementById('city-result');
-
-button.addEventListener('click', async () => {
-    result.textContent = 'Détection de votre ville…';
-
+        <script>
+document.addEventListener('DOMContentLoaded', async () => {
     try {
         const city = await getUserCity();
 
-        result.textContent = city
-            ? `Votre ville : ${city}`
-            : 'Ville introuvable.';
+        console.log('Ville détectée :', city);
     } catch (error) {
-        console.error(error);
-        result.textContent = error.message;
+        console.error('Erreur de géolocalisation :', error.message);
     }
 });
 
@@ -59,7 +51,6 @@ function getUserCoordinates() {
             reject(new Error(
                 'La géolocalisation n’est pas disponible sur ce navigateur.'
             ));
-
             return;
         }
 
@@ -134,35 +125,14 @@ async function getUserCity() {
     const address = data.address ?? {};
 
     return (
-        address.city
-        ?? address.town
-        ?? address.village
-        ?? address.municipality
-        ?? address.city_district
-        ?? null
+        address.city ??
+        address.town ??
+        address.village ??
+        address.municipality ??
+        address.city_district ??
+        null
     );
 }
 </script>
-
-
-
-
-
-
-
-
-
-
-        {{ include('composant/__header/_navbar.html.twig') }}
-        {% block body %}{% endblock %}
-        {{ include('composant/_footer/_footer.html.twig') }}
-
-        {% if app.user %}
-            <div
-                data-controller="browser-preferences"
-                data-browser-preferences-url-value="{{ path('app_user_browser_preferences') }}"
-                data-browser-preferences-token-value="{{ csrf_token('browser_preferences') }}"
-            ></div>
-        {% endif %}
     </body>
 </html>
