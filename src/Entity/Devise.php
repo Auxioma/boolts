@@ -3,11 +3,14 @@
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
+ * pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
- * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ * Ce code source est la propriété exclusive de Auxioma Web Agency
+ * et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation
+ * sans autorisation préalable est interdite.
  */
 
 namespace App\Entity;
@@ -18,12 +21,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DeviseRepository::class)]
+#[ORM\Table(name: 'devise')]
 class Devise
 {
-    public function __toString(): string
-    {
-        return $this->nom;
-    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -38,19 +38,30 @@ class Devise
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'devise')]
-    private Collection $devise;
+    #[ORM\OneToMany(
+        targetEntity: User::class,
+        mappedBy: 'devise'
+    )]
+    private Collection $users;
 
     /**
      * @var Collection<int, Pays>
      */
-    #[ORM\OneToMany(targetEntity: Pays::class, mappedBy: 'devise')]
+    #[ORM\OneToMany(
+        targetEntity: Pays::class,
+        mappedBy: 'devise'
+    )]
     private Collection $pays;
 
     public function __construct()
     {
-        $this->devise = new ArrayCollection();
+        $this->users = new ArrayCollection();
         $this->pays = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom ?? '';
     }
 
     public function getId(): ?int
@@ -65,7 +76,7 @@ class Devise
 
     public function setNom(string $nom): static
     {
-        $this->nom = $nom;
+        $this->nom = trim($nom);
 
         return $this;
     }
@@ -77,7 +88,7 @@ class Devise
 
     public function setSigne(string $signe): static
     {
-        $this->signe = $signe;
+        $this->signe = trim($signe);
 
         return $this;
     }
@@ -85,28 +96,28 @@ class Devise
     /**
      * @return Collection<int, User>
      */
-    public function getDevise(): Collection
+    public function getUsers(): Collection
     {
-        return $this->devise;
+        return $this->users;
     }
 
-    public function addDevise(User $devise): static
+    public function addUser(User $user): static
     {
-        if (!$this->devise->contains($devise)) {
-            $this->devise->add($devise);
-            $devise->setDevise($this);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setDevise($this);
         }
 
         return $this;
     }
 
-    public function removeDevise(User $devise): static
+    public function removeUser(User $user): static
     {
-        if ($this->devise->removeElement($devise)) {
-            // set the owning side to null (unless already changed)
-            if ($devise->getDevise() === $this) {
-                $devise->setDevise(null);
-            }
+        if (
+            $this->users->removeElement($user)
+            && $user->getDevise() === $this
+        ) {
+            $user->setDevise(null);
         }
 
         return $this;
@@ -120,23 +131,23 @@ class Devise
         return $this->pays;
     }
 
-    public function addPay(Pays $pay): static
+    public function addPay(Pays $pays): static
     {
-        if (!$this->pays->contains($pay)) {
-            $this->pays->add($pay);
-            $pay->setDevise($this);
+        if (!$this->pays->contains($pays)) {
+            $this->pays->add($pays);
+            $pays->setDevise($this);
         }
 
         return $this;
     }
 
-    public function removePay(Pays $pay): static
+    public function removePay(Pays $pays): static
     {
-        if ($this->pays->removeElement($pay)) {
-            // set the owning side to null (unless already changed)
-            if ($pay->getDevise() === $this) {
-                $pay->setDevise(null);
-            }
+        if (
+            $this->pays->removeElement($pays)
+            && $pays->getDevise() === $this
+        ) {
+            $pays->setDevise(null);
         }
 
         return $this;

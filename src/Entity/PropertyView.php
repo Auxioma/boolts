@@ -3,11 +3,14 @@
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
+ * pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
- * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ * Ce code source est la propriété exclusive de Auxioma Web Agency
+ * et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation
+ * sans autorisation préalable est interdite.
  */
 
 namespace App\Entity;
@@ -17,9 +20,26 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PropertyViewRepository::class)]
 #[ORM\Table(name: 'property_view')]
-#[ORM\Index(name: 'idx_property_view_property', columns: ['property_id'])]
-#[ORM\Index(name: 'idx_property_view_user', columns: ['user_id'])]
-#[ORM\UniqueConstraint(name: 'uniq_property_view_key', columns: ['view_key'])]
+#[ORM\Index(
+    name: 'idx_property_view_property',
+    columns: ['property_id']
+)]
+#[ORM\Index(
+    name: 'idx_property_view_user',
+    columns: ['user_id']
+)]
+#[ORM\Index(
+    name: 'idx_property_view_viewed_at',
+    columns: ['viewed_at']
+)]
+#[ORM\Index(
+    name: 'idx_property_view_property_date',
+    columns: ['property_id', 'viewed_at']
+)]
+#[ORM\UniqueConstraint(
+    name: 'uniq_property_view_key',
+    columns: ['view_key']
+)]
 class PropertyView
 {
     #[ORM\Id]
@@ -28,39 +48,66 @@ class PropertyView
     private ?int $id = null;
 
     /**
-     * Le bien immobilier consulté.
+     * Bien immobilier consulté.
      */
-    #[ORM\ManyToOne(targetEntity: Property::class)]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(
+        targetEntity: Property::class,
+        inversedBy: 'propertyViews'
+    )]
+    #[ORM\JoinColumn(
+        name: 'property_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        onDelete: 'CASCADE'
+    )]
     private ?Property $property = null;
 
     /**
-     * L'utilisateur connecté si disponible.
-     * Si le visiteur n'est pas connecté, cette valeur reste null.
+     * Utilisateur connecté ayant consulté le bien.
+     *
+     * Cette valeur reste nulle pour un visiteur anonyme.
      */
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    #[ORM\ManyToOne(
+        targetEntity: User::class,
+        inversedBy: 'propertyViews'
+    )]
+    #[ORM\JoinColumn(
+        name: 'user_id',
+        referencedColumnName: 'id',
+        nullable: true,
+        onDelete: 'SET NULL'
+    )]
     private ?User $user = null;
 
     /**
-     * Clé unique pour éviter de compter plusieurs fois la même vue.
-     * Exemple : 1 vue par bien / visiteur / jour.
+     * Clé unique permettant d'éviter les vues en double.
+     *
+     * Exemple :
+     * une vue par annonce, visiteur et journée.
      */
-    #[ORM\Column(name: 'view_key', length: 64)]
+    #[ORM\Column(
+        name: 'view_key',
+        length: 64,
+        unique: true
+    )]
     private ?string $viewKey = null;
 
     /**
-     * Hash du visiteur.
-     * On ne stocke pas l'adresse IP en clair.
+     * Empreinte hachée du visiteur.
+     *
+     * L'adresse IP ne doit pas être stockée en clair.
      */
-    #[ORM\Column(name: 'visitor_hash', length: 64)]
+    #[ORM\Column(
+        name: 'visitor_hash',
+        length: 64
+    )]
     private ?string $visitorHash = null;
 
     /**
-     * Date de consultation du bien.
+     * Date et heure de consultation.
      */
     #[ORM\Column(name: 'viewed_at')]
-    private ?\DateTimeImmutable $viewedAt = null;
+    private \DateTimeImmutable $viewedAt;
 
     public function __construct()
     {
@@ -120,13 +167,14 @@ class PropertyView
         return $this;
     }
 
-    public function getViewedAt(): ?\DateTimeImmutable
+    public function getViewedAt(): \DateTimeImmutable
     {
         return $this->viewedAt;
     }
 
-    public function setViewedAt(\DateTimeImmutable $viewedAt): static
-    {
+    public function setViewedAt(
+        \DateTimeImmutable $viewedAt
+    ): static {
         $this->viewedAt = $viewedAt;
 
         return $this;

@@ -3,11 +3,14 @@
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
+ * pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
- * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ * Ce code source est la propriété exclusive de Auxioma Web Agency
+ * et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation
+ * sans autorisation préalable est interdite.
  */
 
 namespace App\Entity;
@@ -18,12 +21,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LanguesRepository::class)]
+#[ORM\Table(name: 'langues')]
 class Langues
 {
-    public function __toString(): string
-    {
-        return $this->name;
-    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,18 +32,26 @@ class Langues
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 10)]
     private ?string $iso = null;
 
     /**
      * @var Collection<int, User>
      */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'langues')]
-    private Collection $langue;
+    #[ORM\OneToMany(
+        targetEntity: User::class,
+        mappedBy: 'langues'
+    )]
+    private Collection $users;
 
     public function __construct()
     {
-        $this->langue = new ArrayCollection();
+        $this->users = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return $this->name ?? '';
     }
 
     public function getId(): ?int
@@ -58,7 +66,7 @@ class Langues
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->name = trim($name);
 
         return $this;
     }
@@ -70,7 +78,7 @@ class Langues
 
     public function setIso(string $iso): static
     {
-        $this->iso = $iso;
+        $this->iso = strtolower(trim($iso));
 
         return $this;
     }
@@ -78,28 +86,28 @@ class Langues
     /**
      * @return Collection<int, User>
      */
-    public function getLangue(): Collection
+    public function getUsers(): Collection
     {
-        return $this->langue;
+        return $this->users;
     }
 
-    public function addLangue(User $langue): static
+    public function addUser(User $user): static
     {
-        if (!$this->langue->contains($langue)) {
-            $this->langue->add($langue);
-            $langue->setLangues($this);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setLangues($this);
         }
 
         return $this;
     }
 
-    public function removeLangue(User $langue): static
+    public function removeUser(User $user): static
     {
-        if ($this->langue->removeElement($langue)) {
-            // set the owning side to null (unless already changed)
-            if ($langue->getLangues() === $this) {
-                $langue->setLangues(null);
-            }
+        if (
+            $this->users->removeElement($user)
+            && $user->getLangues() === $this
+        ) {
+            $user->setLangues(null);
         }
 
         return $this;

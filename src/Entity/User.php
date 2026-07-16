@@ -12,6 +12,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Billing\AgencyBillingProfile;
 use App\Entity\FormContact\Contact;
 use App\Entity\Traits\CreatedAtTraits;
 use App\Entity\Traits\DeletedAtTraits;
@@ -115,10 +116,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $whatsApp = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(
+        targetEntity: Langues::class,
+        inversedBy: 'users'
+    )]
+    #[ORM\JoinColumn(
+        nullable: true,
+        onDelete: 'SET NULL'
+    )]
     private ?Langues $langues = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(
+        targetEntity: Devise::class,
+        inversedBy: 'users'
+    )]
+    #[ORM\JoinColumn(
+        nullable: true,
+        onDelete: 'SET NULL'
+    )]
     private ?Devise $devise = null;
 
     #[ORM\ManyToOne]
@@ -140,11 +155,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToMany(targetEntity: HoraireOuverture::class, mappedBy: 'agence')]
     private Collection $horaireOuvertures;
 
-    #[ORM\OneToMany(targetEntity: PropertyView::class, mappedBy: 'user')]
+    /**
+     * @var Collection<int, PropertyView>
+     */
+    #[ORM\OneToMany(
+        targetEntity: PropertyView::class,
+        mappedBy: 'user'
+    )]
     private Collection $propertyViews;
 
     #[ORM\ManyToMany(targetEntity: LangueParler::class, mappedBy: 'user')]
     private Collection $langueParlers;
+
+    #[ORM\OneToOne(
+        mappedBy: 'agency',
+        targetEntity: AgencyBillingProfile::class,
+        cascade: ['persist', 'remove']
+    )]
+    private ?AgencyBillingProfile $billingProfile = null;
 
     public function __construct()
     {
@@ -766,6 +794,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     {
         if ($this->langueParlers->removeElement($langueParler)) {
             $langueParler->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    public function getBillingProfile(): ?AgencyBillingProfile
+    {
+        return $this->billingProfile;
+    }
+
+    public function setBillingProfile(
+        ?AgencyBillingProfile $billingProfile
+    ): static {
+        $this->billingProfile = $billingProfile;
+
+        if (
+            $billingProfile !== null
+            && $billingProfile->getAgency() !== $this
+        ) {
+            $billingProfile->setAgency($this);
         }
 
         return $this;
