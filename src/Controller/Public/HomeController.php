@@ -83,7 +83,10 @@ final class HomeController extends AbstractController
         /**
          * Logement plus populaire a paris filtré par le nombre de vue.
          */
-        $city = null;
+        $session = $request->getSession();
+
+        $city = $session->get('city', null);
+
         $locale = $request->getLocale();
 
         $logementPopulaireVente = $this->propertyRepository->logementPopulaire(
@@ -163,12 +166,15 @@ final class HomeController extends AbstractController
         $city = mb_trim((string) $request->query->get('city'));
         $country = mb_trim((string) $request->query->get('country'));
 
+        $session = $request->getSession();
+        $session->set('city', $city);
+        $session->set('country', $country);
+
+
+
         if ('' === $city || mb_strlen($city) > 120) {
             return new Response('Ville invalide.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        /* $vente = $this->propertyRepository->findBy(['ville' => $city,'typeTransaction' => '1',],['createdAt' => 'DESC'],10,); */
-        /* $location = $this->propertyRepository->findBy(['ville' => $city,'typeTransaction' => '2',],['createdAt' => 'DESC'],10,); */
 
         $logementPopulaireVente = $this->propertyRepository->logementPopulaire($country, $city, $request->getLocale(), '1');
         $logementAjouterRecementVente = $this->propertyRepository->logemntRecementAjouter($country, $city, $request->getLocale(), '1');
