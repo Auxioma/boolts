@@ -93,7 +93,7 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
                 continue;
             }
 
-            /**
+            /*
              * On évite qu'une agence mette en favori son propre bien.
              */
             if (

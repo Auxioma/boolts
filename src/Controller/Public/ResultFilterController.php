@@ -59,7 +59,7 @@ final class ResultFilterController extends AbstractController
         ]);
 
         /**
-         * Je vaix rechercher les biens du filtre pour les affiché sur la card
+         * Je vaix rechercher les biens du filtre pour les affiché sur la card.
          */
         $filters = $this->extractFormFilters($request);
 

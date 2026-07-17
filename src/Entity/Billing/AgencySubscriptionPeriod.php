@@ -1,12 +1,20 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Billing;
 
-use App\Entity\Shared\TimestampableTrait;
-use App\Entity\Devise;
 use App\Entity\Billing\Enum\SubscriptionPeriodStatus;
+use App\Entity\Devise;
+use App\Entity\Shared\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -56,36 +64,128 @@ class AgencySubscriptionPeriod
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getSubscription(): AgencySubscription { return $this->subscription; }
-    public function setSubscription(AgencySubscription $subscription): static { $this->subscription = $subscription; return $this; }
+    public function getSubscription(): AgencySubscription
+    {
+        return $this->subscription;
+    }
 
-    public function getPeriodStart(): \DateTimeImmutable { return $this->periodStart; }
-    public function setPeriodStart(\DateTimeImmutable $periodStart): static { $this->periodStart = $periodStart; return $this; }
+    public function setSubscription(AgencySubscription $subscription): static
+    {
+        $this->subscription = $subscription;
 
-    public function getPeriodEnd(): \DateTimeImmutable { return $this->periodEnd; }
-    public function setPeriodEnd(\DateTimeImmutable $periodEnd): static { $this->periodEnd = $periodEnd; return $this; }
+        return $this;
+    }
 
-    public function getPropertyLimit(): ?int { return $this->propertyLimit; }
-    public function setPropertyLimit(?int $propertyLimit): static { $this->propertyLimit = $propertyLimit; return $this; }
+    public function getPeriodStart(): \DateTimeImmutable
+    {
+        return $this->periodStart;
+    }
 
-    public function getIncludedBoosts(): int { return $this->includedBoosts; }
-    public function setIncludedBoosts(int $includedBoosts): static { $this->includedBoosts = $includedBoosts; return $this; }
+    public function setPeriodStart(\DateTimeImmutable $periodStart): static
+    {
+        $this->periodStart = $periodStart;
 
-    public function getAmountMinor(): int { return $this->amountMinor; }
-    public function setAmountMinor(int $amountMinor): static { $this->amountMinor = $amountMinor; return $this; }
+        return $this;
+    }
 
-    public function getCurrency(): Devise { return $this->currency; }
-    public function setCurrency(Devise $currency): static { $this->currency = $currency; return $this; }
+    public function getPeriodEnd(): \DateTimeImmutable
+    {
+        return $this->periodEnd;
+    }
 
-    public function getPayment(): ?Payment { return $this->payment; }
-    public function setPayment(?Payment $payment): static { $this->payment = $payment; return $this; }
+    public function setPeriodEnd(\DateTimeImmutable $periodEnd): static
+    {
+        $this->periodEnd = $periodEnd;
 
-    public function getStatus(): SubscriptionPeriodStatus { return $this->status; }
-    public function setStatus(SubscriptionPeriodStatus $status): static { $this->status = $status; return $this; }
+        return $this;
+    }
 
-    public function getProviderInvoiceId(): ?string { return $this->providerInvoiceId; }
-    public function setProviderInvoiceId(?string $providerInvoiceId): static { $this->providerInvoiceId = $providerInvoiceId; return $this; }
+    public function getPropertyLimit(): ?int
+    {
+        return $this->propertyLimit;
+    }
 
+    public function setPropertyLimit(?int $propertyLimit): static
+    {
+        $this->propertyLimit = $propertyLimit;
+
+        return $this;
+    }
+
+    public function getIncludedBoosts(): int
+    {
+        return $this->includedBoosts;
+    }
+
+    public function setIncludedBoosts(int $includedBoosts): static
+    {
+        $this->includedBoosts = $includedBoosts;
+
+        return $this;
+    }
+
+    public function getAmountMinor(): int
+    {
+        return $this->amountMinor;
+    }
+
+    public function setAmountMinor(int $amountMinor): static
+    {
+        $this->amountMinor = $amountMinor;
+
+        return $this;
+    }
+
+    public function getCurrency(): Devise
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(Devise $currency): static
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function getPayment(): ?Payment
+    {
+        return $this->payment;
+    }
+
+    public function setPayment(?Payment $payment): static
+    {
+        $this->payment = $payment;
+
+        return $this;
+    }
+
+    public function getStatus(): SubscriptionPeriodStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(SubscriptionPeriodStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getProviderInvoiceId(): ?string
+    {
+        return $this->providerInvoiceId;
+    }
+
+    public function setProviderInvoiceId(?string $providerInvoiceId): static
+    {
+        $this->providerInvoiceId = $providerInvoiceId;
+
+        return $this;
+    }
 }

@@ -1,12 +1,20 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Billing;
 
+use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
-use App\Entity\Devise;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -80,7 +88,10 @@ class AgencyBillingProfile
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getAgency(): ?User
     {
@@ -92,7 +103,7 @@ class AgencyBillingProfile
         $this->agency = $agency;
 
         if (
-            $agency !== null
+            null !== $agency
             && $agency->getBillingProfile() !== $this
         ) {
             $agency->setBillingProfile($this);
@@ -101,46 +112,171 @@ class AgencyBillingProfile
         return $this;
     }
 
-    public function getStripeCustomerId(): string { return $this->stripeCustomerId; }
-    public function setStripeCustomerId(string $stripeCustomerId): static { $this->stripeCustomerId = $stripeCustomerId; return $this; }
+    public function getStripeCustomerId(): string
+    {
+        return $this->stripeCustomerId;
+    }
 
-    public function getPreferredCurrency(): ?Devise { return $this->preferredCurrency; }
-    public function setPreferredCurrency(?Devise $preferredCurrency): static { $this->preferredCurrency = $preferredCurrency; return $this; }
+    public function setStripeCustomerId(string $stripeCustomerId): static
+    {
+        $this->stripeCustomerId = $stripeCustomerId;
 
-    public function getDefaultPaymentMethod(): ?AgencyPaymentMethod { return $this->defaultPaymentMethod; }
-    public function setDefaultPaymentMethod(?AgencyPaymentMethod $defaultPaymentMethod): static { $this->defaultPaymentMethod = $defaultPaymentMethod; return $this; }
+        return $this;
+    }
 
-    public function getBillingEmail(): ?string { return $this->billingEmail; }
-    public function setBillingEmail(?string $billingEmail): static { $this->billingEmail = $billingEmail; return $this; }
+    public function getPreferredCurrency(): ?Devise
+    {
+        return $this->preferredCurrency;
+    }
 
-    public function getLegalName(): ?string { return $this->legalName; }
-    public function setLegalName(?string $legalName): static { $this->legalName = $legalName; return $this; }
+    public function setPreferredCurrency(?Devise $preferredCurrency): static
+    {
+        $this->preferredCurrency = $preferredCurrency;
 
-    public function getCommercialName(): ?string { return $this->commercialName; }
-    public function setCommercialName(?string $commercialName): static { $this->commercialName = $commercialName; return $this; }
+        return $this;
+    }
 
-    public function getAddressLine1(): ?string { return $this->addressLine1; }
-    public function setAddressLine1(?string $addressLine1): static { $this->addressLine1 = $addressLine1; return $this; }
+    public function getDefaultPaymentMethod(): ?AgencyPaymentMethod
+    {
+        return $this->defaultPaymentMethod;
+    }
 
-    public function getAddressLine2(): ?string { return $this->addressLine2; }
-    public function setAddressLine2(?string $addressLine2): static { $this->addressLine2 = $addressLine2; return $this; }
+    public function setDefaultPaymentMethod(?AgencyPaymentMethod $defaultPaymentMethod): static
+    {
+        $this->defaultPaymentMethod = $defaultPaymentMethod;
 
-    public function getPostalCode(): ?string { return $this->postalCode; }
-    public function setPostalCode(?string $postalCode): static { $this->postalCode = $postalCode; return $this; }
+        return $this;
+    }
 
-    public function getCity(): ?string { return $this->city; }
-    public function setCity(?string $city): static { $this->city = $city; return $this; }
+    public function getBillingEmail(): ?string
+    {
+        return $this->billingEmail;
+    }
 
-    public function getRegion(): ?string { return $this->region; }
-    public function setRegion(?string $region): static { $this->region = $region; return $this; }
+    public function setBillingEmail(?string $billingEmail): static
+    {
+        $this->billingEmail = $billingEmail;
 
-    public function getCountryCode(): ?string { return $this->countryCode; }
-    public function setCountryCode(?string $countryCode): static { $this->countryCode = $countryCode; return $this; }
+        return $this;
+    }
 
-    public function getLocale(): string { return $this->locale; }
-    public function setLocale(string $locale): static { $this->locale = $locale; return $this; }
+    public function getLegalName(): ?string
+    {
+        return $this->legalName;
+    }
 
-    public function getTaxExemptStatus(): string { return $this->taxExemptStatus; }
-    public function setTaxExemptStatus(string $taxExemptStatus): static { $this->taxExemptStatus = $taxExemptStatus; return $this; }
+    public function setLegalName(?string $legalName): static
+    {
+        $this->legalName = $legalName;
 
+        return $this;
+    }
+
+    public function getCommercialName(): ?string
+    {
+        return $this->commercialName;
+    }
+
+    public function setCommercialName(?string $commercialName): static
+    {
+        $this->commercialName = $commercialName;
+
+        return $this;
+    }
+
+    public function getAddressLine1(): ?string
+    {
+        return $this->addressLine1;
+    }
+
+    public function setAddressLine1(?string $addressLine1): static
+    {
+        $this->addressLine1 = $addressLine1;
+
+        return $this;
+    }
+
+    public function getAddressLine2(): ?string
+    {
+        return $this->addressLine2;
+    }
+
+    public function setAddressLine2(?string $addressLine2): static
+    {
+        $this->addressLine2 = $addressLine2;
+
+        return $this;
+    }
+
+    public function getPostalCode(): ?string
+    {
+        return $this->postalCode;
+    }
+
+    public function setPostalCode(?string $postalCode): static
+    {
+        $this->postalCode = $postalCode;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getRegion(): ?string
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?string $region): static
+    {
+        $this->region = $region;
+
+        return $this;
+    }
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(?string $countryCode): static
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
+    public function getLocale(): string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale): static
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getTaxExemptStatus(): string
+    {
+        return $this->taxExemptStatus;
+    }
+
+    public function setTaxExemptStatus(string $taxExemptStatus): static
+    {
+        $this->taxExemptStatus = $taxExemptStatus;
+
+        return $this;
+    }
 }

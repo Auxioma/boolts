@@ -1,13 +1,21 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Booster;
 
+use App\Entity\Billing\Enum\PropertyBoostStatus;
+use App\Entity\Property;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
-use App\Entity\Property;
-use App\Entity\Billing\Enum\PropertyBoostStatus;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -50,27 +58,92 @@ class PropertyBoost
         $this->endsAt = $this->startsAt->modify('+7 days');
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getProperty(): Property { return $this->property; }
-    public function setProperty(Property $property): static { $this->property = $property; return $this; }
+    public function getProperty(): Property
+    {
+        return $this->property;
+    }
 
-    public function getAgency(): User { return $this->agency; }
-    public function setAgency(User $agency): static { $this->agency = $agency; return $this; }
+    public function setProperty(Property $property): static
+    {
+        $this->property = $property;
 
-    public function getBoosterTransaction(): BoosterTransaction { return $this->boosterTransaction; }
-    public function setBoosterTransaction(BoosterTransaction $boosterTransaction): static { $this->boosterTransaction = $boosterTransaction; return $this; }
+        return $this;
+    }
 
-    public function getStatus(): PropertyBoostStatus { return $this->status; }
-    public function setStatus(PropertyBoostStatus $status): static { $this->status = $status; return $this; }
+    public function getAgency(): User
+    {
+        return $this->agency;
+    }
 
-    public function getStartsAt(): \DateTimeImmutable { return $this->startsAt; }
-    public function setStartsAt(\DateTimeImmutable $startsAt): static { $this->startsAt = $startsAt; return $this; }
+    public function setAgency(User $agency): static
+    {
+        $this->agency = $agency;
 
-    public function getEndsAt(): \DateTimeImmutable { return $this->endsAt; }
-    public function setEndsAt(\DateTimeImmutable $endsAt): static { $this->endsAt = $endsAt; return $this; }
+        return $this;
+    }
 
-    public function getCanceledAt(): ?\DateTimeImmutable { return $this->canceledAt; }
-    public function setCanceledAt(?\DateTimeImmutable $canceledAt): static { $this->canceledAt = $canceledAt; return $this; }
+    public function getBoosterTransaction(): BoosterTransaction
+    {
+        return $this->boosterTransaction;
+    }
 
+    public function setBoosterTransaction(BoosterTransaction $boosterTransaction): static
+    {
+        $this->boosterTransaction = $boosterTransaction;
+
+        return $this;
+    }
+
+    public function getStatus(): PropertyBoostStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(PropertyBoostStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStartsAt(): \DateTimeImmutable
+    {
+        return $this->startsAt;
+    }
+
+    public function setStartsAt(\DateTimeImmutable $startsAt): static
+    {
+        $this->startsAt = $startsAt;
+
+        return $this;
+    }
+
+    public function getEndsAt(): \DateTimeImmutable
+    {
+        return $this->endsAt;
+    }
+
+    public function setEndsAt(\DateTimeImmutable $endsAt): static
+    {
+        $this->endsAt = $endsAt;
+
+        return $this;
+    }
+
+    public function getCanceledAt(): ?\DateTimeImmutable
+    {
+        return $this->canceledAt;
+    }
+
+    public function setCanceledAt(?\DateTimeImmutable $canceledAt): static
+    {
+        $this->canceledAt = $canceledAt;
+
+        return $this;
+    }
 }

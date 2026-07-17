@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Service;
 
 use GeoIp2\Database\Reader;
@@ -12,9 +22,9 @@ class GeoIpLocationService
 
     public function __construct(
         #[Autowire('%kernel.project_dir%')]
-        string $projectDir
+        string $projectDir,
     ) {
-        $this->databasePath = $projectDir . '/var/geoip/GeoLite2-City.mmdb';
+        $this->databasePath = $projectDir.'/var/geoip/GeoLite2-City.mmdb';
     }
 
     public function locateIp(?string $ip): array
@@ -66,10 +76,8 @@ class GeoIpLocationService
                 'timezone' => $record->location->timeZone ?? null,
                 'accuracyRadius' => $record->location->accuracyRadius ?? null,
 
-                'hasCity' => $city !== null,
+                'hasCity' => null !== $city,
                 'displayLocation' => $city ?: ($region ?: $country),
-
-
             ];
         } catch (AddressNotFoundException) {
             return $this->error($ip, 'Aucune localisation trouvée pour cette IP dans MaxMind.');
@@ -80,11 +88,11 @@ class GeoIpLocationService
 
     private function isValidPublicIp(string $ip): bool
     {
-        return filter_var(
-                $ip,
-                FILTER_VALIDATE_IP,
-                FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-            ) !== false;
+        return false !== filter_var(
+            $ip,
+            \FILTER_VALIDATE_IP,
+            \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE
+        );
     }
 
     private function error(?string $ip, string $message): array
@@ -106,7 +114,6 @@ class GeoIpLocationService
 
             'hasCity' => false,
             'displayLocation' => null,
-
         ];
     }
 }

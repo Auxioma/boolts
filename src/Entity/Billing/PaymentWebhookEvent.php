@@ -1,11 +1,19 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Billing;
 
-use App\Entity\Shared\TimestampableTrait;
 use App\Entity\Billing\Enum\WebhookEventStatus;
+use App\Entity\Shared\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -59,42 +67,152 @@ class PaymentWebhookEvent
         $this->receivedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getProvider(): string { return $this->provider; }
-    public function setProvider(string $provider): static { $this->provider = $provider; return $this; }
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
 
-    public function getProviderEventId(): string { return $this->providerEventId; }
-    public function setProviderEventId(string $providerEventId): static { $this->providerEventId = $providerEventId; return $this; }
+    public function setProvider(string $provider): static
+    {
+        $this->provider = $provider;
 
-    public function getEventType(): string { return $this->eventType; }
-    public function setEventType(string $eventType): static { $this->eventType = $eventType; return $this; }
+        return $this;
+    }
 
-    public function getApiVersion(): ?string { return $this->apiVersion; }
-    public function setApiVersion(?string $apiVersion): static { $this->apiVersion = $apiVersion; return $this; }
+    public function getProviderEventId(): string
+    {
+        return $this->providerEventId;
+    }
 
-    public function getLivemode(): bool { return $this->livemode; }
-    public function setLivemode(bool $livemode): static { $this->livemode = $livemode; return $this; }
+    public function setProviderEventId(string $providerEventId): static
+    {
+        $this->providerEventId = $providerEventId;
 
-    public function getPayload(): array { return $this->payload; }
-    public function setPayload(array $payload): static { $this->payload = $payload; return $this; }
+        return $this;
+    }
 
-    public function getStatus(): WebhookEventStatus { return $this->status; }
-    public function setStatus(WebhookEventStatus $status): static { $this->status = $status; return $this; }
+    public function getEventType(): string
+    {
+        return $this->eventType;
+    }
 
-    public function getAttemptCount(): int { return $this->attemptCount; }
-    public function setAttemptCount(int $attemptCount): static { $this->attemptCount = $attemptCount; return $this; }
+    public function setEventType(string $eventType): static
+    {
+        $this->eventType = $eventType;
 
-    public function getReceivedAt(): \DateTimeImmutable { return $this->receivedAt; }
-    public function setReceivedAt(\DateTimeImmutable $receivedAt): static { $this->receivedAt = $receivedAt; return $this; }
+        return $this;
+    }
 
-    public function getProcessedAt(): ?\DateTimeImmutable { return $this->processedAt; }
-    public function setProcessedAt(?\DateTimeImmutable $processedAt): static { $this->processedAt = $processedAt; return $this; }
+    public function getApiVersion(): ?string
+    {
+        return $this->apiVersion;
+    }
 
-    public function getFailedAt(): ?\DateTimeImmutable { return $this->failedAt; }
-    public function setFailedAt(?\DateTimeImmutable $failedAt): static { $this->failedAt = $failedAt; return $this; }
+    public function setApiVersion(?string $apiVersion): static
+    {
+        $this->apiVersion = $apiVersion;
 
-    public function getErrorMessage(): ?string { return $this->errorMessage; }
-    public function setErrorMessage(?string $errorMessage): static { $this->errorMessage = $errorMessage; return $this; }
+        return $this;
+    }
 
+    public function getLivemode(): bool
+    {
+        return $this->livemode;
+    }
+
+    public function setLivemode(bool $livemode): static
+    {
+        $this->livemode = $livemode;
+
+        return $this;
+    }
+
+    public function getPayload(): array
+    {
+        return $this->payload;
+    }
+
+    public function setPayload(array $payload): static
+    {
+        $this->payload = $payload;
+
+        return $this;
+    }
+
+    public function getStatus(): WebhookEventStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(WebhookEventStatus $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getAttemptCount(): int
+    {
+        return $this->attemptCount;
+    }
+
+    public function setAttemptCount(int $attemptCount): static
+    {
+        $this->attemptCount = $attemptCount;
+
+        return $this;
+    }
+
+    public function getReceivedAt(): \DateTimeImmutable
+    {
+        return $this->receivedAt;
+    }
+
+    public function setReceivedAt(\DateTimeImmutable $receivedAt): static
+    {
+        $this->receivedAt = $receivedAt;
+
+        return $this;
+    }
+
+    public function getProcessedAt(): ?\DateTimeImmutable
+    {
+        return $this->processedAt;
+    }
+
+    public function setProcessedAt(?\DateTimeImmutable $processedAt): static
+    {
+        $this->processedAt = $processedAt;
+
+        return $this;
+    }
+
+    public function getFailedAt(): ?\DateTimeImmutable
+    {
+        return $this->failedAt;
+    }
+
+    public function setFailedAt(?\DateTimeImmutable $failedAt): static
+    {
+        $this->failedAt = $failedAt;
+
+        return $this;
+    }
+
+    public function getErrorMessage(): ?string
+    {
+        return $this->errorMessage;
+    }
+
+    public function setErrorMessage(?string $errorMessage): static
+    {
+        $this->errorMessage = $errorMessage;
+
+        return $this;
+    }
 }

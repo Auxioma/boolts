@@ -3,14 +3,11 @@
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
- * pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
- * Ce code source est la propriété exclusive de Auxioma Web Agency
- * et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation
- * sans autorisation préalable est interdite.
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
 namespace App\Entity;
@@ -66,7 +63,7 @@ class Langues
 
     public function setName(string $name): static
     {
-        $this->name = trim($name);
+        $this->name = mb_trim($name);
 
         return $this;
     }
@@ -78,7 +75,7 @@ class Langues
 
     public function setIso(string $iso): static
     {
-        $this->iso = strtolower(trim($iso));
+        $this->iso = mb_strtolower(mb_trim($iso));
 
         return $this;
     }

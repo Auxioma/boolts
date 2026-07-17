@@ -1,11 +1,19 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Booster;
 
-use App\Entity\Shared\TimestampableTrait;
 use App\Entity\Devise;
+use App\Entity\Shared\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -40,21 +48,68 @@ class BoosterPackPrice
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getBoosterPack(): BoosterPack { return $this->boosterPack; }
-    public function setBoosterPack(BoosterPack $boosterPack): static { $this->boosterPack = $boosterPack; return $this; }
+    public function getBoosterPack(): BoosterPack
+    {
+        return $this->boosterPack;
+    }
 
-    public function getCurrency(): Devise { return $this->currency; }
-    public function setCurrency(Devise $currency): static { $this->currency = $currency; return $this; }
+    public function setBoosterPack(BoosterPack $boosterPack): static
+    {
+        $this->boosterPack = $boosterPack;
 
-    public function getAmountMinor(): int { return $this->amountMinor; }
-    public function setAmountMinor(int $amountMinor): static { $this->amountMinor = $amountMinor; return $this; }
+        return $this;
+    }
 
-    public function getPaymentProviderPriceId(): ?string { return $this->paymentProviderPriceId; }
-    public function setPaymentProviderPriceId(?string $paymentProviderPriceId): static { $this->paymentProviderPriceId = $paymentProviderPriceId; return $this; }
+    public function getCurrency(): Devise
+    {
+        return $this->currency;
+    }
 
-    public function isIsActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+    public function setCurrency(Devise $currency): static
+    {
+        $this->currency = $currency;
 
+        return $this;
+    }
+
+    public function getAmountMinor(): int
+    {
+        return $this->amountMinor;
+    }
+
+    public function setAmountMinor(int $amountMinor): static
+    {
+        $this->amountMinor = $amountMinor;
+
+        return $this;
+    }
+
+    public function getPaymentProviderPriceId(): ?string
+    {
+        return $this->paymentProviderPriceId;
+    }
+
+    public function setPaymentProviderPriceId(?string $paymentProviderPriceId): static
+    {
+        $this->paymentProviderPriceId = $paymentProviderPriceId;
+
+        return $this;
+    }
+
+    public function isIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
 }

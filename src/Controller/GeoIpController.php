@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Controller;
 
 use App\Service\GeoIpLocationService;
@@ -13,7 +23,7 @@ class GeoIpController extends AbstractController
     #[Route('/debug/ip-location', name: 'app_debug_ip_location', methods: ['GET'])]
     public function locateCurrentVisitor(
         Request $request,
-        GeoIpLocationService $geoIpLocationService
+        GeoIpLocationService $geoIpLocationService,
     ): JsonResponse {
         $ip = $request->headers->get('cf-connecting-ip')
             ?: $request->getClientIp();
@@ -27,7 +37,7 @@ class GeoIpController extends AbstractController
     #[Route('/debug/ip-location/{ip}', name: 'app_debug_ip_location_by_ip', methods: ['GET'])]
     public function locateSpecificIp(
         string $ip,
-        GeoIpLocationService $geoIpLocationService
+        GeoIpLocationService $geoIpLocationService,
     ): JsonResponse {
         return $this->json([
             'ip_used' => $ip,

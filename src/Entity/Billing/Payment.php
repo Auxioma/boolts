@@ -1,15 +1,23 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Billing;
 
+use App\Entity\Billing\Enum\PaymentStatus;
+use App\Entity\Billing\Enum\PaymentType;
+use App\Entity\Booster\BoosterPack;
+use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
-use App\Entity\Devise;
-use App\Entity\Booster\BoosterPack;
-use App\Entity\Billing\Enum\PaymentType;
-use App\Entity\Billing\Enum\PaymentStatus;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -135,108 +143,416 @@ class Payment
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getReference(): string { return $this->reference; }
-    public function setReference(string $reference): static { $this->reference = $reference; return $this; }
+    public function getReference(): string
+    {
+        return $this->reference;
+    }
 
-    public function getAgency(): User { return $this->agency; }
-    public function setAgency(User $agency): static { $this->agency = $agency; return $this; }
+    public function setReference(string $reference): static
+    {
+        $this->reference = $reference;
 
-    public function getBillingProfile(): AgencyBillingProfile { return $this->billingProfile; }
-    public function setBillingProfile(AgencyBillingProfile $billingProfile): static { $this->billingProfile = $billingProfile; return $this; }
+        return $this;
+    }
 
-    public function getPaymentMethod(): ?AgencyPaymentMethod { return $this->paymentMethod; }
-    public function setPaymentMethod(?AgencyPaymentMethod $paymentMethod): static { $this->paymentMethod = $paymentMethod; return $this; }
+    public function getAgency(): User
+    {
+        return $this->agency;
+    }
 
-    public function getSubscription(): ?AgencySubscription { return $this->subscription; }
-    public function setSubscription(?AgencySubscription $subscription): static { $this->subscription = $subscription; return $this; }
+    public function setAgency(User $agency): static
+    {
+        $this->agency = $agency;
 
-    public function getBoosterPack(): ?BoosterPack { return $this->boosterPack; }
-    public function setBoosterPack(?BoosterPack $boosterPack): static { $this->boosterPack = $boosterPack; return $this; }
+        return $this;
+    }
 
-    public function getType(): PaymentType { return $this->type; }
-    public function setType(PaymentType $type): static { $this->type = $type; return $this; }
+    public function getBillingProfile(): AgencyBillingProfile
+    {
+        return $this->billingProfile;
+    }
 
-    public function getStatus(): PaymentStatus { return $this->status; }
-    public function setStatus(PaymentStatus $status): static { $this->status = $status; return $this; }
+    public function setBillingProfile(AgencyBillingProfile $billingProfile): static
+    {
+        $this->billingProfile = $billingProfile;
 
-    public function getAmountSubtotalMinor(): int { return $this->amountSubtotalMinor; }
-    public function setAmountSubtotalMinor(int $amountSubtotalMinor): static { $this->amountSubtotalMinor = $amountSubtotalMinor; return $this; }
+        return $this;
+    }
 
-    public function getDiscountAmountMinor(): int { return $this->discountAmountMinor; }
-    public function setDiscountAmountMinor(int $discountAmountMinor): static { $this->discountAmountMinor = $discountAmountMinor; return $this; }
+    public function getPaymentMethod(): ?AgencyPaymentMethod
+    {
+        return $this->paymentMethod;
+    }
 
-    public function getTaxAmountMinor(): int { return $this->taxAmountMinor; }
-    public function setTaxAmountMinor(int $taxAmountMinor): static { $this->taxAmountMinor = $taxAmountMinor; return $this; }
+    public function setPaymentMethod(?AgencyPaymentMethod $paymentMethod): static
+    {
+        $this->paymentMethod = $paymentMethod;
 
-    public function getAmountTotalMinor(): int { return $this->amountTotalMinor; }
-    public function setAmountTotalMinor(int $amountTotalMinor): static { $this->amountTotalMinor = $amountTotalMinor; return $this; }
+        return $this;
+    }
 
-    public function getAmountPaidMinor(): int { return $this->amountPaidMinor; }
-    public function setAmountPaidMinor(int $amountPaidMinor): static { $this->amountPaidMinor = $amountPaidMinor; return $this; }
+    public function getSubscription(): ?AgencySubscription
+    {
+        return $this->subscription;
+    }
 
-    public function getAmountRefundedMinor(): int { return $this->amountRefundedMinor; }
-    public function setAmountRefundedMinor(int $amountRefundedMinor): static { $this->amountRefundedMinor = $amountRefundedMinor; return $this; }
+    public function setSubscription(?AgencySubscription $subscription): static
+    {
+        $this->subscription = $subscription;
 
-    public function getCurrency(): Devise { return $this->currency; }
-    public function setCurrency(Devise $currency): static { $this->currency = $currency; return $this; }
+        return $this;
+    }
 
-    public function getSettlementCurrency(): ?Devise { return $this->settlementCurrency; }
-    public function setSettlementCurrency(?Devise $settlementCurrency): static { $this->settlementCurrency = $settlementCurrency; return $this; }
+    public function getBoosterPack(): ?BoosterPack
+    {
+        return $this->boosterPack;
+    }
 
-    public function getExchangeRate(): ?string { return $this->exchangeRate; }
-    public function setExchangeRate(?string $exchangeRate): static { $this->exchangeRate = $exchangeRate; return $this; }
+    public function setBoosterPack(?BoosterPack $boosterPack): static
+    {
+        $this->boosterPack = $boosterPack;
 
-    public function getGrossSettlementAmountMinor(): int { return $this->grossSettlementAmountMinor; }
-    public function setGrossSettlementAmountMinor(int $grossSettlementAmountMinor): static { $this->grossSettlementAmountMinor = $grossSettlementAmountMinor; return $this; }
+        return $this;
+    }
 
-    public function getFeeSettlementAmountMinor(): int { return $this->feeSettlementAmountMinor; }
-    public function setFeeSettlementAmountMinor(int $feeSettlementAmountMinor): static { $this->feeSettlementAmountMinor = $feeSettlementAmountMinor; return $this; }
+    public function getType(): PaymentType
+    {
+        return $this->type;
+    }
 
-    public function getNetSettlementAmountMinor(): int { return $this->netSettlementAmountMinor; }
-    public function setNetSettlementAmountMinor(int $netSettlementAmountMinor): static { $this->netSettlementAmountMinor = $netSettlementAmountMinor; return $this; }
+    public function setType(PaymentType $type): static
+    {
+        $this->type = $type;
 
-    public function getProvider(): string { return $this->provider; }
-    public function setProvider(string $provider): static { $this->provider = $provider; return $this; }
+        return $this;
+    }
 
-    public function getProviderPaymentIntentId(): ?string { return $this->providerPaymentIntentId; }
-    public function setProviderPaymentIntentId(?string $providerPaymentIntentId): static { $this->providerPaymentIntentId = $providerPaymentIntentId; return $this; }
+    public function getStatus(): PaymentStatus
+    {
+        return $this->status;
+    }
 
-    public function getProviderChargeId(): ?string { return $this->providerChargeId; }
-    public function setProviderChargeId(?string $providerChargeId): static { $this->providerChargeId = $providerChargeId; return $this; }
+    public function setStatus(PaymentStatus $status): static
+    {
+        $this->status = $status;
 
-    public function getProviderInvoiceId(): ?string { return $this->providerInvoiceId; }
-    public function setProviderInvoiceId(?string $providerInvoiceId): static { $this->providerInvoiceId = $providerInvoiceId; return $this; }
+        return $this;
+    }
 
-    public function getProviderCheckoutSessionId(): ?string { return $this->providerCheckoutSessionId; }
-    public function setProviderCheckoutSessionId(?string $providerCheckoutSessionId): static { $this->providerCheckoutSessionId = $providerCheckoutSessionId; return $this; }
+    public function getAmountSubtotalMinor(): int
+    {
+        return $this->amountSubtotalMinor;
+    }
 
-    public function getProviderBalanceTransactionId(): ?string { return $this->providerBalanceTransactionId; }
-    public function setProviderBalanceTransactionId(?string $providerBalanceTransactionId): static { $this->providerBalanceTransactionId = $providerBalanceTransactionId; return $this; }
+    public function setAmountSubtotalMinor(int $amountSubtotalMinor): static
+    {
+        $this->amountSubtotalMinor = $amountSubtotalMinor;
 
-    public function getPaymentMethodSnapshot(): array { return $this->paymentMethodSnapshot; }
-    public function setPaymentMethodSnapshot(array $paymentMethodSnapshot): static { $this->paymentMethodSnapshot = $paymentMethodSnapshot; return $this; }
+        return $this;
+    }
 
-    public function getMetadata(): array { return $this->metadata; }
-    public function setMetadata(array $metadata): static { $this->metadata = $metadata; return $this; }
+    public function getDiscountAmountMinor(): int
+    {
+        return $this->discountAmountMinor;
+    }
 
-    public function getFailureCode(): ?string { return $this->failureCode; }
-    public function setFailureCode(?string $failureCode): static { $this->failureCode = $failureCode; return $this; }
+    public function setDiscountAmountMinor(int $discountAmountMinor): static
+    {
+        $this->discountAmountMinor = $discountAmountMinor;
 
-    public function getFailureMessage(): ?string { return $this->failureMessage; }
-    public function setFailureMessage(?string $failureMessage): static { $this->failureMessage = $failureMessage; return $this; }
+        return $this;
+    }
 
-    public function getAuthorizedAt(): ?\DateTimeImmutable { return $this->authorizedAt; }
-    public function setAuthorizedAt(?\DateTimeImmutable $authorizedAt): static { $this->authorizedAt = $authorizedAt; return $this; }
+    public function getTaxAmountMinor(): int
+    {
+        return $this->taxAmountMinor;
+    }
 
-    public function getPaidAt(): ?\DateTimeImmutable { return $this->paidAt; }
-    public function setPaidAt(?\DateTimeImmutable $paidAt): static { $this->paidAt = $paidAt; return $this; }
+    public function setTaxAmountMinor(int $taxAmountMinor): static
+    {
+        $this->taxAmountMinor = $taxAmountMinor;
 
-    public function getFailedAt(): ?\DateTimeImmutable { return $this->failedAt; }
-    public function setFailedAt(?\DateTimeImmutable $failedAt): static { $this->failedAt = $failedAt; return $this; }
+        return $this;
+    }
 
-    public function getCanceledAt(): ?\DateTimeImmutable { return $this->canceledAt; }
-    public function setCanceledAt(?\DateTimeImmutable $canceledAt): static { $this->canceledAt = $canceledAt; return $this; }
+    public function getAmountTotalMinor(): int
+    {
+        return $this->amountTotalMinor;
+    }
 
+    public function setAmountTotalMinor(int $amountTotalMinor): static
+    {
+        $this->amountTotalMinor = $amountTotalMinor;
+
+        return $this;
+    }
+
+    public function getAmountPaidMinor(): int
+    {
+        return $this->amountPaidMinor;
+    }
+
+    public function setAmountPaidMinor(int $amountPaidMinor): static
+    {
+        $this->amountPaidMinor = $amountPaidMinor;
+
+        return $this;
+    }
+
+    public function getAmountRefundedMinor(): int
+    {
+        return $this->amountRefundedMinor;
+    }
+
+    public function setAmountRefundedMinor(int $amountRefundedMinor): static
+    {
+        $this->amountRefundedMinor = $amountRefundedMinor;
+
+        return $this;
+    }
+
+    public function getCurrency(): Devise
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(Devise $currency): static
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function getSettlementCurrency(): ?Devise
+    {
+        return $this->settlementCurrency;
+    }
+
+    public function setSettlementCurrency(?Devise $settlementCurrency): static
+    {
+        $this->settlementCurrency = $settlementCurrency;
+
+        return $this;
+    }
+
+    public function getExchangeRate(): ?string
+    {
+        return $this->exchangeRate;
+    }
+
+    public function setExchangeRate(?string $exchangeRate): static
+    {
+        $this->exchangeRate = $exchangeRate;
+
+        return $this;
+    }
+
+    public function getGrossSettlementAmountMinor(): int
+    {
+        return $this->grossSettlementAmountMinor;
+    }
+
+    public function setGrossSettlementAmountMinor(int $grossSettlementAmountMinor): static
+    {
+        $this->grossSettlementAmountMinor = $grossSettlementAmountMinor;
+
+        return $this;
+    }
+
+    public function getFeeSettlementAmountMinor(): int
+    {
+        return $this->feeSettlementAmountMinor;
+    }
+
+    public function setFeeSettlementAmountMinor(int $feeSettlementAmountMinor): static
+    {
+        $this->feeSettlementAmountMinor = $feeSettlementAmountMinor;
+
+        return $this;
+    }
+
+    public function getNetSettlementAmountMinor(): int
+    {
+        return $this->netSettlementAmountMinor;
+    }
+
+    public function setNetSettlementAmountMinor(int $netSettlementAmountMinor): static
+    {
+        $this->netSettlementAmountMinor = $netSettlementAmountMinor;
+
+        return $this;
+    }
+
+    public function getProvider(): string
+    {
+        return $this->provider;
+    }
+
+    public function setProvider(string $provider): static
+    {
+        $this->provider = $provider;
+
+        return $this;
+    }
+
+    public function getProviderPaymentIntentId(): ?string
+    {
+        return $this->providerPaymentIntentId;
+    }
+
+    public function setProviderPaymentIntentId(?string $providerPaymentIntentId): static
+    {
+        $this->providerPaymentIntentId = $providerPaymentIntentId;
+
+        return $this;
+    }
+
+    public function getProviderChargeId(): ?string
+    {
+        return $this->providerChargeId;
+    }
+
+    public function setProviderChargeId(?string $providerChargeId): static
+    {
+        $this->providerChargeId = $providerChargeId;
+
+        return $this;
+    }
+
+    public function getProviderInvoiceId(): ?string
+    {
+        return $this->providerInvoiceId;
+    }
+
+    public function setProviderInvoiceId(?string $providerInvoiceId): static
+    {
+        $this->providerInvoiceId = $providerInvoiceId;
+
+        return $this;
+    }
+
+    public function getProviderCheckoutSessionId(): ?string
+    {
+        return $this->providerCheckoutSessionId;
+    }
+
+    public function setProviderCheckoutSessionId(?string $providerCheckoutSessionId): static
+    {
+        $this->providerCheckoutSessionId = $providerCheckoutSessionId;
+
+        return $this;
+    }
+
+    public function getProviderBalanceTransactionId(): ?string
+    {
+        return $this->providerBalanceTransactionId;
+    }
+
+    public function setProviderBalanceTransactionId(?string $providerBalanceTransactionId): static
+    {
+        $this->providerBalanceTransactionId = $providerBalanceTransactionId;
+
+        return $this;
+    }
+
+    public function getPaymentMethodSnapshot(): array
+    {
+        return $this->paymentMethodSnapshot;
+    }
+
+    public function setPaymentMethodSnapshot(array $paymentMethodSnapshot): static
+    {
+        $this->paymentMethodSnapshot = $paymentMethodSnapshot;
+
+        return $this;
+    }
+
+    public function getMetadata(): array
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(array $metadata): static
+    {
+        $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    public function getFailureCode(): ?string
+    {
+        return $this->failureCode;
+    }
+
+    public function setFailureCode(?string $failureCode): static
+    {
+        $this->failureCode = $failureCode;
+
+        return $this;
+    }
+
+    public function getFailureMessage(): ?string
+    {
+        return $this->failureMessage;
+    }
+
+    public function setFailureMessage(?string $failureMessage): static
+    {
+        $this->failureMessage = $failureMessage;
+
+        return $this;
+    }
+
+    public function getAuthorizedAt(): ?\DateTimeImmutable
+    {
+        return $this->authorizedAt;
+    }
+
+    public function setAuthorizedAt(?\DateTimeImmutable $authorizedAt): static
+    {
+        $this->authorizedAt = $authorizedAt;
+
+        return $this;
+    }
+
+    public function getPaidAt(): ?\DateTimeImmutable
+    {
+        return $this->paidAt;
+    }
+
+    public function setPaidAt(?\DateTimeImmutable $paidAt): static
+    {
+        $this->paidAt = $paidAt;
+
+        return $this;
+    }
+
+    public function getFailedAt(): ?\DateTimeImmutable
+    {
+        return $this->failedAt;
+    }
+
+    public function setFailedAt(?\DateTimeImmutable $failedAt): static
+    {
+        $this->failedAt = $failedAt;
+
+        return $this;
+    }
+
+    public function getCanceledAt(): ?\DateTimeImmutable
+    {
+        return $this->canceledAt;
+    }
+
+    public function setCanceledAt(?\DateTimeImmutable $canceledAt): static
+    {
+        $this->canceledAt = $canceledAt;
+
+        return $this;
+    }
 }

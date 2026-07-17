@@ -1,12 +1,20 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Billing;
 
-use App\Entity\Shared\TimestampableTrait;
-use App\Entity\Devise;
 use App\Entity\Billing\Enum\PaymentFeeType;
+use App\Entity\Devise;
+use App\Entity\Shared\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -50,30 +58,104 @@ class PaymentFee
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getPayment(): Payment { return $this->payment; }
-    public function setPayment(Payment $payment): static { $this->payment = $payment; return $this; }
+    public function getPayment(): Payment
+    {
+        return $this->payment;
+    }
 
-    public function getRefund(): ?Refund { return $this->refund; }
-    public function setRefund(?Refund $refund): static { $this->refund = $refund; return $this; }
+    public function setPayment(Payment $payment): static
+    {
+        $this->payment = $payment;
 
-    public function getType(): PaymentFeeType { return $this->type; }
-    public function setType(PaymentFeeType $type): static { $this->type = $type; return $this; }
+        return $this;
+    }
 
-    public function getAmountMinor(): int { return $this->amountMinor; }
-    public function setAmountMinor(int $amountMinor): static { $this->amountMinor = $amountMinor; return $this; }
+    public function getRefund(): ?Refund
+    {
+        return $this->refund;
+    }
 
-    public function getCurrency(): Devise { return $this->currency; }
-    public function setCurrency(Devise $currency): static { $this->currency = $currency; return $this; }
+    public function setRefund(?Refund $refund): static
+    {
+        $this->refund = $refund;
 
-    public function getProviderBalanceTransactionId(): ?string { return $this->providerBalanceTransactionId; }
-    public function setProviderBalanceTransactionId(?string $providerBalanceTransactionId): static { $this->providerBalanceTransactionId = $providerBalanceTransactionId; return $this; }
+        return $this;
+    }
 
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
+    public function getType(): PaymentFeeType
+    {
+        return $this->type;
+    }
 
-    public function isIsRefundable(): bool { return $this->isRefundable; }
-    public function setIsRefundable(bool $isRefundable): static { $this->isRefundable = $isRefundable; return $this; }
+    public function setType(PaymentFeeType $type): static
+    {
+        $this->type = $type;
 
+        return $this;
+    }
+
+    public function getAmountMinor(): int
+    {
+        return $this->amountMinor;
+    }
+
+    public function setAmountMinor(int $amountMinor): static
+    {
+        $this->amountMinor = $amountMinor;
+
+        return $this;
+    }
+
+    public function getCurrency(): Devise
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(Devise $currency): static
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    public function getProviderBalanceTransactionId(): ?string
+    {
+        return $this->providerBalanceTransactionId;
+    }
+
+    public function setProviderBalanceTransactionId(?string $providerBalanceTransactionId): static
+    {
+        $this->providerBalanceTransactionId = $providerBalanceTransactionId;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function isIsRefundable(): bool
+    {
+        return $this->isRefundable;
+    }
+
+    public function setIsRefundable(bool $isRefundable): static
+    {
+        $this->isRefundable = $isRefundable;
+
+        return $this;
+    }
 }

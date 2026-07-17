@@ -3,14 +3,11 @@
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
- * pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
- * Ce code source est la propriété exclusive de Auxioma Web Agency
- * et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation
- * sans autorisation préalable est interdite.
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
 namespace App\Controller\Public;
@@ -195,7 +192,7 @@ final class SearchController extends AbstractController
     )]
     public function results(
         Request $request,
-        string $searchToken
+        string $searchToken,
     ): Response {
         $locale = $request->getLocale();
 
@@ -217,9 +214,7 @@ final class SearchController extends AbstractController
             ->get('property_search_'.$searchToken);
 
         if (null === $criteria) {
-            throw $this->createNotFoundException(
-                'Cette recherche est introuvable ou expirée.'
-            );
+            throw $this->createNotFoundException('Cette recherche est introuvable ou expirée.');
         }
 
         $filter = $this->buildFilterFromCriteria($criteria);
@@ -400,7 +395,7 @@ final class SearchController extends AbstractController
     )]
     public function mapBounds(
         Request $request,
-        string $searchToken
+        string $searchToken,
     ): JsonResponse {
         $criteria = $request
             ->getSession()
@@ -411,7 +406,7 @@ final class SearchController extends AbstractController
                 [
                     'success' => false,
 
-                    'message' => sprintf(
+                    'message' => \sprintf(
                         '%s',
                         'Cette recherche est introuvable ou expirée.'
                     ),
@@ -429,7 +424,7 @@ final class SearchController extends AbstractController
                 [
                     'success' => false,
 
-                    'message' => sprintf(
+                    'message' => \sprintf(
                         '%s',
                         'Coordonnées de carte invalides.'
                     ),
@@ -542,7 +537,7 @@ final class SearchController extends AbstractController
      * @return array<string, mixed>
      */
     private function buildCriteriaFromFilter(
-        FilterCityCountry $filter
+        FilterCityCountry $filter,
     ): array {
         $transactionType = $filter
             ->getTransactionType();
@@ -630,7 +625,7 @@ final class SearchController extends AbstractController
      * les critères stockés dans la session.
      */
     private function buildFilterFromCriteria(
-        array $criteria
+        array $criteria,
     ): FilterCityCountry {
         $filter = new FilterCityCountry();
 
@@ -715,7 +710,7 @@ final class SearchController extends AbstractController
      * }
      */
     private function buildModalLocationPrefill(
-        array $criteria
+        array $criteria,
     ): array {
         $countryName = $this->cleanValue(
             $criteria['pays'] ?? null
@@ -891,7 +886,7 @@ final class SearchController extends AbstractController
      * une comparaison fiable.
      */
     private function normalizeLocationKey(
-        ?string $value
+        ?string $value,
     ): string {
         $value = mb_strtolower(
             mb_trim((string) $value)
@@ -926,7 +921,7 @@ final class SearchController extends AbstractController
      * }|null
      */
     private function getValidMapBoundsFromRequest(
-        Request $request
+        Request $request,
     ): ?array {
         $north = $request->query->get('north');
         $south = $request->query->get('south');
@@ -959,7 +954,6 @@ final class SearchController extends AbstractController
      * présents dans la zone visible de la carte.
      *
      * @param array<int, object> $properties
-     *
      * @param array{
      *     north: float,
      *     south: float,
@@ -971,13 +965,13 @@ final class SearchController extends AbstractController
      */
     private function filterPropertiesByMapBounds(
         array $properties,
-        array $mapBounds
+        array $mapBounds,
     ): array {
         return array_values(
             array_filter(
                 $properties,
-                function (
-                    object $property
+                static function (
+                    object $property,
                 ) use ($mapBounds): bool {
                     if (
                         !method_exists(
@@ -1054,7 +1048,7 @@ final class SearchController extends AbstractController
      * Nettoie une valeur reçue depuis un formulaire.
      */
     private function cleanValue(
-        mixed $value
+        mixed $value,
     ): ?string {
         if (null === $value) {
             return null;
@@ -1077,7 +1071,7 @@ final class SearchController extends AbstractController
      * @return array<string, mixed>
      */
     private function extractFormFilters(
-        Request $request
+        Request $request,
     ): array {
         if (
             $request->query->has('modal_filter')

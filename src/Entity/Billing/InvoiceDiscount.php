@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Billing;
 
@@ -47,30 +55,104 @@ class InvoiceDiscount
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getInvoice(): Invoice { return $this->invoice; }
-    public function setInvoice(Invoice $invoice): static { $this->invoice = $invoice; return $this; }
+    public function getInvoice(): Invoice
+    {
+        return $this->invoice;
+    }
 
-    public function getInvoiceLine(): ?InvoiceLine { return $this->invoiceLine; }
-    public function setInvoiceLine(?InvoiceLine $invoiceLine): static { $this->invoiceLine = $invoiceLine; return $this; }
+    public function setInvoice(Invoice $invoice): static
+    {
+        $this->invoice = $invoice;
 
-    public function getCode(): ?string { return $this->code; }
-    public function setCode(?string $code): static { $this->code = $code; return $this; }
+        return $this;
+    }
 
-    public function getDescription(): string { return $this->description; }
-    public function setDescription(string $description): static { $this->description = $description; return $this; }
+    public function getInvoiceLine(): ?InvoiceLine
+    {
+        return $this->invoiceLine;
+    }
 
-    public function getType(): string { return $this->type; }
-    public function setType(string $type): static { $this->type = $type; return $this; }
+    public function setInvoiceLine(?InvoiceLine $invoiceLine): static
+    {
+        $this->invoiceLine = $invoiceLine;
 
-    public function getPercentage(): ?string { return $this->percentage; }
-    public function setPercentage(?string $percentage): static { $this->percentage = $percentage; return $this; }
+        return $this;
+    }
 
-    public function getAmountMinor(): int { return $this->amountMinor; }
-    public function setAmountMinor(int $amountMinor): static { $this->amountMinor = $amountMinor; return $this; }
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
 
-    public function getProviderCouponId(): ?string { return $this->providerCouponId; }
-    public function setProviderCouponId(?string $providerCouponId): static { $this->providerCouponId = $providerCouponId; return $this; }
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
 
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getPercentage(): ?string
+    {
+        return $this->percentage;
+    }
+
+    public function setPercentage(?string $percentage): static
+    {
+        $this->percentage = $percentage;
+
+        return $this;
+    }
+
+    public function getAmountMinor(): int
+    {
+        return $this->amountMinor;
+    }
+
+    public function setAmountMinor(int $amountMinor): static
+    {
+        $this->amountMinor = $amountMinor;
+
+        return $this;
+    }
+
+    public function getProviderCouponId(): ?string
+    {
+        return $this->providerCouponId;
+    }
+
+    public function setProviderCouponId(?string $providerCouponId): static
+    {
+        $this->providerCouponId = $providerCouponId;
+
+        return $this;
+    }
 }

@@ -163,18 +163,18 @@ class PropertyRepository extends ServiceEntityRepository
 
         $qb
             ->andWhere('pt.pays = :pays')
-            ->setParameter('pays', trim($pays));
+            ->setParameter('pays', mb_trim($pays));
 
         if (!empty($ville)) {
             $qb
                 ->andWhere('pt.ville = :ville')
-                ->setParameter('ville', trim($ville));
+                ->setParameter('ville', mb_trim($ville));
         }
 
         if (!empty($cp)) {
             $qb
                 ->andWhere('p.codePostal = :cp')
-                ->setParameter('cp', trim($cp));
+                ->setParameter('cp', mb_trim($cp));
         }
 
         return $qb->orderBy('p.createdAt', 'DESC');
@@ -183,8 +183,15 @@ class PropertyRepository extends ServiceEntityRepository
     /**
      * logment les plus populaire a paris.
      */
-    public function logementPopulaire($country, $locale, $id): array
-    {
+    /**
+     * Retourne les logements les plus populaires.
+     */
+    public function logementPopulaire(
+        ?string $country,
+        ?string $city,
+        string $locale,
+        int|string $id,
+    ): array {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.propertyViews', 'pv')
             ->leftJoin('p.translations', 'pt')
@@ -198,33 +205,59 @@ class PropertyRepository extends ServiceEntityRepository
             ->addOrderBy('p.createdAt', 'DESC')
             ->setMaxResults(10);
 
-        if ($country) {
+        if (null !== $country && '' !== mb_trim($country)) {
             $qb
-                ->andWhere('pt.pays = :country')
-                ->setParameter('country', $country);
+                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
+                ->setParameter('country', mb_trim($country));
         }
 
-        return $qb->getQuery()->getResult();
+        if (null !== $city && '' !== mb_trim($city)) {
+            $qb
+                ->andWhere('LOWER(pt.ville) = LOWER(:city)')
+                ->setParameter('city', mb_trim($city));
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
     }
 
     /**
      * Logement Ajouter Ressament, filtré par la date de update.
      */
-    public function logemntRecementAjouter($country, $locale, $id): array
-    {
-        return $this->createQueryBuilder('p')
+    /**
+     * Retourne les logements récemment ajoutés.
+     */
+    public function logemntRecementAjouter(
+        ?string $country,
+        ?string $city,
+        string $locale,
+        int|string $id,
+    ): array {
+        $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.translations', 'pt')
             ->andWhere('pt.locale = :locale')
             ->setParameter('locale', $locale)
-            ->andWhere('pt.pays = :country')
-            ->setParameter('country', $country)
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
             ->setParameter('transactionTypeId', $id)
             ->orderBy('p.updatedAt', 'DESC')
-            ->setMaxResults(10)
+            ->setMaxResults(10);
+
+        if (null !== $country && '' !== mb_trim($country)) {
+            $qb
+                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
+                ->setParameter('country', mb_trim($country));
+        }
+
+        if (null !== $city && '' !== mb_trim($city)) {
+            $qb
+                ->andWhere('LOWER(pt.ville) = LOWER(:city)')
+                ->setParameter('city', mb_trim($city));
+        }
+
+        return $qb
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
 
     public function findBySearchAndMapBoundsQueryBuilder(
@@ -280,7 +313,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->andWhere('p.statut = :statut')
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE);
 
-        if (null !== $locale && '' !== trim($locale)) {
+        if (null !== $locale && '' !== mb_trim($locale)) {
             $qb
                 ->andWhere('pt.locale = :locale')
                 ->setParameter('locale', $locale);
@@ -451,7 +484,7 @@ class PropertyRepository extends ServiceEntityRepository
         $orX = $qb->expr()->orX();
 
         foreach ($values as $index => $value) {
-            $value = trim((string) $value);
+            $value = mb_trim((string) $value);
 
             if ('' === $value) {
                 continue;
@@ -509,7 +542,7 @@ class PropertyRepository extends ServiceEntityRepository
          * Si la valeur est une string JSON, on essaye de la décoder.
          */
         if (\is_string($value)) {
-            $value = trim($value);
+            $value = mb_trim($value);
 
             $decoded = json_decode($value, true);
 
@@ -528,7 +561,7 @@ class PropertyRepository extends ServiceEntityRepository
             return null;
         }
 
-        $value = trim($value);
+        $value = mb_trim($value);
 
         return '' === $value ? null : $value;
     }
@@ -547,7 +580,7 @@ class PropertyRepository extends ServiceEntityRepository
          * [{"district_name":"Montorgueil","city_name":"Paris"}]
          */
         if (\is_string($value)) {
-            $value = trim($value);
+            $value = mb_trim($value);
 
             /*
              * Premier essai :
@@ -590,7 +623,7 @@ class PropertyRepository extends ServiceEntityRepository
                 continue;
             }
 
-            $item = trim($item);
+            $item = mb_trim($item);
 
             if ('' === $item) {
                 continue;
@@ -685,7 +718,6 @@ class PropertyRepository extends ServiceEntityRepository
         return null;
     }
 
-
     /**
      * Retourne les biens immobiliers correspondant aux filtres publics.
      *
@@ -704,7 +736,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->andWhere('p.statut = :statut')
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE);
 
-        if (null !== $locale && '' !== trim($locale)) {
+        if (null !== $locale && '' !== mb_trim($locale)) {
             $qb
                 ->andWhere('pt.locale = :locale')
                 ->setParameter('locale', $locale);

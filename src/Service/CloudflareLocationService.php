@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Service;
 
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -63,20 +73,20 @@ class CloudflareLocationService
 
     private function clean(?string $value): ?string
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
-        $value = trim($value);
+        $value = mb_trim($value);
 
-        return $value !== '' ? $value : null;
+        return '' !== $value ? $value : null;
     }
 
     private function toFloat(?string $value): ?float
     {
         $value = $this->clean($value);
 
-        if ($value === null || !is_numeric($value)) {
+        if (null === $value || !is_numeric($value)) {
             return null;
         }
 

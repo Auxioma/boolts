@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Service;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -23,7 +33,7 @@ class ForcedIpCityResolver
             ?: $request->getClientIp();
 
         /**
-         * 1. Cloudflare direct
+         * 1. Cloudflare direct.
          */
         $cloudflareCity = $this->cleanCity($request->headers->get('cf-ipcity'));
 
@@ -49,7 +59,7 @@ class ForcedIpCityResolver
         }
 
         /**
-         * 2. MaxMind local
+         * 2. MaxMind local.
          */
         $maxmind = $this->geoIpLocationService->locateIp($ip);
 
@@ -75,7 +85,7 @@ class ForcedIpCityResolver
         }
 
         /**
-         * 3. API ipapi.co
+         * 3. API ipapi.co.
          */
         $ipapi = $this->locateWithIpApi($ip);
 
@@ -101,7 +111,7 @@ class ForcedIpCityResolver
         }
 
         /**
-         * 4. Mapbox reverse geocoding avec les coordonnées disponibles
+         * 4. Mapbox reverse geocoding avec les coordonnées disponibles.
          */
         $latitude = $ipapi['latitude'] ?? $maxmind['latitude'] ?? null;
         $longitude = $ipapi['longitude'] ?? $maxmind['longitude'] ?? null;
@@ -132,7 +142,7 @@ class ForcedIpCityResolver
         }
 
         /**
-         * 5. Dernier fallback : on force une valeur affichable
+         * 5. Dernier fallback : on force une valeur affichable.
          */
         $forcedCity = $ipapi['region']
             ?? $maxmind['region']
@@ -163,7 +173,7 @@ class ForcedIpCityResolver
     private function locateWithIpApi(string $ip): array
     {
         try {
-            $response = $this->httpClient->request('GET', sprintf('https://ipapi.co/%s/json/', $ip), [
+            $response = $this->httpClient->request('GET', \sprintf('https://ipapi.co/%s/json/', $ip), [
                 'timeout' => 5,
             ]);
 
@@ -199,7 +209,7 @@ class ForcedIpCityResolver
 
     private function reverseGeocodeCityWithMapbox(float $latitude, float $longitude): ?string
     {
-        if ($this->mapboxToken === '') {
+        if ('' === $this->mapboxToken) {
             return null;
         }
 
@@ -223,7 +233,7 @@ class ForcedIpCityResolver
 
                 if (
                     $name
-                    && in_array($featureType, ['place', 'locality'], true)
+                    && \in_array($featureType, ['place', 'locality'], true)
                 ) {
                     return $this->cleanCity($name);
                 }
@@ -237,23 +247,23 @@ class ForcedIpCityResolver
 
     private function cleanCity(?string $value): ?string
     {
-        if ($value === null) {
+        if (null === $value) {
             return null;
         }
 
         $value = rawurldecode($value);
-        $value = trim($value);
+        $value = mb_trim($value);
 
-        return $value !== '' ? $value : null;
+        return '' !== $value ? $value : null;
     }
 
     private function isValidPublicIp(string $ip): bool
     {
-        return filter_var(
-                $ip,
-                FILTER_VALIDATE_IP,
-                FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
-            ) !== false;
+        return false !== filter_var(
+            $ip,
+            \FILTER_VALIDATE_IP,
+            \FILTER_FLAG_NO_PRIV_RANGE | \FILTER_FLAG_NO_RES_RANGE
+        );
     }
 
     private function fallbackUnknown(?string $ip, string $message): array

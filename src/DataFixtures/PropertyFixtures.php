@@ -85,6 +85,8 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         'Rennes' => 1.15,
         'Bayonne' => 1.35,
         'Le Havre' => 0.82,
+        'Saint-Valery-en-Caux' => 0.90,
+        'Marrakech' => 1.10,
 
         'Toronto' => 1.95,
         'Vancouver' => 2.15,
@@ -751,6 +753,19 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             'mapboxId' => 'fixture-fr-le-havre-76600',
             'streets' => ['Avenue Foch', 'Rue de Paris', 'Boulevard François 1er'],
         ],
+        [
+            'countryCode' => 'FR',
+            'country' => 'France',
+            'codePostal' => '76460',
+            'ville' => 'Saint-Valery-en-Caux',
+            'region' => 'Normandie',
+            'department' => 'Seine-Maritime',
+            'neighborhood' => 'Centre-ville',
+            'latitude' => '49.8728',
+            'longitude' => '0.7098',
+            'mapboxId' => 'fixture-fr-saint-valery-en-caux-76460',
+            'streets' => ['Rue des Remparts', 'Rue du Havre', 'Quai d’Amont'],
+        ],
     ];
 
     private const CANADA_LOCATIONS = [
@@ -1406,6 +1421,23 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         ],
     ];
 
+
+    private const MOROCCO_LOCATIONS = [
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '40000',
+            'ville' => 'Marrakech',
+            'region' => 'Marrakech-Safi',
+            'department' => 'Préfecture de Marrakech',
+            'neighborhood' => 'Guéliz',
+            'latitude' => '31.6295',
+            'longitude' => '-7.9811',
+            'mapboxId' => 'fixture-ma-marrakech-40000',
+            'streets' => ['Avenue Mohammed VI', 'Boulevard Mohamed Zerktouni', 'Rue de la Liberté'],
+        ],
+    ];
+
     public function load(ObjectManager $manager): void
     {
         if (\function_exists('set_time_limit')) {
@@ -1563,7 +1595,11 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
     private function getLocations(): array
     {
-        return array_merge(self::FRANCE_LOCATIONS, self::CANADA_LOCATIONS);
+        return array_merge(
+            self::FRANCE_LOCATIONS,
+            self::CANADA_LOCATIONS,
+            self::MOROCCO_LOCATIONS,
+        );
     }
 
     private function pickPropertyProfile(\Faker\Generator $faker): array
@@ -2213,7 +2249,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             $reference = \sprintf(
                 'TM-%s-%s-%06d',
                 $location['countryCode'],
-                preg_replace('/[^A-Z0-9]/', '', mb_strtoupper(substr($location['ville'], 0, 4))),
+                preg_replace('/[^A-Z0-9]/', '', mb_strtoupper(mb_substr($location['ville'], 0, 4))),
                 $propertyReferenceIndex
             );
         } while (isset($usedReferences[$reference]));

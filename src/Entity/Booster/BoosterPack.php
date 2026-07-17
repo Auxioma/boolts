@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Booster;
 
@@ -42,27 +50,92 @@ class BoosterPack
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getCode(): string { return $this->code; }
-    public function setCode(string $code): static { $this->code = $code; return $this; }
+    public function getCode(): string
+    {
+        return $this->code;
+    }
 
-    public function getName(): string { return $this->name; }
-    public function setName(string $name): static { $this->name = $name; return $this; }
+    public function setCode(string $code): static
+    {
+        $this->code = $code;
 
-    public function getDescription(): ?string { return $this->description; }
-    public function setDescription(?string $description): static { $this->description = $description; return $this; }
+        return $this;
+    }
 
-    public function getBoostQuantity(): int { return $this->boostQuantity; }
-    public function setBoostQuantity(int $boostQuantity): static { $this->boostQuantity = $boostQuantity; return $this; }
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
-    public function getBoostDurationDays(): int { return $this->boostDurationDays; }
-    public function setBoostDurationDays(int $boostDurationDays): static { $this->boostDurationDays = $boostDurationDays; return $this; }
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
-    public function isIsActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+        return $this;
+    }
 
-    public function getPosition(): int { return $this->position; }
-    public function setPosition(int $position): static { $this->position = $position; return $this; }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getBoostQuantity(): int
+    {
+        return $this->boostQuantity;
+    }
+
+    public function setBoostQuantity(int $boostQuantity): static
+    {
+        $this->boostQuantity = $boostQuantity;
+
+        return $this;
+    }
+
+    public function getBoostDurationDays(): int
+    {
+        return $this->boostDurationDays;
+    }
+
+    public function setBoostDurationDays(int $boostDurationDays): static
+    {
+        $this->boostDurationDays = $boostDurationDays;
+
+        return $this;
+    }
+
+    public function isIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
+
+        return $this;
+    }
 }

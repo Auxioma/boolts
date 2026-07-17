@@ -805,12 +805,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     }
 
     public function setBillingProfile(
-        ?AgencyBillingProfile $billingProfile
+        ?AgencyBillingProfile $billingProfile,
     ): static {
         $this->billingProfile = $billingProfile;
 
         if (
-            $billingProfile !== null
+            null !== $billingProfile
             && $billingProfile->getAgency() !== $this
         ) {
             $billingProfile->setAgency($this);

@@ -83,11 +83,36 @@ final class HomeController extends AbstractController
         /**
          * Logement plus populaire a paris filtré par le nombre de vue.
          */
-        $logementPopulaireVente = $this->propertyRepository->logementPopulaire($country, $request->getLocale(), '1');
-        $logementAjouterRecementVente = $this->propertyRepository->logemntRecementAjouter($country, $request->getLocale(), '1');
+        $city = null;
+        $locale = $request->getLocale();
 
-        $logementPopulaireLocation = $this->propertyRepository->logementPopulaire($country, $request->getLocale(), '2');
-        $logementAjouterRecementLocation = $this->propertyRepository->logemntRecementAjouter($country, $request->getLocale(), '2');
+        $logementPopulaireVente = $this->propertyRepository->logementPopulaire(
+            $country,
+            $city,
+            $locale,
+            1
+        );
+
+        $logementAjouterRecementVente = $this->propertyRepository->logemntRecementAjouter(
+            $country,
+            $city,
+            $locale,
+            1
+        );
+
+        $logementPopulaireLocation = $this->propertyRepository->logementPopulaire(
+            $country,
+            $city,
+            $locale,
+            2
+        );
+
+        $logementAjouterRecementLocation = $this->propertyRepository->logemntRecementAjouter(
+            $country,
+            $city,
+            $locale,
+            2
+        );
 
         $aLaUneLocation = $this->propertyRepository->findBy([], null, 10);
         $aLaUneVente = $this->propertyRepository->findBy([], null, 10);
@@ -116,6 +141,51 @@ final class HomeController extends AbstractController
             'aLaUneLocation' => $aLaUneLocation,
             'aLaUneVente' => $aLaUneVente,
             'lastSearchSession' => $lastSearchSession,
+        ]);
+    }
+
+    #[Route(
+        path: [
+            'en' => '/home/properties/by-city',
+            'fr' => '/fr/accueil/biens-par-ville',
+        ],
+        name: 'app_home_properties_by_city',
+        methods: ['GET']
+    )]
+    public function propertiesByCity(Request $request): Response
+    {
+        /*if (!$request->isXmlHttpRequest()) {
+            throw $this->createNotFoundException(
+                'Cette route est réservée aux requêtes AJAX.'
+            );
+        }*/
+
+        $city = mb_trim((string) $request->query->get('city'));
+        $country = mb_trim((string) $request->query->get('country'));
+
+        if ('' === $city || mb_strlen($city) > 120) {
+            return new Response('Ville invalide.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        /* $vente = $this->propertyRepository->findBy(['ville' => $city,'typeTransaction' => '1',],['createdAt' => 'DESC'],10,); */
+        /* $location = $this->propertyRepository->findBy(['ville' => $city,'typeTransaction' => '2',],['createdAt' => 'DESC'],10,); */
+
+        $logementPopulaireVente = $this->propertyRepository->logementPopulaire($country, $city, $request->getLocale(), '1');
+        $logementAjouterRecementVente = $this->propertyRepository->logemntRecementAjouter($country, $city, $request->getLocale(), '1');
+
+        $logementPopulaireLocation = $this->propertyRepository->logementPopulaire($country, $city, $request->getLocale(), '2');
+        $logementAjouterRecementLocation = $this->propertyRepository->logemntRecementAjouter($country, $city, $request->getLocale(), '2');
+
+        $aLaUneLocation = $this->propertyRepository->findBy([], null, 10);
+        $aLaUneVente = $this->propertyRepository->findBy([], null, 10);
+
+        return $this->render('public/home/_partials/_property_sections.html.twig', [
+            'logementPopulaireVente' => $logementPopulaireVente,
+            'logementAjouterRecementVente' => $logementAjouterRecementVente,
+            'logementPopulaireLocation' => $logementPopulaireLocation,
+            'logementAjouterRecementLocation' => $logementAjouterRecementLocation,
+            'aLaUneLocation' => $aLaUneLocation,
+            'aLaUneVente' => $aLaUneVente,
         ]);
     }
 }

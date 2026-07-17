@@ -1,11 +1,19 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c) 2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Entity\Billing;
 
-use App\Entity\Shared\TimestampableTrait;
 use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
+use App\Entity\Shared\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -74,57 +82,212 @@ class AgencyPaymentMethod
         $this->initializeTimestamps();
     }
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getBillingProfile(): AgencyBillingProfile { return $this->billingProfile; }
-    public function setBillingProfile(AgencyBillingProfile $billingProfile): static { $this->billingProfile = $billingProfile; return $this; }
+    public function getBillingProfile(): AgencyBillingProfile
+    {
+        return $this->billingProfile;
+    }
 
-    public function getStripePaymentMethodId(): string { return $this->stripePaymentMethodId; }
-    public function setStripePaymentMethodId(string $stripePaymentMethodId): static { $this->stripePaymentMethodId = $stripePaymentMethodId; return $this; }
+    public function setBillingProfile(AgencyBillingProfile $billingProfile): static
+    {
+        $this->billingProfile = $billingProfile;
 
-    public function getStripeSetupIntentId(): ?string { return $this->stripeSetupIntentId; }
-    public function setStripeSetupIntentId(?string $stripeSetupIntentId): static { $this->stripeSetupIntentId = $stripeSetupIntentId; return $this; }
+        return $this;
+    }
 
-    public function getStripeMandateId(): ?string { return $this->stripeMandateId; }
-    public function setStripeMandateId(?string $stripeMandateId): static { $this->stripeMandateId = $stripeMandateId; return $this; }
+    public function getStripePaymentMethodId(): string
+    {
+        return $this->stripePaymentMethodId;
+    }
 
-    public function getType(): string { return $this->type; }
-    public function setType(string $type): static { $this->type = $type; return $this; }
+    public function setStripePaymentMethodId(string $stripePaymentMethodId): static
+    {
+        $this->stripePaymentMethodId = $stripePaymentMethodId;
 
-    public function getBrand(): ?string { return $this->brand; }
-    public function setBrand(?string $brand): static { $this->brand = $brand; return $this; }
+        return $this;
+    }
 
-    public function getLast4(): ?string { return $this->last4; }
-    public function setLast4(?string $last4): static { $this->last4 = $last4; return $this; }
+    public function getStripeSetupIntentId(): ?string
+    {
+        return $this->stripeSetupIntentId;
+    }
 
-    public function getExpMonth(): ?int { return $this->expMonth; }
-    public function setExpMonth(?int $expMonth): static { $this->expMonth = $expMonth; return $this; }
+    public function setStripeSetupIntentId(?string $stripeSetupIntentId): static
+    {
+        $this->stripeSetupIntentId = $stripeSetupIntentId;
 
-    public function getExpYear(): ?int { return $this->expYear; }
-    public function setExpYear(?int $expYear): static { $this->expYear = $expYear; return $this; }
+        return $this;
+    }
 
-    public function getCardholderName(): ?string { return $this->cardholderName; }
-    public function setCardholderName(?string $cardholderName): static { $this->cardholderName = $cardholderName; return $this; }
+    public function getStripeMandateId(): ?string
+    {
+        return $this->stripeMandateId;
+    }
 
-    public function getCountryCode(): ?string { return $this->countryCode; }
-    public function setCountryCode(?string $countryCode): static { $this->countryCode = $countryCode; return $this; }
+    public function setStripeMandateId(?string $stripeMandateId): static
+    {
+        $this->stripeMandateId = $stripeMandateId;
 
-    public function getFunding(): ?string { return $this->funding; }
-    public function setFunding(?string $funding): static { $this->funding = $funding; return $this; }
+        return $this;
+    }
 
-    public function getFingerprint(): ?string { return $this->fingerprint; }
-    public function setFingerprint(?string $fingerprint): static { $this->fingerprint = $fingerprint; return $this; }
+    public function getType(): string
+    {
+        return $this->type;
+    }
 
-    public function isIsDefault(): bool { return $this->isDefault; }
-    public function setIsDefault(bool $isDefault): static { $this->isDefault = $isDefault; return $this; }
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
-    public function isIsActive(): bool { return $this->isActive; }
-    public function setIsActive(bool $isActive): static { $this->isActive = $isActive; return $this; }
+        return $this;
+    }
 
-    public function getSetupStatus(): PaymentMethodSetupStatus { return $this->setupStatus; }
-    public function setSetupStatus(PaymentMethodSetupStatus $setupStatus): static { $this->setupStatus = $setupStatus; return $this; }
+    public function getBrand(): ?string
+    {
+        return $this->brand;
+    }
 
-    public function getDetachedAt(): ?\DateTimeImmutable { return $this->detachedAt; }
-    public function setDetachedAt(?\DateTimeImmutable $detachedAt): static { $this->detachedAt = $detachedAt; return $this; }
+    public function setBrand(?string $brand): static
+    {
+        $this->brand = $brand;
 
+        return $this;
+    }
+
+    public function getLast4(): ?string
+    {
+        return $this->last4;
+    }
+
+    public function setLast4(?string $last4): static
+    {
+        $this->last4 = $last4;
+
+        return $this;
+    }
+
+    public function getExpMonth(): ?int
+    {
+        return $this->expMonth;
+    }
+
+    public function setExpMonth(?int $expMonth): static
+    {
+        $this->expMonth = $expMonth;
+
+        return $this;
+    }
+
+    public function getExpYear(): ?int
+    {
+        return $this->expYear;
+    }
+
+    public function setExpYear(?int $expYear): static
+    {
+        $this->expYear = $expYear;
+
+        return $this;
+    }
+
+    public function getCardholderName(): ?string
+    {
+        return $this->cardholderName;
+    }
+
+    public function setCardholderName(?string $cardholderName): static
+    {
+        $this->cardholderName = $cardholderName;
+
+        return $this;
+    }
+
+    public function getCountryCode(): ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(?string $countryCode): static
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
+    }
+
+    public function getFunding(): ?string
+    {
+        return $this->funding;
+    }
+
+    public function setFunding(?string $funding): static
+    {
+        $this->funding = $funding;
+
+        return $this;
+    }
+
+    public function getFingerprint(): ?string
+    {
+        return $this->fingerprint;
+    }
+
+    public function setFingerprint(?string $fingerprint): static
+    {
+        $this->fingerprint = $fingerprint;
+
+        return $this;
+    }
+
+    public function isIsDefault(): bool
+    {
+        return $this->isDefault;
+    }
+
+    public function setIsDefault(bool $isDefault): static
+    {
+        $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    public function isIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getSetupStatus(): PaymentMethodSetupStatus
+    {
+        return $this->setupStatus;
+    }
+
+    public function setSetupStatus(PaymentMethodSetupStatus $setupStatus): static
+    {
+        $this->setupStatus = $setupStatus;
+
+        return $this;
+    }
+
+    public function getDetachedAt(): ?\DateTimeImmutable
+    {
+        return $this->detachedAt;
+    }
+
+    public function setDetachedAt(?\DateTimeImmutable $detachedAt): static
+    {
+        $this->detachedAt = $detachedAt;
+
+        return $this;
+    }
 }
