@@ -2,63 +2,121 @@
     <div class="container-fluid g-0">
         <nav class="navbar navbar-expand-xl topbar-nav">
 
-            <a class="navbar-brand topbar-brand" href="#">
-                <img src="{{ asset('images/logo/logo-blanc.svg') }}" alt="Boolts" class="topbar-logo">
+            <a class="navbar-brand topbar-brand" href="{{ path('app_home') }}">
+                <img
+                    src="{{ asset('images/logo/logo-blanc.svg') }}"
+                    alt="Boolts"
+                    class="topbar-logo"
+                >
             </a>
 
-            <div class="topbar-mobile-actions d-flex align-items-center ms-auto">
-                <a href="#" class="topbar-avatar-link">
-                    <img src="{{ asset('images/authentification/auxioma.png') }}" alt="Profil utilisateur" class="topbar-avatar">
-                </a>
+            <div class="topbar-mobile-actions d-flex align-items-center ms-auto d-xl-none">
+
+                {% if not app.user %}
+                    <a
+                        href="{{ path('app_login') }}"
+                        class="topbar-avatar-link"
+                        aria-label="Se connecter"
+                    >
+                        <i data-lucide="circle-user" class="icon-user"></i>
+                    </a>
+                {% else %}
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                        {% set dashboardPath = path('admin') %}
+                    {% elseif is_granted('ROLE_AGENCE') %}
+                        {% set dashboardPath = path('agence_immobiliere_dashboard') %}
+                    {% else %}
+                        {% set dashboardPath = path('app_visiteur_dashboard') %}
+                    {% endif %}
+
+                    {% set avatar = app.user.imageName
+                        ? vich_uploader_asset(app.user, 'imageFile')
+                        : null
+                    %}
+
+                    {% set firstLetter = app.user.prenom
+                        ? app.user.prenom|first|upper
+                        : null
+                    %}
+
+                    <a
+                        href="{{ dashboardPath }}"
+                        class="topbar-avatar-link"
+                        aria-label="Accéder à mon compte"
+                    >
+                        {% if avatar %}
+                            <img
+                                src="{{ avatar }}"
+                                alt="Profil utilisateur"
+                                class="topbar-avatar"
+                            >
+                        {% elseif firstLetter %}
+                            <span class="topbar-avatar avatar-letter">
+                                {{ firstLetter }}
+                            </span>
+                        {% else %}
+                            <img
+                                src="{{ asset('images/authentification/auxioma.png') }}"
+                                alt="Profil utilisateur"
+                                class="topbar-avatar"
+                            >
+                        {% endif %}
+                    </a>
+                {% endif %}
 
                 <button
+                    id="mobile-menu-button"
                     class="navbar-toggler topbar-toggler"
                     type="button"
-
-                    {# data-bs-toggle="collapse"
-                    data-bs-target="#mainNavbar" #}
-                    aria-controls="mainNavbar"
+                    aria-controls="mobile-menu"
                     aria-expanded="false"
                     aria-label="Ouvrir le menu"
                 >
-                    <span class="icon-menu"></span>
+                    <span class="icon-menu" aria-hidden="true"></span>
                 </button>
             </div>
 
-            <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav ms-lg-auto align-items-lg-center topbar-menu">
+            {# Menu desktop uniquement #}
+            <div class="d-none d-xl-flex ms-auto">
+                <ul class="navbar-nav align-items-center topbar-menu">
                     <li class="nav-item">
                         <a class="nav-link" href="#">Acheter</a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="#">Louer</a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="#">Vendre</a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="#">Trouver un pro</a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link" href="#">Exclusivités</a>
                     </li>
 
-                    <li class="nav-item ms-lg-3">
+                    <li class="nav-item ms-3">
                         <a href="#" class="btn topbar-btn">
-                            <i class="icon-plus"></i>
+                            <i class="icon-plus" aria-hidden="true"></i>
                             Déposer une annonce
                         </a>
                     </li>
 
-                    <li class="nav-item ms-lg-3 d-none d-lg-block">
-                        {# je vais faire des redirection si utilisateur est connecté et en fonction du role #}
+                    <li class="nav-item ms-3">
                         {% if not app.user %}
-                            <a href="{{ path('app_login') }}" class="topbar-avatar-link me-0">
+                            <a
+                                href="{{ path('app_login') }}"
+                                class="topbar-avatar-link me-0"
+                                aria-label="Se connecter"
+                            >
                                 <i data-lucide="circle-user" class="icon-user"></i>
-
                             </a>
                         {% else %}
-                            {# Utilisateur connecté : redirection selon rôle #}
 
                             {% if is_granted('ROLE_ADMIN') %}
                                 {% set dashboardPath = path('admin') %}
@@ -68,32 +126,39 @@
                                 {% set dashboardPath = path('app_visiteur_dashboard') %}
                             {% endif %}
 
-                            {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'imageFile') : null %}
-                            {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
+                            {% set avatar = app.user.imageName
+                                ? vich_uploader_asset(app.user, 'imageFile')
+                                : null
+                            %}
 
+                            {% set firstLetter = app.user.prenom
+                                ? app.user.prenom|first|upper
+                                : null
+                            %}
+
+                            <a
+                                href="{{ dashboardPath }}"
+                                class="topbar-avatar-link me-0"
+                                aria-label="Accéder à mon compte"
+                            >
                                 {% if avatar %}
-                                    <a href="#" class="topbar-avatar-link">
-                                        <img
-                                            src="{{ avatar }}"
-                                            alt="Profil utilisateur"
-                                            class="topbar-avatar"
-                                        >
-                                   </a>
+                                    <img
+                                        src="{{ avatar }}"
+                                        alt="Profil utilisateur"
+                                        class="topbar-avatar"
+                                    >
                                 {% elseif firstLetter %}
-                                    <a href="{{ dashboardPath }}" class="topbar-avatar-link me-0">
-                                        <div class="topbar-avatar avatar-letter">
-                                            {{ firstLetter }}
-                                        </div>
-                                    </a>
+                                    <span class="topbar-avatar avatar-letter">
+                                        {{ firstLetter }}
+                                    </span>
                                 {% else %}
-                                    <a href="{{ dashboardPath }}" class="topbar-avatar-link">
-                                        <img
-                                            src="{{ asset('images/authentification/auxioma.png') }}"
-                                            alt="Profil utilisateur"
-                                            class="topbar-avatar"
-                                        >
-                                    </a>
+                                    <img
+                                        src="{{ asset('images/authentification/auxioma.png') }}"
+                                        alt="Profil utilisateur"
+                                        class="topbar-avatar"
+                                    >
                                 {% endif %}
+                            </a>
                         {% endif %}
                     </li>
                 </ul>
@@ -102,15 +167,35 @@
         </nav>
     </div>
 </header>
-{#
-<nav id="mobile-menu">
+
+{# Menu mobile Mmenu #}
+<nav id="mobile-menu" aria-hidden="true">
     <ul>
-        <li><a href="#">Acheter</a></li>
-        <li><a href="#">Louer</a></li>
-        <li><a href="#">Vendre</a></li>
-        <li><a href="#">Trouver un pro</a></li>
-        <li><a href="#">Exclusivités</a></li>
-        <li><a href="#">Déposer une annonce</a></li>
+        <li>
+            <a href="#">Acheter</a>
+        </li>
+
+        <li>
+            <a href="#">Louer</a>
+        </li>
+
+        <li>
+            <a href="#">Vendre</a>
+        </li>
+
+        <li>
+            <a href="#">Trouver un pro</a>
+        </li>
+
+        <li>
+            <a href="#">Exclusivités</a>
+        </li>
+
+        <li>
+            <a href="#">
+                <i class="icon-plus" aria-hidden="true"></i>
+                Déposer une annonce
+            </a>
+        </li>
     </ul>
 </nav>
-#}

@@ -9,7 +9,6 @@ import 'mmenu-js/dist/mmenu.css';
 import '@splidejs/splide/dist/css/splide.min.css';
 
 
-
 import './styles/app.css';
 
 import './stimulus_bootstrap.js';
