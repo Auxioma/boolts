@@ -27,12 +27,11 @@ final class AgenceImmobiliereParametresController extends AbstractController
     {
         $user = $this->getUser();
 
-        dd($user);
-
         $form = $this->createForm(ProfileAgenceType::class, $user);
 
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_parametres/index.html.twig', [
             'form' => $form->createView(),
+            'stripe_public_key' => $this->getParameter('stripe.public_key'),
         ]);
     }
 }

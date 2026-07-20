@@ -10,6 +10,9 @@ parameters:
     app.languages: ['fr', 'en']
     app.2fa.from_email: 'noreply@boolts.com'
     app.2fa.from_name: 'Boolts'
+    stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
+    stripe.public_key: '%env(STRIPE_PUBLIC_KEY)%'
+
 
 services:
     # default configuration for services in *this* file
@@ -49,3 +52,7 @@ services:
     App\Service\GeoIpLocationService:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    Stripe\StripeClient:
+        arguments:
+            - '%stripe.secret_key%'

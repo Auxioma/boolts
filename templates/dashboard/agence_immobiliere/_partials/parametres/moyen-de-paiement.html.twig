@@ -93,105 +93,93 @@
     </div>
 </div>
 {# Modal mode ajouter une carte #}
-<div class="payment-modal-overlay" data-payment-modal>
-    <div class="payment-modal">
+<div
+    class="payment-modal-overlay"
+    data-payment-modal
+    data-controller="payment-method"
+    data-payment-method-public-key-value="{{ stripe_public_key }}"
+    data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
+    data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
+    data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+>
+    <div
+        class="payment-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="payment-modal-title"
+    >
         <button
             type="button"
             class="payment-modal-close"
             data-payment-modal-close
+            aria-label="Fermer"
         >
-            <i class="icon-x"></i>
+            <i class="icon-x" aria-hidden="true"></i>
         </button>
-        <div class="payment-modal-header">
 
-            <div>
-                <h2 class="payment-modal-title">
-                    Indiquez les informations de votre carte
-                </h2>
-            </div>
+        <div class="payment-modal-header">
+            <h2
+                id="payment-modal-title"
+                class="payment-modal-title"
+            >
+                Indiquez les informations de votre carte
+            </h2>
         </div>
 
         <form
             method="post"
-            action="#"
             class="payment-modal-form formulaire"
+            data-payment-method-target="form"
+            data-action="submit->payment-method#submit"
+            novalidate
         >
+            <div
+                class="alert alert-danger d-none mb-20"
+                role="alert"
+                data-payment-method-target="error"
+            ></div>
 
             <div class="payment-form-group">
-                <label for="cardNumber" class="mb-16">
+                <label
+                    for="payment-cardholder-name"
+                    class="mb-16"
+                >
                     Nom du titulaire
                 </label>
 
                 <input
                     type="text"
-                    id="cardNumber"
-                    name="cardNumber"
+                    id="payment-cardholder-name"
+                    name="cardholderName"
                     class="payment-form-control mb-16"
-                    placeholder="Saisissez votre nom"
-                    autocomplete="cc-number"
-                    maxlength="19"
+                    placeholder="Saisissez le nom du titulaire"
+                    autocomplete="cc-name"
+                    data-payment-method-target="cardholderName"
+                    required
                 >
             </div>
 
             <div class="payment-form-group">
-                <label for="cardNumber" class="mb-16">
-                    Numéro de carte
+                <label class="mb-16">
+                    Informations de la carte
                 </label>
 
-                <input
-                    type="text"
-                    id="cardNumber"
-                    name="cardNumber"
-                    class="payment-form-control mb-16"
-                    placeholder="1234 1234 1234 1234"
-                    inputmode="numeric"
-                    autocomplete="cc-number"
-                    maxlength="19"
-                >
-            </div>
-
-            <div class="payment-form-row">
-                <div class="payment-form-group">
-                    <label for="cardExpiry" class="mb-16">
-                        Expiration
-                    </label>
-
-                    <input
-                        type="text"
-                        id="cardExpiry"
-                        name="cardExpiry"
-                        class="payment-form-control mb-16"
-                        placeholder="MM/AA"
-                        inputmode="numeric"
-                        autocomplete="cc-exp"
-                        maxlength="5"
-                    >
-                </div>
-
-                <div class="payment-form-group">
-                    <label for="cardCvc" class="mb-16">
-                        Code de sécurité
-                    </label>
-
-                    <input
-                        type="text"
-                        id="cardCvc"
-                        name="cardCvc"
-                        class="payment-form-control mb-16"
-                        placeholder="CVV"
-                        inputmode="numeric"
-                        autocomplete="cc-csc"
-                        maxlength="4"
-                    >
-                </div>
+                <div
+                    id="payment-element"
+                    class="payment-form-control payment-stripe-element mb-16"
+                    data-payment-method-target="element"
+                ></div>
             </div>
 
             <label class="payment-checkbox">
                 <input
                     type="checkbox"
                     name="defaultPayment"
+                    value="1"
                     class="mr-12"
+                    data-payment-method-target="defaultCheckbox"
                 >
+
                 <span></span>
 
                 Définir comme moyen de paiement par défaut
@@ -209,6 +197,7 @@
                 <button
                     type="submit"
                     class="payment-btn-submit"
+                    data-payment-method-target="submitButton"
                 >
                     Ajouter
                 </button>
@@ -389,3 +378,4 @@
     });
 
 </script>
+<script src="https://js.stripe.com/v3/"></script>

@@ -24,6 +24,7 @@
         "scheb/2fa-bundle": "^8.5",
         "scheb/2fa-email": "^8.5",
         "stof/doctrine-extensions-bundle": "^1.15",
+        "stripe/stripe-php": "^21.0",
         "symfony/apache-pack": "*",
         "symfony/asset": "8.0.*",
         "symfony/asset-mapper": "8.0.*",
