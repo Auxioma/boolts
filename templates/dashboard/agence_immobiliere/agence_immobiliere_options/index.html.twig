@@ -3,17 +3,216 @@
 {% block title %}Hello AgenceImmobiliereOptionsController!{% endblock %}
 
 {% block body %}
-    <main id=dashboard" class="dashboard">
-        <div class="container-fluid">
-            <div class="row">
-                {# div 4 pour le menu du dashboard #}
-                {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+	<main id="dashboard" class="dashboard">
+		<div class="container-fluid">
+			<div
+				class="row">
+				{# div 4 pour le menu du dashboard #}
+				{{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                {# contenu du dashboard #}
-                <div class="col-8">
-                    <h2>options</h2>
-                </div>
-            </div>
-        </div>
-    </main>
+				{# contenu du dashboard #}
+				<div class="col-10">
+					<div class="container pt-48 achat-content-shell px-0">
+						<div class="achat-title-row d-flex align-items-center justify-content-between">
+							<h1>Options et abonnements</h1>
+
+							<button class="btn achat-btn-outline-brand achat-boost-balance" type="button">
+								<img src="https://www.figma.com/api/mcp/asset/4abf21cc-aaec-40db-aef8-19e91701de8e" alt="" class="achat-icon-24">
+
+								<span>Boost : 4</span>
+							</button>
+						</div>
+
+						<h2>Choisissez votre abonnement</h2>
+
+						<div class="achat-billing-switch mx-auto" role="group" aria-label="Période de facturation">
+							<button type="button" class="achat-billing-option" data-period="annual" aria-pressed="false">
+								Annuel
+							</button>
+
+							<button type="button" class="achat-billing-option achat-active" data-period="monthly" aria-pressed="true">
+								Mensuel
+							</button>
+						</div>
+
+						<section class="row g-4 achat-plans-grid">
+							{% for forfait in forfaits %}
+								{% set plan = forfait.plan %}
+								{% set monthlyPrice = forfait.monthly %}
+								{% set annualPrice = forfait.annual %}
+								{% set isCurrentPlan = abonnement_actuel and abonnement_actuel.plan.id == plan.id %}
+
+								<div class="col-12 col-lg-4 d-flex">
+									<article class="achat-pricing-card {{ plan.isFree ? 'achat-basic-card' : '' }} w-100">
+										<div>
+											<h3>{{ plan.name }}</h3>
+
+											<p class="achat-price">
+												{% if plan.isFree %}
+													Gratuit
+												{% elseif monthlyPrice %}
+													<span class="achat-price-value" data-monthly="{{ (monthlyPrice.amountMinor / 100)|number_format(2, ',', ' ') }} {{ monthlyPrice.currency.signe }}" data-annual="{{ annualPrice ? (annualPrice.amountMinor / 100)|number_format(2, ',', ' ') ~ ' ' ~ annualPrice.currency.signe : '' }}">
+														{{ (monthlyPrice.amountMinor / 100)|number_format(2, ',', ' ') }} {{ monthlyPrice.currency.signe }}
+													</span>
+													<span class="achat-price-period">/mois</span>
+												{% endif %}
+											</p>
+
+											<div class="achat-feature-list">
+												{% if plan.description %}<p>{{ plan.description }}</p>{% endif %}
+												<p><strong>✓ {{ plan.propertyLimit is null ? 'Biens illimités' : plan.propertyLimit ~ ' biens' }}</strong></p>
+												<p><strong>✓ {{ plan.includedBoosts }} boost{{ plan.includedBoosts > 1 ? 's' : '' }} inclus</strong></p>
+												<p>Durée d’un boost : {{ plan.boostDurationDays }} jours</p>
+											</div>
+										</div>
+
+										{% if isCurrentPlan %}
+											<button class="btn achat-current-plan" type="button" disabled>Abonnement actuel</button>
+										{% else %}
+											<a
+												href="{{ path('agence_immobiliere_achat', {id: plan.id, period: 'monthly'}) }}"
+												data-monthly-url="{{ path('agence_immobiliere_achat', {id: plan.id, period: 'monthly'}) }}"
+												data-annual-url="{{ path('agence_immobiliere_achat', {id: plan.id, period: 'annual'}) }}"
+												class="btn {{ plan.isFree ? 'achat-current-plan' : 'achat-btn-brand' }} achat-subscribe-link"
+											>Souscrire</a>
+										{% endif %}
+									</article>
+								</div>
+							{% else %}
+								<p>Aucun forfait n’est disponible pour le moment.</p>
+							{% endfor %}
+
+						</section>
+
+						<h2 class="achat-boost-title">
+							Boostez vos annonces
+						</h2>
+
+						<section class="achat-boost-card">
+							<div class="row g-4">
+
+								<div class="col-12 col-md-4">
+									<article class="achat-boost-item h-100">
+										<img src="https://www.figma.com/api/mcp/asset/a00cfadb-c5d2-407a-9a93-c4c1ba50a0fd" alt="Un boost" class="achat-boost-image">
+
+										<h3>1 boost</h3>
+
+										<p class="achat-boost-price">
+											24.99 €
+										</p>
+
+										<p class="achat-boost-description">
+											1 boost s’applique sur 1 annonce et dure 15 jours.
+										</p>
+
+										<a href="#" class="btn achat-btn-outline-brand w-100">
+											Acheter
+										</a>
+									</article>
+								</div>
+
+								<div class="col-12 col-md-4">
+									<article class="achat-boost-item h-100">
+										<img src="https://www.figma.com/api/mcp/asset/971728a4-e716-408a-9189-278ea22e4b1b" alt="Cinq boosts" class="achat-boost-image">
+
+										<h3>5 boost</h3>
+
+										<p class="achat-boost-price">
+											24.99 €
+										</p>
+
+										<p class="achat-boost-description">
+											1 boost s’applique sur 1 annonce et dure 15 jours.
+										</p>
+
+										<a href="#" class="btn achat-btn-outline-brand w-100">
+											Acheter
+										</a>
+									</article>
+								</div>
+
+								<div class="col-12 col-md-4">
+									<article class="achat-boost-item h-100">
+										<img src="https://www.figma.com/api/mcp/asset/66e7e6de-f1f9-4808-9e75-1f0eeae98362" alt="Vingt boosts" class="achat-boost-image">
+
+										<h3>20 boost</h3>
+
+										<p class="achat-boost-price">
+											24.99 €
+										</p>
+
+										<p class="achat-boost-description">
+											1 boost s’applique sur 1 annonce et dure 15 jours.
+										</p>
+
+										<a href="#" class="btn achat-btn-outline-brand w-100">
+											Acheter
+										</a>
+									</article>
+								</div>
+
+							</div>
+						</section>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const billingOptions = document.querySelectorAll(
+            '.achat-billing-option'
+        );
+
+        const priceValues = document.querySelectorAll(
+            '.achat-price-value'
+        );
+
+        const pricePeriods = document.querySelectorAll(
+            '.achat-price-period'
+        );
+
+        const subscriptionLinks = document.querySelectorAll(
+            '.achat-subscribe-link'
+        );
+
+        billingOptions.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const selectedPeriod = button.dataset.period;
+
+                billingOptions.forEach(function (option) {
+                    option.classList.remove('achat-active');
+                    option.setAttribute('aria-pressed', 'false');
+                });
+
+                button.classList.add('achat-active');
+                button.setAttribute('aria-pressed', 'true');
+
+                priceValues.forEach(function (price) {
+                    const newPrice = price.dataset[selectedPeriod];
+
+                    if (
+                        newPrice !== undefined &&
+                        newPrice !== null &&
+                        newPrice.trim() !== ''
+                    ) {
+                        price.textContent = newPrice;
+                    }
+                });
+
+                pricePeriods.forEach(function (period) {
+                    period.textContent = selectedPeriod === 'annual'
+                        ? '/an'
+                        : '/mois';
+                });
+
+                subscriptionLinks.forEach(function (link) {
+                    link.href = link.dataset[selectedPeriod + 'Url'];
+                });
+            });
+        });
+    });
+</script>
+
 {% endblock %}

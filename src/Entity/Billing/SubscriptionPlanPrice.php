@@ -12,13 +12,14 @@
 
 namespace App\Entity\Billing;
 
+use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'subscription_plan_price')]
-#[ORM\UniqueConstraint(name: 'uniq_subscription_plan_currency', columns: ['plan_id', 'currency_id'])]
+#[ORM\UniqueConstraint(name: 'uniq_subscription_plan_currency_period', columns: ['plan_id', 'currency_id', 'billing_period'])]
 class SubscriptionPlanPrice
 {
     use TimestampableTrait;
@@ -36,6 +37,9 @@ class SubscriptionPlanPrice
 
     #[ORM\Column(type: 'bigint')]
     private int $amountMinor = 0;
+
+    #[ORM\Column(enumType: SubscriptionBillingPeriod::class, length: 10)]
+    private SubscriptionBillingPeriod $billingPeriod = SubscriptionBillingPeriod::MONTHLY;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
     private ?string $paymentProviderPriceId = null;
@@ -85,6 +89,18 @@ class SubscriptionPlanPrice
     public function setAmountMinor(int $amountMinor): static
     {
         $this->amountMinor = $amountMinor;
+
+        return $this;
+    }
+
+    public function getBillingPeriod(): SubscriptionBillingPeriod
+    {
+        return $this->billingPeriod;
+    }
+
+    public function setBillingPeriod(SubscriptionBillingPeriod $billingPeriod): static
+    {
+        $this->billingPeriod = $billingPeriod;
 
         return $this;
     }
