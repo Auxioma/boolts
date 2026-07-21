@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
+ * pour l’entreprise Pastelit Co.
  * Tous droits réservés.
- *
- * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
 namespace App\Entity\Billing;
@@ -23,7 +23,9 @@ class AgencyBillingProfile
 {
     use TimestampableTrait;
 
-    #[ORM\Id, ORM\GeneratedValue, ORM\Column]
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\OneToOne(
@@ -39,15 +41,28 @@ class AgencyBillingProfile
     )]
     private ?User $agency = null;
 
-    #[ORM\Column(length: 255, unique: true)]
-    private string $stripeCustomerId;
+    /*
+     * Cette valeur doit être nullable avant la création
+     * du premier Customer Stripe.
+     */
+    #[ORM\Column(
+        name: 'stripe_customer_id',
+        length: 255,
+        nullable: true,
+        unique: true
+    )]
+    private ?string $stripeCustomerId = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Devise $preferredCurrency = null;
 
     #[ORM\OneToOne]
-    #[ORM\JoinColumn(nullable: true, unique: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(
+        nullable: true,
+        unique: true,
+        onDelete: 'SET NULL'
+    )]
     private ?AgencyPaymentMethod $defaultPaymentMethod = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -103,7 +118,7 @@ class AgencyBillingProfile
         $this->agency = $agency;
 
         if (
-            null !== $agency
+            $agency !== null
             && $agency->getBillingProfile() !== $this
         ) {
             $agency->setBillingProfile($this);
@@ -112,13 +127,14 @@ class AgencyBillingProfile
         return $this;
     }
 
-    public function getStripeCustomerId(): string
+    public function getStripeCustomerId(): ?string
     {
         return $this->stripeCustomerId;
     }
 
-    public function setStripeCustomerId(string $stripeCustomerId): static
-    {
+    public function setStripeCustomerId(
+        ?string $stripeCustomerId
+    ): static {
         $this->stripeCustomerId = $stripeCustomerId;
 
         return $this;
@@ -129,8 +145,9 @@ class AgencyBillingProfile
         return $this->preferredCurrency;
     }
 
-    public function setPreferredCurrency(?Devise $preferredCurrency): static
-    {
+    public function setPreferredCurrency(
+        ?Devise $preferredCurrency
+    ): static {
         $this->preferredCurrency = $preferredCurrency;
 
         return $this;
@@ -141,8 +158,9 @@ class AgencyBillingProfile
         return $this->defaultPaymentMethod;
     }
 
-    public function setDefaultPaymentMethod(?AgencyPaymentMethod $defaultPaymentMethod): static
-    {
+    public function setDefaultPaymentMethod(
+        ?AgencyPaymentMethod $defaultPaymentMethod
+    ): static {
         $this->defaultPaymentMethod = $defaultPaymentMethod;
 
         return $this;
@@ -177,8 +195,9 @@ class AgencyBillingProfile
         return $this->commercialName;
     }
 
-    public function setCommercialName(?string $commercialName): static
-    {
+    public function setCommercialName(
+        ?string $commercialName
+    ): static {
         $this->commercialName = $commercialName;
 
         return $this;
@@ -273,8 +292,9 @@ class AgencyBillingProfile
         return $this->taxExemptStatus;
     }
 
-    public function setTaxExemptStatus(string $taxExemptStatus): static
-    {
+    public function setTaxExemptStatus(
+        string $taxExemptStatus
+    ): static {
         $this->taxExemptStatus = $taxExemptStatus;
 
         return $this;

@@ -1,106 +1,96 @@
-<div class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres" id="cat4">
+<div
+    class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres"
+    id="cat4"
+    data-controller="payment-method"
+    data-payment-method-public-key-value="{{ stripe_public_key }}"
+    data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
+    data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
+    data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+>
     <div class="row">
         <div class="col-10 mx-auto">
+            <h2 class="mb-0">Moyens de paiement</h2>
 
-            <h2 class="mb-0">
-                Paiement A finir page forfait
-            </h2>
-
-            <div
-                class="card-information-public-profile my-32 py-18 px-24"
-                data-controller="field-save"
-                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
-                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
-            >
-
+            <div class="card-information-public-profile my-32 py-18 px-24">
                 <div class="connexion-securite">
                     <h5 class="mb-32 mode-de-paiement-profile">
-                        Modes de paiement
+                        Cartes enregistrées
                     </h5>
 
-                    {% for i in 1..5 %}
-                        {% set cardType = cycle(['mastercard', 'visa'], loop.index0) %}
-                        {% set cardName = cardType == 'mastercard' ? 'Mastercard' : 'Visa' %}
-                        {% set cardNumber = random(1000, 9999) %}
-                        {% set month = '%02d'|format(random(1, 12)) %}
-                        {% set year = random(2027, 2032) %}
+                    {% if payment_methods is empty %}
+                        <p class="mb-0 text-muted">
+                            Aucun moyen de paiement n’est enregistré.
+                        </p>
+                    {% else %}
+                        {% for paymentMethod in payment_methods %}
+                            {% set brand = paymentMethod.brand|default('card')|lower %}
+                            {% set logo = brand in ['visa', 'mastercard']
+                                ? 'images/paiement_card/' ~ brand ~ '.svg'
+                                : null
+                            %}
 
-                        <div class="js-payment-line formulaire position-relative {{ not loop.first ? 'mt-20' }}">
-                            <div class="d-flex justify-content-between align-items-start pb-20 {{ not loop.last ? 'ligne-border-bottom' }}">
+                            <div
+                                class="js-payment-line formulaire position-relative {{ not loop.first ? 'mt-20' }}"
+                            >
+                                <div
+                                    class="d-flex justify-content-between align-items-start pb-20 {{ not loop.last ? 'ligne-border-bottom' }}"
+                                >
+                                    <div class="w-100 d-flex align-items-start">
+                                        {% if logo %}
+                                            <img
+                                                src="{{ asset(logo) }}"
+                                                alt="{{ paymentMethod.brand|capitalize }}"
+                                                class="mr-25"
+                                            >
+                                        {% else %}
+                                            <span class="icon-credit-card mr-25"></span>
+                                        {% endif %}
 
-                                <div class="w-100 d-flex align-items-start">
-                                    <img
-                                        src="{{ asset('images/paiement_card/' ~ cardType ~ '.svg') }}"
-                                        alt="{{ cardName }}"
-                                        class="mr-25"
-                                    >
-                                    <div>
-                                        <h3 class="mb-0">
-                                            {{ cardName }} {{ cardNumber }}
-                                        </h3>
-                                        <p class="mt-12 mb-0 js-field-value">
-                                            Date d’expiration : {{ month }}/{{ year }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="position-relative">
-                                    <button
-                                        type="button"
-                                        class="btn btn-link p-0 text-dark text-decoration-none boolts-ellipsis-btn js-payment-menu-toggle"
-                                        aria-expanded="false"
-                                    >
-                                        <i class="icon-ellipsis"></i>
-                                    </button>
-                                    <div class="bg-white overflow-hidden boolts-card-menu js-payment-menu d-none">
-                                        <button
-                                            type="button"
-                                            class="btn w-100 border-0 rounded-0 d-flex align-items-center text-start boolts-card-menu-item py-8 px-16"
-                                        >
-                                            <i class="icon-credit-card mr-2"></i>
-                                            <span>
-                                                Définir par défaut
-                                            </span>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="btn w-100 border-0 rounded-0 d-flex align-items-center text-start boolts-card-menu-item boolts-card-menu-item-supprime py-8 px-16"
-                                        >
-                                            <i class="icon-trash-2 mr-2"></i>
-                                            <span>
-                                                Supprimer
-                                            </span>
-                                        </button>
+                                        <div>
+                                            <h3 class="mb-0">
+                                                {{ paymentMethod.brand|capitalize }}
+                                                •••• {{ paymentMethod.last4 }}
+
+                                                {% if paymentMethod.isIsDefault %}
+                                                    <span class="badge text-bg-primary ms-2">
+                                                        Par défaut
+                                                    </span>
+                                                {% endif %}
+                                            </h3>
+
+                                            <p class="mt-12 mb-0 js-field-value">
+                                                Date d’expiration :
+                                                {{ '%02d'|format(paymentMethod.expMonth) }}/{{ paymentMethod.expYear }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="d-flex mt-32 mb-32">
                     <button
                         type="button"
                         class="btn-add-payment py-10 px-16 payment-open-btn"
-                        data-payment-modal-open
+                        data-action="click->payment-method#open"
                     >
                         <span class="icon-plus mr-6"></span>
-
                         Ajouter un mode de paiement
                     </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{# Modal mode ajouter une carte #}
+
 <div
     class="payment-modal-overlay"
-    data-payment-modal
-    data-controller="payment-method"
-    data-payment-method-public-key-value="{{ stripe_public_key }}"
-    data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
-    data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
-    data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+    data-payment-method-target="modal"
+    data-action="
+        click->payment-method#closeFromOverlay
+        keydown@window->payment-method#closeFromKeyboard
+    "
 >
     <div
         class="payment-modal"
@@ -111,46 +101,43 @@
         <button
             type="button"
             class="payment-modal-close"
-            data-payment-modal-close
+            data-action="click->payment-method#close"
             aria-label="Fermer"
         >
             <i class="icon-x" aria-hidden="true"></i>
         </button>
 
         <div class="payment-modal-header">
-            <h2
-                id="payment-modal-title"
-                class="payment-modal-title"
-            >
+            <h2 id="payment-modal-title" class="payment-modal-title">
                 Indiquez les informations de votre carte
             </h2>
         </div>
 
         <form
-            method="post"
             class="payment-modal-form formulaire"
-            data-payment-method-target="form"
             data-action="submit->payment-method#submit"
             novalidate
         >
             <div
-                class="alert alert-danger d-none mb-20"
+                class="payment-form-error d-none mb-16"
                 role="alert"
                 data-payment-method-target="error"
             ></div>
 
+            <div
+                class="payment-form-success d-none mb-16"
+                role="status"
+                data-payment-method-target="success"
+            ></div>
+
             <div class="payment-form-group">
-                <label
-                    for="payment-cardholder-name"
-                    class="mb-16"
-                >
+                <label for="payment-cardholder-name" class="mb-16">
                     Nom du titulaire
                 </label>
 
                 <input
                     type="text"
                     id="payment-cardholder-name"
-                    name="cardholderName"
                     class="payment-form-control mb-16"
                     placeholder="Saisissez le nom du titulaire"
                     autocomplete="cc-name"
@@ -160,13 +147,10 @@
             </div>
 
             <div class="payment-form-group">
-                <label class="mb-16">
-                    Informations de la carte
-                </label>
+                <label class="mb-16">Informations de la carte</label>
 
                 <div
-                    id="payment-element"
-                    class="payment-form-control payment-stripe-element mb-16"
+                    class="payment-stripe-element mb-16"
                     data-payment-method-target="element"
                 ></div>
             </div>
@@ -181,7 +165,6 @@
                 >
 
                 <span></span>
-
                 Définir comme moyen de paiement par défaut
             </label>
 
@@ -189,7 +172,7 @@
                 <button
                     type="button"
                     class="payment-btn-cancel"
-                    data-payment-modal-close
+                    data-action="click->payment-method#close"
                 >
                     Annuler
                 </button>
@@ -198,6 +181,7 @@
                     type="submit"
                     class="payment-btn-submit"
                     data-payment-method-target="submitButton"
+                    disabled
                 >
                     Ajouter
                 </button>
@@ -205,177 +189,6 @@
         </form>
     </div>
 </div>
+</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const modal = document.querySelector('[data-payment-modal]');
-        const openButtons = document.querySelectorAll('[data-payment-modal-open]');
-        const closeButtons = document.querySelectorAll('[data-payment-modal-close]');
-
-        if (!modal) {
-            return;
-        }
-
-        const openModal = () => {
-            modal.classList.add('is-open');
-            document.body.style.overflow = 'hidden';
-        };
-
-        const closeModal = () => {
-            modal.classList.remove('is-open');
-            document.body.style.overflow = '';
-        };
-
-        openButtons.forEach((button) => {
-            button.addEventListener('click', (event) => {
-                event.preventDefault();
-
-                openModal();
-            });
-        });
-
-        closeButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                closeModal();
-            });
-        });
-
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-
-        document.addEventListener('keydown', (event) => {
-            if (
-                event.key === 'Escape'
-                && modal.classList.contains('is-open')
-            ) {
-                closeModal();
-            }
-        });
-
-        const cardNameInput = document.querySelector('#cardName');
-        const cardNumberInput = document.querySelector('#cardNumber');
-        const cardExpiryInput = document.querySelector('#cardExpiry');
-        const cardCvcInput = document.querySelector('#cardCvc');
-
-        const previewCardName = document.querySelector('#previewCardName');
-        const previewCardNumber = document.querySelector('#previewCardNumber');
-        const previewCardExpiry = document.querySelector('#previewCardExpiry');
-
-        if (cardNameInput) {
-            cardNameInput.addEventListener('input', () => {
-                previewCardName.textContent =
-                    cardNameInput.value || 'Guillaume Devaux';
-            });
-        }
-
-        if (cardNumberInput) {
-            cardNumberInput.addEventListener('input', () => {
-                let value = cardNumberInput.value
-                    .replace(/\D/g, '')
-                    .slice(0, 16);
-
-                value = value
-                    .replace(/(.{4})/g, '$1 ')
-                    .trim();
-
-                cardNumberInput.value = value;
-
-                previewCardNumber.textContent =
-                    value || '•••• •••• •••• ••••';
-            });
-        }
-
-        if (cardExpiryInput) {
-            cardExpiryInput.addEventListener('input', () => {
-                let value = cardExpiryInput.value
-                    .replace(/\D/g, '')
-                    .slice(0, 4);
-
-                if (value.length >= 3) {
-                    value =
-                        value.slice(0, 2)
-                        + '/'
-                        + value.slice(2);
-                }
-
-                cardExpiryInput.value = value;
-
-                previewCardExpiry.textContent =
-                    value || 'MM/AA';
-            });
-        }
-
-        if (cardCvcInput) {
-            cardCvcInput.addEventListener('input', () => {
-                cardCvcInput.value = cardCvcInput.value
-                    .replace(/\D/g, '')
-                    .slice(0, 4);
-            });
-        }
-    });
-</script>
-
-<script>
-
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const toggleButtons = document.querySelectorAll('.js-payment-menu-toggle');
-
-        toggleButtons.forEach(function (button) {
-
-            button.addEventListener('click', function (event) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                const currentLine = button.closest('.js-payment-line');
-
-                const currentMenu = currentLine.querySelector('.js-payment-menu');
-
-                if (!currentMenu) {
-                    return;
-                }
-
-                document.querySelectorAll('.js-payment-menu').forEach(function (menu) {
-
-                    if (menu !== currentMenu) {
-                        menu.classList.add('d-none');
-                    }
-                });
-
-                const isOpen = !currentMenu.classList.contains('d-none');
-
-                currentMenu.classList.toggle('d-none', isOpen);
-
-                button.setAttribute(
-                    'aria-expanded',
-                    isOpen ? 'false' : 'true'
-                );
-            });
-        });
-
-        document.addEventListener('click', function (event) {
-
-            if (
-                event.target.closest('.js-payment-menu') ||
-                event.target.closest('.js-payment-menu-toggle')
-            ) {
-                return;
-            }
-
-            document.querySelectorAll('.js-payment-menu').forEach(function (menu) {
-                menu.classList.add('d-none');
-            });
-
-            document.querySelectorAll('.js-payment-menu-toggle').forEach(function (button) {
-                button.setAttribute('aria-expanded', 'false');
-            });
-        });
-
-    });
-
-</script>
 <script src="https://js.stripe.com/v3/"></script>

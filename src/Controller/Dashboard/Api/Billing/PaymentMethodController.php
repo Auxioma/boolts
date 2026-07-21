@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Api\Billing;
+namespace App\Controller\Dashboard\Api\Billing;
 
+use App\Entity\Billing\AgencyBillingProfile;
 use App\Entity\Billing\AgencyPaymentMethod;
+use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
+use App\Entity\User;
 use App\Repository\Billing\AgencyPaymentMethodRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
 use Stripe\PaymentMethod;
 use Stripe\SetupIntent;
@@ -25,14 +29,15 @@ final class PaymentMethodController extends AbstractController
         private readonly StripeClient $stripe,
         private readonly EntityManagerInterface $entityManager,
         private readonly AgencyPaymentMethodRepository $paymentMethodRepository,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
-    /**
-     * Première étape :
-     * création du SetupIntent Stripe.
-     */
-    #[Route('/setup-intent', name: 'api_agency_billing_setup_intent', methods: ['POST'])]
+    #[Route(
+        '/setup-intent',
+        name: 'api_agency_billing_setup_intent',
+        methods: ['POST']
+    )]
     public function createSetupIntent(Request $request): JsonResponse
     {
         if (!$this->isCsrfTokenValid(
@@ -45,61 +50,22 @@ final class PaymentMethodController extends AbstractController
             ], 403);
         }
 
-        /*
-         * Adapte cette partie selon ton entité User.
-         *
-         * Exemple :
-         * $agency = $this->getUser()->getAgency();
-         */
         $user = $this->getUser();
 
-        if ($user === null) {
+        if (!$user instanceof User) {
             return $this->json([
                 'success' => false,
                 'message' => 'Utilisateur non authentifié.',
             ], 401);
         }
 
-        /*
-         * Adapte le getter à ton architecture.
-         */
-        $billingProfile = $user->getAgencyBillingProfile();
-
-        if ($billingProfile === null) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Le profil de facturation est introuvable.',
-            ], 404);
-        }
-
         try {
-            $stripeCustomerId = $billingProfile->getProviderCustomerId();
+            $billingProfile = $this->getOrCreateBillingProfile($user);
+            $stripeCustomerId = $this->getOrCreateStripeCustomer(
+                $user,
+                $billingProfile
+            );
 
-            /*
-             * Création du Customer Stripe s'il n'existe pas encore.
-             */
-            if (!$stripeCustomerId) {
-                $customer = $this->stripe->customers->create([
-                    'email' => $user->getEmail(),
-                    'name' => $billingProfile->getLegalName()
-                        ?: $user->getUserIdentifier(),
-                    'metadata' => [
-                        'user_id' => (string) $user->getId(),
-                        'billing_profile_id' => (string) $billingProfile->getId(),
-                    ],
-                ]);
-
-                $stripeCustomerId = $customer->id;
-
-                $billingProfile->setProviderCustomerId($stripeCustomerId);
-
-                $this->entityManager->flush();
-            }
-
-            /*
-             * off_session signifie que cette carte pourra être utilisée
-             * plus tard, même lorsque le client n'est pas présent.
-             */
             $setupIntent = $this->stripe->setupIntents->create([
                 'customer' => $stripeCustomerId,
                 'usage' => 'off_session',
@@ -116,17 +82,31 @@ final class PaymentMethodController extends AbstractController
                 'clientSecret' => $setupIntent->client_secret,
             ]);
         } catch (ApiErrorException $exception) {
+            $this->logger->error('Erreur Stripe pendant la création du SetupIntent.', [
+                'message' => $exception->getMessage(),
+                'stripe_code' => $exception->getStripeCode(),
+                'user_id' => $user->getId(),
+            ]);
+
+            return $this->json([
+                'success' => false,
+                'message' => 'Stripe : '.$exception->getMessage(),
+            ], 400);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Erreur interne pendant la création du SetupIntent.', [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'user_id' => $user->getId(),
+            ]);
+
             return $this->json([
                 'success' => false,
                 'message' => $exception->getMessage(),
-            ], 400);
+            ], 500);
         }
     }
 
-    /**
-     * Deuxième étape :
-     * vérification du SetupIntent et récupération du fingerprint.
-     */
     #[Route(
         '/payment-method/complete',
         name: 'api_agency_billing_payment_method_complete',
@@ -144,9 +124,18 @@ final class PaymentMethodController extends AbstractController
             ], 403);
         }
 
-        $payload = json_decode($request->getContent(), true);
+        $user = $this->getUser();
 
-        if (!is_array($payload)) {
+        if (!$user instanceof User) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Utilisateur non authentifié.',
+            ], 401);
+        }
+
+        try {
+            $payload = $request->toArray();
+        } catch (\Throwable) {
             return $this->json([
                 'success' => false,
                 'message' => 'Requête JSON invalide.',
@@ -159,25 +148,19 @@ final class PaymentMethodController extends AbstractController
             FILTER_VALIDATE_BOOL
         );
 
-        if (!is_string($setupIntentId) || !str_starts_with($setupIntentId, 'seti_')) {
+        if (
+            !is_string($setupIntentId)
+            || !str_starts_with($setupIntentId, 'seti_')
+        ) {
             return $this->json([
                 'success' => false,
                 'message' => 'SetupIntent invalide.',
             ], 400);
         }
 
-        $user = $this->getUser();
+        $billingProfile = $user->getBillingProfile();
 
-        if ($user === null) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Utilisateur non authentifié.',
-            ], 401);
-        }
-
-        $billingProfile = $user->getAgencyBillingProfile();
-
-        if ($billingProfile === null) {
+        if (!$billingProfile instanceof AgencyBillingProfile) {
             return $this->json([
                 'success' => false,
                 'message' => 'Profil de facturation introuvable.',
@@ -185,37 +168,29 @@ final class PaymentMethodController extends AbstractController
         }
 
         try {
-            /*
-             * On récupère tout depuis Stripe côté serveur.
-             * On ne fait pas confiance aux informations de carte envoyées
-             * par le navigateur.
-             */
             $setupIntent = $this->stripe->setupIntents->retrieve(
                 $setupIntentId,
-                [
-                    'expand' => ['payment_method'],
-                ]
+                ['expand' => ['payment_method']]
             );
 
             if ($setupIntent->status !== SetupIntent::STATUS_SUCCEEDED) {
                 return $this->json([
                     'success' => false,
                     'message' => sprintf(
-                        'La carte n’a pas été validée. Statut Stripe : %s.',
+                        'La carte n’est pas validée. Statut Stripe : %s.',
                         $setupIntent->status
                     ),
                 ], 400);
             }
 
-            /*
-             * Vérification indispensable :
-             * le SetupIntent doit appartenir au Customer Stripe connecté.
-             */
-            $setupIntentCustomerId = is_string($setupIntent->customer)
-                ? $setupIntent->customer
-                : $setupIntent->customer?->id;
+            $setupIntentCustomerId = $this->extractStripeId(
+                $setupIntent->customer
+            );
 
-            if ($setupIntentCustomerId !== $billingProfile->getProviderCustomerId()) {
+            if (
+                $setupIntentCustomerId === null
+                || $setupIntentCustomerId !== $billingProfile->getStripeCustomerId()
+            ) {
                 return $this->json([
                     'success' => false,
                     'message' => 'Ce SetupIntent ne vous appartient pas.',
@@ -233,119 +208,252 @@ final class PaymentMethodController extends AbstractController
             if (!$paymentMethod instanceof PaymentMethod) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Le moyen de paiement est introuvable.',
+                    'message' => 'Moyen de paiement Stripe introuvable.',
                 ], 404);
             }
 
-            if ($paymentMethod->type !== 'card' || $paymentMethod->card === null) {
+            if (
+                $paymentMethod->type !== 'card'
+                || $paymentMethod->card === null
+            ) {
                 return $this->json([
                     'success' => false,
                     'message' => 'Le moyen de paiement obtenu n’est pas une carte.',
                 ], 400);
             }
 
-            /*
-             * Voici l'empreinte recherchée.
-             */
             $fingerprint = $paymentMethod->card->fingerprint;
 
-            if (!$fingerprint) {
+            if (!is_string($fingerprint) || $fingerprint === '') {
                 return $this->json([
                     'success' => false,
                     'message' => 'Stripe n’a retourné aucune empreinte.',
                 ], 400);
             }
 
-            /*
-             * Évite d'enregistrer deux fois exactement le même
-             * PaymentMethod Stripe.
-             */
-            $existingPaymentMethod = $this->paymentMethodRepository
-                ->findOneBy([
-                    'providerPaymentMethodId' => $paymentMethod->id,
-                ]);
+            $existing = $this->paymentMethodRepository
+                ->findOneByStripePaymentMethodId($paymentMethod->id);
 
-            if ($existingPaymentMethod instanceof AgencyPaymentMethod) {
+            if ($existing instanceof AgencyPaymentMethod) {
+                if ($setAsDefault) {
+                    $this->setDefaultPaymentMethod(
+                        $billingProfile,
+                        $existing
+                    );
+                }
+
                 return $this->json([
                     'success' => true,
                     'duplicate' => true,
-                    'message' => 'Ce moyen de paiement est déjà enregistré.',
-                    'paymentMethod' => [
-                        'id' => $existingPaymentMethod->getId(),
-                        'brand' => $paymentMethod->card->brand,
-                        'last4' => $paymentMethod->card->last4,
-                        'expMonth' => $paymentMethod->card->exp_month,
-                        'expYear' => $paymentMethod->card->exp_year,
-                        'fingerprint' => $fingerprint,
-                    ],
+                    'message' => 'Cette carte est déjà enregistrée.',
+                    'paymentMethod' => $this->serializePaymentMethod($existing),
                 ]);
             }
 
-            /*
-             * Adapte les setters aux véritables noms présents
-             * dans ton entité AgencyPaymentMethod.
-             */
-            $agencyPaymentMethod = new AgencyPaymentMethod();
+            $sameCard = $this->paymentMethodRepository->findOneByFingerprint(
+                $billingProfile,
+                $fingerprint
+            );
 
-            $agencyPaymentMethod
-                ->setBillingProfile($billingProfile)
-                ->setProvider('stripe')
-                ->setProviderPaymentMethodId($paymentMethod->id)
-                ->setType($paymentMethod->type)
-                ->setCardBrand($paymentMethod->card->brand)
-                ->setCardLast4($paymentMethod->card->last4)
-                ->setCardExpMonth($paymentMethod->card->exp_month)
-                ->setCardExpYear($paymentMethod->card->exp_year)
-                ->setCardFingerprint($fingerprint)
-                ->setFunding($paymentMethod->card->funding)
-                ->setCountry($paymentMethod->card->country)
-                ->setIsDefault($setAsDefault);
-
-            /*
-             * Si cette carte devient la carte par défaut,
-             * les autres ne doivent plus l'être.
-             */
-            if ($setAsDefault) {
-                foreach ($billingProfile->getPaymentMethods() as $otherMethod) {
-                    $otherMethod->setIsDefault(false);
-                }
-
-                $agencyPaymentMethod->setIsDefault(true);
-
-                $this->stripe->customers->update(
-                    $billingProfile->getProviderCustomerId(),
-                    [
-                        'invoice_settings' => [
-                            'default_payment_method' => $paymentMethod->id,
-                        ],
-                    ]
-                );
+            if ($sameCard instanceof AgencyPaymentMethod) {
+                return $this->json([
+                    'success' => false,
+                    'duplicate' => true,
+                    'message' => sprintf(
+                        'Cette carte est déjà enregistrée et se termine par %s.',
+                        $sameCard->getLast4()
+                    ),
+                ], 409);
             }
+
+            $cardholderName = null;
+
+            if (
+                $paymentMethod->billing_details !== null
+                && is_string($paymentMethod->billing_details->name)
+            ) {
+                $cardholderName = trim($paymentMethod->billing_details->name);
+            }
+
+            $agencyPaymentMethod = (new AgencyPaymentMethod())
+                ->setBillingProfile($billingProfile)
+                ->setStripePaymentMethodId($paymentMethod->id)
+                ->setStripeSetupIntentId($setupIntent->id)
+                ->setStripeMandateId(
+                    $this->extractStripeId($setupIntent->mandate)
+                )
+                ->setType($paymentMethod->type)
+                ->setBrand($paymentMethod->card->brand)
+                ->setLast4($paymentMethod->card->last4)
+                ->setExpMonth($paymentMethod->card->exp_month)
+                ->setExpYear($paymentMethod->card->exp_year)
+                ->setCardholderName($cardholderName)
+                ->setCountryCode($paymentMethod->card->country)
+                ->setFunding($paymentMethod->card->funding)
+                ->setFingerprint($fingerprint)
+                ->setIsDefault(false)
+                ->setIsActive(true)
+                ->setSetupStatus(PaymentMethodSetupStatus::SUCCEEDED);
 
             $this->entityManager->persist($agencyPaymentMethod);
             $this->entityManager->flush();
 
+            if (
+                $setAsDefault
+                || $billingProfile->getDefaultPaymentMethod() === null
+            ) {
+                $this->setDefaultPaymentMethod(
+                    $billingProfile,
+                    $agencyPaymentMethod
+                );
+            }
+
             return $this->json([
                 'success' => true,
-                'message' => 'Le moyen de paiement a été enregistré.',
-                'paymentMethod' => [
-                    'id' => $agencyPaymentMethod->getId(),
-                    'providerId' => $paymentMethod->id,
-                    'brand' => $paymentMethod->card->brand,
-                    'last4' => $paymentMethod->card->last4,
-                    'expMonth' => $paymentMethod->card->exp_month,
-                    'expYear' => $paymentMethod->card->exp_year,
-                    'funding' => $paymentMethod->card->funding,
-                    'country' => $paymentMethod->card->country,
-                    'fingerprint' => $fingerprint,
-                    'default' => $agencyPaymentMethod->isDefault(),
-                ],
+                'message' => 'Le moyen de paiement a bien été enregistré.',
+                'paymentMethod' => $this->serializePaymentMethod(
+                    $agencyPaymentMethod
+                ),
             ], 201);
         } catch (ApiErrorException $exception) {
+            $this->logger->error('Erreur Stripe pendant la finalisation.', [
+                'message' => $exception->getMessage(),
+                'stripe_code' => $exception->getStripeCode(),
+                'setup_intent_id' => $setupIntentId,
+                'user_id' => $user->getId(),
+            ]);
+
+            return $this->json([
+                'success' => false,
+                'message' => 'Stripe : '.$exception->getMessage(),
+            ], 400);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Erreur interne pendant la finalisation.', [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'setup_intent_id' => $setupIntentId,
+                'user_id' => $user->getId(),
+            ]);
+
             return $this->json([
                 'success' => false,
                 'message' => $exception->getMessage(),
-            ], 400);
+            ], 500);
         }
+    }
+
+    private function getOrCreateBillingProfile(
+        User $user
+    ): AgencyBillingProfile {
+        $billingProfile = $user->getBillingProfile();
+
+        if ($billingProfile instanceof AgencyBillingProfile) {
+            return $billingProfile;
+        }
+
+        $billingProfile = (new AgencyBillingProfile())
+            ->setAgency($user)
+            ->setBillingEmail($user->getEmail())
+            ->setLegalName(
+                trim(($user->getPrenom() ?? '').' '.($user->getNom() ?? ''))
+                ?: $user->getUserIdentifier()
+            );
+
+        $this->entityManager->persist($billingProfile);
+        $this->entityManager->flush();
+
+        return $billingProfile;
+    }
+
+    private function getOrCreateStripeCustomer(
+        User $user,
+        AgencyBillingProfile $billingProfile
+    ): string {
+        $stripeCustomerId = $billingProfile->getStripeCustomerId();
+
+        if (
+            is_string($stripeCustomerId)
+            && str_starts_with($stripeCustomerId, 'cus_')
+        ) {
+            return $stripeCustomerId;
+        }
+
+        $customer = $this->stripe->customers->create([
+            'email' => $billingProfile->getBillingEmail()
+                ?: $user->getEmail(),
+            'name' => $billingProfile->getLegalName()
+                ?: $user->getUserIdentifier(),
+            'metadata' => [
+                'user_id' => (string) $user->getId(),
+                'billing_profile_id' => (string) $billingProfile->getId(),
+            ],
+        ]);
+
+        $billingProfile->setStripeCustomerId($customer->id);
+        $this->entityManager->flush();
+
+        return $customer->id;
+    }
+
+    private function setDefaultPaymentMethod(
+        AgencyBillingProfile $billingProfile,
+        AgencyPaymentMethod $paymentMethod
+    ): void {
+        $this->paymentMethodRepository
+            ->unsetDefaultForBillingProfile($billingProfile);
+
+        $paymentMethod->setIsDefault(true);
+        $billingProfile->setDefaultPaymentMethod($paymentMethod);
+
+        $this->stripe->customers->update(
+            $billingProfile->getStripeCustomerId(),
+            [
+                'invoice_settings' => [
+                    'default_payment_method' =>
+                        $paymentMethod->getStripePaymentMethodId(),
+                ],
+            ]
+        );
+
+        $this->entityManager->flush();
+    }
+
+    private function extractStripeId(mixed $value): ?string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if (
+            is_object($value)
+            && isset($value->id)
+            && is_string($value->id)
+        ) {
+            return $value->id;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function serializePaymentMethod(
+        AgencyPaymentMethod $paymentMethod
+    ): array {
+        return [
+            'id' => $paymentMethod->getId(),
+            'brand' => $paymentMethod->getBrand(),
+            'last4' => $paymentMethod->getLast4(),
+            'expMonth' => $paymentMethod->getExpMonth(),
+            'expYear' => $paymentMethod->getExpYear(),
+            'cardholderName' => $paymentMethod->getCardholderName(),
+            'countryCode' => $paymentMethod->getCountryCode(),
+            'funding' => $paymentMethod->getFunding(),
+            'default' => $paymentMethod->isIsDefault(),
+            'active' => $paymentMethod->isIsActive(),
+            'status' => $paymentMethod->getSetupStatus()->value,
+        ];
     }
 }

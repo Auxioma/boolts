@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Paramètres agence immobilière
+{% block title %}
+    Paramètres agence immobilière
 {% endblock %}
 
 {% block body %}
@@ -8,21 +9,35 @@
         <div class="container-fluid bg-white">
             <div class="row">
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+
                 <div class="col-2 pt-48 border-color-right-gris">
                     <div class="menu-parametres">
                         <h2>Paramètres du compte</h2>
-                        {{ include('dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig') }}
+
+                        {{ include(
+                            'dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig'
+                        ) }}
                     </div>
                 </div>
+
                 <div class="col-8">
                     <div class="row bg-white">
                         <div class="col-12 pt-48">
                             {{ include('dashboard/agence_immobiliere/_partials/parametres/profile_public.html.twig') }}
                             {{ include('dashboard/agence_immobiliere/_partials/parametres/informations_personnelles.html.twig') }}
                             {{ include('dashboard/agence_immobiliere/_partials/parametres/connection-securise.html.twig') }}
-                            {{ include('dashboard/agence_immobiliere/_partials/parametres/moyen-de-paiement.html.twig') }}
+
+                            {{ include(
+                                'dashboard/agence_immobiliere/_partials/parametres/moyen-de-paiement.html.twig',
+                                {
+                                    stripe_public_key: stripe_public_key,
+                                    payment_methods: payment_methods
+                                }
+                            ) }}
+
                             {{ include('dashboard/agence_immobiliere/_partials/parametres/historique-des-paiements.html.twig') }}
                             {{ include('dashboard/agence_immobiliere/_partials/parametres/langue_et_devise.html.twig') }}
+
                             <div class="js-success-message flash-message flash-message-success message-flash-profile d-none"></div>
                             <div class="js-error-message flash-message flash-message-error message-flash-profile-error d-none"></div>
                         </div>
@@ -33,23 +48,30 @@
     </main>
 
     <script>
-        document.querySelectorAll('.js-tab-link').forEach(function (link) {
-link.addEventListener('click', function (e) {
-e.preventDefault(); // 🔥 empêche le reload
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.js-tab-link').forEach((link) => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
 
-const target = this.dataset.tab;
+                    const target = link.dataset.tab;
+                    const targetElement = document.getElementById(target);
 
-document.querySelectorAll('.js-tab-link').forEach(function (l) {
-l.classList.remove('active');
-});
+                    if (!targetElement) {
+                        return;
+                    }
 
-document.querySelectorAll('.js-tab-content').forEach(function (content) {
-content.classList.add('d-none');
-});
+                    document.querySelectorAll('.js-tab-link').forEach((item) => {
+                        item.classList.remove('active');
+                    });
 
-this.classList.add('active');
-document.getElementById(target).classList.remove('d-none');
-});
-});
+                    document.querySelectorAll('.js-tab-content').forEach((content) => {
+                        content.classList.add('d-none');
+                    });
+
+                    link.classList.add('active');
+                    targetElement.classList.remove('d-none');
+                });
+            });
+        });
     </script>
 {% endblock %}

@@ -1,19 +1,14 @@
 <?php
 
-/**
- * Copyright(c) 2026 Boolts (https://boolts.com)
- *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
- * Tous droits réservés.
- *
- * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
- * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
- */
+declare(strict_types=1);
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\ProfileAgenceType;
+use App\Repository\Billing\AgencyPaymentMethodRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -22,16 +17,35 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereParametresController extends AbstractController
 {
-    #[Route('/', name: 'parametres')]
-    public function index(): Response
-    {
+    #[Route('/', name: 'parametres', methods: ['GET', 'POST'])]
+    public function index(
+        AgencyPaymentMethodRepository $paymentMethodRepository,
+        #[Autowire('%stripe.public_key%')]
+        string $stripePublicKey,
+    ): Response {
         $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException(
+                'Utilisateur non authentifié.'
+            );
+        }
 
         $form = $this->createForm(ProfileAgenceType::class, $user);
 
-        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_parametres/index.html.twig', [
-            'form' => $form->createView(),
-            'stripe_public_key' => $this->getParameter('stripe.public_key'),
-        ]);
+        $billingProfile = $user->getBillingProfile();
+
+        $paymentMethods = $billingProfile !== null
+            ? $paymentMethodRepository->findActiveByBillingProfile($billingProfile)
+            : [];
+
+        return $this->render(
+            'dashboard/agence_immobiliere/agence_immobiliere_parametres/index.html.twig',
+            [
+                'form' => $form->createView(),
+                'stripe_public_key' => $stripePublicKey,
+                'payment_methods' => $paymentMethods,
+            ]
+        );
     }
 }

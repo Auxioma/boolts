@@ -2,9 +2,10 @@ import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
     static targets = [
-        'form',
+        'modal',
         'element',
         'error',
+        'success',
         'submitButton',
         'cardholderName',
         'defaultCheckbox'
@@ -20,21 +21,56 @@ export default class extends Controller {
     stripe = null;
     elements = null;
     paymentElement = null;
-    clientSecret = null;
     setupIntentId = null;
+    initialized = false;
+    initializing = false;
 
-    async connect() {
+    connect() {
+        this.hideError();
+        this.hideSuccess();
+
+        if (!this.publicKeyValue || !this.publicKeyValue.startsWith('pk_')) {
+            this.showError('La clé publique Stripe est absente ou invalide.');
+            return;
+        }
+
         if (typeof window.Stripe !== 'function') {
-            this.showError('La bibliothèque Stripe est introuvable.');
+            this.showError('Stripe.js n’est pas chargé dans la page.');
             return;
         }
 
         this.stripe = window.Stripe(this.publicKeyValue);
+    }
 
-        await this.initializeSetupIntent();
+    async open() {
+        this.modalTarget.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+
+        if (!this.initialized && !this.initializing) {
+            await this.initializeSetupIntent();
+        }
+    }
+
+    close() {
+        this.modalTarget.classList.remove('is-open');
+        document.body.style.overflow = '';
+    }
+
+    closeFromOverlay(event) {
+        if (event.target === this.modalTarget) {
+            this.close();
+        }
+    }
+
+    closeFromKeyboard(event) {
+        if (event.key === 'Escape') {
+            this.close();
+        }
     }
 
     async initializeSetupIntent() {
+        this.initializing = true;
+
         try {
             this.setLoading(true);
             this.hideError();
@@ -42,29 +78,47 @@ export default class extends Controller {
             const response = await fetch(this.createUrlValue, {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json',
+                    Accept: 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': this.csrfValue
-                }
+                },
+                credentials: 'same-origin'
             });
 
-            const data = await this.readJson(response);
+            const rawResponse = await response.text();
 
-            if (!response.ok || data.success === false) {
+            let data;
+
+            try {
+                data = JSON.parse(rawResponse);
+            } catch {
                 throw new Error(
-                    data.message || 'Impossible d’initialiser Stripe.'
+                    `Le serveur a retourné une réponse non JSON (${response.status}).`
                 );
             }
 
-            this.clientSecret = data.clientSecret;
+            if (!response.ok || data.success !== true) {
+                throw new Error(
+                    data.message
+                    || `Impossible d’initialiser Stripe (${response.status}).`
+                );
+            }
+
+            if (!data.clientSecret || !data.setupIntentId) {
+                throw new Error(
+                    'Le serveur n’a pas retourné les informations Stripe attendues.'
+                );
+            }
+
             this.setupIntentId = data.setupIntentId;
 
             this.elements = this.stripe.elements({
-                clientSecret: this.clientSecret,
+                clientSecret: data.clientSecret,
                 appearance: {
                     theme: 'stripe',
                     variables: {
-                        borderRadius: '8px'
+                        borderRadius: '8px',
+                        fontSizeBase: '16px'
                     }
                 }
             });
@@ -74,53 +128,73 @@ export default class extends Controller {
                 paymentMethodOrder: ['card']
             });
 
+            this.paymentElement.on('ready', () => {
+                this.initialized = true;
+                this.initializing = false;
+                this.setLoading(false);
+            });
+
+            this.paymentElement.on('loaderror', event => {
+                this.initializing = false;
+                this.setLoading(false);
+                this.showError(
+                    event?.error?.message
+                    || 'Le formulaire Stripe ne peut pas être chargé.'
+                );
+            });
+
+            this.paymentElement.on('change', event => {
+                if (event.error) {
+                    this.showError(event.error.message);
+                } else {
+                    this.hideError();
+                }
+            });
+
             this.paymentElement.mount(this.elementTarget);
         } catch (error) {
-            console.error(error);
-            this.showError(error.message);
-        } finally {
+            console.error('Erreur Stripe :', error);
+
+            this.initializing = false;
             this.setLoading(false);
+            this.showError(
+                error instanceof Error
+                    ? error.message
+                    : 'Impossible d’initialiser Stripe.'
+            );
         }
     }
 
     async submit(event) {
         event.preventDefault();
 
-        if (!this.stripe || !this.elements || !this.clientSecret) {
-            this.showError('Stripe n’est pas encore initialisé.');
+        this.hideError();
+        this.hideSuccess();
+
+        if (!this.stripe || !this.elements || !this.initialized) {
+            this.showError('Stripe n’est pas encore prêt.');
             return;
         }
 
         const cardholderName = this.cardholderNameTarget.value.trim();
 
-        if (!cardholderName) {
+        if (cardholderName.length < 2) {
             this.showError('Veuillez renseigner le nom du titulaire.');
+            this.cardholderNameTarget.focus();
             return;
         }
 
         try {
             this.setLoading(true);
-            this.hideError();
 
-            /*
-             * Vérifie d'abord que les champs Stripe sont complets.
-             */
             const submitResult = await this.elements.submit();
 
             if (submitResult.error) {
-                throw new Error(
-                    submitResult.error.message
-                    || 'Les informations de la carte sont incomplètes.'
-                );
+                throw new Error(submitResult.error.message);
             }
 
-            /*
-             * Stripe gère automatiquement une éventuelle authentification
-             * 3D Secure.
-             */
-            const {setupIntent, error} = await this.stripe.confirmSetup({
+            const result = await this.stripe.confirmSetup({
                 elements: this.elements,
-                clientSecret: this.clientSecret,
                 confirmParams: {
                     payment_method_data: {
                         billing_details: {
@@ -132,70 +206,74 @@ export default class extends Controller {
                 redirect: 'if_required'
             });
 
-            if (error) {
+            if (result.error) {
+                throw new Error(result.error.message);
+            }
+
+            if (!result.setupIntent) {
+                throw new Error('Stripe n’a retourné aucun SetupIntent.');
+            }
+
+            if (result.setupIntent.status !== 'succeeded') {
                 throw new Error(
-                    error.message || 'La carte n’a pas pu être enregistrée.'
+                    `La carte n’est pas validée. Statut : ${result.setupIntent.status}.`
                 );
             }
 
-            if (!setupIntent || setupIntent.status !== 'succeeded') {
-                throw new Error(
-                    'La validation de la carte n’est pas terminée.'
-                );
-            }
-
-            await this.completePaymentMethod(setupIntent.id);
+            await this.complete(result.setupIntent.id);
         } catch (error) {
-            console.error(error);
-            this.showError(error.message);
-        } finally {
+            console.error('Erreur de validation Stripe :', error);
+
             this.setLoading(false);
+            this.showError(
+                error instanceof Error
+                    ? error.message
+                    : 'Impossible d’enregistrer la carte.'
+            );
         }
     }
 
-    async completePaymentMethod(setupIntentId) {
+    async complete(setupIntentId) {
         const response = await fetch(this.completeUrlValue, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': this.csrfValue
             },
+            credentials: 'same-origin',
             body: JSON.stringify({
                 setupIntentId,
                 setAsDefault: this.defaultCheckboxTarget.checked
             })
         });
 
-        const data = await this.readJson(response);
+        const rawResponse = await response.text();
 
-        if (!response.ok || data.success === false) {
+        let data;
+
+        try {
+            data = JSON.parse(rawResponse);
+        } catch {
             throw new Error(
-                data.message || 'Impossible d’enregistrer la carte.'
+                `Le serveur a retourné une réponse non JSON (${response.status}).`
             );
         }
 
-        window.dispatchEvent(new CustomEvent('payment-method:created', {
-            detail: data.paymentMethod
-        }));
-
-        /*
-         * Pour commencer simplement, recharge la liste des cartes.
-         */
-        window.location.reload();
-    }
-
-    async readJson(response) {
-        const contentType = response.headers.get('content-type') || '';
-
-        if (!contentType.includes('application/json')) {
+        if (!response.ok || data.success !== true) {
             throw new Error(
-                'Le serveur a retourné une réponse invalide.'
+                data.message
+                || 'Le moyen de paiement n’a pas pu être enregistré.'
             );
         }
 
-        return response.json();
+        this.showSuccess(data.message);
+        this.setLoading(false);
+
+        window.setTimeout(() => {
+            window.location.reload();
+        }, 700);
     }
 
     setLoading(loading) {
@@ -203,7 +281,7 @@ export default class extends Controller {
             return;
         }
 
-        this.submitButtonTarget.disabled = loading;
+        this.submitButtonTarget.disabled = loading || !this.initialized;
         this.submitButtonTarget.textContent = loading
             ? 'Traitement…'
             : 'Ajouter';
@@ -225,5 +303,23 @@ export default class extends Controller {
 
         this.errorTarget.textContent = '';
         this.errorTarget.classList.add('d-none');
+    }
+
+    showSuccess(message) {
+        if (!this.hasSuccessTarget) {
+            return;
+        }
+
+        this.successTarget.textContent = message;
+        this.successTarget.classList.remove('d-none');
+    }
+
+    hideSuccess() {
+        if (!this.hasSuccessTarget) {
+            return;
+        }
+
+        this.successTarget.textContent = '';
+        this.successTarget.classList.add('d-none');
     }
 }
