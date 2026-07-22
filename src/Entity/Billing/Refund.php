@@ -16,9 +16,11 @@ use App\Entity\Billing\Enum\RefundReason;
 use App\Entity\Billing\Enum\RefundStatus;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\RefundRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: RefundRepository::class)]
 #[ORM\Table(name: 'refund')]
 class Refund
 {

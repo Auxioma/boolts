@@ -30,7 +30,7 @@
 
                                             <div class="achat-forfait-product-description">
                                                 <p class="achat-forfait-product-name">
-                                                    1 x Abonnement Professionnel
+                                                    1 x Abonnement {{ plan.name }}
                                                 </p>
 
                                                 <ul class="achat-forfait-features">
@@ -290,7 +290,7 @@
 
                                         <div class="achat-forfait-total">
                                             <strong>Montant total :</strong>
-                                            <strong>29,99 €/mois</strong>
+                                            <strong>{{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }} {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}</strong>
                                         </div>
 
                                         <button

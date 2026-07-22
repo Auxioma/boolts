@@ -15,9 +15,11 @@ namespace App\Entity\Billing;
 use App\Entity\Billing\Enum\PaymentFeeType;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\PaymentFeeRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PaymentFeeRepository::class)]
 #[ORM\Table(name: 'payment_fee')]
 class PaymentFee
 {
@@ -157,5 +159,10 @@ class PaymentFee
         $this->isRefundable = $isRefundable;
 
         return $this;
+    }
+
+    public function isRefundable(): ?bool
+    {
+        return $this->isRefundable;
     }
 }

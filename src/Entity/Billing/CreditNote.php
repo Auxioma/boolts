@@ -15,9 +15,11 @@ namespace App\Entity\Billing;
 use App\Entity\Billing\Enum\CreditNoteStatus;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\CreditNoteRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: CreditNoteRepository::class)]
 #[ORM\Table(name: 'credit_note')]
 class CreditNote
 {

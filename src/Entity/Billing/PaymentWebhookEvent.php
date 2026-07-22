@@ -14,9 +14,11 @@ namespace App\Entity\Billing;
 
 use App\Entity\Billing\Enum\WebhookEventStatus;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\PaymentWebhookEventRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PaymentWebhookEventRepository::class)]
 #[ORM\Table(name: 'payment_webhook_event')]
 class PaymentWebhookEvent
 {
@@ -214,5 +216,10 @@ class PaymentWebhookEvent
         $this->errorMessage = $errorMessage;
 
         return $this;
+    }
+
+    public function isLivemode(): ?bool
+    {
+        return $this->livemode;
     }
 }

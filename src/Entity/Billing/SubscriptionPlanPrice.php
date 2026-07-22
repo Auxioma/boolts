@@ -15,9 +15,11 @@ namespace App\Entity\Billing;
 use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\SubscriptionPlanPriceRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SubscriptionPlanPriceRepository::class)]
 #[ORM\Table(name: 'subscription_plan_price')]
 #[ORM\UniqueConstraint(name: 'uniq_subscription_plan_currency_period', columns: ['plan_id', 'currency_id', 'billing_period'])]
 class SubscriptionPlanPrice
@@ -127,5 +129,10 @@ class SubscriptionPlanPrice
         $this->isActive = $isActive;
 
         return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
     }
 }

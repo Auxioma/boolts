@@ -13,9 +13,11 @@
 namespace App\Entity\Billing;
 
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\InvoiceDiscountRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: InvoiceDiscountRepository::class)]
 #[ORM\Table(name: 'invoice_discount')]
 class InvoiceDiscount
 {

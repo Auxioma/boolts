@@ -13,6 +13,7 @@
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
 use App\Entity\Billing\AgencySubscription;
+use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\SubscriptionPlanPrice;
 use App\Entity\Booster\BoosterPackPrice;
 use App\Entity\User;
@@ -27,6 +28,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereOptionsController extends AbstractController
 {
+    public function __construct(
+       
+    ){}
+
     #[Route('/', name: 'options')]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -104,7 +109,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
     }
 
     #[Route('/achat/{id}', name: 'achat')]
-    public function achat(int $id, Request $request): Response
+    public function achat(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
         $period = $request->query->get('period', 'monthly');
 
@@ -112,10 +117,31 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             throw $this->createNotFoundException('Période de facturation invalide.');
         }
 
+        $planPrice = $entityManager
+            ->getRepository(SubscriptionPlanPrice::class)
+            ->createQueryBuilder('price')
+            ->addSelect('plan', 'currency')
+            ->innerJoin('price.plan', 'plan')
+            ->innerJoin('price.currency', 'currency')
+            ->where('plan.id = :id')
+            ->andWhere('price.billingPeriod = :period')
+            ->andWhere('price.isActive = :active')
+            ->andWhere('plan.isActive = :active')
+            ->setParameter('id', $id)
+            ->setParameter('period', SubscriptionBillingPeriod::from($period))
+            ->setParameter('active', true)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if (!$planPrice instanceof SubscriptionPlanPrice) {
+            throw $this->createNotFoundException('Forfait indisponible pour cette période de facturation.');
+        }
+
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_options/achat.html.twig',
             [
-                'id' => $id,
+                'plan' => $planPrice->getPlan(),
+                'plan_price' => $planPrice,
                 'period' => $period,
             ]
         );

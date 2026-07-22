@@ -13,9 +13,11 @@
 namespace App\Entity\Billing;
 
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\SubscriptionPlanRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: SubscriptionPlanRepository::class)]
 #[ORM\Table(name: 'subscription_plan')]
 #[ORM\UniqueConstraint(name: 'uniq_subscription_plan_code', columns: ['code'])]
 class SubscriptionPlan
@@ -183,5 +185,20 @@ class SubscriptionPlan
         $this->position = $position;
 
         return $this;
+    }
+
+    public function isFree(): ?bool
+    {
+        return $this->isFree;
+    }
+
+    public function isDefault(): ?bool
+    {
+        return $this->isDefault;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
     }
 }

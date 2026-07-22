@@ -18,9 +18,11 @@ use App\Entity\Booster\BoosterPack;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
+use App\Repository\Billing\PaymentRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PaymentRepository::class)]
 #[ORM\Table(name: 'payment')]
 class Payment
 {

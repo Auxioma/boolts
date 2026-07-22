@@ -15,9 +15,11 @@ namespace App\Entity\Billing;
 use App\Entity\Billing\Enum\PaymentAttemptStatus;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\PaymentAttemptRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PaymentAttemptRepository::class)]
 #[ORM\Table(name: 'payment_attempt')]
 class PaymentAttempt
 {

@@ -16,9 +16,11 @@ use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
+use App\Repository\Billing\AgencySubscriptionRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AgencySubscriptionRepository::class)]
 #[ORM\Table(name: 'agency_subscription')]
 class AgencySubscription
 {
@@ -310,5 +312,10 @@ class AgencySubscription
         $this->currencySnapshot = $currencySnapshot;
 
         return $this;
+    }
+
+    public function isCancelAtPeriodEnd(): ?bool
+    {
+        return $this->cancelAtPeriodEnd;
     }
 }

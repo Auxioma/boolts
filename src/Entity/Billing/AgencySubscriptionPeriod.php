@@ -15,9 +15,11 @@ namespace App\Entity\Billing;
 use App\Entity\Billing\Enum\SubscriptionPeriodStatus;
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\AgencySubscriptionPeriodRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AgencySubscriptionPeriodRepository::class)]
 #[ORM\Table(name: 'agency_subscription_period')]
 class AgencySubscriptionPeriod
 {

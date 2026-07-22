@@ -13,9 +13,10 @@
 namespace App\Entity\Billing;
 
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\BillingTaxIdentifierRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BillingTaxIdentifierRepository::class)]
 #[ORM\Table(name: 'billing_tax_identifier')]
 class BillingTaxIdentifier
 {
@@ -153,5 +154,10 @@ class BillingTaxIdentifier
         $this->verifiedAt = $verifiedAt;
 
         return $this;
+    }
+
+    public function isPrimary(): ?bool
+    {
+        return $this->isPrimary;
     }
 }

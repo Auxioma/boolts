@@ -14,9 +14,10 @@ namespace App\Entity\Billing;
 
 use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\AgencyPaymentMethodRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AgencyPaymentMethodRepository::class)]
 #[ORM\Table(name: 'agency_payment_method')]
 class AgencyPaymentMethod
 {
@@ -289,5 +290,15 @@ class AgencyPaymentMethod
         $this->detachedAt = $detachedAt;
 
         return $this;
+    }
+
+    public function isDefault(): ?bool
+    {
+        return $this->isDefault;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
     }
 }

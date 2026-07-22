@@ -13,9 +13,11 @@
 namespace App\Entity\Billing;
 
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Billing\InvoiceTaxRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: InvoiceTaxRepository::class)]
 #[ORM\Table(name: 'invoice_tax')]
 class InvoiceTax
 {
@@ -214,5 +216,10 @@ class InvoiceTax
         $this->providerTaxRateId = $providerTaxRateId;
 
         return $this;
+    }
+
+    public function isInclusive(): ?bool
+    {
+        return $this->inclusive;
     }
 }

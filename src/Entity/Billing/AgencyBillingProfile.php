@@ -13,11 +13,12 @@ declare(strict_types=1);
 namespace App\Entity\Billing;
 
 use App\Entity\Devise;
+use App\Repository\Billing\AgencyBillingProfileRepository;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: AgencyBillingProfileRepository::class)]
 #[ORM\Table(name: 'agency_billing_profile')]
 class AgencyBillingProfile
 {
