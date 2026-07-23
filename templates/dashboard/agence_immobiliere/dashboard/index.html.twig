@@ -1,106 +1,459 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes biens immobiliers{% endblock %}
+{% block title %}Tableau de bord immobilier{% endblock %}
 
 {% block body %}
-    <main id="dashboard" class="dashboard">
-        <div class="container-fluid">
-            <div class="row">
 
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid dashboard-container">
+            <div class="row g-0">
+
+                {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                <div class="col-10 p-48 bg-white">
-                    <div class="row">
-                        <div class="col-10 mx-auto">
-                            <div class="row">
-                                <div class="col-10 mx-auto">
-                                    <h1 class="entreprise">
-                                        Welcome, {{ app.user.prenom }} {{ app.user.nom }} !
-                                    </h1>
+                {# Contenu principal #}
+                <div class="col-10 dashboard-main">
+                    <div class="dashboard-content">
 
-                                    <div class="px-24 py-24">
-                                        <div>
-                                            <h2>Terminez la création de votre compte pro !</h2>
-                                            <p>Veuillez déposer les derniers documents afin de valider la création de votre compte.</p>
-                                        </div>
-                                        <div>
-                                            <h2>Confirmez votre pays de domiciliation*</h2>
-                                            <input type="text">
-                                            <buttom>Continuer</buttom>
-                                        </div>
-                                    </div>
+                        {# En-tête de la page #}
+                        <div class="d-flex align-items-center justify-content-between dashboard-heading">
+                            <h1 class="dashboard-title">
+                                Welcome,
+                                {{ app.user.prenom|default('John') }}
+                                {{ app.user.nom|default('Doe') }}
+                                !
+                            </h1>
 
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
-                                                <span class="d-block fw-semibold text-dark">
-                                                    Vue du profil
-                                                </span>
-                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
-                                                    393 374
-                                                </span>
-                                                <i class="icon-user-round position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
-                                                <span class="d-block fw-semibold text-dark">
-                                                    Annonces actives
-                                                </span>
-                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
-                                                    300
-                                                </span>
-                                                <i class="icon-building-2 position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
-                                                <span class="d-block fw-semibold text-dark">
-                                                    Vues des annonces
-                                                </span>
-                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
-                                                    393 374
-                                                </span>
-                                                <i class="icon-eye position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="stat-card position-relative overflow-hidden rounded-4 border p-3 h-100">
-                                                <span class="d-block fw-semibold text-dark">
-                                                    Mis en favoris
-                                                </span>
-                                                <span class="d-block fw-bold text-dark fs-5 mt-3">
-                                                    30
-                                                </span>
-                                                <i class="icon-heart position-absolute end-0 bottom-0 me-3 mb-3 fs-2 text-secondary"></i>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <a href="#" class="btn dashboard-boost-button">
+                                <i class="icon-zap"></i>
+                                Boost : 4
+                            </a>
+                        </div>
 
-                                    <div class="row">
-                                        <div class="col-7">
-                                            <span>Statistiques</span>
-                                            <div>
-                                                vues /// favoris /// 7 jours // 30 jours /// 12 mois // personnalisé
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <span>Notifications</span>
-                                            <ul>
-                                                <li>
-                                                    Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.
-                                                </li>
-                                                <li>
-                                                    Your listing House on the beverly hills has been approved
-                                                </li>
-                                            </ul>
-                                            <a href="">Voir plus</a>
-                                        </div>
-                                    </div>
+                        {# Finalisation du compte #}
+                        <section class="dashboard-card account-completion-card">
+                            <div class="account-completion-header">
+                                <div>
+                                    <h2 class="dashboard-section-title">
+                                        Terminez la création de votre compte pro !
+                                    </h2>
 
+                                    <p class="dashboard-section-description">
+                                        Veuillez déposer les derniers documents afin de valider la création de votre compte.
+                                    </p>
                                 </div>
                             </div>
-                        </div>
+
+                            <div class="account-country-block">
+                                <label
+                                    for="domiciliation-country"
+                                    class="account-country-label"
+                                >
+                                    Confirmez votre pays de domiciliation*
+                                </label>
+
+                                <div class="d-flex align-items-center account-country-form">
+                                    <input
+                                        type="text"
+                                        id="domiciliation-country"
+                                        name="domiciliation_country"
+                                        class="form-control account-country-input"
+                                        placeholder="France"
+                                        autocomplete="country-name"
+                                    >
+
+                                    <button
+                                        type="button"
+                                        class="btn account-country-button"
+                                    >
+                                        Continuer
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        {# Statistiques rapides #}
+                        <section class="dashboard-card statistics-card">
+                            <div class="d-flex align-items-center justify-content-between statistics-header">
+                                <h2 class="dashboard-section-title mb-0">
+                                    Statistiques
+                                </h2>
+
+                                <div class="d-flex align-items-center statistics-periods">
+                                    <button type="button" class="statistics-period-button">
+                                        7 jours
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        class="statistics-period-button active"
+                                    >
+                                        30 jours
+                                    </button>
+
+                                    <button type="button" class="statistics-period-button">
+                                        12 mois
+                                    </button>
+
+                                    <button type="button" class="statistics-period-button">
+                                        Maximum
+                                    </button>
+
+                                    <button type="button" class="statistics-period-button">
+                                        Personnalisé
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="row g-4 statistics-summary">
+
+                                <div class="col-3">
+                                    <div class="stat-card">
+                                        <div class="stat-card-label">
+                                            <i class="icon-user-round stat-card-icon"></i>
+
+                                            <span>Vue du profil</span>
+                                        </div>
+
+                                        <span class="stat-card-value">
+                                            393 374
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
+                                    <div class="stat-card">
+                                        <div class="stat-card-label">
+                                            <i class="icon-building-2 stat-card-icon"></i>
+
+                                            <span>Annonces publiées</span>
+                                        </div>
+
+                                        <span class="stat-card-value">
+                                            53
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
+                                    <div class="stat-card stat-card-purple">
+                                        <div class="stat-card-label">
+                                            <i class="icon-eye stat-card-icon"></i>
+
+                                            <span>Vues des annonces</span>
+                                        </div>
+
+                                        <span class="stat-card-value">
+                                            393 374
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
+                                    <div class="stat-card stat-card-green">
+                                        <div class="stat-card-label">
+                                            <i class="icon-heart stat-card-icon"></i>
+
+                                            <span>Mis en favoris</span>
+                                        </div>
+
+                                        <span class="stat-card-value">
+                                            30
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {# Zone du graphique #}
+                            <div class="statistics-chart">
+                                <div class="statistics-chart-scale">
+                                    <span>1 200 000</span>
+                                    <span>1 000 000</span>
+                                    <span>800 000</span>
+                                    <span>600 000</span>
+                                    <span>400 000</span>
+                                    <span>200 000</span>
+                                    <span>0</span>
+                                </div>
+
+                                <div class="statistics-chart-content">
+                                    <div class="chart-horizontal-line chart-line-1"></div>
+                                    <div class="chart-horizontal-line chart-line-2"></div>
+                                    <div class="chart-horizontal-line chart-line-3"></div>
+                                    <div class="chart-horizontal-line chart-line-4"></div>
+                                    <div class="chart-horizontal-line chart-line-5"></div>
+                                    <div class="chart-horizontal-line chart-line-6"></div>
+
+                                    <svg
+                                        class="statistics-svg"
+                                        viewBox="0 0 820 250"
+                                        preserveAspectRatio="none"
+                                        aria-label="Graphique des statistiques"
+                                    >
+                                        <polyline
+                                            class="chart-line chart-line-purple"
+                                            points="15,210 115,155 230,25 345,180 470,105 600,65 720,55 810,58"
+                                        />
+
+                                        <polyline
+                                            class="chart-line chart-line-green"
+                                            points="15,225 115,175 230,48 345,215 470,125 600,85 720,70 810,84"
+                                        />
+
+                                        <g class="chart-points chart-points-purple">
+                                            <circle cx="115" cy="155" r="4"></circle>
+                                            <circle cx="230" cy="25" r="4"></circle>
+                                            <circle cx="345" cy="180" r="4"></circle>
+                                            <circle cx="470" cy="105" r="4"></circle>
+                                            <circle cx="600" cy="65" r="4"></circle>
+                                            <circle cx="720" cy="55" r="4"></circle>
+                                            <circle cx="810" cy="58" r="4"></circle>
+                                        </g>
+
+                                        <g class="chart-points chart-points-green">
+                                            <circle cx="115" cy="175" r="4"></circle>
+                                            <circle cx="230" cy="48" r="4"></circle>
+                                            <circle cx="345" cy="215" r="4"></circle>
+                                            <circle cx="470" cy="125" r="4"></circle>
+                                            <circle cx="600" cy="85" r="4"></circle>
+                                            <circle cx="720" cy="70" r="4"></circle>
+                                            <circle cx="810" cy="84" r="4"></circle>
+                                        </g>
+                                    </svg>
+
+                                    <div class="chart-tooltip">
+                                        <span class="chart-tooltip-date">
+                                            5 Août
+                                        </span>
+
+                                        <span class="chart-tooltip-value">
+                                            4 000
+                                        </span>
+                                    </div>
+
+                                    <div class="chart-dates">
+                                        <span>5 Août</span>
+                                        <span>10 Août</span>
+                                        <span>15 Août</span>
+                                        <span>20 Août</span>
+                                        <span>25 Août</span>
+                                        <span>30 Août</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {# Notifications #}
+                        <section class="dashboard-card notifications-card">
+                            <h2 class="dashboard-section-title">
+                                Notifications
+                            </h2>
+
+                            <div class="notifications-list">
+
+                                <div class="notification-item">
+                                    <span class="notification-dot"></span>
+
+                                    <p class="notification-text">
+                                        Bienvenue sur
+                                        <strong>boolts.com</strong>.
+                                        Veuillez compléter votre inscription en déposant les documents demandés.
+                                    </p>
+                                </div>
+
+                                <div class="notification-item">
+                                    <span class="notification-dot"></span>
+
+                                    <p class="notification-text">
+                                        Your listing
+                                        <strong>House on the Beverly Hills</strong>
+                                        has been approved.
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            <a href="#" class="btn notifications-more-button">
+                                Voir plus
+                            </a>
+                        </section>
+
+                        {# Performances des annonces #}
+                        <section class="dashboard-card properties-performance-card">
+                            <div class="properties-performance-header">
+                                <h2 class="dashboard-section-title">
+                                    Performances des annonces
+                                </h2>
+
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center statistics-periods">
+                                        <button type="button" class="statistics-period-button">
+                                            7 jours
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="statistics-period-button active"
+                                        >
+                                            30 jours
+                                        </button>
+
+                                        <button type="button" class="statistics-period-button">
+                                            12 mois
+                                        </button>
+
+                                        <button type="button" class="statistics-period-button">
+                                            Maximum
+                                        </button>
+
+                                        <button type="button" class="statistics-period-button">
+                                            Personnalisé
+                                        </button>
+                                    </div>
+
+                                    <div class="d-flex align-items-center properties-actions">
+                                        <button
+                                            type="button"
+                                            class="btn properties-action-button properties-filter-button"
+                                        >
+                                            <span class="properties-filter-count">2</span>
+                                            <i class="icon-sliders-horizontal"></i>
+                                            Filtres
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn properties-action-button"
+                                        >
+                                            <i class="icon-arrow-up-down"></i>
+                                            Trier
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn properties-action-button"
+                                        >
+                                            <i class="icon-download"></i>
+                                            Exporter
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="property-list">
+
+                                {% for property in 1..8 %}
+                                    <article class="property-item">
+                                        <div class="d-flex align-items-center property-main">
+
+                                            <div class="property-image-wrapper">
+                                                <img
+                                                    src="{{ asset('images/dashboard/property-example.jpg') }}"
+                                                    alt="Maison à Marrakech"
+                                                    class="property-image"
+                                                >
+                                            </div>
+
+                                            <div class="property-information">
+                                                <h3 class="property-title">
+                                                    Location saisonnière Maison haut standing à Marrakech
+                                                </h3>
+
+                                                <div class="d-flex align-items-center property-price-line">
+                                                    <span class="property-price">
+                                                        1 801 DH
+                                                    </span>
+
+                                                    {% if property <= 4 %}
+                                                        <span class="property-status property-status-published">
+                                                            Publiée
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="property-status property-status-paused">
+                                                            Pause
+                                                        </span>
+                                                    {% endif %}
+
+                                                    {% if property == 4 or property == 5 %}
+                                                        <span class="property-status property-status-boosted">
+                                                            Boostée
+                                                        </span>
+                                                    {% endif %}
+                                                </div>
+
+                                                <p class="property-location">
+                                                    <strong>Marrakech, Maroc</strong>
+                                                    <span>- Créée le 29 juin 2026</span>
+                                                </p>
+
+                                                <span class="property-reference">
+                                                    AUXIOM-8899-100
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="property-statistics">
+                                            <span class="property-statistic">
+                                                <i class="icon-eye"></i>
+                                                320
+                                            </span>
+
+                                            <span class="property-statistic">
+                                                <i class="icon-heart"></i>
+                                                37
+                                            </span>
+                                        </div>
+
+                                        {% if property <= 4 %}
+                                            <a href="#" class="btn property-boost-button">
+                                                <i class="icon-zap"></i>
+                                                Booster
+                                            </a>
+                                        {% endif %}
+                                    </article>
+                                {% endfor %}
+
+                            </div>
+
+                            <nav
+                                class="dashboard-pagination"
+                                aria-label="Pagination des annonces"
+                            >
+                                <a href="#" class="pagination-arrow" aria-label="Page précédente">
+                                    ‹
+                                </a>
+
+                                <a href="#" class="pagination-number active">
+                                    1
+                                </a>
+
+                                <a href="#" class="pagination-number">
+                                    2
+                                </a>
+
+                                <a href="#" class="pagination-number">
+                                    3
+                                </a>
+
+                                <a href="#" class="pagination-number">
+                                    4
+                                </a>
+
+                                <span class="pagination-number">
+                                    …
+                                </span>
+
+                                <a href="#" class="pagination-number">
+                                    32
+                                </a>
+
+                                <a href="#" class="pagination-arrow" aria-label="Page suivante">
+                                    ›
+                                </a>
+                            </nav>
+                        </section>
+
                     </div>
                 </div>
 
