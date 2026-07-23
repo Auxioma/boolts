@@ -12,13 +12,16 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\Billing\AgencyPaymentMethod;
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\SubscriptionPlanPrice;
 use App\Entity\Booster\BoosterPackPrice;
 use App\Entity\User;
+use App\Repository\Billing\AgencyPaymentMethodRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -109,7 +112,14 @@ final class AgenceImmobiliereOptionsController extends AbstractController
     }
 
     #[Route('/achat/{id}', name: 'achat')]
-    public function achat(int $id, Request $request, EntityManagerInterface $entityManager): Response
+    public function achat(
+        int $id,
+        Request $request,
+        EntityManagerInterface $entityManager,
+        AgencyPaymentMethodRepository $paymentMethodRepository,
+        #[Autowire('%stripe.public_key%')]
+        string $stripePublicKey,
+    ): Response
     {
         $period = $request->query->get('period', 'monthly');
 
@@ -137,12 +147,40 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             throw $this->createNotFoundException('Forfait indisponible pour cette période de facturation.');
         }
 
+        $agency = $this->getUser();
+        $paymentMethods = [];
+        $defaultPaymentMethod = null;
+
+        if ($agency instanceof User && $agency->getBillingProfile() !== null) {
+            $paymentMethods = $paymentMethodRepository->findActiveByBillingProfile(
+                $agency->getBillingProfile()
+            );
+
+            foreach ($paymentMethods as $paymentMethod) {
+                if ($paymentMethod->isDefault()) {
+                    $defaultPaymentMethod = $paymentMethod;
+                    break;
+                }
+            }
+
+            $defaultPaymentMethod ??= $paymentMethods[0] ?? null;
+        }
+
+        $otherPaymentMethods = array_values(array_filter(
+            $paymentMethods,
+            static fn (AgencyPaymentMethod $paymentMethod): bool =>
+                $paymentMethod !== $defaultPaymentMethod
+        ));
+
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_options/achat.html.twig',
             [
                 'plan' => $planPrice->getPlan(),
                 'plan_price' => $planPrice,
                 'period' => $period,
+                'default_payment_method' => $defaultPaymentMethod,
+                'other_payment_methods' => $otherPaymentMethods,
+                'stripe_public_key' => $stripePublicKey,
             ]
         );
     }

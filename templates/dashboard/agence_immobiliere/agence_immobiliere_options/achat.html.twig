@@ -3,14 +3,20 @@
 {% block title %}Récapitulatif de votre achat{% endblock %}
 
 {% block body %}
+
+<div
+    data-controller="payment-method"
+   data-payment-method-public-key-value="{{ stripe_public_key }}"
+    data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
+    data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
+    data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+>
     <main id="dashboard" class="dashboard">
         <div class="container-fluid">
             <div class="row">
 
-                {# Menu du tableau de bord #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                {# Contenu du tableau de bord #}
                 <div class="col-10">
                     <main class="achat-forfait-main">
                         <div class="container-fluid achat-forfait-container">
@@ -32,265 +38,146 @@
                                                 <p class="achat-forfait-product-name">
                                                     1 x Abonnement {{ plan.name }}
                                                 </p>
-
-                                                <ul class="achat-forfait-features">
-                                                    <li>
-                                                        <strong>✓ 5 Projects</strong>
-                                                        <span>Perfect for small teams</span>
-                                                    </li>
-
-                                                    <li>
-                                                        <strong>✓ 10GB Storage</strong>
-                                                        <span>Enough for basic needs</span>
-                                                    </li>
-
-                                                    <li>
-                                                        <strong>✓ Basic Support</strong>
-                                                        <span>Email support within 24h</span>
-                                                    </li>
-
-                                                    <li>
-                                                        <strong>✓ Email Notifications</strong>
-                                                        <span>Stay updated with alerts</span>
-                                                    </li>
-                                                </ul>
                                             </div>
                                         </section>
 
-                                        {# Carte bancaire actuellement sélectionnée #}
                                         <section class="achat-forfait-section">
                                             <h2 class="achat-forfait-section-title">
-                                                Carte bancaire sélectionnée
+                                                Carte bancaire par défaut
                                             </h2>
 
-                                            <div class="achat-forfait-current-card">
-                                                <div class="achat-forfait-visa-box">
-                                                    <img
-                                                        src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
-                                                        alt="Visa"
-                                                        class="achat-forfait-visa-logo"
-                                                    >
+                                            {% if default_payment_method %}
+                                                <div class="achat-forfait-current-card">
+                                                    <div class="achat-forfait-visa-box">
+                                                        <img
+                                                            src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
+                                                            alt="{{ default_payment_method.brand|default('Carte bancaire')|capitalize }}"
+                                                            class="achat-forfait-visa-logo"
+                                                        >
+                                                    </div>
+
+                                                    <div class="achat-forfait-bank-card-content">
+                                                        <p
+                                                            class="achat-forfait-bank-card-name"
+                                                            id="selected-card-name"
+                                                        >
+                                                            {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                            {{ default_payment_method.last4 }}
+                                                        </p>
+
+                                                        <p
+                                                            class="achat-forfait-bank-card-expiration"
+                                                            id="selected-card-expiration"
+                                                        >
+                                                            Date d’expiration :
+                                                            {{ '%02d'|format(default_payment_method.expMonth) }}/{{ default_payment_method.expYear }}
+                                                        </p>
+                                                    </div>
+
+                                                    {% if other_payment_methods is not empty %}
+                                                        <button
+                                                            class="achat-forfait-edit-button"
+                                                            type="button"
+                                                            id="show-payment-methods"
+                                                            aria-controls="payment-methods-block"
+                                                            aria-expanded="false"
+                                                        >
+                                                            Modifier
+                                                        </button>
+                                                    {% endif %}
                                                 </div>
-
-                                                <div class="achat-forfait-bank-card-content">
-                                                    <p
-                                                        class="achat-forfait-bank-card-name"
-                                                        id="selected-card-name"
+                                            {% else %}
+                                                <div class="d-flex mt-32 mb-32">
+                                                    <button
+                                                        type="button"
+                                                        class="btn-add-payment py-10 px-16 payment-open-btn"
+                                                        data-action="payment-method#open"
                                                     >
-                                                        Visa 3640
-                                                    </p>
-
-                                                    <p
-                                                        class="achat-forfait-bank-card-expiration"
-                                                        id="selected-card-expiration"
-                                                    >
-                                                        Date d’expiration : 12/08/2027
-                                                    </p>
-                                                </div>
-
-                                                <button
-                                                    class="achat-forfait-edit-button"
-                                                    type="button"
-                                                    id="show-payment-methods"
-                                                    aria-controls="payment-methods-block"
-                                                    aria-expanded="false"
-                                                >
-                                                    Modifier
-                                                </button>
-                                            </div>
-                                        </section>
-
-                                        {#
-                                            Bloc caché par défaut.
-                                            Il est affiché au clic sur "Modifier".
-                                        #}
-                                        <section
-                                            class="achat-forfait-section d-none"
-                                            id="payment-methods-block"
-                                            aria-hidden="true"
-                                        >
-                                            <h2 class="achat-forfait-section-title">
-                                                Choisissez votre carte bancaire
-                                            </h2>
-
-                                            <div
-                                                class="achat-forfait-payment-list"
-                                                role="radiogroup"
-                                                aria-label="Choisissez votre carte bancaire"
-                                            >
-                                                <label class="achat-forfait-payment-option achat-forfait-payment-option-selected">
-                                                    <input
-                                                        type="radio"
-                                                        name="payment-method"
-                                                        value="card-1"
-                                                        class="visually-hidden"
-                                                        data-card-name="Visa 3640"
-                                                        data-card-expiration="Date d’expiration : 12/08/2027"
-                                                        checked
-                                                    >
-
-                                                    <span class="achat-forfait-visa-box">
-                                                        <img
-                                                            src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
-                                                            alt="Visa"
-                                                            class="achat-forfait-visa-logo"
-                                                        >
-                                                    </span>
-
-                                                    <span class="achat-forfait-bank-card-content">
-                                                        <span class="achat-forfait-bank-card-name">
-                                                            Visa 3640
-                                                        </span>
-
-                                                        <span class="achat-forfait-bank-card-expiration">
-                                                            Date d’expiration : 12/08/2027
-                                                        </span>
-                                                    </span>
-                                                </label>
-
-                                                <label class="achat-forfait-payment-option">
-                                                    <input
-                                                        type="radio"
-                                                        name="payment-method"
-                                                        value="card-2"
-                                                        class="visually-hidden"
-                                                        data-card-name="Visa 3184"
-                                                        data-card-expiration="Date d’expiration : 03/2030"
-                                                    >
-
-                                                    <span class="achat-forfait-visa-box">
-                                                        <img
-                                                            src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
-                                                            alt="Visa"
-                                                            class="achat-forfait-visa-logo"
-                                                        >
-                                                    </span>
-
-                                                    <span class="achat-forfait-bank-card-content">
-                                                        <span class="achat-forfait-bank-card-name">
-                                                            Visa 3184
-                                                        </span>
-
-                                                        <span class="achat-forfait-bank-card-expiration">
-                                                            Date d’expiration : 03/2030
-                                                        </span>
-                                                    </span>
-                                                </label>
-
-                                                <label class="achat-forfait-payment-option">
-                                                    <input
-                                                        type="radio"
-                                                        name="payment-method"
-                                                        value="card-3"
-                                                        class="visually-hidden"
-                                                        data-card-name="Mastercard 4587"
-                                                        data-card-expiration="Date d’expiration : 06/2029"
-                                                    >
-
-                                                    <span class="achat-forfait-visa-box">
-                                                        <img
-                                                            src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
-                                                            alt="Carte bancaire"
-                                                            class="achat-forfait-visa-logo"
-                                                        >
-                                                    </span>
-
-                                                    <span class="achat-forfait-bank-card-content">
-                                                        <span class="achat-forfait-bank-card-name">
-                                                            Mastercard 4587
-                                                        </span>
-
-                                                        <span class="achat-forfait-bank-card-expiration">
-                                                            Date d’expiration : 06/2029
-                                                        </span>
-                                                    </span>
-                                                </label>
-
-                                                <label class="achat-forfait-payment-option">
-                                                    <input
-                                                        type="radio"
-                                                        name="payment-method"
-                                                        value="card-4"
-                                                        class="visually-hidden"
-                                                        data-card-name="Visa 7421"
-                                                        data-card-expiration="Date d’expiration : 09/2028"
-                                                    >
-
-                                                    <span class="achat-forfait-visa-box">
-                                                        <img
-                                                            src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
-                                                            alt="Visa"
-                                                            class="achat-forfait-visa-logo"
-                                                        >
-                                                    </span>
-
-                                                    <span class="achat-forfait-bank-card-content">
-                                                        <span class="achat-forfait-bank-card-name">
-                                                            Visa 7421
-                                                        </span>
-
-                                                        <span class="achat-forfait-bank-card-expiration">
-                                                            Date d’expiration : 09/2028
-                                                        </span>
-                                                    </span>
-                                                </label>
-                                            </div>
-
-                                            <div class="achat-forfait-payment-actions">
-                                                <button
-                                                    type="button"
-                                                    class="btn achat-forfait-primary-button"
-                                                    id="confirm-payment-method"
-                                                >
-                                                    Utiliser cette méthode de paiement
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    class="btn achat-forfait-outline-button"
-                                                    id="cancel-payment-method"
-                                                >
-                                                    Annuler
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    class="btn achat-forfait-outline-button achat-forfait-add-payment-button"
-                                                >
-                                                    <i
-                                                        class="bi bi-plus-lg"
-                                                        aria-hidden="true"
-                                                    ></i>
-
-                                                    <span>
+                                                        <span class="icon-plus mr-6"></span>
                                                         Ajouter un mode de paiement
-                                                    </span>
-                                                </button>
-                                            </div>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
                                         </section>
+
+                                        {% if other_payment_methods is not empty %}
+                                            <section
+                                                class="achat-forfait-section d-none"
+                                                id="payment-methods-block"
+                                                aria-hidden="true"
+                                            >
+                                                <h2 class="achat-forfait-section-title">
+                                                    Choisissez une autre carte bancaire
+                                                </h2>
+
+                                                <div class="achat-forfait-payment-list">
+                                                    {% for payment_method in other_payment_methods %}
+                                                        <label class="achat-forfait-payment-option">
+                                                            <input
+                                                                type="radio"
+                                                                name="payment-method"
+                                                                value="{{ payment_method.id }}"
+                                                                class="visually-hidden"
+                                                                data-card-name="{{ payment_method.brand|default('Carte bancaire')|capitalize }} {{ payment_method.last4 }}"
+                                                                data-card-expiration="Date d’expiration : {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}"
+                                                            >
+
+                                                            <span class="achat-forfait-bank-card-content">
+                                                                <span class="achat-forfait-bank-card-name">
+                                                                    {{ payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                                    {{ payment_method.last4 }}
+                                                                </span>
+
+                                                                <span class="achat-forfait-bank-card-expiration">
+                                                                    Date d’expiration :
+                                                                    {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}
+                                                                </span>
+                                                            </span>
+                                                        </label>
+                                                    {% endfor %}
+                                                </div>
+
+                                                <div class="achat-forfait-payment-actions">
+                                                    <button
+                                                        type="button"
+                                                        class="btn achat-forfait-primary-button"
+                                                        id="confirm-payment-method"
+                                                    >
+                                                        Utiliser cette méthode de paiement
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        class="btn achat-forfait-outline-button"
+                                                        id="cancel-payment-method"
+                                                    >
+                                                        Annuler
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        class="btn achat-forfait-outline-button"
+                                                        data-action="payment-method#open"
+                                                    >
+                                                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                                                        <span>Ajouter un mode de paiement</span>
+                                                    </button>
+                                                </div>
+                                            </section>
+                                        {% endif %}
+
                                     </section>
                                 </div>
 
                                 <div class="col-12 col-xl-6">
                                     <aside class="achat-forfait-card achat-forfait-summary-card">
-                                        <p class="achat-forfait-legal-text">
-                                            En passant votre commande, vous acceptez les
-                                            <a href="#">Conditions générales de vente</a>
-                                            de Boolts. Veuillez consulter notre
-                                            <a href="#">
-                                                Notice Protection de vos informations personnelles
-                                            </a>,
-                                            notre
-                                            <a href="#">Notice Cookies</a>
-                                            et notre
-                                            <a href="#">
-                                                Notice Annonces publicitaires basées sur vos centres d’intérêt
-                                            </a>.
-                                        </p>
-
                                         <div class="achat-forfait-total">
                                             <strong>Montant total :</strong>
-                                            <strong>{{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }} {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}</strong>
+
+                                            <strong>
+                                                {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
+                                            </strong>
                                         </div>
 
                                         <button
@@ -310,86 +197,272 @@
         </div>
     </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const showButton = document.getElementById('show-payment-methods');
-            const cancelButton = document.getElementById('cancel-payment-method');
-            const confirmButton = document.getElementById('confirm-payment-method');
-            const paymentBlock = document.getElementById('payment-methods-block');
-            const selectedCardName = document.getElementById('selected-card-name');
-            const selectedCardExpiration = document.getElementById('selected-card-expiration');
-            const paymentOptions = document.querySelectorAll('.achat-forfait-payment-option');
+    <div
+        class="payment-modal-overlay"
+        data-payment-method-target="modal"
+        data-action="
+            click->payment-method#closeFromOverlay
+            keydown@window->payment-method#closeFromKeyboard
+        "
+        aria-hidden="true"
+    >
+        <div
+            class="payment-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="payment-modal-title"
+        >
+            <button
+                type="button"
+                class="payment-modal-close"
+                data-action="payment-method#close"
+                aria-label="Fermer"
+            >
+                <i class="icon-x" aria-hidden="true"></i>
+            </button>
 
-            if (
-                !showButton ||
-                !cancelButton ||
-                !confirmButton ||
-                !paymentBlock
-            ) {
+            <div class="payment-modal-header">
+                <h2 id="payment-modal-title" class="payment-modal-title">
+                    Indiquez les informations de votre carte
+                </h2>
+            </div>
+
+            <form
+                class="payment-modal-form formulaire"
+                data-action="submit->payment-method#submit"
+                novalidate
+            >
+                <div
+                    class="payment-form-error d-none mb-16"
+                    role="alert"
+                    data-payment-method-target="error"
+                ></div>
+
+                <div
+                    class="payment-form-success d-none mb-16"
+                    role="status"
+                    data-payment-method-target="success"
+                ></div>
+
+                <div class="payment-form-group">
+                    <label for="payment-cardholder-name" class="mb-16">
+                        Nom du titulaire
+                    </label>
+
+                    <input
+                        type="text"
+                        id="payment-cardholder-name"
+                        class="payment-form-control mb-16"
+                        placeholder="Saisissez le nom du titulaire"
+                        autocomplete="cc-name"
+                        data-payment-method-target="cardholderName"
+                        required
+                    >
+                </div>
+
+                <div class="payment-form-group">
+                    <label class="mb-16">
+                        Numéro de la carte
+                    </label>
+
+                    <div
+                        class="payment-stripe-element mb-16"
+                        data-payment-method-target="cardNumber"
+                    ></div>
+                </div>
+
+                <div class="payment-form-row">
+                    <div class="payment-form-group payment-form-group--half">
+                        <label class="mb-16">
+                            Date d’expiration
+                        </label>
+
+                        <div
+                            class="payment-stripe-element mb-16"
+                            data-payment-method-target="cardExpiry"
+                        ></div>
+                    </div>
+
+                    <div class="payment-form-group payment-form-group--half">
+                        <label class="mb-16">
+                            Code de sécurité
+                        </label>
+
+                        <div
+                            class="payment-stripe-element mb-16"
+                            data-payment-method-target="cardCvc"
+                        ></div>
+                    </div>
+                </div>
+
+                <div class="payment-form-group">
+                    <label for="payment-country" class="mb-16">
+                        Pays
+                    </label>
+
+                    <select
+                        id="payment-country"
+                        class="payment-form-control mb-16"
+                        autocomplete="country"
+                        data-payment-method-target="country"
+                        required
+                    >
+                        <option value="FR" selected>France</option>
+                        <option value="BE">Belgique</option>
+                        <option value="CH">Suisse</option>
+                        <option value="LU">Luxembourg</option>
+                        <option value="MC">Monaco</option>
+                        <option value="DE">Allemagne</option>
+                        <option value="ES">Espagne</option>
+                        <option value="IT">Italie</option>
+                        <option value="PT">Portugal</option>
+                        <option value="NL">Pays-Bas</option>
+                        <option value="GB">Royaume-Uni</option>
+                    </select>
+                </div>
+
+                <label class="payment-checkbox">
+                    <input
+                        type="checkbox"
+                        name="defaultPayment"
+                        value="1"
+                        class="mr-12"
+                        data-payment-method-target="defaultCheckbox"
+                    >
+
+                    <span></span>
+                    Définir comme moyen de paiement par défaut
+                </label>
+
+                <div class="payment-modal-actions">
+                    <button
+                        type="button"
+                        class="payment-btn-cancel"
+                        data-action="payment-method#close"
+                    >
+                        Annuler
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="payment-btn-submit"
+                        data-payment-method-target="submitButton"
+                        disabled
+                    >
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.payment-form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.payment-form-group--half {
+    flex: 1;
+    min-width: 0;
+}
+
+.payment-stripe-element {
+    border: 1px solid #D5D9E2;
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: #fff;
+}
+
+.payment-stripe-element.StripeElement--focus {
+    border-color: #FF8A1E;
+}
+
+.payment-stripe-element.StripeElement--invalid {
+    border-color: #DC3545;
+}
+</style>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const showButton = document.getElementById('show-payment-methods');
+        const cancelButton = document.getElementById('cancel-payment-method');
+        const confirmButton = document.getElementById('confirm-payment-method');
+        const paymentBlock = document.getElementById('payment-methods-block');
+        const selectedCardName = document.getElementById('selected-card-name');
+        const selectedCardExpiration = document.getElementById('selected-card-expiration');
+        const paymentOptions = document.querySelectorAll('.achat-forfait-payment-option');
+
+        if (!showButton || !cancelButton || !confirmButton || !paymentBlock) {
+            return;
+        }
+
+        function showPaymentMethods() {
+            paymentBlock.classList.remove('d-none');
+            paymentBlock.setAttribute('aria-hidden', 'false');
+            showButton.setAttribute('aria-expanded', 'true');
+
+            paymentBlock.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest'
+            });
+        }
+
+        function hidePaymentMethods() {
+            paymentBlock.classList.add('d-none');
+            paymentBlock.setAttribute('aria-hidden', 'true');
+            showButton.setAttribute('aria-expanded', 'false');
+        }
+
+        showButton.addEventListener('click', showPaymentMethods);
+        cancelButton.addEventListener('click', hidePaymentMethods);
+
+        paymentOptions.forEach(function (option) {
+            const radio = option.querySelector('input[name="payment-method"]');
+
+            if (!radio) {
                 return;
             }
 
-            function showPaymentMethods() {
-                paymentBlock.classList.remove('d-none');
-                paymentBlock.setAttribute('aria-hidden', 'false');
-                showButton.setAttribute('aria-expanded', 'true');
-
-                paymentBlock.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest'
+            radio.addEventListener('change', function () {
+                paymentOptions.forEach(function (item) {
+                    item.classList.remove(
+                        'achat-forfait-payment-option-selected'
+                    );
                 });
-            }
 
-            function hidePaymentMethods() {
-                paymentBlock.classList.add('d-none');
-                paymentBlock.setAttribute('aria-hidden', 'true');
-                showButton.setAttribute('aria-expanded', 'false');
-            }
-
-            showButton.addEventListener('click', showPaymentMethods);
-            cancelButton.addEventListener('click', hidePaymentMethods);
-
-            paymentOptions.forEach(function (option) {
-                const radio = option.querySelector(
-                    'input[name="payment-method"]'
-                );
-
-                if (!radio) {
-                    return;
+                if (radio.checked) {
+                    option.classList.add(
+                        'achat-forfait-payment-option-selected'
+                    );
                 }
-
-                radio.addEventListener('change', function () {
-                    paymentOptions.forEach(function (item) {
-                        item.classList.remove(
-                            'achat-forfait-payment-option-selected'
-                        );
-                    });
-
-                    if (radio.checked) {
-                        option.classList.add(
-                            'achat-forfait-payment-option-selected'
-                        );
-                    }
-                });
-            });
-
-            confirmButton.addEventListener('click', function () {
-                const selectedRadio = document.querySelector(
-                    'input[name="payment-method"]:checked'
-                );
-
-                if (!selectedRadio) {
-                    return;
-                }
-
-                selectedCardName.textContent =
-                    selectedRadio.dataset.cardName ?? '';
-
-                selectedCardExpiration.textContent =
-                    selectedRadio.dataset.cardExpiration ?? '';
-
-                hidePaymentMethods();
             });
         });
-    </script>
+
+        confirmButton.addEventListener('click', function () {
+            const selectedRadio = document.querySelector(
+                'input[name="payment-method"]:checked'
+            );
+
+            if (!selectedRadio) {
+                return;
+            }
+
+            if (selectedCardName) {
+                selectedCardName.textContent =
+                    selectedRadio.dataset.cardName || '';
+            }
+
+            if (selectedCardExpiration) {
+                selectedCardExpiration.textContent =
+                    selectedRadio.dataset.cardExpiration || '';
+            }
+
+            hidePaymentMethods();
+        });
+    });
+</script>
+
 {% endblock %}

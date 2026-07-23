@@ -1,3 +1,4 @@
+```twig
 <div
     class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres"
     id="cat4"
@@ -9,7 +10,9 @@
 >
     <div class="row">
         <div class="col-10 mx-auto">
-            <h2 class="mb-0">Moyens de paiement</h2>
+            <h2 class="mb-0">
+                Moyens de paiement
+            </h2>
 
             <div class="card-information-public-profile my-32 py-18 px-24">
                 <div class="connexion-securite">
@@ -24,6 +27,7 @@
                     {% else %}
                         {% for paymentMethod in payment_methods %}
                             {% set brand = paymentMethod.brand|default('card')|lower %}
+
                             {% set logo = brand in ['visa', 'mastercard']
                                 ? 'images/paiement_card/' ~ brand ~ '.svg'
                                 : null
@@ -39,17 +43,21 @@
                                         {% if logo %}
                                             <img
                                                 src="{{ asset(logo) }}"
-                                                alt="{{ paymentMethod.brand|capitalize }}"
+                                                alt="{{ paymentMethod.brand|default('Carte bancaire')|capitalize }}"
                                                 class="mr-25"
                                             >
                                         {% else %}
-                                            <span class="icon-credit-card mr-25"></span>
+                                            <span
+                                                class="icon-credit-card mr-25"
+                                                aria-hidden="true"
+                                            ></span>
                                         {% endif %}
 
                                         <div>
                                             <h3 class="mb-0">
-                                                {{ paymentMethod.brand|capitalize }}
-                                                •••• {{ paymentMethod.last4 }}
+                                                {{ paymentMethod.brand|default('Carte bancaire')|capitalize }}
+                                                ••••
+                                                {{ paymentMethod.last4 }}
 
                                                 {% if paymentMethod.isIsDefault %}
                                                     <span class="badge text-bg-primary ms-2">
@@ -76,7 +84,11 @@
                         class="btn-add-payment py-10 px-16 payment-open-btn"
                         data-action="click->payment-method#open"
                     >
-                        <span class="icon-plus mr-6"></span>
+                        <span
+                            class="icon-plus mr-6"
+                            aria-hidden="true"
+                        ></span>
+
                         Ajouter un mode de paiement
                     </button>
                 </div>
@@ -84,111 +96,540 @@
         </div>
     </div>
 
-<div
-    class="payment-modal-overlay"
-    data-payment-method-target="modal"
-    data-action="
-        click->payment-method#closeFromOverlay
-        keydown@window->payment-method#closeFromKeyboard
-    "
->
     <div
-        class="payment-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="payment-modal-title"
+        class="payment-modal-overlay"
+        data-payment-method-target="modal"
+        data-action="
+            click->payment-method#closeFromOverlay
+            keydown@window->payment-method#closeFromKeyboard
+        "
+        aria-hidden="true"
     >
-        <button
-            type="button"
-            class="payment-modal-close"
-            data-action="click->payment-method#close"
-            aria-label="Fermer"
+        <div
+            class="payment-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="payment-modal-title"
         >
-            <i class="icon-x" aria-hidden="true"></i>
-        </button>
+            <button
+                type="button"
+                class="payment-modal-close"
+                data-action="click->payment-method#close"
+                aria-label="Fermer"
+            >
+                <i
+                    class="icon-x"
+                    aria-hidden="true"
+                ></i>
+            </button>
 
-        <div class="payment-modal-header">
-            <h2 id="payment-modal-title" class="payment-modal-title">
-                Indiquez les informations de votre carte
-            </h2>
-        </div>
-
-        <form
-            class="payment-modal-form formulaire"
-            data-action="submit->payment-method#submit"
-            novalidate
-        >
-            <div
-                class="payment-form-error d-none mb-16"
-                role="alert"
-                data-payment-method-target="error"
-            ></div>
-
-            <div
-                class="payment-form-success d-none mb-16"
-                role="status"
-                data-payment-method-target="success"
-            ></div>
-
-            <div class="payment-form-group">
-                <label for="payment-cardholder-name" class="mb-16">
-                    Nom du titulaire
-                </label>
-
-                <input
-                    type="text"
-                    id="payment-cardholder-name"
-                    class="payment-form-control mb-16"
-                    placeholder="Saisissez le nom du titulaire"
-                    autocomplete="cc-name"
-                    data-payment-method-target="cardholderName"
-                    required
+            <div class="payment-modal-header">
+                <h2
+                    id="payment-modal-title"
+                    class="payment-modal-title"
                 >
+                    Indiquez les informations de votre carte
+                </h2>
             </div>
 
-            <div class="payment-form-group">
-                <label class="mb-16">Informations de la carte</label>
+            <form
+                class="payment-modal-form formulaire"
+                data-payment-method-target="form"
+                data-action="submit->payment-method#submit"
+                novalidate
+            >
+                <div
+                    class="payment-form-error d-none mb-16"
+                    role="alert"
+                    data-payment-method-target="error"
+                ></div>
 
                 <div
-                    class="payment-stripe-element mb-16"
-                    data-payment-method-target="element"
+                    class="payment-form-success d-none mb-16"
+                    role="status"
+                    data-payment-method-target="success"
                 ></div>
-            </div>
 
-            <label class="payment-checkbox">
-                <input
-                    type="checkbox"
-                    name="defaultPayment"
-                    value="1"
-                    class="mr-12"
-                    data-payment-method-target="defaultCheckbox"
-                >
+                <div class="payment-form-group">
+                    <label
+                        for="payment-cardholder-name-cat4"
+                        class="payment-form-label"
+                    >
+                        Nom du titulaire
+                    </label>
 
-                <span></span>
-                Définir comme moyen de paiement par défaut
-            </label>
+                    <input
+                        type="text"
+                        id="payment-cardholder-name-cat4"
+                        class="payment-form-control"
+                        placeholder="Saisissez le nom du titulaire"
+                        autocomplete="cc-name"
+                        data-payment-method-target="cardholderName"
+                        data-action="
+                            input->payment-method#cardholderChanged
+                            change->payment-method#cardholderChanged
+                        "
+                        required
+                    >
+                </div>
 
-            <div class="payment-modal-actions">
-                <button
-                    type="button"
-                    class="payment-btn-cancel"
-                    data-action="click->payment-method#close"
-                >
-                    Annuler
-                </button>
+                <div class="payment-form-group">
+                    <label class="payment-form-label">
+                        Numéro de la carte
+                    </label>
 
-                <button
-                    type="submit"
-                    class="payment-btn-submit"
-                    data-payment-method-target="submitButton"
-                    disabled
-                >
-                    Ajouter
-                </button>
-            </div>
-        </form>
+                    <div
+                        class="payment-stripe-element"
+                        data-payment-method-target="cardNumber"
+                        aria-label="Numéro de la carte bancaire"
+                    ></div>
+                </div>
+
+                <div class="payment-form-row">
+                    <div class="payment-form-group payment-form-group--half">
+                        <label class="payment-form-label">
+                            Date d’expiration
+                        </label>
+
+                        <div
+                            class="payment-stripe-element"
+                            data-payment-method-target="cardExpiry"
+                            aria-label="Date d’expiration de la carte"
+                        ></div>
+                    </div>
+
+                    <div class="payment-form-group payment-form-group--half">
+                        <label class="payment-form-label">
+                            Code de sécurité
+                        </label>
+
+                        <div
+                            class="payment-stripe-element"
+                            data-payment-method-target="cardCvc"
+                            aria-label="Code de sécurité de la carte"
+                        ></div>
+                    </div>
+                </div>
+
+                <div class="payment-form-group">
+                    <label
+                        for="payment-country-cat4"
+                        class="payment-form-label"
+                    >
+                        Pays
+                    </label>
+
+                    <select
+                        id="payment-country-cat4"
+                        class="payment-form-control"
+                        autocomplete="country"
+                        data-payment-method-target="country"
+                        data-action="change->payment-method#countryChanged"
+                        required
+                    >
+                        <option value="FR" selected>
+                            France
+                        </option>
+
+                        <option value="BE">
+                            Belgique
+                        </option>
+
+                        <option value="CH">
+                            Suisse
+                        </option>
+
+                        <option value="LU">
+                            Luxembourg
+                        </option>
+
+                        <option value="MC">
+                            Monaco
+                        </option>
+
+                        <option value="DE">
+                            Allemagne
+                        </option>
+
+                        <option value="ES">
+                            Espagne
+                        </option>
+
+                        <option value="IT">
+                            Italie
+                        </option>
+
+                        <option value="PT">
+                            Portugal
+                        </option>
+
+                        <option value="NL">
+                            Pays-Bas
+                        </option>
+
+                        <option value="GB">
+                            Royaume-Uni
+                        </option>
+                    </select>
+                </div>
+
+                <label class="payment-checkbox">
+                    <input
+                        type="checkbox"
+                        name="defaultPayment"
+                        value="1"
+                        class="mr-12"
+                        data-payment-method-target="defaultCheckbox"
+                    >
+
+                    <span></span>
+
+                    Définir comme moyen de paiement par défaut
+                </label>
+
+                <div class="payment-modal-actions">
+                    <button
+                        type="button"
+                        class="payment-btn-cancel"
+                        data-action="click->payment-method#close"
+                    >
+                        Annuler
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="payment-btn-submit"
+                        data-payment-method-target="submitButton"
+                        disabled
+                    >
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-</div>
+
+<style>
+    .payment-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 24px;
+
+        background: rgba(17, 24, 39, 0.58);
+
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+
+        overflow-y: auto;
+
+        transition:
+            opacity 180ms ease,
+            visibility 180ms ease;
+    }
+
+    .payment-modal-overlay.is-open {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .payment-modal {
+        position: relative;
+        z-index: 100000;
+
+        width: 100%;
+        max-width: 560px;
+
+        padding: 32px;
+
+        background: #ffffff;
+        border-radius: 16px;
+
+        box-shadow:
+            0 24px 70px rgba(17, 24, 39, 0.24);
+
+        pointer-events: auto;
+    }
+
+    .payment-modal-close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 38px;
+        height: 38px;
+
+        padding: 0;
+
+        color: #161616;
+        background: transparent;
+
+        border: 0;
+        border-radius: 50%;
+
+        cursor: pointer;
+    }
+
+    .payment-modal-close:hover {
+        background: #f3f4f6;
+    }
+
+    .payment-modal-header {
+        padding-right: 45px;
+        margin-bottom: 28px;
+    }
+
+    .payment-modal-title {
+        margin: 0;
+
+        color: #161616;
+
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 32px;
+    }
+
+    .payment-modal-form,
+    .payment-form-group,
+    .payment-form-row,
+    .payment-stripe-element,
+    .payment-stripe-element iframe {
+        position: relative;
+        pointer-events: auto !important;
+    }
+
+    .payment-form-group {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .payment-form-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .payment-form-group--half {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .payment-form-label {
+        display: block;
+
+        margin-bottom: 9px;
+
+        color: #252525;
+
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 20px;
+    }
+
+    .payment-form-control {
+        position: relative;
+        z-index: 1;
+
+        display: block;
+
+        width: 100%;
+        min-height: 50px;
+
+        padding: 12px 14px;
+
+        color: #161616;
+        background: #ffffff;
+
+        border: 1px solid #d5d9e2;
+        border-radius: 10px;
+
+        outline: none;
+
+        font-size: 16px;
+        line-height: 24px;
+
+        pointer-events: auto !important;
+        user-select: text;
+
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease;
+    }
+
+    .payment-form-control:focus {
+        border-color: #ff8a1e;
+
+        box-shadow:
+            0 0 0 3px rgba(255, 138, 30, 0.14);
+    }
+
+    .payment-stripe-element {
+        position: relative;
+        z-index: 1;
+
+        width: 100%;
+        min-height: 50px;
+
+        padding: 14px;
+
+        background: #ffffff;
+
+        border: 1px solid #d5d9e2;
+        border-radius: 10px;
+
+        cursor: text;
+        pointer-events: auto !important;
+
+        transition:
+            border-color 150ms ease,
+            box-shadow 150ms ease;
+    }
+
+    .payment-stripe-element iframe {
+        position: relative !important;
+        z-index: 2 !important;
+
+        width: 100% !important;
+
+        pointer-events: auto !important;
+    }
+
+    .payment-stripe-element.StripeElement--focus {
+        border-color: #ff8a1e;
+
+        box-shadow:
+            0 0 0 3px rgba(255, 138, 30, 0.14);
+    }
+
+    .payment-stripe-element.StripeElement--invalid {
+        border-color: #dc3545;
+
+        box-shadow:
+            0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+
+    .payment-stripe-element.StripeElement--complete {
+        border-color: #198754;
+    }
+
+    .payment-checkbox {
+        display: flex;
+        align-items: center;
+
+        margin: 4px 0 26px;
+
+        color: #343a40;
+
+        font-size: 14px;
+        line-height: 20px;
+
+        cursor: pointer;
+    }
+
+    .payment-checkbox input {
+        flex: 0 0 auto;
+
+        width: 18px;
+        height: 18px;
+
+        cursor: pointer;
+    }
+
+    .payment-modal-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .payment-btn-cancel,
+    .payment-btn-submit {
+        min-height: 46px;
+
+        padding: 11px 20px;
+
+        border-radius: 9px;
+
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 22px;
+
+        cursor: pointer;
+
+        transition:
+            opacity 150ms ease,
+            background-color 150ms ease,
+            border-color 150ms ease;
+    }
+
+    .payment-btn-cancel {
+        color: #343a40;
+        background: #ffffff;
+
+        border: 1px solid #d5d9e2;
+    }
+
+    .payment-btn-submit {
+        color: #ffffff;
+        background: #ff8a1e;
+
+        border: 1px solid #ff8a1e;
+    }
+
+    .payment-btn-submit:hover:not(:disabled) {
+        background: #ed770c;
+        border-color: #ed770c;
+    }
+
+    .payment-btn-submit:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .payment-btn-submit.is-loading {
+        cursor: wait;
+    }
+
+    .payment-form-error,
+    .payment-form-success {
+        padding: 12px 14px;
+
+        border-radius: 8px;
+
+        font-size: 14px;
+        line-height: 21px;
+    }
+
+    .payment-form-error {
+        color: #842029;
+        background: #f8d7da;
+
+        border: 1px solid #f5c2c7;
+    }
+
+    .payment-form-success {
+        color: #0f5132;
+        background: #d1e7dd;
+
+        border: 1px solid #badbcc;
+    }
+
+    body.payment-modal-open {
+        overflow: hidden;
+    }
+</style>
 
 <script src="https://js.stripe.com/v3/"></script>
+```
