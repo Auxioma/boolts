@@ -1,3 +1,10 @@
+{#
+ Template: templates/public/search/_cards.html.twig
+ Role: Renders the public/search Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
 {% if search is defined and search|length > 0 %}
 
     {% for bienImmobilier in search %}

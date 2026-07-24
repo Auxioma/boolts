@@ -1,3 +1,10 @@
+{#
+ Template: templates/dashboard/agence_immobiliere/_partials/mes_biens/_partials/navbar.html.twig
+ Role: Renders the dashboard/agence_immobiliere/_partials/mes_biens/_partials Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
 {% set paysCode = form.vars.data.pays ?? null %}
 
 {% set showBilanEnergetique = paysCode is empty or paysCode == 'FR' %}

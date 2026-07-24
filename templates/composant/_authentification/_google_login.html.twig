@@ -1,1 +1,7 @@
+{#
+ Template: templates/composant/_authentification/_google_login.html.twig
+ Role: Renders the Google OAuth login link.
+ Context: type identifies the requested account type.
+#}
+
 <a href="{{ path('app_google_connect', {type: type}) }}" class="btn-bg-border-gris mt-16 d-block w-100 text-center">Connexion via Google</a>

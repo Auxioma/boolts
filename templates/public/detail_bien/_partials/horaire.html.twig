@@ -1,3 +1,10 @@
+{#
+ Template: templates/public/detail_bien/_partials/horaire.html.twig
+ Role: Renders the public/detail_bien/_partials Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
 {% set horairesRenseignes = property.user.horaireOuvertures|filter(horaire =>
                                     horaire.open
                                     and (

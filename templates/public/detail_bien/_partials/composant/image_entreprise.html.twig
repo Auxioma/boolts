@@ -1,3 +1,10 @@
+{#
+ Template: templates/public/detail_bien/_partials/composant/image_entreprise.html.twig
+ Role: Renders the public/detail_bien/_partials/composant Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
 {% set avatar = property.user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
 {% set firstLetter = property.user.prenom ? property.user.prenom|first|upper : null %}
 {% if avatar %}

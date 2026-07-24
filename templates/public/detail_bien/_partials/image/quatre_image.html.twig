@@ -1,3 +1,10 @@
+{#
+ Template: templates/public/detail_bien/_partials/image/quatre_image.html.twig
+ Role: Renders the public/detail_bien/_partials/image Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
 {% set pictures = property.propertyImages|default([])|slice(0, 4) %}
 
 {% if pictures|length == 4 %}
