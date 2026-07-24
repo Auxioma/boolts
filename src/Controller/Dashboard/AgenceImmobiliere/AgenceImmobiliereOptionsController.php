@@ -13,13 +13,13 @@
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
 use App\Entity\Billing\AgencyPaymentMethod;
-use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\SubscriptionPlanPrice;
-use App\Entity\Booster\BoosterPackPrice;
 use App\Entity\User;
 use App\Repository\Billing\AgencyPaymentMethodRepository;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\Billing\AgencySubscriptionRepository;
+use App\Repository\Billing\SubscriptionPlanPriceRepository;
+use App\Repository\Booster\BoosterPackPriceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,7 +47,11 @@ final class AgenceImmobiliereOptionsController extends AbstractController
     /**
      * Handles the index controller action.
      */
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(
+        SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
+        BoosterPackPriceRepository $boosterPackPriceRepository,
+        AgencySubscriptionRepository $agencySubscriptionRepository,
+    ): Response
     {
         $agency = $this->getUser();
 
@@ -55,19 +59,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             throw $this->createAccessDeniedException('Utilisateur non authentifié.');
         }
 
-        $subscriptionPrices = $entityManager
-            ->getRepository(SubscriptionPlanPrice::class)
-            ->createQueryBuilder('price')
-            ->addSelect('plan', 'currency')
-            ->innerJoin('price.plan', 'plan')
-            ->innerJoin('price.currency', 'currency')
-            ->where('price.isActive = :active')
-            ->andWhere('plan.isActive = :active')
-            ->setParameter('active', true)
-            ->orderBy('plan.position', 'ASC')
-            ->addOrderBy('price.billingPeriod', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $subscriptionPrices = $subscriptionPlanPriceRepository->findActiveWithPlanAndCurrency();
 
         $forfaits = [];
 
@@ -86,31 +78,9 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             $forfaits[$planId][$subscriptionPrice->getBillingPeriod()->value] = $subscriptionPrice;
         }
 
-        $boosterPackPrices = $entityManager
-            ->getRepository(BoosterPackPrice::class)
-            ->createQueryBuilder('price')
-            ->addSelect('pack', 'currency')
-            ->innerJoin('price.boosterPack', 'pack')
-            ->innerJoin('price.currency', 'currency')
-            ->where('price.isActive = :active')
-            ->andWhere('pack.isActive = :active')
-            ->setParameter('active', true)
-            ->orderBy('pack.position', 'ASC')
-            ->getQuery()
-            ->getResult();
+        $boosterPackPrices = $boosterPackPriceRepository->findActiveWithPackAndCurrency();
 
-        $currentSubscription = $entityManager
-            ->getRepository(AgencySubscription::class)
-            ->createQueryBuilder('subscription')
-            ->addSelect('plan', 'price')
-            ->innerJoin('subscription.plan', 'plan')
-            ->leftJoin('subscription.planPrice', 'price')
-            ->where('subscription.agency = :agency')
-            ->setParameter('agency', $agency)
-            ->orderBy('subscription.startedAt', 'DESC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        $currentSubscription = $agencySubscriptionRepository->findLatestForAgency($agency);
 
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_options/index.html.twig',
@@ -129,7 +99,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
     public function achat(
         int $id,
         Request $request,
-        EntityManagerInterface $entityManager,
+        SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
         AgencyPaymentMethodRepository $paymentMethodRepository,
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
@@ -141,21 +111,10 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             throw $this->createNotFoundException('Période de facturation invalide.');
         }
 
-        $planPrice = $entityManager
-            ->getRepository(SubscriptionPlanPrice::class)
-            ->createQueryBuilder('price')
-            ->addSelect('plan', 'currency')
-            ->innerJoin('price.plan', 'plan')
-            ->innerJoin('price.currency', 'currency')
-            ->where('plan.id = :id')
-            ->andWhere('price.billingPeriod = :period')
-            ->andWhere('price.isActive = :active')
-            ->andWhere('plan.isActive = :active')
-            ->setParameter('id', $id)
-            ->setParameter('period', SubscriptionBillingPeriod::from($period))
-            ->setParameter('active', true)
-            ->getQuery()
-            ->getOneOrNullResult();
+        $planPrice = $subscriptionPlanPriceRepository->findActiveForPlanAndPeriod(
+            $id,
+            SubscriptionBillingPeriod::from($period),
+        );
 
         if (!$planPrice instanceof SubscriptionPlanPrice) {
             throw $this->createNotFoundException('Forfait indisponible pour cette période de facturation.');

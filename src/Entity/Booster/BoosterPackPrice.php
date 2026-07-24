@@ -14,9 +14,10 @@ namespace App\Entity\Booster;
 
 use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
+use App\Repository\Booster\BoosterPackPriceRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BoosterPackPriceRepository::class)]
 #[ORM\Table(name: 'booster_pack_price')]
 #[ORM\UniqueConstraint(name: 'uniq_booster_pack_currency', columns: ['booster_pack_id', 'currency_id'])]
 class BoosterPackPrice
