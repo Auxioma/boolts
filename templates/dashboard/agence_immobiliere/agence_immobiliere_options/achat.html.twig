@@ -10,6 +10,9 @@
     data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
     data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
     data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+    data-subscription-url="{{ path('api_agency_billing_subscription_create') }}"
+    data-subscription-csrf="{{ csrf_token('agency_subscription') }}"
+    data-plan-price-id="{{ plan_price.id }}"
 >
     <main id="dashboard" class="dashboard">
         <div class="container-fluid">
@@ -183,9 +186,14 @@
                                         <button
                                             type="button"
                                             class="btn achat-forfait-primary-button"
+                                            id="subscribe-button"
+                                            data-default-payment-method-id="{{ default_payment_method ? default_payment_method.id : '' }}"
+                                            {% if not default_payment_method %}disabled{% endif %}
                                         >
                                             S’abonner
                                         </button>
+
+                                        <p id="subscription-message" class="mt-16 mb-0" role="status"></p>
                                     </aside>
                                 </div>
 
@@ -394,6 +402,66 @@
         const selectedCardName = document.getElementById('selected-card-name');
         const selectedCardExpiration = document.getElementById('selected-card-expiration');
         const paymentOptions = document.querySelectorAll('.achat-forfait-payment-option');
+        const subscribeButton = document.getElementById('subscribe-button');
+        const subscriptionMessage = document.getElementById('subscription-message');
+        const billingContainer = document.querySelector('[data-subscription-url]');
+        let selectedPaymentMethodId = subscribeButton?.dataset.defaultPaymentMethodId || null;
+
+        if (subscribeButton && billingContainer) {
+            subscribeButton.addEventListener('click', async function () {
+                const planPriceId = billingContainer.dataset.planPriceId;
+
+                if (!planPriceId || !selectedPaymentMethodId) {
+                    if (subscriptionMessage) {
+                        subscriptionMessage.textContent = 'Veuillez ajouter ou sélectionner une carte bancaire.';
+                    }
+
+                    return;
+                }
+
+                subscribeButton.disabled = true;
+                subscribeButton.textContent = 'Traitement…';
+
+                try {
+                    const response = await fetch(billingContainer.dataset.subscriptionUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': billingContainer.dataset.subscriptionCsrf
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({
+                            planPriceId: Number(planPriceId),
+                            paymentMethodId: Number(selectedPaymentMethodId)
+                        })
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok || data.success !== true) {
+                        throw new Error(data.message || 'Le paiement n’a pas pu être effectué.');
+                    }
+
+                    if (subscriptionMessage) {
+                        subscriptionMessage.textContent = data.message;
+                    }
+
+                    window.setTimeout(function () {
+                        window.location.href = '{{ path('agence_immobiliere_options') }}';
+                    }, 800);
+                } catch (error) {
+                    if (subscriptionMessage) {
+                        subscriptionMessage.textContent = error instanceof Error
+                            ? error.message
+                            : 'Le paiement n’a pas pu être effectué.';
+                    }
+
+                    subscribeButton.disabled = false;
+                    subscribeButton.textContent = 'S’abonner';
+                }
+            });
+        }
 
         if (!showButton || !cancelButton || !confirmButton || !paymentBlock) {
             return;
@@ -459,6 +527,8 @@
                 selectedCardExpiration.textContent =
                     selectedRadio.dataset.cardExpiration || '';
             }
+
+            selectedPaymentMethodId = selectedRadio.value;
 
             hidePaymentMethods();
         });
