@@ -20,6 +20,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Authentification / Visiteurs / VisiteurRequestNewCode.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class VisiteurRequestNewCode extends AbstractController
 {
     #[Route(
@@ -29,6 +34,9 @@ final class VisiteurRequestNewCode extends AbstractController
         ],
         name: 'app_auth_resend_code'
     )]
+    /**
+     * Handles the index controller action.
+     */
     public function index(
         Request $request,
         UserRepository $userRepository,

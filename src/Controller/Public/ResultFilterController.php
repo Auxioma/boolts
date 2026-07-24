@@ -25,8 +25,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Public / ResultFilterController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class ResultFilterController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         #[Autowire('%env(MAPBOX_PUBLIC_TOKEN)%')]
         private readonly string $mapboxPublicToken,
@@ -41,6 +49,9 @@ final class ResultFilterController extends AbstractController
     }
 
     #[Route('/filter', name: 'app_public_search_card')]
+    /**
+     * Handles the index controller action.
+     */
     public function index(Request $request): Response
     {
         $view = $request->query->get('view', 'list');

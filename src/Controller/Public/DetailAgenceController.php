@@ -25,14 +25,25 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Public / DetailAgenceController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class DetailAgenceController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private readonly ContactMailer $contactMailer,
     ) {
     }
 
     #[Route('/agency/{slug}', name: 'app_public_detail_agence')]
+    /**
+     * Handles the index controller action.
+     */
     public function index(
         UserRepository $userRepository,
         PropertyRepository $propertyRepository,

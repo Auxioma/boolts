@@ -29,13 +29,24 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/immobiliere/options', name: 'agence_immobiliere_')]
 #[IsGranted('ROLE_AGENCE')]
+/**
+ * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereOptionsController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereOptionsController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
        
     ){}
 
     #[Route('/', name: 'options')]
+    /**
+     * Handles the index controller action.
+     */
     public function index(EntityManagerInterface $entityManager): Response
     {
         $agency = $this->getUser();
@@ -112,6 +123,9 @@ final class AgenceImmobiliereOptionsController extends AbstractController
     }
 
     #[Route('/achat/{id}', name: 'achat')]
+    /**
+     * Handles the achat controller action.
+     */
     public function achat(
         int $id,
         Request $request,

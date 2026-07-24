@@ -18,9 +18,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module GeoIpController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 class GeoIpController extends AbstractController
 {
     #[Route('/debug/ip-location', name: 'app_debug_ip_location', methods: ['GET'])]
+    /**
+     * Handles the locateCurrentVisitor controller action.
+     */
     public function locateCurrentVisitor(
         Request $request,
         GeoIpLocationService $geoIpLocationService,
@@ -35,6 +43,9 @@ class GeoIpController extends AbstractController
     }
 
     #[Route('/debug/ip-location/{ip}', name: 'app_debug_ip_location_by_ip', methods: ['GET'])]
+    /**
+     * Handles the locateSpecificIp controller action.
+     */
     public function locateSpecificIp(
         string $ip,
         GeoIpLocationService $geoIpLocationService,

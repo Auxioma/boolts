@@ -37,10 +37,18 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
         'en' => '/reset-password',
     ],
 )]
+/**
+ * HTTP controller for module Authentification / Visiteurs / ResetPasswordController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 class ResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;
 
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
         private EntityManagerInterface $entityManager,
@@ -52,6 +60,9 @@ class ResetPasswordController extends AbstractController
      * Display & process form to request a password reset.
      */
     #[Route('', name: 'app_forgot_password_request')]
+    /**
+     * Handles the request controller action.
+     */
     public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
@@ -84,6 +95,9 @@ class ResetPasswordController extends AbstractController
      * Confirmation page after a user has requested a password reset.
      */
     #[Route('/check-email', name: 'app_check_email')]
+    /**
+     * Handles the checkEmail controller action.
+     */
     public function checkEmail(): Response
     {
         // Generate a fake token if the user does not exist or someone hit this page directly.
@@ -101,6 +115,9 @@ class ResetPasswordController extends AbstractController
      * Validates and process the reset URL that the user clicked in their email.
      */
     #[Route('/reset/{token}', name: 'app_reset_password')]
+    /**
+     * Handles the reset controller action.
+     */
     public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, ?string $token = null): Response
     {
         if ($token) {

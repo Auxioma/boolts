@@ -17,9 +17,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/agence/aide', name: 'agence_immobiliere_')]
+/**
+ * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereAideController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereAideController extends AbstractController
 {
     #[Route('/', name: 'aide')]
+    /**
+     * Handles the index controller action.
+     */
     public function index(): Response
     {
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_aide/index.html.twig', [

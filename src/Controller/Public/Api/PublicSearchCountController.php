@@ -18,9 +18,17 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Public / Api / PublicSearchCountController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class PublicSearchCountController extends AbstractController
 {
     #[Route('/public/search/count', name: 'app_public_search_count', methods: ['GET'])]
+    /**
+     * Handles the __invoke controller action.
+     */
     public function __invoke(
         Request $request,
         PropertyRepository $propertyRepository,

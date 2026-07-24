@@ -15,9 +15,17 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/immobiliere/parametres', name: 'agence_immobiliere_')]
 #[IsGranted('ROLE_AGENCE')]
+/**
+ * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereParametresController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereParametresController extends AbstractController
 {
     #[Route('/', name: 'parametres', methods: ['GET', 'POST'])]
+    /**
+     * Handles the index controller action.
+     */
     public function index(
         AgencyPaymentMethodRepository $paymentMethodRepository,
         #[Autowire('%stripe.public_key%')]

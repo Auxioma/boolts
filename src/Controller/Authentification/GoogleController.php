@@ -19,9 +19,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Authentification / GoogleController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class GoogleController extends AbstractController
 {
     #[Route('/connect/google/{type}', name: 'app_google_connect')]
+    /**
+     * Handles the connect controller action.
+     */
     public function connect(string $type, Request $request, ClientRegistry $clientRegistry): RedirectResponse
     {
         if (!\in_array($type, ['particulier', 'professionnel'], true)) {
@@ -39,6 +47,9 @@ final class GoogleController extends AbstractController
     }
 
     #[Route('/connect/google/check', name: 'connect_google_check')]
+    /**
+     * Handles the check controller action.
+     */
     public function check(): Response
     {
         // Cette méthode est "interceptée" par le système d'auth (authenticator).

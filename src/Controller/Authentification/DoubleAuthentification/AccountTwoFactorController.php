@@ -24,9 +24,17 @@ use Symfony\Component\Routing\Attribute\Route;
 // use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/account/2fa')]
+/**
+ * HTTP controller for module Authentification / DoubleAuthentification / AccountTwoFactorController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 class AccountTwoFactorController extends AbstractController
 {
     #[Route('/status', name: 'account_2fa_status', methods: ['GET'])]
+    /**
+     * Handles the status controller action.
+     */
     public function status(): JsonResponse
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
@@ -39,6 +47,9 @@ class AccountTwoFactorController extends AbstractController
     }
 
     #[Route('/toggle', name: 'account_2fa_toggle', methods: ['POST'])]
+    /**
+     * Handles the toggle controller action.
+     */
     public function toggle(
         Request $request,
         EntityManagerInterface $em,

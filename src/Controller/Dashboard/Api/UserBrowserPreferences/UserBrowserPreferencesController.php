@@ -27,9 +27,17 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
+/**
+ * HTTP controller for module Dashboard / Api / UserBrowserPreferences / UserBrowserPreferencesController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class UserBrowserPreferencesController extends AbstractController
 {
     #[Route('/api/user/browser-preferences', name: 'app_user_browser_preferences', methods: ['POST'])]
+    /**
+     * Handles the save controller action.
+     */
     public function save(
         Request $request,
         EntityManagerInterface $entityManager,

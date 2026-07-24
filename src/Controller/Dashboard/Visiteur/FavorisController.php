@@ -23,9 +23,17 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_USER')]
+/**
+ * HTTP controller for module Dashboard / Visiteur / FavorisController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 class FavorisController extends AbstractController
 {
     #[Route('/favoris/property/{id}/toggle', name: 'app_favoris_property_toggle', methods: ['POST'])]
+    /**
+     * Handles the toggle controller action.
+     */
     public function toggle(
         Property $property,
         Request $request,

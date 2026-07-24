@@ -25,8 +25,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * HTTP controller for module Public / HomeController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class HomeController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         #[Autowire('%env(MAPBOX_PUBLIC_TOKEN)%')]
         private readonly string $mapboxPublicToken,
@@ -43,6 +51,9 @@ final class HomeController extends AbstractController
         name: 'app_home',
         methods: ['GET']
     )]
+    /**
+     * Handles the index controller action.
+     */
     public function index(
         CategoryBienTransactionRepository $categoryBienTransactionRepository,
         Request $request,
@@ -155,6 +166,9 @@ final class HomeController extends AbstractController
         name: 'app_home_properties_by_city',
         methods: ['GET']
     )]
+    /**
+     * Handles the propertiesByCity controller action.
+     */
     public function propertiesByCity(Request $request): Response
     {
         /*if (!$request->isXmlHttpRequest()) {

@@ -37,10 +37,18 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
         'en' => '/pro/reset-password',
     ],
 )]
+/**
+ * HTTP controller for module Authentification / AgenceImmobiliere / AgenceImmobiliereResetPasswordController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 class AgenceImmobiliereResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;
 
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
         private EntityManagerInterface $entityManager,
@@ -52,6 +60,9 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
      * Display & process form to request a password reset.
      */
     #[Route('', name: 'agence_immobiliereforgot_password_request')]
+    /**
+     * Handles the request controller action.
+     */
     public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
@@ -84,6 +95,9 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
      * Confirmation page after a user has requested a password reset.
      */
     #[Route('/check-email', name: 'agence_immobilierecheck_email')]
+    /**
+     * Handles the checkEmail controller action.
+     */
     public function checkEmail(): Response
     {
         // Generate a fake token if the user does not exist or someone hit this page directly.
@@ -101,6 +115,9 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
      * Validates and process the reset URL that the user clicked in their email.
      */
     #[Route('/reset/{token}', name: 'agence_immobilierereset_password')]
+    /**
+     * Handles the reset controller action.
+     */
     public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, ?string $token = null): Response
     {
         if ($token) {

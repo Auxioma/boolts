@@ -23,14 +23,25 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Public / DetailBienController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class DetailBienController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private readonly ContactMailer $contactMailer,
     ) {
     }
 
     #[Route('/public/detail/bien/{slug}', name: 'app_public_detail_bien')]
+    /**
+     * Handles the index controller action.
+     */
     public function index(
         #[MapEntity(mapping: ['slug' => 'slug'])]
         Property $property,

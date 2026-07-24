@@ -17,6 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * HTTP controller for module Authentification / AgenceImmobiliere / AgenceImmobiliereLoginController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereLoginController extends AbstractController
 {
     #[Route(
@@ -26,6 +31,9 @@ final class AgenceImmobiliereLoginController extends AbstractController
         ],
         name: 'app_professionnelle_connexion'
     )]
+    /**
+     * Handles the login controller action.
+     */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {

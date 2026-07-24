@@ -17,6 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * HTTP controller for module Authentification / Visiteurs / VisiteurLoginController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class VisiteurLoginController extends AbstractController
 {
     #[Route(
@@ -26,6 +31,9 @@ final class VisiteurLoginController extends AbstractController
         ],
         name: 'app_login'
     )]
+    /**
+     * Handles the index controller action.
+     */
     public function index(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
@@ -41,6 +49,9 @@ final class VisiteurLoginController extends AbstractController
     }
 
     #[Route(path: '/logout', name: 'app_logout')]
+    /**
+     * Handles the logout controller action.
+     */
     public function logout(): void
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');

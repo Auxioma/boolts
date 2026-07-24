@@ -20,8 +20,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
+/**
+ * HTTP controller for the EasyAdmin administration dashboard.
+ */
 class DashboardController extends AbstractDashboardController
 {
+    /**
+     * Renders the EasyAdmin dashboard home page.
+     */
     public function index(): Response
     {
         // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
@@ -30,12 +36,20 @@ class DashboardController extends AbstractDashboardController
         return $this->render('bundles/EasyAdminBundle/Page/home_page.html.twig');
     }
 
+    /**
+     * Configures the EasyAdmin dashboard metadata.
+     */
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
             ->setTitle('Boolts');
     }
 
+    /**
+     * Defines the EasyAdmin navigation entries.
+     *
+     * @return iterable<MenuItem>
+     */
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');

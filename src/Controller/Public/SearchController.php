@@ -30,8 +30,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
+/**
+ * HTTP controller for module Public / SearchController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class SearchController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         #[Autowire('%env(MAPBOX_PUBLIC_TOKEN)%')]
         private readonly string $mapboxPublicToken,
@@ -50,6 +58,9 @@ final class SearchController extends AbstractController
         name: 'app_public_search',
         methods: ['POST']
     )]
+    /**
+     * Handles the index controller action.
+     */
     public function index(Request $request): Response
     {
         $filter = new FilterCityCountry();
@@ -190,6 +201,9 @@ final class SearchController extends AbstractController
         name: 'app_public_search_results',
         methods: ['GET']
     )]
+    /**
+     * Handles the results controller action.
+     */
     public function results(
         Request $request,
         string $searchToken,
@@ -393,6 +407,9 @@ final class SearchController extends AbstractController
         name: 'app_public_search_map_bounds',
         methods: ['GET']
     )]
+    /**
+     * Handles the mapBounds controller action.
+     */
     public function mapBounds(
         Request $request,
         string $searchToken,

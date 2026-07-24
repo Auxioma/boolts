@@ -20,12 +20,20 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * HTTP controller for module Dashboard / Api / Ai / AgenceImmobiliereMesBiensAiController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereMesBiensAiController extends AbstractController
 {
     private const OPENAI_API_URL = 'https://api.openai.com/v1/responses';
     private const OPENAI_MODEL = 'gpt-4.1-mini';
     private const OPENAI_MAX_OUTPUT_TOKENS = 700;
 
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
@@ -33,6 +41,9 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
     }
 
     #[Route('/generate-description-ai', name: 'agence_immobiliere_mes_biens_generate_description_ai', methods: ['POST'])]
+    /**
+     * Handles the generateDescriptionAi controller action.
+     */
     public function generateDescriptionAi(Request $request): JsonResponse
     {
         if (!$request->isXmlHttpRequest()) {

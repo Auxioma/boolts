@@ -16,9 +16,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Dashboard / Visiteur / VisiteurDashboardController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class VisiteurDashboardController extends AbstractController
 {
     #[Route('/visiteur/dashboard', name: 'app_visiteur_dashboard')]
+    /**
+     * Handles the index controller action.
+     */
     public function index(): Response
     {
         return $this->render('dashboard/visiteur/dashboard/dashboard.html.twig', [

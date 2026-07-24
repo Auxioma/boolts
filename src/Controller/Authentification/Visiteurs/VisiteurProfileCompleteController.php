@@ -24,8 +24,16 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Authentification / Visiteurs / VisiteurProfileCompleteController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class VisiteurProfileCompleteController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private MailerInterface $mailer,
     ) {
@@ -38,6 +46,9 @@ final class VisiteurProfileCompleteController extends AbstractController
         ],
         name: 'app_visiteur_profile_complete'
     )]
+    /**
+     * Handles the index controller action.
+     */
     public function index(Request $request, UserRepository $userRepository, EntityManagerInterface $em, Security $security, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $session = $request->getSession();

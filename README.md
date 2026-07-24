@@ -2,6 +2,8 @@
 
 Plateforme web immobilière développée avec **Symfony 8** pour la gestion, la publication et la recherche de biens immobiliers.
 
+> La documentation technique PHP est disponible dans [docs/README.md](docs/README.md).
+
 Le projet contient une partie publique pour les visiteurs, une partie professionnelle pour les agences immobilières, un système d’authentification différencié, une recherche géographique via Mapbox, un parcours multi-étapes de création d’annonce, la gestion des favoris, des formulaires de contact, l’upload d’images et l’optimisation des visuels.
 
 ---

@@ -25,9 +25,17 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/mes/biens', name: 'agence_immobiliere_')]
+/**
+ * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereMesBiensController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
     #[Route('/', name: 'mes_biens')]
+    /**
+     * Handles the index controller action.
+     */
     public function index(
         Request $request,
         PropertyRepository $propertyRepository,
@@ -290,6 +298,9 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     }
 
     #[Route('/status', name: 'mes_biens_status')]
+    /**
+     * Handles the status controller action.
+     */
     public function status(): Response
     {
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/status.html.twig');

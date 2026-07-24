@@ -22,6 +22,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Authentification / Visiteurs / VisiteurRegisterController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class VisiteurRegisterController extends AbstractController
 {
     #[Route(
@@ -31,6 +36,9 @@ final class VisiteurRegisterController extends AbstractController
         ],
         name: 'app_visiteur_inscription'
     )]
+    /**
+     * Handles the index controller action.
+     */
     public function index(Request $request, UserRepository $userRepository, EntityManagerInterface $em, EmailVerificationService $emailVerificationService): Response
     {
         /* si utilisateur deja en session, je redirige vers l'admin visiteur */

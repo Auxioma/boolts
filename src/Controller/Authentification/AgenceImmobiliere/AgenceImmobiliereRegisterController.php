@@ -22,6 +22,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Authentification / AgenceImmobiliere / AgenceImmobiliereRegisterController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereRegisterController extends AbstractController
 {
     #[Route(
@@ -31,6 +36,9 @@ final class AgenceImmobiliereRegisterController extends AbstractController
         ],
         name: 'app_professionnelle_register'
     )]
+    /**
+     * Handles the registerPro controller action.
+     */
     public function registerPro(Request $request, UserRepository $userRepository, EntityManagerInterface $em, EmailVerificationService $emailVerificationService): Response
     {
         /* si utilisateur deja en session, je redirige vers l'admin visiteur */

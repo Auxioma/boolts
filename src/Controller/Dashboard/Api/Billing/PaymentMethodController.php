@@ -23,8 +23,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/agence/billing')]
 #[IsGranted('ROLE_AGENCE')]
+/**
+ * HTTP controller for module Dashboard / Api / Billing / PaymentMethodController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class PaymentMethodController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private readonly StripeClient $stripe,
         private readonly EntityManagerInterface $entityManager,
@@ -38,6 +46,9 @@ final class PaymentMethodController extends AbstractController
         name: 'api_agency_billing_setup_intent',
         methods: ['POST']
     )]
+    /**
+     * Handles the createSetupIntent controller action.
+     */
     public function createSetupIntent(Request $request): JsonResponse
     {
         if (!$this->isCsrfTokenValid(
@@ -112,6 +123,9 @@ final class PaymentMethodController extends AbstractController
         name: 'api_agency_billing_payment_method_complete',
         methods: ['POST']
     )]
+    /**
+     * Handles the completePaymentMethod controller action.
+     */
     public function completePaymentMethod(Request $request): JsonResponse
     {
         if (!$this->isCsrfTokenValid(

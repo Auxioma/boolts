@@ -26,9 +26,17 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
+/**
+ * HTTP controller for module Dashboard / Api / AgenceImmobiliere / UpdateProfileAgenceImmobiliereController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class UpdateProfileAgenceImmobiliereController extends AbstractController
 {
     #[Route('/dashboard/api/profile', name: 'api_profile_agence_immobiliere', methods: ['POST'])]
+    /**
+     * Handles the index controller action.
+     */
     public function index(
         Request $request,
         EntityManagerInterface $entityManager,

@@ -22,6 +22,11 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/geo/autocomplete')]
+/**
+ * HTTP controller for module Public / GeoAutocompleteController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class GeoAutocompleteController extends AbstractController
 {
     private const GEONAMES_BASE_URL = 'https://secure.geonames.org';
@@ -38,6 +43,9 @@ final class GeoAutocompleteController extends AbstractController
 
     private const MAX_DISTRICT_DISTANCE_KM = 80.0;
 
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly CacheInterface $cache,
@@ -45,6 +53,9 @@ final class GeoAutocompleteController extends AbstractController
     }
 
     #[Route('/pays', name: 'app_geo_country_autocomplete', methods: ['GET'])]
+    /**
+     * Handles the countries controller action.
+     */
     public function countries(Request $request): JsonResponse
     {
         $q = mb_trim((string) $request->query->get('q', ''));
@@ -64,6 +75,9 @@ final class GeoAutocompleteController extends AbstractController
     }
 
     #[Route('/villes', name: 'app_geo_city_autocomplete', methods: ['GET'])]
+    /**
+     * Handles the cities controller action.
+     */
     public function cities(Request $request): JsonResponse
     {
         $q = mb_trim((string) $request->query->get('q', ''));
@@ -86,6 +100,9 @@ final class GeoAutocompleteController extends AbstractController
     }
 
     #[Route('/quartiers', name: 'app_geo_district_autocomplete', methods: ['GET'])]
+    /**
+     * Handles the districts controller action.
+     */
     public function districts(Request $request): JsonResponse
     {
         $q = mb_trim((string) $request->query->get('q', ''));
@@ -144,6 +161,9 @@ final class GeoAutocompleteController extends AbstractController
     }
 
     #[Route('/debug-live', name: 'app_geo_autocomplete_debug_live', methods: ['GET'])]
+    /**
+     * Handles the debugLive controller action.
+     */
     public function debugLive(Request $request): JsonResponse
     {
         $q = mb_trim((string) $request->query->get('q', 'rou'));

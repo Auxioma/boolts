@@ -33,8 +33,16 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/agence/billing')]
 #[IsGranted('ROLE_AGENCE')]
+/**
+ * HTTP controller for module Dashboard / Api / Billing / SubscriptionController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class SubscriptionController extends AbstractController
 {
+    /**
+     * Handles the __construct controller action.
+     */
     public function __construct(
         private readonly StripeClient $stripe,
         private readonly EntityManagerInterface $entityManager,
@@ -43,6 +51,9 @@ final class SubscriptionController extends AbstractController
     }
 
     #[Route('/subscription', name: 'api_agency_billing_subscription_create', methods: ['POST'])]
+    /**
+     * Handles the create controller action.
+     */
     public function create(Request $request): JsonResponse
     {
         if (!$this->isCsrfTokenValid('agency_subscription', (string) $request->headers->get('X-CSRF-TOKEN'))) {

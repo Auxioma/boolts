@@ -22,6 +22,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * HTTP controller for module Authentification / AgenceImmobiliere / AgenceImmobiliereOptController.
+ *
+ * Centralizes actions exposed by the routes declared in this class.
+ */
 final class AgenceImmobiliereOptController extends AbstractController
 {
     #[Route(
@@ -31,6 +36,9 @@ final class AgenceImmobiliereOptController extends AbstractController
         ],
         name: 'app_professionnelle_otp'
     )]
+    /**
+     * Handles the opt controller action.
+     */
     public function opt(Request $request, UserRepository $userRepository, EntityManagerInterface $em, EmailVerificationService $emailVerificationService): Response
     {
         if ($this->getUser()) {
