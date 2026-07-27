@@ -122,7 +122,26 @@
 
                             <div class="row g-4 statistics-summary">
 
-                                <div class="col-4">
+                                                            <div class="col-3">
+                                    <div
+                                        class="stat-card statistics-series-toggle"
+                                        role="button"
+                                        tabindex="0"
+                                        aria-pressed="true"
+                                        data-series-index="0"
+                                        data-action="click->dashboard-statistics#toggleSeries"
+                                    >
+                                        <div class="stat-card-label">
+                                            <i class="icon-building-2 stat-card-icon"></i>
+
+                                            <span>vue profile</span>
+                                        </div>
+
+                                        <span class="stat-card-value" data-dashboard-statistics-target="published">55555</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-3">
                                     <div
                                         class="stat-card statistics-series-toggle"
                                         role="button"
@@ -141,7 +160,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div
                                         class="stat-card stat-card-purple statistics-series-toggle"
                                         role="button"
@@ -160,7 +179,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div
                                         class="stat-card stat-card-green statistics-series-toggle"
                                         role="button"

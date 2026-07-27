@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
@@ -40,7 +42,9 @@ class LangueParlerFixtures extends Fixture
         foreach (self::LANGUAGES as $code => $name) {
             $langueParler = new LangueParler();
 
-            $this->hydrateLanguage($langueParler, $code, $name);
+            $langueParler
+                ->setCode($code)
+                ->setName($name);
 
             $manager->persist($langueParler);
 
@@ -53,28 +57,4 @@ class LangueParlerFixtures extends Fixture
         $manager->flush();
     }
 
-    private function hydrateLanguage(LangueParler $langueParler, string $code, string $name): void
-    {
-        if (method_exists($langueParler, 'setCode')) {
-            $langueParler->setCode($code);
-        }
-
-        if (method_exists($langueParler, 'setNom')) {
-            $langueParler->setNom($name);
-
-            return;
-        }
-
-        if (method_exists($langueParler, 'setName')) {
-            $langueParler->setName($name);
-
-            return;
-        }
-
-        if (method_exists($langueParler, 'setLangue')) {
-            $langueParler->setLangue($name);
-
-            return;
-        }
-    }
 }

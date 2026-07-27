@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
@@ -31,6 +33,7 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+        $faker->seed(20260727);
 
         /**
          * On récupère les vrais utilisateurs créés en base.

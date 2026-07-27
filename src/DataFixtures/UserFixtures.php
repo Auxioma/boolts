@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
@@ -305,10 +307,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
+        $faker->seed(20260727);
         $userReferenceIndex = 1;
 
         $visiteur = $this->createUser(
-            email: 'visiteur@visiteur.visiteur',
+            email: 'visiteur@example.com',
             roles: ['ROLE_USER'],
             password: '0000',
             nom: $faker->lastName(),
@@ -325,8 +328,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $agence = $this->createAgency(
             email: 'agence@agence.agence',
-            entreprise: 'Agence Boolts Paris',
-            password: '0000',
+            entreprise: 'Cabinet des Docks Immobilier',
+            password: 'agence',
             nom: $faker->lastName(),
             prenom: $faker->firstName(),
             telephone: $faker->phoneNumber(),
@@ -342,7 +345,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $mohcineAddress = self::AGENCY_ADDRESSES[1];
 
         $mohcine = $this->createAgency(
-            email: 'mohcine.elafia@gmail.com',
+            email: 'mohcine@agence.example.com',
             entreprise: 'Agence Mohcine',
             password: '0000',
             nom: $faker->lastName(),
@@ -358,7 +361,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         ++$userReferenceIndex;
 
         $admin = $this->createUser(
-            email: 'admin@admin.admin',
+            email: 'admin@boolts.example.com',
             roles: ['ROLE_ADMIN'],
             password: '0000',
             nom: $faker->lastName(),
@@ -375,7 +378,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $addressData = $faker->randomElement(self::AGENCY_ADDRESSES);
 
             $agency = $this->createAgency(
-                email: \sprintf('agence%d@boolts.test', $i),
+                email: \sprintf('agence%d@agence.example.com', $i),
                 entreprise: \sprintf('Agence Internationale %d', $i),
                 password: '0000',
                 nom: $faker->lastName(),
@@ -419,7 +422,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setPays($pays)
             ->setDevise($pays->getDevise())
             ->setFuseauHoraire($this->getFuseauHoraireByCountryIso($iso))
-            ->setLangues($this->getLanguesReference($defaultLanguageCode));
+            ->setLangues($this->getLanguesReference($defaultLanguageCode))
+            ->setVisitAgency('0');
 
         foreach ($spokenLanguageCodes as $spokenLanguageCode) {
             $user->addLangueParler(
@@ -460,7 +464,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setNumeroContact($telephone)
             ->setWhatsApp($telephone)
             ->setCodePostal($addressData['codePostal'])
-            ->setCodePostalContact($addressData['codePostal']);
+            ->setCodePostalContact($addressData['codePostal'])
+            ->setVisitAgency((string) $this->getAgencyVisitCount($email));
 
         $this->fillUserTranslation($agency, 'fr', $addressData['fr']);
         $this->fillUserTranslation($agency, 'en', $addressData['en']);
@@ -468,6 +473,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $agency->mergeNewTranslations();
 
         return $agency;
+    }
+
+    private function getAgencyVisitCount(string $email): int
+    {
+        return 250 + (int) (crc32(mb_strtolower($email)) % 24_751);
     }
 
     private function fillUserTranslation(User $user, string $locale, array $data): void

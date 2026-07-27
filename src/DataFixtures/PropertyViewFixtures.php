@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
@@ -19,6 +21,8 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
+use Faker\Generator;
 
 class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -33,8 +37,13 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
      */
     private const BATCH_SIZE = 500;
 
+    private Generator $faker;
+
     public function load(ObjectManager $manager): void
     {
+        $this->faker = Factory::create('fr_FR');
+        $this->faker->seed(20260727);
+
         if (!$manager instanceof EntityManagerInterface) {
             throw new \LogicException('Le manager doit être une instance de EntityManagerInterface.');
         }
@@ -46,15 +55,11 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
         $connection->beginTransaction();
 
         try {
-            for ($propertyIndex = 1; $propertyIndex <= PropertyFixtures::PROPERTY_COUNT; ++$propertyIndex) {
-                $propertyReference = PropertyFixtures::PROPERTY_REFERENCE_PREFIX.$propertyIndex;
+            /** @var list<Property> $properties */
+            $properties = $manager->getRepository(Property::class)->findAll();
 
-                if (!$this->hasReference($propertyReference, Property::class)) {
-                    continue;
-                }
-
-                /** @var Property $property */
-                $property = $this->getReference($propertyReference, Property::class);
+            foreach ($properties as $propertyIndex => $property) {
+                ++$propertyIndex;
 
                 $propertyId = $property->getId();
 
@@ -62,7 +67,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
                     continue;
                 }
 
-                $viewsCount = random_int(
+                $viewsCount = $this->faker->numberBetween(
                     self::MIN_VIEWS_PER_PROPERTY,
                     self::MAX_VIEWS_PER_PROPERTY
                 );
@@ -153,11 +158,11 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
         /*
          * 60% des vues sont anonymes.
          */
-        if (random_int(1, 100) <= 60) {
+        if ($this->faker->numberBetween(1, 100) <= 60) {
             return null;
         }
 
-        $userIndex = random_int(1, UserFixtures::USER_COUNT);
+        $userIndex = $this->faker->numberBetween(1, UserFixtures::USER_COUNT);
 
         $userReference = UserFixtures::USER_REFERENCE_PREFIX.$userIndex;
 
@@ -187,7 +192,7 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
             'anonymous_property_%d_view_%d_random_%d',
             $propertyIndex,
             $viewIndex,
-            random_int(1000, 999999)
+            $this->faker->numberBetween(1000, 999999)
         ));
     }
 
@@ -206,10 +211,10 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
 
     private function randomViewedAt(): \DateTimeImmutable
     {
-        $daysAgo = random_int(0, self::MAX_DAYS_AGO);
-        $hoursAgo = random_int(0, 23);
-        $minutesAgo = random_int(0, 59);
-        $secondsAgo = random_int(0, 59);
+        $daysAgo = $this->faker->numberBetween(0, self::MAX_DAYS_AGO);
+        $hoursAgo = $this->faker->numberBetween(0, 23);
+        $minutesAgo = $this->faker->numberBetween(0, 59);
+        $secondsAgo = $this->faker->numberBetween(0, 59);
 
         return new \DateTimeImmutable(\sprintf(
             '-%d days -%d hours -%d minutes -%d seconds',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c) 2026 Boolts (https://boolts.com)
  *
@@ -12,6 +14,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\RealEstate\PropertyLocationCatalog;
 use App\Entity\Caracteristique;
 use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
@@ -32,10 +35,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
      * Le vrai volume est dynamique :
      * 100 villes x 6 à 12 biens = environ 600 à 1200 annonces réalistes.
      */
-    public const PROPERTY_COUNT = 2000;
-
-    private const MIN_PROPERTIES_PER_LOCATION = 6;
-    private const MAX_PROPERTIES_PER_LOCATION = 12;
+    public const PROPERTIES_PER_CITY = 50;
 
     /**
      * Rayon GPS autour du centre de la ville.
@@ -1426,6 +1426,45 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         [
             'countryCode' => 'MA',
             'country' => 'Maroc',
+            'codePostal' => '20000',
+            'ville' => 'Casablanca',
+            'region' => 'Casablanca-Settat',
+            'department' => 'Préfecture de Casablanca',
+            'neighborhood' => 'Racine',
+            'latitude' => '33.5731',
+            'longitude' => '-7.5898',
+            'mapboxId' => 'fixture-ma-casablanca-20000',
+            'streets' => ['Boulevard d’Anfa', 'Boulevard Zerktouni', 'Rue Ibnou Jahir'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '10000',
+            'ville' => 'Rabat',
+            'region' => 'Rabat-Salé-Kénitra',
+            'department' => 'Préfecture de Rabat',
+            'neighborhood' => 'Agdal',
+            'latitude' => '34.0209',
+            'longitude' => '-6.8416',
+            'mapboxId' => 'fixture-ma-rabat-10000',
+            'streets' => ['Avenue Mohammed V', 'Avenue Fal Ould Oumeir', 'Rue Oued Fès'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '30000',
+            'ville' => 'Fès',
+            'region' => 'Fès-Meknès',
+            'department' => 'Préfecture de Fès',
+            'neighborhood' => 'Ville Nouvelle',
+            'latitude' => '34.0331',
+            'longitude' => '-5.0003',
+            'mapboxId' => 'fixture-ma-fes-30000',
+            'streets' => ['Avenue Hassan II', 'Avenue des FAR', 'Boulevard Mohammed V'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
             'codePostal' => '40000',
             'ville' => 'Marrakech',
             'region' => 'Marrakech-Safi',
@@ -1435,6 +1474,84 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             'longitude' => '-7.9811',
             'mapboxId' => 'fixture-ma-marrakech-40000',
             'streets' => ['Avenue Mohammed VI', 'Boulevard Mohamed Zerktouni', 'Rue de la Liberté'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '80000',
+            'ville' => 'Agadir',
+            'region' => 'Souss-Massa',
+            'department' => 'Préfecture d’Agadir Ida-Outanane',
+            'neighborhood' => 'Founty',
+            'latitude' => '30.4278',
+            'longitude' => '-9.5981',
+            'mapboxId' => 'fixture-ma-agadir-80000',
+            'streets' => ['Avenue Mohammed V', 'Boulevard du 20 Août', 'Rue des Orangers'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '90000',
+            'ville' => 'Tanger',
+            'region' => 'Tanger-Tétouan-Al Hoceïma',
+            'department' => 'Préfecture de Tanger-Assilah',
+            'neighborhood' => 'Malabata',
+            'latitude' => '35.7595',
+            'longitude' => '-5.8340',
+            'mapboxId' => 'fixture-ma-tanger-90000',
+            'streets' => ['Avenue Mohammed VI', 'Boulevard Pasteur', 'Avenue d’Espagne'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '50000',
+            'ville' => 'Meknès',
+            'region' => 'Fès-Meknès',
+            'department' => 'Préfecture de Meknès',
+            'neighborhood' => 'Hamria',
+            'latitude' => '33.8935',
+            'longitude' => '-5.5473',
+            'mapboxId' => 'fixture-ma-meknes-50000',
+            'streets' => ['Avenue des FAR', 'Avenue Mohammed V', 'Rue Rouamzine'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '60000',
+            'ville' => 'Oujda',
+            'region' => 'Oriental',
+            'department' => 'Préfecture d’Oujda-Angad',
+            'neighborhood' => 'Centre-ville',
+            'latitude' => '34.6814',
+            'longitude' => '-1.9086',
+            'mapboxId' => 'fixture-ma-oujda-60000',
+            'streets' => ['Boulevard Mohammed V', 'Avenue Allal El Fassi', 'Rue de Marrakech'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '14000',
+            'ville' => 'Kénitra',
+            'region' => 'Rabat-Salé-Kénitra',
+            'department' => 'Province de Kénitra',
+            'neighborhood' => 'Maâmora',
+            'latitude' => '34.2610',
+            'longitude' => '-6.5802',
+            'mapboxId' => 'fixture-ma-kenitra-14000',
+            'streets' => ['Avenue Mohammed V', 'Avenue Moulay Abdelaziz', 'Rue Sebou'],
+        ],
+        [
+            'countryCode' => 'MA',
+            'country' => 'Maroc',
+            'codePostal' => '93000',
+            'ville' => 'Tétouan',
+            'region' => 'Tanger-Tétouan-Al Hoceïma',
+            'department' => 'Province de Tétouan',
+            'neighborhood' => 'Ensanche',
+            'latitude' => '35.5785',
+            'longitude' => '-5.3684',
+            'mapboxId' => 'fixture-ma-tetouan-93000',
+            'streets' => ['Avenue Mohammed V', 'Avenue Abdelkhalek Torres', 'Rue Ahmed Balafrej'],
         ],
     ];
 
@@ -1449,6 +1566,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         }
 
         $faker = Factory::create('fr_FR');
+        $faker->seed(20260727);
 
         $agenceReferences = [
             UserFixtures::USER_AGENCE_REFERENCE,
@@ -1459,9 +1577,15 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             $agenceReferences[] = UserFixtures::USER_AGENCE_REFERENCE_PREFIX.$i;
         }
 
-        $caracteristiques = $manager
-            ->getRepository(Caracteristique::class)
-            ->findAll();
+        $caracteristiques = [];
+        foreach (['stationnement', 'terrasse', 'balcon', 'jardin', 'piscine', 'cave-debarras', 'climatisation', 'chauffage', 'ascenseur'] as $reference) {
+            /** @var Caracteristique $caracteristique */
+            $caracteristique = $this->getReference(
+                CaracteristiqueFixtures::CARACTERISTIQUE_REFERENCE_PREFIX.$reference,
+                Caracteristique::class
+            );
+            $caracteristiques[$reference] = $caracteristique;
+        }
 
         $usedSlugs = [];
         $usedGps = [];
@@ -1471,12 +1595,13 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         $propertyReferenceIndex = 1;
 
         foreach ($this->getLocations() as $location) {
-            $numberOfPropertiesForLocation = $faker->numberBetween(
-                self::MIN_PROPERTIES_PER_LOCATION,
-                self::MAX_PROPERTIES_PER_LOCATION
-            );
-
-            for ($i = 1; $i <= $numberOfPropertiesForLocation; ++$i) {
+            for ($i = 1; $i <= self::PROPERTIES_PER_CITY; ++$i) {
+                $location['neighborhood'] = $faker->randomElement($location['neighborhoods']);
+                $location['mapboxId'] = sprintf(
+                    'fixture-%s-%s',
+                    mb_strtolower($location['countryCode']),
+                    mb_strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $location['ville']) ?? 'city')
+                );
                 $propertyData = $this->pickPropertyProfile($faker);
 
                 $randomGps = $this->generateUniqueRandomGpsAround(
@@ -1539,7 +1664,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                     ->setDpeMax((string) $metrics['dpeMax'])
                     ->setDateIndexationEnergie(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-3 years', 'now')))
                     ->setReferenceInterne($referenceInterne)
-                    ->setStatut(StatutAnnonceImmobiliere::PUBLIEE)
+                    ->setStatut($this->getStatus($propertyData['typeTransaction'], $propertyReferenceIndex))
                     ->setSlug($slug);
 
                 if ('vente' === $propertyData['typeTransaction']) {
@@ -1558,21 +1683,21 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
                 $createdAt = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-10 months', '-2 days'));
 
-                if (method_exists($property, 'setCreatedAt')) {
-                    $property->setCreatedAt($createdAt);
-                }
+                $property->setCreatedAt($createdAt);
 
-                if (method_exists($property, 'setUpdatedAt')) {
-                    $property->setUpdatedAt(
-                        $createdAt->modify('+'.$faker->numberBetween(1, 45).' days')
+                $eligibleCaracteristiques = $this->getEligibleCaracteristiques(
+                    $propertyData['typeBien'],
+                    $location['countryCode'],
+                    $caracteristiques
+                );
+
+                if ([] !== $eligibleCaracteristiques) {
+                    $numberOfCaracteristiques = $faker->numberBetween(
+                        1,
+                        min(4, count($eligibleCaracteristiques))
                     );
-                }
 
-                if ([] !== $caracteristiques) {
-                    $maxCaracteristiques = min(9, \count($caracteristiques));
-                    $numberOfCaracteristiques = $faker->numberBetween(2, $maxCaracteristiques);
-
-                    foreach ($faker->randomElements($caracteristiques, $numberOfCaracteristiques) as $caracteristique) {
+                    foreach ($faker->randomElements($eligibleCaracteristiques, $numberOfCaracteristiques) as $caracteristique) {
                         $property->addCaracteristique($caracteristique);
                     }
                 }
@@ -1595,11 +1720,55 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
     private function getLocations(): array
     {
-        return array_merge(
-            self::FRANCE_LOCATIONS,
-            self::CANADA_LOCATIONS,
-            self::MOROCCO_LOCATIONS,
-        );
+        return PropertyLocationCatalog::all();
+    }
+
+    private function getStatus(string $transaction, int $index): StatutAnnonceImmobiliere
+    {
+        $distribution = $index % 100;
+
+        if ($distribution < 85) {
+            return StatutAnnonceImmobiliere::PUBLIEE;
+        }
+
+        if ($distribution < 90) {
+            return StatutAnnonceImmobiliere::BROUILLON;
+        }
+
+        if ($distribution < 95) {
+            return 'vente' === $transaction
+                ? StatutAnnonceImmobiliere::VENDUE
+                : StatutAnnonceImmobiliere::LOUEE;
+        }
+
+        return StatutAnnonceImmobiliere::ARCHIVEE;
+    }
+
+    /**
+     * @param array<string, Caracteristique> $caracteristiques
+     * @return list<Caracteristique>
+     */
+    private function getEligibleCaracteristiques(
+        string $typeBien,
+        string $countryCode,
+        array $caracteristiques,
+    ): array {
+        $references = match ($typeBien) {
+            'appartement' => ['balcon', 'ascenseur', 'cave-debarras', 'stationnement', 'chauffage'],
+            'maison', 'ferme' => ['terrasse', 'jardin', 'stationnement', 'chauffage', 'climatisation'],
+            'villa' => ['terrasse', 'jardin', 'piscine', 'stationnement', 'climatisation'],
+            'bureaux' => ['ascenseur', 'stationnement', 'climatisation', 'chauffage'],
+            'local-commercial', 'fond-de-commerce' => ['stationnement', 'climatisation', 'chauffage'],
+            'parking-garage-box' => ['stationnement'],
+            'terrain' => [],
+            default => [],
+        };
+
+        if ('MA' === $countryCode && in_array('climatisation', $references, true)) {
+            $references[] = 'climatisation';
+        }
+
+        return array_values(array_intersect_key($caracteristiques, array_flip($references)));
     }
 
     private function pickPropertyProfile(\Faker\Generator $faker): array
@@ -1929,26 +2098,21 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         do {
             ++$attempts;
 
-            $street = $faker->randomElement($location['streets']);
+            $street = $faker->randomElement(
+                'MA' === $location['countryCode']
+                    ? ['Avenue Mohammed V', 'Boulevard Hassan II', 'Rue Al Qods']
+                    : ['Rue de la République', 'Avenue de la Gare', 'Rue des Écoles']
+            );
             $streetNumber = $faker->numberBetween(1, 220);
             $adresse = $streetNumber.' '.$street;
 
-            if ('CA' === $location['countryCode']) {
-                $fullAddress = \sprintf(
-                    '%s, %s, %s %s, Canada',
-                    $adresse,
-                    $location['ville'],
-                    $location['region'],
-                    $location['codePostal']
-                );
-            } else {
-                $fullAddress = \sprintf(
-                    '%s, %s %s, France',
-                    $adresse,
-                    $location['codePostal'],
-                    $location['ville']
-                );
-            }
+            $fullAddress = \sprintf(
+                '%s, %s %s, %s',
+                $adresse,
+                $location['codePostal'],
+                $location['ville'],
+                $location['country']
+            );
 
             $key = mb_strtolower($location['countryCode'].'|'.$fullAddress);
         } while (isset($usedFullAddresses[$key]) && $attempts < 250);

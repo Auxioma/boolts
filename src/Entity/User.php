@@ -174,6 +174,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     )]
     private ?AgencyBillingProfile $billingProfile = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $visitAgency = null;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
@@ -815,6 +818,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         ) {
             $billingProfile->setAgency($this);
         }
+
+        return $this;
+    }
+
+    public function getVisitAgency(): ?string
+    {
+        return $this->visitAgency;
+    }
+
+    public function setVisitAgency(string $visitAgency): static
+    {
+        $this->visitAgency = $visitAgency;
 
         return $this;
     }
