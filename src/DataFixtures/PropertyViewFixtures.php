@@ -14,11 +14,9 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\Property;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
-use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -33,9 +31,11 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
     private const MAX_DAYS_AGO = 45;
 
     /**
-     * Nombre d'enregistrements insérés en une seule requête SQL.
+     * Nombre d'enregistrements insérés en une seule requête SQL native.
+     *
+     * Une taille volontairement limitée évite aussi les requêtes trop longues.
      */
-    private const BATCH_SIZE = 500;
+    private const BATCH_SIZE = 200;
 
     private Generator $faker;
 
@@ -48,24 +48,28 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
             throw new \LogicException('Le manager doit être une instance de EntityManagerInterface.');
         }
 
-        $connection = $manager->getConnection();
+        $nativeConnection = $manager->getConnection()->getNativeConnection();
+
+        if (!$nativeConnection instanceof \PDO) {
+            throw new \LogicException('La fixture des vues nécessite une connexion PDO native.');
+        }
+
+        /** @var list<int|string> $propertyIds */
+        $propertyIds = $nativeConnection
+            ->query('SELECT id FROM property')
+            ->fetchAll(\PDO::FETCH_COLUMN);
 
         $rows = [];
 
-        $connection->beginTransaction();
+        $ownsTransaction = !$nativeConnection->inTransaction();
+
+        if ($ownsTransaction) {
+            $nativeConnection->beginTransaction();
+        }
 
         try {
-            /** @var list<Property> $properties */
-            $properties = $manager->getRepository(Property::class)->findAll();
-
-            foreach ($properties as $propertyIndex => $property) {
+            foreach ($propertyIds as $propertyIndex => $propertyId) {
                 ++$propertyIndex;
-
-                $propertyId = $property->getId();
-
-                if (null === $propertyId) {
-                    continue;
-                }
 
                 $viewsCount = $this->faker->numberBetween(
                     self::MIN_VIEWS_PER_PROPERTY,
@@ -106,25 +110,29 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
                     ];
 
                     if (\count($rows) >= self::BATCH_SIZE) {
-                        $this->insertBatch($connection, $rows);
+                        $this->insertBatch($nativeConnection, $rows);
                         $rows = [];
                     }
                 }
             }
 
             if ([] !== $rows) {
-                $this->insertBatch($connection, $rows);
+                $this->insertBatch($nativeConnection, $rows);
             }
 
-            $connection->commit();
+            if ($ownsTransaction) {
+                $nativeConnection->commit();
+            }
         } catch (\Throwable $exception) {
-            $connection->rollBack();
+            if ($ownsTransaction && $nativeConnection->inTransaction()) {
+                $nativeConnection->rollBack();
+            }
 
             throw $exception;
         }
     }
 
-    private function insertBatch(Connection $connection, array $rows): void
+    private function insertBatch(\PDO $connection, array $rows): void
     {
         if ([] === $rows) {
             return;
@@ -150,7 +158,13 @@ class PropertyViewFixtures extends Fixture implements DependentFixtureInterface
             implode(', ', $placeholders)
         );
 
-        $connection->executeStatement($sql, $params);
+        $statement = $connection->prepare($sql);
+
+        if (false === $statement) {
+            throw new \RuntimeException('Impossible de préparer l’insertion des vues de biens.');
+        }
+
+        $statement->execute($params);
     }
 
     private function getRandomUser(): ?User
