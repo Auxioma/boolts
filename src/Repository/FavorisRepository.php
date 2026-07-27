@@ -39,6 +39,32 @@ class FavorisRepository extends ServiceEntityRepository
         return array_map('intval', array_column($rows, 'propertyId'));
     }
 
+    /**
+     * @return list<\DateTimeImmutable>
+     */
+    public function findCreatedDatesForPropertyOwnerDashboard(User $user, ?\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        $queryBuilder = $this->createQueryBuilder('f')
+            ->select('f.createdAt')
+            ->innerJoin('f.property', 'p')
+            ->andWhere('p.user = :user')
+            ->andWhere('f.createdAt IS NOT NULL')
+            ->andWhere('f.createdAt <= :end')
+            ->setParameter('user', $user)
+            ->setParameter('end', $end);
+
+        if (null !== $start) {
+            $queryBuilder
+                ->andWhere('f.createdAt >= :start')
+                ->setParameter('start', $start);
+        }
+
+        return array_map(
+            static fn (array $row): \DateTimeImmutable => new \DateTimeImmutable($row['createdAt']),
+            $queryBuilder->getQuery()->getScalarResult(),
+        );
+    }
+
     //    /**
     //     * @return Favoris[] Returns an array of Favoris objects
     //     */

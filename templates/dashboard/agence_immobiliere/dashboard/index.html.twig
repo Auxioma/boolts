@@ -80,33 +80,41 @@
                         </section>
 
                         {# Statistiques rapides #}
-                        <section class="dashboard-card statistics-card">
+                        <section
+                            class="dashboard-card statistics-card"
+                            data-controller="dashboard-statistics"
+                            data-dashboard-statistics-url-value="{{ path('agence_immobiliere_dashboard_statistics') }}"
+                        >
                             <div class="d-flex align-items-center justify-content-between statistics-header">
                                 <h2 class="dashboard-section-title mb-0">
                                     Statistiques
                                 </h2>
 
                                 <div class="d-flex align-items-center statistics-periods">
-                                    <button type="button" class="statistics-period-button">
+                                    <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-statistics#selectPeriod">
                                         7 jours
+                                    </button>
+
+                                    <button type="button" class="statistics-period-button {{ statistics.period == '30d' ? 'active' }}" data-period="30d" data-action="dashboard-statistics#selectPeriod">
+                                        30 jours
+                                    </button>
+
+                                    <button type="button" class="statistics-period-button {{ statistics.period == '12m' ? 'active' }}" data-period="12m" data-action="dashboard-statistics#selectPeriod">
+                                        12 mois
+                                    </button>
+
+                                    <button type="button" class="statistics-period-button {{ statistics.period == 'max' ? 'active' }}" data-period="max" data-action="dashboard-statistics#selectPeriod">
+                                        Maximum
                                     </button>
 
                                     <button
                                         type="button"
-                                        class="statistics-period-button active"
+                                        class="statistics-period-button {{ statistics.period == 'custom' ? 'active' }}"
+                                        data-period="custom"
+                                        data-action="dashboard-statistics#selectPeriod"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#statistics-custom-period-modal"
                                     >
-                                        30 jours
-                                    </button>
-
-                                    <button type="button" class="statistics-period-button">
-                                        12 mois
-                                    </button>
-
-                                    <button type="button" class="statistics-period-button">
-                                        Maximum
-                                    </button>
-
-                                    <button type="button" class="statistics-period-button">
                                         Personnalisé
                                     </button>
                                 </div>
@@ -114,59 +122,60 @@
 
                             <div class="row g-4 statistics-summary">
 
-                                <div class="col-3">
-                                    <div class="stat-card">
-                                        <div class="stat-card-label">
-                                            <i class="icon-user-round stat-card-icon"></i>
-
-                                            <span>Vue du profil</span>
-                                        </div>
-
-                                        <span class="stat-card-value">
-                                            393 374
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="col-3">
-                                    <div class="stat-card">
+                                <div class="col-4">
+                                    <div
+                                        class="stat-card statistics-series-toggle"
+                                        role="button"
+                                        tabindex="0"
+                                        aria-pressed="true"
+                                        data-series-index="0"
+                                        data-action="click->dashboard-statistics#toggleSeries"
+                                    >
                                         <div class="stat-card-label">
                                             <i class="icon-building-2 stat-card-icon"></i>
 
                                             <span>Annonces publiées</span>
                                         </div>
 
-                                        <span class="stat-card-value">
-                                            53
-                                        </span>
+                                        <span class="stat-card-value" data-dashboard-statistics-target="published">{{ statistics.totals.published }}</span>
                                     </div>
                                 </div>
 
-                                <div class="col-3">
-                                    <div class="stat-card stat-card-purple">
+                                <div class="col-4">
+                                    <div
+                                        class="stat-card stat-card-purple statistics-series-toggle"
+                                        role="button"
+                                        tabindex="0"
+                                        aria-pressed="true"
+                                        data-series-index="1"
+                                        data-action="click->dashboard-statistics#toggleSeries"
+                                    >
                                         <div class="stat-card-label">
                                             <i class="icon-eye stat-card-icon"></i>
 
                                             <span>Vues des annonces</span>
                                         </div>
 
-                                        <span class="stat-card-value">
-                                            393 374
-                                        </span>
+                                        <span class="stat-card-value" data-dashboard-statistics-target="views">{{ statistics.totals.views }}</span>
                                     </div>
                                 </div>
 
-                                <div class="col-3">
-                                    <div class="stat-card stat-card-green">
+                                <div class="col-4">
+                                    <div
+                                        class="stat-card stat-card-green statistics-series-toggle"
+                                        role="button"
+                                        tabindex="0"
+                                        aria-pressed="true"
+                                        data-series-index="2"
+                                        data-action="click->dashboard-statistics#toggleSeries"
+                                    >
                                         <div class="stat-card-label">
                                             <i class="icon-heart stat-card-icon"></i>
 
                                             <span>Mis en favoris</span>
                                         </div>
 
-                                        <span class="stat-card-value">
-                                            30
-                                        </span>
+                                        <span class="stat-card-value" data-dashboard-statistics-target="favorites">{{ statistics.totals.favorites }}</span>
                                     </div>
                                 </div>
 
@@ -174,78 +183,44 @@
 
                             {# Zone du graphique #}
                             <div class="statistics-chart">
-                                <div class="statistics-chart-scale">
-                                    <span>1 200 000</span>
-                                    <span>1 000 000</span>
-                                    <span>800 000</span>
-                                    <span>600 000</span>
-                                    <span>400 000</span>
-                                    <span>200 000</span>
-                                    <span>0</span>
-                                </div>
 
                                 <div class="statistics-chart-content">
-                                    <div class="chart-horizontal-line chart-line-1"></div>
-                                    <div class="chart-horizontal-line chart-line-2"></div>
-                                    <div class="chart-horizontal-line chart-line-3"></div>
-                                    <div class="chart-horizontal-line chart-line-4"></div>
-                                    <div class="chart-horizontal-line chart-line-5"></div>
-                                    <div class="chart-horizontal-line chart-line-6"></div>
+                                    {{ render_chart(
+                                        statistics_chart, {
+                                            class: 'statistics-chart-canvas',
+                                            'data-dashboard-statistics-target': 'chart'
+                                    }) }}
+                                </div>
+                            </div>
 
-                                    <svg
-                                        class="statistics-svg"
-                                        viewBox="0 0 820 250"
-                                        preserveAspectRatio="none"
-                                        aria-label="Graphique des statistiques"
-                                    >
-                                        <polyline
-                                            class="chart-line chart-line-purple"
-                                            points="15,210 115,155 230,25 345,180 470,105 600,65 720,55 810,58"
-                                        />
-
-                                        <polyline
-                                            class="chart-line chart-line-green"
-                                            points="15,225 115,175 230,48 345,215 470,125 600,85 720,70 810,84"
-                                        />
-
-                                        <g class="chart-points chart-points-purple">
-                                            <circle cx="115" cy="155" r="4"></circle>
-                                            <circle cx="230" cy="25" r="4"></circle>
-                                            <circle cx="345" cy="180" r="4"></circle>
-                                            <circle cx="470" cy="105" r="4"></circle>
-                                            <circle cx="600" cy="65" r="4"></circle>
-                                            <circle cx="720" cy="55" r="4"></circle>
-                                            <circle cx="810" cy="58" r="4"></circle>
-                                        </g>
-
-                                        <g class="chart-points chart-points-green">
-                                            <circle cx="115" cy="175" r="4"></circle>
-                                            <circle cx="230" cy="48" r="4"></circle>
-                                            <circle cx="345" cy="215" r="4"></circle>
-                                            <circle cx="470" cy="125" r="4"></circle>
-                                            <circle cx="600" cy="85" r="4"></circle>
-                                            <circle cx="720" cy="70" r="4"></circle>
-                                            <circle cx="810" cy="84" r="4"></circle>
-                                        </g>
-                                    </svg>
-
-                                    <div class="chart-tooltip">
-                                        <span class="chart-tooltip-date">
-                                            5 Août
-                                        </span>
-
-                                        <span class="chart-tooltip-value">
-                                            4 000
-                                        </span>
-                                    </div>
-
-                                    <div class="chart-dates">
-                                        <span>5 Août</span>
-                                        <span>10 Août</span>
-                                        <span>15 Août</span>
-                                        <span>20 Août</span>
-                                        <span>25 Août</span>
-                                        <span>30 Août</span>
+                            <div
+                                id="statistics-custom-period-modal"
+                                class="modal fade"
+                                tabindex="-1"
+                                aria-labelledby="statistics-custom-period-modal-title"
+                                aria-hidden="true"
+                                data-dashboard-statistics-target="modal"
+                            >
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h2 id="statistics-custom-period-modal-title" class="modal-title fs-5">Période personnalisée</h2>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="statistics-start" class="form-label">Date de début</label>
+                                                <input id="statistics-start" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.start|date('Y-m-d') }}" data-dashboard-statistics-target="start">
+                                            </div>
+                                            <div>
+                                                <label for="statistics-end" class="form-label">Date de fin</label>
+                                                <input id="statistics-end" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.end|date('Y-m-d') }}" data-dashboard-statistics-target="end">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="button" class="btn btn-primary" data-action="dashboard-statistics#loadCustomPeriod">Appliquer</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

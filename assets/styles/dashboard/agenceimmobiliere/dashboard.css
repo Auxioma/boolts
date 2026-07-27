@@ -263,6 +263,22 @@
     height: 270px;
 }
 
+.statistics-series-toggle {
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.statistics-series-toggle.is-inactive {
+    opacity: 0.45;
+}
+
+.statistics-chart-canvas {
+    position: relative;
+    z-index: 1;
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .chart-horizontal-line {
     position: absolute;
     left: 0;

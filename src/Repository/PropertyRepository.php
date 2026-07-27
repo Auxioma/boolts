@@ -31,6 +31,33 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<\DateTimeImmutable>
+     */
+    public function findPublishedDatesForDashboard(User $user, ?\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->select('p.createdAt')
+            ->andWhere('p.user = :user')
+            ->andWhere('p.statut = :status')
+            ->andWhere('p.createdAt IS NOT NULL')
+            ->andWhere('p.createdAt <= :end')
+            ->setParameter('user', $user)
+            ->setParameter('status', StatutAnnonceImmobiliere::PUBLIEE)
+            ->setParameter('end', $end);
+
+        if (null !== $start) {
+            $queryBuilder
+                ->andWhere('p.createdAt >= :start')
+                ->setParameter('start', $start);
+        }
+
+        return array_map(
+            static fn (array $row): \DateTimeImmutable => new \DateTimeImmutable($row['createdAt']),
+            $queryBuilder->getQuery()->getScalarResult(),
+        );
+    }
+
+    /**
      * Retourne une requête pour récupérer les biens immobiliers d’un utilisateur donné.
      * Cette méthode est utilisée pour la pagination dans le contrôleur DetailAgenceController.
      * De plus, il y aura les filtre de recherche à ajouter dans cette requête.

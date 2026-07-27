@@ -13,6 +13,7 @@
 namespace App\Repository;
 
 use App\Entity\PropertyView;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,6 +25,31 @@ class PropertyViewRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, PropertyView::class);
+    }
+
+    /**
+     * @return list<\DateTimeImmutable>
+     */
+    public function findViewedDatesForDashboard(User $user, ?\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        $queryBuilder = $this->createQueryBuilder('pv')
+            ->select('pv.viewedAt')
+            ->innerJoin('pv.property', 'p')
+            ->andWhere('p.user = :user')
+            ->andWhere('pv.viewedAt <= :end')
+            ->setParameter('user', $user)
+            ->setParameter('end', $end);
+
+        if (null !== $start) {
+            $queryBuilder
+                ->andWhere('pv.viewedAt >= :start')
+                ->setParameter('start', $start);
+        }
+
+        return array_map(
+            static fn (array $row): \DateTimeImmutable => new \DateTimeImmutable($row['viewedAt']),
+            $queryBuilder->getQuery()->getScalarResult(),
+        );
     }
 
     //    /**

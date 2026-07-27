@@ -12,6 +12,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\CreatedAtTraits;
 use App\Repository\FavorisRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -20,6 +21,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\UniqueConstraint(name: 'UNIQ_FAVORIS_USER_PROPERTY', columns: ['user_id', 'property_id'])]
 class Favoris
 {
+    use CreatedAtTraits;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
