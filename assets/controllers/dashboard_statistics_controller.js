@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import { Modal } from 'bootstrap';
 
 export default class extends Controller {
-    static targets = ['modal', 'start', 'end', 'published', 'views', 'favorites', 'chart'];
+    static targets = ['modal', 'start', 'end', 'profileViews', 'published', 'views', 'favorites', 'chart'];
     static values = { url: String };
 
     connect() {
@@ -37,6 +37,7 @@ export default class extends Controller {
         }
 
         const statistics = await response.json();
+        this.profileViewsTarget.textContent = statistics.profileViews;
         this.publishedTarget.textContent = statistics.published;
         this.viewsTarget.textContent = statistics.views;
         this.favoritesTarget.textContent = statistics.favorites;

@@ -13,6 +13,7 @@
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
 use App\Entity\User;
+use App\Repository\AgencyProfileDailyVisitRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
@@ -42,6 +43,7 @@ final class DashboardController extends AbstractController
         PropertyRepository $propertyRepository,
         PropertyViewRepository $propertyViewRepository,
         FavorisRepository $favorisRepository,
+        AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
     ): Response
     {
         $statistics = $this->statistics(
@@ -49,6 +51,7 @@ final class DashboardController extends AbstractController
             $propertyRepository,
             $propertyViewRepository,
             $favorisRepository,
+            $agencyProfileDailyVisitRepository,
         );
 
         return $this->render('dashboard/agence_immobiliere/dashboard/index.html.twig', [
@@ -65,6 +68,7 @@ final class DashboardController extends AbstractController
         PropertyRepository $propertyRepository,
         PropertyViewRepository $propertyViewRepository,
         FavorisRepository $favorisRepository,
+        AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
     ): JsonResponse {
         try {
             $statistics = $this->statistics(
@@ -72,6 +76,7 @@ final class DashboardController extends AbstractController
                 $propertyRepository,
                 $propertyViewRepository,
                 $favorisRepository,
+                $agencyProfileDailyVisitRepository,
             );
         } catch (\InvalidArgumentException $exception) {
             return $this->json(['message' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -88,6 +93,7 @@ final class DashboardController extends AbstractController
         PropertyRepository $propertyRepository,
         PropertyViewRepository $propertyViewRepository,
         FavorisRepository $favorisRepository,
+        AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
     ): array {
         $user = $this->getUser();
 
@@ -100,8 +106,13 @@ final class DashboardController extends AbstractController
         $publishedDates = $propertyRepository->findPublishedDatesForDashboard($user, $start, $end);
         $viewedDates = $propertyViewRepository->findViewedDatesForDashboard($user, $start, $end);
         $favoriteDates = $favorisRepository->findCreatedDatesForPropertyOwnerDashboard($user, $start, $end);
+        $profileDailyViews = $agencyProfileDailyVisitRepository->findForDashboard($user, $start, $end);
+        $profileViewDates = array_map(
+            static fn ($dailyView): \DateTimeImmutable => $dailyView->getViewedOn() ?? new \DateTimeImmutable('today'),
+            $profileDailyViews
+        );
 
-        $chartStart = $start ?? $this->firstDate($publishedDates, $viewedDates, $favoriteDates) ?? $end;
+        $chartStart = $start ?? $this->firstDate($publishedDates, $viewedDates, $favoriteDates, $profileViewDates) ?? $end;
         $monthly = $chartStart->diff($end)->days > 31;
         $buckets = $this->buckets($chartStart, $end, $monthly);
 
@@ -110,12 +121,14 @@ final class DashboardController extends AbstractController
             'start' => $chartStart,
             'end' => $end,
             'totals' => [
+                'profileViews' => array_sum(array_map(static fn ($dailyView): int => $dailyView->getVisits(), $profileDailyViews)),
                 'published' => count($publishedDates),
                 'views' => count($viewedDates),
                 'favorites' => count($favoriteDates),
             ],
             'series' => [
                 'labels' => array_values(array_map(static fn (array $bucket): string => $bucket['label'], $buckets)),
+                'profileViews' => $this->sumByBucket($profileDailyViews, $buckets, $monthly),
                 'published' => $this->countByBucket($publishedDates, $buckets, $monthly),
                 'views' => $this->countByBucket($viewedDates, $buckets, $monthly),
                 'favorites' => $this->countByBucket($favoriteDates, $buckets, $monthly),
@@ -167,6 +180,7 @@ final class DashboardController extends AbstractController
         $chart->setData([
             'labels' => $statistics['series']['labels'],
             'datasets' => [
+                ['label' => 'Vues du profil', 'data' => $statistics['series']['profileViews'], 'borderColor' => '#d27a00', 'backgroundColor' => 'rgba(210, 122, 0, .12)', 'tension' => 0],
                 ['label' => 'Annonces publiées', 'data' => $statistics['series']['published'], 'borderColor' => '#1c8c62', 'backgroundColor' => 'rgba(28, 140, 98, .12)', 'tension' => 0],
                 ['label' => 'Vues des annonces', 'data' => $statistics['series']['views'], 'borderColor' => '#7746d5', 'backgroundColor' => 'rgba(119, 70, 213, .12)', 'tension' => 0],
                 ['label' => 'Mises en favoris', 'data' => $statistics['series']['favorites'], 'borderColor' => '#42ae79', 'backgroundColor' => 'rgba(66, 174, 121, .12)', 'tension' => 0],
@@ -219,6 +233,25 @@ final class DashboardController extends AbstractController
 
             if (isset($buckets[$key])) {
                 ++$buckets[$key]['count'];
+            }
+        }
+
+        return array_values(array_map(static fn (array $bucket): int => $bucket['count'], $buckets));
+    }
+
+    private function sumByBucket(array $dailyViews, array $buckets, bool $monthly): array
+    {
+        foreach ($dailyViews as $dailyView) {
+            $viewedOn = $dailyView->getViewedOn();
+
+            if (null === $viewedOn) {
+                continue;
+            }
+
+            $key = $monthly ? $viewedOn->format('Y-m') : $viewedOn->format('Y-m-d');
+
+            if (isset($buckets[$key])) {
+                $buckets[$key]['count'] += $dailyView->getVisits();
             }
         }
 

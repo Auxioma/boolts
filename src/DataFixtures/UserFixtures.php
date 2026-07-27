@@ -423,7 +423,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setDevise($pays->getDevise())
             ->setFuseauHoraire($this->getFuseauHoraireByCountryIso($iso))
             ->setLangues($this->getLanguesReference($defaultLanguageCode))
-            ->setVisitAgency('0');
+            ->setVisitAgency(0);
 
         foreach ($spokenLanguageCodes as $spokenLanguageCode) {
             $user->addLangueParler(
@@ -465,7 +465,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ->setWhatsApp($telephone)
             ->setCodePostal($addressData['codePostal'])
             ->setCodePostalContact($addressData['codePostal'])
-            ->setVisitAgency((string) $this->getAgencyVisitCount($email));
+            ->setVisitAgency($this->getAgencyVisitCount($email));
 
         $this->fillUserTranslation($agency, 'fr', $addressData['fr']);
         $this->fillUserTranslation($agency, 'en', $addressData['en']);

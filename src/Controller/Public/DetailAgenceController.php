@@ -13,7 +13,10 @@
 namespace App\Controller\Public;
 
 use App\Entity\FormContact\Contact;
+use App\Entity\AgencyProfileDailyVisit;
+use App\Entity\User;
 use App\Form\FormContact\ContactType;
+use App\Repository\AgencyProfileDailyVisitRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\UserRepository;
@@ -48,6 +51,7 @@ final class DetailAgenceController extends AbstractController
         UserRepository $userRepository,
         PropertyRepository $propertyRepository,
         FavorisRepository $favorisRepository,
+        AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
         string $slug,
         PaginatorInterface $paginator,
         Request $request,
@@ -58,6 +62,8 @@ final class DetailAgenceController extends AbstractController
         if (!$user) {
             throw $this->createNotFoundException('Agence introuvable.');
         }
+
+        $this->recordProfileVisit($user, $agencyProfileDailyVisitRepository, $entityManager);
 
         /**
          * Gestion des filtre avec la pagination.
@@ -134,5 +140,36 @@ final class DetailAgenceController extends AbstractController
             'form' => $form->createView(),
             'favoritePropertyIds' => $favoritePropertyIds,
         ]);
+    }
+
+    private function recordProfileVisit(
+        User $agency,
+        AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
+        EntityManagerInterface $entityManager,
+    ): void {
+        $viewer = $this->getUser();
+
+        if ($viewer instanceof User && $viewer->getId() === $agency->getId()) {
+            return;
+        }
+
+        $today = new \DateTimeImmutable('today');
+        $dailyVisit = $agencyProfileDailyVisitRepository->findOneBy([
+            'agency' => $agency,
+            'viewedOn' => $today,
+        ]);
+
+        if (!$dailyVisit instanceof AgencyProfileDailyVisit) {
+            $dailyVisit = new AgencyProfileDailyVisit();
+            $dailyVisit
+                ->setAgency($agency)
+                ->setViewedOn($today)
+                ->setVisits(0);
+            $entityManager->persist($dailyVisit);
+        }
+
+        $dailyVisit->incrementVisits();
+        $agency->setVisitAgency($agency->getVisitAgency() + 1);
+        $entityManager->flush();
     }
 }

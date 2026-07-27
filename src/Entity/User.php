@@ -174,8 +174,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     )]
     private ?AgencyBillingProfile $billingProfile = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $visitAgency = null;
+    #[ORM\Column(options: ['default' => 0])]
+    private int $visitAgency = 0;
 
     public function __construct()
     {
@@ -822,14 +822,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return $this;
     }
 
-    public function getVisitAgency(): ?string
+    public function getVisitAgency(): int
     {
         return $this->visitAgency;
     }
 
-    public function setVisitAgency(string $visitAgency): static
+    public function setVisitAgency(int $visitAgency): static
     {
-        $this->visitAgency = $visitAgency;
+        $this->visitAgency = max(0, $visitAgency);
 
         return $this;
     }
