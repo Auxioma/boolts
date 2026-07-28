@@ -79,6 +79,441 @@
                             </div>
                         </section>
 
+
+{# termier et entrez les documents #}
+<section
+    class="finish-setup"
+    data-node-id="2465:10931"
+>
+    <header class="finish-setup__header">
+        <div class="finish-setup__heading">
+            <h2 class="finish-setup__title">
+                Terminez la création de votre compte pro !
+            </h2>
+
+            <p class="finish-setup__subtitle">
+                Veuillez déposer les derniers documents afin de valider la création de votre compte.
+            </p>
+        </div>
+
+        <div class="finish-setup__country">
+            <span class="finish-setup__country-value">
+                France
+            </span>
+
+            <svg
+                class="finish-setup__country-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden="true"
+            >
+                <path
+                    d="M7 9.5L12 14.5L17 9.5"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+            </svg>
+        </div>
+    </header>
+
+    <div class="finish-setup__documents">
+        <div class="finish-setup__document">
+            <div class="finish-setup__document-content">
+                <h3 class="finish-setup__document-title">
+                    Extrait KBIS
+                </h3>
+
+                <p class="finish-setup__document-description">
+                    Ce document est important car...
+                </p>
+            </div>
+
+            <p class="finish-setup__formats">
+                (Formats requis : jpeg, png, heic, pdf)
+            </p>
+
+            <label class="finish-setup__upload">
+                <input
+                    class="finish-setup__file-input"
+                    type="file"
+                    name="kbis"
+                    accept=".jpeg,.jpg,.png,.heic,.pdf"
+                >
+
+                <svg
+                    class="finish-setup__upload-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M12 16V3"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M7.5 7.5L12 3L16.5 7.5"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                    <path
+                        d="M5 14.5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V14.5"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+                </svg>
+
+                <span>Téléverser</span>
+            </label>
+        </div>
+
+        <div class="finish-setup__document">
+            <div class="finish-setup__document-content">
+                <h3 class="finish-setup__document-title">
+                    Pièce d’identité
+                </h3>
+
+                <p class="finish-setup__document-description">
+                    Ce document est important car...
+                </p>
+            </div>
+
+            <p class="finish-setup__formats">
+                (Formats requis : jpeg, png, heic, pdf)
+            </p>
+
+            <label class="finish-setup__upload">
+                <input
+                    class="finish-setup__file-input"
+                    type="file"
+                    name="identity"
+                    accept=".jpeg,.jpg,.png,.heic,.pdf"
+                >
+
+                <svg
+                    class="finish-setup__upload-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    aria-hidden="true"
+                >
+                    <path
+                        d="M12 16V3"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+
+                    <path
+                        d="M7.5 7.5L12 3L16.5 7.5"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+
+                    <path
+                        d="M5 14.5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V14.5"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+                </svg>
+
+                <span>Téléverser</span>
+            </label>
+        </div>
+    </div>
+
+    <button
+        class="finish-setup__submit"
+        type="submit"
+        disabled
+    >
+        Envoyer les documents
+    </button>
+</section>
+
+<style>
+.finish-setup,
+.finish-setup * {
+    box-sizing: border-box;
+}
+
+.finish-setup {
+    --finish-brand: #5d00ff;
+    --finish-black: #0b0f14;
+    --finish-grey: #858789;
+    --finish-light-grey: #ebecec;
+    --finish-white: #ffffff;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+
+    width: 100%;
+    padding: 24px;
+
+    background: var(--finish-white);
+    border: 2px solid var(--finish-brand);
+    border-radius: 24px;
+
+    font-family: "Eudoxus Sans", Arial, sans-serif;
+}
+
+.finish-setup__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    width: 100%;
+}
+
+.finish-setup__heading {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.finish-setup__title {
+    width: 100%;
+    margin: 0;
+
+    color: #000000;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+}
+
+.finish-setup__subtitle {
+    width: 100%;
+    margin: 0;
+
+    color: var(--finish-grey);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+
+.finish-setup__country {
+    display: flex;
+    flex: 0 0 140px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    width: 140px;
+    height: 44px;
+    padding: 12px 14px;
+
+    background: var(--finish-white);
+    border: 2px solid var(--finish-light-grey);
+    border-radius: 8px;
+}
+
+.finish-setup__country-value {
+    flex: 1 1 0;
+    min-width: 0;
+
+    color: var(--finish-black);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.finish-setup__country-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+
+    color: var(--finish-grey);
+}
+
+.finish-setup__documents {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    width: 100%;
+}
+
+.finish-setup__document {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+
+    width: 100%;
+    padding: 12px 0;
+
+    border-bottom: 2px solid var(--finish-light-grey);
+}
+
+.finish-setup__document-content {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 15px;
+
+    min-width: 0;
+}
+
+.finish-setup__document-title {
+    width: 100%;
+    margin: 0;
+
+    color: var(--finish-black);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+
+.finish-setup__document-description {
+    width: 100%;
+    margin: 0;
+
+    color: var(--finish-grey);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+
+.finish-setup__formats {
+    flex: 0 0 auto;
+    margin: 0;
+
+    color: var(--finish-grey);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.finish-setup__upload {
+    position: relative;
+
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    height: 44px;
+    padding: 10px 16px;
+
+    color: var(--finish-brand);
+    background: var(--finish-white);
+    border: 2px solid var(--finish-brand);
+    border-radius: 50px;
+
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+
+    cursor: pointer;
+}
+
+.finish-setup__file-input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+
+    overflow: hidden;
+
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+
+    white-space: nowrap;
+    border: 0;
+}
+
+.finish-setup__upload-icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+}
+
+.finish-setup__submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 44px;
+    padding: 10px 16px;
+
+    color: var(--finish-grey);
+    background: var(--finish-light-grey);
+    border: 0;
+    border-radius: 50px;
+
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+    white-space: nowrap;
+
+    cursor: not-allowed;
+}
+
+@media (max-width: 800px) {
+    .finish-setup {
+        align-items: stretch;
+        padding: 20px;
+    }
+
+    .finish-setup__header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .finish-setup__country {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .finish-setup__document {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .finish-setup__formats {
+        white-space: normal;
+    }
+
+    .finish-setup__upload,
+    .finish-setup__submit {
+        width: 100%;
+    }
+}
+</style>
+
+
                         {# Statistiques rapides #}
                         <section
                             class="dashboard-card statistics-card"
