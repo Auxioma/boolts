@@ -13,6 +13,7 @@
 namespace App\Entity;
 
 use App\Entity\Billing\AgencyBillingProfile;
+use App\Entity\Document\UserDocumentRequest;
 use App\Entity\FormContact\Contact;
 use App\Entity\Traits\CreatedAtTraits;
 use App\Entity\Traits\DeletedAtTraits;
@@ -177,6 +178,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(options: ['default' => 0])]
     private int $visitAgency = 0;
 
+    /**
+     * @var Collection<int, UserDocumentRequest>
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'user',
+        targetEntity: UserDocumentRequest::class,
+        cascade: ['persist'],
+        orphanRemoval: false
+    )]
+    private Collection $documentRequests;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
@@ -185,6 +197,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->horaireOuvertures = new ArrayCollection();
         $this->propertyViews = new ArrayCollection();
         $this->langueParlers = new ArrayCollection();
+        $this->documentRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -833,4 +846,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, UserDocumentRequest>
+     */
+    public function getDocumentRequests(): Collection
+    {
+        return $this->documentRequests;
+    }
+
+    public function addDocumentRequest(
+        UserDocumentRequest $documentRequest
+    ): static {
+        if (!$this->documentRequests->contains($documentRequest)) {
+            $this->documentRequests->add($documentRequest);
+            $documentRequest->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDocumentRequest(
+        UserDocumentRequest $documentRequest
+    ): static {
+        if ($this->documentRequests->removeElement($documentRequest)) {
+            if ($documentRequest->getUser() === $this) {
+                $documentRequest->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
 }
