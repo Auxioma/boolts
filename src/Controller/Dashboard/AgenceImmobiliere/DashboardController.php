@@ -12,8 +12,15 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\Document\RequiredDocument;
+use App\Entity\Document\UserDocumentRequest;
+use App\Entity\Document\UserDocumentSubmission;
+use App\Entity\Enum\DocumentRequestStatus;
 use App\Entity\User;
+use App\Form\Documents\AskDocumentsType;
 use App\Repository\AgencyProfileDailyVisitRepository;
+use App\Repository\Document\RequiredDocumentRepository;
+use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
@@ -21,9 +28,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/pro/dashboard', name: 'agence_immobiliere_')]
 /**
@@ -44,6 +54,8 @@ final class DashboardController extends AbstractController
         PropertyViewRepository $propertyViewRepository,
         FavorisRepository $favorisRepository,
         AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
+        RequiredDocumentRepository $requiredDocumentRepository,
+        UserDocumentRequestRepository $userDocumentRequestRepository,
     ): Response
     {
         $statistics = $this->statistics(
@@ -54,11 +66,183 @@ final class DashboardController extends AbstractController
             $agencyProfileDailyVisitRepository,
         );
 
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(AskDocumentsType::class, $user);
+
+        $form->handleRequest($request);
+        $documentsStepActive = $request->query->getBoolean('documents');
+
+        $documentForms = [];
+        $requiredDocuments = $requiredDocumentRepository->findBy(
+            ['enabled' => true],
+            ['position' => 'ASC', 'name' => 'ASC'],
+        );
+
+        foreach ($requiredDocuments as $requiredDocument) {
+            $documentForms[$requiredDocument->getId()] = $this->createForm(AskDocumentsType::class, $user, [
+                'include_country' => false,
+                'required_document' => $requiredDocument,
+            ])->createView();
+        }
+
+        $requiredDocumentCount = count(array_filter(
+            $requiredDocuments,
+            static fn (RequiredDocument $requiredDocument): bool => $requiredDocument->isRequired(),
+        ));
+        $documentsComplete = $requiredDocumentCount > 0
+            && $requiredDocumentCount === $userDocumentRequestRepository->countSubmittedRequiredDocuments($user);
+
         return $this->render('dashboard/agence_immobiliere/dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
             'statistics' => $statistics,
             'statistics_chart' => $this->buildChart($chartBuilder, $statistics),
+            'form' => $form->createView(),
+            'document_forms' => $documentForms,
+            'required_documents' => $requiredDocuments,
+            'documents_complete' => $documentsComplete,
+            'documents_step_active' => $documentsStepActive,
         ]);
+    }
+
+    #[Route('/documents/upload', name: 'dashboard_document_upload', methods: ['POST'])]
+    public function uploadDocument(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        RequiredDocumentRepository $requiredDocumentRepository,
+        UserDocumentRequestRepository $userDocumentRequestRepository,
+        Filesystem $filesystem,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $requiredDocumentId = $request->request->all('ask_documents')['requiredDocument'] ?? null;
+        $requiredDocument = null;
+
+        if (is_numeric($requiredDocumentId)) {
+            $requiredDocument = $entityManager->find(RequiredDocument::class, (int) $requiredDocumentId);
+        }
+
+        if (!$requiredDocument instanceof RequiredDocument || !$requiredDocument->isEnabled()) {
+            return $this->documentUploadResponse($request, false, 'Le document demandé est introuvable.', Response::HTTP_NOT_FOUND);
+        }
+
+        $form = $this->createForm(AskDocumentsType::class, $user, [
+            'include_country' => false,
+            'required_document' => $requiredDocument,
+        ]);
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            $errors = [];
+
+            foreach ($form->getErrors(true) as $error) {
+                $errors[] = $error->getMessage();
+            }
+
+            return $this->documentUploadResponse(
+                $request,
+                false,
+                [] === $errors ? 'Le fichier transmis est invalide.' : implode(' ', $errors),
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        $file = $form->get('document')->getData();
+
+        if (!$file instanceof UploadedFile || !$file->isValid()) {
+            return $this->documentUploadResponse($request, false, 'Veuillez sélectionner un fichier valide.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $mimeType = $file->getMimeType() ?? $file->getClientMimeType() ?? 'application/octet-stream';
+        $fileSize = $file->getSize();
+
+        if ('application/pdf' !== $mimeType && !str_starts_with($mimeType, 'image/')) {
+            return $this->documentUploadResponse($request, false, 'Seuls les fichiers image et les PDF sont acceptés.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if ($fileSize > $requiredDocument->getMaxFileSizeMb() * 1024 * 1024) {
+            return $this->documentUploadResponse($request, false, 'Le fichier dépasse la taille maximale autorisée.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $documentRequest = $userDocumentRequestRepository->findForUserAndRequiredDocument($user, $requiredDocument);
+
+        if (!$documentRequest instanceof UserDocumentRequest) {
+            $documentRequest = (new UserDocumentRequest())
+                ->setUser($user)
+                ->setRequiredDocument($requiredDocument);
+        }
+
+        if (!$documentRequest->canSubmit()) {
+            return $this->documentUploadResponse($request, false, 'Vous ne pouvez plus envoyer ce document.', Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $directory = $this->getParameter('kernel.project_dir').'/public/uploads/document/'.$user->getId();
+        $filesystem->mkdir($directory);
+        $extension = $file->guessExtension();
+        $fileName = bin2hex(random_bytes(16)).(is_string($extension) ? '.'.$extension : '');
+        $file->move($directory, $fileName);
+        $storagePath = 'uploads/document/'.$user->getId().'/'.$fileName;
+
+        $submission = (new UserDocumentSubmission())
+            ->setDocumentRequest($documentRequest)
+            ->setFileName($fileName)
+            ->setOriginalFileName($file->getClientOriginalName())
+            ->setMimeType($mimeType)
+            ->setFileSize($fileSize)
+            ->setStoragePath($storagePath)
+            ->setChecksum(hash_file('sha256', $directory.'/'.$fileName))
+            ->setAttemptNumber($documentRequest->getSubmissionCount() + 1);
+
+        $documentRequest
+            ->addSubmission($submission)
+            ->setStatus(DocumentRequestStatus::UNDER_REVIEW);
+
+        $entityManager->persist($documentRequest);
+        $entityManager->persist($submission);
+        $entityManager->flush();
+
+        $requiredDocumentCount = $requiredDocumentRepository->count([
+            'enabled' => true,
+            'required' => true,
+        ]);
+        $documentsComplete = $requiredDocumentCount > 0
+            && $requiredDocumentCount === $userDocumentRequestRepository->countSubmittedRequiredDocuments($user);
+
+        return $this->documentUploadResponse(
+            $request,
+            true,
+            'Votre document a été téléversé et sera vérifié.',
+            Response::HTTP_OK,
+            $documentsComplete,
+        );
+    }
+
+    private function documentUploadResponse(
+        Request $request,
+        bool $success,
+        string $message,
+        int $status,
+        bool $documentsComplete = false,
+    ): Response {
+        if ($request->isXmlHttpRequest()) {
+            return $this->json([
+                'success' => $success,
+                'message' => $message,
+                'documentsComplete' => $documentsComplete,
+            ], $status);
+        }
+
+        $this->addFlash($success ? 'success' : 'error', $message);
+
+        return $this->redirectToRoute('agence_immobiliere_dashboard', ['documents' => 1]);
     }
 
     #[Route('/statistics', name: 'dashboard_statistics', methods: ['GET'])]
