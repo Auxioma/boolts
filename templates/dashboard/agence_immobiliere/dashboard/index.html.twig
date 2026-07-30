@@ -204,6 +204,7 @@
                 </label>
                 <p class="finish-setup__remove-file" data-remove-file hidden>Supprimer</p>
             {{ form_end(documentForm) }}
+            <div class="alert alert-danger finish-setup__document-flash" data-document-upload-error role="alert" hidden></div>
         </div>
         {% endfor %}
     </div>
@@ -218,17 +219,79 @@
         Continuer
     </button>
 
+    <div class="document-limit-message" data-document-limit-message{% if not documents_submission_limit_reached %} hidden{% endif %}>
+        <h2 class="document-limit-title">
+            Vous avez atteint la limite de dépôt de document
+        </h2>
+
+        <p class="document-limit-description">
+            Contactez le support pour plus d’informations en cliquant
+            <a href="#" class="document-limit-link">ici.</a>
+        </p>
+    </div>
+
+    <div class="document-confirmation" data-document-confirmation hidden>
+        <p class="document-confirmation__success">
+            Les documents ont bien été envoyés !
+        </p>
+
+        <p class="document-confirmation__status">
+            Nous traitons votre dossier.
+        </p>
+
+        <p class="document-confirmation__text">
+            Changez les documents déposés en cliquant
+            <a href="#" class="document-confirmation__link" data-document-confirmation-link>ici</a>.
+        </p>
+
+        <p class="document-confirmation__help">
+            Pour toute question, contactez le support via l’onglet “aide”.
+        </p>
+    </div>
+
 </section>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const continueButton = document.querySelector('[data-documents-continue]');
+    const documentConfirmation = document.querySelector('[data-document-confirmation]');
+    const documentConfirmationLink = document.querySelector('[data-document-confirmation-link]');
+    const documentLimitMessage = document.querySelector('[data-document-limit-message]');
     const forms = [...document.querySelectorAll('[data-document-upload-form]')];
 
     if (!continueButton || !forms.length) {
         return;
     }
+
+    documentConfirmationLink?.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        forms.forEach((form) => {
+            if (form.dataset.uploaded !== 'true') {
+                return;
+            }
+
+            const input = form.querySelector('[data-document-upload]');
+            const status = form.querySelector('[data-upload-status]');
+            const formats = form.parentElement.querySelector('[data-document-formats]');
+            const uploadLabel = form.querySelector('.finish-setup__upload');
+            const removeFile = form.querySelector('[data-remove-file]');
+
+            form.dataset.uploaded = 'false';
+            input.disabled = false;
+            status.textContent = 'Téléverser';
+            formats.textContent = input.files[0]?.name || formats.dataset.defaultFormats;
+            uploadLabel.hidden = Boolean(input.files.length);
+            removeFile.hidden = !input.files.length;
+            removeFile.textContent = 'Supprimer';
+            removeFile.classList.remove('finish-setup__remove-file--uploaded');
+        });
+
+        documentConfirmation?.replaceWith(continueButton);
+        updateContinueButton();
+        forms[0]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
 
     const isRequired = (form) => form.dataset.requiredDocument === 'true';
     const isSatisfied = (form) => {
@@ -246,6 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = async (form) => {
         const input = form.querySelector('[data-document-upload]');
         const status = form.querySelector('[data-upload-status]');
+        const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
         const formData = new FormData(form);
         const originalFileName = input.files[0]?.name ?? '';
 
@@ -268,12 +332,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }));
 
             if (!response.ok || !result.success) {
-                throw new Error(result.message || 'Le téléversement a échoué.');
+                const uploadError = new Error(result.message || 'Le téléversement a échoué.');
+                uploadError.submissionLimitReached = Boolean(result.submissionLimitReached);
+
+                throw uploadError;
             }
 
             form.dataset.uploaded = 'true';
-            input.value = '';
             status.textContent = 'Téléversé';
+            errorFlash.hidden = true;
             const removeFile = form.querySelector('[data-remove-file]');
             removeFile.textContent = originalFileName;
             removeFile.classList.add('finish-setup__remove-file--uploaded');
@@ -282,6 +349,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             input.disabled = false;
             status.textContent = error.message || 'Erreur de téléversement';
+            errorFlash.textContent = error.message || 'Erreur de téléversement';
+            errorFlash.hidden = false;
             throw error;
         }
     };
@@ -292,8 +361,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const formats = form.parentElement.querySelector('[data-document-formats]');
         const uploadLabel = form.querySelector('.finish-setup__upload');
         const removeFile = form.querySelector('[data-remove-file]');
+        const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
 
         input.addEventListener('change', () => {
+            errorFlash.hidden = true;
+
             if (input.files.length) {
                 form.dataset.uploaded = 'false';
                 formats.textContent = input.files[0].name;
@@ -340,7 +412,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const result = await uploadForm(form);
                 continueButton.dataset.documentsComplete = result.documentsComplete ? 'true' : 'false';
             }
+
+            if (documentConfirmation) {
+                documentConfirmation.hidden = false;
+                continueButton.replaceWith(documentConfirmation);
+            } else {
+                continueButton.remove();
+            }
         } catch (error) {
+            if (error.submissionLimitReached && documentLimitMessage) {
+                documentLimitMessage.hidden = false;
+            }
+
             // Le statut détaillé est affiché sur la ligne du document en erreur.
         } finally {
             continueButton.textContent = 'Continuer';
@@ -378,6 +461,85 @@ document.addEventListener('DOMContentLoaded', () => {
     border-radius: 24px;
 
     font-family: "Eudoxus Sans", Arial, sans-serif;
+}
+
+.document-confirmation {
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.25;
+}
+
+.document-confirmation p {
+    margin: 0;
+}
+
+.document-confirmation__success {
+    margin-bottom: 7px !important;
+    color: #198754;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.document-confirmation__status {
+    margin-bottom: 2px !important;
+    color: #858789;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.document-confirmation__text {
+    margin-bottom: 10px !important;
+    color: #858789;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.document-confirmation__link {
+    color: #5d00ff;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.document-confirmation__link:hover {
+    color: #4900c9;
+}
+
+.document-confirmation__help {
+    color: #858789;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.document-limit-message {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.document-limit-title {
+    margin: 0 0 14px;
+    color: #ea334b;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.document-limit-description {
+    margin: 0;
+    color: #858789;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.document-limit-link {
+    color: #5d00ff;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.document-limit-link:hover {
+    color: #4700c7;
 }
 
 .finish-setup[hidden] {

@@ -78,15 +78,22 @@ final class DashboardController extends AbstractController
         $documentsStepActive = $request->query->getBoolean('documents');
 
         $documentForms = [];
+        $documentsSubmissionLimitReached = false;
         $requiredDocuments = $requiredDocumentRepository->findBy(
             ['enabled' => true],
             ['position' => 'ASC', 'name' => 'ASC'],
         );
 
         foreach ($requiredDocuments as $requiredDocument) {
+            $documentRequest = $userDocumentRequestRepository->findForUserAndRequiredDocument($user, $requiredDocument);
+            $documentsSubmissionLimitReached = $documentsSubmissionLimitReached
+                || ($documentRequest instanceof UserDocumentRequest
+                    && $this->isSubmissionLimitReached($documentRequest));
+
             $documentForms[$requiredDocument->getId()] = $this->createForm(AskDocumentsType::class, $user, [
                 'include_country' => false,
                 'required_document' => $requiredDocument,
+                'csrf_token_id' => 'agency_document_upload',
             ])->createView();
         }
 
@@ -105,6 +112,7 @@ final class DashboardController extends AbstractController
             'document_forms' => $documentForms,
             'required_documents' => $requiredDocuments,
             'documents_complete' => $documentsComplete,
+            'documents_submission_limit_reached' => $documentsSubmissionLimitReached,
             'documents_step_active' => $documentsStepActive,
         ]);
     }
@@ -137,6 +145,7 @@ final class DashboardController extends AbstractController
         $form = $this->createForm(AskDocumentsType::class, $user, [
             'include_country' => false,
             'required_document' => $requiredDocument,
+            'csrf_token_id' => 'agency_document_upload',
         ]);
         $form->handleRequest($request);
 
@@ -165,11 +174,11 @@ final class DashboardController extends AbstractController
         $fileSize = $file->getSize();
 
         if ('application/pdf' !== $mimeType && !str_starts_with($mimeType, 'image/')) {
-            return $this->documentUploadResponse($request, false, 'Seuls les fichiers image et les PDF sont acceptés.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->documentUploadResponse($request, false, 'Le format du document n’est pas pris en charge', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         if ($fileSize > $requiredDocument->getMaxFileSizeMb() * 1024 * 1024) {
-            return $this->documentUploadResponse($request, false, 'Le fichier dépasse la taille maximale autorisée.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->documentUploadResponse($request, false, 'Le document est trop volumineux', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $documentRequest = $userDocumentRequestRepository->findForUserAndRequiredDocument($user, $requiredDocument);
@@ -181,7 +190,14 @@ final class DashboardController extends AbstractController
         }
 
         if (!$documentRequest->canSubmit()) {
-            return $this->documentUploadResponse($request, false, 'Vous ne pouvez plus envoyer ce document.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->documentUploadResponse(
+                $request,
+                false,
+                'Vous ne pouvez plus envoyer ce document.',
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                false,
+                $this->isSubmissionLimitReached($documentRequest),
+            );
         }
 
         $directory = $this->getParameter('kernel.project_dir').'/public/uploads/document/'.$user->getId();
@@ -231,18 +247,26 @@ final class DashboardController extends AbstractController
         string $message,
         int $status,
         bool $documentsComplete = false,
+        bool $submissionLimitReached = false,
     ): Response {
         if ($request->isXmlHttpRequest()) {
             return $this->json([
                 'success' => $success,
                 'message' => $message,
                 'documentsComplete' => $documentsComplete,
+                'submissionLimitReached' => $submissionLimitReached,
             ], $status);
         }
 
         $this->addFlash($success ? 'success' : 'error', $message);
 
         return $this->redirectToRoute('agence_immobiliere_dashboard', ['documents' => 1]);
+    }
+
+    private function isSubmissionLimitReached(UserDocumentRequest $documentRequest): bool
+    {
+        return $documentRequest->getSubmissionCount()
+            >= ($documentRequest->getRequiredDocument()?->getMaxSubmissions() ?? 0);
     }
 
     #[Route('/statistics', name: 'dashboard_statistics', methods: ['GET'])]
