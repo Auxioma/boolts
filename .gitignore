@@ -33,3 +33,4 @@ phpstan.neon
 ###< liip/imagine-bundle ###
 
 /public/properties
+/public/uploads
