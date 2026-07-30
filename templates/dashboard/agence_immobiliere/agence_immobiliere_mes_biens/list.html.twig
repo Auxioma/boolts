@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes biens immobiliers{% endblock %}
+
+{% block body %}
+<main id="dashboard" class="dashboard">
+
+    <div class="container-fluid">
+        <div class="row">
+            {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+            <div class="col-10 p-48 bg-white">
+                <div class="row">
+                    <div class="col-10 mx-auto">
+                        <div class="agence-mes-biens-list">
+                            <div class="mes-biens-immobilier">
+                                <div class="d-flex justify-content-between align-items-start mb-32">
+                                    <div>
+                                        <h1>
+                                            Mes biens
+                                        </h1>
+                                        <p class="description-page">
+                                            Retrouvez ici toutes vos annonces immobilières.
+                                        </p>
+                                    </div>
+                                    <a 
+                                        href="{{ path('agence_immobiliere_mes_biens') }}"
+                                        class="btn-deposer-annonce"
+                                    >
+                                        <i class="icon-circle-plus"></i>
+                                        Déposer une annonce
+                                    </a>
+                                </div>
+                                <div class="property-count mb-24">
+                                    {{ properties|length }}
+                                    bien{{ properties|length > 1 ? 's' }}
+                                </div>
+                                {% if properties|length %}
+                                    <div class="properties-grid">
+                                        {% for property in properties %}
+                                            {% set firstImage = property.propertyImages|first %}
+                                            {% set uploadedImage = firstImage ? vich_uploader_asset(firstImage, 'imageFile') : null %}
+                                            <article class="property-card">
+                                                <div class="property-card-image">
+                                                    {% if uploadedImage %}
+                                                        <img
+                                                            src="{{ uploadedImage }}"
+                                                            alt="{{ property.titreDuLogement ?: 'Photo du bien' }}"
+                                                        >
+                                                    {% else %}
+                                                        <div class="property-image-empty">
+                                                            <i class="icon-image-off"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="property-card-content">
+                                                    <div class="property-card-header">
+                                                        <h2>
+                                                            {{ property.titreDuLogement ?: 'Annonce sans titre' }}
+                                                        </h2>
+                                                        <span class="property-status">
+                                                            {{ property.statut.label }}
+                                                        </span>
+                                                    </div>
+                                                    <p class="property-type">
+                                                        {{ property.typeBien 
+                                                            ? property.typeBien.name 
+                                                            : 'Type non renseigné'
+                                                        }}
+                                                        {% if property.typeTransaction %}
+                                                            · {{ property.typeTransaction.name }}
+                                                        {% endif %}
+                                                    </p>
+                                                    <p class="property-location">
+                                                        <i class="icon-map-pin"></i>
+                                                        {{ property.ville ?: 'Localisation non renseignée' }}
+                                                        {% if property.pays %}
+                                                            , {{ property.pays }}
+                                                        {% endif %}
+                                                    </p>
+                                                    <small>
+                                                        Réf.
+                                                        {{ property.referenceInterne ?: property.slug }}
+                                                    </small>
+                                                </div>
+                                            </article>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="property-empty">
+                                        <i class="icon-building-2"></i>
+                                        <h2>
+                                            Vous n’avez pas encore de bien
+                                        </h2>
+                                        <p>
+                                            Déposez votre première annonce pour la retrouver ici.
+                                        </p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

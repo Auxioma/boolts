@@ -1,0 +1,162 @@
+/* =========================================
+PAGE LISTE MES BIENS IMMOBILIERS
+========================================= */
+
+.agence-mes-biens-list .mes-biens-immobilier h1 {
+    color: #0B0F14;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+    margin-bottom: 8px;
+}
+
+.agence-mes-biens-list .description-page {
+    color: #858789;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.agence-mes-biens-list .btn-deposer-annonce {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    background: #5D00FF;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.agence-mes-biens-list .btn-deposer-annonce:hover {
+    background:#4800c9;
+    color:#FFFFFF;
+}
+
+.agence-mes-biens-list .property-count {
+    color:#858789;
+    font-size:14px;
+    font-weight:700;
+}
+
+.agence-mes-biens-list .properties-grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:24px;
+}
+
+.agence-mes-biens-list .property-card {
+    display:flex;
+    gap:20px;
+    padding:16px;
+    border:2px solid #EBECEC;
+    border-radius:24px;
+    background:#FFFFFF;
+    transition:.2s ease;
+}
+
+.agence-mes-biens-list .property-card:hover {
+    border-color:#5D00FF;
+    transform:translateY(-2px);
+}
+
+.agence-mes-biens-list .property-card-image {
+    width:180px;
+    height:150px;
+    flex-shrink:0;
+    border-radius:18px;
+    overflow:hidden;
+    background:#F8F8F8;
+}
+
+.agence-mes-biens-list .property-card-image img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.agence-mes-biens-list .property-image-empty {
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#858789;
+    font-size:30px;
+}
+
+.agence-mes-biens-list .property-card-content {
+    flex:1;
+}
+
+.agence-mes-biens-list .property-card-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.agence-mes-biens-list .property-card-header h2 {
+    color:#0B0F14;
+    font-size:18px;
+    font-weight:700;
+    line-height:22px;
+    margin:0;
+}
+
+.agence-mes-biens-list .property-status {
+    background:#CEB2FF;
+    color:#5D00FF;
+    padding:6px 12px;
+    border-radius:50px;
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.agence-mes-biens-list .property-type {
+    margin-top:12px;
+    color:#858789;
+    font-size:14px;
+    font-weight:500;
+}
+
+.agence-mes-biens-list .property-location {
+    color:#0B0F14;
+    font-size:14px;
+    font-weight:600;
+}
+
+.agence-mes-biens-list .property-location i {
+    color:#5D00FF;
+}
+
+.agence-mes-biens-list .property-card small {
+    color:#858789;
+    font-size:12px;
+}
+
+.agence-mes-biens-list .property-empty {
+    border:2px dashed #EBECEC;
+    border-radius:28px;
+    padding:60px;
+    text-align:center;
+}
+
+.agence-mes-biens-list .property-empty i {
+    font-size:40px;
+    color:#5D00FF;
+}
+
+.agence-mes-biens-list .property-empty h2 {
+    margin-top:20px;
+    color:#0B0F14;
+    font-size:20px;
+    font-weight:700;
+}
+
+.agence-mes-biens-list .property-empty p {
+    color:#858789;
+}
