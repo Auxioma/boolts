@@ -13,6 +13,7 @@
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
 use App\Entity\Property;
+use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Repository\PropertyRepository;
 use App\Service\MapboxAddressTranslator;
@@ -32,6 +33,26 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
+    #[Route('/liste', name: 'mes_biens_list', methods: ['GET'])]
+    public function list(
+        PropertyRepository $propertyRepository,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $properties = $propertyRepository->findBy(
+            ['user' => $user],
+            ['createdAt' => 'DESC'],
+        );
+
+        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/list.html.twig', [
+            'properties' => $properties,
+        ]);
+    }
+
     #[Route('/', name: 'mes_biens')]
     /**
      * Handles the index controller action.
@@ -112,8 +133,16 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $transaction = $mesBiens->getTypeTransaction();
 
                 if ($transaction) {
-                    $session->set('typeTransaction', mb_strtolower($transaction->getId()));
-                }
+                    $slugFr = $transaction->translate('fr')->getSlug();
+
+                    $typeTransactionCode = match ($slugFr) {
+                        'vente' => '1',
+                        'location' => '2',
+                        default => null,
+                    };
+
+                    $session->set('typeTransaction', $typeTransactionCode);
+            }
 
                 $this->updateReachedStep($session, 3);
 
@@ -294,6 +323,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'form' => $form->createView(),
             'step' => $step,
             'stepperStep' => $session->get('mes_biens_reached_step', $step),
+            'typeTransaction' => $typeTransaction,
+
         ]);
     }
 
