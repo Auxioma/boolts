@@ -16,6 +16,7 @@ use App\Entity\Document\RequiredDocument;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
+use App\Entity\Property;
 use App\Entity\User;
 use App\Form\Documents\AskDocumentsType;
 use App\Repository\AgencyProfileDailyVisitRepository;
@@ -24,10 +25,12 @@ use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
+use Knp\Component\Pager\PaginatorInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response; 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Filesystem\Filesystem;
@@ -43,6 +46,8 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 final class DashboardController extends AbstractController
 {
+    private const PERFORMANCE_PROPERTIES_PER_PAGE = 10;
+
     #[Route('/', name: 'dashboard')]
     /**
      * Handles the index controller action.
@@ -114,6 +119,40 @@ final class DashboardController extends AbstractController
             'documents_complete' => $documentsComplete,
             'documents_submission_limit_reached' => $documentsSubmissionLimitReached,
             'documents_step_active' => $documentsStepActive,
+        ]);
+    }
+
+    #[Route('/performances', name: 'dashboard_performances', methods: ['GET'])]
+    public function performances(
+        Request $request,
+        PropertyRepository $propertyRepository,
+        FavorisRepository $favorisRepository,
+        PaginatorInterface $paginator,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $affichePerformanceAnnonce = $this->paginatePerformanceProperties(
+            $user,
+            $request,
+            $propertyRepository,
+            $paginator,
+        );
+        $propertyIds = [];
+
+        foreach ($affichePerformanceAnnonce->getItems() as $property) {
+            if ($property instanceof Property && null !== $property->getId()) {
+                $propertyIds[] = $property->getId();
+            }
+        }
+
+        return $this->render('dashboard/agence_immobiliere/dashboard/_property_performance.html.twig', [
+            'affiche_performance_annonce' => $affichePerformanceAnnonce,
+            'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds),
+            'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
         ]);
     }
 
@@ -342,6 +381,21 @@ final class DashboardController extends AbstractController
                 'favorites' => $this->countByBucket($favoriteDates, $buckets, $monthly),
             ],
         ];
+    }
+
+    /** @return PaginationInterface<int, Property> */
+    private function paginatePerformanceProperties(
+        User $user,
+        Request $request,
+        PropertyRepository $propertyRepository,
+        PaginatorInterface $paginator,
+    ): PaginationInterface {
+        return $paginator->paginate(
+            $propertyRepository->findForDashboardPerformanceQuery($user),
+            $request->query->getInt('performance_page', 1),
+            self::PERFORMANCE_PROPERTIES_PER_PAGE,
+            ['pageParameterName' => 'performance_page'],
+        );
     }
 
     private function resolvePeriod(Request $request): array
