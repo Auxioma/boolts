@@ -1,0 +1,58 @@
+<turbo-frame id="dashboard-property-performance">
+    <div class="property-list">
+        {% for property in affiche_performance_annonce %}
+            <article class="property-item">
+                <div class="d-flex align-items-center property-main">
+                    <div class="property-image-wrapper">
+                        {% set imagePerformance = property.propertyImages|first %}
+                        {% if imagePerformance %}
+                            <img src="{{ vich_uploader_asset(imagePerformance, 'imageFile') }}" alt="">
+                        {% endif %}
+                    </div>
+
+                    <div class="property-information">
+                        <h3 class="property-title">{{ property.referenceInterne }}</h3>
+                        <div class="d-flex align-items-center property-price-line">
+                            {% set price = property.prix ?? property.montantLoyerHorsCharge %}
+                            <span class="property-price">
+                                {{ price|number_format(0, ',', ' ') }}
+                                {{ property.user.devise.signe|default('') }}
+                            </span>
+                            <span class="property-status property-status-published">{{ property.statut.value|capitalize }}</span>
+                        </div>
+                        <p class="property-location">
+                            <strong>{{ property.ville }}, {{ property.pays }}</strong>
+                            <span>- Créée le {{ property.createdAt|date('d/m/Y') }}</span>
+                        </p>
+                        <span class="property-reference">{{ property.referenceInterne }}</span>
+                    </div>
+                </div>
+
+                <div class="property-statistics">
+                    <span class="property-statistic">
+                        <i class="icon-eye"></i>
+                        {{ property.propertyViews|length }}
+                    </span>
+                    <span class="property-statistic">
+                        <i class="icon-heart"></i>
+                        {{ favorite_counts[property.id]|default(0) }}
+                    </span>
+                </div>
+
+                {% if property.id not in boosted_property_ids %}
+                    <a href="#" class="btn property-boost-button">
+                        <i class="icon-zap"></i>
+                        Booster
+                    </a>
+                {% endif %}
+            </article>
+        {% else %}
+            <p class="mb-0">Aucune annonce à afficher.</p>
+        {% endfor %}
+    </div>
+
+    {{ knp_pagination_render(
+        affiche_performance_annonce,
+        'pagination/dashboard_property_performance.html.twig'
+    ) }}
+</turbo-frame>

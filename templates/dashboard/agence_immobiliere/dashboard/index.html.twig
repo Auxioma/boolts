@@ -38,7 +38,12 @@
                         </div>
 
                         {# Finalisation du compte #}
-                        <section class="dashboard-card account-completion-card">
+                        <div data-controller="dashboard-account-completion">
+                        <section
+                            class="dashboard-card account-completion-card"
+                            data-dashboard-account-completion-target="countryStep"
+                            {% if documents_step_active %}hidden{% endif %}
+                        >
                             <div class="account-completion-header">
                                 <div>
                                     <h2 class="dashboard-section-title">
@@ -60,18 +65,18 @@
                                 </label>
 
                                 <div class="d-flex align-items-center account-country-form">
-                                    <input
-                                        type="text"
-                                        id="domiciliation-country"
-                                        name="domiciliation_country"
-                                        class="form-control account-country-input"
-                                        placeholder="France"
-                                        autocomplete="country-name"
-                                    >
+                                    {{ form_widget(form.pays, {
+                                        attr: {
+                                            id: 'domiciliation-country',
+                                            class: 'form-select account-country-input',
+                                            'data-dashboard-account-completion-target': 'country'
+                                        }
+                                    }) }}
 
                                     <button
                                         type="button"
                                         class="btn account-country-button"
+                                        data-action="dashboard-account-completion#continue"
                                     >
                                         Continuer
                                     </button>
@@ -84,6 +89,8 @@
 <section
     class="finish-setup"
     data-node-id="2465:10931"
+    data-dashboard-account-completion-target="documentsStep"
+    {% if not documents_step_active %}hidden{% endif %}
 >
     <header class="finish-setup__header">
         <div class="finish-setup__heading">
@@ -98,7 +105,7 @@
 
         <div class="finish-setup__country">
             <span class="finish-setup__country-value">
-                France
+                <span data-dashboard-account-completion-target="selectedCountry"></span>
             </span>
 
             <svg
@@ -119,28 +126,50 @@
     </header>
 
     <div class="finish-setup__documents">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success w-100" role="status">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger w-100" role="alert">{{ message }}</div>
+        {% endfor %}
+
+        {% for requiredDocument in required_documents %}
         <div class="finish-setup__document">
             <div class="finish-setup__document-content">
                 <h3 class="finish-setup__document-title">
-                    Extrait KBIS
+                    {{ requiredDocument.name }}
                 </h3>
 
                 <p class="finish-setup__document-description">
-                    Ce document est important car...
+                    {{ requiredDocument.description }}
                 </p>
             </div>
 
-            <p class="finish-setup__formats">
-                (Formats requis : jpeg, png, heic, pdf)
+            <p
+                class="finish-setup__formats"
+                data-document-formats
+                data-default-formats="(Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)"
+            >
+                (Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)
             </p>
 
-            <label class="finish-setup__upload">
-                <input
-                    class="finish-setup__file-input"
-                    type="file"
-                    name="kbis"
-                    accept=".jpeg,.jpg,.png,.heic,.pdf"
-                >
+            {% set documentForm = document_forms[requiredDocument.id] %}
+            {{ form_start(documentForm, {
+                action: path('agence_immobiliere_dashboard_document_upload'),
+                attr: {
+                    class: 'finish-setup__upload-form',
+                    'data-document-upload-form': '',
+                    'data-required-document': requiredDocument.required ? 'true' : 'false'
+                }
+            }) }}
+                {{ form_widget(documentForm.requiredDocument, {attr: {hidden: 'hidden'}}) }}
+                <label class="finish-setup__upload">
+                {{ form_widget(documentForm.document, {
+                    attr: {
+                        class: 'finish-setup__file-input',
+                        'data-document-upload': ''
+                    }
+                }) }}
 
                 <svg
                     class="finish-setup__upload-icon"
@@ -171,75 +200,240 @@
                     />
                 </svg>
 
-                <span>Téléverser</span>
-            </label>
+                <span data-upload-status>Téléverser</span>
+                </label>
+                <p class="finish-setup__remove-file" data-remove-file hidden>Supprimer</p>
+            {{ form_end(documentForm) }}
+            <div class="alert alert-danger finish-setup__document-flash" data-document-upload-error role="alert" hidden></div>
         </div>
-
-        <div class="finish-setup__document">
-            <div class="finish-setup__document-content">
-                <h3 class="finish-setup__document-title">
-                    Pièce d’identité
-                </h3>
-
-                <p class="finish-setup__document-description">
-                    Ce document est important car...
-                </p>
-            </div>
-
-            <p class="finish-setup__formats">
-                (Formats requis : jpeg, png, heic, pdf)
-            </p>
-
-            <label class="finish-setup__upload">
-                <input
-                    class="finish-setup__file-input"
-                    type="file"
-                    name="identity"
-                    accept=".jpeg,.jpg,.png,.heic,.pdf"
-                >
-
-                <svg
-                    class="finish-setup__upload-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M12 16V3"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                    />
-
-                    <path
-                        d="M7.5 7.5L12 3L16.5 7.5"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
-
-                    <path
-                        d="M5 14.5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V14.5"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                    />
-                </svg>
-
-                <span>Téléverser</span>
-            </label>
-        </div>
+        {% endfor %}
     </div>
 
     <button
         class="finish-setup__submit"
-        type="submit"
+        type="button"
+        data-documents-continue
+        data-documents-complete="{{ documents_complete ? 'true' : 'false' }}"
         disabled
     >
-        Envoyer les documents
+        Continuer
     </button>
+
+    <div class="document-limit-message" data-document-limit-message{% if not documents_submission_limit_reached %} hidden{% endif %}>
+        <h2 class="document-limit-title">
+            Vous avez atteint la limite de dépôt de document
+        </h2>
+
+        <p class="document-limit-description">
+            Contactez le support pour plus d’informations en cliquant
+            <a href="#" class="document-limit-link">ici.</a>
+        </p>
+    </div>
+
+    <div class="document-confirmation" data-document-confirmation hidden>
+        <p class="document-confirmation__success">
+            Les documents ont bien été envoyés !
+        </p>
+
+        <p class="document-confirmation__status">
+            Nous traitons votre dossier.
+        </p>
+
+        <p class="document-confirmation__text">
+            Changez les documents déposés en cliquant
+            <a href="#" class="document-confirmation__link" data-document-confirmation-link>ici</a>.
+        </p>
+
+        <p class="document-confirmation__help">
+            Pour toute question, contactez le support via l’onglet “aide”.
+        </p>
+    </div>
+
 </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const continueButton = document.querySelector('[data-documents-continue]');
+    const documentConfirmation = document.querySelector('[data-document-confirmation]');
+    const documentConfirmationLink = document.querySelector('[data-document-confirmation-link]');
+    const documentLimitMessage = document.querySelector('[data-document-limit-message]');
+    const forms = [...document.querySelectorAll('[data-document-upload-form]')];
+
+    if (!continueButton || !forms.length) {
+        return;
+    }
+
+    documentConfirmationLink?.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        forms.forEach((form) => {
+            if (form.dataset.uploaded !== 'true') {
+                return;
+            }
+
+            const input = form.querySelector('[data-document-upload]');
+            const status = form.querySelector('[data-upload-status]');
+            const formats = form.parentElement.querySelector('[data-document-formats]');
+            const uploadLabel = form.querySelector('.finish-setup__upload');
+            const removeFile = form.querySelector('[data-remove-file]');
+
+            form.dataset.uploaded = 'false';
+            input.disabled = false;
+            status.textContent = 'Téléverser';
+            formats.textContent = input.files[0]?.name || formats.dataset.defaultFormats;
+            uploadLabel.hidden = Boolean(input.files.length);
+            removeFile.hidden = !input.files.length;
+            removeFile.textContent = 'Supprimer';
+            removeFile.classList.remove('finish-setup__remove-file--uploaded');
+        });
+
+        documentConfirmation?.replaceWith(continueButton);
+        updateContinueButton();
+        forms[0]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    const isRequired = (form) => form.dataset.requiredDocument === 'true';
+    const isSatisfied = (form) => {
+        const input = form.querySelector('[data-document-upload]');
+
+        return form.dataset.uploaded === 'true' || Boolean(input?.files?.length);
+    };
+    const updateContinueButton = () => {
+        const allRequiredDocumentsSelected = forms
+            .filter(isRequired)
+            .every(isSatisfied);
+
+        continueButton.disabled = !allRequiredDocumentsSelected;
+    };
+    const uploadForm = async (form) => {
+        const input = form.querySelector('[data-document-upload]');
+        const status = form.querySelector('[data-upload-status]');
+        const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
+        const formData = new FormData(form);
+        const originalFileName = input.files[0]?.name ?? '';
+
+        input.disabled = true;
+        status.textContent = 'Téléversement en cours…';
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const result = await response.json().catch(() => ({
+                success: false,
+                message: 'Le serveur n’a pas pu traiter ce document. Veuillez réessayer.'
+            }));
+
+            if (!response.ok || !result.success) {
+                const uploadError = new Error(result.message || 'Le téléversement a échoué.');
+                uploadError.submissionLimitReached = Boolean(result.submissionLimitReached);
+
+                throw uploadError;
+            }
+
+            form.dataset.uploaded = 'true';
+            status.textContent = 'Téléversé';
+            errorFlash.hidden = true;
+            const removeFile = form.querySelector('[data-remove-file]');
+            removeFile.textContent = originalFileName;
+            removeFile.classList.add('finish-setup__remove-file--uploaded');
+
+            return result;
+        } catch (error) {
+            input.disabled = false;
+            status.textContent = error.message || 'Erreur de téléversement';
+            errorFlash.textContent = error.message || 'Erreur de téléversement';
+            errorFlash.hidden = false;
+            throw error;
+        }
+    };
+
+    forms.forEach((form) => {
+        const input = form.querySelector('[data-document-upload]');
+        const status = form.querySelector('[data-upload-status]');
+        const formats = form.parentElement.querySelector('[data-document-formats]');
+        const uploadLabel = form.querySelector('.finish-setup__upload');
+        const removeFile = form.querySelector('[data-remove-file]');
+        const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
+
+        input.addEventListener('change', () => {
+            errorFlash.hidden = true;
+
+            if (input.files.length) {
+                form.dataset.uploaded = 'false';
+                formats.textContent = input.files[0].name;
+                uploadLabel.hidden = true;
+                removeFile.hidden = false;
+                removeFile.textContent = 'Supprimer';
+                removeFile.classList.remove('finish-setup__remove-file--uploaded');
+            } else {
+                status.textContent = 'Téléverser';
+                formats.textContent = formats.dataset.defaultFormats;
+                uploadLabel.hidden = false;
+                removeFile.hidden = true;
+            }
+
+            updateContinueButton();
+        });
+
+        removeFile.addEventListener('click', () => {
+            if (input.disabled) {
+                return;
+            }
+
+            input.value = '';
+            input.dispatchEvent(new Event('change'));
+        });
+    });
+
+    continueButton.addEventListener('click', async () => {
+        const formsToUpload = forms.filter((form) => {
+            const input = form.querySelector('[data-document-upload]');
+
+            return input.files.length && form.dataset.uploaded !== 'true';
+        });
+
+        if (!formsToUpload.length) {
+            return;
+        }
+
+        continueButton.disabled = true;
+        continueButton.textContent = 'Téléversement en cours…';
+
+        try {
+            for (const form of formsToUpload) {
+                const result = await uploadForm(form);
+                continueButton.dataset.documentsComplete = result.documentsComplete ? 'true' : 'false';
+            }
+
+            if (documentConfirmation) {
+                documentConfirmation.hidden = false;
+                continueButton.replaceWith(documentConfirmation);
+            } else {
+                continueButton.remove();
+            }
+        } catch (error) {
+            if (error.submissionLimitReached && documentLimitMessage) {
+                documentLimitMessage.hidden = false;
+            }
+
+            // Le statut détaillé est affiché sur la ligne du document en erreur.
+        } finally {
+            continueButton.textContent = 'Continuer';
+            updateContinueButton();
+        }
+    });
+
+    updateContinueButton();
+});
+</script>
 
 <style>
 .finish-setup,
@@ -267,6 +461,89 @@
     border-radius: 24px;
 
     font-family: "Eudoxus Sans", Arial, sans-serif;
+}
+
+.document-confirmation {
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.25;
+}
+
+.document-confirmation p {
+    margin: 0;
+}
+
+.document-confirmation__success {
+    margin-bottom: 7px !important;
+    color: #198754;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.document-confirmation__status {
+    margin-bottom: 2px !important;
+    color: #858789;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.document-confirmation__text {
+    margin-bottom: 10px !important;
+    color: #858789;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.document-confirmation__link {
+    color: #5d00ff;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.document-confirmation__link:hover {
+    color: #4900c9;
+}
+
+.document-confirmation__help {
+    color: #858789;
+    font-size: 15px;
+    font-weight: 400;
+}
+
+.document-limit-message {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.document-limit-title {
+    margin: 0 0 14px;
+    color: #ea334b;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.document-limit-description {
+    margin: 0;
+    color: #858789;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.document-limit-link {
+    color: #5d00ff;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+
+.document-limit-link:hover {
+    color: #4700c7;
+}
+
+.finish-setup[hidden] {
+    display: none;
 }
 
 .finish-setup__header {
@@ -432,6 +709,26 @@
     letter-spacing: 0;
 
     cursor: pointer;
+}
+
+.finish-setup__remove-file {
+    flex: 0 0 auto;
+    margin: 0;
+
+    color: #dc3545;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.finish-setup__remove-file[hidden] {
+    display: none;
+}
+
+.finish-setup__remove-file--uploaded {
+    color: var(--finish-grey);
+    cursor: default;
 }
 
 .finish-setup__file-input {
@@ -777,117 +1074,13 @@
                                 </div>
                             </div>
 
-                            <div class="property-list">
-
-                                {% for property in 1..8 %}
-                                    <article class="property-item">
-                                        <div class="d-flex align-items-center property-main">
-
-                                            <div class="property-image-wrapper">
-                                                <img
-                                                    src="{{ asset('images/dashboard/property-example.jpg') }}"
-                                                    alt="Maison à Marrakech"
-                                                    class="property-image"
-                                                >
-                                            </div>
-
-                                            <div class="property-information">
-                                                <h3 class="property-title">
-                                                    Location saisonnière Maison haut standing à Marrakech
-                                                </h3>
-
-                                                <div class="d-flex align-items-center property-price-line">
-                                                    <span class="property-price">
-                                                        1 801 DH
-                                                    </span>
-
-                                                    {% if property <= 4 %}
-                                                        <span class="property-status property-status-published">
-                                                            Publiée
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="property-status property-status-paused">
-                                                            Pause
-                                                        </span>
-                                                    {% endif %}
-
-                                                    {% if property == 4 or property == 5 %}
-                                                        <span class="property-status property-status-boosted">
-                                                            Boostée
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-
-                                                <p class="property-location">
-                                                    <strong>Marrakech, Maroc</strong>
-                                                    <span>- Créée le 29 juin 2026</span>
-                                                </p>
-
-                                                <span class="property-reference">
-                                                    AUXIOM-8899-100
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="property-statistics">
-                                            <span class="property-statistic">
-                                                <i class="icon-eye"></i>
-                                                320
-                                            </span>
-
-                                            <span class="property-statistic">
-                                                <i class="icon-heart"></i>
-                                                37
-                                            </span>
-                                        </div>
-
-                                        {% if property <= 4 %}
-                                            <a href="#" class="btn property-boost-button">
-                                                <i class="icon-zap"></i>
-                                                Booster
-                                            </a>
-                                        {% endif %}
-                                    </article>
-                                {% endfor %}
-
-                            </div>
-
-                            <nav
-                                class="dashboard-pagination"
-                                aria-label="Pagination des annonces"
+                            <turbo-frame
+                                id="dashboard-property-performance"
+                                src="{{ path('agence_immobiliere_dashboard_performances') }}"
+                                loading="eager"
                             >
-                                <a href="#" class="pagination-arrow" aria-label="Page précédente">
-                                    ‹
-                                </a>
-
-                                <a href="#" class="pagination-number active">
-                                    1
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    2
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    3
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    4
-                                </a>
-
-                                <span class="pagination-number">
-                                    …
-                                </span>
-
-                                <a href="#" class="pagination-number">
-                                    32
-                                </a>
-
-                                <a href="#" class="pagination-arrow" aria-label="Page suivante">
-                                    ›
-                                </a>
-                            </nav>
+                                <p class="mb-0">Chargement des annonces...</p>
+                            </turbo-frame>
                         </section>
 
                     </div>
