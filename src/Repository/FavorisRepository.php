@@ -40,6 +40,33 @@ class FavorisRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int> $propertyIds
+     * @return array<int, int>
+     */
+    public function countByPropertyIds(array $propertyIds): array
+    {
+        if ([] === $propertyIds) {
+            return [];
+        }
+
+        $rows = $this->createQueryBuilder('f')
+            ->select('IDENTITY(f.property) AS propertyId, COUNT(f.id) AS favoritesCount')
+            ->andWhere('f.property IN (:propertyIds)')
+            ->setParameter('propertyIds', $propertyIds)
+            ->groupBy('f.property')
+            ->getQuery()
+            ->getScalarResult();
+
+        $counts = [];
+
+        foreach ($rows as $row) {
+            $counts[(int) $row['propertyId']] = (int) $row['favoritesCount'];
+        }
+
+        return $counts;
+    }
+
+    /**
      * @return list<\DateTimeImmutable>
      */
     public function findCreatedDatesForPropertyOwnerDashboard(User $user, ?\DateTimeImmutable $start, \DateTimeImmutable $end): array

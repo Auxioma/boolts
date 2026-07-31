@@ -12,6 +12,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Billing\Enum\PropertyBoostStatus;
+use App\Entity\Booster\PropertyBoost;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Favoris;
 use App\Entity\Property;
@@ -97,6 +99,49 @@ class PropertyRepository extends ServiceEntityRepository
         }
 
         return $qb->orderBy('p.createdAt', $direction);
+    }
+
+    public function findForDashboardPerformanceQuery(User $user): QueryBuilder
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.propertyImages', 'pi')
+            ->addSelect('pi')
+            ->innerJoin('p.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('u.devise', 'currency')
+            ->addSelect('currency')
+            ->andWhere('p.user = :user')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('user', $user)
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
+            ->orderBy('p.createdAt', 'DESC');
+    }
+
+    /**
+     * @param list<int> $propertyIds
+     * @return list<int>
+     */
+    public function findBoostedPropertyIds(array $propertyIds): array
+    {
+        if ([] === $propertyIds) {
+            return [];
+        }
+
+        $rows = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
+            ->from(PropertyBoost::class, 'pb')
+            ->andWhere('pb.property IN (:propertyIds)')
+            ->andWhere('pb.status IN (:statuses)')
+            ->setParameter('propertyIds', $propertyIds)
+            ->setParameter('statuses', [
+                PropertyBoostStatus::ACTIVE->value,
+                PropertyBoostStatus::SCHEDULED->value,
+            ])
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map('intval', array_column($rows, 'propertyId'));
     }
 
     /**

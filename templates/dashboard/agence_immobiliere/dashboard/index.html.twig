@@ -1074,117 +1074,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
 
-                            <div class="property-list">
-
-                                {% for property in 1..8 %}
-                                    <article class="property-item">
-                                        <div class="d-flex align-items-center property-main">
-
-                                            <div class="property-image-wrapper">
-                                                <img
-                                                    src="{{ asset('images/dashboard/property-example.jpg') }}"
-                                                    alt="Maison à Marrakech"
-                                                    class="property-image"
-                                                >
-                                            </div>
-
-                                            <div class="property-information">
-                                                <h3 class="property-title">
-                                                    Location saisonnière Maison haut standing à Marrakech
-                                                </h3>
-
-                                                <div class="d-flex align-items-center property-price-line">
-                                                    <span class="property-price">
-                                                        1 801 DH
-                                                    </span>
-
-                                                    {% if property <= 4 %}
-                                                        <span class="property-status property-status-published">
-                                                            Publiée
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="property-status property-status-paused">
-                                                            Pause
-                                                        </span>
-                                                    {% endif %}
-
-                                                    {% if property == 4 or property == 5 %}
-                                                        <span class="property-status property-status-boosted">
-                                                            Boostée
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-
-                                                <p class="property-location">
-                                                    <strong>Marrakech, Maroc</strong>
-                                                    <span>- Créée le 29 juin 2026</span>
-                                                </p>
-
-                                                <span class="property-reference">
-                                                    AUXIOM-8899-100
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="property-statistics">
-                                            <span class="property-statistic">
-                                                <i class="icon-eye"></i>
-                                                320
-                                            </span>
-
-                                            <span class="property-statistic">
-                                                <i class="icon-heart"></i>
-                                                37
-                                            </span>
-                                        </div>
-
-                                        {% if property <= 4 %}
-                                            <a href="#" class="btn property-boost-button">
-                                                <i class="icon-zap"></i>
-                                                Booster
-                                            </a>
-                                        {% endif %}
-                                    </article>
-                                {% endfor %}
-
-                            </div>
-
-                            <nav
-                                class="dashboard-pagination"
-                                aria-label="Pagination des annonces"
+                            <turbo-frame
+                                id="dashboard-property-performance"
+                                src="{{ path('agence_immobiliere_dashboard_performances') }}"
+                                loading="eager"
                             >
-                                <a href="#" class="pagination-arrow" aria-label="Page précédente">
-                                    ‹
-                                </a>
-
-                                <a href="#" class="pagination-number active">
-                                    1
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    2
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    3
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    4
-                                </a>
-
-                                <span class="pagination-number">
-                                    …
-                                </span>
-
-                                <a href="#" class="pagination-number">
-                                    32
-                                </a>
-
-                                <a href="#" class="pagination-arrow" aria-label="Page suivante">
-                                    ›
-                                </a>
-                            </nav>
+                                <p class="mb-0">Chargement des annonces...</p>
+                            </turbo-frame>
                         </section>
 
                     </div>

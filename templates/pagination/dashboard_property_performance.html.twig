@@ -1,0 +1,33 @@
+{% if pageCount > 1 %}
+    <nav class="dashboard-pagination" aria-label="Pagination des annonces">
+        {% if previous is defined %}
+            <a
+                href="{{ path(route, query|merge({(pageParameterName): previous})) }}"
+                class="pagination-arrow"
+                aria-label="Page précédente"
+                data-turbo-frame="dashboard-property-performance"
+            >‹</a>
+        {% endif %}
+
+        {% for page in pagesInRange %}
+            {% if page == current %}
+                <span class="pagination-number active">{{ page }}</span>
+            {% else %}
+                <a
+                    href="{{ path(route, query|merge({(pageParameterName): page})) }}"
+                    class="pagination-number"
+                    data-turbo-frame="dashboard-property-performance"
+                >{{ page }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if next is defined %}
+            <a
+                href="{{ path(route, query|merge({(pageParameterName): next})) }}"
+                class="pagination-arrow"
+                aria-label="Page suivante"
+                data-turbo-frame="dashboard-property-performance"
+            >›</a>
+        {% endif %}
+    </nav>
+{% endif %}

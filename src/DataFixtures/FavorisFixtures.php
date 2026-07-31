@@ -26,7 +26,7 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
 {
     public const FAVORIS_REFERENCE_PREFIX = 'favoris_';
 
-    public const FAVORIS_COUNT = 30;
+    private const FAVORITE_PROPERTY_RATE = 0.8;
 
     private const BATCH_SIZE = 50;
 
@@ -60,57 +60,27 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
-        /**
-         * Tableau anti-doublon.
-         *
-         * Clé utilisée :
-         * userId_propertyId
-         *
-         * Exemple :
-         * 12_458
-         */
-        $existingFavoris = [];
-
+        $favoritesTarget = (int) ceil(count($properties) * self::FAVORITE_PROPERTY_RATE);
+        /** @var list<Property> $favoriteProperties */
+        $favoriteProperties = $faker->randomElements($properties, $favoritesTarget);
         $favorisCreated = 0;
-        $attempts = 0;
 
-        /**
-         * Sécurité pour éviter une boucle infinie.
-         *
-         * On met large, car certains couples peuvent être refusés :
-         * - doublon user/property
-         * - agence qui veut mettre son propre bien en favori
-         */
-        $maxAttempts = self::FAVORIS_COUNT * 100;
+        foreach ($favoriteProperties as $property) {
+            $ownerId = $property->getUser()?->getId();
+            $eligibleUsers = array_filter(
+                $users,
+                static fn (User $user): bool => $user->getId() !== $ownerId,
+            );
 
-        while ($favorisCreated < self::FAVORIS_COUNT && $attempts < $maxAttempts) {
-            ++$attempts;
+            if ([] === $eligibleUsers) {
+                throw new \RuntimeException('Un utilisateur distinct du propriétaire est requis pour créer un favori.');
+            }
 
             /** @var User $user */
-            $user = $faker->randomElement($users);
-
-            /** @var Property $property */
-            $property = $faker->randomElement($properties);
+            $user = $faker->randomElement($eligibleUsers);
 
             if (null === $user->getId() || null === $property->getId()) {
-                continue;
-            }
-
-            /*
-             * On évite qu'une agence mette en favori son propre bien.
-             */
-            if (
-                null !== $property->getUser()
-                && null !== $property->getUser()->getId()
-                && $property->getUser()->getId() === $user->getId()
-            ) {
-                continue;
-            }
-
-            $uniqueKey = $user->getId().'_'.$property->getId();
-
-            if (isset($existingFavoris[$uniqueKey])) {
-                continue;
+                throw new \LogicException('Les utilisateurs et biens doivent être persistés avant les favoris.');
             }
 
             $favoris = new Favoris();
@@ -119,8 +89,6 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
                 ->setProperty($property);
 
             $manager->persist($favoris);
-
-            $existingFavoris[$uniqueKey] = true;
 
             ++$favorisCreated;
 
