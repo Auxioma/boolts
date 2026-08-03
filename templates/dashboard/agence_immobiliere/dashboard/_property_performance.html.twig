@@ -19,6 +19,9 @@
                                 {{ property.user.devise.signe|default('') }}
                             </span>
                             <span class="property-status property-status-published">{{ property.statut.value|capitalize }}</span>
+                            {% if property.id in boosted_property_ids %}
+                                <div class="property-status property-status-boosted">Boost</div>
+                            {% endif %}
                         </div>
                         <p class="property-location">
                             <strong>{{ property.ville }}, {{ property.pays }}</strong>

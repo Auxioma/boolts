@@ -132,12 +132,9 @@ class PropertyRepository extends ServiceEntityRepository
             ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
             ->from(PropertyBoost::class, 'pb')
             ->andWhere('pb.property IN (:propertyIds)')
-            ->andWhere('pb.status IN (:statuses)')
+            ->andWhere('pb.status = :status')
             ->setParameter('propertyIds', $propertyIds)
-            ->setParameter('statuses', [
-                PropertyBoostStatus::ACTIVE->value,
-                PropertyBoostStatus::SCHEDULED->value,
-            ])
+            ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
             ->getQuery()
             ->getScalarResult();
 
