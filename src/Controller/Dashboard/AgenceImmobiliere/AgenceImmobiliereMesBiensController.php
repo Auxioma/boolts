@@ -12,9 +12,11 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\Filter\ModalFilter;
 use App\Entity\Property;
 use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
+use App\Form\Filter\ModalFilterType;
 use App\Repository\PropertyRepository;
 use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
@@ -36,6 +38,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     #[Route('/liste', name: 'mes_biens_list', methods: ['GET'])]
     public function list(
         PropertyRepository $propertyRepository,
+        Request $request,
     ): Response {
         $user = $this->getUser();
 
@@ -43,13 +46,110 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $properties = $propertyRepository->findBy(
-            ['user' => $user],
-            ['createdAt' => 'DESC'],
+        $search = $request
+            ->query
+            ->getString('search');
+
+        $sort = $request
+            ->query
+            ->getString(
+                'sort',
+                'p.createdAt'
+            );
+
+        $direction = $request
+            ->query
+            ->getString(
+                'direction',
+                'DESC'
+            );
+
+        $filter = new ModalFilter();
+
+        $filterForm = $this->createForm(
+            ModalFilterType::class,
+            $filter,
+            [
+                'action' => $this->generateUrl(
+                    'agence_immobiliere_mes_biens_list'
+                ),
+                'method' => 'GET',
+            ]
         );
 
-        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/list.html.twig', [
-            'properties' => $properties,
+        $filterForm->handleRequest($request);
+
+        $filters = $request
+            ->query
+            ->has('modal_filter')
+            ? $request
+                ->query
+                ->all('modal_filter')
+            : [];
+
+        $properties = $propertyRepository
+            ->findPropertysByUserWithFiltersQuery(
+                user: $user,
+                search: $search,
+                filters: $filters,
+                sort: $sort,
+                direction: $direction,
+                locale: $request->getLocale(),
+            )
+            ->getQuery()
+            ->getResult();
+
+        return $this->render(
+            'dashboard/agence_immobiliere/agence_immobiliere_mes_biens/list.html.twig',
+            [
+                'properties' => $properties,
+                'filterForm' => $filterForm->createView(),
+                'modal_filter' => $filters,
+                'totalResults' => \count($properties),
+
+            ]
+        );
+    }
+
+    #[Route('/liste/filtres/count',name: 'mes_biens_filters_count',methods: ['GET']
+    )]
+    public function filtersCount(
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(
+                [
+                    'count' => 0,
+                    'total' => 0,
+                    'totalResults' => 0,
+                ],
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
+        $filters = $request->query->has('modal_filter')
+            ? $request->query->all('modal_filter')
+            : [];
+
+        $properties = $propertyRepository
+            ->findPropertysByUserWithFiltersQuery(
+                user: $user,
+                search: null,
+                filters: $filters,
+                locale: $request->getLocale(),
+            )
+            ->getQuery()
+            ->getResult();
+
+        $count = \count($properties);
+
+        return $this->json([
+            'count' => $count,
+            'total' => $count,
+            'totalResults' => $count,
         ]);
     }
 

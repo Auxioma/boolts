@@ -1,4 +1,5 @@
 {# templates/public/research/_filters_modal.html.twig #}
+{% set filterCountUrl = filterCountUrl|default(path('app_public_search_count')) %}
 
 {#
     Modal Bootstrap des filtres.
@@ -13,7 +14,7 @@
             attr: {
                 class: 'modal-content boolts-filter-content',
                 'data-controller': 'boolts-filter-count',
-                'data-boolts-filter-count-url-value': path('app_public_search_count'),
+                'data-boolts-filter-count-url-value': filterCountUrl,
                 'data-action': '
                     input->boolts-filter-count#refresh
                     change->boolts-filter-count#refresh
