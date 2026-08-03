@@ -49,18 +49,20 @@ class FavorisRepository extends ServiceEntityRepository
             return [];
         }
 
-        $rows = $this->createQueryBuilder('f')
-            ->select('IDENTITY(f.property) AS propertyId, COUNT(f.id) AS favoritesCount')
-            ->andWhere('f.property IN (:propertyIds)')
-            ->setParameter('propertyIds', $propertyIds)
-            ->groupBy('f.property')
-            ->getQuery()
-            ->getScalarResult();
-
         $counts = [];
 
-        foreach ($rows as $row) {
-            $counts[(int) $row['propertyId']] = (int) $row['favoritesCount'];
+        foreach (array_chunk($propertyIds, 500) as $propertyIdChunk) {
+            $rows = $this->createQueryBuilder('f')
+                ->select('IDENTITY(f.property) AS propertyId, COUNT(f.id) AS favoritesCount')
+                ->andWhere('f.property IN (:propertyIds)')
+                ->setParameter('propertyIds', $propertyIdChunk)
+                ->groupBy('f.property')
+                ->getQuery()
+                ->getScalarResult();
+
+            foreach ($rows as $row) {
+                $counts[(int) $row['propertyId']] = (int) $row['favoritesCount'];
+            }
         }
 
         return $counts;

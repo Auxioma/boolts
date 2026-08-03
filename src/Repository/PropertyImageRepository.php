@@ -26,6 +26,35 @@ class PropertyImageRepository extends ServiceEntityRepository
         parent::__construct($registry, PropertyImage::class);
     }
 
+    /**
+     * @param list<int> $propertyIds
+     * @return array<int, int>
+     */
+    public function countByPropertyIds(array $propertyIds): array
+    {
+        if ([] === $propertyIds) {
+            return [];
+        }
+
+        $counts = [];
+
+        foreach (array_chunk($propertyIds, 500) as $propertyIdChunk) {
+            $rows = $this->createQueryBuilder('pi')
+                ->select('IDENTITY(pi.property) AS propertyId, COUNT(pi.id) AS imagesCount')
+                ->andWhere('pi.property IN (:propertyIds)')
+                ->setParameter('propertyIds', $propertyIdChunk)
+                ->groupBy('pi.property')
+                ->getQuery()
+                ->getScalarResult();
+
+            foreach ($rows as $row) {
+                $counts[(int) $row['propertyId']] = (int) $row['imagesCount'];
+            }
+        }
+
+        return $counts;
+    }
+
     //    /**
     //     * @return PropertyImage[] Returns an array of PropertyImage objects
     //     */

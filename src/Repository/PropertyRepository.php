@@ -131,6 +131,40 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<Property>
+     */
+    public function findForDashboardExport(User $user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.translations', 'propertyTranslation')
+            ->addSelect('propertyTranslation')
+            ->leftJoin('p.propertyImages', 'propertyImage')
+            ->addSelect('propertyImage')
+            ->leftJoin('p.typeBien', 'typeBien')
+            ->addSelect('typeBien')
+            ->leftJoin('typeBien.translations', 'typeBienTranslation')
+            ->addSelect('typeBienTranslation')
+            ->leftJoin('p.typeTransaction', 'typeTransaction')
+            ->addSelect('typeTransaction')
+            ->leftJoin('typeTransaction.translations', 'typeTransactionTranslation')
+            ->addSelect('typeTransactionTranslation')
+            ->leftJoin('p.caracteristique', 'caracteristique')
+            ->addSelect('caracteristique')
+            ->leftJoin('caracteristique.translations', 'caracteristiqueTranslation')
+            ->addSelect('caracteristiqueTranslation')
+            ->innerJoin('p.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('u.devise', 'currency')
+            ->addSelect('currency')
+            ->andWhere('p.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('p.createdAt', 'DESC')
+            ->addOrderBy('propertyImage.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @param list<int> $propertyIds
      * @return list<int>
      */
@@ -140,18 +174,25 @@ class PropertyRepository extends ServiceEntityRepository
             return [];
         }
 
-        $rows = $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
-            ->from(PropertyBoost::class, 'pb')
-            ->andWhere('pb.property IN (:propertyIds)')
-            ->andWhere('pb.status = :status')
-            ->setParameter('propertyIds', $propertyIds)
-            ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
-            ->getQuery()
-            ->getScalarResult();
+        $rows = [];
 
-        return array_map('intval', array_column($rows, 'propertyId'));
+        foreach (array_chunk($propertyIds, 500) as $propertyIdChunk) {
+            $rows = [
+                ...$rows,
+                ...$this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
+                    ->from(PropertyBoost::class, 'pb')
+                    ->andWhere('pb.property IN (:propertyIds)')
+                    ->andWhere('pb.status = :status')
+                    ->setParameter('propertyIds', $propertyIdChunk)
+                    ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
+                    ->getQuery()
+                    ->getScalarResult(),
+            ];
+        }
+
+        return array_values(array_unique(array_map('intval', array_column($rows, 'propertyId'))));
     }
 
     /**
