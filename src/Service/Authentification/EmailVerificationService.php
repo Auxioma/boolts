@@ -34,8 +34,9 @@ final readonly class EmailVerificationService
     {
         $code = $this->generateCode();
 
+        $user->setEmailAuthCode($code);
+
         $user
-            ->setEmailAuthCode($code)
             ->setEmailAuthCodeExpiresAt(new \DateTimeImmutable(\sprintf('+%d minutes', $ttlMinutes)))
             ->setEmailAuthCodeRequestedAt(new \DateTimeImmutable())
             ->setFailedVerificationAttempts(0)
@@ -67,18 +68,22 @@ final readonly class EmailVerificationService
             return false;
         }
 
-        if ('' === $user->getEmailAuthCode()) {
+        $authCode = $user->getEmailAuthCode();
+
+        if (null === $authCode || '' === $authCode) {
             return false;
         }
 
-        if (null === $user->getEmailAuthCodeExpiresAt()) {
+        $expiresAt = $user->getEmailAuthCodeExpiresAt();
+
+        if (null === $expiresAt) {
             return false;
         }
 
-        if ($user->getEmailAuthCodeExpiresAt() < new \DateTimeImmutable()) {
+        if ($expiresAt < new \DateTimeImmutable()) {
             return false;
         }
 
-        return hash_equals($user->getEmailAuthCode(), mb_trim($submittedCode));
+        return hash_equals($authCode, mb_trim($submittedCode));
     }
 }

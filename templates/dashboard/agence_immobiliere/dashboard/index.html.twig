@@ -1013,7 +1013,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         </section>
 
                         {# Performances des annonces #}
-                        <section class="dashboard-card properties-performance-card">
+                        <section
+                            class="dashboard-card properties-performance-card"
+                            data-controller="dashboard-property-performance"
+                            data-dashboard-property-performance-url-value="{{ path('agence_immobiliere_dashboard_performances') }}"
+                        >
                             <div class="properties-performance-header">
                                 <h2 class="dashboard-section-title">
                                     Performances des annonces
@@ -1021,26 +1025,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center statistics-periods">
-                                        <button type="button" class="statistics-period-button">
+                                        <button type="button" class="statistics-period-button" data-period="7d" data-action="dashboard-property-performance#selectPeriod">
                                             7 jours
                                         </button>
 
                                         <button
                                             type="button"
                                             class="statistics-period-button active"
+                                            data-period="30d"
+                                            data-action="dashboard-property-performance#selectPeriod"
                                         >
                                             30 jours
                                         </button>
 
-                                        <button type="button" class="statistics-period-button">
+                                        <button type="button" class="statistics-period-button" data-period="12m" data-action="dashboard-property-performance#selectPeriod">
                                             12 mois
                                         </button>
 
-                                        <button type="button" class="statistics-period-button">
+                                        <button type="button" class="statistics-period-button" data-period="max" data-action="dashboard-property-performance#selectPeriod">
                                             Maximum
                                         </button>
 
-                                        <button type="button" class="statistics-period-button">
+                                        <button
+                                            type="button"
+                                            class="statistics-period-button"
+                                            data-period="custom"
+                                            data-action="dashboard-property-performance#selectPeriod"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#property-performance-custom-period-modal"
+                                        >
                                             Personnalisé
                                         </button>
                                     </div>
@@ -1078,9 +1091,42 @@ document.addEventListener('DOMContentLoaded', () => {
                                 id="dashboard-property-performance"
                                 src="{{ path('agence_immobiliere_dashboard_performances') }}"
                                 loading="eager"
+                                data-dashboard-property-performance-target="frame"
                             >
                                 <p class="mb-0">Chargement des annonces...</p>
                             </turbo-frame>
+
+                            <div
+                                id="property-performance-custom-period-modal"
+                                class="modal fade"
+                                tabindex="-1"
+                                aria-labelledby="property-performance-custom-period-modal-title"
+                                aria-hidden="true"
+                                data-dashboard-property-performance-target="modal"
+                            >
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h2 id="property-performance-custom-period-modal-title" class="modal-title fs-5">Période personnalisée</h2>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="property-performance-start" class="form-label">Date de début</label>
+                                                <input id="property-performance-start" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" data-dashboard-property-performance-target="start">
+                                            </div>
+                                            <div>
+                                                <label for="property-performance-end" class="form-label">Date de fin</label>
+                                                <input id="property-performance-end" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" data-dashboard-property-performance-target="end">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="button" class="btn btn-primary" data-action="dashboard-property-performance#loadCustomPeriod">Appliquer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </section>
 
                     </div>

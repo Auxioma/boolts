@@ -30,6 +30,16 @@ final class ProfessionnelRegisterEmailTranslationFixtures extends Fixture
                 'professionnel.register.email.submit' => 'Continuer',
                 'professionnel.register.email.link' => 'Vous êtes un professionnel ?',
             ],
+
+            'en' => [
+                'professionnel.register.email.meta.title' => 'Registration',
+                'professionnel.register.email.title' => 'Register for your professional area',
+                'professionnel.register.email.apple' => 'Sign in with Apple',
+                'professionnel.register.email.or' => 'OR',
+                'professionnel.register.email.email.label' => 'Register with an email address*',
+                'professionnel.register.email.submit' => 'Continue',
+                'professionnel.register.email.link' => 'Are you a professional?',
+            ],
         ];
 
         foreach ($translations as $locale => $items) {

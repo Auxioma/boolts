@@ -101,9 +101,13 @@ class PropertyRepository extends ServiceEntityRepository
         return $qb->orderBy('p.createdAt', $direction);
     }
 
-    public function findForDashboardPerformanceQuery(User $user): QueryBuilder
+    public function findForDashboardPerformanceQuery(
+        User $user,
+        ?\DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+    ): QueryBuilder
     {
-        return $this->createQueryBuilder('p')
+        $queryBuilder = $this->createQueryBuilder('p')
             ->leftJoin('p.propertyImages', 'pi')
             ->addSelect('pi')
             ->innerJoin('p.user', 'u')
@@ -112,9 +116,18 @@ class PropertyRepository extends ServiceEntityRepository
             ->addSelect('currency')
             ->andWhere('p.user = :user')
             ->andWhere('p.statut = :statut')
+            ->andWhere('p.createdAt <= :end')
             ->setParameter('user', $user)
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
-            ->orderBy('p.createdAt', 'DESC');
+            ->setParameter('end', $end);
+
+        if (null !== $start) {
+            $queryBuilder
+                ->andWhere('p.createdAt >= :start')
+                ->setParameter('start', $start);
+        }
+
+        return $queryBuilder->orderBy('p.createdAt', 'DESC');
     }
 
     /**
@@ -132,12 +145,9 @@ class PropertyRepository extends ServiceEntityRepository
             ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
             ->from(PropertyBoost::class, 'pb')
             ->andWhere('pb.property IN (:propertyIds)')
-            ->andWhere('pb.status IN (:statuses)')
+            ->andWhere('pb.status = :status')
             ->setParameter('propertyIds', $propertyIds)
-            ->setParameter('statuses', [
-                PropertyBoostStatus::ACTIVE->value,
-                PropertyBoostStatus::SCHEDULED->value,
-            ])
+            ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
             ->getQuery()
             ->getScalarResult();
 

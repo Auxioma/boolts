@@ -29,6 +29,15 @@ final class ProfessionnelRegisterVerifyCodeTranslationFixtures extends Fixture
                 'professionnel.register.verify_code.resend_code' => 'Renvoyer le code',
                 'professionnel.register.verify_code.change_email' => 'Changer d’adresse e-mail',
             ],
+
+            'en' => [
+                'professionnel.register.verify_code.meta.title' => 'Code verification',
+                'professionnel.register.verify_code.title' => 'You have received a verification code by email',
+                'professionnel.register.verify_code.submit' => 'Continue',
+                'professionnel.register.verify_code.or' => 'OR',
+                'professionnel.register.verify_code.resend_code' => 'Resend code',
+                'professionnel.register.verify_code.change_email' => 'Change email address',
+            ],
         ];
 
         foreach ($translations as $locale => $items) {

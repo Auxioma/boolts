@@ -135,11 +135,19 @@ final class DashboardController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        try {
+            [, $start, $end] = $this->resolvePeriod($request);
+        } catch (\InvalidArgumentException $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         $affichePerformanceAnnonce = $this->paginatePerformanceProperties(
             $user,
             $request,
             $propertyRepository,
             $paginator,
+            $start,
+            $end,
         );
         $propertyIds = [];
 
@@ -389,9 +397,11 @@ final class DashboardController extends AbstractController
         Request $request,
         PropertyRepository $propertyRepository,
         PaginatorInterface $paginator,
+        ?\DateTimeImmutable $start,
+        \DateTimeImmutable $end,
     ): PaginationInterface {
         return $paginator->paginate(
-            $propertyRepository->findForDashboardPerformanceQuery($user),
+            $propertyRepository->findForDashboardPerformanceQuery($user, $start, $end),
             $request->query->getInt('performance_page', 1),
             self::PERFORMANCE_PROPERTIES_PER_PAGE,
             ['pageParameterName' => 'performance_page'],

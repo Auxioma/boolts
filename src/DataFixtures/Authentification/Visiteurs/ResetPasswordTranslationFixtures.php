@@ -30,6 +30,16 @@ final class ResetPasswordTranslationFixtures extends Fixture
                 'visiteur.reset_password.reset.password_confirm.placeholder' => 'Veuillez confirmer votre mot de passe',
                 'visiteur.reset_password.reset.submit' => 'Modifier mon mot de passe',
             ],
+
+            'en' => [
+                'visiteur.reset_password.reset.meta.title' => 'New password',
+                'visiteur.reset_password.reset.title' => 'Change your password',
+                'visiteur.reset_password.reset.password.label' => 'New password',
+                'visiteur.reset_password.reset.password.placeholder' => 'Enter your password',
+                'visiteur.reset_password.reset.password_confirm.label' => 'Confirm password',
+                'visiteur.reset_password.reset.password_confirm.placeholder' => 'Confirm your password',
+                'visiteur.reset_password.reset.submit' => 'Change my password',
+            ],
         ];
 
         foreach ($translations as $locale => $items) {

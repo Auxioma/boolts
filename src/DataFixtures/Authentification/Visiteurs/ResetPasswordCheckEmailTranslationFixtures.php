@@ -26,6 +26,12 @@ final class ResetPasswordCheckEmailTranslationFixtures extends Fixture
                 'visiteur.reset_password.check_email.title' => 'Le lien de réinitialisation a été envoyé par e-mail !',
                 'visiteur.reset_password.check_email.resend_link' => 'Vous n’avez rien reçu ? Recevoir un nouvel e-mail',
             ],
+
+            'en' => [
+                'visiteur.reset_password.check_email.meta.title' => 'Email sent',
+                'visiteur.reset_password.check_email.title' => 'The reset link has been sent by email!',
+                'visiteur.reset_password.check_email.resend_link' => 'Did not receive anything? Get a new email',
+            ],
         ];
 
         foreach ($translations as $locale => $items) {
