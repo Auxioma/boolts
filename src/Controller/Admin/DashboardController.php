@@ -55,7 +55,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::section('Utilisateurs & Accès', 'fas fa-users');
         yield MenuItem::linkTo(UserCrudController::class, 'Utilisateurs', 'fas fa-user')
-            ->setAction(Action::INDEX);
+            ->setAction(Action::INDEX)
+            ->setQueryParameter('role', 'ROLE_USER');
+        yield MenuItem::linkTo(UserCrudController::class, 'Agences', 'fas fa-building')
+            ->setAction(Action::INDEX)
+            ->setQueryParameter('role', 'ROLE_AGENCE');
         yield MenuItem::linkTo(TranslationCrudController::class, 'Traductions', 'fas fa-language')
             ->setAction(Action::INDEX);
     }

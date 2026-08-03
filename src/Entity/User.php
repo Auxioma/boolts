@@ -384,12 +384,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return (string) $this->email;
     }
 
-    public function getEmailAuthCode(): string
+    public function getEmailAuthCode(): ?string
     {
-        if (null === $this->emailAuthCode) {
-            throw new \LogicException('The email authentication code was not set.');
-        }
-
         return $this->emailAuthCode;
     }
 
