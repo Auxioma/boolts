@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\DataFixtures;
 
-use App\Entity\Property;
-use App\Entity\PropertyImage;
-use App\Repository\PropertyRepository;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -20,7 +18,6 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
     private const MIN_IMAGES_PER_PROPERTY = 5;
     private const MAX_IMAGES_PER_PROPERTY = 12;
     private const MAX_PROPERTIES_PER_GENERATED_SET = 5;
-    private const FLUSH_EVERY_PROPERTIES = 100;
     private const UPLOAD_DIRECTORY = 'public/properties';
     private const IMAGE_WIDTH = 1200;
     private const IMAGE_HEIGHT = 800;
@@ -36,42 +33,78 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
 
     public function __construct(
         private readonly KernelInterface $kernel,
-        private readonly PropertyRepository $propertyRepository,
     ) {
     }
 
     public function load(ObjectManager $manager): void
     {
-        /** @var list<Property> $properties */
-        $properties = $this->propertyRepository->findAll();
+        if (!$manager instanceof EntityManagerInterface) {
+            throw new \LogicException('Le manager doit être une instance de EntityManagerInterface.');
+        }
 
-        if ([] === $properties) {
+        $nativeConnection = $manager->getConnection()->getNativeConnection();
+
+        if (!$nativeConnection instanceof \PDO) {
+            throw new \LogicException('La fixture des images nécessite une connexion PDO native.');
+        }
+
+        $propertyStatement = $nativeConnection->query('SELECT id FROM property ORDER BY id ASC');
+
+        if (false === $propertyStatement) {
+            throw new \RuntimeException('Impossible de récupérer les biens immobiliers pour générer leurs images.');
+        }
+
+        /** @var list<int|string> $propertyIds */
+        $propertyIds = $propertyStatement->fetchAll(\PDO::FETCH_COLUMN);
+
+        if ([] === $propertyIds) {
             throw new \RuntimeException("Aucun bien immobilier trouvé. Lance d'abord PropertyFixtures.");
         }
 
-        foreach ($properties as $propertyIndex => $property) {
-            $generatedSet = intdiv($propertyIndex, self::MAX_PROPERTIES_PER_GENERATED_SET) + 1;
-            $imagesCount = self::MIN_IMAGES_PER_PROPERTY + ($propertyIndex % (self::MAX_IMAGES_PER_PROPERTY - self::MIN_IMAGES_PER_PROPERTY + 1));
+        $statement = $nativeConnection->prepare(
+            'INSERT INTO property_image (property_id, image_name, image_size, position, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)'
+        );
 
-            for ($position = 1; $position <= $imagesCount; ++$position) {
-                $image = $this->createGeneratedImage($generatedSet, $position);
-
-                $propertyImage = new PropertyImage();
-                $propertyImage
-                    ->setProperty($property)
-                    ->setPosition((string) $position)
-                    ->setImageName($image['name'])
-                    ->setImageSize($image['size']);
-
-                $manager->persist($propertyImage);
-            }
-
-            if (0 === ($propertyIndex + 1) % self::FLUSH_EVERY_PROPERTIES) {
-                $manager->flush();
-            }
+        if (false === $statement) {
+            throw new \RuntimeException('Impossible de préparer l’insertion des images de biens.');
         }
 
-        $manager->flush();
+        $ownsTransaction = !$nativeConnection->inTransaction();
+
+        if ($ownsTransaction) {
+            $nativeConnection->beginTransaction();
+        }
+
+        try {
+            foreach ($propertyIds as $propertyIndex => $propertyId) {
+                $generatedSet = intdiv($propertyIndex, self::MAX_PROPERTIES_PER_GENERATED_SET) + 1;
+                $imagesCount = self::MIN_IMAGES_PER_PROPERTY + ($propertyIndex % (self::MAX_IMAGES_PER_PROPERTY - self::MIN_IMAGES_PER_PROPERTY + 1));
+
+                for ($position = 1; $position <= $imagesCount; ++$position) {
+                    $image = $this->createGeneratedImage($generatedSet, $position);
+                    $now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+
+                    $statement->execute([
+                        $propertyId,
+                        $image['name'],
+                        $image['size'],
+                        (string) $position,
+                        $now,
+                        $now,
+                    ]);
+                }
+            }
+
+            if ($ownsTransaction) {
+                $nativeConnection->commit();
+            }
+        } catch (\Throwable $exception) {
+            if ($ownsTransaction && $nativeConnection->inTransaction()) {
+                $nativeConnection->rollBack();
+            }
+
+            throw $exception;
+        }
     }
 
     /**
