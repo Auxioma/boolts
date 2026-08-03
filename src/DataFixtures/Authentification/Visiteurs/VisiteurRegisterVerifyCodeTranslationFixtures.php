@@ -30,6 +30,16 @@ final class VisiteurRegisterVerifyCodeTranslationFixtures extends Fixture
                 'visiteur.register.verify_code.resend_code' => 'Renvoyer le code',
                 'visiteur.register.verify_code.change_email' => 'Changer d’adresse e-mail',
             ],
+
+            'en' => [
+                'visiteur.register.verify_code.meta.title' => 'Code verification',
+                'visiteur.register.verify_code.title' => 'You have received a verification code by email',
+                'visiteur.register.verify_code.digit_label' => 'Digit %position% of the code',
+                'visiteur.register.verify_code.submit' => 'Continue',
+                'visiteur.register.verify_code.or' => 'OR',
+                'visiteur.register.verify_code.resend_code' => 'Resend code',
+                'visiteur.register.verify_code.change_email' => 'Change email address',
+            ],
         ];
 
         foreach ($translations as $locale => $items) {
