@@ -34,8 +34,9 @@ final readonly class EmailVerificationService
     {
         $code = $this->generateCode();
 
+        $user->setEmailAuthCode($code);
+
         $user
-            ->setEmailAuthCode($code)
             ->setEmailAuthCodeExpiresAt(new \DateTimeImmutable(\sprintf('+%d minutes', $ttlMinutes)))
             ->setEmailAuthCodeRequestedAt(new \DateTimeImmutable())
             ->setFailedVerificationAttempts(0)
