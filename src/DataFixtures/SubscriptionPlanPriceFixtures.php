@@ -22,20 +22,7 @@ use Doctrine\Persistence\ObjectManager;
 
 final class SubscriptionPlanPriceFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const PRICES = [
-        SubscriptionBillingPeriod::MONTHLY->value => [
-            'free' => 0,
-            'starter' => 1990,
-            'pro' => 4990,
-            'premium' => 9990,
-        ],
-        SubscriptionBillingPeriod::ANNUAL->value => [
-            'free' => 0,
-            'starter' => 19900,
-            'pro' => 49900,
-            'premium' => 99900,
-        ],
-    ];
+    public const SUBSCRIPTION_PLAN_PRICE_REFERENCE_PREFIX = 'subscription_plan_price_';
 
     public function load(ObjectManager $manager): void
     {
@@ -47,7 +34,7 @@ final class SubscriptionPlanPriceFixtures extends Fixture implements DependentFi
             throw new \RuntimeException('La devise EUR doit être chargée avant les prix des abonnements.');
         }
 
-        foreach (self::PRICES as $billingPeriod => $prices) {
+        foreach (BillingFixtureData::SUBSCRIPTION_PRICES as $billingPeriod => $prices) {
             foreach ($prices as $planCode => $amountMinor) {
                 $plan = $this->getReference(
                     SubscriptionPlanFixtures::SUBSCRIPTION_PLAN_REFERENCE_PREFIX.$planCode,
@@ -63,6 +50,10 @@ final class SubscriptionPlanPriceFixtures extends Fixture implements DependentFi
                     ->setIsActive(true);
 
                 $manager->persist($price);
+                $this->addReference(
+                    self::SUBSCRIPTION_PLAN_PRICE_REFERENCE_PREFIX.$planCode.'_'.$billingPeriod,
+                    $price,
+                );
             }
         }
 
