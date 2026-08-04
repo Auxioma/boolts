@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -17,7 +17,6 @@ use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
 use App\Repository\Billing\AgencySubscriptionRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AgencySubscriptionRepository::class)]

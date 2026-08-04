@@ -142,7 +142,7 @@
                     }) }}
                 {% endif %}
 
-                {{ form_end(form, { render_rest: false }) }}
+                {{ form_end(form, {render_rest: false}) }}
             </div>
 
             <div class="col-4 d-flex justify-content-center">
@@ -152,7 +152,7 @@
                             href="{{ path('app_public_search_results', {
                                 searchToken: searchToken,
                                 view: 'list',
-                                modal_filter: modal_filter
+                                modal_filter: modal_filter,
                             }) }}"
                             class="search-card-switch-item {{ currentView == 'list' ? 'search-card-is-active' : '' }}"
                         >
@@ -164,7 +164,7 @@
                             href="{{ path('app_public_search_results', {
                                 searchToken: searchToken,
                                 view: 'map',
-                                modal_filter: modal_filter
+                                modal_filter: modal_filter,
                             }) }}"
                             class="search-card-switch-item {{ currentView == 'map' ? 'search-card-is-active' : '' }}"
                         >

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -12,8 +12,8 @@
 
 namespace App\Controller\Public;
 
-use App\Entity\FormContact\Contact;
 use App\Entity\AgencyProfileDailyVisit;
+use App\Entity\FormContact\Contact;
 use App\Entity\User;
 use App\Form\FormContact\ContactType;
 use App\Repository\AgencyProfileDailyVisitRepository;

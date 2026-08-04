@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -12,40 +12,73 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Document\UserDocumentRequest;
+use App\Entity\Document\UserDocumentSubmission;
+use App\Entity\Enum\DocumentRequestStatus;
 use App\Entity\User;
+use App\Field\UserDocumentsField;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
- * HTTP controller for User administration in EasyAdmin.
+ * Administration séparée des visiteurs et des agences.
  *
  * @extends AbstractCrudController<User>
  */
 class UserCrudController extends AbstractCrudController
 {
+    private const ROLE_VISITOR = 'ROLE_USER';
+    private const ROLE_AGENCY = 'ROLE_AGENCE';
+
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly AdminUrlGenerator $adminUrlGenerator,
     ) {
     }
+
 
     public static function getEntityFqcn(): string
     {
         return User::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        $agencyView = $this->isAgencyView();
+
+        return $crud
+            ->setEntityLabelInSingular($agencyView ? 'Agence' : 'Visiteur')
+            ->setEntityLabelInPlural($agencyView ? 'Agences' : 'Visiteurs')
+            ->setPageTitle(Crud::PAGE_INDEX, $agencyView ? 'Agences' : 'Visiteurs')
+            ->setPageTitle(Crud::PAGE_NEW, $agencyView ? 'Ajouter une agence' : 'Ajouter un visiteur')
+            ->setPageTitle(Crud::PAGE_EDIT, $agencyView ? 'Modifier l’agence' : 'Modifier le visiteur')
+            ->setPageTitle(Crud::PAGE_DETAIL, $agencyView ? 'Détail de l’agence' : 'Détail du visiteur')
+            ->setDefaultSort(['createdAt' => 'DESC'])
+            ->addFormTheme('admin/form/user_documents.html.twig');
     }
 
     public function createIndexQueryBuilder(
@@ -55,22 +88,20 @@ class UserCrudController extends AbstractCrudController
         FilterCollection $filters,
     ): QueryBuilder {
         $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
-        $role = $this->getContext()?->getRequest()->query->get('role');
+        $role = $this->selectedRole();
 
-        if (!\in_array($role, ['ROLE_USER', 'ROLE_AGENCE'], true)) {
-            return $queryBuilder;
+        if (self::ROLE_AGENCY === $role) {
+            return $queryBuilder
+                ->andWhere('entity.roles LIKE :agencyRole')
+                ->setParameter('agencyRole', '%"'.self::ROLE_AGENCY.'"%');
         }
 
-        $queryBuilder
-            ->andWhere('entity.roles LIKE :role')
-            ->setParameter('role', \sprintf('%%"%s"%%', $role))
-        ;
-
-        if ('ROLE_USER' === $role) {
-            $queryBuilder
+        if (self::ROLE_VISITOR === $role) {
+            // Un visiteur peut avoir ROLE_USER enregistré ou un tableau de rôles vide,
+            // car User::getRoles() ajoute déjà ROLE_USER automatiquement.
+            return $queryBuilder
                 ->andWhere('entity.roles NOT LIKE :agencyRole')
-                ->setParameter('agencyRole', '%"ROLE_AGENCE"%')
-            ;
+                ->setParameter('agencyRole', '%"'.self::ROLE_AGENCY.'"%');
         }
 
         return $queryBuilder;
@@ -78,60 +109,135 @@ class UserCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        if ($this->isAgencyView()) {
-            if (Crud::PAGE_INDEX === $pageName) {
-                return [
-                    TextField::new('entreprise', 'Nom de l’agence'),
-                    EmailField::new('email', 'E-mail'),
-                    TextField::new('telephone', 'Téléphone'),
-                    TextField::new('ville', 'Ville'),
-                    AssociationField::new('pays', 'Pays'),
-                ];
-            }
+        return $this->isAgencyView()
+            ? $this->agencyFields($pageName)
+            : $this->visitorFields($pageName);
+    }
 
+    /**
+     * @return iterable<FieldInterface>
+     */
+    private function visitorFields(string $pageName): iterable
+    {
+        if (Crud::PAGE_INDEX === $pageName) {
             return [
-                IdField::new('id')->hideOnForm(),
-                TextField::new('entreprise', 'Agence'),
+                IdField::new('id', 'ID'),
                 TextField::new('nom', 'Nom'),
                 TextField::new('prenom', 'Prénom'),
                 EmailField::new('email', 'E-mail'),
                 TextField::new('telephone', 'Téléphone'),
-                TextField::new('whatsApp', 'WhatsApp'),
-                TextField::new('emailContact', 'E-mail de contact'),
-                TextField::new('numeroContact', 'Numéro de contact'),
-                AssociationField::new('pays', 'Pays'),
-                AssociationField::new('langues', 'Langue'),
-                AssociationField::new('devise', 'Devise'),
-                AssociationField::new('fuseauHoraire', 'Fuseau horaire'),
-                TextField::new('adresse', 'Adresse'),
-                TextField::new('adresseComplement', 'Complément d’adresse'),
                 TextField::new('ville', 'Ville'),
-                TextField::new('codePostal', 'Code postal'),
-                TextField::new('adresseContact', 'Adresse de contact'),
-                TextField::new('adresseComplementContact', 'Complément d’adresse de contact'),
-                TextField::new('villeContact', 'Ville de contact'),
-                TextField::new('paysContact', 'Pays de contact'),
-                TextField::new('codePostalContact', 'Code postal de contact'),
-                BooleanField::new('isVerified', 'Compte vérifié'),
-                BooleanField::new('emailAuthEnabled', 'Authentification par e-mail'),
-                IntegerField::new('visitAgency', 'Visites de l’agence'),
-                TextField::new('slug')->onlyOnDetail(),
-                DateTimeField::new('createdAt', 'Créé le')->onlyOnDetail(),
-                DateTimeField::new('updatedAt', 'Mis à jour le')->onlyOnDetail(),
-                DateTimeField::new('lastLoginAt', 'Dernière connexion')->onlyOnDetail(),
+                AssociationField::new('pays', 'Pays'),
+                BooleanField::new('isVerified', 'Vérifié'),
+                DateTimeField::new('createdAt', 'Inscrit le'),
             ];
         }
 
         return [
-            IdField::new('id')->hideOnForm(),
-            TextField::new('nom', 'Nom'),
-            TextField::new('prenom', 'Prénom'),
-            EmailField::new('email', 'E-mail'),
-            TextField::new('password', 'Mot de passe')
-                ->setFormType(PasswordType::class)
-                ->onlyOnForms()
-                ->setRequired(Crud::PAGE_NEW === $pageName),
+            IdField::new('id', 'ID')->hideOnForm(),
+            FormField::addTab('Identité', 'fa fa-user'),
+            TextField::new('nom', 'Nom')->setColumns(6),
+            TextField::new('prenom', 'Prénom')->setColumns(6),
+            EmailField::new('email', 'E-mail')->setColumns(6),
+            TextField::new('telephone', 'Téléphone')->setColumns(6),
+            TextField::new('whatsApp', 'WhatsApp')->setColumns(6),
+            $this->passwordField($pageName)->setColumns(6),
+            FormField::addTab('Adresse', 'fa fa-location-dot'),
+            TextField::new('adresse', 'Adresse')->setColumns(8),
+            TextField::new('adresseComplement', 'Complément')->setColumns(4),
+            TextField::new('codePostal', 'Code postal')->setColumns(4),
+            TextField::new('ville', 'Ville')->setColumns(4),
+            AssociationField::new('pays', 'Pays')->setColumns(4),
+            FormField::addTab('Préférences', 'fa fa-sliders'),
+            AssociationField::new('langues', 'Langue')->setColumns(4),
+            AssociationField::new('devise', 'Devise')->setColumns(4),
+            AssociationField::new('fuseauHoraire', 'Fuseau horaire')->setColumns(4),
+            FormField::addTab('Sécurité', 'fa fa-shield-halved'),
+            BooleanField::new('isVerified', 'Compte vérifié')->setColumns(6),
+            BooleanField::new('emailAuthEnabled', 'Authentification par e-mail')->setColumns(6),
+            FormField::addTab('Documents', 'fa fa-file-lines')->onlyWhenUpdating(),
+            UserDocumentsField::new('documentRequests', false)->onlyWhenUpdating(),
+
+            DateTimeField::new('createdAt', 'Créé le')->onlyOnDetail(),
+            DateTimeField::new('updatedAt', 'Mis à jour le')->onlyOnDetail(),
+            DateTimeField::new('lastLoginAt', 'Dernière connexion')->onlyOnDetail(),
         ];
+    }
+
+    /**
+     * @return iterable<FieldInterface>
+     */
+    private function agencyFields(string $pageName): iterable
+    {
+        if (Crud::PAGE_INDEX === $pageName) {
+            return [
+                IdField::new('id', 'ID'),
+                TextField::new('entreprise', 'Nom de l’agence'),
+                EmailField::new('email', 'Compte administrateur'),
+                EmailField::new('emailContact', 'E-mail public'),
+                TextField::new('numeroContact', 'Téléphone public'),
+                TextField::new('villeContact', 'Ville'),
+                BooleanField::new('isVerified', 'Vérifiée'),
+                IntegerField::new('visitAgency', 'Visites'),
+            ];
+        }
+
+        return [
+            IdField::new('id', 'ID')->hideOnForm(),
+            FormField::addTab('Agence', 'fa fa-building'),
+            TextField::new('entreprise', 'Nom de l’agence')->setColumns(8),
+            TextField::new('slug', 'Slug')->onlyOnDetail(),
+            TextareaField::new('description', 'Description de l’agence')
+                ->setColumns(12)
+                ->hideOnIndex(),
+            FormField::addTab('Responsable du compte', 'fa fa-user-tie'),
+            TextField::new('nom', 'Nom')->setColumns(6),
+            TextField::new('prenom', 'Prénom')->setColumns(6),
+            EmailField::new('email', 'E-mail de connexion')->setColumns(6),
+            TextField::new('telephone', 'Téléphone personnel')->setColumns(6),
+            TextField::new('whatsApp', 'WhatsApp')->setColumns(6),
+            $this->passwordField($pageName)->setColumns(6),
+            FormField::addTab('Coordonnées publiques', 'fa fa-address-card'),
+            EmailField::new('emailContact', 'E-mail de contact')->setColumns(6),
+            TextField::new('numeroContact', 'Numéro de contact')->setColumns(6),
+            TextField::new('adresseContact', 'Adresse de contact')->setColumns(8),
+            TextField::new('adresseComplementContact', 'Complément')->setColumns(4),
+            TextField::new('codePostalContact', 'Code postal')->setColumns(4),
+            TextField::new('villeContact', 'Ville')->setColumns(4),
+            TextField::new('paysContact', 'Pays')->setColumns(4),
+            FormField::addTab('Adresse du compte', 'fa fa-location-dot'),
+            TextField::new('adresse', 'Adresse')->setColumns(8),
+            TextField::new('adresseComplement', 'Complément')->setColumns(4),
+            TextField::new('codePostal', 'Code postal')->setColumns(4),
+            TextField::new('ville', 'Ville')->setColumns(4),
+            AssociationField::new('pays', 'Pays')->setColumns(4),
+            FormField::addTab('Préférences', 'fa fa-sliders'),
+            AssociationField::new('langues', 'Langue')->setColumns(4),
+            AssociationField::new('devise', 'Devise')->setColumns(4),
+            AssociationField::new('fuseauHoraire', 'Fuseau horaire')->setColumns(4),
+            FormField::addTab('Sécurité et statistiques', 'fa fa-shield-halved'),
+            BooleanField::new('isVerified', 'Compte vérifié')->setColumns(4),
+            BooleanField::new('emailAuthEnabled', 'Authentification par e-mail')->setColumns(4),
+            FormField::addTab('Documents', 'fa fa-file-lines')->onlyWhenUpdating(),
+            UserDocumentsField::new('documentRequests', false)->onlyWhenUpdating(),
+
+            DateTimeField::new('createdAt', 'Créée le')->onlyOnDetail(),
+            DateTimeField::new('updatedAt', 'Mise à jour le')->onlyOnDetail(),
+            DateTimeField::new('lastLoginAt', 'Dernière connexion')->onlyOnDetail(),
+        ];
+    }
+
+    private function passwordField(string $pageName): TextField
+    {
+        return TextField::new('password', 'Mot de passe')
+            ->setFormType(PasswordType::class)
+            ->onlyOnForms()
+            ->setRequired(Crud::PAGE_NEW === $pageName)
+            ->setHelp(
+                Crud::PAGE_EDIT === $pageName
+                    ? 'Laissez vide pour conserver le mot de passe actuel.'
+                    : null
+            );
     }
 
     public function persistEntity(EntityManagerInterface $entityManager, object $entityInstance): void
@@ -155,9 +261,8 @@ class UserCrudController extends AbstractCrudController
             $password = $entityInstance->getPassword();
 
             if (null === $password || '' === $password) {
-                $entityInstance->setPassword(
-                    $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance)['password'] ?? null
-                );
+                $originalData = $entityManager->getUnitOfWork()->getOriginalEntityData($entityInstance);
+                $entityInstance->setPassword($originalData['password'] ?? null);
             } else {
                 $this->hashPassword($entityInstance);
             }
@@ -166,22 +271,142 @@ class UserCrudController extends AbstractCrudController
         parent::updateEntity($entityManager, $entityInstance);
     }
 
+    #[Route(
+        '/admin/user/{user}/document/{submission}/approve',
+        name: 'admin_user_document_approve',
+        methods: ['POST'],
+    )]
+    #[IsGranted('ROLE_ADMIN')]
+    public function approveDocument(
+        User $user,
+        UserDocumentSubmission $submission,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse {
+        $documentRequest = $this->documentRequestForUser($user, $submission);
+        $tokenId = 'approve_document_'.$submission->getId();
+
+        if (!$this->isCsrfTokenValid($tokenId, $request->request->getString('_approve_token_'.$submission->getId()))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        if ($submission !== $documentRequest->getLatestSubmission() || 'pending' !== $submission->getStatus()->value) {
+            $this->addFlash('warning', 'Ce document ne peut plus être validé.');
+
+            return $this->redirectToUserEdit($user);
+        }
+
+        $administrator = $this->getUser();
+
+        if (!$administrator instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $submission->approve($administrator);
+        $documentRequest->markAsCompleted();
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le document a été validé.');
+
+        return $this->redirectToUserEdit($user);
+    }
+
+    #[Route(
+        '/admin/user/{user}/document/{submission}/reject',
+        name: 'admin_user_document_reject',
+        methods: ['POST'],
+    )]
+    #[IsGranted('ROLE_ADMIN')]
+    public function rejectDocument(
+        User $user,
+        UserDocumentSubmission $submission,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): RedirectResponse {
+        $documentRequest = $this->documentRequestForUser($user, $submission);
+        $tokenId = 'reject_document_'.$submission->getId();
+
+        if (!$this->isCsrfTokenValid($tokenId, $request->request->getString('_reject_token_'.$submission->getId()))) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        $reason = mb_trim($request->request->getString('rejection_reason_'.$submission->getId()));
+
+        if ('' === $reason) {
+            $this->addFlash('warning', 'Le motif du refus est obligatoire.');
+
+            return $this->redirectToUserEdit($user);
+        }
+
+        if ($submission !== $documentRequest->getLatestSubmission() || 'pending' !== $submission->getStatus()->value) {
+            $this->addFlash('warning', 'Ce document ne peut plus être refusé.');
+
+            return $this->redirectToUserEdit($user);
+        }
+
+        $administrator = $this->getUser();
+
+        if (!$administrator instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $submission->reject($administrator, $reason);
+        $documentRequest->setStatus(DocumentRequestStatus::REJECTED);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le document a été refusé.');
+
+        return $this->redirectToUserEdit($user);
+    }
+
+    private function documentRequestForUser(
+        User $user,
+        UserDocumentSubmission $submission,
+    ): UserDocumentRequest {
+        $documentRequest = $submission->getDocumentRequest();
+
+        if (!$documentRequest instanceof UserDocumentRequest || $documentRequest->getUser()?->getId() !== $user->getId()) {
+            throw $this->createNotFoundException();
+        }
+
+        return $documentRequest;
+    }
+
+    private function redirectToUserEdit(User $user): RedirectResponse
+    {
+        $role = \in_array(self::ROLE_AGENCY, $user->getRoles(), true)
+            ? self::ROLE_AGENCY
+            : self::ROLE_VISITOR;
+
+        return $this->redirect(
+            $this->adminUrlGenerator
+                ->setController(self::class)
+                ->setAction(Action::EDIT)
+                ->setEntityId($user->getId())
+                ->set('role', $role)
+                ->generateUrl(),
+        );
+    }
+
     private function selectedRole(): ?string
     {
         $role = $this->getContext()?->getRequest()->query->get('role');
 
-        return \in_array($role, ['ROLE_USER', 'ROLE_AGENCE'], true) ? $role : null;
+        return \in_array($role, [self::ROLE_VISITOR, self::ROLE_AGENCY], true)
+            ? $role
+            : null;
     }
 
     private function isAgencyView(): bool
     {
-        if ('ROLE_AGENCE' === $this->selectedRole()) {
+        if (self::ROLE_AGENCY === $this->selectedRole()) {
             return true;
         }
 
         $entity = $this->getContext()?->getEntity()?->getInstance();
 
-        return $entity instanceof User && \in_array('ROLE_AGENCE', $entity->getRoles(), true);
+        return $entity instanceof User
+            && \in_array(self::ROLE_AGENCY, $entity->getRoles(), true);
     }
 
     private function hashPassword(User $user): void

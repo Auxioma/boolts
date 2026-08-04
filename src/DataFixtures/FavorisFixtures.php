@@ -1,9 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -60,7 +58,7 @@ class FavorisFixtures extends Fixture implements DependentFixtureInterface
             return;
         }
 
-        $favoritesTarget = (int) ceil(count($properties) * self::FAVORITE_PROPERTY_RATE);
+        $favoritesTarget = (int) ceil(\count($properties) * self::FAVORITE_PROPERTY_RATE);
         /** @var list<Property> $favoriteProperties */
         $favoriteProperties = $faker->randomElements($properties, $favoritesTarget);
         $favorisCreated = 0;

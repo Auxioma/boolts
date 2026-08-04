@@ -8,11 +8,11 @@
 {% set resultsCount = totalResults|default(
     search is defined and search is not null
     ? search.getTotalItemCount
-    : 0
+    : 0,
 ) %}
 
 {% set mapBoundsUrl = path('app_public_search_map_bounds', {
-    searchToken: searchToken
+    searchToken: searchToken,
 }) %}
 
 {% if app.request.queryString is not empty %}
@@ -51,10 +51,10 @@
                     id="search-card-results-grid"
                     data-search-card-map-target="resultsGrid"
                 >
-                    {% include 'public/search/_cards.html.twig' with {
+                    {{ include('public/search/_cards.html.twig', {
                         search: search,
-                        favoritePropertyIds: favoritePropertyIds|default([])
-                    } only %}
+                        favoritePropertyIds: favoritePropertyIds|default([]),
+                    }, false) }}
                 </div>
             </section>
 

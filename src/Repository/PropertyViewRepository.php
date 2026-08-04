@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -29,6 +29,7 @@ class PropertyViewRepository extends ServiceEntityRepository
 
     /**
      * @param list<int> $propertyIds
+     *
      * @return array<int, int>
      */
     public function countByPropertyIds(array $propertyIds, ?\DateTimeImmutable $start, \DateTimeImmutable $end): array

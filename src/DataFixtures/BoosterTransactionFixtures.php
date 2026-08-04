@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -28,7 +36,7 @@ final class BoosterTransactionFixtures extends Fixture implements DependentFixtu
 
         foreach (array_keys(BillingFixtureData::agencyReferences()) as $position => $agencyKey) {
             $agency = $this->getReference(BillingFixtureData::agencyReferences()[$agencyKey], User::class);
-            $packCode = $packCodes[$position % count($packCodes)];
+            $packCode = $packCodes[$position % \count($packCodes)];
             $pack = $this->getReference(
                 BoosterPackFixtures::BOOSTER_PACK_REFERENCE_PREFIX.$packCode,
                 BoosterPack::class,
@@ -41,7 +49,7 @@ final class BoosterTransactionFixtures extends Fixture implements DependentFixtu
                 ->setType(BoosterTransactionType::PACK_PURCHASE)
                 ->setBoosterPack($pack)
                 ->setPayment($payment)
-                ->setExpiresAt((new \DateTimeImmutable())->modify(sprintf('+%d days', $pack->getBoostDurationDays())))
+                ->setExpiresAt((new \DateTimeImmutable())->modify(\sprintf('+%d days', $pack->getBoostDurationDays())))
                 ->setIdempotencyKey('fixture-pack-purchase-'.$agencyKey)
                 ->setDescription('Achat fixture du pack boost '.$pack->getName());
 
@@ -122,11 +130,8 @@ final class BoosterTransactionFixtures extends Fixture implements DependentFixtu
             },
         ));
 
-        if (count($properties) < $requiredCount) {
-            throw new \RuntimeException(sprintf(
-                'Au moins %d annonces publiées liées aux agences fixtures sont nécessaires pour charger les boosts de biens.',
-                $requiredCount,
-            ));
+        if (\count($properties) < $requiredCount) {
+            throw new \RuntimeException(\sprintf('Au moins %d annonces publiées liées aux agences fixtures sont nécessaires pour charger les boosts de biens.', $requiredCount));
         }
 
         $boostIndex = 1;
@@ -153,7 +158,7 @@ final class BoosterTransactionFixtures extends Fixture implements DependentFixtu
                     ->setSubscriptionPeriod($sourcePeriod)
                     ->setPayment($sourcePayment)
                     ->setExpiresAt($endsAt)
-                    ->setIdempotencyKey(sprintf('fixture-property-boost-%03d', $boostIndex))
+                    ->setIdempotencyKey(\sprintf('fixture-property-boost-%03d', $boostIndex))
                     ->setDescription('Utilisation fixture d’un boost sur une annonce.');
 
                 $manager->persist($transaction);
@@ -169,7 +174,7 @@ final class BoosterTransactionFixtures extends Fixture implements DependentFixtu
     private function boostSource(string $agencyKey, int $boostIndex): array
     {
         $agencyPosition = array_search($agencyKey, array_keys(BillingFixtureData::agencyReferences()), true);
-        $planCode = is_int($agencyPosition) ? BillingFixtureData::agencyPlanCode($agencyPosition) : 'free';
+        $planCode = \is_int($agencyPosition) ? BillingFixtureData::agencyPlanCode($agencyPosition) : 'free';
 
         if (0 === $boostIndex % 2 && 'free' !== $planCode) {
             return [
@@ -186,7 +191,7 @@ final class BoosterTransactionFixtures extends Fixture implements DependentFixtu
         }
 
         $packCodes = array_keys(BillingFixtureData::BOOSTER_PRICES);
-        $packCode = $packCodes[$boostIndex % count($packCodes)];
+        $packCode = $packCodes[$boostIndex % \count($packCodes)];
 
         return [
             $this->getReference(BoosterPackFixtures::BOOSTER_PACK_REFERENCE_PREFIX.$packCode, BoosterPack::class),

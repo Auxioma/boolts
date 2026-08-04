@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -20,25 +20,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
-/**
- * HTTP controller for the EasyAdmin administration dashboard.
- */
 class DashboardController extends AbstractDashboardController
 {
-    /**
-     * Renders the EasyAdmin dashboard home page.
-     */
     public function index(): Response
     {
-        // Option 3. You can render some custom template to display a proper dashboard with widgets, etc.
-        // (tip: it's easier if your template extends from @EasyAdmin/page/content.html.twig)
-        //
         return $this->render('bundles/EasyAdminBundle/Page/home_page.html.twig');
     }
 
-    /**
-     * Configures the EasyAdmin dashboard metadata.
-     */
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
@@ -46,20 +34,22 @@ class DashboardController extends AbstractDashboardController
     }
 
     /**
-     * Defines the EasyAdmin navigation entries.
-     *
      * @return iterable<MenuItem>
      */
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+
         yield MenuItem::section('Utilisateurs & Accès', 'fas fa-users');
-        yield MenuItem::linkTo(UserCrudController::class, 'Utilisateurs', 'fas fa-user')
+
+        yield MenuItem::linkTo(UserCrudController::class, 'Visiteurs', 'fas fa-user')
             ->setAction(Action::INDEX)
             ->setQueryParameter('role', 'ROLE_USER');
+
         yield MenuItem::linkTo(UserCrudController::class, 'Agences', 'fas fa-building')
             ->setAction(Action::INDEX)
             ->setQueryParameter('role', 'ROLE_AGENCE');
+
         yield MenuItem::linkTo(TranslationCrudController::class, 'Traductions', 'fas fa-language')
             ->setAction(Action::INDEX);
     }

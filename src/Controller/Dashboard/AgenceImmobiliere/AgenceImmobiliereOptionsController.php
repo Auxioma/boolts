@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -18,9 +18,9 @@ use App\Entity\Billing\Enum\PaymentAttemptStatus;
 use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
 use App\Entity\Billing\Enum\PaymentStatus;
 use App\Entity\Billing\Enum\PaymentType;
+use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\Payment;
 use App\Entity\Billing\PaymentAttempt;
-use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\SubscriptionPlanPrice;
 use App\Entity\Booster\BoosterPackPrice;
 use App\Entity\Booster\BoosterTransaction;
@@ -54,8 +54,8 @@ final class AgenceImmobiliereOptionsController extends AbstractController
      * Handles the __construct controller action.
      */
     public function __construct(
-       
-    ){}
+    ) {
+    }
 
     #[Route('/', name: 'options')]
     /**
@@ -65,8 +65,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
         BoosterPackPriceRepository $boosterPackPriceRepository,
         AgencySubscriptionRepository $agencySubscriptionRepository,
-    ): Response
-    {
+    ): Response {
         $agency = $this->getUser();
 
         if (!$agency instanceof User) {
@@ -117,11 +116,10 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         AgencyPaymentMethodRepository $paymentMethodRepository,
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
-    ): Response
-    {
+    ): Response {
         $period = $request->query->get('period', 'monthly');
 
-        if (!in_array($period, ['monthly', 'annual'], true)) {
+        if (!\in_array($period, ['monthly', 'annual'], true)) {
             throw $this->createNotFoundException('Période de facturation invalide.');
         }
 
@@ -138,7 +136,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         $paymentMethods = [];
         $defaultPaymentMethod = null;
 
-        if ($agency instanceof User && $agency->getBillingProfile() !== null) {
+        if ($agency instanceof User && null !== $agency->getBillingProfile()) {
             $paymentMethods = $paymentMethodRepository->findActiveByBillingProfile(
                 $agency->getBillingProfile()
             );
@@ -155,8 +153,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
 
         $otherPaymentMethods = array_values(array_filter(
             $paymentMethods,
-            static fn (AgencyPaymentMethod $paymentMethod): bool =>
-                $paymentMethod !== $defaultPaymentMethod
+            static fn (AgencyPaymentMethod $paymentMethod): bool => $paymentMethod !== $defaultPaymentMethod
         ));
 
         return $this->render(
@@ -182,11 +179,10 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         AgencyPaymentMethodRepository $paymentMethodRepository,
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
-    ): Response
-    {
+    ): Response {
         $boostPrice = $boosterPackPriceRepository->find($id);
 
-        if ($boostPrice === null || !$boostPrice->isIsActive() || !$boostPrice->getBoosterPack()->isIsActive()) {
+        if (null === $boostPrice || !$boostPrice->isIsActive() || !$boostPrice->getBoosterPack()->isIsActive()) {
             throw $this->createNotFoundException('Pack boost indisponible.');
         }
 
@@ -194,7 +190,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         $paymentMethods = [];
         $defaultPaymentMethod = null;
 
-        if ($agency instanceof User && $agency->getBillingProfile() !== null) {
+        if ($agency instanceof User && null !== $agency->getBillingProfile()) {
             $paymentMethods = $paymentMethodRepository->findActiveByBillingProfile(
                 $agency->getBillingProfile()
             );
@@ -211,8 +207,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
 
         $otherPaymentMethods = array_values(array_filter(
             $paymentMethods,
-            static fn (AgencyPaymentMethod $paymentMethod): bool =>
-                $paymentMethod !== $defaultPaymentMethod
+            static fn (AgencyPaymentMethod $paymentMethod): bool => $paymentMethod !== $defaultPaymentMethod
         ));
 
         return $this->render(
@@ -256,9 +251,9 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             return $this->json(['success' => false, 'message' => 'Requête JSON invalide.'], 400);
         }
 
-        $paymentMethodId = filter_var($payload['paymentMethodId'] ?? null, FILTER_VALIDATE_INT);
+        $paymentMethodId = filter_var($payload['paymentMethodId'] ?? null, \FILTER_VALIDATE_INT);
 
-        if ($paymentMethodId === false || $paymentMethodId === null || $paymentMethodId < 1) {
+        if (false === $paymentMethodId || null === $paymentMethodId || $paymentMethodId < 1) {
             return $this->json(['success' => false, 'message' => 'Carte bancaire invalide.'], 400);
         }
 
@@ -274,7 +269,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
 
         $billingProfile = $agency->getBillingProfile();
 
-        if ($billingProfile === null || !str_starts_with((string) $billingProfile->getStripeCustomerId(), 'cus_')) {
+        if (null === $billingProfile || !str_starts_with((string) $billingProfile->getStripeCustomerId(), 'cus_')) {
             return $this->json(['success' => false, 'message' => 'Profil de facturation ou client Stripe introuvable.'], 409);
         }
 
@@ -283,7 +278,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         if (!$paymentMethod instanceof AgencyPaymentMethod
             || $paymentMethod->getBillingProfile() !== $billingProfile
             || !$paymentMethod->isActive()
-            || $paymentMethod->getSetupStatus() !== PaymentMethodSetupStatus::SUCCEEDED
+            || PaymentMethodSetupStatus::SUCCEEDED !== $paymentMethod->getSetupStatus()
         ) {
             return $this->json(['success' => false, 'message' => 'Aucune carte bancaire valide n’est disponible pour cet achat.'], 409);
         }
@@ -296,7 +291,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'payment_method' => $paymentMethod->getStripePaymentMethodId(),
                 'payment_method_types' => ['card'],
                 'confirm' => true,
-                'description' => sprintf('Pack boost %s', $boostPrice->getBoosterPack()->getName()),
+                'description' => \sprintf('Pack boost %s', $boostPrice->getBoosterPack()->getName()),
                 'metadata' => [
                     'agency_id' => (string) $agency->getId(),
                     'booster_pack_price_id' => (string) $boostPrice->getId(),
@@ -304,12 +299,12 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 ],
             ]);
 
-            if ($paymentIntent->status !== 'succeeded') {
+            if ('succeeded' !== $paymentIntent->status) {
                 return $this->json(['success' => false, 'message' => 'Le paiement Stripe n’a pas été confirmé.'], 402);
             }
 
             $payment = (new Payment())
-                ->setReference('BOOST-'.strtoupper(bin2hex(random_bytes(8))))
+                ->setReference('BOOST-'.mb_strtoupper(bin2hex(random_bytes(8))))
                 ->setAgency($agency)
                 ->setBillingProfile($billingProfile)
                 ->setPaymentMethod($paymentMethod)
@@ -321,7 +316,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 ->setAmountPaidMinor($boostPrice->getAmountMinor())
                 ->setCurrency($boostPrice->getCurrency())
                 ->setProviderPaymentIntentId($paymentIntent->id)
-                ->setProviderChargeId(is_string($paymentIntent->latest_charge) ? $paymentIntent->latest_charge : null)
+                ->setProviderChargeId(\is_string($paymentIntent->latest_charge) ? $paymentIntent->latest_charge : null)
                 ->setPaymentMethodSnapshot([
                     'brand' => $paymentMethod->getBrand(),
                     'last4' => $paymentMethod->getLast4(),
@@ -335,15 +330,15 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 ->setType(BoosterTransactionType::PACK_PURCHASE)
                 ->setBoosterPack($boostPrice->getBoosterPack())
                 ->setPayment($payment)
-                ->setExpiresAt((new \DateTimeImmutable())->modify(sprintf('+%d days', $boostPrice->getBoosterPack()->getBoostDurationDays())))
-                ->setDescription(sprintf('Achat du pack boost %s', $boostPrice->getBoosterPack()->getName()));
+                ->setExpiresAt((new \DateTimeImmutable())->modify(\sprintf('+%d days', $boostPrice->getBoosterPack()->getBoostDurationDays())))
+                ->setDescription(\sprintf('Achat du pack boost %s', $boostPrice->getBoosterPack()->getName()));
 
             $paymentAttempt = (new PaymentAttempt())
                 ->setPayment($payment)
                 ->setPaymentMethod($paymentMethod)
                 ->setStatus(PaymentAttemptStatus::SUCCEEDED)
                 ->setProviderPaymentIntentId($paymentIntent->id)
-                ->setProviderChargeId(is_string($paymentIntent->latest_charge) ? $paymentIntent->latest_charge : null)
+                ->setProviderChargeId(\is_string($paymentIntent->latest_charge) ? $paymentIntent->latest_charge : null)
                 ->setAmountMinor($boostPrice->getAmountMinor())
                 ->setCurrency($boostPrice->getCurrency())
                 ->setCompletedAt(new \DateTimeImmutable());
@@ -386,6 +381,6 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             throw new \LogicException('Le code ISO de la devise du pack boost est introuvable.');
         }
 
-        return strtolower($matches[1]);
+        return mb_strtolower($matches[1]);
     }
 }

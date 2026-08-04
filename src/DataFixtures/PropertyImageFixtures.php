@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -42,30 +50,25 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
             throw new \RuntimeException("Aucun bien immobilier trouvé. Lance d'abord PropertyFixtures.");
         }
 
-        $series = $this->getAvailableImageSeries(count($properties));
+        $series = $this->getAvailableImageSeries(\count($properties));
 
         if ([] === $series) {
-            throw new \RuntimeException(
-                'Aucune galerie locale valide contenant au moins cinq images n’est disponible dans public/properties.'
-            );
+            throw new \RuntimeException('Aucune galerie locale valide contenant au moins cinq images n’est disponible dans public/properties.');
         }
 
         foreach ($properties as $propertyIndex => $property) {
-            $seriesIndex = intdiv($propertyIndex, self::MAX_PROPERTIES_PER_SOURCE_SERIES) % count($series);
+            $seriesIndex = intdiv($propertyIndex, self::MAX_PROPERTIES_PER_SOURCE_SERIES) % \count($series);
             $gallery = $series[$seriesIndex];
             $imagesCount = min(
                 self::MIN_IMAGES_PER_PROPERTY + ($propertyIndex % (self::MAX_IMAGES_PER_PROPERTY - self::MIN_IMAGES_PER_PROPERTY + 1)),
-                count($gallery)
+                \count($gallery)
             );
 
             if ($imagesCount < self::MIN_IMAGES_PER_PROPERTY) {
-                throw new \RuntimeException(sprintf(
-                    'La galerie locale sélectionnée pour le bien %d contient moins de cinq images.',
-                    $propertyIndex + 1
-                ));
+                throw new \RuntimeException(\sprintf('La galerie locale sélectionnée pour le bien %d contient moins de cinq images.', $propertyIndex + 1));
             }
 
-            foreach (array_slice($gallery, 0, $imagesCount) as $position => $image) {
+            foreach (\array_slice($gallery, 0, $imagesCount) as $position => $image) {
                 $propertyImage = new PropertyImage();
                 $propertyImage
                     ->setProperty($property)
@@ -107,7 +110,7 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
 
         /** @var \SplFileInfo $file */
         foreach ($iterator as $file) {
-            if (!$file->isFile() || !in_array(mb_strtolower($file->getExtension()), ['jpeg', 'jpg', 'png', 'webp'], true)) {
+            if (!$file->isFile() || !\in_array(mb_strtolower($file->getExtension()), ['jpeg', 'jpg', 'png', 'webp'], true)) {
                 continue;
             }
 
@@ -127,7 +130,7 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
 
             $seriesKey = mb_strtolower($matches[1]);
             $sourcePosition = (int) $matches[2];
-            $relativePath = str_replace('\\', '/', substr($file->getPathname(), strlen($uploadDirectory) + 1));
+            $relativePath = str_replace('\\', '/', mb_substr($file->getPathname(), mb_strlen($uploadDirectory) + 1));
 
             if (!isset($series[$seriesKey][$sourcePosition])) {
                 $series[$seriesKey][$sourcePosition] = [
@@ -135,10 +138,10 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
                     'size' => $size,
                 ];
 
-                if (count($series[$seriesKey]) >= self::MIN_IMAGES_PER_PROPERTY) {
+                if (\count($series[$seriesKey]) >= self::MIN_IMAGES_PER_PROPERTY) {
                     $completeSeries[$seriesKey] = true;
 
-                    if (count($completeSeries) >= $requiredSeries) {
+                    if (\count($completeSeries) >= $requiredSeries) {
                         break;
                     }
                 }
@@ -150,7 +153,7 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
 
         foreach ($series as $gallery) {
             ksort($gallery);
-            if (count($gallery) >= self::MIN_IMAGES_PER_PROPERTY) {
+            if (\count($gallery) >= self::MIN_IMAGES_PER_PROPERTY) {
                 $galleries[] = array_values($gallery);
             }
         }

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Entity\Document;
 
 use App\Repository\Document\RequiredDocumentRepository;
@@ -62,7 +72,7 @@ class RequiredDocument
 
     public function setName(string $name): static
     {
-        $this->name = trim($name);
+        $this->name = mb_trim($name);
 
         return $this;
     }
@@ -111,9 +121,7 @@ class RequiredDocument
     public function setMaxSubmissions(int $maxSubmissions): static
     {
         if ($maxSubmissions < 1) {
-            throw new \InvalidArgumentException(
-                'Le nombre maximal d’envois doit être supérieur à zéro.'
-            );
+            throw new \InvalidArgumentException('Le nombre maximal d’envois doit être supérieur à zéro.');
         }
 
         $this->maxSubmissions = $maxSubmissions;

@@ -5,7 +5,7 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-{% extends 'base.html.twig' %} 
+{% extends 'base.html.twig' %}
 
 {% block title %}Tableau de bord immobilier{% endblock %}
 
@@ -66,8 +66,8 @@
                                         attr: {
                                             id: 'domiciliation-country',
                                             class: 'form-select account-country-input',
-                                            'data-dashboard-account-completion-target': 'country'
-                                        }
+                                            'data-dashboard-account-completion-target': 'country',
+                                        },
                                     }) }}
 
                                     <button
@@ -80,7 +80,6 @@
                                 </div>
                             </div>
                         </section>
-
 
 {# termier et entrez les documents #}
 <section
@@ -156,16 +155,16 @@
                 attr: {
                     class: 'finish-setup__upload-form',
                     'data-document-upload-form': '',
-                    'data-required-document': requiredDocument.required ? 'true' : 'false'
-                }
+                    'data-required-document': requiredDocument.required ? 'true' : 'false',
+                },
             }) }}
                 {{ form_widget(documentForm.requiredDocument, {attr: {hidden: 'hidden'}}) }}
                 <label class="finish-setup__upload">
                 {{ form_widget(documentForm.document, {
                     attr: {
                         class: 'finish-setup__file-input',
-                        'data-document-upload': ''
-                    }
+                        'data-document-upload': '',
+                    },
                 }) }}
 
                 <svg
@@ -807,7 +806,6 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 </style>
 
-
                         {# Statistiques rapides #}
                         <section
                             class="dashboard-card statistics-card"
@@ -936,7 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     {{ render_chart(
                                         statistics_chart, {
                                             class: 'statistics-chart-canvas',
-                                            'data-dashboard-statistics-target': 'chart'
+                                            'data-dashboard-statistics-target': 'chart',
                                     }) }}
                                 </div>
                             </div>

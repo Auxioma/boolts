@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -49,7 +57,7 @@ final class PaymentFixtures extends Fixture implements DependentFixtureInterface
             if ('free' !== $planCode) {
                 $subscriptionAmountMinor = BillingFixtureData::SUBSCRIPTION_PRICES[SubscriptionBillingPeriod::MONTHLY->value][$planCode];
                 $subscriptionPayment = (new Payment())
-                    ->setReference('FIXTURE-SUB-'.strtoupper($agencyKey))
+                    ->setReference('FIXTURE-SUB-'.mb_strtoupper($agencyKey))
                     ->setAgency($agency)
                     ->setBillingProfile($billingProfile)
                     ->setPaymentMethod($paymentMethod)
@@ -76,7 +84,7 @@ final class PaymentFixtures extends Fixture implements DependentFixtureInterface
                 $this->addReference(BillingFixtureData::subscriptionPaymentReference($agencyKey), $subscriptionPayment);
             }
 
-            $packCode = $packCodes[$position % count($packCodes)];
+            $packCode = $packCodes[$position % \count($packCodes)];
             $boosterPack = $this->getReference(
                 BoosterPackFixtures::BOOSTER_PACK_REFERENCE_PREFIX.$packCode,
                 BoosterPack::class,
@@ -85,7 +93,7 @@ final class PaymentFixtures extends Fixture implements DependentFixtureInterface
             $refundedMinor = 'main' === $agencyKey ? 500 : 0;
 
             $boosterPayment = (new Payment())
-                ->setReference('FIXTURE-BOOST-'.strtoupper($agencyKey))
+                ->setReference('FIXTURE-BOOST-'.mb_strtoupper($agencyKey))
                 ->setAgency($agency)
                 ->setBillingProfile($billingProfile)
                 ->setPaymentMethod($paymentMethod)

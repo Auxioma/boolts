@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -12,9 +12,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\SubscriptionPlan;
 use App\Entity\Billing\SubscriptionPlanPrice;
-use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Devise;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;

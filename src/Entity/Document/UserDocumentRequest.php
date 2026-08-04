@@ -1,9 +1,19 @@
 <?php
 
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Entity\Document;
 
-use App\Entity\User;
 use App\Entity\Enum\DocumentRequestStatus;
+use App\Entity\User;
 use App\Repository\Document\UserDocumentRequestRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -97,7 +107,7 @@ class UserDocumentRequest
     }
 
     public function setRequiredDocument(
-        ?RequiredDocument $requiredDocument
+        ?RequiredDocument $requiredDocument,
     ): static {
         $this->requiredDocument = $requiredDocument;
 
@@ -177,7 +187,7 @@ class UserDocumentRequest
     }
 
     public function addSubmission(
-        UserDocumentSubmission $submission
+        UserDocumentSubmission $submission,
     ): static {
         if (!$this->submissions->contains($submission)) {
             $this->submissions->add($submission);
@@ -205,7 +215,7 @@ class UserDocumentRequest
             return false;
         }
 
-        if ($this->status === DocumentRequestStatus::APPROVED) {
+        if (DocumentRequestStatus::APPROVED === $this->status) {
             return false;
         }
 
@@ -220,7 +230,7 @@ class UserDocumentRequest
 
         foreach ($this->submissions as $submission) {
             if (
-                $latestSubmission === null
+                null === $latestSubmission
                 || $submission->getAttemptNumber()
                 > $latestSubmission->getAttemptNumber()
             ) {
