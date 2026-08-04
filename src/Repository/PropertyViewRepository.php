@@ -28,6 +28,39 @@ class PropertyViewRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param list<int> $propertyIds
+     * @return array<int, int>
+     */
+    public function countByPropertyIds(array $propertyIds, ?\DateTimeImmutable $start, \DateTimeImmutable $end): array
+    {
+        if ([] === $propertyIds) {
+            return [];
+        }
+
+        $queryBuilder = $this->createQueryBuilder('pv')
+            ->select('IDENTITY(pv.property) AS propertyId, COUNT(pv.id) AS viewsCount')
+            ->andWhere('pv.property IN (:propertyIds)')
+            ->andWhere('pv.viewedAt <= :end')
+            ->setParameter('propertyIds', $propertyIds)
+            ->setParameter('end', $end)
+            ->groupBy('pv.property');
+
+        if (null !== $start) {
+            $queryBuilder
+                ->andWhere('pv.viewedAt >= :start')
+                ->setParameter('start', $start);
+        }
+
+        $counts = [];
+
+        foreach ($queryBuilder->getQuery()->getScalarResult() as $row) {
+            $counts[(int) $row['propertyId']] = (int) $row['viewsCount'];
+        }
+
+        return $counts;
+    }
+
+    /**
      * @return list<\DateTimeImmutable>
      */
     public function findViewedDatesForDashboard(User $user, ?\DateTimeImmutable $start, \DateTimeImmutable $end): array

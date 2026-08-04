@@ -59,6 +59,7 @@ export default class extends Controller {
         this.element.querySelectorAll('[data-period]').forEach((button) => {
             button.classList.toggle('active', button.dataset.period === parameters.period);
         });
+        window.dispatchEvent(new CustomEvent('dashboard-period-changed', { detail: parameters }));
     }
 
     toggleSeries(event) {

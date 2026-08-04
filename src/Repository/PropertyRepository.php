@@ -17,6 +17,7 @@ use App\Entity\Booster\PropertyBoost;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Favoris;
 use App\Entity\Property;
+use App\Entity\PropertyView;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -105,8 +106,16 @@ class PropertyRepository extends ServiceEntityRepository
         User $user,
         ?\DateTimeImmutable $start,
         \DateTimeImmutable $end,
+        string $sort = 'created',
+        string $direction = 'DESC',
     ): QueryBuilder
     {
+        $direction = mb_strtoupper($direction);
+
+        if (!\in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'DESC';
+        }
+
         $queryBuilder = $this->createQueryBuilder('p')
             ->leftJoin('p.propertyImages', 'pi')
             ->addSelect('pi')
@@ -127,7 +136,37 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('start', $start);
         }
 
-        return $queryBuilder->orderBy('p.createdAt', 'DESC');
+        if ('views' === $sort) {
+            $viewsCountSelect = '(SELECT COUNT(periodView.id) FROM '.PropertyView::class.' periodView WHERE periodView.property = p AND periodView.viewedAt <= :end';
+
+            if (null !== $start) {
+                $viewsCountSelect .= ' AND periodView.viewedAt >= :start';
+            }
+
+            $viewsCountSelect .= ') AS HIDDEN viewsCount';
+
+            return $queryBuilder
+                ->addSelect($viewsCountSelect)
+                ->orderBy('viewsCount', $direction)
+                ->addOrderBy('p.createdAt', 'DESC');
+        }
+
+        if ('favorites' === $sort) {
+            $favoritesCountSelect = '(SELECT COUNT(periodFavorite.id) FROM '.Favoris::class.' periodFavorite WHERE periodFavorite.property = p AND periodFavorite.createdAt IS NOT NULL AND periodFavorite.createdAt <= :end';
+
+            if (null !== $start) {
+                $favoritesCountSelect .= ' AND periodFavorite.createdAt >= :start';
+            }
+
+            $favoritesCountSelect .= ') AS HIDDEN favoritesCount';
+
+            return $queryBuilder
+                ->addSelect($favoritesCountSelect)
+                ->orderBy('favoritesCount', $direction)
+                ->addOrderBy('p.createdAt', 'DESC');
+        }
+
+        return $queryBuilder->orderBy('p.createdAt', $direction);
     }
 
     /**

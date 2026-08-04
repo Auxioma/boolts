@@ -70,6 +70,17 @@ final class DashboardController extends AbstractController
             $favorisRepository,
             $agencyProfileDailyVisitRepository,
         );
+        [$performanceSort, $performanceDirection] = $this->resolvePerformanceSort($request);
+        $performanceQueryParameters = [
+            'period' => $statistics['period'],
+            'performance_sort' => $performanceSort,
+            'performance_direction' => mb_strtolower($performanceDirection),
+        ];
+
+        if ('custom' === $statistics['period']) {
+            $performanceQueryParameters['start'] = $statistics['start']->format('Y-m-d');
+            $performanceQueryParameters['end'] = $statistics['end']->format('Y-m-d');
+        }
 
         $user = $this->getUser();
 
@@ -113,6 +124,9 @@ final class DashboardController extends AbstractController
             'controller_name' => 'DashboardController',
             'statistics' => $statistics,
             'statistics_chart' => $this->buildChart($chartBuilder, $statistics),
+            'performance_query_parameters' => $performanceQueryParameters,
+            'performance_sort' => $performanceSort,
+            'performance_direction' => $performanceDirection,
             'form' => $form->createView(),
             'document_forms' => $documentForms,
             'required_documents' => $requiredDocuments,
@@ -126,6 +140,7 @@ final class DashboardController extends AbstractController
     public function performances(
         Request $request,
         PropertyRepository $propertyRepository,
+        PropertyViewRepository $propertyViewRepository,
         FavorisRepository $favorisRepository,
         PaginatorInterface $paginator,
     ): Response {
@@ -141,6 +156,7 @@ final class DashboardController extends AbstractController
             return new Response($exception->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        [$sort, $direction] = $this->resolvePerformanceSort($request);
         $affichePerformanceAnnonce = $this->paginatePerformanceProperties(
             $user,
             $request,
@@ -148,6 +164,8 @@ final class DashboardController extends AbstractController
             $paginator,
             $start,
             $end,
+            $sort,
+            $direction,
         );
         $propertyIds = [];
 
@@ -159,7 +177,8 @@ final class DashboardController extends AbstractController
 
         return $this->render('dashboard/agence_immobiliere/dashboard/_property_performance.html.twig', [
             'affiche_performance_annonce' => $affichePerformanceAnnonce,
-            'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds),
+            'view_counts' => $propertyViewRepository->countByPropertyIds($propertyIds, $start, $end),
+            'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds, $start, $end),
             'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
         ]);
     }
@@ -399,13 +418,35 @@ final class DashboardController extends AbstractController
         PaginatorInterface $paginator,
         ?\DateTimeImmutable $start,
         \DateTimeImmutable $end,
+        string $sort,
+        string $direction,
     ): PaginationInterface {
         return $paginator->paginate(
-            $propertyRepository->findForDashboardPerformanceQuery($user, $start, $end),
+            $propertyRepository->findForDashboardPerformanceQuery($user, $start, $end, $sort, $direction),
             $request->query->getInt('performance_page', 1),
             self::PERFORMANCE_PROPERTIES_PER_PAGE,
-            ['pageParameterName' => 'performance_page'],
+            [
+                'pageParameterName' => 'performance_page',
+                'sortFieldParameterName' => 'performance_sort_field',
+                'sortDirectionParameterName' => 'performance_sort_direction',
+            ],
         );
+    }
+
+    private function resolvePerformanceSort(Request $request): array
+    {
+        $sort = $request->query->getString('performance_sort', 'created');
+        $direction = mb_strtoupper($request->query->getString('performance_direction', 'desc'));
+
+        if (!\in_array($sort, ['created', 'views', 'favorites'], true)) {
+            $sort = 'created';
+        }
+
+        if (!\in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'DESC';
+        }
+
+        return [$sort, $direction];
     }
 
     private function resolvePeriod(Request $request): array

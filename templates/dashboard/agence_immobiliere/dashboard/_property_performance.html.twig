@@ -1,4 +1,7 @@
-<turbo-frame id="dashboard-property-performance">
+<turbo-frame
+    id="dashboard-property-performance"
+    data-dashboard-property-performance-target="frame"
+>
     <div class="property-list">
         {% for property in affiche_performance_annonce %}
             <article class="property-item">
@@ -34,7 +37,7 @@
                 <div class="property-statistics">
                     <span class="property-statistic">
                         <i class="icon-eye"></i>
-                        {{ property.propertyViews|length }}
+                        {{ view_counts[property.id]|default(0) }}
                     </span>
                     <span class="property-statistic">
                         <i class="icon-heart"></i>

@@ -43,23 +43,34 @@ class FavorisRepository extends ServiceEntityRepository
      * @param list<int> $propertyIds
      * @return array<int, int>
      */
-    public function countByPropertyIds(array $propertyIds): array
+    public function countByPropertyIds(
+        array $propertyIds,
+        ?\DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+    ): array
     {
         if ([] === $propertyIds) {
             return [];
         }
 
-        $rows = $this->createQueryBuilder('f')
+        $queryBuilder = $this->createQueryBuilder('f')
             ->select('IDENTITY(f.property) AS propertyId, COUNT(f.id) AS favoritesCount')
             ->andWhere('f.property IN (:propertyIds)')
+            ->andWhere('f.createdAt IS NOT NULL')
+            ->andWhere('f.createdAt <= :end')
             ->setParameter('propertyIds', $propertyIds)
-            ->groupBy('f.property')
-            ->getQuery()
-            ->getScalarResult();
+            ->setParameter('end', $end)
+            ->groupBy('f.property');
 
         $counts = [];
 
-        foreach ($rows as $row) {
+        if (null !== $start) {
+            $queryBuilder
+                ->andWhere('f.createdAt >= :start')
+                ->setParameter('start', $start);
+        }
+
+        foreach ($queryBuilder->getQuery()->getScalarResult() as $row) {
             $counts[(int) $row['propertyId']] = (int) $row['favoritesCount'];
         }
 
