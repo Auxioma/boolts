@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -46,7 +54,7 @@ final class AgencyProfileDailyVisitFixtures extends Fixture implements Dependent
             $agencyId = $agency->getId();
 
             if (null === $agencyId) {
-                throw new \LogicException(sprintf('L’agence de référence "%s" doit être persistée.', $reference));
+                throw new \LogicException(\sprintf('L’agence de référence "%s" doit être persistée.', $reference));
             }
 
             $total = 0;
@@ -59,12 +67,12 @@ final class AgencyProfileDailyVisitFixtures extends Fixture implements Dependent
                 $visits = $faker->numberBetween(2, 24 + ($agencyIndex % 12) * 4);
                 $rows[] = [
                     'agency_id' => $agencyId,
-                    'viewed_on' => $today->modify(sprintf('-%d days', $day))->format('Y-m-d'),
+                    'viewed_on' => $today->modify(\sprintf('-%d days', $day))->format('Y-m-d'),
                     'visits' => $visits,
                 ];
                 $total += $visits;
 
-                if (count($rows) >= self::BATCH_SIZE) {
+                if (\count($rows) >= self::BATCH_SIZE) {
                     $this->insertBatch($nativeConnection, $rows);
                     $rows = [];
                 }
@@ -95,7 +103,7 @@ final class AgencyProfileDailyVisitFixtures extends Fixture implements Dependent
             $parameters[] = $row['visits'];
         }
 
-        $statement = $connection->prepare(sprintf(
+        $statement = $connection->prepare(\sprintf(
             'INSERT INTO agency_profile_daily_visit (agency_id, viewed_on, visits) VALUES %s',
             implode(', ', $placeholders)
         ));

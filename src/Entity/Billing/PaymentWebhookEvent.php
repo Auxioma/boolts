@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -15,7 +15,6 @@ namespace App\Entity\Billing;
 use App\Entity\Billing\Enum\WebhookEventStatus;
 use App\Entity\Shared\TimestampableTrait;
 use App\Repository\Billing\PaymentWebhookEventRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PaymentWebhookEventRepository::class)]

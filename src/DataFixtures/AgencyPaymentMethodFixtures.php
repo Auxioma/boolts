@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -22,7 +30,7 @@ final class AgencyPaymentMethodFixtures extends Fixture implements DependentFixt
                 BillingFixtureData::profileReference($agencyKey),
                 AgencyBillingProfile::class,
             );
-            $last4 = str_pad((string) (4242 + (int) $position), 4, '0', STR_PAD_LEFT);
+            $last4 = mb_str_pad((string) (4242 + (int) $position), 4, '0', \STR_PAD_LEFT);
 
             $paymentMethod = (new AgencyPaymentMethod())
                 ->setBillingProfile($profile)
@@ -30,7 +38,7 @@ final class AgencyPaymentMethodFixtures extends Fixture implements DependentFixt
                 ->setStripeSetupIntentId('seti_fixture_'.$agencyKey)
                 ->setType('card')
                 ->setBrand('visa')
-                ->setLast4(substr($last4, -4))
+                ->setLast4(mb_substr($last4, -4))
                 ->setExpMonth(12)
                 ->setExpYear(2030)
                 ->setCardholderName('Agence '.$agencyKey)

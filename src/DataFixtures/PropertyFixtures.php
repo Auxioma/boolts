@@ -1,9 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -1422,7 +1420,6 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         ],
     ];
 
-
     private const MOROCCO_LOCATIONS = [
         [
             'countryCode' => 'MA',
@@ -1598,7 +1595,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         foreach ($this->getLocations() as $location) {
             for ($i = 1; $i <= self::PROPERTIES_PER_CITY; ++$i) {
                 $location['neighborhood'] = $faker->randomElement($location['neighborhoods']);
-                $location['mapboxId'] = sprintf(
+                $location['mapboxId'] = \sprintf(
                     'fixture-%s-%s',
                     mb_strtolower($location['countryCode']),
                     mb_strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $location['ville']) ?? 'city')
@@ -1698,7 +1695,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 if ([] !== $eligibleCaracteristiques) {
                     $numberOfCaracteristiques = $faker->numberBetween(
                         1,
-                        min(4, count($eligibleCaracteristiques))
+                        min(4, \count($eligibleCaracteristiques))
                     );
 
                     foreach ($faker->randomElements($eligibleCaracteristiques, $numberOfCaracteristiques) as $caracteristique) {
@@ -1750,6 +1747,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
     /**
      * @param array<string, Caracteristique> $caracteristiques
+     *
      * @return list<Caracteristique>
      */
     private function getEligibleCaracteristiques(
@@ -1768,7 +1766,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             default => [],
         };
 
-        if ('MA' === $countryCode && in_array('climatisation', $references, true)) {
+        if ('MA' === $countryCode && \in_array('climatisation', $references, true)) {
             $references[] = 'climatisation';
         }
 

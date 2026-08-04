@@ -1,21 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
- * pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
 namespace App\Entity\Billing;
 
 use App\Entity\Devise;
-use App\Repository\Billing\AgencyBillingProfileRepository;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
+use App\Repository\Billing\AgencyBillingProfileRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AgencyBillingProfileRepository::class)]
@@ -119,7 +119,7 @@ class AgencyBillingProfile
         $this->agency = $agency;
 
         if (
-            $agency !== null
+            null !== $agency
             && $agency->getBillingProfile() !== $this
         ) {
             $agency->setBillingProfile($this);
@@ -134,7 +134,7 @@ class AgencyBillingProfile
     }
 
     public function setStripeCustomerId(
-        ?string $stripeCustomerId
+        ?string $stripeCustomerId,
     ): static {
         $this->stripeCustomerId = $stripeCustomerId;
 
@@ -147,7 +147,7 @@ class AgencyBillingProfile
     }
 
     public function setPreferredCurrency(
-        ?Devise $preferredCurrency
+        ?Devise $preferredCurrency,
     ): static {
         $this->preferredCurrency = $preferredCurrency;
 
@@ -160,7 +160,7 @@ class AgencyBillingProfile
     }
 
     public function setDefaultPaymentMethod(
-        ?AgencyPaymentMethod $defaultPaymentMethod
+        ?AgencyPaymentMethod $defaultPaymentMethod,
     ): static {
         $this->defaultPaymentMethod = $defaultPaymentMethod;
 
@@ -197,7 +197,7 @@ class AgencyBillingProfile
     }
 
     public function setCommercialName(
-        ?string $commercialName
+        ?string $commercialName,
     ): static {
         $this->commercialName = $commercialName;
 
@@ -294,7 +294,7 @@ class AgencyBillingProfile
     }
 
     public function setTaxExemptStatus(
-        string $taxExemptStatus
+        string $taxExemptStatus,
     ): static {
         $this->taxExemptStatus = $taxExemptStatus;
 

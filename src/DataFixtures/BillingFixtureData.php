@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -167,7 +175,7 @@ final class BillingFixtureData
             }
         }
 
-        throw new \LogicException(sprintf('Aucune agence de fixture pour le forfait "%s".', $planCode));
+        throw new \LogicException(\sprintf('Aucune agence de fixture pour le forfait "%s".', $planCode));
     }
 
     public static function paymentSnapshot(string $last4 = '4242'): array
@@ -224,26 +232,26 @@ final class BillingFixtureData
 
         return match ($status) {
             'active' => [
-                $start = $today->modify(sprintf('-%d days', ($index % 7) + 1)),
+                $start = $today->modify(\sprintf('-%d days', ($index % 7) + 1)),
                 $start->modify('+15 days'),
                 null,
             ],
             'scheduled' => [
-                $start = $today->modify(sprintf('+%d days', ($index % 6) + 1)),
+                $start = $today->modify(\sprintf('+%d days', ($index % 6) + 1)),
                 $start->modify('+15 days'),
                 null,
             ],
             'expired' => [
-                $start = $today->modify(sprintf('-%d days', 24 + ($index % 8))),
+                $start = $today->modify(\sprintf('-%d days', 24 + ($index % 8))),
                 $start->modify('+15 days'),
                 null,
             ],
             'canceled' => [
-                $start = $today->modify(sprintf('-%d days', 12 + ($index % 4))),
+                $start = $today->modify(\sprintf('-%d days', 12 + ($index % 4))),
                 $start->modify('+15 days'),
-                $today->modify(sprintf('-%d days', ($index % 3) + 1)),
+                $today->modify(\sprintf('-%d days', ($index % 3) + 1)),
             ],
-            default => throw new \InvalidArgumentException(sprintf('Statut de boost fixture invalide : %s', $status)),
+            default => throw new \InvalidArgumentException(\sprintf('Statut de boost fixture invalide : %s', $status)),
         };
     }
 }

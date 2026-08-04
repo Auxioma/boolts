@@ -22,7 +22,7 @@
                         <h2>Paramètres du compte</h2>
 
                         {{ include(
-                            'dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig'
+                            'dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig',
                         ) }}
                     </div>
                 </div>
@@ -38,8 +38,8 @@
                                 'dashboard/agence_immobiliere/_partials/parametres/moyen-de-paiement.html.twig',
                                 {
                                     stripe_public_key: stripe_public_key,
-                                    payment_methods: payment_methods
-                                }
+                                    payment_methods: payment_methods,
+                                },
                             ) }}
 
                             {{ include('dashboard/agence_immobiliere/_partials/parametres/historique-des-paiements.html.twig') }}

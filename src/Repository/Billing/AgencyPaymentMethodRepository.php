@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Repository\Billing;
 
@@ -20,7 +28,7 @@ final class AgencyPaymentMethodRepository extends ServiceEntityRepository
     }
 
     public function findOneByStripePaymentMethodId(
-        string $stripePaymentMethodId
+        string $stripePaymentMethodId,
     ): ?AgencyPaymentMethod {
         return $this->findOneBy([
             'stripePaymentMethodId' => $stripePaymentMethodId,
@@ -29,7 +37,7 @@ final class AgencyPaymentMethodRepository extends ServiceEntityRepository
 
     public function findOneByFingerprint(
         AgencyBillingProfile $billingProfile,
-        string $fingerprint
+        string $fingerprint,
     ): ?AgencyPaymentMethod {
         return $this->findOneBy([
             'billingProfile' => $billingProfile,
@@ -42,7 +50,7 @@ final class AgencyPaymentMethodRepository extends ServiceEntityRepository
      * @return list<AgencyPaymentMethod>
      */
     public function findActiveByBillingProfile(
-        AgencyBillingProfile $billingProfile
+        AgencyBillingProfile $billingProfile,
     ): array {
         return $this->findBy(
             [
@@ -57,7 +65,7 @@ final class AgencyPaymentMethodRepository extends ServiceEntityRepository
     }
 
     public function unsetDefaultForBillingProfile(
-        AgencyBillingProfile $billingProfile
+        AgencyBillingProfile $billingProfile,
     ): void {
         $this->createQueryBuilder('paymentMethod')
             ->update()

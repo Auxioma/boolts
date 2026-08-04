@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Controller\Dashboard\Api\Billing;
 
@@ -159,11 +167,11 @@ final class PaymentMethodController extends AbstractController
         $setupIntentId = $payload['setupIntentId'] ?? null;
         $setAsDefault = filter_var(
             $payload['setAsDefault'] ?? false,
-            FILTER_VALIDATE_BOOL
+            \FILTER_VALIDATE_BOOL
         );
 
         if (
-            !is_string($setupIntentId)
+            !\is_string($setupIntentId)
             || !str_starts_with($setupIntentId, 'seti_')
         ) {
             return $this->json([
@@ -187,10 +195,10 @@ final class PaymentMethodController extends AbstractController
                 ['expand' => ['payment_method']]
             );
 
-            if ($setupIntent->status !== SetupIntent::STATUS_SUCCEEDED) {
+            if (SetupIntent::STATUS_SUCCEEDED !== $setupIntent->status) {
                 return $this->json([
                     'success' => false,
-                    'message' => sprintf(
+                    'message' => \sprintf(
                         'La carte n’est pas validée. Statut Stripe : %s.',
                         $setupIntent->status
                     ),
@@ -202,7 +210,7 @@ final class PaymentMethodController extends AbstractController
             );
 
             if (
-                $setupIntentCustomerId === null
+                null === $setupIntentCustomerId
                 || $setupIntentCustomerId !== $billingProfile->getStripeCustomerId()
             ) {
                 return $this->json([
@@ -213,7 +221,7 @@ final class PaymentMethodController extends AbstractController
 
             $paymentMethod = $setupIntent->payment_method;
 
-            if (is_string($paymentMethod)) {
+            if (\is_string($paymentMethod)) {
                 $paymentMethod = $this->stripe->paymentMethods->retrieve(
                     $paymentMethod
                 );
@@ -227,8 +235,8 @@ final class PaymentMethodController extends AbstractController
             }
 
             if (
-                $paymentMethod->type !== 'card'
-                || $paymentMethod->card === null
+                'card' !== $paymentMethod->type
+                || null === $paymentMethod->card
             ) {
                 return $this->json([
                     'success' => false,
@@ -238,7 +246,7 @@ final class PaymentMethodController extends AbstractController
 
             $fingerprint = $paymentMethod->card->fingerprint;
 
-            if (!is_string($fingerprint) || $fingerprint === '') {
+            if (!\is_string($fingerprint) || '' === $fingerprint) {
                 return $this->json([
                     'success' => false,
                     'message' => 'Stripe n’a retourné aucune empreinte.',
@@ -273,7 +281,7 @@ final class PaymentMethodController extends AbstractController
                 return $this->json([
                     'success' => false,
                     'duplicate' => true,
-                    'message' => sprintf(
+                    'message' => \sprintf(
                         'Cette carte est déjà enregistrée et se termine par %s.',
                         $sameCard->getLast4()
                     ),
@@ -283,10 +291,10 @@ final class PaymentMethodController extends AbstractController
             $cardholderName = null;
 
             if (
-                $paymentMethod->billing_details !== null
-                && is_string($paymentMethod->billing_details->name)
+                null !== $paymentMethod->billing_details
+                && \is_string($paymentMethod->billing_details->name)
             ) {
-                $cardholderName = trim($paymentMethod->billing_details->name);
+                $cardholderName = mb_trim($paymentMethod->billing_details->name);
             }
 
             $agencyPaymentMethod = (new AgencyPaymentMethod())
@@ -314,7 +322,7 @@ final class PaymentMethodController extends AbstractController
 
             if (
                 $setAsDefault
-                || $billingProfile->getDefaultPaymentMethod() === null
+                || null === $billingProfile->getDefaultPaymentMethod()
             ) {
                 $this->setDefaultPaymentMethod(
                     $billingProfile,
@@ -358,7 +366,7 @@ final class PaymentMethodController extends AbstractController
     }
 
     private function getOrCreateBillingProfile(
-        User $user
+        User $user,
     ): AgencyBillingProfile {
         $billingProfile = $user->getBillingProfile();
 
@@ -370,7 +378,7 @@ final class PaymentMethodController extends AbstractController
             ->setAgency($user)
             ->setBillingEmail($user->getEmail())
             ->setLegalName(
-                trim(($user->getPrenom() ?? '').' '.($user->getNom() ?? ''))
+                mb_trim(($user->getPrenom() ?? '').' '.($user->getNom() ?? ''))
                 ?: $user->getUserIdentifier()
             );
 
@@ -382,12 +390,12 @@ final class PaymentMethodController extends AbstractController
 
     private function getOrCreateStripeCustomer(
         User $user,
-        AgencyBillingProfile $billingProfile
+        AgencyBillingProfile $billingProfile,
     ): string {
         $stripeCustomerId = $billingProfile->getStripeCustomerId();
 
         if (
-            is_string($stripeCustomerId)
+            \is_string($stripeCustomerId)
             && str_starts_with($stripeCustomerId, 'cus_')
         ) {
             return $stripeCustomerId;
@@ -412,7 +420,7 @@ final class PaymentMethodController extends AbstractController
 
     private function setDefaultPaymentMethod(
         AgencyBillingProfile $billingProfile,
-        AgencyPaymentMethod $paymentMethod
+        AgencyPaymentMethod $paymentMethod,
     ): void {
         $this->paymentMethodRepository
             ->unsetDefaultForBillingProfile($billingProfile);
@@ -424,8 +432,7 @@ final class PaymentMethodController extends AbstractController
             $billingProfile->getStripeCustomerId(),
             [
                 'invoice_settings' => [
-                    'default_payment_method' =>
-                        $paymentMethod->getStripePaymentMethodId(),
+                    'default_payment_method' => $paymentMethod->getStripePaymentMethodId(),
                 ],
             ]
         );
@@ -435,14 +442,14 @@ final class PaymentMethodController extends AbstractController
 
     private function extractStripeId(mixed $value): ?string
     {
-        if (is_string($value)) {
+        if (\is_string($value)) {
             return $value;
         }
 
         if (
-            is_object($value)
+            \is_object($value)
             && isset($value->id)
-            && is_string($value->id)
+            && \is_string($value->id)
         ) {
             return $value->id;
         }
@@ -454,7 +461,7 @@ final class PaymentMethodController extends AbstractController
      * @return array<string, mixed>
      */
     private function serializePaymentMethod(
-        AgencyPaymentMethod $paymentMethod
+        AgencyPaymentMethod $paymentMethod,
     ): array {
         return [
             'id' => $paymentMethod->getId(),

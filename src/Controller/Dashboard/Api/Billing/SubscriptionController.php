@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Controller\Dashboard\Api\Billing;
 
@@ -21,8 +29,6 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
-use Stripe\Price;
-use Stripe\Product;
 use Stripe\StripeClient;
 use Stripe\Subscription;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -72,10 +78,10 @@ final class SubscriptionController extends AbstractController
             return $this->json(['success' => false, 'message' => 'Requête JSON invalide.'], 400);
         }
 
-        $planPriceId = filter_var($payload['planPriceId'] ?? null, FILTER_VALIDATE_INT);
-        $paymentMethodId = filter_var($payload['paymentMethodId'] ?? null, FILTER_VALIDATE_INT);
+        $planPriceId = filter_var($payload['planPriceId'] ?? null, \FILTER_VALIDATE_INT);
+        $paymentMethodId = filter_var($payload['paymentMethodId'] ?? null, \FILTER_VALIDATE_INT);
 
-        if ($planPriceId === false || $planPriceId === null || $planPriceId < 1) {
+        if (false === $planPriceId || null === $planPriceId || $planPriceId < 1) {
             return $this->json(['success' => false, 'message' => 'Forfait invalide.'], 400);
         }
 
@@ -91,15 +97,15 @@ final class SubscriptionController extends AbstractController
 
         $billingProfile = $agency->getBillingProfile();
 
-        if ($billingProfile === null || !str_starts_with((string) $billingProfile->getStripeCustomerId(), 'cus_')) {
+        if (null === $billingProfile || !str_starts_with((string) $billingProfile->getStripeCustomerId(), 'cus_')) {
             return $this->json(['success' => false, 'message' => 'Profil de facturation ou client Stripe introuvable.'], 409);
         }
 
-        $paymentMethod = $paymentMethodId !== false && $paymentMethodId !== null && $paymentMethodId > 0
+        $paymentMethod = false !== $paymentMethodId && null !== $paymentMethodId && $paymentMethodId > 0
             ? $this->entityManager->getRepository(AgencyPaymentMethod::class)->find($paymentMethodId)
             : $billingProfile->getDefaultPaymentMethod();
 
-        if (!$paymentMethod instanceof AgencyPaymentMethod || $paymentMethod->getBillingProfile() !== $billingProfile || !$paymentMethod->isActive() || $paymentMethod->getSetupStatus() !== PaymentMethodSetupStatus::SUCCEEDED) {
+        if (!$paymentMethod instanceof AgencyPaymentMethod || $paymentMethod->getBillingProfile() !== $billingProfile || !$paymentMethod->isActive() || PaymentMethodSetupStatus::SUCCEEDED !== $paymentMethod->getSetupStatus()) {
             return $this->json(['success' => false, 'message' => 'Aucune carte bancaire valide n’est disponible pour cet achat.'], 409);
         }
 
@@ -162,19 +168,19 @@ final class SubscriptionController extends AbstractController
     {
         $stripePriceId = $planPrice->getPaymentProviderPriceId();
 
-        if (is_string($stripePriceId) && str_starts_with($stripePriceId, 'price_')) {
+        if (\is_string($stripePriceId) && str_starts_with($stripePriceId, 'price_')) {
             return $stripePriceId;
         }
 
         $product = $this->stripe->products->create([
-            'name' => sprintf('Abonnement %s', $planPrice->getPlan()->getName()),
+            'name' => \sprintf('Abonnement %s', $planPrice->getPlan()->getName()),
             'metadata' => ['subscription_plan_price_id' => (string) $planPrice->getId()],
         ]);
         $price = $this->stripe->prices->create([
             'product' => $product->id,
             'currency' => $this->currencyCode($planPrice),
             'unit_amount' => $planPrice->getAmountMinor(),
-            'recurring' => ['interval' => $planPrice->getBillingPeriod() === SubscriptionBillingPeriod::ANNUAL ? 'year' : 'month'],
+            'recurring' => ['interval' => SubscriptionBillingPeriod::ANNUAL === $planPrice->getBillingPeriod() ? 'year' : 'month'],
             'metadata' => ['subscription_plan_price_id' => (string) $planPrice->getId()],
         ]);
 
@@ -188,7 +194,7 @@ final class SubscriptionController extends AbstractController
     {
         $periodStart = (new \DateTimeImmutable())->setTimestamp((int) $stripeSubscription->current_period_start);
         $periodEnd = (new \DateTimeImmutable())->setTimestamp((int) $stripeSubscription->current_period_end);
-        $invoiceId = is_string($stripeSubscription->latest_invoice) ? $stripeSubscription->latest_invoice : null;
+        $invoiceId = \is_string($stripeSubscription->latest_invoice) ? $stripeSubscription->latest_invoice : null;
 
         $subscription = (new AgencySubscription())
             ->setAgency($agency)
@@ -208,7 +214,7 @@ final class SubscriptionController extends AbstractController
             ->setCurrencySnapshot($planPrice->getCurrency());
 
         $payment = (new Payment())
-            ->setReference('SUB-'.strtoupper(bin2hex(random_bytes(8))))
+            ->setReference('SUB-'.mb_strtoupper(bin2hex(random_bytes(8))))
             ->setAgency($agency)
             ->setBillingProfile($paymentMethod->getBillingProfile())
             ->setPaymentMethod($paymentMethod)
@@ -259,6 +265,6 @@ final class SubscriptionController extends AbstractController
             throw new \LogicException('Le code ISO de la devise du forfait est introuvable.');
         }
 
-        return strtolower($matches[1]);
+        return mb_strtolower($matches[1]);
     }
 }

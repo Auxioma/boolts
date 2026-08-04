@@ -1,9 +1,19 @@
 <?php
 
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
+
 namespace App\Entity\Document;
 
-use App\Entity\User;
 use App\Entity\Enum\DocumentSubmissionStatus;
+use App\Entity\User;
 use App\Repository\Document\UserDocumentSubmissionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -81,7 +91,7 @@ class UserDocumentSubmission
     }
 
     public function setDocumentRequest(
-        ?UserDocumentRequest $documentRequest
+        ?UserDocumentRequest $documentRequest,
     ): static {
         $this->documentRequest = $documentRequest;
 
@@ -189,12 +199,12 @@ class UserDocumentSubmission
 
     public function reject(
         User $administrator,
-        string $reason
+        string $reason,
     ): static {
         $this->status = DocumentSubmissionStatus::REJECTED;
         $this->reviewedBy = $administrator;
         $this->reviewedAt = new \DateTimeImmutable();
-        $this->rejectionReason = trim($reason);
+        $this->rejectionReason = mb_trim($reason);
 
         return $this;
     }

@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -9,8 +17,8 @@ use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\AgencySubscriptionPeriod;
 use App\Entity\Billing\Enum\InvoiceStatus;
 use App\Entity\Billing\Enum\InvoiceType;
-use App\Entity\Billing\Payment;
 use App\Entity\Billing\Invoice;
+use App\Entity\Billing\Payment;
 use App\Entity\Devise;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -52,7 +60,7 @@ final class InvoiceFixtures extends Fixture implements DependentFixtureInterface
                     billingProfile: $billingProfile,
                     payment: $payment,
                     currency: $currency,
-                    number: 'FAC-SUB-'.strtoupper($agencyKey),
+                    number: 'FAC-SUB-'.mb_strtoupper($agencyKey),
                     type: InvoiceType::SUBSCRIPTION,
                     providerInvoiceId: 'in_fixture_subscription_'.$agencyKey,
                     subscription: $subscription,
@@ -74,7 +82,7 @@ final class InvoiceFixtures extends Fixture implements DependentFixtureInterface
                 billingProfile: $billingProfile,
                 payment: $boosterPayment,
                 currency: $currency,
-                number: 'FAC-BOOST-'.strtoupper($agencyKey),
+                number: 'FAC-BOOST-'.mb_strtoupper($agencyKey),
                 type: InvoiceType::BOOSTER_PACK,
                 providerInvoiceId: 'in_fixture_booster_'.$agencyKey,
                 subscription: null,

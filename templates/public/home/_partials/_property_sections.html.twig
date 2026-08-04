@@ -47,19 +47,19 @@
                                 highlight: 'Une',
                                 featured: true,
                                 emptyText: '',
-                                items: aLaUneLocation|default([])
+                                items: aLaUneLocation|default([]),
                             },
                             {
                                 title: 'Logements populaires à louer',
                                 emptyText: 'Aucun logement populaire en location pour le moment.',
-                                items: logementPopulaireLocation|default([])
+                                items: logementPopulaireLocation|default([]),
                             },
                             {
                                 title: 'Logements récemment ajoutés à louer',
                                 emptyText: 'Aucun logement récemment ajouté en location pour le moment.',
-                                items: logementAjouterRecementLocation|default([])
-                            }
-                        ]
+                                items: logementAjouterRecementLocation|default([]),
+                            },
+                        ],
                         },
                         {
                             key: 'vente',
@@ -70,20 +70,20 @@
                                 highlight: 'Une',
                                 featured: true,
                                 emptyText: '',
-                                items: aLaUneVente|default([])
+                                items: aLaUneVente|default([]),
                             },
                             {
                                 title: 'Biens populaires à acheter',
                                 emptyText: 'Aucun bien populaire à acheter pour le moment.',
-                                items: logementPopulaireVente|default([])
+                                items: logementPopulaireVente|default([]),
                             },
                             {
                                 title: 'Biens récemment ajoutés à acheter',
                                 emptyText: 'Aucun bien récemment ajouté à acheter pour le moment.',
-                                items: logementAjouterRecementVente|default([])
-                            }
-                        ]
-                        }
+                                items: logementAjouterRecementVente|default([]),
+                            },
+                        ],
+                        },
                     ] %}
 
                     {% for panel in panels %}
@@ -201,18 +201,18 @@
                                                             {# Vente : prix #}
                                                             {% set prixVente = bienImmobilier.prix|default('0')|replace({
                                                                 ' ': '',
-                                                                ',': '.'
+                                                                ',': '.',
                                                             }) + 0 %}
 
                                                             {# Location : loyer hors charges + charges #}
                                                             {% set loyerHorsCharge = bienImmobilier.montantLoyerHorsCharge|default('0')|replace({
                                                                 ' ': '',
-                                                                ',': '.'
+                                                                ',': '.',
                                                             }) + 0 %}
 
                                                             {% set montantCharges = bienImmobilier.montantDesCharges|default('0')|replace({
                                                                 ' ': '',
-                                                                ',': '.'
+                                                                ',': '.',
                                                             }) + 0 %}
 
                                                             {% set prixTotal = isLocation
@@ -232,19 +232,19 @@
 
                                                             {% if bienImmobilier.chambres is not empty %}
                                                                 {% set details = details|merge([
-                                                                    bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : '')
+                                                                    bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
                                                                 ]) %}
                                                             {% endif %}
 
                                                             {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
                                                                 {% set details = details|merge([
-                                                                    bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains'
+                                                                    bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
                                                                 ]) %}
                                                             {% endif %}
 
                                                             {% if bienImmobilier.surfaceTotal is not empty %}
                                                                 {% set details = details|merge([
-                                                                    bienImmobilier.surfaceTotal ~ 'm²'
+                                                                    bienImmobilier.surfaceTotal ~ 'm²',
                                                                 ]) %}
                                                             {% endif %}
 
@@ -257,7 +257,7 @@
 
                                                                 {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
                                                                     {% set addressParts = addressParts|merge([
-                                                                        (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim
+                                                                        (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
                                                                     ]) %}
                                                                 {% endif %}
                                                             {% endif %}
@@ -265,7 +265,7 @@
                                                             {% set propertyAddress = addressParts|join(', ') %}
 
                                                             {% set detailUrl = path('app_public_detail_bien', {
-                                                                slug: bienImmobilier.slug
+                                                                slug: bienImmobilier.slug,
                                                             }) %}
 
                                                             <li class="splide__slide">
@@ -279,7 +279,7 @@
                                                                     address="{{ propertyAddress }}"
                                                                     image="{{ uploadedImage }}"
                                                                     url="{{ detailUrl }}"
-                                                                    favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                                                                    favoriteUrl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
                                                                     favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
                                                                     :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
                                                                 />

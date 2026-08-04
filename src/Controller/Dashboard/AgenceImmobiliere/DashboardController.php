@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -26,18 +26,18 @@ use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
-use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response; 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
-use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/pro/dashboard', name: 'agence_immobiliere_')]
 /**
@@ -62,8 +62,7 @@ final class DashboardController extends AbstractController
         AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
         RequiredDocumentRepository $requiredDocumentRepository,
         UserDocumentRequestRepository $userDocumentRequestRepository,
-    ): Response
-    {
+    ): Response {
         $statistics = $this->statistics(
             $request,
             $propertyRepository,
@@ -114,7 +113,7 @@ final class DashboardController extends AbstractController
             ])->createView();
         }
 
-        $requiredDocumentCount = count(array_filter(
+        $requiredDocumentCount = \count(array_filter(
             $requiredDocuments,
             static fn (RequiredDocument $requiredDocument): bool => $requiredDocument->isRequired(),
         ));
@@ -272,7 +271,7 @@ final class DashboardController extends AbstractController
         $directory = $this->getParameter('kernel.project_dir').'/public/uploads/document/'.$user->getId();
         $filesystem->mkdir($directory);
         $extension = $file->guessExtension();
-        $fileName = bin2hex(random_bytes(16)).(is_string($extension) ? '.'.$extension : '');
+        $fileName = bin2hex(random_bytes(16)).(\is_string($extension) ? '.'.$extension : '');
         $file->move($directory, $fileName);
         $storagePath = 'uploads/document/'.$user->getId().'/'.$fileName;
 
@@ -399,9 +398,9 @@ final class DashboardController extends AbstractController
             'end' => $end,
             'totals' => [
                 'profileViews' => array_sum(array_map(static fn ($dailyView): int => $dailyView->getVisits(), $profileDailyViews)),
-                'published' => count($publishedDates),
-                'views' => count($viewedDates),
-                'favorites' => count($favoriteDates),
+                'published' => \count($publishedDates),
+                'views' => \count($viewedDates),
+                'favorites' => \count($favoriteDates),
             ],
             'series' => [
                 'labels' => array_values(array_map(static fn (array $bucket): string => $bucket['label'], $buckets)),

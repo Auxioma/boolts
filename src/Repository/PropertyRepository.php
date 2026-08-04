@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -108,8 +108,7 @@ class PropertyRepository extends ServiceEntityRepository
         \DateTimeImmutable $end,
         string $sort = 'created',
         string $direction = 'DESC',
-    ): QueryBuilder
-    {
+    ): QueryBuilder {
         $direction = mb_strtoupper($direction);
 
         if (!\in_array($direction, ['ASC', 'DESC'], true)) {
@@ -171,6 +170,7 @@ class PropertyRepository extends ServiceEntityRepository
 
     /**
      * @param list<int> $propertyIds
+     *
      * @return list<int>
      */
     public function findBoostedPropertyIds(array $propertyIds): array
