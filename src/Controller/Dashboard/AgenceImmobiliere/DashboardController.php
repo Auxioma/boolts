@@ -20,6 +20,7 @@ use App\Entity\Property;
 use App\Entity\User;
 use App\Form\Documents\AskDocumentsType;
 use App\Repository\AgencyProfileDailyVisitRepository;
+use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\Document\RequiredDocumentRepository;
 use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\FavorisRepository;
@@ -142,6 +143,7 @@ final class DashboardController extends AbstractController
         PropertyRepository $propertyRepository,
         PropertyViewRepository $propertyViewRepository,
         FavorisRepository $favorisRepository,
+        BoosterTransactionRepository $boosterTransactionRepository,
         PaginatorInterface $paginator,
     ): Response {
         $user = $this->getUser();
@@ -180,6 +182,7 @@ final class DashboardController extends AbstractController
             'view_counts' => $propertyViewRepository->countByPropertyIds($propertyIds, $start, $end),
             'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds, $start, $end),
             'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
+            'boosts_restants' => $boosterTransactionRepository->countAvailableForAgency($user),
         ]);
     }
 

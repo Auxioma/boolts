@@ -43,6 +43,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
      */
     private const GPS_RANDOM_RADIUS_KM = 2.5;
     private const EARTH_RADIUS_KM = 6371.0088;
+    private const PROPERTY_CREATED_AT_START = '2023-01-01 00:00:00';
 
     /**
      * Profils réalistes, proches de ce que l’on voit sur SeLoger / PAP :
@@ -1681,7 +1682,10 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 $this->fillTranslation($property, 'fr', $localizedAddress['fr'], $propertyData, $metrics, $faker);
                 $this->fillTranslation($property, 'en', $localizedAddress['en'], $propertyData, $metrics, $faker);
 
-                $createdAt = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-10 months', '-2 days'));
+                $createdAt = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween(
+                    self::PROPERTY_CREATED_AT_START,
+                    'now'
+                ));
 
                 $property->setCreatedAt($createdAt);
 
