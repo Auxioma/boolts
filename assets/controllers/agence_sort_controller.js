@@ -33,6 +33,19 @@ export default class extends Controller {
         document.removeEventListener('click', this.closeOnOutsideClick);
     }
 
+    selectOption(event) {
+        const selectedOption = event.currentTarget;
+
+        this.menuTarget.querySelectorAll('[role="option"]').forEach((option) => {
+            option.classList.remove('sort-menu__item--active');
+            option.setAttribute('aria-selected', 'false');
+        });
+
+        selectedOption.classList.add('sort-menu__item--active');
+        selectedOption.setAttribute('aria-selected', 'true');
+        this.close();
+    }
+
     closeOnOutsideClick(event) {
         if (!this.element.contains(event.target)) {
             this.close();
