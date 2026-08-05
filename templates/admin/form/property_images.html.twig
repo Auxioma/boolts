@@ -1,0 +1,22 @@
+{% block property_images_widget %}
+    {% set images = form.vars.data %}
+
+    {% if images is empty %}
+        <div class="text-body-secondary">Aucune image n’est associée à ce bien.</div>
+    {% else %}
+        <div class="row g-3">
+            {% for image in images %}
+                <div class="col-6 col-md-4 col-xl-3">
+                    <a href="{{ asset('properties/' ~ image.imageName) }}" target="_blank" rel="noopener noreferrer">
+                        <img
+                            src="{{ asset('properties/' ~ image.imageName) }}"
+                            alt="Image {{ image.position }}"
+                            class="img-fluid rounded border"
+                            loading="lazy"
+                        >
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock property_images_widget %}

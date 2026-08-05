@@ -176,6 +176,11 @@ class Property implements TranslatableInterface
         return $this->id;
     }
 
+    public function __toString(): string
+    {
+        return $this->referenceInterne ?? $this->slug ?? 'Bien #'.($this->id ?? 'nouveau');
+    }
+
     public function getAdresse(): ?string
     {
         return $this->translate()->getAdresse();
