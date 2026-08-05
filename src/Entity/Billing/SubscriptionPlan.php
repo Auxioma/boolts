@@ -66,6 +66,11 @@ class SubscriptionPlan
         return $this->id;
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
     public function getCode(): string
     {
         return $this->code;
