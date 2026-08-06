@@ -618,3 +618,103 @@
     border: 2px solid #EBECEC;
     margin: auto 12px auto 0;
 }
+
+/* pagina° */
+.property-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+.property-pagination .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+}
+
+.property-pagination .pagination > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.property-pagination .pagination a,
+.property-pagination .pagination .current {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border: 2px solid #EBECEC;
+    border-radius: 50px;
+    background: #FFFFFF;
+    color: #858789;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.property-pagination .pagination a:hover {
+    border-color: #5D00FF;
+    color: #5D00FF;
+}
+
+.property-pagination .pagination .current {
+    border-color: #5D00FF;
+    background: #5D00FF;
+    color: #FFFFFF;
+}
+
+.property-pagination .pagination .disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.btn-check + .boolts-choice .boolts-choice-remove {
+    display: none;
+}
+
+.btn-check:checked + .boolts-choice .boolts-choice-remove {
+    display: inline-flex;
+}
+
+
+.agence-mes-biens-list .property-search-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    margin-right: 12px;
+    border: 0;
+    background: transparent;
+    color: #858789;
+    cursor: pointer;
+}
+
+.agence-mes-biens-list .property-search-submit:hover {
+    color: #5D00FF;
+}
+
+.agence-mes-biens-list .property-search-submit i {
+    margin-right: 0;
+}
+
+.agence-mes-biens-list .property-search input[type="search"] {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 15px;
+}
+
+.agence-mes-biens-list .property-search input[type="search"]::-webkit-search-cancel-button {
+    cursor: pointer;
+}

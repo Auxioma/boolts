@@ -33,38 +33,61 @@
 
                                 <div class="property-tools mb-24">
 
-                                    <form
-                                        method="get"
-                                        action="{{ path('agence_immobiliere_mes_biens_list') }}"
-                                        class="property-search"
+                                <form
+                                    method="get"
+                                    action="{{ path('agence_immobiliere_mes_biens_list') }}"
+                                    class="property-search"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="property-search-submit"
+                                        aria-label="Rechercher"
                                     >
-                                        <i class="icon-search"></i>
+                                        <i class="icon-search" aria-hidden="true"></i>
+                                    </button>
 
+                                    <input
+                                        type="search"
+                                        name="search"
+                                        value="{{ app.request.query.get('search') }}"
+                                        placeholder="Rechercher un bien, une référence, une ville ou un pays"
+                                        autocomplete="off"
+                                    >
+
+                                    {% if app.request.query.get('sort') %}
                                         <input
-                                            type="text"
-                                            name="search"
-                                            value="{{ app.request.query.get('search') }}"
-                                            placeholder="Rechercher un bien, une référence"
+                                            type="hidden"
+                                            name="sort"
+                                            value="{{ app.request.query.get('sort') }}"
                                         >
+                                    {% endif %}
 
-                                        {% for key, value in app.request.query.all('modal_filter') %}
-                                            {% if value is iterable %}
-                                                {% for childKey, childValue in value %}
-                                                    <input
-                                                        type="hidden"
-                                                        name="modal_filter[{{ key }}][{{ childKey }}]"
-                                                        value="{{ childValue }}"
-                                                    >
-                                                {% endfor %}
-                                            {% else %}
+                                    {% if app.request.query.get('direction') %}
+                                        <input
+                                            type="hidden"
+                                            name="direction"
+                                            value="{{ app.request.query.get('direction') }}"
+                                        >
+                                    {% endif %}
+
+                                    {% for key, value in app.request.query.all('modal_filter') %}
+                                        {% if value is iterable %}
+                                            {% for childKey, childValue in value %}
                                                 <input
                                                     type="hidden"
-                                                    name="modal_filter[{{ key }}]"
-                                                    value="{{ value }}"
+                                                    name="modal_filter[{{ key }}][{{ childKey }}]"
+                                                    value="{{ childValue }}"
                                                 >
-                                            {% endif %}
-                                        {% endfor %}
-                                    </form>
+                                            {% endfor %}
+                                        {% else %}
+                                            <input
+                                                type="hidden"
+                                                name="modal_filter[{{ key }}]"
+                                                value="{{ value }}"
+                                            >
+                                        {% endif %}
+                                    {% endfor %}
+                                </form>
                                     <button
                                         type="button"
                                         class="btn-dashboard-filter"
@@ -83,8 +106,8 @@
                                     </a>
                                 </div>
                                 <div class="property-count mb-24">
-                                    {{ properties|length }}
-                                    bien{{ properties|length > 1 ? 's' }}
+                                    {{ properties.getTotalItemCount }}
+                                    bien{{ properties.getTotalItemCount > 1 ? 's' }}
                                 </div>
                                 {% if properties|length %}
                                     <form method="post">
@@ -196,6 +219,13 @@
                                                 </article>
                                             {% endfor %}
                                         </div>
+
+                                        {% if properties.pageCount > 1 %}
+                                            <div class="property-pagination mt-32">
+                                                {{ knp_pagination_render(properties) }}
+                                            </div>
+                                        {% endif %}
+
                                     </form>
                                 {% else %}
                                     <div class="property-empty">
@@ -218,7 +248,7 @@
 </main>
 {% include 'composant/_search/_search.html.twig' with {
     formModal: filterForm,
-    totalResults: totalResults,
-    filterCountUrl: path('agence_immobiliere_mes_biens_filters_count')} 
-%}
+    totalResults: properties.getTotalItemCount,
+    filterCountUrl: path('agence_immobiliere_mes_biens_filters_count')
+} %}
 {% endblock %}

@@ -3,7 +3,11 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['button', 'count', 'label'];
+    static targets = [
+        'button',
+        'count',
+        'label',
+    ];
 
     static values = {
         url: String,
@@ -12,6 +16,7 @@ export default class extends Controller {
     connect() {
         this.timeout = null;
         this.abortController = null;
+        this.isResetting = false;
 
         this.refresh();
     }
@@ -27,7 +32,7 @@ export default class extends Controller {
     }
 
     refresh() {
-        if (!this.hasUrlValue) {
+        if (!this.hasUrlValue || this.isResetting) {
             return;
         }
 
@@ -40,13 +45,147 @@ export default class extends Controller {
         }, 350);
     }
 
-    refreshAfterReset() {
-        setTimeout(() => {
-            this.refresh();
-        }, 0);
+    refreshAfterReset(event) {
+        this.isResetting = true;
+
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
+
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
+
+        const form = event.currentTarget;
+
+        window.requestAnimationFrame(() => {
+            this.resetNatureInputs(form);
+            this.resetPropertyTypeInputs(form);
+            this.resetDpeInputs(form);
+            this.resetNumericInputs(form);
+            this.resetSearchInputs(form);
+            this.resetLocationFields(form);
+            this.resetChoiceLabels(form);
+
+            window.dispatchEvent(
+                new CustomEvent('boolts-location:reset')
+            );
+
+            setTimeout(() => {
+                this.isResetting = false;
+                this.loadCount();
+            }, 0);
+        });
+    }
+
+    resetNatureInputs(form) {
+        const natureInputs = form.querySelectorAll(
+            'input[name="modal_filter[natureDeLaPropriete]"]'
+        );
+
+        natureInputs.forEach((input) => {
+            input.checked = input.value === '';
+        });
+    }
+
+    resetPropertyTypeInputs(form) {
+        const propertyTypeInputs = form.querySelectorAll(
+            'input[name="modal_filter[typeDePropriete][]"]'
+        );
+
+        propertyTypeInputs.forEach((input) => {
+            input.checked = false;
+        });
+    }
+
+    resetDpeInputs(form) {
+        const dpeInputs = form.querySelectorAll(
+            'input[name="modal_filter[dpe][]"]'
+        );
+
+        dpeInputs.forEach((input) => {
+            input.checked = false;
+        });
+    }
+
+    resetNumericInputs(form) {
+        const numericInputs = form.querySelectorAll(
+            'input[type="number"]'
+        );
+
+        numericInputs.forEach((input) => {
+            input.value = '';
+        });
+    }
+
+    resetSearchInputs(form) {
+        const searchInputs = form.querySelectorAll(
+            'input[type="search"]'
+        );
+
+        searchInputs.forEach((input) => {
+            input.value = '';
+        });
+    }
+
+    resetLocationFields(form) {
+        const locationFieldNames = [
+            'modal_filter[pays]',
+            'modal_filter[ville]',
+            'modal_filter[quartier]',
+        ];
+
+        locationFieldNames.forEach((fieldName) => {
+            const input = form.querySelector(
+                `input[name="${fieldName}"]`
+            );
+
+            if (!input) {
+                return;
+            }
+
+            input.value = '[]';
+
+            input.dispatchEvent(
+                new Event('change', {
+                    bubbles: true,
+                })
+            );
+        });
+
+        form
+            .querySelectorAll('.boolts-selected-list')
+            .forEach((list) => {
+                list.innerHTML = '';
+                list.hidden = true;
+            });
+    }
+
+    resetChoiceLabels(form) {
+        form
+            .querySelectorAll('.boolts-choice-remove')
+            .forEach((icon) => {
+                icon.remove();
+            });
+
+        form
+            .querySelectorAll('.boolts-choice')
+            .forEach((label) => {
+                label.classList.remove(
+                    'active',
+                    'selected',
+                    'is-selected'
+                );
+            });
     }
 
     async loadCount() {
+        if (!this.hasUrlValue) {
+            return;
+        }
+
         const formData = new FormData(this.element);
         const params = new URLSearchParams(formData);
 
@@ -56,37 +195,66 @@ export default class extends Controller {
 
         this.abortController = new AbortController();
 
-        this.buttonTarget.classList.add('is-loading');
+        if (this.hasButtonTarget) {
+            this.buttonTarget.classList.add('is-loading');
+            this.buttonTarget.disabled = true;
+        }
 
         try {
-            const response = await fetch(`${this.urlValue}?${params.toString()}`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                signal: this.abortController.signal,
-            });
+            const response = await fetch(
+                `${this.urlValue}?${params.toString()}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: this.abortController.signal,
+                }
+            );
 
             if (!response.ok) {
-                return;
+                throw new Error(
+                    `Erreur HTTP ${response.status}`
+                );
             }
 
             const data = await response.json();
-            const total = Number(data.total ?? 0);
+
+            const total = Number(
+                data.total
+                ?? data.count
+                ?? data.totalResults
+                ?? 0
+            );
 
             this.updateButton(total);
         } catch (error) {
             if (error.name !== 'AbortError') {
-                console.error('Erreur AJAX count filtres :', error);
+                console.error(
+                    'Erreur AJAX count filtres :',
+                    error
+                );
             }
         } finally {
-            this.buttonTarget.classList.remove('is-loading');
+            if (this.hasButtonTarget) {
+                this.buttonTarget.classList.remove('is-loading');
+                this.buttonTarget.disabled = false;
+            }
         }
     }
 
     updateButton(total) {
-        this.countTarget.textContent = new Intl.NumberFormat('fr-FR').format(total);
-        this.labelTarget.textContent = total === 1 ? 'logement' : 'logements';
+        if (this.hasCountTarget) {
+            this.countTarget.textContent = new Intl.NumberFormat(
+                'fr-FR'
+            ).format(total);
+        }
+
+        if (this.hasLabelTarget) {
+            this.labelTarget.textContent = total === 1
+                ? 'logement'
+                : 'logements';
+        }
     }
 }

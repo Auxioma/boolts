@@ -38,7 +38,10 @@
 
         {# Bouton reset HTML : réinitialise les champs visibles du formulaire #}
         <div class="boolts-filter-reset-wrapper px-24">
-            <button type="reset" class="boolts-filter-reset">
+            <button
+                type="reset"
+                class="boolts-filter-reset"
+            >
                 Réinitialiser les filtres
             </button>
         </div>
@@ -194,9 +197,7 @@
                                             {{ choice.label }}
 
                                             {# Affiche une croix seulement si le choix est sélectionné #}
-                                            {% if isChecked %}
                                                 <span class="boolts-choice-remove" aria-hidden="true">&times;</span>
-                                            {% endif %}
                                         </label>
 
                                     {% endif %}
@@ -279,6 +280,7 @@
                 <div
                     class="accordion-item boolts-filter-item"
                     data-controller="boolts-location"
+                    data-action="boolts-location:reset@window->boolts-location#reset"
                     data-boolts-location-country-url-value="{{ path('app_geo_country_autocomplete') }}"
                     data-boolts-location-city-url-value="{{ path('app_geo_city_autocomplete') }}"
                     data-boolts-location-district-url-value="{{ path('app_geo_district_autocomplete') }}"

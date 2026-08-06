@@ -21,6 +21,7 @@ use App\Repository\PropertyRepository;
 use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +39,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     #[Route('/liste', name: 'mes_biens_list', methods: ['GET'])]
     public function list(
         PropertyRepository $propertyRepository,
+        PaginatorInterface $paginator,
         Request $request,
     ): Response {
         $user = $this->getUser();
@@ -46,23 +48,19 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        $search = $request
-            ->query
-            ->getString('search');
+        $search = mb_trim(
+            $request->query->getString('search')
+        );
 
-        $sort = $request
-            ->query
-            ->getString(
-                'sort',
-                'p.createdAt'
-            );
+        $sort = $request->query->getString(
+            'sort',
+            'p.createdAt'
+        );
 
-        $direction = $request
-            ->query
-            ->getString(
-                'direction',
-                'DESC'
-            );
+        $direction = $request->query->getString(
+            'direction',
+            'DESC'
+        );
 
         $filter = new ModalFilter();
 
@@ -79,25 +77,28 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $filterForm->handleRequest($request);
 
-        $filters = $request
-            ->query
-            ->has('modal_filter')
-            ? $request
-                ->query
-                ->all('modal_filter')
+        $filters = $request->query->has('modal_filter')
+            ? $request->query->all('modal_filter')
             : [];
 
-        $properties = $propertyRepository
+        $queryBuilder = $propertyRepository
             ->findPropertysByUserWithFiltersQuery(
                 user: $user,
-                search: $search,
+                search: '' !== $search ? $search : null,
                 filters: $filters,
                 sort: $sort,
                 direction: $direction,
                 locale: $request->getLocale(),
-            )
-            ->getQuery()
-            ->getResult();
+            );
+
+        $properties = $paginator->paginate(
+            $queryBuilder,
+            max(
+                1,
+                $request->query->getInt('page', 1)
+            ),
+            10
+        );
 
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_mes_biens/list.html.twig',
@@ -105,8 +106,10 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 'properties' => $properties,
                 'filterForm' => $filterForm->createView(),
                 'modal_filter' => $filters,
-                'totalResults' => \count($properties),
-
+                'searchValue' => $search,
+                'sortValue' => $sort,
+                'directionValue' => $direction,
+                'totalResults' => $properties->getTotalItemCount(),
             ]
         );
     }
