@@ -93,5 +93,22 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::linkTo(TranslationCrudController::class, 'Traductions', 'fas fa-language')
             ->setAction(Action::INDEX);
+
+        yield MenuItem::section('Système', 'fas fa-gears');
+
+yield MenuItem::linkTo(
+    MaintenanceSettingCrudController::class,
+    'Maintenance',
+    'fas fa-wrench'
+)
+    ->setAction(Action::INDEX);
+
+yield MenuItem::linkTo(
+    MaintenanceAllowedIpCrudController::class,
+    'IP autorisées',
+    'fas fa-network-wired'
+)
+    ->setAction(Action::INDEX);
+    
     }
 }
