@@ -59,7 +59,7 @@ class AgencyProfileDailyVisit
 
     public function setViewedOn(\DateTimeImmutable $viewedOn): static
     {
-        $this->viewedOn = $viewedOn->setTime(0, 0);
+        $this->viewedOn = $viewedOn;
 
         return $this;
     }

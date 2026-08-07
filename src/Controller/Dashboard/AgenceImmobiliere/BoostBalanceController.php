@@ -16,11 +16,13 @@ use App\Entity\User;
 use App\Repository\Booster\BoosterTransactionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_AGENCE')]
 final class BoostBalanceController extends AbstractController
 {
+    #[Route('/pro/boost-balance', name: 'agence_immobiliere_boost_balance', methods: ['GET'])]
     public function button(
         BoosterTransactionRepository $boosterTransactionRepository,
         string $variant = 'dashboard',
