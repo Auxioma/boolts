@@ -15,6 +15,7 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 use App\Entity\Filter\ModalFilter;
 use App\Entity\Property;
 use App\Entity\User;
+use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Form\Filter\ModalFilterType;
 use App\Repository\PropertyRepository;
@@ -156,6 +157,328 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         ]);
     }
 
+    #[Route(
+        '/{id}/pause',
+        name: 'mes_biens_pause',
+        methods: ['POST']
+    )]
+    public function pause(
+        Property $property,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $user = $this->getUser();
+
+        if (
+            !$user instanceof User
+            || $property->getUser()?->getId() !== $user->getId()
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'property_pause_'.$property->getId(),
+            $request->request->getString('_property_token')
+        )) {
+            throw $this->createAccessDeniedException(
+                'Token CSRF invalide.'
+            );
+        }
+
+        $property->setStatut(
+            StatutAnnonceImmobiliere::DEPUBLIEE
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'L’annonce a été mise en pause.'
+        );
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens_list'
+        );
+    }
+
+    #[Route(
+        '/{id}/modifier',
+        name: 'mes_biens_edit',
+        methods: ['GET']
+    )]
+    public function edit(
+        Property $property,
+        Request $request,
+    ): Response {
+        $user = $this->getUser();
+
+        if (
+            !$user instanceof User
+            || $property->getUser()?->getId() !== $user->getId()
+        ) {
+            throw $this->createAccessDeniedException(
+                'Vous ne pouvez pas modifier cette annonce.'
+            );
+        }
+
+        $session = $request->getSession();
+
+        $session->set(
+            'mes_biens_property_id',
+            $property->getId()
+        );
+
+        $session->set(
+            'mes_biens_reached_step',
+            8
+        );
+
+        $transaction = $property->getTypeTransaction();
+
+        if ($transaction) {
+            $slugFr = $transaction
+                ->translate('fr')
+                ->getSlug();
+
+            $typeTransactionCode = match ($slugFr) {
+                'vente' => '1',
+                'location' => '2',
+                default => null,
+            };
+
+            if (null !== $typeTransactionCode) {
+                $session->set(
+                    'typeTransaction',
+                    $typeTransactionCode
+                );
+            }
+        }
+
+        $session->set(
+            'mes_biens_edit_mode',
+            true
+        );
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens',
+            [
+                'step' => 1,
+            ]
+        );
+    }
+
+    #[Route(
+        '/{id}/reactiver',
+        name: 'mes_biens_reactivate',
+        methods: ['POST']
+    )]
+    public function reactivate(
+        Property $property,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $user = $this->getUser();
+
+        if (
+            !$user instanceof User
+            || $property->getUser()?->getId() !== $user->getId()
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'property_reactivate_'.$property->getId(),
+            $request->request->getString('_property_token')
+        )) {
+            throw $this->createAccessDeniedException(
+                'Token CSRF invalide.'
+            );
+        }
+
+        $property->setStatut(
+            StatutAnnonceImmobiliere::PUBLIEE
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'L’annonce a été réactivée.'
+        );
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens_list'
+        );
+    }
+
+    #[Route(
+        '/{id}/supprimer',
+        name: 'mes_biens_delete',
+        methods: ['POST']
+    )]
+    public function delete(
+        Property $property,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $user = $this->getUser();
+
+        if (
+            !$user instanceof User
+            || $property->getUser()?->getId() !== $user->getId()
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'property_delete_'.$property->getId(),
+            $request->request->getString('_property_token')
+        )) {
+            throw $this->createAccessDeniedException(
+                'Token CSRF invalide.'
+            );
+        }
+
+        $property->setStatut(
+            StatutAnnonceImmobiliere::SUPPRIMEE
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'L’annonce a été supprimée.'
+        );
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens_list'
+        );
+    }
+
+    // action groupey 
+    #[Route('/actions-groupees',name: 'mes_biens_bulk_action',methods: ['POST'])]
+    public function bulkAction(Request $request,PropertyRepository $propertyRepository,EntityManagerInterface $entityManager,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'property_bulk_action',
+            $request->request->getString('_token')
+        )) {
+            throw $this->createAccessDeniedException(
+                'Token CSRF invalide.'
+            );
+        }
+
+        $propertyIds = $request->request->all(
+            'properties'
+        );
+
+        $action = $request->request->getString(
+            'action'
+        );
+
+        if ([] === $propertyIds) {
+            $this->addFlash(
+                'warning',
+                'Sélectionnez au moins une annonce.'
+            );
+
+            return $this->redirectToRoute(
+                'agence_immobiliere_mes_biens_list'
+            );
+        }
+
+        $propertyIds = array_values(
+            array_unique(
+                array_filter(
+                    array_map(
+                        'intval',
+                        $propertyIds
+                    )
+                )
+            )
+        );
+
+        $properties = $propertyRepository
+            ->createQueryBuilder('p')
+            ->andWhere('p.id IN (:ids)')
+            ->andWhere('p.user = :user')
+            ->setParameter('ids', $propertyIds)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+
+        if ([] === $properties) {
+            $this->addFlash(
+                'warning',
+                'Aucune annonce valide sélectionnée.'
+            );
+
+            return $this->redirectToRoute(
+                'agence_immobiliere_mes_biens_list'
+            );
+        }
+
+        $newStatus = match ($action) {
+            'pause' => StatutAnnonceImmobiliere::DEPUBLIEE,
+            'reactivate' => StatutAnnonceImmobiliere::PUBLIEE,
+            'delete' => StatutAnnonceImmobiliere::SUPPRIMEE,
+            default => null,
+        };
+
+        if (null === $newStatus) {
+            $this->addFlash(
+                'danger',
+                'Action inconnue.'
+            );
+
+            return $this->redirectToRoute(
+                'agence_immobiliere_mes_biens_list'
+            );
+        }
+
+        foreach ($properties as $property) {
+            $property->setStatut(
+                $newStatus
+            );
+        }
+
+        $entityManager->flush();
+
+        $message = match ($action) {
+            'pause' => \sprintf(
+                '%d annonce(s) mise(s) en pause.',
+                \count($properties)
+            ),
+
+            'reactivate' => \sprintf(
+                '%d annonce(s) réactivée(s).',
+                \count($properties)
+            ),
+
+            'delete' => \sprintf(
+                '%d annonce(s) supprimée(s).',
+                \count($properties)
+            ),
+
+            default => 'Action effectuée.',
+        };
+
+        $this->addFlash(
+            'success',
+            $message
+        );
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens_list'
+        );
+    }
+
     #[Route('/', name: 'mes_biens')]
     /**
      * Handles the index controller action.
@@ -182,14 +505,32 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             $session->set('mes_biens_reached_step', 1);
         }
 
-        $propertyId = $session->get('mes_biens_property_id');
+        $propertyId = $session->get(
+            'mes_biens_property_id'
+        );
 
         if ($propertyId) {
-            $mesBiens = $propertyRepository->find($propertyId);
+            $mesBiens = $propertyRepository->find(
+                $propertyId
+            );
 
             if (!$mesBiens) {
                 $this->clearMesBiensSession($session);
+
                 $mesBiens = new Property();
+            } else {
+                $user = $this->getUser();
+
+                if (
+                    !$user instanceof User
+                    || $mesBiens->getUser()?->getId() !== $user->getId()
+                ) {
+                    $this->clearMesBiensSession($session);
+
+                    throw $this->createAccessDeniedException(
+                        'Vous ne pouvez pas modifier cette annonce.'
+                    );
+                }
             }
         } else {
             $mesBiens = new Property();
@@ -210,19 +551,39 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             | Step 1 : type de bien
             |--------------------------------------------------------------------------
             */
+
             if (1 === $step) {
-                $mesBiens->setSlug($numericSlugGenerator->generate(16));
-                $entityManager->persist($mesBiens);
+                if (null === $mesBiens->getId()) {
+                    $mesBiens->setSlug(
+                        $numericSlugGenerator->generate(16)
+                    );
+
+                    $entityManager->persist(
+                        $mesBiens
+                    );
+                }
+
                 $entityManager->flush();
 
-                $session->set('mes_biens_property_id', $mesBiens->getId());
+                $session->set(
+                    'mes_biens_property_id',
+                    $mesBiens->getId()
+                );
 
-                $this->updateReachedStep($session, 2);
+                $this->updateReachedStep(
+                    $session,
+                    2
+                );
 
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 2,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId() ?? '',
-                ]);
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens',
+                    [
+                        'step' => 2,
+                        'typeTransaction' => $mesBiens
+                            ->getTypeTransaction()
+                            ?->getId() ?? '',
+                    ]
+                );
             }
 
             /*
@@ -265,42 +626,73 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $mapboxId = $mesBiens->getMapboxId();
                 $sessionToken = $mesBiens->getSessionIdMapbox();
 
-                if ($mapboxId) {
+                $isFixtureMapboxId = null !== $mapboxId
+                    && str_starts_with(
+                        $mapboxId,
+                        'fixture-'
+                    );
+
+                if (
+                    $mapboxId
+                    && !$isFixtureMapboxId
+                ) {
                     foreach (['fr', 'en'] as $locale) {
                         $address = $mapboxAddressTranslator->translateByMapboxId(
                             mapboxId: $mapboxId,
                             sessionToken: $sessionToken,
                             locale: $locale
                         );
-
                         if (null === $address) {
                             continue;
                         }
-
-                        $translation = $mesBiens->translate($locale);
-
-                        $translation->setAdresse($address['adresse']);
-                        $translation->setVille($address['ville']);
-                        $translation->setPays($address['pays']);
-                        $translation->setFullAddress($address['fullAddress']);
-                        $translation->setRegion($address['region']);
-                        $translation->setDistrict($address['district']);
-                        $translation->setLocality($address['locality']);
-                        $translation->setNeighborhood($address['neighborhood']);
-                        $translation->setPoi($address['poi']);
+                        $translation = $mesBiens->translate(
+                            $locale
+                        );
+                        $translation->setAdresse(
+                            $address['adresse']
+                        );
+                        $translation->setVille(
+                            $address['ville']
+                        );
+                        $translation->setPays(
+                            $address['pays']
+                        );
+                        $translation->setFullAddress(
+                            $address['fullAddress']
+                        );
+                        $translation->setRegion(
+                            $address['region']
+                        );
+                        $translation->setDistrict(
+                            $address['district']
+                        );
+                        $translation->setLocality(
+                            $address['locality']
+                        );
+                        $translation->setNeighborhood(
+                            $address['neighborhood']
+                        );
+                        $translation->setPoi(
+                            $address['poi']
+                        );
                     }
-
                     $mesBiens->mergeNewTranslations();
                 }
-
                 $entityManager->flush();
 
-                $this->updateReachedStep($session, 4);
-
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 4,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                ]);
+                $this->updateReachedStep(
+                    $session,
+                    4
+                );
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens',
+                    [
+                        'step' => 4,
+                        'typeTransaction' => $mesBiens
+                            ->getTypeTransaction()
+                            ?->getId(),
+                    ]
+                );
             }
 
             /*
@@ -411,14 +803,38 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             | Step 8 : prix
             |--------------------------------------------------------------------------
             */
+
             if (8 === $step) {
                 $entityManager->flush();
 
-                $this->clearMesBiensSession($session);
+                $isEditMode = true === $session->get(
+                    'mes_biens_edit_mode',
+                    false
+                );
 
-                return $this->redirectToRoute('agence_immobiliere_mes_biens_status', [
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                ]);
+                $this->clearMesBiensSession(
+                    $session
+                );
+
+                if ($isEditMode) {
+                    $this->addFlash(
+                        'success',
+                        'L’annonce a été modifiée avec succès.'
+                    );
+
+                    return $this->redirectToRoute(
+                        'agence_immobiliere_mes_biens_list'
+                    );
+                }
+
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens_status',
+                    [
+                        'typeTransaction' => $mesBiens
+                            ->getTypeTransaction()
+                            ?->getId(),
+                    ]
+                );
             }
         }
 
@@ -449,10 +865,23 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         }
     }
 
-    private function clearMesBiensSession(SessionInterface $session): void
-    {
-        $session->remove('mes_biens_property_id');
-        $session->remove('typeTransaction');
-        $session->remove('mes_biens_reached_step');
+    private function clearMesBiensSession(
+        SessionInterface $session
+    ): void {
+        $session->remove(
+            'mes_biens_property_id'
+        );
+
+        $session->remove(
+            'typeTransaction'
+        );
+
+        $session->remove(
+            'mes_biens_reached_step'
+        );
+
+        $session->remove(
+            'mes_biens_edit_mode'
+        );
     }
 }

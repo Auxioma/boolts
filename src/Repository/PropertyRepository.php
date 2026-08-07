@@ -207,10 +207,13 @@ class PropertyRepository extends ServiceEntityRepository
             ->addSelect('pt')
             ->andWhere('p.user = :user')
             ->setParameter('user', $user)
-            ->andWhere('p.statut = :statut')
+            ->andWhere('p.statut IN (:statuts)')
             ->setParameter(
-                'statut',
-                StatutAnnonceImmobiliere::PUBLIEE
+                'statuts',
+                [
+                    StatutAnnonceImmobiliere::PUBLIEE,
+                    StatutAnnonceImmobiliere::DEPUBLIEE,
+                ]
             );
 
         if (

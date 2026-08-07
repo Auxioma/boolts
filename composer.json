@@ -54,6 +54,7 @@
         "symfony/twig-bundle": "8.0.*",
         "symfony/ux-autocomplete": "^3.2",
         "symfony/ux-chartjs": "^3.1",
+        "symfony/ux-live-component": "^3.4",
         "symfony/ux-toggle-password": "^2.35",
         "symfony/ux-turbo": "^3.0",
         "symfony/validator": "8.0.*",
