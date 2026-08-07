@@ -13,4 +13,5 @@ import '@splidejs/splide/dist/css/splide.min.css';
 import './styles/app.css';
 
 import './stimulus_bootstrap.js';
+import './frontend_error_reporter.js';
 import './styles/plugin/intl-tel-input/intlTelInputWithAssets.css';
