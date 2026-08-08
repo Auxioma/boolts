@@ -17,5 +17,6 @@ vich_uploader:
             uri_prefix: /properties
             upload_destination: '%kernel.project_dir%/public/properties'
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            # directory_namer: App\Vich\PropertyDirectoryNamer
             delete_on_update: true
             delete_on_remove: true

@@ -22,6 +22,7 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Intl\Countries;
 
 /**
  * @extends ServiceEntityRepository<Property>
@@ -68,6 +69,7 @@ class PropertyRepository extends ServiceEntityRepository
      */
     public function findPropertysByUserQuery(
         User $user,
+        string $search = null,
         string $sort = 'p.createdAt',
         string $direction = 'DESC',
     ): QueryBuilder {
@@ -78,10 +80,25 @@ class PropertyRepository extends ServiceEntityRepository
         }
 
         $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.translations', 'pt')
             ->andWhere('p.user = :user')
             ->setParameter('user', $user)
             ->andWhere('p.statut = :statut')
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE);
+
+        if ($search) {
+        $qb
+            ->andWhere(
+                'LOWER(p.referenceInterne) LIKE :search
+                OR LOWER(pt.titreDuLogement) LIKE :search
+                OR LOWER(pt.ville) LIKE :search'
+            )
+            ->setParameter(
+                'search',
+                '%'.mb_strtolower($search).'%'
+            );
+        }
+    
 
         if ('p.views' === $sort) {
             return $qb
@@ -169,6 +186,411 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<Property>
+     */
+    public function findForDashboardExport(User $user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.translations', 'propertyTranslation')
+            ->addSelect('propertyTranslation')
+            ->leftJoin('p.propertyImages', 'propertyImage')
+            ->addSelect('propertyImage')
+            ->leftJoin('p.typeBien', 'typeBien')
+            ->addSelect('typeBien')
+            ->leftJoin('typeBien.translations', 'typeBienTranslation')
+            ->addSelect('typeBienTranslation')
+            ->leftJoin('p.typeTransaction', 'typeTransaction')
+            ->addSelect('typeTransaction')
+            ->leftJoin('typeTransaction.translations', 'typeTransactionTranslation')
+            ->addSelect('typeTransactionTranslation')
+            ->leftJoin('p.caracteristique', 'caracteristique')
+            ->addSelect('caracteristique')
+            ->leftJoin('caracteristique.translations', 'caracteristiqueTranslation')
+            ->addSelect('caracteristiqueTranslation')
+            ->innerJoin('p.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('u.devise', 'currency')
+            ->addSelect('currency')
+            ->andWhere('p.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('p.createdAt', 'DESC')
+            ->addOrderBy('propertyImage.position', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    public function findPropertysByUserWithFiltersQuery(
+    User $user,
+    ?string $search = null,
+    array $filters = [],
+    string $sort = 'p.createdAt',
+    string $direction = 'DESC',
+    ?string $locale = null,
+    ): QueryBuilder {
+        if (
+            isset($filters['modal_filter'])
+            && \is_array($filters['modal_filter'])
+        ) {
+            $filters = $filters['modal_filter'];
+        }
+
+        $direction = mb_strtoupper($direction);
+
+        if (!\in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'DESC';
+        }
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('DISTINCT p')
+            ->leftJoin('p.translations', 'pt')
+            ->addSelect('pt')
+            ->andWhere('p.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('p.statut IN (:statuts)')
+            ->setParameter(
+                'statuts',
+                [
+                    StatutAnnonceImmobiliere::PUBLIEE,
+                    StatutAnnonceImmobiliere::DEPUBLIEE,
+                ]
+            );
+
+        if (
+            null !== $locale
+            && '' !== mb_trim($locale)
+        ) {
+            $qb
+                ->andWhere('pt.locale = :locale')
+                ->setParameter('locale', $locale);
+        }
+
+        if (
+            null !== $search
+            && '' !== mb_trim($search)
+        ) {
+        $normalizedSearch = mb_strtolower(
+            mb_trim($search)
+        );
+
+        $qb
+            ->andWhere(
+                $qb->expr()->orX(
+                    'LOWER(p.referenceInterne) LIKE :search',
+                    'LOWER(p.slug) LIKE :search',
+                    'LOWER(pt.titreDuLogement) LIKE :search',
+                    'LOWER(pt.ville) LIKE :search',
+                    'LOWER(pt.pays) LIKE :search',
+                    'LOWER(pt.adresse) LIKE :search',
+                    'LOWER(pt.fullAddress) LIKE :search'
+                )
+            )
+            ->setParameter(
+                'search',
+                '%'.$normalizedSearch.'%'
+            );
+        }
+
+        $natureDeLaPropriete = $this->normalizeSingleValue(
+            $filters['natureDeLaPropriete'] ?? null,
+            [
+                'id',
+                'value',
+                'code',
+                'name',
+                'label',
+            ]
+        );
+
+        if (null !== $natureDeLaPropriete) {
+            $qb
+                ->andWhere(
+                    'IDENTITY(p.typeTransaction) = :natureDeLaPropriete'
+                )
+                ->setParameter(
+                    'natureDeLaPropriete',
+                    (int) $natureDeLaPropriete
+                );
+        }
+
+        $typesDePropriete = $this->normalizeArrayValue(
+            $filters['typeDePropriete'] ?? [],
+            [
+                'id',
+                'value',
+                'code',
+                'name',
+                'label',
+            ]
+        );
+
+        if ([] !== $typesDePropriete) {
+            $qb
+                ->andWhere(
+                    'IDENTITY(p.typeBien) IN (:typesDePropriete)'
+                )
+                ->setParameter(
+                    'typesDePropriete',
+                    array_map(
+                        'intval',
+                        $typesDePropriete
+                    )
+                );
+        }
+
+        $pays = $this->normalizeCountryFilterValues(
+            $filters['pays'] ?? [],
+            $locale
+        );
+
+        $villes = $this->normalizeArrayValue(
+            $filters['ville'] ?? [],
+            [
+                'city_name',
+                'ville',
+                'locality',
+                'name',
+                'label',
+                'value',
+                'postal_code',
+                'postcode',
+            ]
+        );
+
+        $quartiers = $this->normalizeArrayValue(
+            $filters['quartier'] ?? [],
+            [
+                'district_name',
+                'neighborhood',
+                'quartier',
+                'district',
+                'name',
+                'label',
+                'value',
+            ]
+        );
+
+        $this->addTextFilter(
+            $qb,
+            'pt.pays',
+            'pays',
+            $pays
+        );
+
+        $this->addTextFilter(
+            $qb,
+            'pt.ville',
+            'ville',
+            $villes
+        );
+
+        if ([] !== $quartiers) {
+            if (
+                $this
+                    ->getClassMetadata()
+                    ->hasField('quartier')
+            ) {
+                $this->addTextFilter(
+                    $qb,
+                    'p.quartier',
+                    'quartier',
+                    $quartiers
+                );
+            } elseif (
+                $this
+                    ->getClassMetadata()
+                    ->hasField('neighborhood')
+            ) {
+                $this->addTextFilter(
+                    $qb,
+                    'p.neighborhood',
+                    'quartier',
+                    $quartiers
+                );
+            } elseif (
+                $this
+                    ->getClassMetadata()
+                    ->hasField('district')
+            ) {
+                $this->addTextFilter(
+                    $qb,
+                    'p.district',
+                    'quartier',
+                    $quartiers
+                );
+            }
+        }
+
+        if (
+            $this
+                ->getClassMetadata()
+                ->hasField('chambres')
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'p.chambres',
+                $filters,
+                'minChambres',
+                'maxChambres'
+            );
+        }
+
+        if (
+            $this
+                ->getClassMetadata()
+                ->hasField('salleDeBains')
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'p.salleDeBains',
+                $filters,
+                'minSallesDeBain',
+                'maxSallesDeBain'
+            );
+        }
+
+        if (
+            $this
+                ->getClassMetadata()
+                ->hasField('surfaceTotal')
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'p.surfaceTotal',
+                $filters,
+                'minSurface',
+                'maxSurface'
+            );
+        }
+
+        if (
+            $this
+                ->getClassMetadata()
+                ->hasField('anneeConstruction')
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'p.anneeConstruction',
+                $filters,
+                'minAnneeConstruction',
+                'maxAnneeConstruction'
+            );
+        }
+
+        if (
+            $this
+                ->getClassMetadata()
+                ->hasField('prix')
+            && $this
+                ->getClassMetadata()
+                ->hasField('montantLoyerHorsCharge')
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'COALESCE(
+                    p.prix,
+                    p.montantLoyerHorsCharge
+                )',
+                $filters,
+                'minPrix',
+                'maxPrix'
+            );
+        } elseif (
+            $this
+                ->getClassMetadata()
+                ->hasField('prix')
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'p.prix',
+                $filters,
+                'minPrix',
+                'maxPrix'
+            );
+        } elseif (
+            $this
+                ->getClassMetadata()
+                ->hasField(
+                    'montantLoyerHorsCharge'
+                )
+        ) {
+            $this->addRangeFilter(
+                $qb,
+                'p.montantLoyerHorsCharge',
+                $filters,
+                'minPrix',
+                'maxPrix'
+            );
+        }
+
+        $dpe = $this->normalizeArrayValue(
+            $filters['dpe'] ?? [],
+            [
+                'value',
+                'label',
+                'name',
+                'code',
+            ]
+        );
+
+        if (
+            [] !== $dpe
+            && $this
+                ->getClassMetadata()
+                ->hasField('dpeLettre')
+        ) {
+            $qb
+                ->andWhere(
+                    'UPPER(p.dpeLettre) IN (:dpe)'
+                )
+                ->setParameter(
+                    'dpe',
+                    array_map(
+                        'strtoupper',
+                        $dpe
+                    )
+                );
+        }
+
+        if ('p.views' === $sort) {
+            return $qb
+                ->leftJoin(
+                    'p.propertyViews',
+                    'pv'
+                )
+                ->addSelect(
+                    'COUNT(pv.id) AS HIDDEN viewsCount'
+                )
+                ->groupBy('p.id')
+                ->orderBy(
+                    'viewsCount',
+                    $direction
+                );
+        }
+
+        if ('favorisCount' === $sort) {
+            return $qb
+                ->leftJoin(
+                    Favoris::class,
+                    'f',
+                    'WITH',
+                    'f.property = p'
+                )
+                ->addSelect(
+                    'COUNT(f.id) AS HIDDEN favorisCount'
+                )
+                ->groupBy('p.id')
+                ->orderBy(
+                    'favorisCount',
+                    $direction
+                );
+        }
+
+        return $qb->orderBy(
+            'p.createdAt',
+            $direction
+        );
+    }
+
+    /**
      * @param list<int> $propertyIds
      *
      * @return list<int>
@@ -179,18 +601,25 @@ class PropertyRepository extends ServiceEntityRepository
             return [];
         }
 
-        $rows = $this->getEntityManager()
-            ->createQueryBuilder()
-            ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
-            ->from(PropertyBoost::class, 'pb')
-            ->andWhere('pb.property IN (:propertyIds)')
-            ->andWhere('pb.status = :status')
-            ->setParameter('propertyIds', $propertyIds)
-            ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
-            ->getQuery()
-            ->getScalarResult();
+        $rows = [];
 
-        return array_map('intval', array_column($rows, 'propertyId'));
+        foreach (array_chunk($propertyIds, 500) as $propertyIdChunk) {
+            $rows = [
+                ...$rows,
+                ...$this->getEntityManager()
+                    ->createQueryBuilder()
+                    ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
+                    ->from(PropertyBoost::class, 'pb')
+                    ->andWhere('pb.property IN (:propertyIds)')
+                    ->andWhere('pb.status = :status')
+                    ->setParameter('propertyIds', $propertyIdChunk)
+                    ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
+                    ->getQuery()
+                    ->getScalarResult(),
+            ];
+        }
+
+        return array_values(array_unique(array_map('intval', array_column($rows, 'propertyId'))));
     }
 
     /**
@@ -592,6 +1021,118 @@ class PropertyRepository extends ServiceEntityRepository
         return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
+    private function normalizeCountryFilterValues(
+        mixed $value,
+        ?string $locale = null,
+    ): array {
+        if (
+            null === $value
+            || '' === $value
+            || '[]' === $value
+        ) {
+            return [];
+        }
+
+        if (\is_string($value)) {
+            $decodedValue = json_decode(
+                $value,
+                true
+            );
+
+            if (
+                \JSON_ERROR_NONE === json_last_error()
+                && \is_array($decodedValue)
+            ) {
+                $value = $decodedValue;
+            } else {
+                $value = [$value];
+            }
+        }
+
+        if (!\is_array($value)) {
+            $value = [$value];
+        }
+
+        $countries = [];
+
+        foreach ($value as $country) {
+            if (\is_scalar($country)) {
+                $countryName = mb_trim(
+                    (string) $country
+                );
+
+                if ('' !== $countryName) {
+                    $countries[] = $countryName;
+                }
+
+                continue;
+            }
+
+            if (!\is_array($country)) {
+                continue;
+            }
+
+            $countryCode = $country['country_code']
+                ?? $country['code']
+                ?? $country['raw']['country_code']
+                ?? $country['raw']['code']
+                ?? null;
+
+            if (
+                null !== $countryCode
+                && '' !== mb_trim((string) $countryCode)
+            ) {
+                $countryCode = mb_strtoupper(
+                    mb_trim((string) $countryCode)
+                );
+
+                foreach (['fr', 'en'] as $countryLocale) {
+                    try {
+                        $translatedCountryName = Countries::getName(
+                            $countryCode,
+                            $countryLocale
+                        );
+
+                        if (
+                            null !== $translatedCountryName
+                            && '' !== mb_trim($translatedCountryName)
+                        ) {
+                            $countries[] = mb_trim(
+                                $translatedCountryName
+                            );
+                        }
+                    } catch (\Throwable) {
+                    }
+                }
+            }
+
+            $originalCountryName = $country['country_name']
+                ?? $country['pays']
+                ?? $country['country']
+                ?? $country['label']
+                ?? $country['name']
+                ?? $country['value']
+                ?? null;
+
+            if (
+                null !== $originalCountryName
+                && '' !== mb_trim((string) $originalCountryName)
+            ) {
+                $countries[] = mb_trim(
+                    (string) $originalCountryName
+                );
+            }
+        }
+
+        return array_values(
+            array_unique(
+                array_filter(
+                    $countries,
+                    static fn (string $country): bool => '' !== mb_trim($country)
+                )
+            )
+        );
+    }
     private function addTextFilter(
         QueryBuilder $qb,
         string $field,
