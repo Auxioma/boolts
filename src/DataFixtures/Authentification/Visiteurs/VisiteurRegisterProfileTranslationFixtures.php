@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -31,6 +31,18 @@ final class VisiteurRegisterProfileTranslationFixtures extends Fixture
                 'visiteur.register.profile.password_confirm.label' => 'Confirmer le mot de passe*',
                 'visiteur.register.profile.terms.label' => 'J’accepte les conditions d’utilisation de Boolts.*',
                 'visiteur.register.profile.submit' => 'S’inscrire',
+            ],
+
+            'en' => [
+                'visiteur.register.profile.meta.title' => 'Welcome to Boolts!',
+                'visiteur.register.profile.title' => 'Welcome to Boolts!',
+                'visiteur.register.profile.lastname.label' => 'Last name*',
+                'visiteur.register.profile.firstname.label' => 'First name*',
+                'visiteur.register.profile.password.label' => 'Password*',
+                'visiteur.register.profile.password.help' => 'Minimum 12 characters. We recommend combining letters, numbers and special characters for optimal security.',
+                'visiteur.register.profile.password_confirm.label' => 'Confirm password*',
+                'visiteur.register.profile.terms.label' => 'I accept the Boolts terms of use.*',
+                'visiteur.register.profile.submit' => 'Register',
             ],
         ];
 

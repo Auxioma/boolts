@@ -39,7 +39,7 @@ On récupère modal_filter :
                     searchToken: searchToken,
                     page: 1,
                     view: 'map',
-                    modal_filter: modalFilter
+                    modal_filter: modalFilter,
                 } %}
 
                 {% if mapBounds is iterable %}
@@ -47,14 +47,14 @@ On récupère modal_filter :
                         north: mapBounds.north,
                         south: mapBounds.south,
                         east: mapBounds.east,
-                        west: mapBounds.west
+                        west: mapBounds.west,
                     }) %}
                 {% endif %}
 
                 <ul class="pagination justify-content-center flex-wrap gap-2 mb-0">
 
                     {% if paginationData.previous is defined %}
-                        {% set previousParams = commonParams|merge({ page: paginationData.previous }) %}
+                        {% set previousParams = commonParams|merge({page: paginationData.previous}) %}
 
                         <li class="page-item">
                             <a class="page-link" href="{{ path('app_public_search_results', previousParams) }}" rel="prev">
@@ -68,7 +68,7 @@ On récupère modal_filter :
                     {% endif %}
 
                     {% if paginationData.startPage is defined and paginationData.startPage > 1 %}
-                        {% set firstParams = commonParams|merge({ page: 1 }) %}
+                        {% set firstParams = commonParams|merge({page: 1}) %}
 
                         <li class="page-item">
                             <a class="page-link" href="{{ path('app_public_search_results', firstParams) }}">1</a>
@@ -82,7 +82,7 @@ On récupère modal_filter :
                     {% endif %}
 
                     {% for page in paginationData.pagesInRange %}
-                        {% set pageParams = commonParams|merge({ page: page }) %}
+                        {% set pageParams = commonParams|merge({page: page}) %}
 
                         <li class="page-item {{ page == paginationData.current ? 'active' : '' }}">
                             {% if page == paginationData.current %}
@@ -100,7 +100,7 @@ On récupère modal_filter :
                             </li>
                         {% endif %}
 
-                        {% set lastParams = commonParams|merge({ page: paginationData.pageCount }) %}
+                        {% set lastParams = commonParams|merge({page: paginationData.pageCount}) %}
 
                         <li class="page-item">
                             <a class="page-link" href="{{ path('app_public_search_results', lastParams) }}">{{ paginationData.pageCount }}</a>
@@ -108,7 +108,7 @@ On récupère modal_filter :
                     {% endif %}
 
                     {% if paginationData.next is defined %}
-                        {% set nextParams = commonParams|merge({ page: paginationData.next }) %}
+                        {% set nextParams = commonParams|merge({page: paginationData.next}) %}
 
                         <li class="page-item">
                             <a class="page-link" href="{{ path('app_public_search_results', nextParams) }}" rel="next">
@@ -136,7 +136,7 @@ On récupère modal_filter :
         >
             {{ knp_pagination_render(search, null, {
                 modal_filter: modalFilter,
-                view: currentView
+                view: currentView,
             }) }}
         </nav>
 

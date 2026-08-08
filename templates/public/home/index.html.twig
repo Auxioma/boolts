@@ -41,7 +41,6 @@
                     </div>
                 </div>
 
-
                 {% if lastSearchSession is not null %}
                     <div class="container-xl home-bt-container home-bt-resume-shell">
                         <div class="home-bt-resume mx-auto">
@@ -205,7 +204,7 @@
         </main>
 
         {% if app.user and is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') %}
-            {% include 'composant/_footer/navbar_footer.html.twig' %}
+            {{ include('composant/_footer/navbar_footer.html.twig') }}
         {% endif %}
     </div>
 

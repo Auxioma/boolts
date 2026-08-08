@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -26,6 +26,13 @@ final class ProfessionnelForgotPasswordTranslationFixtures extends Fixture
                 'professionnel.forgot_password.title' => 'Saisissez votre adresse e-mail',
                 'professionnel.forgot_password.email.label' => 'Adresse e-mail',
                 'professionnel.forgot_password.submit' => 'Envoyer le lien de modification',
+            ],
+
+            'en' => [
+                'professionnel.forgot_password.meta.title' => 'Forgot password',
+                'professionnel.forgot_password.title' => 'Enter your email address',
+                'professionnel.forgot_password.email.label' => 'Email address',
+                'professionnel.forgot_password.submit' => 'Send reset link',
             ],
         ];
 

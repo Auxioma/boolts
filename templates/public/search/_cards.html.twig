@@ -92,19 +92,19 @@
 
         {% if bienImmobilier.chambres is defined and bienImmobilier.chambres is not empty %}
             {% set details = details|merge([
-                bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : '')
+                bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
             ]) %}
         {% endif %}
 
         {% if bienImmobilier.salleDeBains is defined and bienImmobilier.salleDeBains is not empty %}
             {% set details = details|merge([
-                bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains'
+                bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
             ]) %}
         {% endif %}
 
         {% if bienImmobilier.surfaceTotal is defined and bienImmobilier.surfaceTotal is not empty %}
             {% set details = details|merge([
-                bienImmobilier.surfaceTotal ~ 'm²'
+                bienImmobilier.surfaceTotal ~ 'm²',
             ]) %}
         {% endif %}
 
@@ -126,7 +126,7 @@
 
         {% if codePostal is not empty or ville is not empty %}
             {% set addressParts = addressParts|merge([
-                (codePostal ~ ' ' ~ ville)|trim
+                (codePostal ~ ' ' ~ ville)|trim,
             ]) %}
         {% endif %}
 
@@ -143,7 +143,7 @@
         {% set slug = bienImmobilier.slug|default('') %}
 
         {% set detailUrl = slug is not empty
-            ? path('app_public_detail_bien', { slug: slug })
+            ? path('app_public_detail_bien', {slug: slug})
             : '#'
         %}
 
@@ -189,7 +189,7 @@
             dpeLettre: bienImmobilier.dpeLettre|default(''),
             gesLettre: bienImmobilier.gesLettre|default(''),
             referenceInterne: bienImmobilier.referenceInterne|default(''),
-            favorite: isFavorite
+            favorite: isFavorite,
         } %}
 
         <div class="col-12 col-md-6">
@@ -265,7 +265,7 @@
                         aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
                         data-controller="favorite"
                         data-action="click->favorite#toggle"
-                        data-favorite-url-value="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                        data-favorite-url-value="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
                         data-favorite-token-value="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
                     >
                         <svg class="search-card-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">

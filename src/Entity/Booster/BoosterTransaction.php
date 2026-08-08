@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -18,9 +18,10 @@ use App\Entity\Billing\Payment;
 use App\Entity\Property;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
+use App\Repository\Booster\BoosterTransactionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BoosterTransactionRepository::class)]
 #[ORM\Table(name: 'booster_transaction')]
 class BoosterTransaction
 {

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -14,7 +14,6 @@ namespace App\Entity\Billing;
 
 use App\Entity\Shared\TimestampableTrait;
 use App\Repository\Billing\SubscriptionPlanRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SubscriptionPlanRepository::class)]
@@ -65,6 +64,11 @@ class SubscriptionPlan
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function __toString(): string
+    {
+        return $this->name;
     }
 
     public function getCode(): string

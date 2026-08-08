@@ -37,16 +37,16 @@
                                     visa: 'Visa',
                                     mastercard: 'Mastercard',
                                     amex: 'Amex',
-                                    american_express: 'Amex'
+                                    american_express: 'Amex',
                                 }[brand]|default(
-                                    paymentMethod.brand|default('Carte bancaire')|capitalize
+                                    paymentMethod.brand|default('Carte bancaire')|capitalize,
                                 ) %}
 
                                 {% set logo = brand in [
                                     'visa',
                                     'mastercard',
                                     'amex',
-                                    'american_express'
+                                    'american_express',
                                 ]
                                     ? 'images/paiement_card/' ~ (
                                         brand == 'american_express'

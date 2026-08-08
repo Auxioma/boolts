@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -384,12 +384,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         return (string) $this->email;
     }
 
-    public function getEmailAuthCode(): string
+    public function getEmailAuthCode(): ?string
     {
-        if (null === $this->emailAuthCode) {
-            throw new \LogicException('The email authentication code was not set.');
-        }
-
         return $this->emailAuthCode;
     }
 
@@ -856,7 +852,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     }
 
     public function addDocumentRequest(
-        UserDocumentRequest $documentRequest
+        UserDocumentRequest $documentRequest,
     ): static {
         if (!$this->documentRequests->contains($documentRequest)) {
             $this->documentRequests->add($documentRequest);
@@ -867,7 +863,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     }
 
     public function removeDocumentRequest(
-        UserDocumentRequest $documentRequest
+        UserDocumentRequest $documentRequest,
     ): static {
         if ($this->documentRequests->removeElement($documentRequest)) {
             if ($documentRequest->getUser() === $this) {
@@ -877,5 +873,4 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
         return $this;
     }
-
 }

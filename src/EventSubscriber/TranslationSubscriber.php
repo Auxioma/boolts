@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -34,12 +34,13 @@ class TranslationSubscriber implements EventSubscriberInterface
 
     /**
      * Définit les événements auxquels ce subscriber réagit.
-     * Ici, on réagit à l’événement KernelEvents::REQUEST avec une priorité de 20.
+     * Le chargement intervient après le pare-feu afin qu’une requête interdite
+     * ne déclenche pas inutilement d’accès à la base de données.
      */
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::REQUEST => ['onKernelRequest', 20],
+            KernelEvents::REQUEST => ['onKernelRequest', 0],
         ];
     }
 

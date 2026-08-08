@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -28,6 +28,15 @@ final class ProfessionnelRegisterVerifyCodeTranslationFixtures extends Fixture
                 'professionnel.register.verify_code.or' => 'OU',
                 'professionnel.register.verify_code.resend_code' => 'Renvoyer le code',
                 'professionnel.register.verify_code.change_email' => 'Changer d’adresse e-mail',
+            ],
+
+            'en' => [
+                'professionnel.register.verify_code.meta.title' => 'Code verification',
+                'professionnel.register.verify_code.title' => 'You have received a verification code by email',
+                'professionnel.register.verify_code.submit' => 'Continue',
+                'professionnel.register.verify_code.or' => 'OR',
+                'professionnel.register.verify_code.resend_code' => 'Resend code',
+                'professionnel.register.verify_code.change_email' => 'Change email address',
             ],
         ];
 

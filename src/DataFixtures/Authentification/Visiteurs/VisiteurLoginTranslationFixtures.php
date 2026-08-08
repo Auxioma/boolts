@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -36,6 +36,23 @@ final class VisiteurLoginTranslationFixtures extends Fixture
                 'visiteur.login.forgot_password' => 'Mot de passe oublié ?',
                 'visiteur.login.register' => 'Inscription',
                 'visiteur.login.professional_link' => 'Vous êtes un professionnel ?',
+            ],
+
+            'en' => [
+                'visiteur.login.meta.title' => 'Sign in',
+                'visiteur.login.title' => 'Sign in',
+                'visiteur.login.apple' => 'Sign in with Apple',
+                'visiteur.login.google' => 'Sign in with Google',
+                'visiteur.login.or' => 'OR',
+                'visiteur.login.email.label' => 'Email address',
+                'visiteur.login.email.placeholder' => 'Enter your email address',
+                'visiteur.login.password.label' => 'Password',
+                'visiteur.login.password.placeholder' => 'Enter your password',
+                'visiteur.login.error.invalid_credentials' => 'Incorrect email address or password',
+                'visiteur.login.submit' => 'Sign in',
+                'visiteur.login.forgot_password' => 'Forgot password?',
+                'visiteur.login.register' => 'Register',
+                'visiteur.login.professional_link' => 'Are you a professional?',
             ],
         ];
 

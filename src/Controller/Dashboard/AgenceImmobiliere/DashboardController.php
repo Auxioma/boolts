@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -16,24 +16,28 @@ use App\Entity\Document\RequiredDocument;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
+use App\Entity\Property;
 use App\Entity\User;
 use App\Form\Documents\AskDocumentsType;
 use App\Repository\AgencyProfileDailyVisitRepository;
+use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\Document\RequiredDocumentRepository;
 use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\Pagination\PaginationInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
-use Doctrine\ORM\EntityManagerInterface;
 
 #[Route('/pro/dashboard', name: 'agence_immobiliere_')]
 /**
@@ -43,6 +47,8 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 final class DashboardController extends AbstractController
 {
+    private const PERFORMANCE_PROPERTIES_PER_PAGE = 10;
+
     #[Route('/', name: 'dashboard')]
     /**
      * Handles the index controller action.
@@ -56,8 +62,7 @@ final class DashboardController extends AbstractController
         AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
         RequiredDocumentRepository $requiredDocumentRepository,
         UserDocumentRequestRepository $userDocumentRequestRepository,
-    ): Response
-    {
+    ): Response {
         $statistics = $this->statistics(
             $request,
             $propertyRepository,
@@ -65,6 +70,17 @@ final class DashboardController extends AbstractController
             $favorisRepository,
             $agencyProfileDailyVisitRepository,
         );
+        [$performanceSort, $performanceDirection] = $this->resolvePerformanceSort($request);
+        $performanceQueryParameters = [
+            'period' => $statistics['period'],
+            'performance_sort' => $performanceSort,
+            'performance_direction' => mb_strtolower($performanceDirection),
+        ];
+
+        if ('custom' === $statistics['period']) {
+            $performanceQueryParameters['start'] = $statistics['start']->format('Y-m-d');
+            $performanceQueryParameters['end'] = $statistics['end']->format('Y-m-d');
+        }
 
         $user = $this->getUser();
 
@@ -97,7 +113,7 @@ final class DashboardController extends AbstractController
             ])->createView();
         }
 
-        $requiredDocumentCount = count(array_filter(
+        $requiredDocumentCount = \count(array_filter(
             $requiredDocuments,
             static fn (RequiredDocument $requiredDocument): bool => $requiredDocument->isRequired(),
         ));
@@ -108,12 +124,64 @@ final class DashboardController extends AbstractController
             'controller_name' => 'DashboardController',
             'statistics' => $statistics,
             'statistics_chart' => $this->buildChart($chartBuilder, $statistics),
+            'performance_query_parameters' => $performanceQueryParameters,
+            'performance_sort' => $performanceSort,
+            'performance_direction' => $performanceDirection,
             'form' => $form->createView(),
             'document_forms' => $documentForms,
             'required_documents' => $requiredDocuments,
             'documents_complete' => $documentsComplete,
             'documents_submission_limit_reached' => $documentsSubmissionLimitReached,
             'documents_step_active' => $documentsStepActive,
+        ]);
+    }
+
+    #[Route('/performances', name: 'dashboard_performances', methods: ['GET'])]
+    public function performances(
+        Request $request,
+        PropertyRepository $propertyRepository,
+        PropertyViewRepository $propertyViewRepository,
+        FavorisRepository $favorisRepository,
+        BoosterTransactionRepository $boosterTransactionRepository,
+        PaginatorInterface $paginator,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        try {
+            [, $start, $end] = $this->resolvePeriod($request);
+        } catch (\InvalidArgumentException $exception) {
+            return new Response($exception->getMessage(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        [$sort, $direction] = $this->resolvePerformanceSort($request);
+        $affichePerformanceAnnonce = $this->paginatePerformanceProperties(
+            $user,
+            $request,
+            $propertyRepository,
+            $paginator,
+            $start,
+            $end,
+            $sort,
+            $direction,
+        );
+        $propertyIds = [];
+
+        foreach ($affichePerformanceAnnonce->getItems() as $property) {
+            if ($property instanceof Property && null !== $property->getId()) {
+                $propertyIds[] = $property->getId();
+            }
+        }
+
+        return $this->render('dashboard/agence_immobiliere/dashboard/_property_performance.html.twig', [
+            'affiche_performance_annonce' => $affichePerformanceAnnonce,
+            'view_counts' => $propertyViewRepository->countByPropertyIds($propertyIds, $start, $end),
+            'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds, $start, $end),
+            'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
+            'boosts_restants' => $boosterTransactionRepository->countAvailableForAgency($user),
         ]);
     }
 
@@ -203,7 +271,7 @@ final class DashboardController extends AbstractController
         $directory = $this->getParameter('kernel.project_dir').'/public/uploads/document/'.$user->getId();
         $filesystem->mkdir($directory);
         $extension = $file->guessExtension();
-        $fileName = bin2hex(random_bytes(16)).(is_string($extension) ? '.'.$extension : '');
+        $fileName = bin2hex(random_bytes(16)).(\is_string($extension) ? '.'.$extension : '');
         $file->move($directory, $fileName);
         $storagePath = 'uploads/document/'.$user->getId().'/'.$fileName;
 
@@ -330,9 +398,9 @@ final class DashboardController extends AbstractController
             'end' => $end,
             'totals' => [
                 'profileViews' => array_sum(array_map(static fn ($dailyView): int => $dailyView->getVisits(), $profileDailyViews)),
-                'published' => count($publishedDates),
-                'views' => count($viewedDates),
-                'favorites' => count($favoriteDates),
+                'published' => \count($publishedDates),
+                'views' => \count($viewedDates),
+                'favorites' => \count($favoriteDates),
             ],
             'series' => [
                 'labels' => array_values(array_map(static fn (array $bucket): string => $bucket['label'], $buckets)),
@@ -342,6 +410,45 @@ final class DashboardController extends AbstractController
                 'favorites' => $this->countByBucket($favoriteDates, $buckets, $monthly),
             ],
         ];
+    }
+
+    /** @return PaginationInterface<int, Property> */
+    private function paginatePerformanceProperties(
+        User $user,
+        Request $request,
+        PropertyRepository $propertyRepository,
+        PaginatorInterface $paginator,
+        ?\DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+        string $sort,
+        string $direction,
+    ): PaginationInterface {
+        return $paginator->paginate(
+            $propertyRepository->findForDashboardPerformanceQuery($user, $start, $end, $sort, $direction),
+            $request->query->getInt('performance_page', 1),
+            self::PERFORMANCE_PROPERTIES_PER_PAGE,
+            [
+                'pageParameterName' => 'performance_page',
+                'sortFieldParameterName' => 'performance_sort_field',
+                'sortDirectionParameterName' => 'performance_sort_direction',
+            ],
+        );
+    }
+
+    private function resolvePerformanceSort(Request $request): array
+    {
+        $sort = $request->query->getString('performance_sort', 'created');
+        $direction = mb_strtoupper($request->query->getString('performance_direction', 'desc'));
+
+        if (!\in_array($sort, ['created', 'views', 'favorites'], true)) {
+            $sort = 'created';
+        }
+
+        if (!\in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'DESC';
+        }
+
+        return [$sort, $direction];
     }
 
     private function resolvePeriod(Request $request): array

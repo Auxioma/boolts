@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -29,6 +29,16 @@ final class ProfessionnelRegisterEmailTranslationFixtures extends Fixture
                 'professionnel.register.email.email.label' => 'Inscription via adresse e-mail*',
                 'professionnel.register.email.submit' => 'Continuer',
                 'professionnel.register.email.link' => 'Vous êtes un professionnel ?',
+            ],
+
+            'en' => [
+                'professionnel.register.email.meta.title' => 'Registration',
+                'professionnel.register.email.title' => 'Register for your professional area',
+                'professionnel.register.email.apple' => 'Sign in with Apple',
+                'professionnel.register.email.or' => 'OR',
+                'professionnel.register.email.email.label' => 'Register with an email address*',
+                'professionnel.register.email.submit' => 'Continue',
+                'professionnel.register.email.link' => 'Are you a professional?',
             ],
         ];
 

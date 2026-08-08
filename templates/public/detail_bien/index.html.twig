@@ -137,7 +137,12 @@
                                         <div class="min-w-0">
                                             <p class="bt-contact-card__name">
                                                 {{ property.user.entreprise }}
-                                                <i class="bi bi-chevron-right small ms-1"></i>
+                                                <a href="{{ path('app_public_detail_agence', { 
+                                                    slug: property.user.slug }) }}" 
+                                                    class="bt-contact-card__link"
+                                                >
+                                                <i class="icon-chevron-right ms-1"></i>
+                                                </a>
                                             </p>
                                             <p class="bt-contact-card__address">
                                                 Agence immobilière -
@@ -603,7 +608,6 @@
             }
         }
 
-
         @media (min-width: 992px) {
             .bt-contact-sticky-wrapper {
                 align-self: stretch;
@@ -625,7 +629,7 @@
                 overflow: visible;
             }
         }
-        
+
     </style>
 
     {# ========================= #}

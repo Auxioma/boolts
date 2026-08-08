@@ -1,0 +1,112 @@
+<turbo-frame
+    id="dashboard-property-performance"
+    data-dashboard-property-performance-target="frame"
+>
+    {% set boosts_restants = boosts_restants|default(0) %}
+    {% set no_boost_available = boosts_restants <= 0 %}
+
+    <div class="property-list">
+        {% for property in affiche_performance_annonce %}
+            <article class="property-item">
+                <div class="d-flex align-items-center property-main">
+                    <div class="property-image-wrapper">
+                        {% set imagePerformance = property.propertyImages|first %}
+                        {% if imagePerformance %}
+                            <img src="{{ vich_uploader_asset(imagePerformance, 'imageFile') }}" alt="">
+                        {% endif %}
+                    </div>
+
+                    <div class="property-information">
+                        <h3 class="property-title">{{ property.referenceInterne }}</h3>
+                        <div class="d-flex align-items-center property-price-line">
+                            {% set price = property.prix ?? property.montantLoyerHorsCharge %}
+                            <span class="property-price">
+                                {{ price|number_format(0, ',', ' ') }}
+                                {{ property.user.devise.signe|default('') }}
+                            </span>
+                            <span class="property-status property-status-published">{{ property.statut.value|capitalize }}</span>
+                            {% if property.id in boosted_property_ids %}
+                                <div class="property-status property-status-boosted">Boost</div>
+                            {% endif %}
+                        </div>
+                        <p class="property-location">
+                            <strong>{{ property.ville }}, {{ property.pays }}</strong>
+                            <span>- Créée le {{ property.createdAt|date('d/m/Y') }}</span>
+                        </p>
+                        <span class="property-reference">{{ property.referenceInterne }}</span>
+                    </div>
+                </div>
+
+                <div class="property-statistics">
+                    <span class="property-statistic">
+                        <i class="icon-eye"></i>
+                        {{ view_counts[property.id]|default(0) }}
+                    </span>
+                    <span class="property-statistic">
+                        <i class="icon-heart"></i>
+                        {{ favorite_counts[property.id]|default(0) }}
+                    </span>
+                </div>
+
+                {% if property.id not in boosted_property_ids %}
+                    <button
+                        class="btn property-boost-button"
+                        type="button"
+                        {% if no_boost_available %}
+                            data-bs-toggle="modal"
+                            data-bs-target="#property-performance-no-boost-modal"
+                        {% endif %}
+                    >
+                        <i class="icon-zap"></i>
+                        Booster
+                    </button>
+                {% endif %}
+
+            </article>
+        {% else %}
+            <p class="mb-0">Aucune annonce à afficher.</p>
+        {% endfor %}
+    </div>
+
+    {% if no_boost_available %}
+        <div
+            id="property-performance-no-boost-modal"
+            class="modal fade"
+            tabindex="-1"
+            aria-labelledby="property-performance-no-boost-modal-title"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="property-performance-no-boost-modal-title" class="modal-title fs-5">
+                            Vous avez besoin de boost
+                        </h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        Vous avez besoin de créditer des boosts avant de faire cette action.
+                        Rendez-vous sur la page dédiée afin d’en ajouter à votre compte.
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <a
+                            class="btn btn-primary"
+                            href="{{ path('agence_immobiliere_options') }}#boosts"
+                            data-turbo-frame="_top"
+                        >
+                            Obtenir des boosts
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {{ knp_pagination_render(
+        affiche_performance_annonce,
+        'pagination/dashboard_property_performance.html.twig',
+    ) }}
+</turbo-frame>

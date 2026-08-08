@@ -19,8 +19,8 @@
                     change->boolts-filter-count#refresh
                     reset->boolts-filter-count#refreshAfterReset
                     boolts-location:changed@window->boolts-filter-count#refresh
-                '
-            }
+                ',
+            },
         }) }}
 
         {# Header de la modal #}
@@ -323,16 +323,16 @@
                                             autocomplete: 'off',
                                             placeholder: 'Rechercher un pays',
                                             'data-boolts-location-target': 'countryInput',
-                                            'data-action': 'input->boolts-location#searchCountry keydown->boolts-location#keyboardCountry'
-                                        }
+                                            'data-action': 'input->boolts-location#searchCountry keydown->boolts-location#keyboardCountry',
+                                        },
                                     }) }}
                                 </div>
 
                                 {# Champ caché contenant la vraie valeur envoyée au serveur #}
                                 {{ form_widget(formModal.pays, {
                                     attr: {
-                                        'data-boolts-location-target': 'countryHidden'
-                                    }
+                                        'data-boolts-location-target': 'countryHidden',
+                                    },
                                 }) }}
 
                                 {# Liste des pays sélectionnés, remplie par Stimulus #}
@@ -362,15 +362,15 @@
                                             autocomplete: 'off',
                                             placeholder: 'Rechercher une ville',
                                             'data-boolts-location-target': 'cityInput',
-                                            'data-action': 'input->boolts-location#searchCity keydown->boolts-location#keyboardCity'
-                                        }
+                                            'data-action': 'input->boolts-location#searchCity keydown->boolts-location#keyboardCity',
+                                        },
                                     }) }}
                                 </div>
 
                                 {{ form_widget(formModal.ville, {
                                     attr: {
-                                        'data-boolts-location-target': 'cityHidden'
-                                    }
+                                        'data-boolts-location-target': 'cityHidden',
+                                    },
                                 }) }}
 
                                 <div
@@ -399,15 +399,15 @@
                                             autocomplete: 'off',
                                             placeholder: 'Rechercher un quartier',
                                             'data-boolts-location-target': 'districtInput',
-                                            'data-action': 'input->boolts-location#searchDistrict keydown->boolts-location#keyboardDistrict'
-                                        }
+                                            'data-action': 'input->boolts-location#searchDistrict keydown->boolts-location#keyboardDistrict',
+                                        },
                                     }) }}
                                 </div>
 
                                 {{ form_widget(formModal.quartier, {
                                     attr: {
-                                        'data-boolts-location-target': 'districtHidden'
-                                    }
+                                        'data-boolts-location-target': 'districtHidden',
+                                    },
                                 }) }}
 
                                 <div
@@ -435,36 +435,36 @@
                         label: 'Chambres',
                         minField: 'minChambres',
                         maxField: 'maxChambres',
-                        unit: ''
+                        unit: '',
                     },
                     {
                         id: 'salles-de-bain',
                         label: 'Salle de bain',
                         minField: 'minSallesDeBain',
                         maxField: 'maxSallesDeBain',
-                        unit: ''
+                        unit: '',
                     },
                     {
                         id: 'surface',
                         label: 'Surface',
                         minField: 'minSurface',
                         maxField: 'maxSurface',
-                        unit: 'm²'
+                        unit: 'm²',
                     },
                     {
                         id: 'annee-construction',
                         label: 'Année de construction',
                         minField: 'minAnneeConstruction',
                         maxField: 'maxAnneeConstruction',
-                        unit: ''
+                        unit: '',
                     },
                     {
                         id: 'prix',
                         label: 'Fourchette de prix',
                         minField: 'minPrix',
                         maxField: 'maxPrix',
-                        unit: '€'
-                    }
+                        unit: '€',
+                    },
                 ] %}
 
                 {# Boucle sur chaque groupe min/max #}
@@ -512,8 +512,8 @@
                                                     attr: {
                                                         class: 'boolts-filter-input',
                                                         inputmode: 'numeric',
-                                                        min: 0
-                                                    }
+                                                        min: 0,
+                                                    },
                                                 }) }}
 
                                                 {# Affiche l'unité seulement si elle existe #}
@@ -539,8 +539,8 @@
                                                     attr: {
                                                         class: 'boolts-filter-input',
                                                         inputmode: 'numeric',
-                                                        min: 0
-                                                    }
+                                                        min: 0,
+                                                    },
                                                 }) }}
 
                                                 {% if filter.unit is not empty %}
@@ -591,13 +591,13 @@
 
                                     {# Données d'affichage pour chaque lettre DPE #}
                                     {% set dpeItems = {
-                                        'A': {text: '< 71', class: 'a'},
-                                        'B': {text: '71 - 110', class: 'b'},
-                                        'C': {text: '111 - 180', class: 'c'},
-                                        'D': {text: '181 - 250', class: 'd'},
-                                        'E': {text: '251 - 330', class: 'e'},
-                                        'F': {text: '331 - 420', class: 'f'},
-                                        'G': {text: '> 420', class: 'g'}
+                                        A: {text: '< 71', class: 'a'},
+                                        B: {text: '71 - 110', class: 'b'},
+                                        C: {text: '111 - 180', class: 'c'},
+                                        D: {text: '181 - 250', class: 'd'},
+                                        E: {text: '251 - 330', class: 'e'},
+                                        F: {text: '331 - 420', class: 'f'},
+                                        G: {text: '> 420', class: 'g'},
                                     } %}
 
                                     {# Boucle sur les checkbox générées par Symfony pour le champ DPE #}
@@ -614,8 +614,8 @@
                                             {# Checkbox Symfony du DPE #}
                                             {{ form_widget(dpeField, {
                                                 attr: {
-                                                    class: 'form-check-input boolts-energy-check'
-                                                }
+                                                    class: 'form-check-input boolts-energy-check',
+                                                },
                                             }) }}
 
                                             <label

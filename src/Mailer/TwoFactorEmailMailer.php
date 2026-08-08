@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -36,7 +36,12 @@ final class TwoFactorEmailMailer implements AuthCodeMailerInterface
             throw new \LogicException('User must have getEmailAuthCode() (implement EmailAuthCodeInterface).');
         }
 
-        $authCode = (string) $user->getEmailAuthCode();
+        $authCode = $user->getEmailAuthCode();
+
+        if (null === $authCode) {
+            return;
+        }
+
         $toEmail = method_exists($user, 'getEmail') ? (string) $user->getEmail() : null;
 
         if (!$toEmail) {

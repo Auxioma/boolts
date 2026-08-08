@@ -1,9 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -43,6 +41,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
      */
     private const GPS_RANDOM_RADIUS_KM = 2.5;
     private const EARTH_RADIUS_KM = 6371.0088;
+    private const PROPERTY_CREATED_AT_START = '2023-01-01 00:00:00';
 
     /**
      * Profils réalistes, proches de ce que l’on voit sur SeLoger / PAP :
@@ -1421,7 +1420,6 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         ],
     ];
 
-
     private const MOROCCO_LOCATIONS = [
         [
             'countryCode' => 'MA',
@@ -1597,7 +1595,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
         foreach ($this->getLocations() as $location) {
             for ($i = 1; $i <= self::PROPERTIES_PER_CITY; ++$i) {
                 $location['neighborhood'] = $faker->randomElement($location['neighborhoods']);
-                $location['mapboxId'] = sprintf(
+                $location['mapboxId'] = \sprintf(
                     'fixture-%s-%s',
                     mb_strtolower($location['countryCode']),
                     mb_strtolower((string) preg_replace('/[^a-z0-9]+/i', '-', $location['ville']) ?? 'city')
@@ -1681,7 +1679,10 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 $this->fillTranslation($property, 'fr', $localizedAddress['fr'], $propertyData, $metrics, $faker);
                 $this->fillTranslation($property, 'en', $localizedAddress['en'], $propertyData, $metrics, $faker);
 
-                $createdAt = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-10 months', '-2 days'));
+                $createdAt = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween(
+                    self::PROPERTY_CREATED_AT_START,
+                    'now'
+                ));
 
                 $property->setCreatedAt($createdAt);
 
@@ -1694,7 +1695,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
                 if ([] !== $eligibleCaracteristiques) {
                     $numberOfCaracteristiques = $faker->numberBetween(
                         1,
-                        min(4, count($eligibleCaracteristiques))
+                        min(4, \count($eligibleCaracteristiques))
                     );
 
                     foreach ($faker->randomElements($eligibleCaracteristiques, $numberOfCaracteristiques) as $caracteristique) {
@@ -1746,6 +1747,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
 
     /**
      * @param array<string, Caracteristique> $caracteristiques
+     *
      * @return list<Caracteristique>
      */
     private function getEligibleCaracteristiques(
@@ -1764,7 +1766,7 @@ class PropertyFixtures extends Fixture implements DependentFixtureInterface
             default => [],
         };
 
-        if ('MA' === $countryCode && in_array('climatisation', $references, true)) {
+        if ('MA' === $countryCode && \in_array('climatisation', $references, true)) {
             $references[] = 'climatisation';
         }
 

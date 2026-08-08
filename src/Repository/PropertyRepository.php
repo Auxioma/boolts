@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -12,9 +12,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Billing\Enum\PropertyBoostStatus;
+use App\Entity\Booster\PropertyBoost;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Favoris;
 use App\Entity\Property;
+use App\Entity\PropertyView;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -97,6 +100,97 @@ class PropertyRepository extends ServiceEntityRepository
         }
 
         return $qb->orderBy('p.createdAt', $direction);
+    }
+
+    public function findForDashboardPerformanceQuery(
+        User $user,
+        ?\DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+        string $sort = 'created',
+        string $direction = 'DESC',
+    ): QueryBuilder {
+        $direction = mb_strtoupper($direction);
+
+        if (!\in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'DESC';
+        }
+
+        $queryBuilder = $this->createQueryBuilder('p')
+            ->leftJoin('p.propertyImages', 'pi')
+            ->addSelect('pi')
+            ->innerJoin('p.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('u.devise', 'currency')
+            ->addSelect('currency')
+            ->andWhere('p.user = :user')
+            ->andWhere('p.statut = :statut')
+            ->andWhere('p.createdAt <= :end')
+            ->setParameter('user', $user)
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
+            ->setParameter('end', $end);
+
+        if (null !== $start) {
+            $queryBuilder
+                ->andWhere('p.createdAt >= :start')
+                ->setParameter('start', $start);
+        }
+
+        if ('views' === $sort) {
+            $viewsCountSelect = '(SELECT COUNT(periodView.id) FROM '.PropertyView::class.' periodView WHERE periodView.property = p AND periodView.viewedAt <= :end';
+
+            if (null !== $start) {
+                $viewsCountSelect .= ' AND periodView.viewedAt >= :start';
+            }
+
+            $viewsCountSelect .= ') AS HIDDEN viewsCount';
+
+            return $queryBuilder
+                ->addSelect($viewsCountSelect)
+                ->orderBy('viewsCount', $direction)
+                ->addOrderBy('p.createdAt', 'DESC');
+        }
+
+        if ('favorites' === $sort) {
+            $favoritesCountSelect = '(SELECT COUNT(periodFavorite.id) FROM '.Favoris::class.' periodFavorite WHERE periodFavorite.property = p AND periodFavorite.createdAt IS NOT NULL AND periodFavorite.createdAt <= :end';
+
+            if (null !== $start) {
+                $favoritesCountSelect .= ' AND periodFavorite.createdAt >= :start';
+            }
+
+            $favoritesCountSelect .= ') AS HIDDEN favoritesCount';
+
+            return $queryBuilder
+                ->addSelect($favoritesCountSelect)
+                ->orderBy('favoritesCount', $direction)
+                ->addOrderBy('p.createdAt', 'DESC');
+        }
+
+        return $queryBuilder->orderBy('p.createdAt', $direction);
+    }
+
+    /**
+     * @param list<int> $propertyIds
+     *
+     * @return list<int>
+     */
+    public function findBoostedPropertyIds(array $propertyIds): array
+    {
+        if ([] === $propertyIds) {
+            return [];
+        }
+
+        $rows = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('DISTINCT IDENTITY(pb.property) AS propertyId')
+            ->from(PropertyBoost::class, 'pb')
+            ->andWhere('pb.property IN (:propertyIds)')
+            ->andWhere('pb.status = :status')
+            ->setParameter('propertyIds', $propertyIds)
+            ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_map('intval', array_column($rows, 'propertyId'));
     }
 
     /**

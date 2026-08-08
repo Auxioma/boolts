@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\DataFixtures;
 
@@ -13,11 +21,7 @@ use Doctrine\Persistence\ObjectManager;
 
 final class BoosterPackPriceFixtures extends Fixture implements DependentFixtureInterface
 {
-    private const PRICES = [
-        'boost-1' => 2499,
-        'boost-5' => 9999,
-        'boost-20' => 29999,
-    ];
+    public const BOOSTER_PACK_PRICE_REFERENCE_PREFIX = 'booster_pack_price_';
 
     public function load(ObjectManager $manager): void
     {
@@ -29,7 +33,7 @@ final class BoosterPackPriceFixtures extends Fixture implements DependentFixture
             throw new \RuntimeException('La devise EUR doit être chargée avant les prix des packs boost.');
         }
 
-        foreach (self::PRICES as $packCode => $amountMinor) {
+        foreach (BillingFixtureData::BOOSTER_PRICES as $packCode => $amountMinor) {
             $pack = $this->getReference(
                 BoosterPackFixtures::BOOSTER_PACK_REFERENCE_PREFIX.$packCode,
                 BoosterPack::class,
@@ -43,6 +47,7 @@ final class BoosterPackPriceFixtures extends Fixture implements DependentFixture
                 ->setIsActive(true);
 
             $manager->persist($price);
+            $this->addReference(self::BOOSTER_PACK_PRICE_REFERENCE_PREFIX.$packCode, $price);
         }
 
         $manager->flush();

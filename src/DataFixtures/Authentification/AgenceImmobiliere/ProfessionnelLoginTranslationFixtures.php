@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -31,6 +31,18 @@ final class ProfessionnelLoginTranslationFixtures extends Fixture
                 'professionnel.login.submit' => 'Se connecter',
                 'professionnel.login.forgot_password' => 'Mot de passe oublié ?',
                 'professionnel.login.register' => 'Inscription',
+            ],
+
+            'en' => [
+                'professionnel.login.meta.title' => 'Sign in',
+                'professionnel.login.title' => 'Sign in to your professional area',
+                'professionnel.login.apple' => 'Sign in with Apple',
+                'professionnel.login.or' => 'OR',
+                'professionnel.login.email.label' => 'Email address',
+                'professionnel.login.password.label' => 'Password',
+                'professionnel.login.submit' => 'Sign in',
+                'professionnel.login.forgot_password' => 'Forgot password?',
+                'professionnel.login.register' => 'Register',
             ],
         ];
 

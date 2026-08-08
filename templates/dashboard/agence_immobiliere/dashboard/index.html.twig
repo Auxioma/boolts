@@ -5,7 +5,7 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-{% extends 'base.html.twig' %} 
+{% extends 'base.html.twig' %}
 
 {% block title %}Tableau de bord immobilier{% endblock %}
 
@@ -31,10 +31,7 @@
                                 !
                             </h1>
 
-                            <a href="#" class="btn dashboard-boost-button">
-                                <i class="icon-zap"></i>
-                                Boost : 4
-                            </a>
+                            {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
                         </div>
 
                         {# Finalisation du compte #}
@@ -69,8 +66,8 @@
                                         attr: {
                                             id: 'domiciliation-country',
                                             class: 'form-select account-country-input',
-                                            'data-dashboard-account-completion-target': 'country'
-                                        }
+                                            'data-dashboard-account-completion-target': 'country',
+                                        },
                                     }) }}
 
                                     <button
@@ -83,7 +80,6 @@
                                 </div>
                             </div>
                         </section>
-
 
 {# termier et entrez les documents #}
 <section
@@ -159,16 +155,16 @@
                 attr: {
                     class: 'finish-setup__upload-form',
                     'data-document-upload-form': '',
-                    'data-required-document': requiredDocument.required ? 'true' : 'false'
-                }
+                    'data-required-document': requiredDocument.required ? 'true' : 'false',
+                },
             }) }}
                 {{ form_widget(documentForm.requiredDocument, {attr: {hidden: 'hidden'}}) }}
                 <label class="finish-setup__upload">
                 {{ form_widget(documentForm.document, {
                     attr: {
                         class: 'finish-setup__file-input',
-                        'data-document-upload': ''
-                    }
+                        'data-document-upload': '',
+                    },
                 }) }}
 
                 <svg
@@ -810,7 +806,6 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 </style>
 
-
                         {# Statistiques rapides #}
                         <section
                             class="dashboard-card statistics-card"
@@ -854,7 +849,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             <div class="row g-4 statistics-summary">
 
-                                                            <div class="col-3">
+                                <div class="col-3">
                                     <div
                                         class="stat-card statistics-series-toggle"
                                         role="button"
@@ -939,7 +934,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     {{ render_chart(
                                         statistics_chart, {
                                             class: 'statistics-chart-canvas',
-                                            'data-dashboard-statistics-target': 'chart'
+                                            'data-dashboard-statistics-target': 'chart',
                                     }) }}
                                 </div>
                             </div>
@@ -1013,7 +1008,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         </section>
 
                         {# Performances des annonces #}
-                        <section class="dashboard-card properties-performance-card">
+                        <section
+                            class="dashboard-card properties-performance-card"
+                            data-controller="dashboard-property-performance"
+                            data-dashboard-property-performance-url-value="{{ path('agence_immobiliere_dashboard_performances', performance_query_parameters) }}"
+                            data-action="click@window->dashboard-property-performance#closeSortMenuOnOutsideClick keydown.esc@window->dashboard-property-performance#closeSortMenu dashboard-period-changed@window->dashboard-property-performance#syncPeriod"
+                        >
                             <div class="properties-performance-header">
                                 <h2 class="dashboard-section-title">
                                     Performances des annonces
@@ -1021,26 +1021,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center statistics-periods">
-                                        <button type="button" class="statistics-period-button">
+                                        <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-property-performance#selectPeriod">
                                             7 jours
                                         </button>
 
                                         <button
                                             type="button"
-                                            class="statistics-period-button active"
+                                            class="statistics-period-button {{ statistics.period == '30d' ? 'active' }}"
+                                            data-period="30d"
+                                            data-action="dashboard-property-performance#selectPeriod"
                                         >
                                             30 jours
                                         </button>
 
-                                        <button type="button" class="statistics-period-button">
+                                        <button type="button" class="statistics-period-button {{ statistics.period == '12m' ? 'active' }}" data-period="12m" data-action="dashboard-property-performance#selectPeriod">
                                             12 mois
                                         </button>
 
-                                        <button type="button" class="statistics-period-button">
+                                        <button type="button" class="statistics-period-button {{ statistics.period == 'max' ? 'active' }}" data-period="max" data-action="dashboard-property-performance#selectPeriod">
                                             Maximum
                                         </button>
 
-                                        <button type="button" class="statistics-period-button">
+                                        <button
+                                            type="button"
+                                            class="statistics-period-button {{ statistics.period == 'custom' ? 'active' }}"
+                                            data-period="custom"
+                                            data-action="dashboard-property-performance#selectPeriod"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#property-performance-custom-period-modal"
+                                        >
                                             Personnalisé
                                         </button>
                                     </div>
@@ -1055,13 +1064,100 @@ document.addEventListener('DOMContentLoaded', () => {
                                             Filtres
                                         </button>
 
-                                        <button
-                                            type="button"
-                                            class="btn properties-action-button"
-                                        >
-                                            <i class="icon-arrow-up-down"></i>
-                                            Trier
-                                        </button>
+                                        <div class="properties-sort">
+                                            <button
+                                                type="button"
+                                                class="btn properties-action-button"
+                                                data-action="dashboard-property-performance#toggleSortMenu"
+                                                data-dashboard-property-performance-target="sortButton"
+                                                aria-haspopup="listbox"
+                                                aria-expanded="false"
+                                                aria-controls="dashboard-sort-menu"
+                                            >
+                                                <i class="icon-arrow-up-down"></i>
+                                                Trier
+                                            </button>
+
+                                            <div
+                                                id="dashboard-sort-menu"
+                                                class="sort-menu d-none"
+                                                data-dashboard-property-performance-target="sortMenu"
+                                                role="listbox"
+                                                aria-label="Trier les résultats"
+                                            >
+                                                <button
+                                                    class="sort-menu__item {{ performance_sort == 'created' and performance_direction == 'DESC' ? 'sort-menu__item--active' }}"
+                                                    type="button"
+                                                    role="option"
+                                                    aria-selected="{{ performance_sort == 'created' and performance_direction == 'DESC' ? 'true' : 'false' }}"
+                                                    data-sort="created"
+                                                    data-direction="desc"
+                                                    data-action="dashboard-property-performance#selectSort"
+                                                >
+                                                    Date d'ajout (récent → ancien)
+                                                </button>
+
+                                                <button
+                                                    class="sort-menu__item {{ performance_sort == 'created' and performance_direction == 'ASC' ? 'sort-menu__item--active' }}"
+                                                    type="button"
+                                                    role="option"
+                                                    aria-selected="{{ performance_sort == 'created' and performance_direction == 'ASC' ? 'true' : 'false' }}"
+                                                    data-sort="created"
+                                                    data-direction="asc"
+                                                    data-action="dashboard-property-performance#selectSort"
+                                                >
+                                                    Date d'ajout (ancien → récent)
+                                                </button>
+
+                                                <button
+                                                    class="sort-menu__item {{ performance_sort == 'views' and performance_direction == 'DESC' ? 'sort-menu__item--active' }}"
+                                                    type="button"
+                                                    role="option"
+                                                    aria-selected="{{ performance_sort == 'views' and performance_direction == 'DESC' ? 'true' : 'false' }}"
+                                                    data-sort="views"
+                                                    data-direction="desc"
+                                                    data-action="dashboard-property-performance#selectSort"
+                                                >
+                                                    Vues (plus → moins)
+                                                </button>
+
+                                                <button
+                                                    class="sort-menu__item {{ performance_sort == 'views' and performance_direction == 'ASC' ? 'sort-menu__item--active' }}"
+                                                    type="button"
+                                                    role="option"
+                                                    aria-selected="{{ performance_sort == 'views' and performance_direction == 'ASC' ? 'true' : 'false' }}"
+                                                    data-sort="views"
+                                                    data-direction="asc"
+                                                    data-action="dashboard-property-performance#selectSort"
+                                                >
+                                                    Vues (moins → plus)
+                                                </button>
+
+                                                <button
+                                                    class="sort-menu__item {{ performance_sort == 'favorites' and performance_direction == 'DESC' ? 'sort-menu__item--active' }}"
+                                                    type="button"
+                                                    role="option"
+                                                    aria-selected="{{ performance_sort == 'favorites' and performance_direction == 'DESC' ? 'true' : 'false' }}"
+                                                    data-sort="favorites"
+                                                    data-direction="desc"
+                                                    data-action="dashboard-property-performance#selectSort"
+                                                >
+                                                    Favoris (plus → moins)
+                                                </button>
+
+                                                <button
+                                                    class="sort-menu__item {{ performance_sort == 'favorites' and performance_direction == 'ASC' ? 'sort-menu__item--active' }}"
+                                                    type="button"
+                                                    role="option"
+                                                    aria-selected="{{ performance_sort == 'favorites' and performance_direction == 'ASC' ? 'true' : 'false' }}"
+                                                    data-sort="favorites"
+                                                    data-direction="asc"
+                                                    data-action="dashboard-property-performance#selectSort"
+                                                >
+                                                    Favoris (moins → plus)
+                                                </button>
+                                            </div>
+                                        </div>
 
                                         <button
                                             type="button"
@@ -1074,117 +1170,46 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
 
-                            <div class="property-list">
-
-                                {% for property in 1..8 %}
-                                    <article class="property-item">
-                                        <div class="d-flex align-items-center property-main">
-
-                                            <div class="property-image-wrapper">
-                                                <img
-                                                    src="{{ asset('images/dashboard/property-example.jpg') }}"
-                                                    alt="Maison à Marrakech"
-                                                    class="property-image"
-                                                >
-                                            </div>
-
-                                            <div class="property-information">
-                                                <h3 class="property-title">
-                                                    Location saisonnière Maison haut standing à Marrakech
-                                                </h3>
-
-                                                <div class="d-flex align-items-center property-price-line">
-                                                    <span class="property-price">
-                                                        1 801 DH
-                                                    </span>
-
-                                                    {% if property <= 4 %}
-                                                        <span class="property-status property-status-published">
-                                                            Publiée
-                                                        </span>
-                                                    {% else %}
-                                                        <span class="property-status property-status-paused">
-                                                            Pause
-                                                        </span>
-                                                    {% endif %}
-
-                                                    {% if property == 4 or property == 5 %}
-                                                        <span class="property-status property-status-boosted">
-                                                            Boostée
-                                                        </span>
-                                                    {% endif %}
-                                                </div>
-
-                                                <p class="property-location">
-                                                    <strong>Marrakech, Maroc</strong>
-                                                    <span>- Créée le 29 juin 2026</span>
-                                                </p>
-
-                                                <span class="property-reference">
-                                                    AUXIOM-8899-100
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="property-statistics">
-                                            <span class="property-statistic">
-                                                <i class="icon-eye"></i>
-                                                320
-                                            </span>
-
-                                            <span class="property-statistic">
-                                                <i class="icon-heart"></i>
-                                                37
-                                            </span>
-                                        </div>
-
-                                        {% if property <= 4 %}
-                                            <a href="#" class="btn property-boost-button">
-                                                <i class="icon-zap"></i>
-                                                Booster
-                                            </a>
-                                        {% endif %}
-                                    </article>
-                                {% endfor %}
-
-                            </div>
-
-                            <nav
-                                class="dashboard-pagination"
-                                aria-label="Pagination des annonces"
+                            <turbo-frame
+                                id="dashboard-property-performance"
+                                src="{{ path('agence_immobiliere_dashboard_performances', performance_query_parameters) }}"
+                                loading="eager"
+                                data-dashboard-property-performance-target="frame"
                             >
-                                <a href="#" class="pagination-arrow" aria-label="Page précédente">
-                                    ‹
-                                </a>
+                                <p class="mb-0">Chargement des annonces...</p>
+                            </turbo-frame>
 
-                                <a href="#" class="pagination-number active">
-                                    1
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    2
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    3
-                                </a>
-
-                                <a href="#" class="pagination-number">
-                                    4
-                                </a>
-
-                                <span class="pagination-number">
-                                    …
-                                </span>
-
-                                <a href="#" class="pagination-number">
-                                    32
-                                </a>
-
-                                <a href="#" class="pagination-arrow" aria-label="Page suivante">
-                                    ›
-                                </a>
-                            </nav>
+                            <div
+                                id="property-performance-custom-period-modal"
+                                class="modal fade"
+                                tabindex="-1"
+                                aria-labelledby="property-performance-custom-period-modal-title"
+                                aria-hidden="true"
+                                data-dashboard-property-performance-target="modal"
+                            >
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h2 id="property-performance-custom-period-modal-title" class="modal-title fs-5">Période personnalisée</h2>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="property-performance-start" class="form-label">Date de début</label>
+                                                <input id="property-performance-start" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.start|date('Y-m-d') }}" data-dashboard-property-performance-target="start">
+                                            </div>
+                                            <div>
+                                                <label for="property-performance-end" class="form-label">Date de fin</label>
+                                                <input id="property-performance-end" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.end|date('Y-m-d') }}" data-dashboard-property-performance-target="end">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="button" class="btn btn-primary" data-action="dashboard-property-performance#loadCustomPeriod">Appliquer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </section>
 
                     </div>

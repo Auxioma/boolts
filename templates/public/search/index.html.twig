@@ -10,28 +10,28 @@
 {% block title %}Boolts - Recherche{% endblock %}
 
 {% block body %}
-{% include 'composant/_search/_search.html.twig' %}
+{{ include('composant/_search/_search.html.twig') }}
 
     {% set currentView = view|default('list') %}
     {% set totalResults = search is defined and search is not null ? search.getTotalItemCount : 0 %}
 
     <div class="{{ currentView == 'map' ? 'search-card-page' : 'bt-research-page' }}">
 
-        {% include 'public/search/_toolbar.html.twig' with {
+        {{ include('public/search/_toolbar.html.twig', {
             form: form,
             search: search,
             criteria: criteria|default(null),
             searchToken: searchToken,
             currentView: currentView,
             mapbox_public_token: mapboxPublicToken|default(''),
-            modal_filter: modal_filter|default({})
-        } only %}
+            modal_filter: modal_filter|default({}),
+        }, false) }}
 
         <main class="{{ currentView == 'map' ? 'search-card-main' : 'bt-research-main' }}" id="results">
 
             {% if currentView == 'map' %}
 
-                {% include 'public/search/_results_map.html.twig' with {
+                {{ include('public/search/_results_map.html.twig', {
                     search: search,
                     totalResults: totalResults,
                     criteria: criteria|default(null),
@@ -41,27 +41,27 @@
                     mapboxPublicToken: mapboxPublicToken|default(''),
                     mapboxPublicTokenCard: mapboxPublicTokenCard|default(''),
                     mapBounds: mapBounds|default(null),
-                    modal_filter: modal_filter|default({})
-                } only %}
+                    modal_filter: modal_filter|default({}),
+                }, false) }}
 
             {% else %}
 
-                {% include 'public/search/_results_list.html.twig' with {
+                {{ include('public/search/_results_list.html.twig', {
                     search: search,
                     totalResults: totalResults,
                     criteria: criteria|default(null),
-                    favoritePropertyIds: favoritePropertyIds|default([])
-                } only %}
+                    favoritePropertyIds: favoritePropertyIds|default([]),
+                }, false) }}
 
             {% endif %}
 
-            {% include 'public/search/_pagination.html.twig' with {
+            {{ include('public/search/_pagination.html.twig', {
                 search: search,
                 searchToken: searchToken,
                 currentView: currentView,
                 mapBounds: mapBounds|default(null),
-                modal_filter: modal_filter|default({})
-            } only %}
+                modal_filter: modal_filter|default({}),
+            }, false) }}
 
         </main>
 

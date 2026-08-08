@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -183,8 +183,6 @@ final class HomeController extends AbstractController
         $session = $request->getSession();
         $session->set('city', $city);
         $session->set('country', $country);
-
-
 
         if ('' === $city || mb_strlen($city) > 120) {
             return new Response('Ville invalide.', Response::HTTP_UNPROCESSABLE_ENTITY);

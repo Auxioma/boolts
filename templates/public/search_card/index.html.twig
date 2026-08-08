@@ -261,7 +261,7 @@
                                     {% endif %}
 
                                     {% set detailUrl = bienImmobilier.slug is not empty
-                                        ? path('app_public_detail_bien', { slug: bienImmobilier.slug })
+                                        ? path('app_public_detail_bien', {slug: bienImmobilier.slug})
                                         : '#'
                                     %}
 
@@ -327,7 +327,7 @@
                                                 aria-pressed="{{ bienImmobilier.id in favoritePropertyIds|default([]) ? 'true' : 'false' }}"
                                                 data-controller="favorite"
                                                 data-action="click->favorite#toggle"
-                                                data-favorite-url-value="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                                                data-favorite-url-value="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
                                                 data-favorite-token-value="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
                                             >
                                                 <svg class="search-card-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -405,13 +405,13 @@
                             <div class="search-card-map-visual" aria-hidden="true"></div>
 
                             {% set mapMarkers = [
-                                { price: '590€', x: 33, y: 36 },
-                                { price: '853€', x: 39, y: 45 },
-                                { price: '400€', x: 61, y: 33 },
-                                { price: '639€', x: 66, y: 50 },
-                                { price: '400€', x: 31, y: 62 },
-                                { price: '639€', x: 18, y: 65 },
-                                { price: '853€', x: 48, y: 70 },
+                                {price: '590€', x: 33, y: 36},
+                                {price: '853€', x: 39, y: 45},
+                                {price: '400€', x: 61, y: 33},
+                                {price: '639€', x: 66, y: 50},
+                                {price: '400€', x: 31, y: 62},
+                                {price: '639€', x: 18, y: 65},
+                                {price: '853€', x: 48, y: 70},
                             ] %}
 
                             {% for marker in mapMarkers %}

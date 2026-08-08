@@ -1,0 +1,6 @@
+framework:
+    rate_limiter:
+        frontend_error:
+            policy: fixed_window
+            limit: 20
+            interval: '1 minute'

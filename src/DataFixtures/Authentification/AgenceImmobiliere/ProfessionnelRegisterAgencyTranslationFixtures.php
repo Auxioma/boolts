@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright(c) 2026 Boolts (https://boolts.com)
+ * Copyright(c)2026 Boolts (https://boolts.com)
  *
  * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
@@ -30,6 +30,17 @@ final class ProfessionnelRegisterAgencyTranslationFixtures extends Fixture
                 'professionnel.register.agency.password_confirm.label' => 'Confirmer le mot de passe*',
                 'professionnel.register.agency.terms.label' => 'J’accepte les conditions d’utilisation de Boolts.*',
                 'professionnel.register.agency.submit' => 'Se connecter',
+            ],
+
+            'en' => [
+                'professionnel.register.agency.meta.title' => 'Agency registration',
+                'professionnel.register.agency.title' => 'Register your agency now',
+                'professionnel.register.agency.lastname.label' => 'Last name*',
+                'professionnel.register.agency.firstname.label' => 'First name*',
+                'professionnel.register.agency.password.label' => 'Password*',
+                'professionnel.register.agency.password_confirm.label' => 'Confirm password*',
+                'professionnel.register.agency.terms.label' => 'I accept the Boolts terms of use.*',
+                'professionnel.register.agency.submit' => 'Sign in',
             ],
         ];
 

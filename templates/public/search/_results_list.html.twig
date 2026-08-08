@@ -90,7 +90,7 @@
                 {% endif %}
 
                 {% set detailUrl = bienImmobilier.slug is not empty
-                    ? path('app_public_detail_bien', { slug: bienImmobilier.slug })
+                    ? path('app_public_detail_bien', {slug: bienImmobilier.slug})
                     : '#'
                 %}
 
@@ -106,7 +106,7 @@
                         address="{{ addressParts|join(', ') }}"
                         image="{{ uploadedImage }}"
                         url="{{ detailUrl }}"
-                        favoriteUrl="{{ path('app_favoris_property_toggle', { id: bienImmobilier.id }) }}"
+                        favoriteUrl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
                         favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
                         :isFavorite="bienImmobilier.id in favoritePropertyIds|default([])"
                     />
