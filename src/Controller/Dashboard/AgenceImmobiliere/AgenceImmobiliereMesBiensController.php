@@ -12,10 +12,11 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\CategoryBienTransaction;
+use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Filter\ModalFilter;
 use App\Entity\Property;
 use App\Entity\User;
-use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Form\Filter\ModalFilterType;
 use App\Repository\PropertyRepository;
@@ -30,11 +31,6 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/mes/biens', name: 'agence_immobiliere_')]
-/**
- * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereMesBiensController.
- *
- * Centralizes actions exposed by the routes declared in this class.
- */
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
     #[Route('/liste', name: 'mes_biens_list', methods: ['GET'])]
@@ -115,7 +111,10 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         );
     }
 
-    #[Route('/liste/filtres/count',name: 'mes_biens_filters_count',methods: ['GET']
+    #[Route(
+        '/liste/filtres/count',
+        name: 'mes_biens_filters_count',
+        methods: ['GET']
     )]
     public function filtersCount(
         PropertyRepository $propertyRepository,
@@ -236,6 +235,21 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $transaction = $property->getTypeTransaction();
 
         if ($transaction) {
+            /*
+             * ID réel et dynamique de la transaction.
+             */
+            $session->set(
+                'typeTransactionId',
+                $transaction->getId()
+            );
+
+            /*
+             * Code métier utilisé par MesBiensType
+             * pour savoir quels champs afficher à l'étape prix.
+             *
+             * 1 = vente
+             * 2 = location
+             */
             $slugFr = $transaction
                 ->translate('fr')
                 ->getSlug();
@@ -355,9 +369,15 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         );
     }
 
-    // action groupey 
-    #[Route('/actions-groupees',name: 'mes_biens_bulk_action',methods: ['POST'])]
-    public function bulkAction(Request $request,PropertyRepository $propertyRepository,EntityManagerInterface $entityManager,
+    #[Route(
+        '/actions-groupees',
+        name: 'mes_biens_bulk_action',
+        methods: ['POST']
+    )]
+    public function bulkAction(
+        Request $request,
+        PropertyRepository $propertyRepository,
+        EntityManagerInterface $entityManager,
     ): Response {
         $user = $this->getUser();
 
@@ -480,9 +500,6 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     }
 
     #[Route('/', name: 'mes_biens')]
-    /**
-     * Handles the index controller action.
-     */
     public function index(
         Request $request,
         PropertyRepository $propertyRepository,
@@ -491,20 +508,72 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         MapboxAddressTranslator $mapboxAddressTranslator,
     ): Response {
         $session = $request->getSession();
-        $step = $request->query->getInt('step', 1);
+
+        $step = $request->query->getInt(
+            'step',
+            1
+        );
 
         /*
-        |--------------------------------------------------------------------------
-        | Étape maximale atteinte
-        |--------------------------------------------------------------------------
-        |
-        | step        = étape réellement affichée
-        | stepperStep = étape maximale atteinte pour garder la barre bleue
-        */
-        if (!$session->has('mes_biens_reached_step')) {
-            $session->set('mes_biens_reached_step', 1);
+         * ------------------------------------------------------------------
+         * Utilisateur connecté
+         * ------------------------------------------------------------------
+         */
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException(
+                'Vous devez être connecté pour gérer vos biens.'
+            );
         }
 
+        /*
+         * ------------------------------------------------------------------
+         * ID dynamique de la transaction provenant de l'URL
+         * ------------------------------------------------------------------
+         *
+         * Exemple :
+         *
+         * /mes/biens/?step=3&typeTransaction=5
+         *
+         * 5 correspond réellement à :
+         *
+         * CategoryBienTransaction::getId()
+         */
+        $typeTransactionId = $request->query->getInt(
+            'typeTransaction',
+            0
+        );
+
+        if ($typeTransactionId > 0) {
+            $session->set(
+                'typeTransactionId',
+                $typeTransactionId
+            );
+        } else {
+            $typeTransactionId = (int) $session->get(
+                'typeTransactionId',
+                0
+            );
+        }
+
+        /*
+         * ------------------------------------------------------------------
+         * Étape maximale atteinte
+         * ------------------------------------------------------------------
+         */
+        if (!$session->has('mes_biens_reached_step')) {
+            $session->set(
+                'mes_biens_reached_step',
+                1
+            );
+        }
+
+        /*
+         * ------------------------------------------------------------------
+         * Récupération du bien en cours
+         * ------------------------------------------------------------------
+         */
         $propertyId = $session->get(
             'mes_biens_property_id'
         );
@@ -515,17 +584,29 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             );
 
             if (!$mesBiens) {
-                $this->clearMesBiensSession($session);
+                $this->clearMesBiensSession(
+                    $session
+                );
 
                 $mesBiens = new Property();
             } else {
-                $user = $this->getUser();
-
+                /*
+                 * =========================================================
+                 * SÉCURITÉ
+                 * =========================================================
+                 *
+                 * Après un refresh :
+                 *
+                 * - le Property est rechargé depuis la BDD ;
+                 * - son user doit correspondre au user connecté.
+                 */
                 if (
-                    !$user instanceof User
+                    null === $mesBiens->getUser()
                     || $mesBiens->getUser()?->getId() !== $user->getId()
                 ) {
-                    $this->clearMesBiensSession($session);
+                    $this->clearMesBiensSession(
+                        $session
+                    );
 
                     throw $this->createAccessDeniedException(
                         'Vous ne pouvez pas modifier cette annonce.'
@@ -536,35 +617,170 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             $mesBiens = new Property();
         }
 
-        $typeTransaction = $session->get('typeTransaction');
+        /*
+         * ------------------------------------------------------------------
+         * Transaction déjà enregistrée sur le Property
+         * ------------------------------------------------------------------
+         */
+        $existingTransaction = $mesBiens
+            ->getTypeTransaction();
 
-        $form = $this->createForm(MesBiensType::class, $mesBiens, [
-            'step' => $step,
-            'typeTransaction' => $typeTransaction,
-        ]);
+        if ($existingTransaction) {
+            $typeTransactionId = $existingTransaction
+                ->getId();
 
-        $form->handleRequest($request);
+            if ($typeTransactionId) {
+                $session->set(
+                    'typeTransactionId',
+                    $typeTransactionId
+                );
+            }
+        }
+
+        /*
+         * ------------------------------------------------------------------
+         * Si typeTransaction est présent dans l'URL
+         * ------------------------------------------------------------------
+         *
+         * Permet notamment de conserver la sélection lors d'un refresh.
+         */
+        if (
+            $typeTransactionId > 0
+            && null === $mesBiens->getTypeTransaction()
+        ) {
+            $transactionFromUrl = $entityManager
+                ->getRepository(
+                    CategoryBienTransaction::class
+                )
+                ->find(
+                    $typeTransactionId
+                );
+
+            if (
+                $transactionFromUrl instanceof CategoryBienTransaction
+            ) {
+                /*
+                 * Modification seulement en mémoire.
+                 *
+                 * Aucun flush sur un GET.
+                 */
+                $mesBiens->setTypeTransaction(
+                    $transactionFromUrl
+                );
+            } else {
+                $session->remove(
+                    'typeTransactionId'
+                );
+
+                $typeTransactionId = 0;
+            }
+        }
+
+        /*
+         * ------------------------------------------------------------------
+         * Code métier transaction
+         * ------------------------------------------------------------------
+         *
+         * ATTENTION :
+         *
+         * typeTransactionId = ID Doctrine réel et dynamique
+         *
+         * typeTransaction   = code métier :
+         *
+         * 1 = vente
+         * 2 = location
+         *
+         * Le code métier est utilisé par MesBiensType à l'étape 8.
+         */
+        $typeTransaction = $session->get(
+            'typeTransaction'
+        );
+
+        /*
+         * ------------------------------------------------------------------
+         * Formulaire
+         * ------------------------------------------------------------------
+         */
+        $form = $this->createForm(
+            MesBiensType::class,
+            $mesBiens,
+            [
+                'step' => $step,
+                'typeTransaction' => $typeTransaction,
+            ]
+        );
+
+        $form->handleRequest(
+            $request
+        );
 
         if ($form->isSubmitted()) {
             /*
-            |--------------------------------------------------------------------------
-            | Step 1 : type de bien
-            |--------------------------------------------------------------------------
-            */
-
+             * ==============================================================
+             * STEP 1 : TYPE DE BIEN
+             * ==============================================================
+             */
             if (1 === $step) {
+                /*
+                 * Nouveau Property.
+                 */
                 if (null === $mesBiens->getId()) {
                     $mesBiens->setSlug(
-                        $numericSlugGenerator->generate(16)
+                        $numericSlugGenerator->generate(
+                            16
+                        )
+                    );
+
+                    /*
+                     * =====================================================
+                     * CORRECTION IMPORTANTE
+                     * =====================================================
+                     *
+                     * On rattache immédiatement le bien
+                     * à l'utilisateur connecté AVANT le premier flush.
+                     *
+                     * Sans ceci :
+                     *
+                     * property.user = NULL
+                     *
+                     * et lors d'un refresh :
+                     *
+                     * $mesBiens->getUser()?->getId()
+                     *
+                     * retourne NULL.
+                     */
+                    $mesBiens->setUser(
+                        $user
                     );
 
                     $entityManager->persist(
                         $mesBiens
                     );
+                } else {
+                    /*
+                     * Si le Property existe déjà,
+                     * on vérifie encore son propriétaire.
+                     */
+                    if (
+                        null === $mesBiens->getUser()
+                        || $mesBiens->getUser()?->getId() !== $user->getId()
+                    ) {
+                        throw $this->createAccessDeniedException(
+                            'Vous ne pouvez pas modifier cette annonce.'
+                        );
+                    }
                 }
 
                 $entityManager->flush();
 
+                /*
+                 * Le Property possède maintenant :
+                 *
+                 * - un ID
+                 * - un user
+                 * - un typeBien
+                 * - un slug
+                 */
                 $session->set(
                     'mes_biens_property_id',
                     $mesBiens->getId()
@@ -575,56 +791,171 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     2
                 );
 
+                /*
+                 * Transaction éventuellement déjà existante
+                 * en modification ou après retour arrière.
+                 */
+                $typeTransactionId = $mesBiens
+                    ->getTypeTransaction()
+                    ?->getId();
+
+                if (!$typeTransactionId) {
+                    $typeTransactionId = (int) $session->get(
+                        'typeTransactionId',
+                        0
+                    );
+                }
+
+                /*
+                 * Première création :
+                 *
+                 * /mes/biens/?step=2
+                 *
+                 * Si une transaction est déjà connue :
+                 *
+                 * /mes/biens/?step=2&typeTransaction=5
+                 */
+                $parameters = [
+                    'step' => 2,
+                ];
+
+                if ($typeTransactionId > 0) {
+                    $parameters['typeTransaction'] = $typeTransactionId;
+                }
+
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens',
+                    $parameters
+                );
+            }
+
+            /*
+             * ==============================================================
+             * STEP 2 : TYPE DE TRANSACTION
+             * ==============================================================
+             */
+            if (2 === $step) {
+                /*
+                 * Transaction choisie réellement
+                 * par l'utilisateur.
+                 */
+                $transaction = $mesBiens
+                    ->getTypeTransaction();
+
+                if (!$transaction instanceof CategoryBienTransaction) {
+                    $this->addFlash(
+                        'danger',
+                        'Veuillez sélectionner un type de transaction.'
+                    );
+
+                    return $this->redirectToRoute(
+                        'agence_immobiliere_mes_biens',
+                        [
+                            'step' => 2,
+                        ]
+                    );
+                }
+
+                /*
+                 * =========================================================
+                 * ID DYNAMIQUE
+                 * =========================================================
+                 *
+                 * Aucun ID n'est écrit en dur.
+                 *
+                 * Exemple :
+                 *
+                 * Vente      ID = 1
+                 * Location   ID = 4
+                 * Viager     ID = 8
+                 *
+                 * Le système récupère réellement :
+                 *
+                 * $transaction->getId()
+                 */
+                $typeTransactionId = $transaction
+                    ->getId();
+
+                if (!$typeTransactionId) {
+                    throw new \LogicException(
+                        'La transaction sélectionnée ne possède pas d’identifiant.'
+                    );
+                }
+
+                $session->set(
+                    'typeTransactionId',
+                    $typeTransactionId
+                );
+
+                /*
+                 * Code métier uniquement utilisé
+                 * pour savoir si l'étape prix est
+                 * une vente ou une location.
+                 */
+                $slugFr = $transaction
+                    ->translate('fr')
+                    ->getSlug();
+
+                $typeTransactionCode = match ($slugFr) {
+                    'vente' => '1',
+                    'location' => '2',
+                    default => null,
+                };
+
+                if (null !== $typeTransactionCode) {
+                    $session->set(
+                        'typeTransaction',
+                        $typeTransactionCode
+                    );
+
+                    $typeTransaction = $typeTransactionCode;
+                } else {
+                    $session->remove(
+                        'typeTransaction'
+                    );
+
+                    $typeTransaction = null;
+                }
+
+                /*
+                 * Enregistrement du choix de transaction.
+                 */
+                $entityManager->flush();
+
+                $this->updateReachedStep(
+                    $session,
+                    3
+                );
+
+                /*
+                 * URL dynamique :
+                 *
+                 * /mes/biens/?step=3&typeTransaction=ID
+                 *
+                 * Exemple si ID réellement choisi = 4 :
+                 *
+                 * /mes/biens/?step=3&typeTransaction=4
+                 */
                 return $this->redirectToRoute(
                     'agence_immobiliere_mes_biens',
                     [
-                        'step' => 2,
-                        'typeTransaction' => $mesBiens
-                            ->getTypeTransaction()
-                            ?->getId() ?? '',
+                        'step' => 3,
+                        'typeTransaction' => $typeTransactionId,
                     ]
                 );
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 2 : type de transaction
-            |--------------------------------------------------------------------------
-            */
-            if (2 === $step) {
-                $entityManager->flush();
-
-                $transaction = $mesBiens->getTypeTransaction();
-
-                if ($transaction) {
-                    $slugFr = $transaction->translate('fr')->getSlug();
-
-                    $typeTransactionCode = match ($slugFr) {
-                        'vente' => '1',
-                        'location' => '2',
-                        default => null,
-                    };
-
-                    $session->set('typeTransaction', $typeTransactionCode);
-            }
-
-                $this->updateReachedStep($session, 3);
-
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 3,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                ]);
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Step 3 : adresse
-            |--------------------------------------------------------------------------
-            */
+             * ==============================================================
+             * STEP 3 : ADRESSE
+             * ==============================================================
+             */
             if (3 === $step) {
-                $currentLocale = $request->getLocale();
-                $mapboxId = $mesBiens->getMapboxId();
-                $sessionToken = $mesBiens->getSessionIdMapbox();
+                $mapboxId = $mesBiens
+                    ->getMapboxId();
+
+                $sessionToken = $mesBiens
+                    ->getSessionIdMapbox();
 
                 $isFixtureMapboxId = null !== $mapboxId
                     && str_starts_with(
@@ -636,176 +967,310 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     $mapboxId
                     && !$isFixtureMapboxId
                 ) {
-                    foreach (['fr', 'en'] as $locale) {
-                        $address = $mapboxAddressTranslator->translateByMapboxId(
-                            mapboxId: $mapboxId,
-                            sessionToken: $sessionToken,
-                            locale: $locale
-                        );
+                    foreach (
+                        ['fr', 'en'] as $locale
+                    ) {
+                        $address = $mapboxAddressTranslator
+                            ->translateByMapboxId(
+                                mapboxId: $mapboxId,
+                                sessionToken: $sessionToken,
+                                locale: $locale
+                            );
+
                         if (null === $address) {
                             continue;
                         }
+
                         $translation = $mesBiens->translate(
                             $locale
                         );
+
                         $translation->setAdresse(
                             $address['adresse']
                         );
+
                         $translation->setVille(
                             $address['ville']
                         );
+
                         $translation->setPays(
                             $address['pays']
                         );
+
                         $translation->setFullAddress(
                             $address['fullAddress']
                         );
+
                         $translation->setRegion(
                             $address['region']
                         );
+
                         $translation->setDistrict(
                             $address['district']
                         );
+
                         $translation->setLocality(
                             $address['locality']
                         );
+
                         $translation->setNeighborhood(
                             $address['neighborhood']
                         );
+
                         $translation->setPoi(
                             $address['poi']
                         );
                     }
+
                     $mesBiens->mergeNewTranslations();
                 }
+
                 $entityManager->flush();
+
+                $this->syncTransactionSession(
+                    $mesBiens,
+                    $session
+                );
 
                 $this->updateReachedStep(
                     $session,
                     4
                 );
+
                 return $this->redirectToRoute(
                     'agence_immobiliere_mes_biens',
-                    [
-                        'step' => 4,
-                        'typeTransaction' => $mesBiens
-                            ->getTypeTransaction()
-                            ?->getId(),
-                    ]
+                    $this->buildStepParameters(
+                        step: 4,
+                        property: $mesBiens,
+                        session: $session
+                    )
                 );
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 4 : caractéristiques
-            |--------------------------------------------------------------------------
-            */
+             * ==============================================================
+             * STEP 4 : CARACTÉRISTIQUES
+             * ==============================================================
+             */
             if (4 === $step) {
                 $entityManager->flush();
 
-                /*
-                |--------------------------------------------------------------------------
-                | Si le pays n’est pas la France, on saute le bilan énergétique
-                |--------------------------------------------------------------------------
-                */
-                if ('FR' !== $mesBiens->getPays()) {
-                    $this->updateReachedStep($session, 6);
+                $this->syncTransactionSession(
+                    $mesBiens,
+                    $session
+                );
 
-                    return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                        'step' => 6,
-                        'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                    ]);
+                /*
+                 * Si le pays n'est pas la France,
+                 * on saute le bilan énergétique.
+                 */
+                if ('FR' !== $mesBiens->getPays()) {
+                    $this->updateReachedStep(
+                        $session,
+                        6
+                    );
+
+                    return $this->redirectToRoute(
+                        'agence_immobiliere_mes_biens',
+                        $this->buildStepParameters(
+                            step: 6,
+                            property: $mesBiens,
+                            session: $session
+                        )
+                    );
                 }
 
-                $this->updateReachedStep($session, 5);
+                $this->updateReachedStep(
+                    $session,
+                    5
+                );
 
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 5,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                ]);
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens',
+                    $this->buildStepParameters(
+                        step: 5,
+                        property: $mesBiens,
+                        session: $session
+                    )
+                );
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 5 : bilan énergétique
-            |--------------------------------------------------------------------------
-            */
+             * ==============================================================
+             * STEP 5 : BILAN ÉNERGÉTIQUE
+             * ==============================================================
+             */
             if (5 === $step) {
                 $entityManager->flush();
 
-                $this->updateReachedStep($session, 6);
+                $this->syncTransactionSession(
+                    $mesBiens,
+                    $session
+                );
 
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 6,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                ]);
+                $this->updateReachedStep(
+                    $session,
+                    6
+                );
+
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens',
+                    $this->buildStepParameters(
+                        step: 6,
+                        property: $mesBiens,
+                        session: $session
+                    )
+                );
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 6 : photos
-            |--------------------------------------------------------------------------
-            */
+             * ==============================================================
+             * STEP 6 : PHOTOS
+             * ==============================================================
+             */
             if (6 === $step) {
-                foreach ($mesBiens->getPropertyImages() as $index => $propertyImage) {
-                    $propertyImage->setProperty($mesBiens);
-                    $propertyImage->setPosition($index + 1);
+                foreach (
+                    $mesBiens->getPropertyImages()
+                    as $index => $propertyImage
+                ) {
+                    $propertyImage->setProperty(
+                        $mesBiens
+                    );
+
+                    $propertyImage->setPosition(
+                        $index + 1
+                    );
                 }
 
-                $entityManager->persist($mesBiens);
+                $entityManager->persist(
+                    $mesBiens
+                );
+
                 $entityManager->flush();
 
-                $this->updateReachedStep($session, 7);
+                $this->syncTransactionSession(
+                    $mesBiens,
+                    $session
+                );
 
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 7,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                ]);
+                $this->updateReachedStep(
+                    $session,
+                    7
+                );
+
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens',
+                    $this->buildStepParameters(
+                        step: 7,
+                        property: $mesBiens,
+                        session: $session
+                    )
+                );
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 7 : description
-            |--------------------------------------------------------------------------
-            */
+             * ==============================================================
+             * STEP 7 : DESCRIPTION
+             * ==============================================================
+             */
             if (7 === $step) {
                 /*
-                 * traduit le titre et description
+                 * Traduction du titre et de la description.
                  */
-                $mesBiens->translate('fr')->setTitreDuLogement($form->get('titreDuLogement')->getData());
-                $mesBiens->translate('fr')->setDescriptionLogement($form->get('descriptionLogement')->getData());
+                $mesBiens
+                    ->translate('fr')
+                    ->setTitreDuLogement(
+                        $form
+                            ->get('titreDuLogement')
+                            ->getData()
+                    );
 
-                $mesBiens->translate('en')->setTitreDuLogement($form->get('titreDuLogement')->getData());
-                $mesBiens->translate('en')->setDescriptionLogement($form->get('descriptionLogement')->getData());
+                $mesBiens
+                    ->translate('fr')
+                    ->setDescriptionLogement(
+                        $form
+                            ->get('descriptionLogement')
+                            ->getData()
+                    );
+
+                $mesBiens
+                    ->translate('en')
+                    ->setTitreDuLogement(
+                        $form
+                            ->get('titreDuLogement')
+                            ->getData()
+                    );
+
+                $mesBiens
+                    ->translate('en')
+                    ->setDescriptionLogement(
+                        $form
+                            ->get('descriptionLogement')
+                            ->getData()
+                    );
 
                 $mesBiens->mergeNewTranslations();
 
                 $entityManager->flush();
 
-                $typeTransaction = $session->get('typeTransaction');
+                $this->syncTransactionSession(
+                    $mesBiens,
+                    $session
+                );
 
-                if (null === $typeTransaction) {
-                    return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                        'step' => 2,
-                    ]);
+                $typeTransaction = $session->get(
+                    'typeTransaction'
+                );
+
+                $typeTransactionId = $this->getTypeTransactionId(
+                    $mesBiens,
+                    $session
+                );
+
+                /*
+                 * Transaction obligatoire.
+                 */
+                if (
+                    null === $typeTransaction
+                    || null === $typeTransactionId
+                ) {
+                    return $this->redirectToRoute(
+                        'agence_immobiliere_mes_biens',
+                        [
+                            'step' => 2,
+                        ]
+                    );
                 }
 
-                $this->updateReachedStep($session, 8);
+                $this->updateReachedStep(
+                    $session,
+                    8
+                );
 
-                return $this->redirectToRoute('agence_immobiliere_mes_biens', [
-                    'step' => 8,
-                    'typeTransaction' => $mesBiens->getTypeTransaction()?->getId(),
-                ]);
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens',
+                    [
+                        'step' => 8,
+                        'typeTransaction' => $typeTransactionId,
+                    ]
+                );
             }
 
             /*
-            |--------------------------------------------------------------------------
-            | Step 8 : prix
-            |--------------------------------------------------------------------------
-            */
-
+             * ==============================================================
+             * STEP 8 : PRIX
+             * ==============================================================
+             */
             if (8 === $step) {
                 $entityManager->flush();
+
+                /*
+                 * On récupère l'ID AVANT de nettoyer la session.
+                 */
+                $typeTransactionId = $this->getTypeTransactionId(
+                    $mesBiens,
+                    $session
+                );
 
                 $isEditMode = true === $session->get(
                     'mes_biens_edit_mode',
@@ -827,51 +1292,237 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     );
                 }
 
+                $parameters = [];
+
+                if (null !== $typeTransactionId) {
+                    $parameters['typeTransaction'] = $typeTransactionId;
+                }
+
                 return $this->redirectToRoute(
                     'agence_immobiliere_mes_biens_status',
-                    [
-                        'typeTransaction' => $mesBiens
-                            ->getTypeTransaction()
-                            ?->getId(),
-                    ]
+                    $parameters
                 );
             }
         }
 
-        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig', [
-            'form' => $form->createView(),
-            'step' => $step,
-            'stepperStep' => $session->get('mes_biens_reached_step', $step),
-            'typeTransaction' => $typeTransaction,
+        /*
+         * ------------------------------------------------------------------
+         * RENDER
+         * ------------------------------------------------------------------
+         */
+        $typeTransactionId = $this->getTypeTransactionId(
+            $mesBiens,
+            $session
+        );
 
-        ]);
+        return $this->render(
+            'dashboard/agence_immobiliere/agence_immobiliere_mes_biens/index.html.twig',
+            [
+                'form' => $form->createView(),
+
+                'step' => $step,
+
+                'stepperStep' => $session->get(
+                    'mes_biens_reached_step',
+                    $step
+                ),
+
+                /*
+                 * Code métier :
+                 *
+                 * 1 = vente
+                 * 2 = location
+                 */
+                'typeTransaction' => $typeTransaction,
+
+                /*
+                 * ID réel et dynamique.
+                 */
+                'typeTransactionId' => $typeTransactionId,
+            ]
+        );
     }
 
-    #[Route('/status', name: 'mes_biens_status')]
+    #[Route(
+        '/status',
+        name: 'mes_biens_status'
+    )]
+    public function status(
+        Request $request,
+    ): Response {
+        return $this->render(
+            'dashboard/agence_immobiliere/agence_immobiliere_mes_biens/status.html.twig',
+            [
+                'typeTransactionId' => $request
+                    ->query
+                    ->getInt(
+                        'typeTransaction',
+                        0
+                    ),
+            ]
+        );
+    }
+
     /**
-     * Handles the status controller action.
+     * Retourne l'ID réel et dynamique
+     * de la transaction.
      */
-    public function status(): Response
-    {
-        return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_biens/status.html.twig');
+    private function getTypeTransactionId(
+        Property $property,
+        SessionInterface $session,
+    ): ?int {
+        /*
+         * Priorité à l'entité.
+         */
+        $typeTransactionId = $property
+            ->getTypeTransaction()
+            ?->getId();
+
+        if ($typeTransactionId) {
+            $session->set(
+                'typeTransactionId',
+                $typeTransactionId
+            );
+
+            return $typeTransactionId;
+        }
+
+        /*
+         * Sinon récupération depuis la session.
+         */
+        $typeTransactionId = (int) $session->get(
+            'typeTransactionId',
+            0
+        );
+
+        if ($typeTransactionId > 0) {
+            return $typeTransactionId;
+        }
+
+        return null;
     }
 
-    private function updateReachedStep(SessionInterface $session, int $step): void
-    {
-        $currentReachedStep = $session->get('mes_biens_reached_step', 1);
+    /**
+     * Synchronise les informations de transaction
+     * avec la session.
+     */
+    private function syncTransactionSession(
+        Property $property,
+        SessionInterface $session,
+    ): void {
+        $transaction = $property
+            ->getTypeTransaction();
 
-        if ($step > $currentReachedStep) {
-            $session->set('mes_biens_reached_step', $step);
+        if (!$transaction) {
+            return;
+        }
+
+        /*
+         * ID Doctrine réel.
+         */
+        $typeTransactionId = $transaction
+            ->getId();
+
+        if ($typeTransactionId) {
+            $session->set(
+                'typeTransactionId',
+                $typeTransactionId
+            );
+        }
+
+        /*
+         * Code métier :
+         *
+         * 1 = vente
+         * 2 = location
+         */
+        $slugFr = $transaction
+            ->translate('fr')
+            ->getSlug();
+
+        $typeTransactionCode = match ($slugFr) {
+            'vente' => '1',
+            'location' => '2',
+            default => null,
+        };
+
+        if (null !== $typeTransactionCode) {
+            $session->set(
+                'typeTransaction',
+                $typeTransactionCode
+            );
         }
     }
 
+    /**
+     * Génère les paramètres d'URL d'une étape.
+     *
+     * Exemple :
+     *
+     * /mes/biens/?step=4&typeTransaction=5
+     */
+    private function buildStepParameters(
+        int $step,
+        Property $property,
+        SessionInterface $session,
+    ): array {
+        $parameters = [
+            'step' => $step,
+        ];
+
+        $typeTransactionId = $this->getTypeTransactionId(
+            $property,
+            $session
+        );
+
+        if (null !== $typeTransactionId) {
+            $parameters['typeTransaction'] = $typeTransactionId;
+        }
+
+        return $parameters;
+    }
+
+    /**
+     * Mise à jour de l'étape maximale atteinte.
+     */
+    private function updateReachedStep(
+        SessionInterface $session,
+        int $step,
+    ): void {
+        $currentReachedStep = $session->get(
+            'mes_biens_reached_step',
+            1
+        );
+
+        if ($step > $currentReachedStep) {
+            $session->set(
+                'mes_biens_reached_step',
+                $step
+            );
+        }
+    }
+
+    /**
+     * Nettoyage des informations de session
+     * utilisées pendant la création/modification d'un bien.
+     */
     private function clearMesBiensSession(
-        SessionInterface $session
+        SessionInterface $session,
     ): void {
         $session->remove(
             'mes_biens_property_id'
         );
 
+        /*
+         * ID réel de la transaction.
+         */
+        $session->remove(
+            'typeTransactionId'
+        );
+
+        /*
+         * Code métier vente/location.
+         */
         $session->remove(
             'typeTransaction'
         );
