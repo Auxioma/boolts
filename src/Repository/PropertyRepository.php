@@ -250,7 +250,9 @@ class PropertyRepository extends ServiceEntityRepository
                 'statuts',
                 [
                     StatutAnnonceImmobiliere::PUBLIEE,
-                    StatutAnnonceImmobiliere::DEPUBLIEE,
+                    StatutAnnonceImmobiliere::DEPUBLIEE, 
+                    StatutAnnonceImmobiliere::BROUILLON,
+                    StatutAnnonceImmobiliere::PENDING,
                 ]
             );
 
