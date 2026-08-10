@@ -1,96 +1,361 @@
 <!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="robots" content="noindex, nofollow, noarchive">
-    <title>{{ maintenance.title }}</title>
+    <title>Boolts — Maintenance</title>
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
     <style>
+        /*
+         * Conversion Figma -> Bootstrap
+         * Figma: BOOLTS / node 5678:23803
+         *
+         * Frame desktop : 1440 x 900
+         * Marge horizontale Figma : 100px
+         * Largeur utile : 1440 - (100 x 2) = 1240px
+         * Bloc texte : 548px
+         */
+
         :root {
-            color-scheme: dark;
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            --figma-frame-width: 1440px;
+            --figma-frame-height: 900px;
+            --figma-margin: 100px;
+            --figma-container-width: 1240px;
+            --figma-copy-width: 548px;
+
+            --figma-white: #ffffff;
+            --figma-overlay: rgba(0, 0, 0, 0.50);
+
+            --figma-h2-size: 30px;
+            --figma-h2-line-height: 34px;
+            --figma-p-size: 14px;
+            --figma-p-line-height: 20px;
         }
 
-        * {
-            box-sizing: border-box;
+        html,
+        body {
+            min-height: 100%;
         }
 
         body {
-            display: grid;
+            margin: 0;
+            background: #111;
+            font-family: "Eudoxus Sans", "Inter", Arial, Helvetica, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: geometricPrecision;
+        }
+
+        /*
+         * La page Figma est un frame 1440x900 plein écran.
+         * À 1440x900, le rendu reprend les dimensions du design.
+         * Sur les autres écrans, le composant reste responsive.
+         */
+        .maintenance-page {
+            position: relative;
             min-height: 100vh;
-            margin: 0;
-            padding: 2rem;
-            place-items: center;
-            color: #f8fafc;
+            min-height: 100svh;
+            overflow: hidden;
+            color: var(--figma-white);
+            isolation: isolate;
+        }
+
+        .maintenance-page::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -2;
             background:
-                radial-gradient(circle at top, rgb(29 78 216 / 35%), transparent 42rem),
-                #080d18;
+                url("https://www.figma.com/api/mcp/asset/b45d352b-4b06-44d6-8552-bc9cbd84d7e9.png")
+                center center / cover no-repeat;
         }
 
-        main {
-            width: min(100%, 44rem);
-            padding: clamp(2rem, 6vw, 4rem);
-            text-align: center;
-            background: rgb(15 23 42 / 82%);
-            border: 1px solid rgb(148 163 184 / 18%);
-            border-radius: 1.5rem;
-            box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 35%);
-            backdrop-filter: blur(1rem);
+        .maintenance-page::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: var(--figma-overlay);
         }
 
-        .brand {
-            margin: 0 0 2.5rem;
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: .22em;
+        /*
+         * Équivalent de la grille Figma affichée avec Maj+G :
+         * 100px de marge à gauche + 100px à droite sur 1440px.
+         * Bootstrap conserve sa grille 12 colonnes à l'intérieur.
+         */
+        .figma-bootstrap-container {
+            width: calc(100% - (var(--figma-margin) * 2));
+            max-width: var(--figma-container-width);
+            margin-inline: auto;
         }
 
-        .status {
-            display: inline-block;
-            margin-bottom: 1.25rem;
-            padding: .45rem .8rem;
-            color: #93c5fd;
-            font-size: .78rem;
-            font-weight: 700;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-            background: rgb(37 99 235 / 18%);
-            border: 1px solid rgb(96 165 250 / 25%);
-            border-radius: 999px;
+        .maintenance-inner {
+            min-height: 100vh;
+            min-height: 100svh;
+            padding-top: 190px;
+            padding-bottom: 190px;
         }
 
-        h1 {
+        .maintenance-content {
+            gap: 40px;
+        }
+
+        /*
+         * Logo BOOLTS reconstruit avec les assets SVG exacts exportés depuis Figma.
+         * Dimensions / positions issues du frame Figma.
+         */
+        .boolts-logo {
+            position: relative;
+            flex: 0 0 auto;
+            width: 254.004px;
+            height: 109.844px;
+        }
+
+        .boolts-logo img {
+            position: absolute;
+            display: block;
+            max-width: none;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .boolts-logo__part-1 {
+            left: 0;
+            top: 0;
+            width: 51.499px;
+            height: 67.697px;
+        }
+
+        .boolts-logo__part-2 {
+            left: 53.78px;
+            top: 17.52px;
+            width: 51.499px;
+            height: 50.177px;
+        }
+
+        .boolts-logo__part-3 {
+            left: 163.35px;
+            top: 0;
+            width: 13.204px;
+            height: 66.641px;
+        }
+
+        .boolts-logo__part-4 {
+            left: 179.44px;
+            top: 5.90px;
+            width: 32.571px;
+            height: 61.27px;
+        }
+
+        .boolts-logo__part-5 {
+            left: 213.77px;
+            top: 17.50px;
+            width: 40.234px;
+            height: 50.129px;
+        }
+
+        .boolts-logo__part-6 {
+            left: 107.60px;
+            top: 17.52px;
+            width: 51.499px;
+            height: 92.324px;
+        }
+
+        .boolts-logo__tagline-left {
+            left: 0;
+            top: 75.78px;
+            width: 101.924px;
+            height: 13.095px;
+        }
+
+        .boolts-logo__tagline-right {
+            left: 170.92px;
+            top: 75.32px;
+            width: 83.066px;
+            height: 13.555px;
+        }
+
+        .maintenance-copy {
+            width: 100%;
+            max-width: var(--figma-copy-width);
+            gap: 14px;
+            color: var(--figma-white);
+        }
+
+        .maintenance-title {
             margin: 0;
-            font-size: clamp(2rem, 7vw, 3.5rem);
-            line-height: 1.08;
+            font-size: var(--figma-h2-size);
+            line-height: var(--figma-h2-line-height);
+            font-weight: 700;
+            letter-spacing: 0;
         }
 
-        .message {
-            margin: 1.5rem auto 0;
-            color: #cbd5e1;
-            font-size: clamp(1rem, 3vw, 1.15rem);
-            line-height: 1.7;
+        .maintenance-text {
+            margin: 0;
+            font-size: var(--figma-p-size);
+            line-height: var(--figma-p-line-height);
+            font-weight: 500;
+            letter-spacing: 0;
+            white-space: normal;
         }
 
-        .end {
-            margin: 2rem 0 0;
-            color: #94a3b8;
-            font-size: .9rem;
+        .maintenance-text p {
+            margin: 0;
+        }
+
+        .maintenance-text__blank-line {
+            height: 20px;
+        }
+
+        /*
+         * Responsive Bootstrap :
+         * on conserve la logique visuelle du frame tout en réduisant
+         * les marges sur tablette et mobile.
+         */
+        @media (max-width: 991.98px) {
+            :root {
+                --figma-margin: 48px;
+            }
+
+            .maintenance-inner {
+                padding-top: 120px;
+                padding-bottom: 120px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            :root {
+                --figma-margin: 24px;
+            }
+
+            .maintenance-inner {
+                padding-top: 64px;
+                padding-bottom: 64px;
+            }
+
+            .maintenance-content {
+                gap: 32px;
+            }
+
+            .boolts-logo {
+                transform: scale(0.86);
+                transform-origin: center center;
+                margin-top: -8px;
+                margin-bottom: -8px;
+            }
+
+            .maintenance-title {
+                font-size: 26px;
+                line-height: 31px;
+            }
+
+            .maintenance-page::before {
+                background-position: 52% center;
+            }
+        }
+
+        @media (max-height: 650px) and (orientation: landscape) {
+            .maintenance-inner {
+                padding-top: 48px;
+                padding-bottom: 48px;
+            }
+
+            .maintenance-content {
+                gap: 28px;
+            }
+
+            .boolts-logo {
+                transform: scale(0.82);
+                transform-origin: center center;
+                margin-top: -10px;
+                margin-bottom: -10px;
+            }
         }
     </style>
 </head>
-<body>
-<main>
-    <p class="brand">BOOLTS</p>
-    <span class="status">Maintenance en cours</span>
-    <h1>{{ maintenance.title }}</h1>
-    <div class="message">{{ maintenance.message|nl2br }}</div>
 
-    {% if maintenance.endsAt %}
-        <p class="end">
-            Retour prévu le {{ maintenance.endsAt|format_datetime('long', 'short', locale='fr') }}.
-        </p>
-    {% endif %}
-</main>
+<body>
+    <!-- Figma node: 5678:23803 -->
+    <main class="maintenance-page container-fluid px-0">
+        <div class="figma-bootstrap-container">
+            <div class="row g-0">
+                <div class="col-12">
+                    <div class="maintenance-inner d-flex align-items-center justify-content-center">
+                        <div class="maintenance-content d-flex flex-column align-items-center text-center w-100">
+
+                            <div
+                                class="boolts-logo"
+                                role="img"
+                                aria-label="Boolts — L’immobilier. Réinventé."
+                            >
+                                <img
+                                    class="boolts-logo__part-1"
+                                    src="https://www.figma.com/api/mcp/asset/597fd157-58da-4a53-af6a-0c28e7f2c651.svg"
+                                    alt=""
+                                >
+                                <img
+                                    class="boolts-logo__part-2"
+                                    src="https://www.figma.com/api/mcp/asset/de882725-5b35-45df-ba10-260d1b731bd1.svg"
+                                    alt=""
+                                >
+                                <img
+                                    class="boolts-logo__part-3"
+                                    src="https://www.figma.com/api/mcp/asset/4818c3f0-8425-464a-8657-458c702e8651.svg"
+                                    alt=""
+                                >
+                                <img
+                                    class="boolts-logo__part-4"
+                                    src="https://www.figma.com/api/mcp/asset/45d89903-ac7f-481f-80c7-997c568472ec.svg"
+                                    alt=""
+                                >
+                                <img
+                                    class="boolts-logo__part-5"
+                                    src="https://www.figma.com/api/mcp/asset/5bc5bdd1-1490-4063-8e67-2fd2b671c5b9.svg"
+                                    alt=""
+                                >
+                                <img
+                                    class="boolts-logo__part-6"
+                                    src="https://www.figma.com/api/mcp/asset/490c7ed8-c107-4cd5-a3dc-5d39080c7f47.svg"
+                                    alt=""
+                                >
+                                <img
+                                    class="boolts-logo__tagline-left"
+                                    src="https://www.figma.com/api/mcp/asset/7f5c0921-7f12-4ca9-8ed5-106fe928cd76.svg"
+                                    alt=""
+                                >
+                                <img
+                                    class="boolts-logo__tagline-right"
+                                    src="https://www.figma.com/api/mcp/asset/d3b45e90-39b2-43e5-aff3-a03c2fe0b526.svg"
+                                    alt=""
+                                >
+                            </div>
+
+                            <section class="maintenance-copy d-flex flex-column align-items-center">
+                                <h1 class="maintenance-title">
+                                    Le site est en cours de maintenance.
+                                </h1>
+
+                                <div class="maintenance-text w-100">
+                                    <p>
+                                        Nous travaillons à l’améliorer afin de vous offrir une expérience toujours plus performante.
+                                    </p>
+
+                                    <div class="maintenance-text__blank-line" aria-hidden="true"></div>
+
+                                    <p>Merci de votre patience.</p>
+                                </div>
+                            </section>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
