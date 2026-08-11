@@ -1021,7 +1021,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                             $address['poi']
                         );
                     }
-                    
+
                     $mesBiens->mergeNewTranslations();
                 }
 
@@ -1064,7 +1064,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                  * Si le pays n'est pas la France,
                  * on saute le bilan énergétique.
                  */
-                if ('FR' !== $mesBiens->getPays()) {
+                if (!$this->isFranceCountry($mesBiens->getPays())) {
                     $this->updateReachedStep(
                         $session,
                         6
@@ -1339,6 +1339,14 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                  * ID réel et dynamique.
                  */
                 'typeTransactionId' => $typeTransactionId,
+
+                /*
+                 * Le bilan énergétique est disponible uniquement
+                 * pour une adresse située en France.
+                 */
+                'showBilanEnergetique' => $this->isFranceCountry(
+                    $mesBiens->getPays()
+                ),
             ]
         );
     }
@@ -1500,6 +1508,31 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $step
             );
         }
+    }
+
+
+    /**
+     * Indique si le pays du bien correspond à la France.
+     *
+     * La valeur actuelle provenant de l'adresse peut être "France"
+     * alors que certaines anciennes données peuvent contenir "FR".
+     */
+    private function isFranceCountry(?string $country): bool
+    {
+        if (null === $country) {
+            return false;
+        }
+
+        $country = mb_strtolower(
+            trim($country),
+            'UTF-8'
+        );
+
+        return \in_array(
+            $country,
+            ['fr', 'france'],
+            true
+        );
     }
 
     /**
