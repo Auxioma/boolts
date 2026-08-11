@@ -5,11 +5,15 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-{% set paysCode = form.vars.data.pays ?? null %}
+{% set paysCode = form.vars.data.pays ?? '' %}
 
-{% set showBilanEnergetique = paysCode is empty or paysCode == 'FR' %}
+{% set paysNormalized = paysCode|trim|lower %}
+
+{% set showBilanEnergetique = paysNormalized in ['fr', 'france'] %}
 
 {% set visualStep = stepperStep|default(step) %}
+
+{{ dump(showBilanEnergetique, paysCode) }}
 
 {% set steps = [
     {

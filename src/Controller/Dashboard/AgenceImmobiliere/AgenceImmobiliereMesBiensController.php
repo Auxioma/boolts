@@ -1021,7 +1021,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                             $address['poi']
                         );
                     }
-
+                    
                     $mesBiens->mergeNewTranslations();
                 }
 
@@ -1100,7 +1100,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              * STEP 5 : BILAN ÉNERGÉTIQUE
              * ==============================================================
              */
-            if (5 === $step) {
+            if (5 === $step) { 
                 $entityManager->flush();
 
                 $this->syncTransactionSession(
