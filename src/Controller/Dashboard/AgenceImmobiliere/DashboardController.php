@@ -16,6 +16,7 @@ use App\Entity\Document\RequiredDocument;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
+use App\Entity\Pays;
 use App\Entity\Property;
 use App\Entity\PropertyImage;
 use App\Entity\User;
@@ -25,9 +26,11 @@ use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\Document\RequiredDocumentRepository;
 use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\FavorisRepository;
+use App\Repository\PaysRepository;
 use App\Repository\PropertyImageRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
+use App\Service\GeoIpLocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -65,6 +68,8 @@ final class DashboardController extends AbstractController
         AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
         RequiredDocumentRepository $requiredDocumentRepository,
         UserDocumentRequestRepository $userDocumentRequestRepository,
+        GeoIpLocationService $geoIpLocationService,
+        PaysRepository $paysRepository,
     ): Response {
         $statistics = $this->statistics(
             $request,
@@ -89,6 +94,12 @@ final class DashboardController extends AbstractController
 
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException();
+        }
+
+        $ipCountry = $this->detectCountryFromIp($request, $geoIpLocationService, $paysRepository);
+
+        if ($ipCountry instanceof Pays) {
+            $user->setPays($ipCountry);
         }
 
         $form = $this->createForm(AskDocumentsType::class, $user);
@@ -407,6 +418,23 @@ final class DashboardController extends AbstractController
     {
         return $documentRequest->getSubmissionCount()
             >= ($documentRequest->getRequiredDocument()?->getMaxSubmissions() ?? 0);
+    }
+
+    private function detectCountryFromIp(
+        Request $request,
+        GeoIpLocationService $geoIpLocationService,
+        PaysRepository $paysRepository,
+    ): ?Pays {
+        $location = $geoIpLocationService->locateIp($request->getClientIp());
+        $countryCode = $location['countryCode'] ?? null;
+
+        if (!\is_string($countryCode) || '' === trim($countryCode)) {
+            return null;
+        }
+
+        return $paysRepository->findOneBy([
+            'iso' => mb_strtoupper(trim($countryCode)),
+        ]);
     }
 
     private function propertyExportHeaders(): array
