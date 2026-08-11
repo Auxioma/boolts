@@ -58,6 +58,17 @@ class DashboardController extends AbstractDashboardController
             ->setAction(Action::INDEX)
             ->setQueryParameter('role', 'ROLE_AGENCE');
 
+        yield MenuItem::section('Documents', 'fas fa-file-lines');
+
+        yield MenuItem::linkTo(RequiredDocumentCrudController::class, 'Types de documents', 'fas fa-list-check')
+            ->setAction(Action::INDEX);
+
+        yield MenuItem::linkTo(UserDocumentRequestCrudController::class, 'Demandes', 'fas fa-file-circle-question')
+            ->setAction(Action::INDEX);
+
+        yield MenuItem::linkTo(UserDocumentSubmissionCrudController::class, 'Documents transmis', 'fas fa-file-arrow-up')
+            ->setAction(Action::INDEX);
+
         yield MenuItem::section('Biens immobiliers', 'fas fa-house');
 
         yield MenuItem::linkTo(PropertyCrudController::class, 'Biens immobiliers', 'fas fa-building')
@@ -96,19 +107,19 @@ class DashboardController extends AbstractDashboardController
 
         yield MenuItem::section('Système', 'fas fa-gears');
 
-yield MenuItem::linkTo(
-    MaintenanceSettingCrudController::class,
-    'Maintenance',
-    'fas fa-wrench'
-)
-    ->setAction(Action::INDEX);
+        yield MenuItem::linkTo(
+            MaintenanceSettingCrudController::class,
+            'Maintenance',
+            'fas fa-wrench'
+        )
+            ->setAction(Action::INDEX);
 
-yield MenuItem::linkTo(
-    MaintenanceAllowedIpCrudController::class,
-    'IP autorisées',
-    'fas fa-network-wired'
-)
-    ->setAction(Action::INDEX);
-    
-    }
+        yield MenuItem::linkTo(
+            MaintenanceAllowedIpCrudController::class,
+            'IP autorisées',
+            'fas fa-network-wired'
+        )
+            ->setAction(Action::INDEX);
+            
+            }
 }
