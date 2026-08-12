@@ -26,7 +26,11 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class GoogleController extends AbstractController
 {
-    #[Route('/connect/google/{type}', name: 'app_google_connect')]
+    #[Route(
+        '/connect/google/{type}',
+        name: 'app_google_connect',
+        requirements: ['type' => 'particulier|professionnel'],
+    )]
     /**
      * Handles the connect controller action.
      */
