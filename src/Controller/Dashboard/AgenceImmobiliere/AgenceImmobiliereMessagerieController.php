@@ -12,11 +12,18 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Security\Voter\AgencyDocumentVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/immobiliere/messagerie', name: 'agence_immobiliere_')]
+#[IsGranted('ROLE_AGENCE')]
+#[IsGranted(
+    AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD,
+    message: 'Vos documents doivent être validés pour accéder à cette page.',
+)]
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereMessagerieController.
  *

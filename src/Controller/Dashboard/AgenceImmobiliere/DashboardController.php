@@ -16,7 +16,9 @@ use App\Entity\Document\RequiredDocument;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
+use App\Entity\Pays;
 use App\Entity\Property;
+use App\Entity\PropertyImage;
 use App\Entity\User;
 use App\Form\Documents\AskDocumentsType;
 use App\Repository\AgencyProfileDailyVisitRepository;
@@ -24,8 +26,12 @@ use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\Document\RequiredDocumentRepository;
 use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\FavorisRepository;
+use App\Repository\PaysRepository;
+use App\Repository\PropertyImageRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
+use App\Security\Voter\AgencyDocumentVoter;
+use App\Service\GeoIpLocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -35,6 +41,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
@@ -62,6 +69,8 @@ final class DashboardController extends AbstractController
         AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
         RequiredDocumentRepository $requiredDocumentRepository,
         UserDocumentRequestRepository $userDocumentRequestRepository,
+        GeoIpLocationService $geoIpLocationService,
+        PaysRepository $paysRepository,
     ): Response {
         $statistics = $this->statistics(
             $request,
@@ -86,6 +95,12 @@ final class DashboardController extends AbstractController
 
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException();
+        }
+
+        $ipCountry = $this->detectCountryFromIp($request, $geoIpLocationService, $paysRepository);
+
+        if ($ipCountry instanceof Pays) {
+            $user->setPays($ipCountry);
         }
 
         $form = $this->createForm(AskDocumentsType::class, $user);
@@ -183,6 +198,75 @@ final class DashboardController extends AbstractController
             'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
             'boosts_restants' => $boosterTransactionRepository->countAvailableForAgency($user),
         ]);
+    }
+
+    #[Route('/properties/export', name: 'dashboard_properties_export', methods: ['GET'])]
+    public function exportProperties(
+        Request $request,
+        PropertyRepository $propertyRepository,
+        PropertyViewRepository $propertyViewRepository,
+        FavorisRepository $favorisRepository,
+        PropertyImageRepository $propertyImageRepository,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $properties = $propertyRepository->findForDashboardExport($user);
+        $propertyIds = array_values(array_filter(
+            array_map(static fn (Property $property): ?int => $property->getId(), $properties),
+            static fn (?int $propertyId): bool => null !== $propertyId,
+        ));
+
+        $viewCounts = $propertyViewRepository->countByPropertyIds($propertyIds);
+        $favoriteCounts = $favorisRepository->countByPropertyIds($propertyIds);
+        $imageCounts = $propertyImageRepository->countByPropertyIds($propertyIds);
+        $boostedPropertyIds = $propertyRepository->findBoostedPropertyIds($propertyIds);
+        $boostedPropertyIds = array_flip($boostedPropertyIds);
+        $filename = sprintf('biens-immobiliers-%s.csv', (new \DateTimeImmutable())->format('Ymd-His'));
+        $baseUrl = $request->getSchemeAndHttpHost().$request->getBaseUrl();
+
+        $response = new StreamedResponse(function () use (
+            $properties,
+            $viewCounts,
+            $favoriteCounts,
+            $imageCounts,
+            $boostedPropertyIds,
+            $baseUrl,
+        ): void {
+            $output = fopen('php://output', 'wb');
+
+            if (false === $output) {
+                throw new \RuntimeException('Impossible d’ouvrir le flux de sortie CSV.');
+            }
+
+            fwrite($output, "\xEF\xBB\xBF");
+            fputcsv($output, $this->propertyExportHeaders(), ';');
+
+            foreach ($properties as $property) {
+                fputcsv(
+                    $output,
+                    $this->propertyExportRow(
+                        $property,
+                        $viewCounts[$property->getId()] ?? 0,
+                        $favoriteCounts[$property->getId()] ?? 0,
+                        $imageCounts[$property->getId()] ?? 0,
+                        isset($boostedPropertyIds[$property->getId()]),
+                        $baseUrl,
+                    ),
+                    ';',
+                );
+            }
+
+            fclose($output);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
+        $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $filename));
+
+        return $response;
     }
 
     #[Route('/documents/upload', name: 'dashboard_document_upload', methods: ['POST'])]
@@ -337,6 +421,274 @@ final class DashboardController extends AbstractController
             >= ($documentRequest->getRequiredDocument()?->getMaxSubmissions() ?? 0);
     }
 
+    private function detectCountryFromIp(
+        Request $request,
+        GeoIpLocationService $geoIpLocationService,
+        PaysRepository $paysRepository,
+    ): ?Pays {
+        $location = $geoIpLocationService->locateIp($request->getClientIp());
+        $countryCode = $location['countryCode'] ?? null;
+
+        if (!\is_string($countryCode) || '' === trim($countryCode)) {
+            return null;
+        }
+
+        return $paysRepository->findOneBy([
+            'iso' => mb_strtoupper(trim($countryCode)),
+        ]);
+    }
+
+    private function propertyExportHeaders(): array
+    {
+        return [
+            'id',
+            'slug',
+            'statut',
+            'booste',
+            'type_bien_fr',
+            'type_bien_en',
+            'type_transaction_fr',
+            'type_transaction_en',
+            'reference_interne',
+            'prix',
+            'montant_loyer_hors_charge',
+            'montant_depot_de_garantie',
+            'montant_des_charges',
+            'devise_nom',
+            'devise_signe',
+            'code_postal',
+            'latitude',
+            'longitude',
+            'mapbox_id',
+            'session_id_mapbox',
+            'feature_type',
+            'show_adresse',
+            'adresse_fr',
+            'ville_fr',
+            'pays_fr',
+            'adresse_complete_fr',
+            'region_fr',
+            'district_fr',
+            'localite_fr',
+            'quartier_fr',
+            'point_interet_fr',
+            'titre_fr',
+            'description_fr',
+            'adresse_en',
+            'ville_en',
+            'pays_en',
+            'adresse_complete_en',
+            'region_en',
+            'district_en',
+            'localite_en',
+            'quartier_en',
+            'point_interet_en',
+            'titre_en',
+            'description_en',
+            'annee_construction',
+            'chambres',
+            'salle_de_bains',
+            'surface_total',
+            'dpe',
+            'dpe_lettre',
+            'ges',
+            'ges_lettre',
+            'dpe_min',
+            'dpe_max',
+            'date_indexation_energie',
+            'caracteristiques_fr',
+            'caracteristiques_en',
+            'nombre_images',
+            'urls_images',
+            'nombre_vues',
+            'nombre_favoris',
+            'agence_id',
+            'agence_email',
+            'agence_nom',
+            'created_at',
+            'updated_at',
+        ];
+    }
+
+    private function propertyExportRow(
+        Property $property,
+        int $viewCount,
+        int $favoriteCount,
+        int $imageCount,
+        bool $boosted,
+        string $baseUrl,
+    ): array {
+        $agency = $property->getUser();
+        $currency = $agency?->getDevise();
+        $agencyName = mb_trim(sprintf('%s %s', $agency?->getPrenom() ?? '', $agency?->getNom() ?? ''));
+
+        return [
+            $this->csvValue($property->getId()),
+            $this->csvValue($property->getSlug()),
+            $this->csvValue($property->getStatut()->value),
+            $this->csvBoolean($boosted),
+            $this->translatedValue($property->getTypeBien(), 'fr', 'getName'),
+            $this->translatedValue($property->getTypeBien(), 'en', 'getName'),
+            $this->translatedValue($property->getTypeTransaction(), 'fr', 'getName'),
+            $this->translatedValue($property->getTypeTransaction(), 'en', 'getName'),
+            $this->csvValue($property->getReferenceInterne()),
+            $this->csvValue($property->getPrix()),
+            $this->csvValue($property->getMontantLoyerHorsCharge()),
+            $this->csvValue($property->getMontantDepotDeGarantie()),
+            $this->csvValue($property->getMontantDesCharges()),
+            $this->csvValue($currency?->getNom()),
+            $this->csvValue($currency?->getSigne()),
+            $this->csvValue($property->getCodePostal()),
+            $this->csvValue($property->getLatitude()),
+            $this->csvValue($property->getLongitude()),
+            $this->csvValue($property->getMapboxId()),
+            $this->csvValue($property->getSessionIdMapbox()),
+            $this->csvValue($property->getFeatureType()),
+            $this->csvBoolean($property->isShowAdresse()),
+            $this->translatedValue($property, 'fr', 'getAdresse'),
+            $this->translatedValue($property, 'fr', 'getVille'),
+            $this->translatedValue($property, 'fr', 'getPays'),
+            $this->translatedValue($property, 'fr', 'getFullAddress'),
+            $this->translatedValue($property, 'fr', 'getRegion'),
+            $this->translatedValue($property, 'fr', 'getDistrict'),
+            $this->translatedValue($property, 'fr', 'getLocality'),
+            $this->translatedValue($property, 'fr', 'getNeighborhood'),
+            $this->translatedValue($property, 'fr', 'getPoi'),
+            $this->translatedValue($property, 'fr', 'getTitreDuLogement'),
+            $this->translatedValue($property, 'fr', 'getDescriptionLogement'),
+            $this->translatedValue($property, 'en', 'getAdresse'),
+            $this->translatedValue($property, 'en', 'getVille'),
+            $this->translatedValue($property, 'en', 'getPays'),
+            $this->translatedValue($property, 'en', 'getFullAddress'),
+            $this->translatedValue($property, 'en', 'getRegion'),
+            $this->translatedValue($property, 'en', 'getDistrict'),
+            $this->translatedValue($property, 'en', 'getLocality'),
+            $this->translatedValue($property, 'en', 'getNeighborhood'),
+            $this->translatedValue($property, 'en', 'getPoi'),
+            $this->translatedValue($property, 'en', 'getTitreDuLogement'),
+            $this->translatedValue($property, 'en', 'getDescriptionLogement'),
+            $this->csvValue($property->getAnneeConstruction()),
+            $this->csvValue($property->getChambres()),
+            $this->csvValue($property->getSalleDeBains()),
+            $this->csvValue($property->getSurfaceTotal()),
+            $this->csvValue($property->getDpe()),
+            $this->csvValue($property->getDpeLettre()),
+            $this->csvValue($property->getGes()),
+            $this->csvValue($property->getGesLettre()),
+            $this->csvValue($property->getDpeMin()),
+            $this->csvValue($property->getDpeMax()),
+            $this->csvDate($property->getDateIndexationEnergie(), 'Y-m-d'),
+            $this->translatedValues($property->getCaracteristique(), 'fr', 'getNom'),
+            $this->translatedValues($property->getCaracteristique(), 'en', 'getNom'),
+            $this->csvValue($imageCount),
+            $this->propertyImageUrls($property, $baseUrl),
+            $this->csvValue($viewCount),
+            $this->csvValue($favoriteCount),
+            $this->csvValue($agency?->getId()),
+            $this->csvValue($agency?->getEmail()),
+            $this->csvValue($agencyName),
+            $this->csvDate($property->getCreatedAt()),
+            $this->csvDate($property->getUpdatedAt()),
+        ];
+    }
+
+    private function propertyImageUrls(Property $property, string $baseUrl): string
+    {
+        $urls = [];
+
+        foreach ($property->getPropertyImages() as $image) {
+            if (!$image instanceof PropertyImage || null === $image->getImageName()) {
+                continue;
+            }
+
+            $path = $image->getLiipPath() ?? $image->getImageName();
+            $path = str_replace('\\', '/', mb_ltrim($path, '/'));
+            $path = preg_replace('#^(public/)?properties/#', '', $path) ?? $path;
+
+            if ('' === $path) {
+                continue;
+            }
+
+            $encodedPath = implode('/', array_map('rawurlencode', explode('/', $path)));
+            $urls[] = rtrim($baseUrl, '/').'/properties/'.$encodedPath;
+        }
+
+        return implode(' | ', array_values(array_unique($urls)));
+    }
+
+    private function translatedValues(iterable $items, string $locale, string $getter): string
+    {
+        $values = [];
+
+        foreach ($items as $item) {
+            if (!\is_object($item)) {
+                continue;
+            }
+
+            $value = $this->translatedValue($item, $locale, $getter);
+
+            if ('' !== $value) {
+                $values[] = $value;
+            }
+        }
+
+        return implode(' | ', array_values(array_unique($values)));
+    }
+
+    private function translatedValue(?object $translatable, string $locale, string $getter): string
+    {
+        if (null === $translatable || !method_exists($translatable, 'getTranslations')) {
+            return '';
+        }
+
+        $translation = $translatable->getTranslations()->get($locale);
+
+        if (null === $translation || !method_exists($translation, $getter)) {
+            return '';
+        }
+
+        return $this->csvValue($translation->{$getter}());
+    }
+
+    private function csvDate(?\DateTimeInterface $date, string $format = 'Y-m-d H:i:s'): string
+    {
+        return null === $date ? '' : $date->format($format);
+    }
+
+    private function csvBoolean(?bool $value): string
+    {
+        return match ($value) {
+            true => 'oui',
+            false => 'non',
+            null => '',
+        };
+    }
+
+    private function csvValue(mixed $value): string
+    {
+        if (null === $value) {
+            return '';
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            return $this->csvDate($value);
+        }
+
+        if ($value instanceof \BackedEnum) {
+            return (string) $value->value;
+        }
+
+        if (\is_bool($value)) {
+            return $this->csvBoolean($value);
+        }
+
+        if (\is_scalar($value)) {
+            return (string) $value;
+        }
+
+        return '';
+    }
+
     #[Route('/statistics', name: 'dashboard_statistics', methods: ['GET'])]
     public function statisticsData(
         Request $request,
@@ -379,6 +731,10 @@ final class DashboardController extends AbstractController
 
         [$period, $start, $end] = $this->resolvePeriod($request);
 
+        if (!$this->isGranted(AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD)) {
+            return $this->previewStatistics($period, $start, $end);
+        }
+
         $publishedDates = $propertyRepository->findPublishedDatesForDashboard($user, $start, $end);
         $viewedDates = $propertyViewRepository->findViewedDatesForDashboard($user, $start, $end);
         $favoriteDates = $favorisRepository->findCreatedDatesForPropertyOwnerDashboard($user, $start, $end);
@@ -408,6 +764,46 @@ final class DashboardController extends AbstractController
                 'published' => $this->countByBucket($publishedDates, $buckets, $monthly),
                 'views' => $this->countByBucket($viewedDates, $buckets, $monthly),
                 'favorites' => $this->countByBucket($favoriteDates, $buckets, $monthly),
+            ],
+        ];
+    }
+
+    /**
+     * @return array{
+     *     period: string,
+     *     start: \DateTimeImmutable,
+     *     end: \DateTimeImmutable,
+     *     totals: array{profileViews: int, published: int, views: int, favorites: int},
+     *     series: array{
+     *         labels: list<string>,
+     *         profileViews: list<int>,
+     *         published: list<int>,
+     *         views: list<int>,
+     *         favorites: list<int>
+     *     }
+     * }
+     */
+    private function previewStatistics(
+        string $period,
+        ?\DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+    ): array {
+        return [
+            'period' => $period,
+            'start' => $start ?? $end->modify('-11 months')->modify('first day of this month')->setTime(0, 0),
+            'end' => $end,
+            'totals' => [
+                'profileViews' => 284,
+                'published' => 18,
+                'views' => 736,
+                'favorites' => 92,
+            ],
+            'series' => [
+                'labels' => ['01', '05', '09', '13', '17', '21', '25', '29'],
+                'profileViews' => [18, 32, 27, 46, 39, 58, 51, 63],
+                'published' => [1, 3, 2, 4, 3, 5, 6, 7],
+                'views' => [42, 76, 65, 118, 94, 137, 126, 154],
+                'favorites' => [4, 9, 7, 16, 12, 21, 18, 25],
             ],
         ];
     }

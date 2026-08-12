@@ -55,7 +55,7 @@ final class AgenceImmobiliereProfileController extends AbstractController
         $authUserId = $session->get('auth_user_id');
 
         if (!$authUserId) {
-            return $this->redirectToRoute('app_dashboard_agence_immobiliere_dashboard');
+            return $this->redirectToRoute('agence_immobiliere_dashboard');
         }
 
         $user = $userRepository->find($authUserId);
@@ -93,7 +93,7 @@ final class AgenceImmobiliereProfileController extends AbstractController
             $session->remove('auth_user_id');
             $session->remove('auth_step');
 
-            return $this->redirectToRoute('app_dashboard_agence_immobiliere_dashboard');
+            return $this->redirectToRoute('agence_immobiliere_dashboard');
         }
 
         return $this->render('authentification/agence_immobiliere/profile.html.twig', [

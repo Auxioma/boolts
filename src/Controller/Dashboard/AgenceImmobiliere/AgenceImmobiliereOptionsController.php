@@ -29,6 +29,7 @@ use App\Repository\Billing\AgencyPaymentMethodRepository;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Billing\SubscriptionPlanPriceRepository;
 use App\Repository\Booster\BoosterPackPriceRepository;
+use App\Security\Voter\AgencyDocumentVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
@@ -43,6 +44,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/immobiliere/options', name: 'agence_immobiliere_')]
 #[IsGranted('ROLE_AGENCE')]
+#[IsGranted(
+    AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD,
+    message: 'Vos documents doivent être validés pour accéder à cette page.',
+)]
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereOptionsController.
  *

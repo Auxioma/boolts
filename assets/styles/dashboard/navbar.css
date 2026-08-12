@@ -13,6 +13,17 @@
 .menu-dashboard-title.active span {
     color: #5D00FF;
 }
+.menu-dashboard-title--disabled {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.menu-dashboard-title--disabled span,
+.menu-dashboard-title--disabled span i:before {
+    color: #B8B8B8;
+}
+.color-active:has(.menu-dashboard-title--disabled) {
+    cursor: not-allowed;
+}
 
 .aside-dashboard-navbar {
     border-right: 1px solid #EBECEC;
@@ -39,4 +50,11 @@
     border-radius: 10px;
     background: #EBECEC;
     color: #5D00FF;
+}
+.color-active:has(.menu-dashboard-title--disabled):hover {
+    background: transparent;
+}
+.color-active:has(.menu-dashboard-title--disabled):hover span,
+.color-active:has(.menu-dashboard-title--disabled):hover span i:before {
+    color: #B8B8B8;
 }

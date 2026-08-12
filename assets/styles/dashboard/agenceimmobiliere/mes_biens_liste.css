@@ -1,0 +1,317 @@
+/* =========================================
+PAGE LISTE MES BIENS IMMOBILIERS
+========================================= */
+
+.agence-mes-biens-list .mes-biens-immobilier h1 {
+    color: #0B0F14;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+    margin-bottom: 8px;
+}
+
+.agence-mes-biens-list .description-page {
+    color: #858789;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.agence-mes-biens-list .btn-deposer-annonce {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 50px;
+    background: #5D00FF;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.agence-mes-biens-list .btn-deposer-annonce:hover {
+    background:#4800c9;
+    color:#FFFFFF;
+}
+
+.agence-mes-biens-list .property-count {
+    color:#858789;
+    font-size:14px;
+    font-weight:700;
+}
+
+.agence-mes-biens-list .properties-grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:24px;
+}
+
+.agence-mes-biens-list .property-card {
+    display:flex;
+    gap:20px;
+    padding:16px;
+    border:2px solid #EBECEC;
+    border-radius:24px;
+    background:#FFFFFF;
+    transition:.2s ease;
+}
+
+.agence-mes-biens-list .property-card:hover {
+    border-color:#5D00FF;
+    transform:translateY(-2px);
+}
+
+.agence-mes-biens-list .property-card-image {
+    width:180px;
+    height:150px;
+    flex-shrink:0;
+    border-radius:18px;
+    overflow:hidden;
+    background:#F8F8F8;
+}
+
+.agence-mes-biens-list .property-card-image img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.agence-mes-biens-list .property-image-empty {
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#858789;
+    font-size:30px;
+}
+
+.agence-mes-biens-list .property-card-content {
+    flex:1;
+}
+
+.agence-mes-biens-list .property-card-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+}
+
+.agence-mes-biens-list .property-card-header h2 {
+    color:#0B0F14;
+    font-size:18px;
+    font-weight:700;
+    line-height:22px;
+    margin:0;
+}
+
+.agence-mes-biens-list .property-status {
+    background:#CEB2FF;
+    color:#5D00FF;
+    padding:6px 12px;
+    border-radius:50px;
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.agence-mes-biens-list .property-type {
+    margin-top:12px;
+    color:#858789;
+    font-size:14px;
+    font-weight:500;
+}
+
+.agence-mes-biens-list .property-location {
+    color:#0B0F14;
+    font-size:14px;
+    font-weight:600;
+}
+
+.agence-mes-biens-list .property-location i {
+    color:#5D00FF;
+}
+
+.agence-mes-biens-list .property-card small {
+    color:#858789;
+    font-size:12px;
+}
+
+.agence-mes-biens-list .property-empty {
+    border:2px dashed #EBECEC;
+    border-radius:28px;
+    padding:60px;
+    text-align:center;
+}
+
+.agence-mes-biens-list .property-empty i {
+    font-size:40px;
+    color:#5D00FF;
+}
+
+.agence-mes-biens-list .property-empty h2 {
+    margin-top:20px;
+    color:#0B0F14;
+    font-size:20px;
+    font-weight:700;
+}
+
+.agence-mes-biens-list .property-empty p {
+    color:#858789;
+}
+
+/* =========================================
+OUTILS DASHBOARD
+========================================= */
+.agence-mes-biens-list .property-tools {
+    display:flex;
+    gap:16px;
+    align-items:center;
+}
+
+.agence-mes-biens-list .property-search {
+    flex:1;
+    display:flex;
+    align-items:center;
+    border:2px solid #EBECEC;
+    border-radius:50px;
+    padding:0 20px;
+    height:52px;
+}
+
+.agence-mes-biens-list .property-search i {
+    color:#858789;
+    margin-right:12px;
+}
+
+.agence-mes-biens-list .property-search input {
+    border:none;
+    outline:none;
+    width:100%;
+    font-size:15px;
+}
+
+.btn-dashboard-filter {
+    height:52px;
+    padding:0 22px;
+    border-radius:50px;
+    border:2px solid #EBECEC;
+    background:white;
+    color:#0B0F14;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    text-decoration:none;
+}
+
+/* ACTION */
+.property-bulk-actions {
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.property-bulk-actions button {
+    border:2px solid #EBECEC;
+    background:white;
+    padding:10px 18px;
+    border-radius:50px;
+    font-weight:700;
+}
+
+.property-bulk-actions .danger {
+    color:#E53935;
+}
+
+/* LISTEU */
+.properties-list {
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.property-row {
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:16px;
+    border:2px solid #EBECEC;
+    border-radius:24px;
+}
+
+.property-row:hover {
+    border-color:#5D00FF;
+}
+
+.property-checkbox input {
+    width:18px;
+    height:18px;
+}
+
+.property-row-image {
+    width:170px;
+    height:120px;
+    border-radius:18px;
+    overflow:hidden;
+    flex-shrink:0;
+}
+
+.property-row-image img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.property-row-content {
+    flex:1;
+}
+
+.property-row-actions {
+    display:flex;
+    gap:16px;
+    align-items:center;
+}
+
+.property-row-actions a,
+.property-row-actions button {
+    border:none;
+    background:none;
+    color:#858789;
+    font-size:20px;
+}
+
+.property-row-actions a:hover,
+.property-row-actions button:hover {
+    color:#5D00FF;
+}
+
+.agence-mes-biens-list .property-row-main {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+}
+
+.agence-mes-biens-list .property-row-main:hover {
+    color: inherit;
+    text-decoration: none;
+}
+
+.agence-mes-biens-list .property-row-main:hover h2 {
+    color: #5D00FF;
+}
+
+.agence-mes-biens-list .property-row-main h2 {
+    transition: color .2s ease;
+}
+
+.agence-mes-biens-list .property-edit-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

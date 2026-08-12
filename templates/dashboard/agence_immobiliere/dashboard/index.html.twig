@@ -10,6 +10,7 @@
 {% block title %}Tableau de bord immobilier{% endblock %}
 
 {% block body %}
+    {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
 
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
@@ -34,6 +35,7 @@
                             {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
                         </div>
 
+                        {% if not documents_complete %}
                         {# Finalisation du compte #}
                         <div data-controller="dashboard-account-completion">
                         <section
@@ -62,7 +64,7 @@
                                 </label>
 
                                 <div class="d-flex align-items-center account-country-form">
-                                    {{ form_widget(form.pays, {
+                                    {{ form_widget(form.pays, { 
                                         attr: {
                                             id: 'domiciliation-country',
                                             class: 'form-select account-country-input',
@@ -247,9 +249,11 @@
 
 </section>
 </div>
+                        {% endif %}
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const accountCompletion = document.querySelector('[data-controller~="dashboard-account-completion"]');
     const continueButton = document.querySelector('[data-documents-continue]');
     const documentConfirmation = document.querySelector('[data-document-confirmation]');
     const documentConfirmationLink = document.querySelector('[data-document-confirmation-link]');
@@ -407,6 +411,11 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const form of formsToUpload) {
                 const result = await uploadForm(form);
                 continueButton.dataset.documentsComplete = result.documentsComplete ? 'true' : 'false';
+            }
+
+            if (continueButton.dataset.documentsComplete === 'true') {
+                accountCompletion?.remove();
+                return;
             }
 
             if (documentConfirmation) {
@@ -847,7 +856,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
 
-                            <div class="row g-4 statistics-summary">
+                            <div
+                                class="row g-4 statistics-summary{{ documents_validated ? '' : ' dashboard-preview-blur' }}"
+                                {% if not documents_validated %}style="filter: blur(8px) !important; pointer-events: none; user-select: none;"{% endif %}
+                            >
 
                                 <div class="col-3">
                                     <div
@@ -928,7 +940,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
 
                             {# Zone du graphique #}
-                            <div class="statistics-chart">
+                            <div
+                                class="statistics-chart{{ documents_validated ? '' : ' dashboard-preview-blur' }}"
+                                {% if not documents_validated %}style="filter: blur(8px) !important; pointer-events: none; user-select: none;"{% endif %}
+                            >
 
                                 <div class="statistics-chart-content">
                                     {{ render_chart(
@@ -1159,13 +1174,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                             </div>
                                         </div>
 
-                                        <button
-                                            type="button"
+                                        <a
+                                            href="{{ path('agence_immobiliere_dashboard_properties_export') }}"
                                             class="btn properties-action-button"
                                         >
                                             <i class="icon-download"></i>
                                             Exporter
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

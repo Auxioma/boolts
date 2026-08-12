@@ -725,16 +725,32 @@ export default class extends Controller {
 
     syncHiddenFields() {
         if (this.hasCountryHiddenTarget) {
-            this.countryHiddenTarget.value = JSON.stringify(this.selectedCountries);
+            this.countryHiddenTarget.value = JSON.stringify(
+                this.selectedCountries
+            );
         }
 
         if (this.hasCityHiddenTarget) {
-            this.cityHiddenTarget.value = JSON.stringify(this.selectedCities);
+            this.cityHiddenTarget.value = JSON.stringify(
+                this.selectedCities
+            );
         }
 
         if (this.hasDistrictHiddenTarget) {
-            this.districtHiddenTarget.value = JSON.stringify(this.selectedDistricts);
+            this.districtHiddenTarget.value = JSON.stringify(
+                this.selectedDistricts
+            );
         }
+
+        window.dispatchEvent(
+            new CustomEvent('boolts-location:changed', {
+                detail: {
+                    countries: this.selectedCountries,
+                    cities: this.selectedCities,
+                    districts: this.selectedDistricts,
+                },
+            })
+        );
     }
 
     // ============================================================
@@ -863,6 +879,34 @@ export default class extends Controller {
         } catch (error) {
             return [];
         }
+    }
+
+    reset() {
+        this.selectedCountries = [];
+        this.selectedCities = [];
+        this.selectedDistricts = [];
+
+        if (this.hasCountryInputTarget) {
+            this.countryInputTarget.value = '';
+        }
+
+        if (this.hasCityInputTarget) {
+            this.cityInputTarget.value = '';
+        }
+
+        if (this.hasDistrictInputTarget) {
+            this.districtInputTarget.value = '';
+        }
+
+        this.closeAllDropdowns();
+
+        this.refreshUi();
+    }
+
+    resetFromEvent(event) {
+        event.preventDefault();
+
+        this.reset();
     }
 
     injectStyle() {

@@ -6,10 +6,22 @@
 #}
 
 {% set paysCode = form.vars.data.pays ?? null %}
+{% set paysNormalized = paysCode is not empty ? paysCode|trim|lower : '' %}
 
-{% set showBilanEnergetique = paysCode is empty or paysCode == 'FR' %}
+{#
+    Priorité à la valeur calculée par le contrôleur.
+    Le fallback permet aussi de reconnaître "France" ou "FR"
+    directement depuis le formulaire.
+#}
+{% set showBilanEnergetique = showBilanEnergetique|default(
+    paysNormalized in ['fr', 'france']
+) %}
 
-{% set visualStep = stepperStep|default(step) %}
+{# Étape réellement affichée à l'écran. #}
+{% set visualStep = step %}
+
+{# Étape maximale déjà atteinte, utilisée uniquement pour rendre les liens cliquables. #}
+{% set reachedStep = stepperStep|default(step) %}
 
 {% set steps = [
     {
@@ -34,6 +46,7 @@
     },
 ] %}
 
+{# L'étape 5 est affichée uniquement si l'adresse est en France. #}
 {% if showBilanEnergetique %}
     {% set steps = steps|merge([
         {
@@ -62,6 +75,11 @@
     },
 ]) %}
 
+{#
+    Position visuelle dans le stepper.
+    Si l'étape énergétique est masquée, les étapes 6/7/8
+    remontent d'une position visuelle.
+#}
 {% if visualStep <= 4 %}
     {% set activePosition = visualStep %}
 {% elseif visualStep == 5 %}
@@ -71,7 +89,10 @@
 {% endif %}
 
 {% set totalSteps = steps|length %}
-{% set progressPercent = totalSteps > 1 ? ((activePosition - 1) / (totalSteps - 1) * 99) : 0 %}
+{% set progressPercent = totalSteps > 1
+    ? ((activePosition - 1) / (totalSteps - 1) * 99)
+    : 0
+%}
 
 <div
     class="mes-bien-stepper"
@@ -88,11 +109,22 @@
         {% set isCurrentDisplayedStep = item.step == step %}
         {% set isVisualActive = item.step == visualStep %}
         {% set isCompleted = item.step < visualStep %}
-        {% set isClickable = isCompleted or isCurrentDisplayedStep or isVisualActive %}
+        {% set isClickable = item.step <= reachedStep or isCurrentDisplayedStep %}
+
+        {% set routeParams = {
+            step: item.step,
+        } %}
+
+        {# Conserve toujours l'ID réel et dynamique de la transaction dans l'URL. #}
+        {% if typeTransactionId is defined and typeTransactionId %}
+            {% set routeParams = routeParams|merge({
+                typeTransaction: typeTransactionId,
+            }) %}
+        {% endif %}
 
         {% if isClickable %}
             <a
-                href="{{ path('agence_immobiliere_mes_biens', {step: item.step}) }}"
+                href="{{ path('agence_immobiliere_mes_biens', routeParams) }}"
                 class="
                     mes-bien-stepper-item
                     js-stepper-link

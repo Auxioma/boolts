@@ -57,8 +57,28 @@
 
                                         <div class="py-20 navigation-fixed">
                                             {% if step > 1 %}
+                                                {% set previousStep = step - 1 %}
+
+                                                {#
+                                                    Pour un bien hors France, l'étape 5 n'existe pas.
+                                                    Le retour depuis les photos doit donc revenir à l'étape 4.
+                                                #}
+                                                {% if step == 6 and not showBilanEnergetique|default(false) %}
+                                                    {% set previousStep = 4 %}
+                                                {% endif %}
+
+                                                {% set previousParams = {
+                                                    step: previousStep,
+                                                } %}
+
+                                                {% if typeTransactionId is defined and typeTransactionId %}
+                                                    {% set previousParams = previousParams|merge({
+                                                        typeTransaction: typeTransactionId,
+                                                    }) %}
+                                                {% endif %}
+
                                                 <a
-                                                    href="{{ path('agence_immobiliere_mes_biens', {step: step - 1}) }}"
+                                                    href="{{ path('agence_immobiliere_mes_biens', previousParams) }}"
                                                     class="btn-retour py-10 px-16 mr-12 js-navigation-retour"
                                                 >
                                                     Retour

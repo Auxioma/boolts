@@ -73,11 +73,11 @@ security:
             allow_if: "is_granted('ROLE_AGENCE') and not is_granted('ROLE_ADMIN')"
         }
 
-        - {
-            path: ^/user,
-            roles: ROLE_USER,
-            allow_if: "is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') and not is_granted('ROLE_AGENCE')"
-        }
+        #- {
+        #    path: ^/user,
+        #    roles: ROLE_USER,
+        #    allow_if: "is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') and not is_granted('ROLE_AGENCE')"
+        # }
 
         - { path: ^/, roles: PUBLIC_ACCESS, requires_channel: https }
 
