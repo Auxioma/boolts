@@ -30,6 +30,7 @@ use App\Repository\PaysRepository;
 use App\Repository\PropertyImageRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
+use App\Security\Voter\AgencyDocumentVoter;
 use App\Service\GeoIpLocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -730,6 +731,10 @@ final class DashboardController extends AbstractController
 
         [$period, $start, $end] = $this->resolvePeriod($request);
 
+        if (!$this->isGranted(AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD)) {
+            return $this->previewStatistics($period, $start, $end);
+        }
+
         $publishedDates = $propertyRepository->findPublishedDatesForDashboard($user, $start, $end);
         $viewedDates = $propertyViewRepository->findViewedDatesForDashboard($user, $start, $end);
         $favoriteDates = $favorisRepository->findCreatedDatesForPropertyOwnerDashboard($user, $start, $end);
@@ -759,6 +764,46 @@ final class DashboardController extends AbstractController
                 'published' => $this->countByBucket($publishedDates, $buckets, $monthly),
                 'views' => $this->countByBucket($viewedDates, $buckets, $monthly),
                 'favorites' => $this->countByBucket($favoriteDates, $buckets, $monthly),
+            ],
+        ];
+    }
+
+    /**
+     * @return array{
+     *     period: string,
+     *     start: \DateTimeImmutable,
+     *     end: \DateTimeImmutable,
+     *     totals: array{profileViews: int, published: int, views: int, favorites: int},
+     *     series: array{
+     *         labels: list<string>,
+     *         profileViews: list<int>,
+     *         published: list<int>,
+     *         views: list<int>,
+     *         favorites: list<int>
+     *     }
+     * }
+     */
+    private function previewStatistics(
+        string $period,
+        ?\DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+    ): array {
+        return [
+            'period' => $period,
+            'start' => $start ?? $end->modify('-11 months')->modify('first day of this month')->setTime(0, 0),
+            'end' => $end,
+            'totals' => [
+                'profileViews' => 284,
+                'published' => 18,
+                'views' => 736,
+                'favorites' => 92,
+            ],
+            'series' => [
+                'labels' => ['01', '05', '09', '13', '17', '21', '25', '29'],
+                'profileViews' => [18, 32, 27, 46, 39, 58, 51, 63],
+                'published' => [1, 3, 2, 4, 3, 5, 6, 7],
+                'views' => [42, 76, 65, 118, 94, 137, 126, 154],
+                'favorites' => [4, 9, 7, 16, 12, 21, 18, 25],
             ],
         ];
     }

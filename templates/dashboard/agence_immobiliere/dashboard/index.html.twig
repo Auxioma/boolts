@@ -10,6 +10,7 @@
 {% block title %}Tableau de bord immobilier{% endblock %}
 
 {% block body %}
+    {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
 
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
@@ -847,7 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
 
-                            <div class="row g-4 statistics-summary">
+                            <div class="row g-4 statistics-summary{{ documents_validated ? '' : ' dashboard-preview-blur' }}">
 
                                 <div class="col-3">
                                     <div
@@ -928,7 +929,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
 
                             {# Zone du graphique #}
-                            <div class="statistics-chart">
+                            <div class="statistics-chart{{ documents_validated ? '' : ' dashboard-preview-blur' }}">
 
                                 <div class="statistics-chart-content">
                                     {{ render_chart(

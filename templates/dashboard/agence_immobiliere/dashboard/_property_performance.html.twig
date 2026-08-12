@@ -2,10 +2,11 @@
     id="dashboard-property-performance"
     data-dashboard-property-performance-target="frame"
 >
+    {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
     {% set boosts_restants = boosts_restants|default(0) %}
     {% set no_boost_available = boosts_restants <= 0 %}
 
-    <div class="property-list">
+    <div class="property-list{{ documents_validated ? '' : ' dashboard-preview-blur' }}">
         {% for property in affiche_performance_annonce %}
             <article class="property-item">
                 <div class="d-flex align-items-center property-main">
