@@ -55,23 +55,12 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $googleUser = $client->fetchUserFromToken($accessToken);
 
                 $email = $googleUser->getEmail();
-                $googleId = $googleUser->getId();
-
-                // 1. Cherche d'abord par Google ID (prioritaire)
                 $user = $this->em->getRepository(User::class)
-                    ->findOneBy(['googleId' => $googleId]);
+                    ->findOneBy(['email' => $email]);
 
-                // 2. fallback email
-                if (!$user) {
-                    $user = $this->em->getRepository(User::class)
-                        ->findOneBy(['email' => $email]);
-                }
-
-                // 3. création user si inexistant
                 if (!$user) {
                     $user = new User();
                     $user->setEmail($email);
-                    $user->setGoogleId($googleId);
                     $user->setIsVerified(true);
                     $user->setRoles([$requestedRole]);
                     $user->setPrenom($googleUser->getFirstName());
@@ -80,10 +69,32 @@ class GoogleAuthenticator extends OAuth2Authenticator
                     $this->em->persist($user);
                     $this->em->flush();
                 } else {
-                    // mise à jour googleId si login email existant
-                    if (!$user->getGoogleId()) {
-                        $user->setGoogleId($googleId);
+                    $changed = false;
+
+                    if (!$user->isVerified()) {
                         $user->setIsVerified(true);
+                        $changed = true;
+                    }
+
+                    if ('ROLE_AGENCE' === $requestedRole) {
+                        $roles = $user->getRoles();
+
+                        if (
+                            !\in_array('ROLE_ADMIN', $roles, true)
+                            && !\in_array('ROLE_AGENCE', $roles, true)
+                        ) {
+                            $roles = array_values(array_filter(
+                                $roles,
+                                static fn (string $role): bool => 'ROLE_USER' !== $role
+                            ));
+                            $roles[] = 'ROLE_AGENCE';
+
+                            $user->setRoles(array_values(array_unique($roles)));
+                            $changed = true;
+                        }
+                    }
+
+                    if ($changed) {
                         $this->em->flush();
                     }
                 }
