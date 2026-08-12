@@ -12,6 +12,9 @@
 
 namespace App\Controller\Dashboard\Api\Ai;
 
+use App\Entity\Property;
+use App\Entity\User;
+use App\Repository\PropertyRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +32,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
 {
     private const OPENAI_API_URL = 'https://api.openai.com/v1/responses';
     private const OPENAI_MODEL = 'gpt-4.1-mini';
-    private const OPENAI_MAX_OUTPUT_TOKENS = 700;
+    private const OPENAI_MAX_OUTPUT_TOKENS = 700; 
 
     /**
      * Handles the __construct controller action.
@@ -44,8 +47,10 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
     /**
      * Handles the generateDescriptionAi controller action.
      */
-    public function generateDescriptionAi(Request $request): JsonResponse
-    {
+    public function generateDescriptionAi(
+        Request $request,
+        PropertyRepository $propertyRepository,
+    ): JsonResponse {
         if (!$request->isXmlHttpRequest()) {
             return $this->json([
                 'success' => false,
@@ -71,6 +76,37 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
             ], 403);
         }
 
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Vous devez être connecté pour générer une description.',
+            ], 403);
+        }
+
+        $property = $this->findCurrentProperty(
+            $request,
+            $propertyRepository
+        );
+
+        if (!$property instanceof Property) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Aucun bien courant n’a été trouvé en base de données.',
+            ], 404);
+        }
+
+        if (
+            null === $property->getUser()
+            || $property->getUser()?->getId() !== $user->getId()
+        ) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Vous ne pouvez pas générer une description pour ce bien.',
+            ], 403);
+        }
+
         $apiKey = $_ENV['OPENAI_API_KEY'] ?? null;
 
         if (!$apiKey) {
@@ -80,22 +116,34 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
             ], 500);
         }
 
-        $title = mb_trim((string) ($payload['title'] ?? ''));
-        $currentDescription = mb_trim((string) ($payload['currentDescription'] ?? ''));
-
-        $payloadFormData = $payload['formData'] ?? [];
-        $formContext = $this->buildPropertyContextFromPayload(
-            \is_array($payloadFormData) ? $payloadFormData : []
+        $title = $this->cleanContextValue(
+            $payload['title'] ?? null
         );
 
-        $sessionContext = $this->buildPropertyContextFromSession($request);
+        if ('' === $title) {
+            $title = $this->cleanContextValue(
+                $property->getTitreDuLogement()
+            );
+        }
 
-        $propertyContext = $this->mergeContexts($formContext, $sessionContext);
+        $currentDescription = $this->cleanContextValue(
+            $payload['currentDescription'] ?? null
+        );
+
+        if ('' === $currentDescription) {
+            $currentDescription = $this->cleanContextValue(
+                $property->getDescriptionLogement()
+            );
+        }
+
+        $propertyContext = $this->buildPropertyContextFromProperty(
+            $property
+        );
 
         if ('' === $propertyContext && '' === $title && '' === $currentDescription) {
             return $this->json([
                 'success' => false,
-                'message' => 'Aucune donnée du formulaire n’a été transmise à l’IA.',
+                'message' => 'Aucune donnée du bien n’a été trouvée en base de données.',
             ], 400);
         }
 
@@ -229,229 +277,276 @@ Rédige uniquement la description finale publiable.
 PROMPT;
     }
 
-    /**
-     * @param array<string, mixed> $formData
-     */
-    private function buildPropertyContextFromPayload(array $formData): string
+    private function findCurrentProperty(
+        Request $request,
+        PropertyRepository $propertyRepository,
+    ): ?Property {
+        if (!$request->hasSession()) {
+            return null;
+        }
+
+        $propertyId = $request
+            ->getSession()
+            ->get(
+                'mes_biens_property_id'
+            );
+
+        if (
+            null === $propertyId
+            || '' === $propertyId
+        ) {
+            return null;
+        }
+
+        return $propertyRepository->find(
+            (int) $propertyId
+        );
+    }
+
+    private function buildPropertyContextFromProperty(Property $property): string
     {
         $lines = [];
 
-        foreach ($formData as $field => $value) {
-            if (!\is_scalar($value) && null !== $value) {
+        $this->addContextLine(
+            $lines,
+            'Type de bien',
+            $property->getTypeBien()?->getName()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Type de transaction',
+            $property->getTypeTransaction()?->getName()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Ville',
+            $property->getVille()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Code postal',
+            $property->getCodePostal()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Pays',
+            $property->getPays()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Quartier',
+            $property->getNeighborhood()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Localité',
+            $property->getLocality()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Région',
+            $property->getRegion()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Surface totale',
+            $property->getSurfaceTotal()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Nombre de chambres',
+            $property->getChambres()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Nombre de salles de bains',
+            $property->getSalleDeBains()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Année de construction',
+            $property->getAnneeConstruction()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Classe énergétique',
+            $property->getDpeLettre()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'DPE',
+            $property->getDpe()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'DPE minimum',
+            $property->getDpeMin()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'DPE maximum',
+            $property->getDpeMax()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'GES',
+            $property->getGes()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Date d’indexation énergie',
+            $property->getDateIndexationEnergie()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Prix',
+            $property->getPrix()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Loyer hors charges',
+            $property->getMontantLoyerHorsCharge()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Charges',
+            $property->getMontantDesCharges()
+        );
+
+        $this->addContextLine(
+            $lines,
+            'Dépôt de garantie',
+            $property->getMontantDepotDeGarantie()
+        );
+
+        $caracteristiques = [];
+
+        foreach ($property->getCaracteristique() as $caracteristique) {
+            if (
+                !\is_object($caracteristique)
+                || !method_exists($caracteristique, 'getNom')
+            ) {
                 continue;
             }
 
-            $fieldValue = mb_trim((string) $value);
+            $caracteristiques[] = $caracteristique->getNom();
+        }
 
-            if ('' === $fieldValue) {
-                continue;
-            }
+        $this->addContextListLine(
+            $lines,
+            'Caractéristiques',
+            $caracteristiques
+        );
 
-            if ($this->shouldIgnoreField((string) $field)) {
-                continue;
-            }
+        return implode(
+            "\n",
+            array_unique($lines)
+        );
+    }
 
-            $cleanField = $this->cleanFormFieldName((string) $field);
-
-            $lines[] = \sprintf(
-                '- %s : %s',
-                $this->humanizeFieldName($cleanField),
-                $fieldValue
+    /**
+     * @param list<string> $lines
+     */
+    private function addContextLine(
+        array &$lines,
+        string $label,
+        mixed $value,
+    ): void {
+        if ($value instanceof \DateTimeInterface) {
+            $value = $value->format(
+                'd/m/Y'
             );
         }
 
-        return implode("\n", array_unique($lines));
-    }
+        $value = $this->cleanContextValue(
+            $value
+        );
 
-    private function buildPropertyContextFromSession(Request $request): string
-    {
-        $session = $request->getSession();
-
-        $sessionKeys = [
-            'mes_biens_step_1',
-            'mes_biens_step_2',
-            'mes_biens_step_3',
-            'mes_biens_step_4',
-            'mes_biens_step_5',
-            'mes_biens_step_6',
-            'mes_biens_step_7',
-            'mes_biens_step_8',
-        ];
-
-        $lines = [];
-
-        foreach ($sessionKeys as $sessionKey) {
-            if (!$session->has($sessionKey)) {
-                continue;
-            }
-
-            $value = $session->get($sessionKey);
-
-            if (!\is_array($value)) {
-                continue;
-            }
-
-            foreach ($this->flattenArray($value) as $field => $fieldValue) {
-                if (null === $fieldValue || '' === $fieldValue) {
-                    continue;
-                }
-
-                if ($this->shouldIgnoreField($field)) {
-                    continue;
-                }
-
-                $cleanField = $this->cleanFormFieldName($field);
-
-                $lines[] = \sprintf(
-                    '- %s : %s',
-                    $this->humanizeFieldName($cleanField),
-                    $fieldValue
-                );
-            }
+        if ('' === $value) {
+            return;
         }
 
-        return implode("\n", array_unique($lines));
+        $lines[] = \sprintf(
+            '- %s : %s',
+            $label,
+            $value
+        );
     }
 
     /**
-     * @param array<string, mixed> $array
-     *
-     * @return array<string, string>
+     * @param list<string> $lines
+     * @param list<mixed>  $values
      */
-    private function flattenArray(array $array, string $prefix = ''): array
-    {
-        $result = [];
+    private function addContextListLine(
+        array &$lines,
+        string $label,
+        array $values,
+    ): void {
+        $values = array_values(
+            array_unique(
+                array_filter(
+                    array_map(
+                        fn (mixed $value): string => $this->cleanContextValue(
+                            $value
+                        ),
+                        $values
+                    ),
+                    static fn (string $value): bool => '' !== $value
+                )
+            )
+        );
 
-        foreach ($array as $key => $value) {
-            $newKey = '' === $prefix
-                ? (string) $key
-                : $prefix.'.'.$key;
-
-            if (\is_array($value)) {
-                $result += $this->flattenArray($value, $newKey);
-                continue;
-            }
-
-            if (\is_scalar($value) || null === $value) {
-                $result[$newKey] = mb_trim((string) $value);
-            }
+        if ([] === $values) {
+            return;
         }
 
-        return $result;
+        $lines[] = \sprintf(
+            '- %s : %s',
+            $label,
+            implode(
+                ', ',
+                $values
+            )
+        );
     }
 
-    private function mergeContexts(string ...$contexts): string
+    private function cleanContextValue(mixed $value): string
     {
-        $lines = [];
-
-        foreach ($contexts as $context) {
-            foreach (explode("\n", $context) as $line) {
-                $line = mb_trim($line);
-
-                if ('' === $line) {
-                    continue;
-                }
-
-                $lines[] = $line;
-            }
+        if (null === $value) {
+            return '';
         }
 
-        return implode("\n", array_unique($lines));
-    }
-
-    private function cleanFormFieldName(string $field): string
-    {
-        $field = preg_replace('/^.*\./', '', $field) ?? $field;
-
-        if (preg_match('/\[([^\]]+)\]$/', $field, $matches)) {
-            return $matches[1];
+        if (\is_bool($value)) {
+            return $value ? 'Oui' : 'Non';
         }
 
-        return $field;
-    }
-
-    private function shouldIgnoreField(string $field): bool
-    {
-        $ignoredFields = [
-            '_token',
-            'token',
-            'csrf',
-            'csrfToken',
-            'submit',
-            'save',
-            'next',
-            'previous',
-            'referenceInterne',
-            'propertyImages',
-            'imageFile',
-        ];
-
-        foreach ($ignoredFields as $ignoredField) {
-            if (str_contains($field, $ignoredField)) {
-                return true;
-            }
+        if (!\is_scalar($value)) {
+            return '';
         }
 
-        return false;
-    }
-
-    private function humanizeFieldName(string $field): string
-    {
-        $labels = [
-            'typeBien' => 'Type de bien',
-            'typeTransaction' => 'Type de transaction',
-            'categoryBien' => 'Type de bien',
-            'categoryBienTransaction' => 'Type de transaction',
-
-            'pays' => 'Pays',
-            'adresse' => 'Adresse',
-            'address' => 'Adresse',
-            'codePostal' => 'Code postal',
-            'postalCode' => 'Code postal',
-            'ville' => 'Ville',
-            'city' => 'Ville',
-
-            'surface' => 'Surface',
-            'surfaceHabitable' => 'Surface habitable',
-            'livingArea' => 'Surface habitable',
-            'nombrePieces' => 'Nombre de pièces',
-            'rooms' => 'Nombre de pièces',
-            'nombreChambres' => 'Nombre de chambres',
-            'bedrooms' => 'Nombre de chambres',
-            'sallesDeBains' => 'Nombre de salles de bains',
-            'bathrooms' => 'Nombre de salles de bains',
-
-            'caracteristique' => 'Caractéristiques',
-            'caracteristiques' => 'Caractéristiques',
-            'features' => 'Caractéristiques',
-
-            'dpe' => 'DPE',
-            'ges' => 'GES',
-            'dpeMax' => 'DPE maximum',
-            'dpeMin' => 'DPE minimum',
-            'dpeLettre' => 'Classe énergétique',
-            'dateIndexationEnergie' => 'Date d’indexation énergie',
-
-            'titreDuLogement' => 'Titre du logement',
-            'descriptionLogement' => 'Description du logement',
-
-            'prix' => 'Prix',
-            'price' => 'Prix',
-            'montantDepotDeGarantie' => 'Dépôt de garantie',
-            'montantLoyerHorsCharge' => 'Loyer hors charges',
-            'montantDesCharges' => 'Charges',
-        ];
-
-        return $labels[$field] ?? $this->formatUnknownFieldName($field);
-    }
-
-    private function formatUnknownFieldName(string $field): string
-    {
-        $field = preg_replace('/([a-z])([A-Z])/', '$1 $2', $field) ?? $field;
-        $field = str_replace(['_', '-'], ' ', $field);
-        $field = mb_strtolower($field);
-
-        return ucfirst($field);
+        return mb_trim(
+            (string) $value
+        );
     }
 
     /**
