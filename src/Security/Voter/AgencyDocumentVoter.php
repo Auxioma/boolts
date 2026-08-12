@@ -31,6 +31,10 @@ final class AgencyDocumentVoter extends Voter
         DocumentSubmissionStatus::REJECTED,
     ];
 
+    private const APPROVED_STATUSES = [
+        DocumentSubmissionStatus::APPROVED,
+    ];
+
     public function __construct(
         private readonly UserDocumentSubmissionRepository $submissionRepository,
     ) {
@@ -53,6 +57,7 @@ final class AgencyDocumentVoter extends Voter
             return false;
         }
 
-        return !$this->submissionRepository->hasLatestSubmissionWithStatus($user, self::BLOCKING_STATUSES);
+        return $this->submissionRepository->hasLatestSubmissionWithStatus($user, self::APPROVED_STATUSES)
+            && !$this->submissionRepository->hasLatestSubmissionWithStatus($user, self::BLOCKING_STATUSES);
     }
 }
