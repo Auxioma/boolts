@@ -28,9 +28,9 @@
                                                 {{ 'visiteur.register.email.apple'|trans }}
                                             </a>
 
-                                            <a href="" class="btn-bg-border-gris mt-16 d-block w-100 text-center">
-                                                {{ 'visiteur.register.email.google'|trans }}
-                                            </a>
+                                            {{ include('composant/_authentification/_google_login.html.twig', {
+                                                type: 'particulier',
+                                            }) }}
                                         </div>
 
                                         <div class="divider my-32">
