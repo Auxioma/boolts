@@ -848,7 +848,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
 
-                            <div class="row g-4 statistics-summary{{ documents_validated ? '' : ' dashboard-preview-blur' }}">
+                            <div
+                                class="row g-4 statistics-summary{{ documents_validated ? '' : ' dashboard-preview-blur' }}"
+                                {% if not documents_validated %}style="filter: blur(8px) !important; pointer-events: none; user-select: none;"{% endif %}
+                            >
 
                                 <div class="col-3">
                                     <div
@@ -929,7 +932,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
 
                             {# Zone du graphique #}
-                            <div class="statistics-chart{{ documents_validated ? '' : ' dashboard-preview-blur' }}">
+                            <div
+                                class="statistics-chart{{ documents_validated ? '' : ' dashboard-preview-blur' }}"
+                                {% if not documents_validated %}style="filter: blur(8px) !important; pointer-events: none; user-select: none;"{% endif %}
+                            >
 
                                 <div class="statistics-chart-content">
                                     {{ render_chart(

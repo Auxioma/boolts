@@ -6,7 +6,10 @@
     {% set boosts_restants = boosts_restants|default(0) %}
     {% set no_boost_available = boosts_restants <= 0 %}
 
-    <div class="property-list{{ documents_validated ? '' : ' dashboard-preview-blur' }}">
+    <div
+        class="property-list{{ documents_validated ? '' : ' dashboard-preview-blur' }}"
+        {% if not documents_validated %}style="filter: blur(8px) !important; pointer-events: none; user-select: none;"{% endif %}
+    >
         {% for property in affiche_performance_annonce %}
             <article class="property-item">
                 <div class="d-flex align-items-center property-main">
