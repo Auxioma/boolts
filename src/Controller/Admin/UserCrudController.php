@@ -17,14 +17,18 @@ use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
 use App\Entity\User;
 use App\Field\UserDocumentsField;
+use App\Repository\Document\RequiredDocumentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
@@ -40,6 +44,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -57,9 +62,10 @@ class UserCrudController extends AbstractCrudController
     public function __construct(
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly RequiredDocumentRepository $requiredDocumentRepository,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
-
 
     public static function getEntityFqcn(): string
     {
@@ -79,6 +85,11 @@ class UserCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_DETAIL, $agencyView ? 'Détail de l’agence' : 'Détail du visiteur')
             ->setDefaultSort(['createdAt' => 'DESC'])
             ->addFormTheme('admin/form/user_documents.html.twig');
+    }
+
+    public function configureAssets(Assets $assets): Assets
+    {
+        return $assets->addJsFile('js/admin-user-documents.js');
     }
 
     public function createIndexQueryBuilder(
@@ -250,9 +261,21 @@ class UserCrudController extends AbstractCrudController
             }
 
             $this->hashPassword($entityInstance);
+            $this->addMissingDocumentRequests($entityInstance, $entityManager);
         }
 
         parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    public function edit(AdminContext $context): KeyValueStore|Response
+    {
+        $entity = $context->getEntity()->getInstance();
+
+        if ($entity instanceof User && $this->addMissingDocumentRequests($entity, $this->entityManager)) {
+            $this->entityManager->flush();
+        }
+
+        return parent::edit($context);
     }
 
     public function updateEntity(EntityManagerInterface $entityManager, object $entityInstance): void
@@ -282,18 +305,26 @@ class UserCrudController extends AbstractCrudController
         UserDocumentSubmission $submission,
         Request $request,
         EntityManagerInterface $entityManager,
-    ): RedirectResponse {
+    ): Response {
         $documentRequest = $this->documentRequestForUser($user, $submission);
         $tokenId = 'approve_document_'.$submission->getId();
 
         if (!$this->isCsrfTokenValid($tokenId, $request->request->getString('_approve_token_'.$submission->getId()))) {
+            if ($request->isXmlHttpRequest()) {
+                return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], Response::HTTP_FORBIDDEN);
+            }
+
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
         if ($submission !== $documentRequest->getLatestSubmission() || 'pending' !== $submission->getStatus()->value) {
-            $this->addFlash('warning', 'Ce document ne peut plus être validé.');
-
-            return $this->redirectToUserEdit($user);
+            return $this->documentActionResponse(
+                $request,
+                $user,
+                false,
+                'Ce document ne peut plus être validé.',
+                Response::HTTP_CONFLICT,
+            );
         }
 
         $administrator = $this->getUser();
@@ -306,9 +337,14 @@ class UserCrudController extends AbstractCrudController
         $documentRequest->markAsCompleted();
         $entityManager->flush();
 
-        $this->addFlash('success', 'Le document a été validé.');
-
-        return $this->redirectToUserEdit($user);
+        return $this->documentActionResponse(
+            $request,
+            $user,
+            true,
+            'Le document a été validé.',
+            Response::HTTP_OK,
+            ['status' => 'approved', 'statusLabel' => 'Validé'],
+        );
     }
 
     #[Route(
@@ -322,26 +358,38 @@ class UserCrudController extends AbstractCrudController
         UserDocumentSubmission $submission,
         Request $request,
         EntityManagerInterface $entityManager,
-    ): RedirectResponse {
+    ): Response {
         $documentRequest = $this->documentRequestForUser($user, $submission);
         $tokenId = 'reject_document_'.$submission->getId();
 
         if (!$this->isCsrfTokenValid($tokenId, $request->request->getString('_reject_token_'.$submission->getId()))) {
+            if ($request->isXmlHttpRequest()) {
+                return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], Response::HTTP_FORBIDDEN);
+            }
+
             throw $this->createAccessDeniedException('Jeton CSRF invalide.');
         }
 
         $reason = mb_trim($request->request->getString('rejection_reason_'.$submission->getId()));
 
         if ('' === $reason) {
-            $this->addFlash('warning', 'Le motif du refus est obligatoire.');
-
-            return $this->redirectToUserEdit($user);
+            return $this->documentActionResponse(
+                $request,
+                $user,
+                false,
+                'Le motif du refus est obligatoire.',
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
         }
 
         if ($submission !== $documentRequest->getLatestSubmission() || 'pending' !== $submission->getStatus()->value) {
-            $this->addFlash('warning', 'Ce document ne peut plus être refusé.');
-
-            return $this->redirectToUserEdit($user);
+            return $this->documentActionResponse(
+                $request,
+                $user,
+                false,
+                'Ce document ne peut plus être refusé.',
+                Response::HTTP_CONFLICT,
+            );
         }
 
         $administrator = $this->getUser();
@@ -354,9 +402,18 @@ class UserCrudController extends AbstractCrudController
         $documentRequest->setStatus(DocumentRequestStatus::REJECTED);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Le document a été refusé.');
-
-        return $this->redirectToUserEdit($user);
+        return $this->documentActionResponse(
+            $request,
+            $user,
+            true,
+            'Le document a été refusé.',
+            Response::HTTP_OK,
+            [
+                'status' => 'rejected',
+                'statusLabel' => 'Refusé',
+                'rejectionReason' => $reason,
+            ],
+        );
     }
 
     private function documentRequestForUser(
@@ -388,6 +445,30 @@ class UserCrudController extends AbstractCrudController
         );
     }
 
+    /**
+     * @param array<string, scalar|null> $data
+     */
+    private function documentActionResponse(
+        Request $request,
+        User $user,
+        bool $success,
+        string $message,
+        int $status,
+        array $data = [],
+    ): Response {
+        if ($request->isXmlHttpRequest()) {
+            return $this->json([
+                'success' => $success,
+                'message' => $message,
+                ...$data,
+            ], $status);
+        }
+
+        $this->addFlash($success ? 'success' : 'warning', $message);
+
+        return $this->redirectToUserEdit($user);
+    }
+
     private function selectedRole(): ?string
     {
         $role = $this->getContext()?->getRequest()->query->get('role');
@@ -416,5 +497,44 @@ class UserCrudController extends AbstractCrudController
         if (null !== $password && '' !== $password) {
             $user->setPassword($this->passwordHasher->hashPassword($user, $password));
         }
+    }
+
+    private function addMissingDocumentRequests(User $user, EntityManagerInterface $entityManager): bool
+    {
+        if (!\in_array(self::ROLE_AGENCY, $user->getRoles(), true)) {
+            return false;
+        }
+
+        $existingDocumentIds = [];
+
+        foreach ($user->getDocumentRequests() as $documentRequest) {
+            $requiredDocumentId = $documentRequest->getRequiredDocument()?->getId();
+
+            if (null !== $requiredDocumentId) {
+                $existingDocumentIds[$requiredDocumentId] = true;
+            }
+        }
+
+        $added = false;
+        $requiredDocuments = $this->requiredDocumentRepository->findBy(
+            ['enabled' => true],
+            ['position' => 'ASC', 'name' => 'ASC'],
+        );
+
+        foreach ($requiredDocuments as $requiredDocument) {
+            $requiredDocumentId = $requiredDocument->getId();
+
+            if (null === $requiredDocumentId || isset($existingDocumentIds[$requiredDocumentId])) {
+                continue;
+            }
+
+            $documentRequest = (new UserDocumentRequest())
+                ->setRequiredDocument($requiredDocument);
+            $user->addDocumentRequest($documentRequest);
+            $entityManager->persist($documentRequest);
+            $added = true;
+        }
+
+        return $added;
     }
 }

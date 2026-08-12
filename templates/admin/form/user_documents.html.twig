@@ -1,13 +1,20 @@
 {% block user_documents_widget %}
     {% set documentRequests = form.vars.data %}
+    {% set statusLabels = {
+        waiting_upload: 'Non envoyé',
+        under_review: 'En cours de vérification',
+        rejected: 'Refusé',
+        approved: 'Validé',
+        blocked: 'Bloqué',
+    } %}
 
     {% if documentRequests is empty %}
         <div class="text-body-secondary">Aucun document n'a été demandé à cet utilisateur.</div>
     {% else %}
-        <div class="vstack gap-3">
+        <div class="vstack gap-3" data-admin-user-documents>
             {% for documentRequest in documentRequests %}
                 {% set submission = documentRequest.latestSubmission %}
-                <article class="border rounded-3 p-3">
+                <article class="border rounded-3 p-3" data-document-card>
                     <div class="d-flex flex-wrap justify-content-between gap-2">
                         <div>
                             <h3 class="h6 mb-1">{{ documentRequest.requiredDocument.name }}</h3>
@@ -15,8 +22,11 @@
                                 <p class="text-body-secondary mb-0">{{ documentRequest.requiredDocument.description }}</p>
                             {% endif %}
                         </div>
-                        <span class="badge text-bg-{{ documentRequest.status.value == 'approved' ? 'success' : (documentRequest.status.value == 'rejected' ? 'danger' : 'secondary') }}">
-                            {{ documentRequest.status.value }}
+                        <span
+                            class="badge text-bg-{{ documentRequest.status.value == 'approved' ? 'success' : (documentRequest.status.value == 'rejected' ? 'danger' : 'secondary') }}"
+                            data-document-status
+                        >
+                            {{ statusLabels[documentRequest.status.value]|default(documentRequest.status.value) }}
                         </span>
                     </div>
 
@@ -34,34 +44,42 @@
                             </div>
                             <div class="col-md-3">
                                 <span class="d-block text-body-secondary small">Statut</span>
-                                {{ submission.status.value }}
+                                <span data-submission-status>{{ statusLabels[submission.status.value]|default(submission.status.value) }}</span>
                             </div>
                         </div>
 
                         {% if submission.status.value == 'pending' %}
-                            <div class="row g-3 align-items-end mt-1">
+                            <div class="row g-3 align-items-end mt-1" data-document-actions>
                                 <div class="col-md-8">
                                     <label class="form-label" for="rejection_reason_{{ submission.id }}">Motif du refus</label>
-                                    <textarea id="rejection_reason_{{ submission.id }}" class="form-control" name="rejection_reason_{{ submission.id }}" rows="2" aria-required="true"></textarea>
+                                    <textarea
+                                        id="rejection_reason_{{ submission.id }}"
+                                        class="form-control"
+                                        name="rejection_reason_{{ submission.id }}"
+                                        rows="2"
+                                        aria-required="true"
+                                        data-rejection-reason
+                                    ></textarea>
                                 </div>
                                 <div class="col-md-4 d-flex gap-2">
-                                    <input type="hidden" name="_approve_token_{{ submission.id }}" value="{{ csrf_token('approve_document_' ~ submission.id) }}">
                                     <button
                                         class="btn btn-success"
-                                        type="submit"
-                                        formaction="{{ path('admin_user_document_approve', {user: form.parent.vars.data.id, submission: submission.id}) }}"
-                                        formmethod="post"
-                                        formnovalidate
+                                        type="button"
+                                        data-document-action="approve"
+                                        data-url="{{ path('admin_user_document_approve', {user: form.parent.vars.data.id, submission: submission.id}) }}"
+                                        data-token-name="_approve_token_{{ submission.id }}"
+                                        data-token="{{ csrf_token('approve_document_' ~ submission.id) }}"
                                     >
                                         Valider
                                     </button>
-                                    <input type="hidden" name="_reject_token_{{ submission.id }}" value="{{ csrf_token('reject_document_' ~ submission.id) }}">
                                     <button
                                         class="btn btn-danger"
-                                        type="submit"
-                                        formaction="{{ path('admin_user_document_reject', {user: form.parent.vars.data.id, submission: submission.id}) }}"
-                                        formmethod="post"
-                                        formnovalidate
+                                        type="button"
+                                        data-document-action="reject"
+                                        data-url="{{ path('admin_user_document_reject', {user: form.parent.vars.data.id, submission: submission.id}) }}"
+                                        data-token-name="_reject_token_{{ submission.id }}"
+                                        data-token="{{ csrf_token('reject_document_' ~ submission.id) }}"
+                                        data-reason-name="rejection_reason_{{ submission.id }}"
                                     >
                                         Refuser
                                     </button>
@@ -73,6 +91,7 @@
                     {% else %}
                         <p class="text-body-secondary mb-0 mt-3">Aucun fichier transmis.</p>
                     {% endif %}
+                    <p class="text-danger mb-0 mt-3 d-none" role="alert" data-document-error></p>
                 </article>
             {% endfor %}
         </div>

@@ -35,6 +35,7 @@
                             {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
                         </div>
 
+                        {% if not documents_complete %}
                         {# Finalisation du compte #}
                         <div data-controller="dashboard-account-completion">
                         <section
@@ -248,9 +249,11 @@
 
 </section>
 </div>
+                        {% endif %}
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const accountCompletion = document.querySelector('[data-controller~="dashboard-account-completion"]');
     const continueButton = document.querySelector('[data-documents-continue]');
     const documentConfirmation = document.querySelector('[data-document-confirmation]');
     const documentConfirmationLink = document.querySelector('[data-document-confirmation-link]');
@@ -408,6 +411,11 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const form of formsToUpload) {
                 const result = await uploadForm(form);
                 continueButton.dataset.documentsComplete = result.documentsComplete ? 'true' : 'false';
+            }
+
+            if (continueButton.dataset.documentsComplete === 'true') {
+                accountCompletion?.remove();
+                return;
             }
 
             if (documentConfirmation) {
