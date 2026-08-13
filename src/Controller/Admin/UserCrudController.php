@@ -343,7 +343,7 @@ class UserCrudController extends AbstractCrudController
             true,
             'Le document a été validé.',
             Response::HTTP_OK,
-            ['status' => 'approved', 'statusLabel' => 'Validé'],
+            ['status' => 'approved', 'statusLabel' => 'Document validé'],
         );
     }
 

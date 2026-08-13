@@ -12,8 +12,9 @@
 
 namespace App\Repository\Document;
 
-use App\Entity\Enum\DocumentSubmissionStatus;
+use App\Entity\Document\RequiredDocument;
 use App\Entity\Document\UserDocumentSubmission;
+use App\Entity\Enum\DocumentSubmissionStatus;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -60,5 +61,61 @@ final class UserDocumentSubmissionRepository extends ServiceEntityRepository
             ->setParameter('statuses', $statusValues)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @param list<DocumentSubmissionStatus> $statuses
+     */
+    public function hasLatestSubmissionForEveryRequiredDocumentWithStatus(User $user, array $statuses): bool
+    {
+        if ([] === $statuses) {
+            return false;
+        }
+
+        $requiredDocumentCount = (int) $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('COUNT(requiredDocument.id)')
+            ->from(RequiredDocument::class, 'requiredDocument')
+            ->andWhere('requiredDocument.enabled = :enabled')
+            ->andWhere('requiredDocument.required = :required')
+            ->setParameter('enabled', true)
+            ->setParameter('required', true)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        if (0 === $requiredDocumentCount) {
+            return false;
+        }
+
+        $statusValues = array_map(
+            static fn (DocumentSubmissionStatus $status): string => $status->value,
+            $statuses,
+        );
+
+        $matchingRequiredDocumentCount = (int) $this->createQueryBuilder('submission')
+            ->select('COUNT(DISTINCT requiredDocument.id)')
+            ->innerJoin('submission.documentRequest', 'documentRequest')
+            ->innerJoin('documentRequest.requiredDocument', 'requiredDocument')
+            ->andWhere('documentRequest.user = :user')
+            ->andWhere('requiredDocument.enabled = :enabled')
+            ->andWhere('requiredDocument.required = :required')
+            ->andWhere('submission.status IN (:statuses)')
+            ->andWhere(sprintf(
+                'NOT EXISTS (
+                    SELECT newerSubmission.id
+                    FROM %s newerSubmission
+                    WHERE newerSubmission.documentRequest = documentRequest
+                    AND newerSubmission.attemptNumber > submission.attemptNumber
+                )',
+                UserDocumentSubmission::class,
+            ))
+            ->setParameter('user', $user)
+            ->setParameter('enabled', true)
+            ->setParameter('required', true)
+            ->setParameter('statuses', $statusValues)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $requiredDocumentCount === $matchingRequiredDocumentCount;
     }
 }

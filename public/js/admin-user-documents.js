@@ -70,6 +70,8 @@ function updateCard(card, result) {
 
     if (submissionStatus) {
         submissionStatus.textContent = result.statusLabel;
+        submissionStatus.classList.toggle('text-success', result.status === 'approved');
+        submissionStatus.classList.toggle('fw-bold', result.status === 'approved');
     }
 
     card.querySelector('[data-document-actions]')?.remove();
