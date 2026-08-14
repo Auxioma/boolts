@@ -61,6 +61,21 @@ class PropertyRepository extends ServiceEntityRepository
         );
     }
 
+    public function countUsedForAgencyQuota(User $agency): int
+    {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->andWhere('p.user = :agency')
+            ->andWhere('p.statut != :deletedStatus')
+            ->setParameter('agency', $agency)
+            ->setParameter(
+                'deletedStatus',
+                StatutAnnonceImmobiliere::SUPPRIMEE
+            )
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     /**
      * Retourne une requête pour récupérer les biens immobiliers d’un utilisateur donné.
      * Cette méthode est utilisée pour la pagination dans le contrôleur DetailAgenceController.

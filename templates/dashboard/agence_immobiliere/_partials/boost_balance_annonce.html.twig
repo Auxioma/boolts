@@ -1,0 +1,21 @@
+{% if variant == 'options' %}
+    <button
+        class="btn achat-btn-outline-brand achat-boost-balance"
+        type="button"
+    >
+        <img
+            src="https://www.figma.com/api/mcp/asset/4abf21cc-aaec-40db-aef8-19e91701de8e"
+            alt=""
+            class="achat-icon-24"
+        >
+
+        <span>
+            Annonces : {{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}
+        </span>
+    </button>
+{% else %}
+    <a href="#" class="btn dashboard-boost-button">
+        <i class="icon-zap"></i>
+        annonce restante : {{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}
+    </a>
+{% endif %}
