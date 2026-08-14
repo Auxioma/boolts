@@ -20,6 +20,7 @@ use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Form\Filter\ModalFilterType;
 use App\Repository\PropertyRepository;
+use App\Service\Billing\AgencyPropertyQuotaCalculator;
 use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -503,6 +504,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     public function index(
         Request $request,
         PropertyRepository $propertyRepository,
+        AgencyPropertyQuotaCalculator $agencyPropertyQuotaCalculator,
         EntityManagerInterface $entityManager,
         NumericSlugGenerator $numericSlugGenerator,
         MapboxAddressTranslator $mapboxAddressTranslator,
@@ -720,7 +722,15 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             $request
         );
 
-        if ($form->isSubmitted()) {
+        $propertyQuota = $agencyPropertyQuotaCalculator->calculate($user);
+        $showLimitAnnonceModal = $propertyQuota['reached']
+            && null === $mesBiens->getId()
+            && true !== $session->get(
+                'mes_biens_edit_mode',
+                false
+            );
+
+        if ($form->isSubmitted() && !$showLimitAnnonceModal) {
             /*
              * ==============================================================
              * STEP 1 : TYPE DE BIEN
@@ -1352,6 +1362,14 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                  */
                 'showBilanEnergetique' => $this->isFranceCountry(
                     $mesBiens->getPays()
+                ),
+
+                'showLimitAnnonceModal' => $showLimitAnnonceModal,
+                'annoncesRestantes' => $propertyQuota['remaining'],
+                'annoncesUtilisees' => $propertyQuota['used'],
+                'limiteAnnonces' => $propertyQuota['limit'],
+                'abonnementUrl' => $this->generateUrl(
+                    'agence_immobiliere_options'
                 ),
             ]
         );

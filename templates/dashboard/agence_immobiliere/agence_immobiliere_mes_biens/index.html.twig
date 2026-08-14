@@ -105,37 +105,39 @@
                     </div>
                 </div>
 
-                <div class="boolts-limit-modal__backdrop" aria-hidden="true"></div>
+                {% if showLimitAnnonceModal|default(false) %}
+                    <div class="boolts-limit-modal__backdrop" aria-hidden="true"></div>
 
-                <div
-                    id="limitAnnonceModal"
-                    class="boolts-limit-modal"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="limitAnnonceModalTitle"
-                    aria-describedby="limitAnnonceModalDescription"
-                >
-                    <div class="boolts-limit-modal__content">
-                        <div class="boolts-limit-modal__text">
-                            <h2 id="limitAnnonceModalTitle" class="boolts-limit-modal__title">
-                                Vous avez atteint la limite<br>
-                                de dépôt d’annonces
-                            </h2>
+                    <div
+                        id="limitAnnonceModal"
+                        class="boolts-limit-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="limitAnnonceModalTitle"
+                        aria-describedby="limitAnnonceModalDescription"
+                    >
+                        <div class="boolts-limit-modal__content">
+                            <div class="boolts-limit-modal__text">
+                                <h2 id="limitAnnonceModalTitle" class="boolts-limit-modal__title">
+                                    Vous avez atteint la limite<br>
+                                    de dépôt d’annonces
+                                </h2>
 
-                            <p id="limitAnnonceModalDescription" class="boolts-limit-modal__description">
-                                Vous avez atteint la limite de dépôt d’annonce que permet votre plan gratuit.
-                                Pour pouvoir publier d’avantage d’annonces sur Boolts rendez-vous sur nos offres d’abonnements.
-                            </p>
+                                <p id="limitAnnonceModalDescription" class="boolts-limit-modal__description">
+                                    Vous avez atteint la limite de dépôt d’annonces de votre forfait actuel.
+                                    Pour pouvoir publier davantage d’annonces sur Boolts, rendez-vous sur nos offres d’abonnements.
+                                </p>
+                            </div>
+
+                            <a
+                                href="{{ abonnementUrl|default('#') }}"
+                                class="boolts-limit-modal__button"
+                            >
+                                Voir les abonnements
+                            </a>
                         </div>
-
-                        <a
-                            href="{{ abonnementUrl|default('#') }}"
-                            class="boolts-limit-modal__button"
-                        >
-                            Voir les abonnements
-                        </a>
                     </div>
-                </div>
+                {% endif %}
 
             </div>
         </div>

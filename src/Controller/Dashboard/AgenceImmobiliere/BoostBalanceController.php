@@ -12,11 +12,9 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
-use App\Entity\Billing\AgencySubscription;
 use App\Entity\User;
-use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Booster\BoosterTransactionRepository;
-use App\Repository\PropertyRepository;
+use App\Service\Billing\AgencyPropertyQuotaCalculator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -44,8 +42,7 @@ final class BoostBalanceController extends AbstractController
 
     #[Route('/pro/boost-balance/annonce', name: 'agence_immobiliere_boost_balance_annonce', methods: ['GET'])]
     public function annonce(
-        AgencySubscriptionRepository $agencySubscriptionRepository,
-        PropertyRepository $propertyRepository,
+        AgencyPropertyQuotaCalculator $agencyPropertyQuotaCalculator,
         string $variant = 'dashboard',
     ): Response {
         $user = $this->getUser();
@@ -54,25 +51,14 @@ final class BoostBalanceController extends AbstractController
             throw $this->createAccessDeniedException('Utilisateur non authentifié.');
         }
 
-        $subscription = $agencySubscriptionRepository->findLatestQuotaForAgency($user);
-        $propertyLimit = $this->resolvePropertyLimit($subscription);
-        $usedProperties = $propertyRepository->countUsedForAgencyQuota($user);
+        $quota = $agencyPropertyQuotaCalculator->calculate($user);
 
         return $this->render('dashboard/agence_immobiliere/_partials/boost_balance_annonce.html.twig', [
-            'annonces_restantes' => null === $propertyLimit ? null : max(0, $propertyLimit - $usedProperties),
-            'annonces_utilisees' => $usedProperties,
-            'limite_annonces' => $propertyLimit,
+            'annonces_restantes' => $quota['remaining'],
+            'annonces_utilisees' => $quota['used'],
+            'limite_annonces' => $quota['limit'],
+            'quota_annonces_atteint' => $quota['reached'],
             'variant' => $variant,
         ]);
-    }
-
-    private function resolvePropertyLimit(?AgencySubscription $subscription): ?int
-    {
-        if (!$subscription instanceof AgencySubscription) {
-            return 0;
-        }
-
-        return $subscription->getPropertyLimitSnapshot()
-            ?? $subscription->getPlan()->getPropertyLimit();
     }
 }
