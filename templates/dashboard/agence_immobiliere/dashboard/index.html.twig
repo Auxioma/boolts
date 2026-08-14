@@ -103,7 +103,9 @@
 
         <div class="finish-setup__country">
             <span class="finish-setup__country-value">
-                <span data-dashboard-account-completion-target="selectedCountry"></span>
+                <span data-dashboard-account-completion-target="selectedCountry">
+                    {{ app.user.pays ? app.user.pays.nom : '' }}
+                </span>
             </span>
 
             <svg
@@ -132,6 +134,10 @@
         {% endfor %}
 
         {% for requiredDocument in required_documents %}
+        {% set submittedFileName = submitted_document_names[requiredDocument.id]|default(null) %}
+        {% set submittedDocumentStatus = submitted_document_statuses[requiredDocument.id]|default(null) %}
+        {% set isSubmittedDocumentApproved = submittedDocumentStatus == 'approved' %}
+        {% set isSubmittedDocumentRejected = submittedDocumentStatus == 'rejected' %}
         <div class="finish-setup__document">
             <div class="finish-setup__document-content">
                 <h3 class="finish-setup__document-title">
@@ -147,6 +153,7 @@
                 class="finish-setup__formats"
                 data-document-formats
                 data-default-formats="(Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)"
+                {% if isSubmittedDocumentApproved %}hidden{% endif %}
             >
                 (Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)
             </p>
@@ -158,10 +165,13 @@
                     class: 'finish-setup__upload-form',
                     'data-document-upload-form': '',
                     'data-required-document': requiredDocument.required ? 'true' : 'false',
+                    'data-uploaded': submittedFileName and not isSubmittedDocumentRejected ? 'true' : 'false',
+                    'data-submission-status': submittedDocumentStatus ?: '',
+                    'data-submitted-file-name': submittedFileName ?: '',
                 },
             }) }}
                 {{ form_widget(documentForm.requiredDocument, {attr: {hidden: 'hidden'}}) }}
-                <label class="finish-setup__upload">
+                <label class="finish-setup__upload"{% if submittedFileName and not isSubmittedDocumentRejected %} hidden{% endif %}>
                 {{ form_widget(documentForm.document, {
                     attr: {
                         class: 'finish-setup__file-input',
@@ -198,9 +208,21 @@
                     />
                 </svg>
 
-                <span data-upload-status>Téléverser</span>
+                <span data-upload-status>{{ submittedFileName and not isSubmittedDocumentRejected ? 'Téléversé' : 'Téléverser' }}</span>
                 </label>
-                <p class="finish-setup__remove-file" data-remove-file hidden>Supprimer</p>
+                <p
+                    class="finish-setup__remove-file{{ submittedFileName ? ' finish-setup__remove-file--uploaded' : '' }}"
+                    data-remove-file
+                    {% if not submittedFileName %}hidden{% endif %}
+                >
+                    {{ submittedFileName ?: 'Supprimer' }}
+                </p>
+                <p class="finish-setup__document-approved"{% if not isSubmittedDocumentApproved %} hidden{% endif %}>
+                    Document validé
+                </p>
+                <p class="finish-setup__document-rejected"{% if not isSubmittedDocumentRejected %} hidden{% endif %}>
+                    Document refusé
+                </p>
             {{ form_end(documentForm) }}
             <div class="alert alert-danger finish-setup__document-flash" data-document-upload-error role="alert" hidden></div>
         </div>
@@ -212,6 +234,7 @@
         type="button"
         data-documents-continue
         data-documents-complete="{{ documents_complete ? 'true' : 'false' }}"
+        {% if documents_under_review %}hidden{% endif %}
         disabled
     >
         Continuer
@@ -228,7 +251,7 @@
         </p>
     </div>
 
-    <div class="document-confirmation" data-document-confirmation hidden>
+    <div class="document-confirmation" data-document-confirmation{% if not documents_under_review %} hidden{% endif %}>
         <p class="document-confirmation__success">
             Les documents ont bien été envoyés !
         </p>
@@ -277,23 +300,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const formats = form.parentElement.querySelector('[data-document-formats]');
             const uploadLabel = form.querySelector('.finish-setup__upload');
             const removeFile = form.querySelector('[data-remove-file]');
+            const approvedStatus = form.querySelector('.finish-setup__document-approved');
+            const rejectedStatus = form.querySelector('.finish-setup__document-rejected');
 
             form.dataset.uploaded = 'false';
+            form.dataset.submissionStatus = '';
+            form.dataset.submittedFileName = '';
             input.disabled = false;
             status.textContent = 'Téléverser';
             formats.textContent = input.files[0]?.name || formats.dataset.defaultFormats;
+            formats.hidden = false;
             uploadLabel.hidden = Boolean(input.files.length);
             removeFile.hidden = !input.files.length;
             removeFile.textContent = 'Supprimer';
             removeFile.classList.remove('finish-setup__remove-file--uploaded');
+            approvedStatus.hidden = true;
+            rejectedStatus.hidden = true;
         });
 
+        continueButton.hidden = false;
         documentConfirmation?.replaceWith(continueButton);
         updateContinueButton();
         forms[0]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     const isRequired = (form) => form.dataset.requiredDocument === 'true';
+    const getRequiredDocumentId = (form) => form.querySelector('[name="ask_documents[requiredDocument]"]')?.value || '';
     const isSatisfied = (form) => {
         const input = form.querySelector('[data-document-upload]');
 
@@ -306,12 +338,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         continueButton.disabled = !allRequiredDocumentsSelected;
     };
-    const uploadForm = async (form) => {
+    const uploadForm = async (form, options = {}) => {
         const input = form.querySelector('[data-document-upload]');
         const status = form.querySelector('[data-upload-status]');
         const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
         const formData = new FormData(form);
         const originalFileName = input.files[0]?.name ?? '';
+
+        if (options.notifyAdmin === true) {
+            formData.append('notifyAdmin', '1');
+
+            (options.adminNotificationDocumentIds || []).forEach((requiredDocumentId) => {
+                formData.append('adminNotificationRequiredDocumentIds[]', requiredDocumentId);
+            });
+        }
 
         input.disabled = true;
         status.textContent = 'Téléversement en cours…';
@@ -339,11 +379,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             form.dataset.uploaded = 'true';
+            form.dataset.submissionStatus = 'pending';
+            form.dataset.submittedFileName = originalFileName;
             status.textContent = 'Téléversé';
             errorFlash.hidden = true;
             const removeFile = form.querySelector('[data-remove-file]');
+            const approvedStatus = form.querySelector('.finish-setup__document-approved');
+            const rejectedStatus = form.querySelector('.finish-setup__document-rejected');
             removeFile.textContent = originalFileName;
             removeFile.classList.add('finish-setup__remove-file--uploaded');
+            approvedStatus.hidden = true;
+            rejectedStatus.hidden = true;
 
             return result;
         } catch (error) {
@@ -362,6 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const uploadLabel = form.querySelector('.finish-setup__upload');
         const removeFile = form.querySelector('[data-remove-file]');
         const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
+        const approvedStatus = form.querySelector('.finish-setup__document-approved');
+        const rejectedStatus = form.querySelector('.finish-setup__document-rejected');
 
         input.addEventListener('change', () => {
             errorFlash.hidden = true;
@@ -373,18 +421,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 removeFile.hidden = false;
                 removeFile.textContent = 'Supprimer';
                 removeFile.classList.remove('finish-setup__remove-file--uploaded');
+                approvedStatus.hidden = true;
+                rejectedStatus.hidden = true;
             } else {
+                const submittedFileName = form.dataset.submittedFileName || '';
+                const submissionStatus = form.dataset.submissionStatus || '';
+
                 status.textContent = 'Téléverser';
                 formats.textContent = formats.dataset.defaultFormats;
-                uploadLabel.hidden = false;
-                removeFile.hidden = true;
+                formats.hidden = submissionStatus === 'approved';
+                uploadLabel.hidden = Boolean(submittedFileName && submissionStatus !== 'rejected');
+                removeFile.hidden = !submittedFileName;
+                removeFile.textContent = submittedFileName || 'Supprimer';
+                removeFile.classList.toggle('finish-setup__remove-file--uploaded', Boolean(submittedFileName));
+                approvedStatus.hidden = submissionStatus !== 'approved';
+                rejectedStatus.hidden = submissionStatus !== 'rejected';
             }
 
             updateContinueButton();
         });
 
         removeFile.addEventListener('click', () => {
-            if (input.disabled) {
+            if (
+                input.disabled
+                || (removeFile.classList.contains('finish-setup__remove-file--uploaded') && !input.files.length)
+            ) {
                 return;
             }
 
@@ -408,8 +469,22 @@ document.addEventListener('DOMContentLoaded', () => {
         continueButton.textContent = 'Téléversement en cours…';
 
         try {
-            for (const form of formsToUpload) {
-                const result = await uploadForm(form);
+            const adminNotificationDocumentIds = [...new Set(forms
+                .filter((form) => {
+                    const input = form.querySelector('[data-document-upload]');
+
+                    return (input.files.length && form.dataset.uploaded !== 'true')
+                        || (form.dataset.uploaded === 'true' && form.dataset.submissionStatus === 'pending');
+                })
+                .map(getRequiredDocumentId)
+                .filter(Boolean)
+            )];
+
+            for (const [index, form] of formsToUpload.entries()) {
+                const result = await uploadForm(form, {
+                    notifyAdmin: index === formsToUpload.length - 1,
+                    adminNotificationDocumentIds,
+                });
                 continueButton.dataset.documentsComplete = result.documentsComplete ? 'true' : 'false';
             }
 
@@ -734,6 +809,34 @@ document.addEventListener('DOMContentLoaded', () => {
 .finish-setup__remove-file--uploaded {
     color: var(--finish-grey);
     cursor: default;
+}
+
+.finish-setup__document-approved {
+    flex: 0 0 auto;
+    margin: 0;
+
+    color: #198754;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.finish-setup__document-approved[hidden] {
+    display: none;
+}
+
+.finish-setup__document-rejected {
+    flex: 0 0 auto;
+    margin: 0;
+
+    color: #dc3545;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.finish-setup__document-rejected[hidden] {
+    display: none;
 }
 
 .finish-setup__file-input {

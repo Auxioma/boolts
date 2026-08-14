@@ -1,0 +1,59 @@
+{#
+ Template: templates/email/document/admin_pending_documents.html.twig
+ Role: Renders the administrator email sent after an agency document upload.
+ Context: Provided by App\Service\Document\AdminDocumentNotificationMailer.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveaux documents en attente de validation</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
+    <h1>Nouveaux documents en attente de validation</h1>
+
+    <p>Bonjour {{ admin_name|default('Admin') }},</p>
+
+    <p>De nouveaux documents sont en attente de validation dans l'administration du site internet.</p>
+    <p>Les fichiers transmis sont joints à cet email.</p>
+
+    <table role="presentation" cellpadding="6" cellspacing="0" border="0">
+        <tr>
+            <td><strong>Agence</strong></td>
+            <td>{{ agency.entreprise|default(agency.email|default('Agence inconnue')) }}</td>
+        </tr>
+        <tr>
+            <td><strong>Email agence</strong></td>
+            <td>{{ agency.email|default('Non renseigné') }}</td>
+        </tr>
+    </table>
+
+    <h2>Documents à valider</h2>
+
+    <table role="presentation" cellpadding="6" cellspacing="0" border="0">
+        <thead>
+            <tr>
+                <th align="left">Document</th>
+                <th align="left">Fichier</th>
+                <th align="left">Transmis le</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+                {% set documentRequest = submission.documentRequest %}
+                {% set requiredDocument = documentRequest ? documentRequest.requiredDocument : null %}
+                <tr>
+                    <td>{{ requiredDocument.name|default('Document non identifié') }}</td>
+                    <td>{{ submission.originalFileName }}</td>
+                    <td>{{ submission.submittedAt|date('d/m/Y H:i') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Vous pouvez le contrôler depuis l'administration Boolts.</p>
+</body>
+</html>

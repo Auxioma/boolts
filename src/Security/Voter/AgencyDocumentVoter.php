@@ -26,11 +26,6 @@ final class AgencyDocumentVoter extends Voter
 {
     public const ACCESS_RESTRICTED_DASHBOARD = 'AGENCY_DOCUMENTS_ACCESS_RESTRICTED_DASHBOARD';
 
-    private const BLOCKING_STATUSES = [
-        DocumentSubmissionStatus::PENDING,
-        DocumentSubmissionStatus::REJECTED,
-    ];
-
     private const APPROVED_STATUSES = [
         DocumentSubmissionStatus::APPROVED,
     ];
@@ -57,7 +52,9 @@ final class AgencyDocumentVoter extends Voter
             return false;
         }
 
-        return $this->submissionRepository->hasLatestSubmissionWithStatus($user, self::APPROVED_STATUSES)
-            && !$this->submissionRepository->hasLatestSubmissionWithStatus($user, self::BLOCKING_STATUSES);
+        return $this->submissionRepository->hasLatestSubmissionForEveryRequiredDocumentWithStatus(
+            $user,
+            self::APPROVED_STATUSES,
+        );
     }
 }

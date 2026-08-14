@@ -16,6 +16,7 @@ use App\Entity\Document\RequiredDocument;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
+use App\Entity\Enum\DocumentSubmissionStatus;
 use App\Entity\Pays;
 use App\Entity\Property;
 use App\Entity\PropertyImage;
@@ -25,12 +26,14 @@ use App\Repository\AgencyProfileDailyVisitRepository;
 use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\Document\RequiredDocumentRepository;
 use App\Repository\Document\UserDocumentRequestRepository;
+use App\Repository\Document\UserDocumentSubmissionRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PaysRepository;
 use App\Repository\PropertyImageRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
 use App\Security\Voter\AgencyDocumentVoter;
+use App\Service\Document\AdminDocumentNotificationMailer;
 use App\Service\GeoIpLocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -69,6 +72,7 @@ final class DashboardController extends AbstractController
         AgencyProfileDailyVisitRepository $agencyProfileDailyVisitRepository,
         RequiredDocumentRepository $requiredDocumentRepository,
         UserDocumentRequestRepository $userDocumentRequestRepository,
+        UserDocumentSubmissionRepository $userDocumentSubmissionRepository,
         GeoIpLocationService $geoIpLocationService,
         PaysRepository $paysRepository,
     ): Response {
@@ -106,9 +110,10 @@ final class DashboardController extends AbstractController
         $form = $this->createForm(AskDocumentsType::class, $user);
 
         $form->handleRequest($request);
-        $documentsStepActive = $request->query->getBoolean('documents');
 
         $documentForms = [];
+        $submittedDocumentNames = [];
+        $submittedDocumentStatuses = [];
         $documentsSubmissionLimitReached = false;
         $requiredDocuments = $requiredDocumentRepository->findBy(
             ['enabled' => true],
@@ -121,6 +126,15 @@ final class DashboardController extends AbstractController
                 || ($documentRequest instanceof UserDocumentRequest
                     && $this->isSubmissionLimitReached($documentRequest));
 
+            $latestSubmission = $documentRequest instanceof UserDocumentRequest
+                ? $documentRequest->getLatestSubmission()
+                : null;
+
+            if ($latestSubmission instanceof UserDocumentSubmission && null !== $requiredDocument->getId()) {
+                $submittedDocumentNames[$requiredDocument->getId()] = $latestSubmission->getOriginalFileName();
+                $submittedDocumentStatuses[$requiredDocument->getId()] = $latestSubmission->getStatus()->value;
+            }
+
             $documentForms[$requiredDocument->getId()] = $this->createForm(AskDocumentsType::class, $user, [
                 'include_country' => false,
                 'required_document' => $requiredDocument,
@@ -128,12 +142,17 @@ final class DashboardController extends AbstractController
             ])->createView();
         }
 
+        $documentsComplete = $this->areRequiredDocumentsApproved($user, $userDocumentSubmissionRepository);
         $requiredDocumentCount = \count(array_filter(
             $requiredDocuments,
             static fn (RequiredDocument $requiredDocument): bool => $requiredDocument->isRequired(),
         ));
-        $documentsComplete = $requiredDocumentCount > 0
+        $documentsSubmitted = $requiredDocumentCount > 0
             && $requiredDocumentCount === $userDocumentRequestRepository->countSubmittedRequiredDocuments($user);
+        $hasRejectedDocument = \in_array(DocumentSubmissionStatus::REJECTED->value, $submittedDocumentStatuses, true);
+        $documentsUnderReview = $documentsSubmitted && !$documentsComplete && !$hasRejectedDocument;
+        $documentsStepActive = $request->query->getBoolean('documents')
+            || (!$documentsComplete && ([] !== $submittedDocumentNames || $documentsSubmitted));
 
         return $this->render('dashboard/agence_immobiliere/dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
@@ -145,7 +164,10 @@ final class DashboardController extends AbstractController
             'form' => $form->createView(),
             'document_forms' => $documentForms,
             'required_documents' => $requiredDocuments,
+            'submitted_document_names' => $submittedDocumentNames,
+            'submitted_document_statuses' => $submittedDocumentStatuses,
             'documents_complete' => $documentsComplete,
+            'documents_under_review' => $documentsUnderReview,
             'documents_submission_limit_reached' => $documentsSubmissionLimitReached,
             'documents_step_active' => $documentsStepActive,
         ]);
@@ -273,9 +295,10 @@ final class DashboardController extends AbstractController
     public function uploadDocument(
         Request $request,
         EntityManagerInterface $entityManager,
-        RequiredDocumentRepository $requiredDocumentRepository,
         UserDocumentRequestRepository $userDocumentRequestRepository,
+        UserDocumentSubmissionRepository $userDocumentSubmissionRepository,
         Filesystem $filesystem,
+        AdminDocumentNotificationMailer $adminDocumentNotificationMailer,
     ): Response {
         $user = $this->getUser();
 
@@ -377,12 +400,23 @@ final class DashboardController extends AbstractController
         $entityManager->persist($submission);
         $entityManager->flush();
 
-        $requiredDocumentCount = $requiredDocumentRepository->count([
-            'enabled' => true,
-            'required' => true,
-        ]);
-        $documentsComplete = $requiredDocumentCount > 0
-            && $requiredDocumentCount === $userDocumentRequestRepository->countSubmittedRequiredDocuments($user);
+        if ($request->request->getBoolean('notifyAdmin')) {
+            $adminNotificationRequiredDocumentIds = $this->adminNotificationRequiredDocumentIds($request);
+
+            if ([] === $adminNotificationRequiredDocumentIds && null !== $requiredDocument->getId()) {
+                $adminNotificationRequiredDocumentIds = [$requiredDocument->getId()];
+            }
+
+            $adminNotificationSubmissions = $userDocumentSubmissionRepository->findLatestForUserAndRequiredDocuments(
+                $user,
+                $adminNotificationRequiredDocumentIds,
+                [DocumentSubmissionStatus::PENDING],
+            );
+
+            $adminDocumentNotificationMailer->sendPendingDocumentNotification($user, $adminNotificationSubmissions);
+        }
+
+        $documentsComplete = $this->areRequiredDocumentsApproved($user, $userDocumentSubmissionRepository);
 
         return $this->documentUploadResponse(
             $request,
@@ -415,10 +449,38 @@ final class DashboardController extends AbstractController
         return $this->redirectToRoute('agence_immobiliere_dashboard', ['documents' => 1]);
     }
 
+    private function areRequiredDocumentsApproved(
+        User $user,
+        UserDocumentSubmissionRepository $userDocumentSubmissionRepository,
+    ): bool {
+        return $userDocumentSubmissionRepository->hasLatestSubmissionForEveryRequiredDocumentWithStatus(
+            $user,
+            [DocumentSubmissionStatus::APPROVED],
+        );
+    }
+
     private function isSubmissionLimitReached(UserDocumentRequest $documentRequest): bool
     {
         return $documentRequest->getSubmissionCount()
             >= ($documentRequest->getRequiredDocument()?->getMaxSubmissions() ?? 0);
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function adminNotificationRequiredDocumentIds(Request $request): array
+    {
+        $requiredDocumentIds = $request->request->all('adminNotificationRequiredDocumentIds');
+
+        return array_values(array_unique(array_filter(
+            array_map(
+                static fn (mixed $requiredDocumentId): int => is_numeric($requiredDocumentId)
+                    ? (int) $requiredDocumentId
+                    : 0,
+                $requiredDocumentIds,
+            ),
+            static fn (int $requiredDocumentId): bool => $requiredDocumentId > 0,
+        )));
     }
 
     private function detectCountryFromIp(

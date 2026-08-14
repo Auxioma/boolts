@@ -4,7 +4,7 @@
         waiting_upload: 'Non envoyé',
         under_review: 'En cours de vérification',
         rejected: 'Refusé',
-        approved: 'Validé',
+        approved: 'Document validé',
         blocked: 'Bloqué',
     } %}
 
@@ -44,7 +44,12 @@
                             </div>
                             <div class="col-md-3">
                                 <span class="d-block text-body-secondary small">Statut</span>
-                                <span data-submission-status>{{ statusLabels[submission.status.value]|default(submission.status.value) }}</span>
+                                <span
+                                    class="{{ submission.status.value == 'approved' ? 'text-success fw-bold' : '' }}"
+                                    data-submission-status
+                                >
+                                    {{ statusLabels[submission.status.value]|default(submission.status.value) }}
+                                </span>
                             </div>
                         </div>
 
