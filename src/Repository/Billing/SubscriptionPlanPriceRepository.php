@@ -57,4 +57,27 @@ final class SubscriptionPlanPriceRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findDefaultFreeMonthlyPrice(): ?SubscriptionPlanPrice
+    {
+        return $this->createQueryBuilder('price')
+            ->addSelect('plan', 'currency')
+            ->innerJoin('price.plan', 'plan')
+            ->innerJoin('price.currency', 'currency')
+            ->where('price.billingPeriod = :period')
+            ->andWhere('price.amountMinor = :amount')
+            ->andWhere('plan.isFree = :free')
+            ->andWhere('plan.isDefault = :default')
+            ->setParameter('period', SubscriptionBillingPeriod::MONTHLY)
+            ->setParameter('amount', 0)
+            ->setParameter('free', true)
+            ->setParameter('default', true)
+            ->orderBy('plan.isActive', 'DESC')
+            ->addOrderBy('price.isActive', 'DESC')
+            ->addOrderBy('plan.position', 'ASC')
+            ->addOrderBy('price.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

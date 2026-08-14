@@ -59,7 +59,7 @@ security:
     access_control:
         - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/connect/google, roles: PUBLIC_ACCESS, requires_channel: https }
-        - { path: '^/(fr/)?pro/(login|signup|signup/verify|reset-password(?:/.*)?)$', roles: PUBLIC_ACCESS, requires_channel: https }
+        # - { path: '^/(fr/)?pro/(login|signup|signup/verify|reset-password(?:/.*)?)$', roles: PUBLIC_ACCESS, requires_channel: https }
 
         - {
             path: ^/admin,
@@ -67,11 +67,11 @@ security:
             allow_if: "is_granted('ROLE_ADMIN') and not is_granted('ROLE_AGENCE')"
         }
 
-        - {
-            path: ^/pro,
-            roles: ROLE_AGENCE,
-            allow_if: "is_granted('ROLE_AGENCE') and not is_granted('ROLE_ADMIN')"
-        }
+        # - {
+        #    path: ^/pro,
+        #    roles: ROLE_AGENCE,
+        #    allow_if: "is_granted('ROLE_AGENCE') and not is_granted('ROLE_ADMIN')"
+        # }
 
         #- {
         #    path: ^/user,
