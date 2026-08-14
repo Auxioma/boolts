@@ -44,6 +44,14 @@ services:
             $mailerFromEmail: '%env(MAILER_FROM_EMAIL)%'
             $mailerFromName: '%env(MAILER_FROM_NAME)%'
 
+    App\Service\Document\AdminDocumentNotificationMailer:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $adminEmail: '%env(ADMIN_EMAIL)%'
+            $adminName: '%env(ADMIN_NAME)%'
+            $mailerFromEmail: '%env(MAILER_FROM_EMAIL)%'
+            $mailerFromName: '%env(MAILER_FROM_NAME)%'
+
     App\Service\MapboxAddressTranslator:
         arguments:
             $mapboxToken: '%env(MAPBOX_PUBLIC_TOKEN)%'

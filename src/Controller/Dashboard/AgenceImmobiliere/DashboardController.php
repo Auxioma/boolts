@@ -33,6 +33,7 @@ use App\Repository\PropertyImageRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
 use App\Security\Voter\AgencyDocumentVoter;
+use App\Service\Document\AdminDocumentNotificationMailer;
 use App\Service\GeoIpLocationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -297,6 +298,7 @@ final class DashboardController extends AbstractController
         UserDocumentRequestRepository $userDocumentRequestRepository,
         UserDocumentSubmissionRepository $userDocumentSubmissionRepository,
         Filesystem $filesystem,
+        AdminDocumentNotificationMailer $adminDocumentNotificationMailer,
     ): Response {
         $user = $this->getUser();
 
@@ -398,6 +400,22 @@ final class DashboardController extends AbstractController
         $entityManager->persist($submission);
         $entityManager->flush();
 
+        if ($request->request->getBoolean('notifyAdmin')) {
+            $adminNotificationRequiredDocumentIds = $this->adminNotificationRequiredDocumentIds($request);
+
+            if ([] === $adminNotificationRequiredDocumentIds && null !== $requiredDocument->getId()) {
+                $adminNotificationRequiredDocumentIds = [$requiredDocument->getId()];
+            }
+
+            $adminNotificationSubmissions = $userDocumentSubmissionRepository->findLatestForUserAndRequiredDocuments(
+                $user,
+                $adminNotificationRequiredDocumentIds,
+                [DocumentSubmissionStatus::PENDING],
+            );
+
+            $adminDocumentNotificationMailer->sendPendingDocumentNotification($user, $adminNotificationSubmissions);
+        }
+
         $documentsComplete = $this->areRequiredDocumentsApproved($user, $userDocumentSubmissionRepository);
 
         return $this->documentUploadResponse(
@@ -445,6 +463,24 @@ final class DashboardController extends AbstractController
     {
         return $documentRequest->getSubmissionCount()
             >= ($documentRequest->getRequiredDocument()?->getMaxSubmissions() ?? 0);
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function adminNotificationRequiredDocumentIds(Request $request): array
+    {
+        $requiredDocumentIds = $request->request->all('adminNotificationRequiredDocumentIds');
+
+        return array_values(array_unique(array_filter(
+            array_map(
+                static fn (mixed $requiredDocumentId): int => is_numeric($requiredDocumentId)
+                    ? (int) $requiredDocumentId
+                    : 0,
+                $requiredDocumentIds,
+            ),
+            static fn (int $requiredDocumentId): bool => $requiredDocumentId > 0,
+        )));
     }
 
     private function detectCountryFromIp(

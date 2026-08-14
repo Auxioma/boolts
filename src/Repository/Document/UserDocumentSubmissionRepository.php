@@ -118,4 +118,58 @@ final class UserDocumentSubmissionRepository extends ServiceEntityRepository
 
         return $requiredDocumentCount === $matchingRequiredDocumentCount;
     }
+
+    /**
+     * @param list<int> $requiredDocumentIds
+     * @param list<DocumentSubmissionStatus> $statuses
+     *
+     * @return list<UserDocumentSubmission>
+     */
+    public function findLatestForUserAndRequiredDocuments(
+        User $user,
+        array $requiredDocumentIds,
+        array $statuses = [],
+    ): array {
+        $requiredDocumentIds = array_values(array_unique(array_filter(
+            $requiredDocumentIds,
+            static fn (int $requiredDocumentId): bool => $requiredDocumentId > 0,
+        )));
+
+        if ([] === $requiredDocumentIds) {
+            return [];
+        }
+
+        $queryBuilder = $this->createQueryBuilder('submission')
+            ->innerJoin('submission.documentRequest', 'documentRequest')
+            ->innerJoin('documentRequest.requiredDocument', 'requiredDocument')
+            ->andWhere('documentRequest.user = :user')
+            ->andWhere('requiredDocument.id IN (:requiredDocumentIds)')
+            ->andWhere(sprintf(
+                'NOT EXISTS (
+                    SELECT newerSubmission.id
+                    FROM %s newerSubmission
+                    WHERE newerSubmission.documentRequest = documentRequest
+                    AND newerSubmission.attemptNumber > submission.attemptNumber
+                )',
+                UserDocumentSubmission::class,
+            ))
+            ->setParameter('user', $user)
+            ->setParameter('requiredDocumentIds', $requiredDocumentIds)
+            ->orderBy('requiredDocument.position', 'ASC')
+            ->addOrderBy('requiredDocument.name', 'ASC');
+
+        if ([] !== $statuses) {
+            $queryBuilder
+                ->andWhere('submission.status IN (:statuses)')
+                ->setParameter(
+                    'statuses',
+                    array_map(
+                        static fn (DocumentSubmissionStatus $status): string => $status->value,
+                        $statuses,
+                    ),
+                );
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

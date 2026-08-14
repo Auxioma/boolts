@@ -325,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const isRequired = (form) => form.dataset.requiredDocument === 'true';
+    const getRequiredDocumentId = (form) => form.querySelector('[name="ask_documents[requiredDocument]"]')?.value || '';
     const isSatisfied = (form) => {
         const input = form.querySelector('[data-document-upload]');
 
@@ -337,12 +338,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         continueButton.disabled = !allRequiredDocumentsSelected;
     };
-    const uploadForm = async (form) => {
+    const uploadForm = async (form, options = {}) => {
         const input = form.querySelector('[data-document-upload]');
         const status = form.querySelector('[data-upload-status]');
         const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
         const formData = new FormData(form);
         const originalFileName = input.files[0]?.name ?? '';
+
+        if (options.notifyAdmin === true) {
+            formData.append('notifyAdmin', '1');
+
+            (options.adminNotificationDocumentIds || []).forEach((requiredDocumentId) => {
+                formData.append('adminNotificationRequiredDocumentIds[]', requiredDocumentId);
+            });
+        }
 
         input.disabled = true;
         status.textContent = 'Téléversement en cours…';
@@ -460,8 +469,22 @@ document.addEventListener('DOMContentLoaded', () => {
         continueButton.textContent = 'Téléversement en cours…';
 
         try {
-            for (const form of formsToUpload) {
-                const result = await uploadForm(form);
+            const adminNotificationDocumentIds = [...new Set(forms
+                .filter((form) => {
+                    const input = form.querySelector('[data-document-upload]');
+
+                    return (input.files.length && form.dataset.uploaded !== 'true')
+                        || (form.dataset.uploaded === 'true' && form.dataset.submissionStatus === 'pending');
+                })
+                .map(getRequiredDocumentId)
+                .filter(Boolean)
+            )];
+
+            for (const [index, form] of formsToUpload.entries()) {
+                const result = await uploadForm(form, {
+                    notifyAdmin: index === formsToUpload.length - 1,
+                    adminNotificationDocumentIds,
+                });
                 continueButton.dataset.documentsComplete = result.documentsComplete ? 'true' : 'false';
             }
 
