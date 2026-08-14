@@ -69,19 +69,19 @@
                                             autocomplete="off"
                                         >
 
-                                        {% if app.request.query.get('sort') %}
+                                        {% if app.request.query.get('order') %}
                                             <input
                                                 type="hidden"
-                                                name="sort"
-                                                value="{{ app.request.query.get('sort') }}"
+                                                name="order"
+                                                value="{{ app.request.query.get('order') }}"
                                             >
                                         {% endif %}
 
-                                        {% if app.request.query.get('direction') %}
+                                        {% if app.request.query.get('orderDirection') %}
                                             <input
                                                 type="hidden"
-                                                name="direction"
-                                                value="{{ app.request.query.get('direction') }}"
+                                                name="orderDirection"
+                                                value="{{ app.request.query.get('orderDirection') }}"
                                             >
                                         {% endif %}
 
@@ -121,16 +121,136 @@
                                         Filtres
                                     </button>
 
-                                    <a
-                                        href="{{ path('agence_immobiliere_mes_biens_list', {
-                                            sort: 'createdAt',
-                                            direction: 'DESC'
-                                        }) }}"
-                                        class="btn-dashboard-filter"
-                                    >
-                                        <i class="icon-arrow-down-up"></i>
-                                        Trier
-                                    </a>
+                                    <div class="property-sort">
+
+                                        <button
+                                            type="button"
+                                            class="btn-dashboard-filter property-sort-trigger"
+                                            aria-expanded="false"
+                                        >
+                                            <i class="icon-arrow-down-up"></i>
+                                            Trier
+                                        </button>
+
+                                        <div class="property-sort-menu">
+
+                                            <a
+                                                href="{{ path(
+                                                    'agence_immobiliere_mes_biens_list',
+                                                    app.request.query.all|merge({
+                                                        order: 'p.createdAt',
+                                                        orderDirection: 'DESC',
+                                                        page: 1
+                                                    })
+                                                ) }}"
+                                                class="{{
+                                                    app.request.query.get('order', 'p.createdAt') == 'p.createdAt'
+                                                    and app.request.query.get('orderDirection', 'DESC') == 'DESC'
+                                                        ? 'active'
+                                                        : ''
+                                                }}"
+                                            >
+                                                Date d’ajout (récent → ancien)
+                                            </a>
+
+                                            <a
+                                                href="{{ path(
+                                                    'agence_immobiliere_mes_biens_list',
+                                                    app.request.query.all|merge({
+                                                        order: 'p.createdAt',
+                                                        orderDirection: 'ASC',
+                                                        page: 1
+                                                    })
+                                                ) }}"
+                                                class="{{
+                                                    app.request.query.get('order') == 'p.createdAt'
+                                                    and app.request.query.get('orderDirection') == 'ASC'
+                                                        ? 'active'
+                                                        : ''
+                                                }}"
+                                            >
+                                                Date d’ajout (ancien → récent)
+                                            </a>
+
+                                            <a
+                                                href="{{ path(
+                                                    'agence_immobiliere_mes_biens_list',
+                                                    app.request.query.all|merge({
+                                                        order: 'p.views',
+                                                        orderDirection: 'DESC',
+                                                        page: 1
+                                                    })
+                                                ) }}"
+                                                class="{{
+                                                    app.request.query.get('order') == 'p.views'
+                                                    and app.request.query.get('orderDirection') == 'DESC'
+                                                        ? 'active'
+                                                        : ''
+                                                }}"
+                                            >
+                                                Vues (plus → moins)
+                                            </a>
+
+                                            <a
+                                                href="{{ path(
+                                                    'agence_immobiliere_mes_biens_list',
+                                                    app.request.query.all|merge({
+                                                        order: 'p.views',
+                                                        orderDirection: 'ASC',
+                                                        page: 1
+                                                    })
+                                                ) }}"
+                                                class="{{
+                                                    app.request.query.get('order') == 'p.views'
+                                                    and app.request.query.get('orderDirection') == 'ASC'
+                                                        ? 'active'
+                                                        : ''
+                                                }}"
+                                            >
+                                                Vues (moins → plus)
+                                            </a>
+
+                                            <a
+                                                href="{{ path(
+                                                    'agence_immobiliere_mes_biens_list',
+                                                    app.request.query.all|merge({
+                                                        order: 'favorisCount',
+                                                        orderDirection: 'DESC',
+                                                        page: 1
+                                                    })
+                                                ) }}"
+                                                class="{{
+                                                    app.request.query.get('order') == 'favorisCount'
+                                                    and app.request.query.get('orderDirection') == 'DESC'
+                                                        ? 'active'
+                                                        : ''
+                                                }}"
+                                            >
+                                                Favoris (plus → moins)
+                                            </a>
+
+                                            <a
+                                                href="{{ path(
+                                                    'agence_immobiliere_mes_biens_list',
+                                                    app.request.query.all|merge({
+                                                        order: 'favorisCount',
+                                                        orderDirection: 'ASC',
+                                                        page: 1
+                                                    })
+                                                ) }}"
+                                                class="{{
+                                                    app.request.query.get('order') == 'favorisCount'
+                                                    and app.request.query.get('orderDirection') == 'ASC'
+                                                        ? 'active'
+                                                        : ''
+                                                }}"
+                                            >
+                                                Favoris (moins → plus)
+                                            </a>
+
+                                        </div>
+
+                                    </div>
 
                                 </div>
 
@@ -436,5 +556,50 @@
     totalResults: properties.getTotalItemCount,
     filterCountUrl: path('agence_immobiliere_mes_biens_filters_count')
 } %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const sort = document.querySelector('.property-sort');
+
+    if (!sort) {
+        return;
+    }
+
+    const trigger = sort.querySelector('.property-sort-trigger');
+    const menu = sort.querySelector('.property-sort-menu');
+
+    if (!trigger || !menu) {
+        return;
+    }
+
+    trigger.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const opened = sort.classList.toggle('is-open');
+
+        trigger.setAttribute(
+            'aria-expanded',
+            opened ? 'true' : 'false'
+        );
+    });
+
+    menu.addEventListener('click', function (event) {
+        event.stopPropagation();
+    });
+
+    document.addEventListener('click', function (event) {
+        if (sort.contains(event.target)) {
+            return;
+        }
+
+        sort.classList.remove('is-open');
+        trigger.setAttribute(
+            'aria-expanded',
+            'false'
+        );
+    });
+});
+</script>
 
 {% endblock %}

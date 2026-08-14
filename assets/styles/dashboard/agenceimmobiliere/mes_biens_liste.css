@@ -315,3 +315,60 @@ OUTILS DASHBOARD
     align-items: center;
     justify-content: center;
 }
+
+.agence-mes-biens-list .property-sort {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.agence-mes-biens-list .property-sort-trigger {
+    cursor: pointer;
+}
+
+.agence-mes-biens-list .property-sort-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 1000;
+    display: none;
+    width: 290px;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #EBECEC;
+    border-radius: 12px;
+    background: #FFFFFF;
+    box-shadow: 0 12px 30px rgba(11, 15, 20, .12);
+}
+
+.agence-mes-biens-list .property-sort.is-open .property-sort-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.agence-mes-biens-list .property-sort-menu a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 18px;
+    color: #0B0F14;
+    background: #FFFFFF;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    text-decoration: none;
+    transition: .15s ease;
+}
+
+.agence-mes-biens-list .property-sort-menu a:hover {
+    background: #F8F8F8;
+    color: #0B0F14;
+}
+
+.agence-mes-biens-list .property-sort-menu a.active {
+    background: #5D00FF;
+    color: #FFFFFF;
+}
+
+.agence-mes-biens-list .property-sort-menu a + a {
+    border-top: 1px solid #F2F2F2;
+}

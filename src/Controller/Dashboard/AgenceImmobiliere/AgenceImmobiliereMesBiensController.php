@@ -54,14 +54,14 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         );
 
         $sort = $request->query->getString(
-            'sort',
-            'p.createdAt'
-        );
+                'order',
+                'p.createdAt'
+            );
 
         $direction = $request->query->getString(
-            'direction',
-            'DESC'
-        );
+                'orderDirection',
+                'DESC'
+            );
 
         $filter = new ModalFilter();
 
