@@ -509,6 +509,12 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     ): Response {
         $session = $request->getSession();
 
+        if ($request->isMethod('GET') && $request->query->has('token')) {
+            $this->clearMesBiensSession(
+                $session
+            );
+        }
+
         $step = $request->query->getInt(
             'step',
             1

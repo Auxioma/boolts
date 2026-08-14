@@ -14,6 +14,7 @@ namespace App\Controller\Authentification\AgenceImmobiliere;
 
 use App\Form\Authentification\CompleteProfileType;
 use App\Repository\UserRepository;
+use App\Service\Billing\FreeAgencySubscriptionActivator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,8 +50,14 @@ final class AgenceImmobiliereProfileController extends AbstractController
     /**
      * Handles the completeProfile controller action.
      */
-    public function completeProfile(Request $request, UserRepository $userRepository, EntityManagerInterface $em, Security $security, UserPasswordHasherInterface $userPasswordHasher): Response
-    {
+    public function completeProfile(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $em,
+        Security $security,
+        UserPasswordHasherInterface $userPasswordHasher,
+        FreeAgencySubscriptionActivator $freeAgencySubscriptionActivator,
+    ): Response {
         $session = $request->getSession();
         $authUserId = $session->get('auth_user_id');
 
@@ -73,6 +80,7 @@ final class AgenceImmobiliereProfileController extends AbstractController
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             $user->setIsVerified(true);
+            $freeAgencySubscriptionActivator->activate($user);
             $em->flush();
 
             /** Send confirmation email */
