@@ -105,6 +105,40 @@
                     </div>
                 </div>
 
+                {% if showLimitAnnonceModal|default(false) %}
+                    <div class="boolts-limit-modal__backdrop" aria-hidden="true"></div>
+
+                    <div
+                        id="limitAnnonceModal"
+                        class="boolts-limit-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="limitAnnonceModalTitle"
+                        aria-describedby="limitAnnonceModalDescription"
+                    >
+                        <div class="boolts-limit-modal__content">
+                            <div class="boolts-limit-modal__text">
+                                <h2 id="limitAnnonceModalTitle" class="boolts-limit-modal__title">
+                                    Vous avez atteint la limite<br>
+                                    de dépôt d’annonces
+                                </h2>
+
+                                <p id="limitAnnonceModalDescription" class="boolts-limit-modal__description">
+                                    Vous avez atteint la limite de dépôt d’annonces de votre forfait actuel.
+                                    Pour pouvoir publier davantage d’annonces sur Boolts, rendez-vous sur nos offres d’abonnements.
+                                </p>
+                            </div>
+
+                            <a
+                                href="{{ abonnementUrl|default('#') }}"
+                                class="boolts-limit-modal__button"
+                            >
+                                Voir les abonnements
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+
             </div>
         </div>
     </main>
@@ -120,6 +154,115 @@
             font-style: normal;
             font-weight: 700;
             line-height: 20px;
+        }
+
+
+        /* Modal Figma - node 5400:14709 */
+        .boolts-limit-modal__backdrop {
+            position: fixed;
+            z-index: 1050;
+            top: 75px;
+            right: 0;
+            bottom: 85px;
+            left: 16.666667%;
+            background: rgba(255, 255, 255, 0.22);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+        }
+
+        .boolts-limit-modal {
+            position: fixed;
+            z-index: 1055;
+            top: calc(50% - 55px);
+            left: 58.333333%;
+            transform: translate(-50%, -50%);
+            width: 549px;
+            max-width: calc(100vw - 48px);
+            background: #FFF;
+            border-radius: 24px;
+            box-shadow: 0 4px 12.05px rgba(0, 0, 0, 0.16);
+        }
+
+        .boolts-limit-modal__content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            padding: 24px;
+        }
+
+        .boolts-limit-modal__text {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .boolts-limit-modal__title {
+            width: 100%;
+            margin: 0;
+            color: #0B0F14;
+            font-family: 'Eudoxus Sans', sans-serif;
+            font-size: 30px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 34px;
+        }
+
+        .boolts-limit-modal__description {
+            width: 100%;
+            margin: 0;
+            color: #858789;
+            font-family: 'Eudoxus Sans', sans-serif;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 20px;
+        }
+
+        .boolts-limit-modal__button {
+            display: inline-flex;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border-radius: 50px;
+            background: #5D00FF;
+            color: #FFF;
+            font-family: 'Eudoxus Sans', sans-serif;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 20px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .boolts-limit-modal__button:hover,
+        .boolts-limit-modal__button:focus-visible {
+            color: #FFF;
+            text-decoration: none;
+        }
+
+        @media (max-width: 991.98px) {
+            .boolts-limit-modal__backdrop {
+                top: 0;
+                bottom: 0;
+                left: 0;
+            }
+
+            .boolts-limit-modal {
+                left: 50%;
+                width: calc(100vw - 32px);
+                max-width: 549px;
+            }
+
+            .boolts-limit-modal__title {
+                font-size: 26px;
+                line-height: 30px;
+            }
         }
     </style>
 

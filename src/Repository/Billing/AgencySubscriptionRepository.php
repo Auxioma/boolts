@@ -13,6 +13,7 @@
 namespace App\Repository\Billing;
 
 use App\Entity\Billing\AgencySubscription;
+use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,6 +34,28 @@ final class AgencySubscriptionRepository extends ServiceEntityRepository
             ->leftJoin('subscription.planPrice', 'price')
             ->where('subscription.agency = :agency')
             ->setParameter('agency', $agency)
+            ->orderBy('subscription.startedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findLatestQuotaForAgency(User $agency): ?AgencySubscription
+    {
+        return $this->createQueryBuilder('subscription')
+            ->addSelect('plan', 'price')
+            ->innerJoin('subscription.plan', 'plan')
+            ->leftJoin('subscription.planPrice', 'price')
+            ->where('subscription.agency = :agency')
+            ->andWhere('subscription.status IN (:statuses)')
+            ->setParameter('agency', $agency)
+            ->setParameter(
+                'statuses',
+                [
+                    SubscriptionStatus::FREE,
+                    SubscriptionStatus::ACTIVE,
+                ]
+            )
             ->orderBy('subscription.startedAt', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
