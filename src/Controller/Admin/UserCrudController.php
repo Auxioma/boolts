@@ -18,6 +18,7 @@ use App\Entity\Enum\DocumentRequestStatus;
 use App\Entity\User;
 use App\Field\UserDocumentsField;
 use App\Repository\Document\RequiredDocumentRepository;
+use App\Service\Document\ClientDocumentNotificationMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
@@ -305,6 +306,7 @@ class UserCrudController extends AbstractCrudController
         UserDocumentSubmission $submission,
         Request $request,
         EntityManagerInterface $entityManager,
+        ClientDocumentNotificationMailer $clientDocumentNotificationMailer,
     ): Response {
         $documentRequest = $this->documentRequestForUser($user, $submission);
         $tokenId = 'approve_document_'.$submission->getId();
@@ -337,6 +339,8 @@ class UserCrudController extends AbstractCrudController
         $documentRequest->markAsCompleted();
         $entityManager->flush();
 
+        $clientDocumentNotificationMailer->sendApprovedDocumentNotification($user, $submission);
+
         return $this->documentActionResponse(
             $request,
             $user,
@@ -358,6 +362,7 @@ class UserCrudController extends AbstractCrudController
         UserDocumentSubmission $submission,
         Request $request,
         EntityManagerInterface $entityManager,
+        ClientDocumentNotificationMailer $clientDocumentNotificationMailer,
     ): Response {
         $documentRequest = $this->documentRequestForUser($user, $submission);
         $tokenId = 'reject_document_'.$submission->getId();
@@ -401,6 +406,8 @@ class UserCrudController extends AbstractCrudController
         $submission->reject($administrator, $reason);
         $documentRequest->setStatus(DocumentRequestStatus::REJECTED);
         $entityManager->flush();
+
+        $clientDocumentNotificationMailer->sendRejectedDocumentNotification($user, $submission);
 
         return $this->documentActionResponse(
             $request,

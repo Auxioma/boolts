@@ -1,0 +1,373 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #EBECEC;
+    color: #0B0F14;
+    font-family: Inter, Arial, Helvetica, sans-serif;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+img {
+    display: block;
+    border: 0;
+    outline: none;
+    text-decoration: none;
+}
+
+a {
+    color: #5D00FF;
+}
+
+
+/* =========================================================
+   CONTAINER
+   ========================================================= */
+
+.mail-wrapper {
+    width: 100%;
+    background: #EBECEC;
+}
+
+.mail-container {
+    width: 600px;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #FFFFFF;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.mail-header {
+    background: #5D00FF;
+
+    padding-top: 40px;
+    padding-right: 34px;
+    padding-bottom: 40px;
+    padding-left: 34px;
+}
+
+.brand-table {
+    width: auto;
+}
+
+.brand-logo {
+    display: block;
+    width: 204px;
+    height: auto;
+}
+
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+
+.mail-main {
+    padding-top: 70px;
+    padding-right: 34px;
+    padding-bottom: 100px;
+    padding-left: 34px;
+}
+
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.mail-title {
+    margin: 0 0 50px 0;
+
+    color: #0B0F14;
+
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    line-height: 34px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TEXT
+   ========================================================= */
+
+.mail-text {
+    margin: 0;
+
+    color: #0B0F14;
+
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+}
+
+
+/* =========================================================
+   BUTTON
+   ========================================================= */
+
+.button-wrapper {
+    margin-top: 30px;
+}
+
+.primary-button {
+    display: inline-block;
+
+    min-height: 20px;
+
+    padding-top: 12px;
+    padding-right: 16px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+
+    background: #5D00FF;
+
+    border-radius: 50px;
+
+    color: #FFFFFF !important;
+
+    font-family: "Eudoxus Sans", Inter, Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   SUPPORT
+   ========================================================= */
+
+.support-block {
+    margin-top: 50px;
+}
+
+.support-block p {
+    margin: 0;
+
+    color: #0B0F14;
+
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+}
+
+.support-block a {
+    color: #5D00FF;
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer-top {
+    padding-top: 16px;
+    padding-right: 34px;
+    padding-bottom: 16px;
+    padding-left: 34px;
+
+    background: #FFFFFF;
+
+    border-top: 1px solid #EBECEC;
+    border-bottom: 1px solid #EBECEC;
+}
+
+.footer-column {
+    width: 50%;
+}
+
+.footer-column-right {
+    width: 50%;
+    text-align: right;
+}
+
+
+/* =========================================================
+   BOOLTS FOOTER
+   ========================================================= */
+
+.footer-brand {
+    margin: 0 0 24px 0;
+
+    color: #0B0F14;
+
+    font-family: "Eudoxus Sans", Inter, Arial, Helvetica, sans-serif;
+    font-size: 30px;
+    line-height: 30px;
+    font-weight: 700;
+}
+
+.footer-address {
+    color: #241C15;
+
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: normal;
+    font-weight: 400;
+}
+
+.footer-address p {
+    margin: 0;
+}
+
+
+/* =========================================================
+   SOCIAL
+   ========================================================= */
+
+.social-icons {
+    padding-bottom: 18px;
+    text-align: right;
+}
+
+.social-icons a {
+    display: inline-block;
+    margin-left: 16px;
+}
+
+.social-icons img {
+    display: inline-block;
+
+    width: 20px;
+    height: 20px;
+}
+
+
+/* =========================================================
+   FOOTER LINKS
+   ========================================================= */
+
+.footer-links {
+    text-align: right;
+
+    color: #241C15;
+
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: normal;
+}
+
+.footer-links p {
+    margin: 0 0 4px 0;
+}
+
+.footer-links a {
+    color: #241C15;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   LEGAL
+   ========================================================= */
+
+.footer-legal {
+    padding-top: 16px;
+    padding-right: 34px;
+    padding-bottom: 34px;
+    padding-left: 34px;
+
+    background: #FFFFFF;
+
+    color: #241C15;
+
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    line-height: normal;
+    font-weight: 400;
+}
+
+.footer-legal p {
+    margin: 0;
+}
+
+.footer-legal a {
+    color: #5D00FF;
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media only screen and (max-width: 600px) {
+
+    .mail-container {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .mail-header {
+        padding: 32px 24px !important;
+    }
+
+    .brand-logo {
+        width: 180px !important;
+    }
+
+    .mail-main {
+        padding-top: 55px !important;
+        padding-right: 24px !important;
+        padding-bottom: 75px !important;
+        padding-left: 24px !important;
+    }
+
+    .mail-title {
+        margin-bottom: 40px !important;
+
+        font-size: 28px !important;
+        line-height: 33px !important;
+    }
+
+    .primary-button {
+        font-size: 15px !important;
+    }
+
+    .support-block {
+        margin-top: 42px !important;
+    }
+
+    .footer-top {
+        padding: 18px 24px !important;
+    }
+
+    .footer-column,
+    .footer-column-right {
+        display: block !important;
+
+        width: 100% !important;
+
+        text-align: left !important;
+    }
+
+    .footer-column-right {
+        padding-top: 24px !important;
+    }
+
+    .social-icons,
+    .footer-links {
+        text-align: left !important;
+    }
+
+    .social-icons a {
+        margin-right: 16px !important;
+        margin-left: 0 !important;
+    }
+
+    .footer-legal {
+        padding: 18px 24px 32px !important;
+    }
+}
