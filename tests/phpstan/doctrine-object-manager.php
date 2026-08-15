@@ -11,16 +11,10 @@
  */
 
 use App\Kernel;
-use Doctrine\ORM\EntityManagerInterface;
 
-require dirname(__DIR__, 2).'/vendor/autoload.php';
+require_once dirname(__DIR__, 2).'/phpstan-bootstrap.php';
 
-$kernel = new Kernel('dev', true);
+$kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
 $kernel->boot();
 
-/** @var EntityManagerInterface $entityManager */
-$entityManager = $kernel->getContainer()
-    ->get('doctrine')
-    ->getManager();
-
-return $entityManager;
+return $kernel->getContainer()->get('doctrine');
