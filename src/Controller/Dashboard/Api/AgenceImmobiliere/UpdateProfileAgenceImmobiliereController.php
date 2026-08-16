@@ -66,12 +66,12 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->json([
+            return $this->json(array_merge([
                 'success' => true,
                 'message' => 'Les modifications ont été effectuées avec succès !',
                 'imageName' => $user->getImageName(),
                 'imageSize' => $user->getImageSize(),
-            ]);
+            ], $this->getPublicProfilePayload($user)));
         }
 
         $data = json_decode($request->getContent(), true);
@@ -133,12 +133,12 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->json([
+            return $this->json(array_merge([
                 'success' => true,
                 'message' => 'Les modifications ont été effectuées avec succès !',
                 'field' => $field,
                 'value' => '*****************',
-            ]);
+            ], $this->getPublicProfilePayload($user)));
         }
 
         if (\in_array($field, ['horaireOuvertures', 'openingHours', 'horaireOuverture'], true)) {
@@ -160,12 +160,12 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->json([
+            return $this->json(array_merge([
                 'success' => true,
                 'message' => 'Les horaires ont été enregistrés avec succès !',
                 'field' => $field,
                 'value' => $value,
-            ]);
+            ], $this->getPublicProfilePayload($user)));
         }
 
         if ('langueParlers' === $field) {
@@ -194,12 +194,12 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->json([
+            return $this->json(array_merge([
                 'success' => true,
                 'message' => 'Les langues parlées ont été enregistrées avec succès !',
                 'field' => $field,
                 'value' => $value,
-            ]);
+            ], $this->getPublicProfilePayload($user)));
         }
 
         $form = $this->createForm(ProfileAgenceType::class, $user);
@@ -241,12 +241,12 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             $entityManager->flush();
 
-            return $this->json([
+            return $this->json(array_merge([
                 'success' => true,
                 'message' => 'Les modifications ont été effectuées avec succès !',
                 'field' => $field,
                 'value' => $value,
-            ]);
+            ], $this->getPublicProfilePayload($user)));
         }
 
         if (!$field || !$form->has($field)) {
@@ -276,13 +276,29 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->json([
+        return $this->json(array_merge([
             'success' => true,
             'message' => 'Les modifications ont été effectuées avec succès !',
             'field' => $field,
             'value' => $value,
             'whatsApp' => $data['whatsApp'] ?? null,
-        ]);
+        ], $this->getPublicProfilePayload($user)));
+    }
+
+    private function getPublicProfilePayload(User $user): array
+    {
+        $slug = $user->getSlug();
+
+        return [
+            'publicProfileUrl' => $this->hasFilledValue($slug)
+                ? $this->generateUrl('app_public_detail_agence', ['slug' => $slug])
+                : null,
+        ];
+    }
+
+    private function hasFilledValue(?string $value): bool
+    {
+        return '' !== trim($value ?? '');
     }
 
     private function hasAtLeastOneOpeningHour(array $openingHours): bool

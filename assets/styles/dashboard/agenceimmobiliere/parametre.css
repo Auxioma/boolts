@@ -225,6 +225,15 @@
     line-height: 20px;
 }
 
+.fiche-public a.is-disabled,
+.fiche-public a.is-disabled:hover {
+    border-color: #EBECEC;
+    background: #FFFFFF;
+    color: #858789;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 .complete-profile {
     border-radius: 10px;
     border: 2px solid #5D00FF;

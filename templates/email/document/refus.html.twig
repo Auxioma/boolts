@@ -1,0 +1,326 @@
+{#
+ Template: templates/email/document/refus.html.twig
+ Figma: BOOLTS - node 5738:13589
+ Role: Email envoyé lorsqu'un ou plusieurs documents d'une agence sont refusés.
+#}
+
+{% apply inline_css(source('email/document/style.css')) %}
+<!DOCTYPE html>
+
+<html lang="{{ app.request.locale|default('fr') }}">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Un ou plusieurs de vos documents n’ont pas été acceptés
+    </title>
+</head>
+
+<body>
+
+<table
+    role="presentation"
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="mail-wrapper"
+>
+    <tr>
+        <td align="center">
+
+            <table
+                role="presentation"
+                width="600"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                class="mail-container"
+            >
+
+                {# ======================================================
+                   HEADER
+                   FIGMA 5738:13590
+                   ====================================================== #}
+
+                <tr>
+                    <td class="mail-header">
+
+                        <table
+                            role="presentation"
+                            cellpadding="0"
+                            cellspacing="0"
+                            border="0"
+                            class="brand-table"
+                        >
+                            <tr>
+
+                                <td valign="middle">
+
+                                    <img
+                                        src="{{ absolute_url(asset('images/logo/mail.svg')) }}"
+                                        alt="Boolts"
+                                        class="brand-logo"
+                                        width="204"
+                                    >
+
+                                </td>
+
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+
+                {# ======================================================
+                   CONTENU PRINCIPAL
+                   FIGMA 5738:13598
+                   ====================================================== #}
+
+                <tr>
+                    <td class="mail-main">
+
+                        {# TITRE FIGMA 5738:13600 #}
+
+                        <h1 class="mail-title">
+                            Un ou plusieurs de vos documents n’ont pas été acceptés
+                        </h1>
+
+
+                        {# TEXTE FIGMA 5738:13602 #}
+
+                        <p class="mail-text">
+                            Bonjour {{ agenceName|default('AGENCE_NAME') }},
+                            après vérification, un ou plusieurs de vos documents
+                            ne répondent pas aux critères nécessaires.
+                            Consultez votre tableau de bord pour connaître les motifs
+                            du refus et effectuer les modifications demandées.
+                        </p>
+
+
+                        {# BOUTON FIGMA 5738:13603 #}
+
+                        <table
+                            role="presentation"
+                            cellpadding="0"
+                            cellspacing="0"
+                            border="0"
+                            class="button-wrapper"
+                        >
+                            <tr>
+
+                                <td>
+
+                                    <a
+                                        href="{{ dashboardUrl|default('#') }}"
+                                        class="primary-button"
+                                    >
+                                        Aller à mon tableau de bord
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        </table>
+
+
+                        {# SUPPORT FIGMA 5738:13605 #}
+
+                        <div class="support-block">
+
+                            <p>
+                                Vous avez des soucis pour vous connecter ?
+                                <br>
+
+                                Contactez notre support :
+                                <a href="mailto:contact@boolts.com">
+                                    contact@boolts.com
+                                </a>
+                            </p>
+
+                        </div>
+
+                    </td>
+                </tr>
+
+
+                {# ======================================================
+                   FOOTER
+                   FIGMA 5738:13606
+                   ====================================================== #}
+
+                <tr>
+
+                    <td class="footer-top">
+
+                        <table
+                            role="presentation"
+                            width="100%"
+                            cellpadding="0"
+                            cellspacing="0"
+                            border="0"
+                        >
+
+                            <tr>
+
+                                {# COLONNE GAUCHE #}
+
+                                <td
+                                    width="50%"
+                                    valign="bottom"
+                                    class="footer-column"
+                                >
+
+                                    <p class="footer-brand">
+                                        boolts
+                                    </p>
+
+                                    <div class="footer-address">
+
+                                        <p>
+                                            ©{{ 'now'|date('Y') }} Boolts
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+
+                                {# COLONNE DROITE #}
+
+                                <td
+                                    width="50%"
+                                    valign="bottom"
+                                    align="right"
+                                    class="footer-column-right"
+                                >
+
+                                    {# RÉSEAUX SOCIAUX #}
+
+                                    <div class="social-icons">
+
+                                        <a
+                                            href="{{ instagramUrl|default('#') }}"
+                                            target="_blank"
+                                            aria-label="Instagram"
+                                        >
+
+                                            <img
+                                                src="{{ absolute_url(asset('images/logo/instagram.svg')) }}"
+                                                alt="Instagram"
+                                                width="20"
+                                                height="20"
+                                            >
+
+                                        </a>
+
+
+                                        <a
+                                            href="{{ facebookUrl|default('#') }}"
+                                            target="_blank"
+                                            aria-label="Facebook"
+                                        >
+
+                                            <img
+                                                src="{{ absolute_url(asset('images/logo/facebook.svg')) }}"
+                                                alt="Facebook"
+                                                width="20"
+                                                height="20"
+                                            >
+
+                                        </a>
+
+                                    </div>
+
+
+                                    {# LIENS FOOTER #}
+
+                                    <div class="footer-links">
+
+                                        <p>
+
+                                            <a
+                                                href="{{ cguUrl|default('#') }}"
+                                                target="_blank"
+                                            >
+                                                CGU
+                                            </a>
+
+                                        </p>
+
+                                        <p>
+
+                                            <a
+                                                href="{{ contactUrl|default('#') }}"
+                                                target="_blank"
+                                            >
+                                                Nous contacter
+                                            </a>
+
+                                        </p>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </td>
+
+                </tr>
+
+
+                {# ======================================================
+                   FOOTER LEGAL
+                   FIGMA 5738:13622
+                   ====================================================== #}
+
+                <tr>
+
+                    <td class="footer-legal">
+
+                        <p>
+                            Boolts is a registered trademark.
+                            Instagram and Facebook are trademarks of Meta Inc.,
+                            registered in the U.S. and other countries.
+
+                            <br>
+
+                            Vous avez reçu ce message parce que vous vous êtes
+                            inscrit sur notre site le
+                            {{ registrationDate|default('26/02/2026') }}.
+                        </p>
+
+                        <p>
+
+                            Vous ne souhaitez plus recevoir d’e-mail de notre part ?
+
+                            <a href="{{ unsubscribeUrl|default('#') }}">
+                                Cliquez ici.
+                            </a>
+
+                        </p>
+
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+
+</html>
+{% endapply %}

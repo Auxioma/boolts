@@ -6,1177 +6,1087 @@
 #}
 
 <div class="js-tab-content px-48 pb-92 contenue-des-page-des-parametres" id="cat1">
-    <div class="row">
-        <div class="col-10 mx-auto">
-            <h2 class="mb-0">Fiche agence</h2>
+	<div class="row">
+		<div class="col-10 mx-auto">
+			<h2 class="mb-0">Fiche agence</h2>
 
-            {% set profileItems = [
+			{% set profileItems = [
                 {
                     field: 'entreprise',
                     label: 'Ajouter un nom d’agence',
                     done: app.user.entreprise is not empty,
+                    selector: '#' ~ form.entreprise.vars.id,
                     optional: false,
                 },
                 {
                     field: 'description',
                     label: 'Ajouter une description',
                     done: app.user.description is not empty,
+                    selector: '#' ~ form.description.vars.id,
                     optional: false,
                 },
                 {
                     field: 'adresseContact',
                     label: 'Ajouter une adresse postale',
-                    done: app.user.adresseContact is not empty and app.user.codePostalContact is not empty and app.user.villeContact is not empty,
+                    done: app.user.adresseContact is not empty and app.user.codePostalContact is not empty and app.user.villeContact is not empty and app.user.paysContact is not empty,
+                    selector: '#' ~ form.adresseContact.vars.id ~ ', #' ~ form.codePostalContact.vars.id ~ ', #' ~ form.villeContact.vars.id ~ ', #' ~ form.paysContact.vars.id,
+                    mode: 'all',
+                    optional: false,
+                },
+                {
+                    field: 'langueParlers',
+                    label: 'Ajouter les langues parlées par l’agence',
+                    done: app.user.langueParlers is not empty,
+                    selector: '#' ~ form.langueParlers.vars.id,
                     optional: false,
                 },
                 {
                     field: 'emailContact',
                     label: 'Ajouter une adresse mail',
                     done: app.user.emailContact is not empty,
+                    selector: '#' ~ form.emailContact.vars.id,
                     optional: true,
                 },
                 {
                     field: 'numeroContact',
                     label: 'Ajouter un numéro',
                     done: app.user.numeroContact is not empty,
+                    selector: '#telephone-input',
                     optional: true,
                 },
             ] %}
 
-            {% set requiredItems = profileItems|filter(item => not item.optional) %}
-            {% set doneRequiredItems = requiredItems|filter(item => item.done) %}
+			{% set requiredItems = profileItems|filter(item => not item.optional) %}
+			{% set doneRequiredItems = requiredItems|filter(item => item.done) %}
 
-            {% set totalRequired = requiredItems|length %}
-            {% set totalDone = doneRequiredItems|length %}
+			{% set totalRequired = requiredItems|length %}
+			{% set totalDone = doneRequiredItems|length %}
 
-            {% set progress = totalRequired > 0 ? ((totalDone / totalRequired) * 100)|round : 0 %}
+			{% set progress = totalRequired > 0 ? ((totalDone / totalRequired) * 100)|round : 0 %}
+			{% set publicProfileUrl = app.user.slug is not empty ? path('app_public_detail_agence', {slug: app.user.slug}) : '' %}
+			{% set publicProfileReady = publicProfileUrl is not empty and totalDone == totalRequired %}
 
-            <div
-                class="complete-profile py-24 px-24 mt-32"
-                data-controller="profile-progress"
-            >
-                <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
+			<div class="complete-profile py-24 px-24 mt-32" data-controller="profile-progress">
+				<h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
 
-                <div class="progress my-12" style="height: 10px;">
-                    <div
-                        class="progress-bar"
-                        data-profile-progress-target="bar"
-                        role="progressbar"
-                        style="width: {{ progress }}%;"
-                        aria-valuenow="{{ progress }}"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                    ></div>
-                </div>
+				<div class="progress my-12" style="height: 10px;">
+					<div class="progress-bar" data-profile-progress-target="bar" role="progressbar" style="width: {{ progress }}%;" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+				</div>
 
-                {% for item in profileItems %}
-                    <p
-                        class="{{ loop.first ? 'mb-0' : 'mt-2 mb-0' }} {% if item.done %} active {% endif %}"
-                        data-profile-progress-target="item"
-                        data-field="{{ item.field }}"
-                        data-optional="{{ item.optional ? 'true' : 'false' }}"
-                        data-done="{{ item.done ? 'true' : 'false' }}"
-                    >
-            <span data-profile-progress-target="icon">
-                {% if item.done %}
-                    <i class="icon-check mr-8"></i>
-                {% endif %}
-            </span>
+				{% for item in profileItems %}
+					<p class="{{ loop.first ? 'mb-0' : 'mt-2 mb-0' }} {% if item.done %} active {% endif %}" data-profile-progress-target="item" data-field="{{ item.field }}" data-optional="{{ item.optional ? 'true' : 'false' }}" data-done="{{ item.done ? 'true' : 'false' }}" data-required-selector="{{ item.selector|default('') }}" data-required-mode="{{ item.mode|default('any') }}">
+						<span data-profile-progress-target="icon">
+							{% if item.done %}
+								<i class="icon-check mr-8"></i>
+							{% endif %}
+						</span>
 
-                        {{ item.label }}
+						{{ item.label }}
 
-                        {% if item.optional %}
-                            <span>(optionnel)</span>
-                        {% endif %}
-                    </p>
-                {% endfor %}
-            </div>
+						{% if item.optional %}
+							<span>(optionnel)</span>
+						{% endif %}
+					</p>
+				{% endfor %}
+			</div>
 
-            <div
-                class="card-information-public-profile my-32 py-18 px-24"
-                data-controller="field-save"
-                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
-                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
-            >
-                <div class="d-flex align-items-center gap-3">
-                    <div class="position-relative">
+			<div class="card-information-public-profile my-32 py-18 px-24" data-controller="field-save" data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}" data-field-save-csrf-value="{{ csrf_token('profile_edit') }}">
+				<div class="d-flex align-items-center gap-3">
+					<div class="position-relative">
 
-                        {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'imageFile') : null %}
-                        {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
+						{% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'imageFile') : null %}
+						{% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
 
-                        {% if avatar %}
-                            <img
-                                src="{{ avatar }}"
-                                alt="avatar"
-                                class="rounded-circle object-fit-cover js-avatar-preview"
-                                width="100"
-                                height="100"
-                            >
-                        {% elseif firstLetter %}
-                            <img
-                                src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}"
-                                alt="avatar"
-                                class="rounded-circle object-fit-cover js-avatar-preview"
-                                width="100"
-                                height="100"
-                            >
-                        {% endif %}
+						{% if avatar %}
+							<img src="{{ avatar }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+						{% elseif firstLetter %}
+							<img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+						{% endif %}
 
-                        <button
-                            class="btn btn-change-image rounded-pill position-absolute start-50 translate-middle-x"
-                            type="button"
-                            style="bottom: -12px;"
-                            id="change-image-button"
-                        >
-                            Modifier
-                        </button>
+						<button class="btn btn-change-image rounded-pill position-absolute start-50 translate-middle-x" type="button" style="bottom: -12px;" id="change-image-button">
+							Modifier
+						</button>
 
-                        {{ form_widget(form.imageFile, {
+						{{ form_widget(form.imageFile, {
                             attr: {
                                 class: 'd-none js-image-input',
                                 accept: 'image/*',
                             },
                         }) }}
-                    </div>
+					</div>
 
-                    <div class="d-flex flex-column w-100 formulaire formulaire-profile-public">
+					<div class="d-flex flex-column w-100 formulaire formulaire-profile-public">
 
-                        <div class="js-editable-field">
-                            <div class="w-100">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="js-field-value">
-                                        <h2 class="profile-public-name mb-0" id="entreprise-public-value">
-                                            {{ app.user.entreprise ?? 'Définissez le nom de votre agence' }}
-                                        </h2>
-                                    </div>
+						<div class="js-editable-field">
+							<div class="w-100">
+								<div class="d-flex align-items-center gap-2">
+									<div class="js-field-value">
+										<h2 class="profile-public-name mb-0" id="entreprise-public-value">
+											{{ app.user.entreprise ?? 'Définissez le nom de votre agence' }}
+										</h2>
+									</div>
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen"
-                                        data-action="click->field-save#handle"
-                                        data-field-save-field-param="entreprise"
-                                        data-field-save-input-param="#{{ form.entreprise.vars.id }}"
-                                        data-field-save-output-param="#entreprise-public-value"
-                                    >
-                                        <i class="icon-pen"></i>
-                                    </button>
-                                </div>
+									<button type="button" class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen" data-action="click->field-save#handle" data-field-save-field-param="entreprise" data-field-save-input-param="#{{ form.entreprise.vars.id }}" data-field-save-output-param="#entreprise-public-value">
+										<i class="icon-pen"></i>
+									</button>
+								</div>
 
-                                <div class="d-none js-field-input">
-                                    <div class="d-flex align-items-center gap-2 mt-2">
-                                        {{ form_widget(form.entreprise, {
+								<div class="d-none js-field-input">
+									<div class="d-flex align-items-center gap-2 mt-2">
+										{{ form_widget(form.entreprise, {
                                             attr: {
                                                 class: 'form-control w-75',
                                             },
                                         }) }}
 
-                                        <button
-                                            type="button"
-                                            class="btn btn-link p-0 text-decoration-none js-btn-save"
-                                            data-action="click->field-save#handle"
-                                            data-field-save-field-param="entreprise"
-                                            data-field-save-input-param="#{{ form.entreprise.vars.id }}"
-                                            data-field-save-output-param="#entreprise-public-value"
-                                        >
-                                            <i class="icon-save"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+										<button type="button" class="btn btn-link p-0 text-decoration-none js-btn-save" data-action="click->field-save#handle" data-field-save-field-param="entreprise" data-field-save-input-param="#{{ form.entreprise.vars.id }}" data-field-save-output-param="#entreprise-public-value">
+											<i class="icon-save"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                        <div class="js-editable-field mt-10">
-                            <div class="w-100">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="js-field-value" id="description-public-value">
-                                        <p class="profile-public-description mb-0">
-                                            {{ app.user.description ?? 'Rédigez une courte description ici.' }}
-                                        </p>
-                                    </div>
+						<div class="js-editable-field mt-10">
+							<div class="w-100">
+								<div class="d-flex align-items-center gap-2">
+									<div class="js-field-value" id="description-public-value">
+										<p class="profile-public-description mb-0">
+											{{ app.user.description ?? 'Rédigez une courte description ici.' }}
+										</p>
+									</div>
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen"
-                                        data-action="click->field-save#handle"
-                                        data-field-save-field-param="description"
-                                        data-field-save-input-param="#{{ form.description.vars.id }}"
-                                        data-field-save-output-param="#description-public-value"
-                                    >
-                                        <i class="icon-pen"></i>
-                                    </button>
-                                </div>
+									<button type="button" class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen" data-action="click->field-save#handle" data-field-save-field-param="description" data-field-save-input-param="#{{ form.description.vars.id }}" data-field-save-output-param="#description-public-value">
+										<i class="icon-pen"></i>
+									</button>
+								</div>
 
-                                <div class="d-none js-field-input">
-                                    <div class="d-flex align-items-center gap-2 mt-2">
-                                        {{ form_widget(form.description, {
+								<div class="d-none js-field-input">
+									<div class="d-flex align-items-center gap-2 mt-2">
+										{{ form_widget(form.description, {
                                             attr: {
                                                 class: 'form-control w-75',
                                             },
                                         }) }}
 
-                                        <button
-                                            type="button"
-                                            class="btn btn-link p-0 text-decoration-none js-btn-save"
-                                            data-action="click->field-save#handle"
-                                            data-field-save-field-param="description"
-                                            data-field-save-input-param="#{{ form.description.vars.id }}"
-                                            data-field-save-output-param="#description-public-value"
-                                        >
-                                            <i class="icon-save"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+										<button type="button" class="btn btn-link p-0 text-decoration-none js-btn-save" data-action="click->field-save#handle" data-field-save-field-param="description" data-field-save-input-param="#{{ form.description.vars.id }}" data-field-save-output-param="#description-public-value">
+											<i class="icon-save"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 
-                    </div>
-                </div>
+					</div>
+				</div>
 
-                <div class="d-inline-block"></div>
+				<div class="d-inline-block"></div>
 
-                <div class="connexion-securite mt-24 bg-white">
+				<div
+					class="connexion-securite mt-24 bg-white">
 
-                    {# Adresse de contact #}
-                    <div class="js-editable-field formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start pb-12 ligne-border-bottom">
-                            <div class="w-100">
-                                <h3 class="mb-0">Adresse de l’agence*</h3>
+					{# Adresse de contact #}
+					<div class="js-editable-field formulaire my-20">
+						<div class="d-flex justify-content-between align-items-start pb-12 ligne-border-bottom">
+							<div class="w-100">
+								<h3 class="mb-0">Adresse de l’agence*</h3>
 
-                                <p class="mt-12 mb-0 js-field-value" id="adresse-contact-value">
-                                    {% if app.user and app.user.adresseContact %}
-                                        {{ app.user.adresseContact }}
+								<p class="mt-12 mb-0 js-field-value" id="adresse-contact-value">
+									{% if app.user and app.user.adresseContact %}
+										{{ app.user.adresseContact }}
 
-                                        {% if app.user.codePostalContact or app.user.villeContact %}
-                                            , {{ app.user.codePostalContact }} {{ app.user.villeContact }}
-                                        {% endif %}
+										{% if app.user.codePostalContact or app.user.villeContact %}
+											,
+											{{ app.user.codePostalContact }}
+											{{ app.user.villeContact }}
+										{% endif %}
 
-                                        {% if app.user.paysContact %}
-                                            , {{ app.user.paysContact }}
-                                        {% endif %}
-                                    {% else %}
-                                        Saisissez votre adresse postale
-                                    {% endif %}
-                                </p>
+										{% if app.user.paysContact %}
+											,
+											{{ app.user.paysContact }}
+										{% endif %}
+									{% else %}
+										Saisissez votre adresse postale
+									{% endif %}
+								</p>
 
-                                <div class="mt-12 d-none js-field-input w-75">
-                                    <div class="mb-16">
-                                        {{ form_widget(form.adresseContact, {
+								<div class="mt-12 d-none js-field-input w-75">
+									<div class="mb-16">
+										{{ form_widget(form.adresseContact, {
                                             attr: {
                                                 class: 'form-control js-address-input',
                                                 placeholder: 'Entrez un numéro et un nom de rue',
                                                 'data-name': 'adresseContact',
                                             },
                                         }) }}
-                                    </div>
+									</div>
 
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="mb-16">
-                                                <label class="form-label mb-16">Code postal</label>
+									<div class="row">
+										<div class="col-6">
+											<div class="mb-16">
+												<label class="form-label mb-16">Code postal</label>
 
-                                                {{ form_widget(form.codePostalContact, {
+												{{ form_widget(form.codePostalContact, {
                                                     attr: {
                                                         class: 'form-control js-address-input',
                                                         placeholder: 'Entrez un code postal',
                                                         'data-name': 'codePostalContact',
                                                     },
                                                 }) }}
-                                            </div>
-                                        </div>
+											</div>
+										</div>
 
-                                        <div class="col-6">
-                                            <label class="form-label mb-16">Ville</label>
+										<div class="col-6">
+											<label class="form-label mb-16">Ville</label>
 
-                                            {{ form_widget(form.villeContact, {
+											{{ form_widget(form.villeContact, {
                                                 attr: {
                                                     class: 'form-control js-address-input',
                                                     placeholder: 'Choisissez une ville',
                                                     'data-name': 'villeContact',
                                                 },
                                             }) }}
-                                        </div>
-                                    </div>
+										</div>
+									</div>
 
-                                    <div>
-                                        <label class="form-label mb-16">Pays*</label>
+									<div>
+										<label class="form-label mb-16">Pays*</label>
 
-                                        {{ form_widget(form.paysContact, {
+										{{ form_widget(form.paysContact, {
                                             attr: {
                                                 class: 'form-control js-address-input',
                                                 placeholder: 'France',
                                                 'data-name': 'paysContact',
                                             },
                                         }) }}
-                                    </div>
-                                </div>
-                            </div>
+									</div>
+								</div>
+							</div>
 
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="adresseContact"
-                                data-field-save-multiple-param="true"
-                                data-field-save-output-param="#adresse-contact-value"
-                            >
-                                Définir
-                            </button>
-                        </div>
-                    </div>
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="adresseContact" data-field-save-multiple-param="true" data-field-save-output-param="#adresse-contact-value">
+								Définir
+							</button>
+						</div>
+					</div>
 
-                    {# Numéro de contact #}
-                    <div class="js-editable-field formulaire mt-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-                            <div class="w-100">
+					{# Numéro de contact #}
+					<div class="js-editable-field formulaire mt-20">
+						<div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+							<div class="w-100">
 
-                                <div class="d-flex justify-content-between align-items-start w-100">
-                                    <div>
-                                        <h3 class="mb-0">Numéro de téléphone</h3>
+								<div class="d-flex justify-content-between align-items-start w-100">
+									<div>
+										<h3 class="mb-0">Numéro de téléphone</h3>
 
-                                        <p class="mt-12 mb-0 js-field-value" id="numero-contact-value">
-                                            {{ app.user.numeroContact ?? 'Définissez un numéro de contact' }}
-                                        </p>
-                                    </div>
+										<p class="mt-12 mb-0 js-field-value" id="numero-contact-value">
+											{{ app.user.numeroContact ?? 'Définissez un numéro de contact' }}
+										</p>
+									</div>
 
-                                    <button
-                                        type="button"
-                                        class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                        data-action="click->field-save#handle"
-                                        data-field-save-field-param="numeroContact"
-                                        data-field-save-input-param="#telephone-input"
-                                        data-field-save-output-param="#numero-contact-value"
-                                        data-field-save-whatsapp-switch-param="#whatsapp-switch"
-                                        data-field-save-same-number-param="#same-number-checkbox"
-                                        data-field-save-whatsapp-input-param="#whatsapp-phone"
-                                    >
-                                        Définir
-                                    </button>
-                                </div>
+									<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="numeroContact" data-field-save-input-param="#telephone-input" data-field-save-output-param="#numero-contact-value" data-field-save-whatsapp-switch-param="#whatsapp-switch" data-field-save-same-number-param="#same-number-checkbox" data-field-save-whatsapp-input-param="#whatsapp-phone">
+										Définir
+									</button>
+								</div>
 
-                                <div class="js-field-input d-none mt-12">
+								<div class="js-field-input d-none mt-12">
 
-                                    <div data-controller="phone">
-                                        {{ form_widget(form.numeroContact, {
+									<div data-controller="phone">
+										{{ form_widget(form.numeroContact, {
                                             id: 'telephone-input',
                                             attr: {
                                                 class: 'form-control w-75',
                                                 'data-phone-target': 'input',
                                             },
                                         }) }}
-                                    </div>
+									</div>
 
-                                    <div class="mt-12">
-                                        <div class="d-flex justify-content-between align-items-center w-100">
-                                            <span class="fw-semibold">Whatsapp</span>
+									<div class="mt-12">
+										<div class="d-flex justify-content-between align-items-center w-100">
+											<span class="fw-semibold">Whatsapp</span>
 
-                                            <label class="contenue-des-page-des-parametres-switch">
-                                                <input type="checkbox" id="whatsapp-switch">
-                                                <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                            </label>
-                                        </div>
+											<label class="contenue-des-page-des-parametres-switch">
+												<input type="checkbox" id="whatsapp-switch">
+												<span class="contenue-des-page-des-parametres-switch-slider"></span>
+											</label>
+										</div>
 
-                                        <div
-                                            class="contenue-des-page-des-parametres-checkbox-wrapper mt-12 d-none"
-                                            id="whatsapp-checkbox-wrapper"
-                                        >
-                                            <label class="contenue-des-page-des-parametres-checkbox">
-                                                <input type="checkbox" id="same-number-checkbox">
+										<div class="contenue-des-page-des-parametres-checkbox-wrapper mt-12 d-none" id="whatsapp-checkbox-wrapper">
+											<label class="contenue-des-page-des-parametres-checkbox">
+												<input type="checkbox" id="same-number-checkbox">
 
-                                                <span class="contenue-des-page-des-parametres-checkbox-custom"></span>
+												<span class="contenue-des-page-des-parametres-checkbox-custom"></span>
 
-                                                <span class="contenue-des-page-des-parametres-checkbox-label">
-                                                    Utiliser le même numéro
-                                                </span>
-                                            </label>
-                                        </div>
+												<span class="contenue-des-page-des-parametres-checkbox-label">
+													Utiliser le même numéro
+												</span>
+											</label>
+										</div>
 
-                                        <div class="mt-12 d-none" id="whatsapp-phone-wrapper">
-                                            <div data-controller="phone">
-                                                {{ form_widget(form.whatsApp, {
+										<div class="mt-12 d-none" id="whatsapp-phone-wrapper">
+											<div data-controller="phone">
+												{{ form_widget(form.whatsApp, {
                                                     id: 'whatsapp-phone',
                                                     attr: {
                                                         class: 'form-control w-75',
                                                         'data-phone-target': 'input',
                                                     },
                                                 }) }}
-                                            </div>
-                                        </div>
-                                    </div>
+											</div>
+										</div>
+									</div>
 
-                                    <span class="flash-message flash-message-error js-field-error d-none"></span>
-                                </div>
+									<span class="flash-message flash-message-error js-field-error d-none"></span>
+								</div>
 
-                            </div>
-                        </div>
-                    </div>
+							</div>
+						</div>
+					</div>
 
-                    {# Email de contact #}
-                    <div class="js-editable-field formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-                            <div class="w-100">
-                                <h3 class="mb-0">Adresse e-mail</h3>
+					{# Email de contact #}
+					<div class="js-editable-field formulaire my-20">
+						<div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+							<div class="w-100">
+								<h3 class="mb-0">Adresse e-mail</h3>
 
-                                <p class="mt-12 mb-0 js-field-value" id="email-contact-value">
-                                    {{ app.user.emailContact ?? 'Définissez une adresse e-mail de contact' }}
-                                </p>
+								<p class="mt-12 mb-0 js-field-value" id="email-contact-value">
+									{{ app.user.emailContact ?? 'Définissez une adresse e-mail de contact' }}
+								</p>
 
-                                <div class="mt-12 d-none js-field-input">
-                                    {{ form_widget(form.emailContact, {
+								<div class="mt-12 d-none js-field-input">
+									{{ form_widget(form.emailContact, {
                                         attr: {
                                             class: 'form-control w-75',
                                         },
                                     }) }}
-                                </div>
-                            </div>
+								</div>
+							</div>
 
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="emailContact"
-                                data-field-save-input-param="#{{ form.emailContact.vars.id }}"
-                                data-field-save-output-param="#email-contact-value"
-                            >
-                                Définir
-                            </button>
-                        </div>
-                    </div>
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="emailContact" data-field-save-input-param="#{{ form.emailContact.vars.id }}" data-field-save-output-param="#email-contact-value">
+								Définir
+							</button>
+						</div>
+					</div>
 
-                    {# Langues parlées #}
-                    <div class="js-editable-field formulaire mt-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
-                            <div class="w-100">
-                                <h3 class="mb-0">Langues parlées par l’agence*</h3>
+					{# Langues parlées #}
+					<div class="js-editable-field formulaire mt-20">
+						<div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+							<div class="w-100">
+								<h3 class="mb-0">Langues parlées par l’agence*</h3>
 
-                                <p class="mt-12 mb-0 js-field-value" id="langues-parlees-value">
-                                    {% if app.user.langueParlers is not empty %}
-                                        {{ app.user.langueParlers|map(langue => langue.name)|join(', ') }}
-                                    {% else %}
-                                        Définissez les langues parlées par l’agence
-                                    {% endif %}
-                                </p>
+								<p class="mt-12 mb-0 js-field-value" id="langues-parlees-value">
+									{% if app.user.langueParlers is not empty %}
+										{{ app.user.langueParlers|map(langue => langue.name)|join(', ') }}
+									{% else %}
+										Définissez les langues parlées par l’agence
+									{% endif %}
+								</p>
 
-                                <div class="mt-12 d-none js-field-input">
-                                    <div class="agency-languages" data-controller="languages">
-                                        {{ form_widget(form.langueParlers, {
+								<div class="mt-12 d-none js-field-input">
+									<div class="agency-languages" data-controller="languages">
+										{{ form_widget(form.langueParlers, {
                                             attr: {
                                                 class: 'agency-languages-select d-none',
                                                 'data-languages-target': 'select',
                                             },
                                         }) }}
 
-                                        <div class="agency-languages-search">
-                                            <input
-                                                type="text"
-                                                class="form-control agency-languages-input w-75 rounded-70 pl-44"
-                                                placeholder="Rechercher une langue..."
-                                                autocomplete="off"
-                                                data-languages-target="search"
-                                                data-action="input->languages#search"
-                                            >
+										<div class="agency-languages-search">
+											<input type="text" class="form-control agency-languages-input w-75 rounded-70 pl-44" placeholder="Rechercher une langue..." autocomplete="off" data-languages-target="search" data-action="input->languages#search">
 
-                                            <i class="icon-search agency-languages-add"></i>
-                                        </div>
+											<i class="icon-search agency-languages-add"></i>
+										</div>
 
-                                        <div
-                                            class="agency-languages-results"
-                                            data-languages-target="results"
-                                        ></div>
+										<div class="agency-languages-results" data-languages-target="results"></div>
 
-                                        <div
-                                            class="agency-languages-tags"
-                                            data-languages-target="tags"
-                                        ></div>
-                                    </div>
-                                </div>
-                            </div>
+										<div class="agency-languages-tags" data-languages-target="tags"></div>
+									</div>
+								</div>
+							</div>
 
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="langueParlers"
-                                data-field-save-input-param="#{{ form.langueParlers.vars.id }}"
-                                data-field-save-output-param="#langues-parlees-value"
-                                data-field-save-multiple-param="true"
-                            >
-                                Définir
-                            </button>
-                        </div>
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="langueParlers" data-field-save-input-param="#{{ form.langueParlers.vars.id }}" data-field-save-output-param="#langues-parlees-value" data-field-save-multiple-param="true">
+								Définir
+							</button>
+						</div>
 
-                        <p class="js-field-error text-danger mt-2 mb-0 d-none"></p>
-                    </div>
+						<p class="js-field-error text-danger mt-2 mb-0 d-none"></p>
+					</div>
 
-                    <style>
-.agency-languages {
-    width: 100%;
-}
+					<style>
+						.agency-languages {
+							width: 100%;
+						}
 
-.agency-languages-search {
-    position: relative;
-    margin-top: 24px;
-}
+						.agency-languages-search {
+							position: relative;
+							margin-top: 24px;
+						}
 
-.agency-languages-input {
-    /*height: 64px;
+						.agency-languages-input {
+							;
+							/*height: 64px;
     padding: 0 76px 0 32px;
     border: 1px solid #e5e5e5;
     border-radius: 999px;
     font-size: 1rem;
     font-weight: 600;
     box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);*/
-}
+						}
 
-.agency-languages-input::placeholder {
-    color: #8b8f98;
-}
+						.agency-languages-input::placeholder {
+							color: #8b8f98;
+						}
 
-.agency-languages-input:focus {
-    border-color: #5d00ff;
-    box-shadow: 0 0 0 0.2rem rgba(93, 0, 255, 0.12);
-}
+						.agency-languages-input:focus {
+							border-color: #5d00ff;
+							box-shadow: 0 0 0 0.2rem rgba(93, 0, 255, 0.12);
+						}
 
-.agency-languages-add {
-    position: absolute;
-    top: 50%;
-    left: 10px;
-    width: 24px;
-    height: 24px;
-    transform: translateY(-50%);
-    border: 0;
-    border-radius: 50%;
-    color: var(--color-gray-light);
-    font-size: 2rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+						.agency-languages-add {
+							position: absolute;
+							top: 50%;
+							left: 10px;
+							width: 24px;
+							height: 24px;
+							transform: translateY(-50%);
+							border: 0;
+							border-radius: 50%;
+							color: var(--color-gray-light);
+							font-size: 2rem;
+							line-height: 1;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+						}
 
-.agency-languages-results {
-    position: absolute;
-    z-index: 20;
-    width: 100%;
-    margin-top: 8px;
-    background: #ffffff;
-    border-radius: 18px;
-    overflow: hidden;
-}
+						.agency-languages-results {
+							position: absolute;
+							z-index: 20;
+							width: 100%;
+							margin-top: 8px;
+							background: #ffffff;
+							border-radius: 18px;
+							overflow: hidden;
+						}
 
-.agency-languages-result {
-    width: 100%;
-    padding: 12px 22px;
-    border: 0;
-    background: #ffffff;
-    text-align: left;
-    font-weight: 600;
-    color: #212529;
-}
+						.agency-languages-result {
+							width: 100%;
+							padding: 12px 22px;
+							border: 0;
+							background: #ffffff;
+							text-align: left;
+							font-weight: 600;
+							color: #212529;
+						}
 
-.agency-languages-result:hover {
-    background: #f5f0ff;
-    color: #5d00ff;
-}
+						.agency-languages-result:hover {
+							background: #f5f0ff;
+							color: #5d00ff;
+						}
 
-.agency-languages-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 26px;
-}
+						.agency-languages-tags {
+							display: flex;
+							flex-wrap: wrap;
+							gap: 16px;
+							margin-top: 26px;
+						}
 
-.agency-language-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 44px;
-    padding: 8px 18px;
-    border: 2px solid #5d00ff;
-    border-radius: 999px;
-    background: #ffffff;
-    color: #5d00ff;
-    font-size: 1rem;
-    font-weight: 700;
-}
+						.agency-language-tag {
+							display: inline-flex;
+							align-items: center;
+							gap: 12px;
+							min-height: 44px;
+							padding: 8px 18px;
+							border: 2px solid #5d00ff;
+							border-radius: 999px;
+							background: #ffffff;
+							color: #5d00ff;
+							font-size: 1rem;
+							font-weight: 700;
+						}
 
-.agency-language-tag span {
-    font-size: 1.4rem;
-    line-height: 1;
-}
+						.agency-language-tag span {
+							font-size: 1.4rem;
+							line-height: 1;
+						}
 
-.agency-language-tag:hover {
-    background: #5d00ff;
-    color: #ffffff;
-}
+						.agency-language-tag:hover {
+							background: #5d00ff;
+							color: #ffffff;
+						}
 
-@media (max-width: 576px) {
-    .agency-languages-input {
-        height: 58px;
-        padding-left: 22px;
-    }
+						@media(max-width: 576px) {
+							.agency-languages-input {
+								height: 58px;
+								padding-left: 22px;
+							}
 
-    .agency-languages-add {
-        width: 44px;
-        height: 44px;
-    }
+							.agency-languages-add {
+								width: 44px;
+								height: 44px;
+							}
 
-    .agency-language-tag {
-        font-size: 0.95rem;
-    }
-}
-</style>
+							.agency-language-tag {
+								font-size: 0.95rem;
+							}
+						}
+					</style>
 
-                    {# Horaire d'ouverture #}
-                    <div class="js-editable-field formulaire my-20">
-                        <div class="d-flex justify-content-between align-items-start pb-20">
-                            <div class="w-100">
-                                <h3 class="mb-12">Horaires</h3>
+					{# Horaire d'ouverture #}
+					<div class="js-editable-field formulaire my-20">
+						<div class="d-flex justify-content-between align-items-start pb-20">
+							<div class="w-100">
+								<h3 class="mb-12">Horaires</h3>
 
-                                <p class="js-field-value mb-0" id="opening-hours-value">
-                                    Tous les jours sont fermés par défaut
-                                </p>
+								<p class="js-field-value mb-0" id="opening-hours-value">
+									Tous les jours sont fermés par défaut
+								</p>
 
-                                {% set prototype = form.horaireOuvertures.vars.prototype %}
+								{% set prototype = form.horaireOuvertures.vars.prototype %}
 
-                                {% set protoIsOpen %}
-                                    {{ form_widget(prototype.isOpen, {
+								{% set protoIsOpen %}
+								{{ form_widget(prototype.isOpen, {
                                         attr: {
                                             class: 'js-opening-toggle',
                                             'data-action': 'change->opening-hours#toggle',
                                         },
                                     }) }}
-                                {% endset %}
-
-                                {% set protoOuvertureMatin %}
-                                    {{ form_widget(prototype.ouvertureMatin) }}
-                                {% endset %}
-
-                                {% set protoFermetureMatin %}
-                                    {{ form_widget(prototype.fermetureMatin) }}
-                                {% endset %}
-
-                                {% set protoOuvertureApresMidi %}
-                                    {{ form_widget(prototype.ouvertureApresMidi) }}
-                                {% endset %}
-
-                                {% set protoFermetureApresMidi %}
-                                    {{ form_widget(prototype.fermetureApresMidi) }}
-                                {% endset %}
-
-                                <div class="opening-hours mt-12 d-none js-field-input" data-controller="opening-hours">
-
-                                    {# Lundi #}
-                                    <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Lundi</label>
-
-                                        <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({__name__: '0'})|raw }}
-                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                        </label>
-
-                                        <span class="js-opening-status">Fermé</span>
-
-                                        <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({__name__: '0'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({__name__: '0'})|raw }}
-                                        </div>
-
-                                        <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({__name__: '0'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({__name__: '0'})|raw }}
-                                        </div>
-
-                                        <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                                <i class="icon-plus"></i>
-                                            </button>
-
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                                <i class="icon-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {# Mardi #}
-                                    <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Mardi</label>
-
-                                        <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({__name__: '1'})|raw }}
-                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                        </label>
-
-                                        <span class="js-opening-status">Fermé</span>
-
-                                        <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({__name__: '1'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({__name__: '1'})|raw }}
-                                        </div>
-
-                                        <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({__name__: '1'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({__name__: '1'})|raw }}
-                                        </div>
-
-                                        <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                                <i class="icon-plus"></i>
-                                            </button>
-
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                                <i class="icon-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {# Mercredi #}
-                                    <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Mercredi</label>
-
-                                        <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({__name__: '2'})|raw }}
-                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                        </label>
-
-                                        <span class="js-opening-status">Fermé</span>
-
-                                        <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({__name__: '2'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({__name__: '2'})|raw }}
-                                        </div>
-
-                                        <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({__name__: '2'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({__name__: '2'})|raw }}
-                                        </div>
-
-                                        <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                                <i class="icon-plus"></i>
-                                            </button>
-
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                                <i class="icon-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {# Jeudi #}
-                                    <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Jeudi</label>
-
-                                        <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({__name__: '3'})|raw }}
-                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                        </label>
-
-                                        <span class="js-opening-status">Fermé</span>
-
-                                        <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({__name__: '3'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({__name__: '3'})|raw }}
-                                        </div>
-
-                                        <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({__name__: '3'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({__name__: '3'})|raw }}
-                                        </div>
-
-                                        <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                                <i class="icon-plus"></i>
-                                            </button>
-
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                                <i class="icon-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {# Vendredi #}
-                                    <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Vendredi</label>
-
-                                        <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({__name__: '4'})|raw }}
-                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                        </label>
-
-                                        <span class="js-opening-status">Fermé</span>
-
-                                        <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({__name__: '4'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({__name__: '4'})|raw }}
-                                        </div>
-
-                                        <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({__name__: '4'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({__name__: '4'})|raw }}
-                                        </div>
-
-                                        <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                                <i class="icon-plus"></i>
-                                            </button>
-
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                                <i class="icon-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {# Samedi #}
-                                    <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Samedi</label>
-
-                                        <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({__name__: '5'})|raw }}
-                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                        </label>
-
-                                        <span class="js-opening-status">Fermé</span>
-
-                                        <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({__name__: '5'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({__name__: '5'})|raw }}
-                                        </div>
-
-                                        <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({__name__: '5'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({__name__: '5'})|raw }}
-                                        </div>
-
-                                        <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                                <i class="icon-plus"></i>
-                                            </button>
-
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                                <i class="icon-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {# Dimanche #}
-                                    <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Dimanche</label>
-
-                                        <label class="contenue-des-page-des-parametres-switch">
-                                            {{ protoIsOpen|replace({__name__: '6'})|raw }}
-                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                        </label>
-
-                                        <span class="js-opening-status">Fermé</span>
-
-                                        <div class="opening-slot js-opening-first" hidden>
-                                            {{ protoOuvertureMatin|replace({__name__: '6'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureMatin|replace({__name__: '6'})|raw }}
-                                        </div>
-
-                                        <div class="opening-slot js-opening-second" hidden>
-                                            {{ protoOuvertureApresMidi|replace({__name__: '6'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
-                                            {{ protoFermetureApresMidi|replace({__name__: '6'})|raw }}
-                                        </div>
-
-                                        <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                                <i class="icon-plus"></i>
-                                            </button>
-
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                                <i class="icon-minus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <button
-                                type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
-                                data-field-save-field-param="openingHours"
-                                data-field-save-input-param=".opening-hours"
-                                data-field-save-output-param="#opening-hours-value"
-                            >
-                                Définir
-                            </button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <style>
-                .opening-hours {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 16px;
-                }
-
-                .opening-day {
-                    display: grid;
-                    grid-template-columns: 110px 60px 70px minmax(220px, 1fr) minmax(220px, 1fr) 80px;
-                    align-items: center;
-                    gap: 14px;
-                }
-
-                .opening-day__label {
-                    color: #0B0F14;
-                    font-size: 14px;
-                    font-style: normal;
-                    font-weight: 500;
-                    line-height: 20px;
-                }
-
-                .js-opening-status {
-                    color: #858789;
-                    font-size: 14px;
-                    font-style: normal;
-                    font-weight: 500;
-                    line-height: 20px;
-                }
-
-                .opening-day:not(.is-closed) .js-opening-status {
-                    font-size: 4px;
-                    font-style: normal;
-                    font-weight: 500;
-                    line-height: 20px;
-                }
-
-                .opening-slot {
-                    display: grid;
-                    grid-template-columns: 1fr 20px 1fr;
-                    align-items: center;
-                    gap: 8px;
-                    min-height: 52px;
-                    padding: 6px 10px;
-                    border: 2px solid #e5e7eb;
-                    border-radius: 12px;
-                    background-color: #fff;
-                }
-
-                .opening-slot__separator {
-                    text-align: center;
-                    font-size: 14px;
-                    color: #6b7280;
-                }
-
-                .opening-slot input[type="time"] {
-                    width: 100%;
-                    height: 40px;
-                    padding: 0 8px;
-                    border: 0;
-                    border-radius: 8px;
-                    font-size: 15px;
-                    color: #374151;
-                    background-color: transparent;
-                }
-
-                .opening-slot input[type="time"]:focus {
-                    outline: 2px solid #5d00ff;
-                    outline-offset: 2px;
-                }
-
-                .opening-day__actions {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-
-                .js-opening-add,
-                .js-opening-remove {
-                    width: 34px;
-                    height: 34px;
-                    border: 0;
-                    border-radius: 50%;
-                    color: #fff;
-                    font-size: 22px;
-                    line-height: 1;
-                    cursor: pointer;
-                }
-
-                .js-opening-add {
-                    background-color: #5d00ff;
-                }
-
-                .js-opening-remove {
-                    background-color: #e7354b;
-                }
-
-                /* Switch personnalisé */
-                .contenue-des-page-des-parametres-switch {
-                    position: relative;
-                    display: inline-block;
-                    width: 44px;
-                    height: 24px;
-                    margin-bottom: 0;
-                }
-
-                .contenue-des-page-des-parametres-switch input {
-                    opacity: 0;
-                    width: 0;
-                    height: 0;
-                }
-
-                .contenue-des-page-des-parametres-switch-slider {
-                    position: absolute;
-                    inset: 0;
-                    cursor: pointer;
-                    border-radius: 999px;
-                    background-color: #d1d5db;
-                    transition: 0.2s ease;
-                }
-
-                .contenue-des-page-des-parametres-switch-slider::before {
-                    content: "";
-                    position: absolute;
-                    left: 3px;
-                    bottom: 3px;
-                    width: 18px;
-                    height: 18px;
-                    border-radius: 50%;
-                    background-color: #fff;
-                    transition: 0.2s ease;
-                }
-
-                .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider {
-                    background-color: #5d00ff;
-                }
-
-                .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider::before {
-                    transform: translateX(20px);
-                }
-
-            </style>
-            <div class="fiche-public mt-48">
-                <a href="{{ path('app_public_detail_agence', {slug: app.user.slug}) }} " target="_blank" class="btn btn-primary">
-                    <i class="icon-eye mr10"></i>
-                    Voir la fiche publique
-                </a>
-
-                <p class="mt-8">Telle qu'elle apparaitra aux utilisateurs</p>
-            </div>
-        </div>
-    </div>
-    <script>
-        // AVATAR
-        const changeImageButton = document.querySelector('#change-image-button');
-        const imageInput = document.querySelector('.js-image-input');
-        const avatarPreview = document.querySelector('.js-avatar-preview');
-
-        if (changeImageButton && imageInput) {
-            changeImageButton.addEventListener('click', () => {
-                imageInput.click();
-            });
-
-            imageInput.addEventListener('change', async (event) => {
-                const file = event.target.files[0];
-
-                if (!file) {
-                    return;
-                }
-
-                if (avatarPreview) {
-                    avatarPreview.src = URL.createObjectURL(file);
-                }
-
-                const formData = new FormData();
-                formData.append('imageFile', file);
-                formData.append('_token', '{{ csrf_token('profile_edit') }}');
-
-                try {
-                    changeImageButton.textContent = '...';
-                    changeImageButton.disabled = true;
-
-                    const response = await fetch('{{ path('api_profile_agence_immobiliere') }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: formData
-                    });
-
-                    const data = await response.json();
-
-                    changeImageButton.textContent = data.success ? 'Modifier' : 'Erreur';
-                } catch (e) {
-                    console.error(e);
-                    changeImageButton.textContent = 'Erreur';
-                } finally {
-                    changeImageButton.disabled = false;
-                }
-            });
-        }
-
-        // WHATSAPP
-        document.addEventListener('DOMContentLoaded', () => {
-            const whatsappSwitch = document.querySelector('#whatsapp-switch');
-            const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
-            const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
-            const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
-            const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
-            const telephoneInput = document.querySelector('#telephone-input');
-
-            //console.log(whatsappSwitch, checkboxWrapper, sameNumberCheckbox, whatsappPhoneWrapper, whatsappPhoneInput, telephoneInput);
-
-            if (
-                !whatsappSwitch ||
-                !checkboxWrapper ||
-                !sameNumberCheckbox ||
-                !whatsappPhoneWrapper ||
-                !whatsappPhoneInput ||
-                !telephoneInput
-            ) {
-                //console.warn('WhatsApp switch: élément manquant');
-                return;
-            }
-
-            whatsappSwitch.addEventListener('change', () => {
-                if (whatsappSwitch.checked) {
-                    checkboxWrapper.classList.remove('d-none');
-                    sameNumberCheckbox.checked = true;
-                    whatsappPhoneWrapper.classList.add('d-none');
-                    whatsappPhoneInput.value = telephoneInput.value;
-                } else {
-                    checkboxWrapper.classList.add('d-none');
-                    whatsappPhoneWrapper.classList.add('d-none');
-                    sameNumberCheckbox.checked = false;
-                    whatsappPhoneInput.value = '';
-                }
-            });
-
-            sameNumberCheckbox.addEventListener('change', () => {
-                if (sameNumberCheckbox.checked) {
-                    whatsappPhoneWrapper.classList.add('d-none');
-                    whatsappPhoneInput.value = telephoneInput.value;
-                } else {
-                    whatsappPhoneWrapper.classList.remove('d-none');
-                    whatsappPhoneInput.value = '';
-                    whatsappPhoneInput.focus();
-                }
-            });
-
-            telephoneInput.addEventListener('input', () => {
-                if (whatsappSwitch.checked && sameNumberCheckbox.checked) {
-                    whatsappPhoneInput.value = telephoneInput.value;
-                }
-            });
-        });
-    </script>
+								{% endset %}
+
+								{% set protoOuvertureMatin %}
+								{{ form_widget(prototype.ouvertureMatin) }}
+								{% endset %}
+
+								{% set protoFermetureMatin %}
+								{{ form_widget(prototype.fermetureMatin) }}
+								{% endset %}
+
+								{% set protoOuvertureApresMidi %}
+								{{ form_widget(prototype.ouvertureApresMidi) }}
+								{% endset %}
+
+								{% set protoFermetureApresMidi %}
+								{{ form_widget(prototype.fermetureApresMidi) }}
+								{% endset %}
+
+								<div
+									class="opening-hours mt-12 d-none js-field-input" data-controller="opening-hours">
+
+									{# Lundi #}
+									<div class="opening-day is-closed mb-12" data-opening-hours-day>
+										<label class="opening-day__label">Lundi</label>
+
+										<label class="contenue-des-page-des-parametres-switch">
+											{{ protoIsOpen|replace({__name__: '0'})|raw }}
+											<span class="contenue-des-page-des-parametres-switch-slider"></span>
+										</label>
+
+										<span class="js-opening-status">Fermé</span>
+
+										<div class="opening-slot js-opening-first" hidden>
+											{{ protoOuvertureMatin|replace({__name__: '0'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureMatin|replace({__name__: '0'})|raw }}
+										</div>
+
+										<div class="opening-slot js-opening-second" hidden>
+											{{ protoOuvertureApresMidi|replace({__name__: '0'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureApresMidi|replace({__name__: '0'})|raw }}
+										</div>
+
+										<div class="opening-day__actions" hidden>
+											<button type="button" class="js-opening-add" data-action="opening-hours#add">
+												<i class="icon-plus"></i>
+											</button>
+
+											<button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+												<i class="icon-minus"></i>
+											</button>
+										</div>
+									</div>
+
+									{# Mardi #}
+									<div class="opening-day is-closed mb-12" data-opening-hours-day>
+										<label class="opening-day__label">Mardi</label>
+
+										<label class="contenue-des-page-des-parametres-switch">
+											{{ protoIsOpen|replace({__name__: '1'})|raw }}
+											<span class="contenue-des-page-des-parametres-switch-slider"></span>
+										</label>
+
+										<span class="js-opening-status">Fermé</span>
+
+										<div class="opening-slot js-opening-first" hidden>
+											{{ protoOuvertureMatin|replace({__name__: '1'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureMatin|replace({__name__: '1'})|raw }}
+										</div>
+
+										<div class="opening-slot js-opening-second" hidden>
+											{{ protoOuvertureApresMidi|replace({__name__: '1'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureApresMidi|replace({__name__: '1'})|raw }}
+										</div>
+
+										<div class="opening-day__actions" hidden>
+											<button type="button" class="js-opening-add" data-action="opening-hours#add">
+												<i class="icon-plus"></i>
+											</button>
+
+											<button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+												<i class="icon-minus"></i>
+											</button>
+										</div>
+									</div>
+
+									{# Mercredi #}
+									<div class="opening-day is-closed mb-12" data-opening-hours-day>
+										<label class="opening-day__label">Mercredi</label>
+
+										<label class="contenue-des-page-des-parametres-switch">
+											{{ protoIsOpen|replace({__name__: '2'})|raw }}
+											<span class="contenue-des-page-des-parametres-switch-slider"></span>
+										</label>
+
+										<span class="js-opening-status">Fermé</span>
+
+										<div class="opening-slot js-opening-first" hidden>
+											{{ protoOuvertureMatin|replace({__name__: '2'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureMatin|replace({__name__: '2'})|raw }}
+										</div>
+
+										<div class="opening-slot js-opening-second" hidden>
+											{{ protoOuvertureApresMidi|replace({__name__: '2'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureApresMidi|replace({__name__: '2'})|raw }}
+										</div>
+
+										<div class="opening-day__actions" hidden>
+											<button type="button" class="js-opening-add" data-action="opening-hours#add">
+												<i class="icon-plus"></i>
+											</button>
+
+											<button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+												<i class="icon-minus"></i>
+											</button>
+										</div>
+									</div>
+
+									{# Jeudi #}
+									<div class="opening-day is-closed mb-12" data-opening-hours-day>
+										<label class="opening-day__label">Jeudi</label>
+
+										<label class="contenue-des-page-des-parametres-switch">
+											{{ protoIsOpen|replace({__name__: '3'})|raw }}
+											<span class="contenue-des-page-des-parametres-switch-slider"></span>
+										</label>
+
+										<span class="js-opening-status">Fermé</span>
+
+										<div class="opening-slot js-opening-first" hidden>
+											{{ protoOuvertureMatin|replace({__name__: '3'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureMatin|replace({__name__: '3'})|raw }}
+										</div>
+
+										<div class="opening-slot js-opening-second" hidden>
+											{{ protoOuvertureApresMidi|replace({__name__: '3'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureApresMidi|replace({__name__: '3'})|raw }}
+										</div>
+
+										<div class="opening-day__actions" hidden>
+											<button type="button" class="js-opening-add" data-action="opening-hours#add">
+												<i class="icon-plus"></i>
+											</button>
+
+											<button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+												<i class="icon-minus"></i>
+											</button>
+										</div>
+									</div>
+
+									{# Vendredi #}
+									<div class="opening-day is-closed mb-12" data-opening-hours-day>
+										<label class="opening-day__label">Vendredi</label>
+
+										<label class="contenue-des-page-des-parametres-switch">
+											{{ protoIsOpen|replace({__name__: '4'})|raw }}
+											<span class="contenue-des-page-des-parametres-switch-slider"></span>
+										</label>
+
+										<span class="js-opening-status">Fermé</span>
+
+										<div class="opening-slot js-opening-first" hidden>
+											{{ protoOuvertureMatin|replace({__name__: '4'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureMatin|replace({__name__: '4'})|raw }}
+										</div>
+
+										<div class="opening-slot js-opening-second" hidden>
+											{{ protoOuvertureApresMidi|replace({__name__: '4'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureApresMidi|replace({__name__: '4'})|raw }}
+										</div>
+
+										<div class="opening-day__actions" hidden>
+											<button type="button" class="js-opening-add" data-action="opening-hours#add">
+												<i class="icon-plus"></i>
+											</button>
+
+											<button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+												<i class="icon-minus"></i>
+											</button>
+										</div>
+									</div>
+
+									{# Samedi #}
+									<div class="opening-day is-closed mb-12" data-opening-hours-day>
+										<label class="opening-day__label">Samedi</label>
+
+										<label class="contenue-des-page-des-parametres-switch">
+											{{ protoIsOpen|replace({__name__: '5'})|raw }}
+											<span class="contenue-des-page-des-parametres-switch-slider"></span>
+										</label>
+
+										<span class="js-opening-status">Fermé</span>
+
+										<div class="opening-slot js-opening-first" hidden>
+											{{ protoOuvertureMatin|replace({__name__: '5'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureMatin|replace({__name__: '5'})|raw }}
+										</div>
+
+										<div class="opening-slot js-opening-second" hidden>
+											{{ protoOuvertureApresMidi|replace({__name__: '5'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureApresMidi|replace({__name__: '5'})|raw }}
+										</div>
+
+										<div class="opening-day__actions" hidden>
+											<button type="button" class="js-opening-add" data-action="opening-hours#add">
+												<i class="icon-plus"></i>
+											</button>
+
+											<button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+												<i class="icon-minus"></i>
+											</button>
+										</div>
+									</div>
+
+									{# Dimanche #}
+									<div class="opening-day is-closed mb-12" data-opening-hours-day>
+										<label class="opening-day__label">Dimanche</label>
+
+										<label class="contenue-des-page-des-parametres-switch">
+											{{ protoIsOpen|replace({__name__: '6'})|raw }}
+											<span class="contenue-des-page-des-parametres-switch-slider"></span>
+										</label>
+
+										<span class="js-opening-status">Fermé</span>
+
+										<div class="opening-slot js-opening-first" hidden>
+											{{ protoOuvertureMatin|replace({__name__: '6'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureMatin|replace({__name__: '6'})|raw }}
+										</div>
+
+										<div class="opening-slot js-opening-second" hidden>
+											{{ protoOuvertureApresMidi|replace({__name__: '6'})|raw }}
+											<span class="opening-slot__separator">à</span>
+											{{ protoFermetureApresMidi|replace({__name__: '6'})|raw }}
+										</div>
+
+										<div class="opening-day__actions" hidden>
+											<button type="button" class="js-opening-add" data-action="opening-hours#add">
+												<i class="icon-plus"></i>
+											</button>
+
+											<button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+												<i class="icon-minus"></i>
+											</button>
+										</div>
+									</div>
+								</div>
+
+							</div>
+
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value">
+								Définir
+							</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<style>
+				.opening-hours {
+					display: flex;
+					flex-direction: column;
+					gap: 16px;
+				}
+
+				.opening-day {
+					display: grid;
+					grid-template-columns: 110px 60px 70px minmax(220px, 1fr) minmax(220px, 1fr) 80px;
+					align-items: center;
+					gap: 14px;
+				}
+
+				.opening-day__label {
+					color: #0B0F14;
+					font-size: 14px;
+					font-style: normal;
+					font-weight: 500;
+					line-height: 20px;
+				}
+
+				.js-opening-status {
+					color: #858789;
+					font-size: 14px;
+					font-style: normal;
+					font-weight: 500;
+					line-height: 20px;
+				}
+
+				.opening-day:not(.is-closed) .js-opening-status {
+					font-size: 4px;
+					font-style: normal;
+					font-weight: 500;
+					line-height: 20px;
+				}
+
+				.opening-slot {
+					display: grid;
+					grid-template-columns: 1fr 20px 1fr;
+					align-items: center;
+					gap: 8px;
+					min-height: 52px;
+					padding: 6px 10px;
+					border: 2px solid #e5e7eb;
+					border-radius: 12px;
+					background-color: #fff;
+				}
+
+				.opening-slot__separator {
+					text-align: center;
+					font-size: 14px;
+					color: #6b7280;
+				}
+
+				.opening-slot input[type="time"] {
+					width: 100%;
+					height: 40px;
+					padding: 0 8px;
+					border: 0;
+					border-radius: 8px;
+					font-size: 15px;
+					color: #374151;
+					background-color: transparent;
+				}
+
+				.opening-slot input[type="time"]:focus {
+					outline: 2px solid #5d00ff;
+					outline-offset: 2px;
+				}
+
+				.opening-day__actions {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+				}
+
+				.js-opening-add,
+				.js-opening-remove {
+					width: 34px;
+					height: 34px;
+					border: 0;
+					border-radius: 50%;
+					color: #fff;
+					font-size: 22px;
+					line-height: 1;
+					cursor: pointer;
+				}
+
+				.js-opening-add {
+					background-color: #5d00ff;
+				}
+
+				.js-opening-remove {
+					background-color: #e7354b;
+				}
+
+				/* Switch personnalisé */
+				.contenue-des-page-des-parametres-switch {
+					position: relative;
+					display: inline-block;
+					width: 44px;
+					height: 24px;
+					margin-bottom: 0;
+				}
+
+				.contenue-des-page-des-parametres-switch input {
+					opacity: 0;
+					width: 0;
+					height: 0;
+				}
+
+				.contenue-des-page-des-parametres-switch-slider {
+					position: absolute;
+					inset: 0;
+					cursor: pointer;
+					border-radius: 999px;
+					background-color: #d1d5db;
+					transition: 0.2s ease;
+				}
+
+				.contenue-des-page-des-parametres-switch-slider::before {
+					content: "";
+					position: absolute;
+					left: 3px;
+					bottom: 3px;
+					width: 18px;
+					height: 18px;
+					border-radius: 50%;
+					background-color: #fff;
+					transition: 0.2s ease;
+				}
+
+				.contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider {
+					background-color: #5d00ff;
+				}
+
+				.contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider::before {
+					transform: translateX(20px);
+				}
+			</style>
+			<div class="fiche-public mt-48">
+				<a
+					{% if publicProfileReady %}
+						href="{{ publicProfileUrl }}"
+						target="_blank"
+						rel="noopener"
+					{% endif %}
+					aria-disabled="{{ publicProfileReady ? 'false' : 'true' }}"
+					tabindex="{{ publicProfileReady ? '0' : '-1' }}"
+					class="btn btn-primary{{ publicProfileReady ? '' : ' is-disabled' }}"
+					data-profile-preview-link
+					data-enabled-href="{{ publicProfileUrl }}"
+				>
+					<i class="icon-eye mr10"></i>
+					Voir la fiche publique
+				</a>
+				<p
+					class="mt-8"
+					data-profile-preview-help
+					data-ready-text="Telle qu'elle apparaitra aux utilisateurs"
+					data-disabled-text="Complétez les informations obligatoires pour activer la fiche publique"
+				>
+					{{ publicProfileReady
+						? "Telle qu'elle apparaitra aux utilisateurs"
+						: 'Complétez les informations obligatoires pour activer la fiche publique'
+					}}
+				</p>
+			</div>
+		</div>
+	</div>
+	<script>
+		// AVATAR
+const changeImageButton = document.querySelector('#change-image-button');
+const imageInput = document.querySelector('.js-image-input');
+const avatarPreview = document.querySelector('.js-avatar-preview');
+
+if (changeImageButton && imageInput) {
+changeImageButton.addEventListener('click', () => {
+imageInput.click();
+});
+
+imageInput.addEventListener('change', async (event) => {
+const file = event.target.files[0];
+
+if (! file) {
+return;
+}
+
+if (avatarPreview) {
+avatarPreview.src = URL.createObjectURL(file);
+}
+
+const formData = new FormData();
+formData.append('imageFile', file);
+formData.append('_token', '{{ csrf_token('profile_edit') }}');
+
+try {
+changeImageButton.textContent = '...';
+changeImageButton.disabled = true;
+
+const response = await fetch('{{ path('api_profile_agence_immobiliere') }}', {
+method: 'POST',
+headers: {
+'X-Requested-With': 'XMLHttpRequest'
+},
+body: formData
+});
+
+const data = await response.json();
+
+changeImageButton.textContent = data.success ? 'Modifier' : 'Erreur';
+} catch (e) {
+console.error(e);
+changeImageButton.textContent = 'Erreur';
+} finally {
+changeImageButton.disabled = false;
+}
+});
+}
+
+// WHATSAPP
+document.addEventListener('DOMContentLoaded', () => {
+const whatsappSwitch = document.querySelector('#whatsapp-switch');
+const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
+const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
+const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
+const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
+const telephoneInput = document.querySelector('#telephone-input');
+
+// console.log(whatsappSwitch, checkboxWrapper, sameNumberCheckbox, whatsappPhoneWrapper, whatsappPhoneInput, telephoneInput);
+
+if (! whatsappSwitch || ! checkboxWrapper || ! sameNumberCheckbox || ! whatsappPhoneWrapper || ! whatsappPhoneInput || ! telephoneInput) { // console.warn('WhatsApp switch: élément manquant');
+return;
+}
+
+whatsappSwitch.addEventListener('change', () => {
+if (whatsappSwitch.checked) {
+checkboxWrapper.classList.remove('d-none');
+sameNumberCheckbox.checked = true;
+whatsappPhoneWrapper.classList.add('d-none');
+whatsappPhoneInput.value = telephoneInput.value;
+} else {
+checkboxWrapper.classList.add('d-none');
+whatsappPhoneWrapper.classList.add('d-none');
+sameNumberCheckbox.checked = false;
+whatsappPhoneInput.value = '';
+}
+});
+
+sameNumberCheckbox.addEventListener('change', () => {
+if (sameNumberCheckbox.checked) {
+whatsappPhoneWrapper.classList.add('d-none');
+whatsappPhoneInput.value = telephoneInput.value;
+} else {
+whatsappPhoneWrapper.classList.remove('d-none');
+whatsappPhoneInput.value = '';
+whatsappPhoneInput.focus();
+}
+});
+
+telephoneInput.addEventListener('input', () => {
+if (whatsappSwitch.checked && sameNumberCheckbox.checked) {
+whatsappPhoneInput.value = telephoneInput.value;
+}
+});
+});
+	</script>
 
 </div>

@@ -146,7 +146,8 @@ export default class extends Controller {
                     detail: {
                         field: fieldName,
                         value: finalValue,
-                        whatsApp: whatsAppValue
+                        whatsApp: whatsAppValue,
+                        publicProfileUrl: data.publicProfileUrl ?? null
                     }
                 }));
 
