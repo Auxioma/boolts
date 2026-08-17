@@ -5,7 +5,8 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-{% set avatar = property.user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
+{% set user = property.user %}
+{% set avatar = user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
 {% set firstLetter = property.user.prenom ? property.user.prenom|first|upper : null %}
 {% if avatar %}
 <img src="{{ avatar }}" alt="{{ user.entreprise }}">

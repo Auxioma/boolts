@@ -210,15 +210,25 @@
 									{% endif %}
 								</p>
 
-								<div class="mt-12 d-none js-field-input w-75">
+								<div
+									class="mt-12 d-none js-field-input w-75"
+									data-controller="mes-biens--adresse-autocomplete"
+									data-mes-biens--adresse-autocomplete-provider-value="nominatim"
+									data-mes-biens--adresse-autocomplete-language-value="{{ app.request.locale|default('fr') }}"
+									data-mes-biens--adresse-autocomplete-limit-value="8">
 									<div class="mb-16">
 										{{ form_widget(form.adresseContact, {
                                             attr: {
                                                 class: 'form-control js-address-input',
                                                 placeholder: 'Entrez un numéro et un nom de rue',
+                                                autocomplete: 'off',
                                                 'data-name': 'adresseContact',
+                                                'data-mes-biens--adresse-autocomplete-target': 'adresse',
+                                                'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur',
                                             },
                                         }) }}
+
+										<div class="mapbox-autocomplete-results list-group shadow mt-2" data-mes-biens--adresse-autocomplete-target="results" hidden></div>
 									</div>
 
 									<div class="row">
@@ -230,7 +240,9 @@
                                                     attr: {
                                                         class: 'form-control js-address-input',
                                                         placeholder: 'Entrez un code postal',
+                                                        autocomplete: 'off',
                                                         'data-name': 'codePostalContact',
+                                                        'data-mes-biens--adresse-autocomplete-target': 'codePostal',
                                                     },
                                                 }) }}
 											</div>
@@ -243,7 +255,9 @@
                                                 attr: {
                                                     class: 'form-control js-address-input',
                                                     placeholder: 'Choisissez une ville',
+                                                    autocomplete: 'off',
                                                     'data-name': 'villeContact',
+                                                    'data-mes-biens--adresse-autocomplete-target': 'ville',
                                                 },
                                             }) }}
 										</div>
@@ -256,7 +270,9 @@
                                             attr: {
                                                 class: 'form-control js-address-input',
                                                 placeholder: 'France',
+                                                autocomplete: 'off',
                                                 'data-name': 'paysContact',
+                                                'data-mes-biens--adresse-autocomplete-target': 'pays',
                                             },
                                         }) }}
 									</div>
