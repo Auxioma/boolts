@@ -33,6 +33,19 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
  */
 final class UpdateProfileAgenceImmobiliereController extends AbstractController
 {
+    private const PROFILE_TRANSLATION_LOCALES = ['fr', 'en'];
+
+    private const TRANSLATED_PROFILE_FIELDS = [
+        'adresse',
+        'adresseComplement',
+        'ville',
+        'description',
+        'adresseContact',
+        'villeContact',
+        'paysContact',
+        'adresseComplementContact',
+    ];
+
     #[Route('/dashboard/api/profile', name: 'api_profile_agence_immobiliere', methods: ['POST'])]
     /**
      * Handles the index controller action.
@@ -212,23 +225,29 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
                 ], 422);
             }
 
+            $submitData = [];
+
             if ('adresse' === $field) {
-                $form->submit([
+                $submitData = [
                     'adresse' => $value['adresse'] ?? null,
                     'adresseComplement' => $value['adresseComplement'] ?? null,
                     'codePostal' => $value['codePostal'] ?? null,
                     'ville' => $value['ville'] ?? null,
                     'pays' => $value['pays'] ?? null,
-                ], false);
+                ];
+
+                $form->submit($submitData, false);
             }
 
             if ('adresseContact' === $field) {
-                $form->submit([
+                $submitData = [
                     'adresseContact' => $value['adresseContact'] ?? null,
                     'codePostalContact' => $value['codePostalContact'] ?? null,
                     'villeContact' => $value['villeContact'] ?? null,
                     'paysContact' => $value['paysContact'] ?? null,
-                ], false);
+                ];
+
+                $form->submit($submitData, false);
             }
 
             if (!$form->isValid()) {
@@ -238,6 +257,8 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
                     'errors' => $this->getFormErrors($form),
                 ], 422);
             }
+
+            $this->syncTranslatedProfileFields($user, $submitData);
 
             $entityManager->flush();
 
@@ -272,6 +293,10 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
                 'message' => $this->getFirstFormError($form),
                 'errors' => $this->getFormErrors($form),
             ], 422);
+        }
+
+        if ($this->isTranslatedProfileField($field)) {
+            $this->syncTranslatedProfileFields($user, [$field => $value]);
         }
 
         $entityManager->flush();
@@ -396,6 +421,47 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             if ($horaireOuverture->getJour() === $jour) {
                 return $horaireOuverture;
             }
+        }
+
+        return null;
+    }
+
+    private function isTranslatedProfileField(string $field): bool
+    {
+        return \in_array($field, self::TRANSLATED_PROFILE_FIELDS, true);
+    }
+
+    private function syncTranslatedProfileFields(User $user, array $fields): void
+    {
+        foreach (self::PROFILE_TRANSLATION_LOCALES as $locale) {
+            $translation = $user->translate($locale, false);
+
+            foreach ($fields as $field => $value) {
+                if (!$this->isTranslatedProfileField($field)) {
+                    continue;
+                }
+
+                $setter = 'set'.ucfirst($field);
+
+                if (!method_exists($translation, $setter)) {
+                    continue;
+                }
+
+                $translation->{$setter}($this->normalizeTranslatedValue($value));
+            }
+        }
+
+        $user->mergeNewTranslations();
+    }
+
+    private function normalizeTranslatedValue(mixed $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        if (\is_scalar($value) || $value instanceof \Stringable) {
+            return (string) $value;
         }
 
         return null;

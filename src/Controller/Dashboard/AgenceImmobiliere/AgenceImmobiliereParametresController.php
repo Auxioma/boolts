@@ -39,7 +39,7 @@ final class AgenceImmobiliereParametresController extends AbstractController
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
     ): Response {
-        $user = $this->getUser();
+        $user = $this->getUser(); 
 
         if (!$user instanceof User) {
             throw $this->createAccessDeniedException('Utilisateur non authentifié.');

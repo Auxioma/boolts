@@ -187,7 +187,7 @@ export default class extends Controller {
     }
 
     connect() {
-        document.querySelectorAll('.js-editable-field').forEach((field) => {
+        this.element.querySelectorAll('.js-editable-field').forEach((field) => {
             const button = field.querySelector('.js-edit-button');
 
             if (!button) {
