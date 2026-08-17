@@ -32,6 +32,10 @@ export default class extends Controller {
             type: Number,
             default: 10,
         },
+        provider: {
+            type: String,
+            default: 'mapbox',
+        },
         types: {
             type: String,
             default: 'address,poi,street,place,locality,neighborhood,postcode,region,country',
@@ -88,6 +92,11 @@ export default class extends Controller {
             return;
         }
 
+        if (this.providerValue === 'nominatim') {
+            await this.fetchNominatimSuggestions(query);
+            return;
+        }
+
         this.abortCurrentRequest();
         this.abortController = new AbortController();
 
@@ -136,6 +145,55 @@ export default class extends Controller {
         }
     }
 
+    async fetchNominatimSuggestions(query) {
+        this.abortCurrentRequest();
+        this.abortController = new AbortController();
+
+        const url = new URL('https://nominatim.openstreetmap.org/search');
+
+        url.searchParams.set('format', 'jsonv2');
+        url.searchParams.set('q', query);
+        url.searchParams.set('addressdetails', '1');
+        url.searchParams.set('limit', String(this.limitValue));
+        url.searchParams.set('dedupe', '1');
+        url.searchParams.set('accept-language', this.languageValue || 'fr');
+
+        try {
+            const response = await fetch(url.toString(), {
+                method: 'GET',
+                signal: this.abortController.signal,
+                headers: {
+                    Accept: 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                console.error('Erreur Nominatim search :', response.status, response.statusText);
+                this.clearSuggestions();
+                return;
+            }
+
+            const data = await response.json();
+
+            this.suggestions = Array.isArray(data)
+                ? data.map((suggestion) => ({
+                    ...suggestion,
+                    provider: 'nominatim',
+                }))
+                : [];
+
+            this.activeIndex = -1;
+            this.renderSuggestions();
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            console.error('Erreur requête Nominatim search :', error);
+            this.clearSuggestions();
+        }
+    }
+
     renderSuggestions() {
         if (!this.hasResultsTarget) {
             return;
@@ -173,23 +231,32 @@ export default class extends Controller {
     }
 
     renderSuggestionHtml(suggestion) {
+        const addressText = typeof suggestion.address === 'string'
+            ? suggestion.address
+            : '';
+
         const name = this.escapeHtml(
             suggestion.name ||
             suggestion.name_preferred ||
             suggestion.text ||
+            suggestion.display_name?.split(',')[0] ||
             ''
         );
 
         const fullAddress = this.escapeHtml(
             suggestion.full_address ||
             suggestion.place_formatted ||
-            suggestion.address ||
+            addressText ||
+            suggestion.display_name ||
             ''
         );
 
         const featureType = this.escapeHtml(
             suggestion.feature_type ||
             suggestion.type ||
+            suggestion.category ||
+            suggestion.class ||
+            suggestion.addresstype ||
             ''
         );
 
@@ -212,6 +279,18 @@ export default class extends Controller {
         this.isSelecting = true;
         this.clearPendingSearch();
         this.hideResults();
+
+        if (this.isNominatimSuggestion(suggestion)) {
+            this.fillFieldsFromNominatim(suggestion);
+            this.clearSuggestions();
+            this.hideResults();
+
+            setTimeout(() => {
+                this.isSelecting = false;
+            }, 300);
+
+            return;
+        }
 
         const mapboxId = suggestion.mapbox_id || suggestion.id || '';
 
@@ -343,6 +422,63 @@ export default class extends Controller {
         this.setTargetValue('locality', locality);
         this.setTargetValue('neighborhood', neighborhood);
         this.setTargetValue('poi', poi);
+    }
+
+    isNominatimSuggestion(suggestion) {
+        return suggestion?.provider === 'nominatim' ||
+            Boolean(suggestion?.display_name && suggestion?.address && !suggestion?.mapbox_id);
+    }
+
+    fillFieldsFromNominatim(suggestion) {
+        const address = suggestion.address || {};
+        const road =
+            address.road ||
+            address.pedestrian ||
+            address.footway ||
+            address.cycleway ||
+            address.path ||
+            address.residential ||
+            address.street ||
+            '';
+        const street = [
+            address.house_number,
+            road,
+        ].filter(Boolean).join(' ');
+        const city =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            address.hamlet ||
+            address.city_district ||
+            address.county ||
+            '';
+        const country = address.country || '';
+        const countryCode = address.country_code
+            ? address.country_code.toUpperCase()
+            : '';
+        const postcode = address.postcode || '';
+        const displayName = suggestion.display_name || suggestion.name || '';
+        const featureType =
+            suggestion.type ||
+            suggestion.category ||
+            suggestion.class ||
+            suggestion.addresstype ||
+            '';
+
+        this.setTargetValue('adresse', street || displayName);
+        this.setTargetValue('codePostal', postcode);
+        this.setTargetValue('ville', city);
+        this.setSelectValueByTextOrValue('pays', country, countryCode);
+        this.setTargetValue('latitude', suggestion.lat || '');
+        this.setTargetValue('longitude', suggestion.lon || '');
+        this.setTargetValue('fullAddress', displayName);
+        this.setTargetValue('featureType', featureType);
+        this.setTargetValue('region', address.state || address.region || '');
+        this.setTargetValue('district', address.county || address.district || '');
+        this.setTargetValue('locality', address.suburb || address.city_district || '');
+        this.setTargetValue('neighborhood', address.neighbourhood || address.neighborhood || '');
+        this.setTargetValue('poi', address.amenity || address.shop || '');
     }
 
     getFirstFeature(data) {
