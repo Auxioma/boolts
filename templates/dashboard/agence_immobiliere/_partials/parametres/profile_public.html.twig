@@ -537,8 +537,50 @@
 							<div class="w-100">
 								<h3 class="mb-12">Horaires</h3>
 
+								{% set openingDays = [
+									{key: 'lundi', label: 'Lundi'},
+									{key: 'mardi', label: 'Mardi'},
+									{key: 'mercredi', label: 'Mercredi'},
+									{key: 'jeudi', label: 'Jeudi'},
+									{key: 'vendredi', label: 'Vendredi'},
+									{key: 'samedi', label: 'Samedi'},
+									{key: 'dimanche', label: 'Dimanche'},
+								] %}
+
+								{% set openingHoursByDay = {} %}
+								{% for horaire in app.user.horaireOuvertures %}
+									{% if horaire.jour is not empty %}
+										{% set openingHoursByDay = openingHoursByDay|merge({(horaire.jour): horaire}) %}
+									{% endif %}
+								{% endfor %}
+
+								{% set openingHoursInitial = {} %}
+								{% set openingHoursSummary = [] %}
+								{% for openingDay in openingDays %}
+									{% set horaire = openingHoursByDay[openingDay.key] ?? null %}
+									{% set dayHours = {
+										isOpen: horaire ? horaire.open : false,
+										ouvertureMatin: horaire and horaire.ouvertureMatin ? horaire.ouvertureMatin|date('H:i') : '',
+										fermetureMatin: horaire and horaire.fermetureMatin ? horaire.fermetureMatin|date('H:i') : '',
+										ouvertureApresMidi: horaire and horaire.ouvertureApresMidi ? horaire.ouvertureApresMidi|date('H:i') : '',
+										fermetureApresMidi: horaire and horaire.fermetureApresMidi ? horaire.fermetureApresMidi|date('H:i') : '',
+									} %}
+									{% set openingHoursInitial = openingHoursInitial|merge({(openingDay.key): dayHours}) %}
+
+									{% if dayHours.isOpen %}
+										{% set slots = [] %}
+										{% if dayHours.ouvertureMatin or dayHours.fermetureMatin %}
+											{% set slots = slots|merge([(dayHours.ouvertureMatin ?: '--:--') ~ ' - ' ~ (dayHours.fermetureMatin ?: '--:--')]) %}
+										{% endif %}
+										{% if dayHours.ouvertureApresMidi or dayHours.fermetureApresMidi %}
+											{% set slots = slots|merge([(dayHours.ouvertureApresMidi ?: '--:--') ~ ' - ' ~ (dayHours.fermetureApresMidi ?: '--:--')]) %}
+										{% endif %}
+										{% set openingHoursSummary = openingHoursSummary|merge([openingDay.label ~ ' : ' ~ (slots is not empty ? slots|join(' / ') : 'Ouvert')]) %}
+									{% endif %}
+								{% endfor %}
+
 								<p class="js-field-value mb-0" id="opening-hours-value">
-									Tous les jours sont fermés par défaut
+									{{ openingHoursSummary is not empty ? openingHoursSummary|join(' | ') : 'Tous les jours sont fermés par défaut' }}
 								</p>
 
 								{% set prototype = form.horaireOuvertures.vars.prototype %}
@@ -569,7 +611,9 @@
 								{% endset %}
 
 								<div
-									class="opening-hours mt-12 d-none js-field-input" data-controller="opening-hours">
+									class="opening-hours mt-12 d-none js-field-input"
+									data-controller="opening-hours"
+									data-opening-hours-initial-value="{{ openingHoursInitial|json_encode|e('html_attr') }}">
 
 									{# Lundi #}
 									<div class="opening-day is-closed mb-12" data-opening-hours-day>

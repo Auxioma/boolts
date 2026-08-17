@@ -1,9 +1,29 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
+    static values = {
+        initial: Object
+    }
+
     connect() {
-        this.element.querySelectorAll('[data-opening-hours-day]').forEach((day) => {
-            this.closeDay(day, false);
+        const days = [
+            'lundi',
+            'mardi',
+            'mercredi',
+            'jeudi',
+            'vendredi',
+            'samedi',
+            'dimanche',
+        ];
+
+        this.element.querySelectorAll('[data-opening-hours-day]').forEach((day, index) => {
+            const dayKey = days[index];
+
+            if (dayKey && this.hasInitialValue && this.initialValue[dayKey]) {
+                this.applyDayValues(day, this.initialValue[dayKey]);
+            }
+
+            this.refreshDayState(day);
         });
     }
 
@@ -15,7 +35,7 @@ export default class extends Controller {
         }
 
         if (event.currentTarget.checked) {
-            this.openDay(day);
+            this.openDay(day, true);
             return;
         }
 
@@ -83,7 +103,11 @@ export default class extends Controller {
         }
     }
 
-    openDay(day) {
+    openDay(day, clearHiddenSecondSlot = true) {
+        this.showDayOpen(day, false, clearHiddenSecondSlot);
+    }
+
+    showDayOpen(day, showSecondSlot = false, clearHiddenSecondSlot = false) {
         const status = day.querySelector('.js-opening-status');
         const firstSlot = day.querySelector('.js-opening-first');
         const secondSlot = day.querySelector('.js-opening-second');
@@ -106,11 +130,14 @@ export default class extends Controller {
         }
 
         if (secondSlot) {
-            secondSlot.hidden = true;
+            secondSlot.hidden = !showSecondSlot;
 
             secondSlot.querySelectorAll('input[type="time"]').forEach((input) => {
-                input.value = '';
-                input.disabled = true;
+                if (!showSecondSlot && clearHiddenSecondSlot) {
+                    input.value = '';
+                }
+
+                input.disabled = !showSecondSlot;
             });
         }
 
@@ -119,11 +146,11 @@ export default class extends Controller {
         }
 
         if (addButton) {
-            addButton.hidden = false;
+            addButton.hidden = showSecondSlot;
         }
 
         if (removeButton) {
-            removeButton.hidden = true;
+            removeButton.hidden = !showSecondSlot;
         }
     }
 
@@ -181,5 +208,57 @@ export default class extends Controller {
         if (removeButton) {
             removeButton.hidden = true;
         }
+    }
+
+    applyDayValues(day, values) {
+        const toggle = day.querySelector('.js-opening-toggle');
+        const timeInputs = day.querySelectorAll('input[type="time"]');
+
+        if (toggle) {
+            toggle.checked = this.isTruthy(values.isOpen);
+        }
+
+        if (timeInputs[0]) {
+            timeInputs[0].value = values.ouvertureMatin || '';
+        }
+
+        if (timeInputs[1]) {
+            timeInputs[1].value = values.fermetureMatin || '';
+        }
+
+        if (timeInputs[2]) {
+            timeInputs[2].value = values.ouvertureApresMidi || '';
+        }
+
+        if (timeInputs[3]) {
+            timeInputs[3].value = values.fermetureApresMidi || '';
+        }
+    }
+
+    refreshDayState(day) {
+        const toggle = day.querySelector('.js-opening-toggle');
+        const timeInputs = day.querySelectorAll('input[type="time"]');
+        const hasAnyTime = Array.from(timeInputs).some((input) => input.value.trim() !== '');
+        const hasSecondSlot = Boolean(
+            timeInputs[2]?.value.trim() || timeInputs[3]?.value.trim()
+        );
+
+        if ((toggle && toggle.checked) || hasAnyTime) {
+            if (toggle) {
+                toggle.checked = true;
+            }
+
+            this.showDayOpen(day, hasSecondSlot, false);
+            return;
+        }
+
+        this.closeDay(day, false);
+    }
+
+    isTruthy(value) {
+        return value === true
+            || value === 1
+            || value === '1'
+            || value === 'true';
     }
 }
