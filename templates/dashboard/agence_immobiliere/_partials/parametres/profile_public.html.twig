@@ -64,9 +64,10 @@
 
 			{% set progress = totalRequired > 0 ? ((totalDone / totalRequired) * 100)|round : 0 %}
 			{% set publicProfileUrl = app.user.slug is not empty ? path('app_public_detail_agence', {slug: app.user.slug}) : '' %}
-			{% set publicProfileReady = publicProfileUrl is not empty and totalDone == totalRequired %}
+			{% set profileComplete = totalDone == totalRequired %}
+			{% set publicProfileReady = publicProfileUrl is not empty and profileComplete %}
 
-			<div class="complete-profile py-24 px-24 mt-32" data-controller="profile-progress">
+			<div class="complete-profile py-24 px-24 mt-32" data-controller="profile-progress"{% if profileComplete %} hidden{% endif %}>
 				<h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
 
 				<div class="progress my-12" style="height: 10px;">

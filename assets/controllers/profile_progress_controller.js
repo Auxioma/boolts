@@ -5,22 +5,14 @@ export default class extends Controller {
     static targets = ['bar', 'item'];
 
     connect() {
-        this.boundRefreshFromPage = this.refreshFromPage.bind(this);
         this.boundRefreshFromSave = this.handleFieldSaved.bind(this);
-        this.boundInputs = new Set();
 
         window.addEventListener('profile:field-saved', this.boundRefreshFromSave);
-        this.bindPageInputs();
         this.refreshFromPage();
     }
 
     disconnect() {
         window.removeEventListener('profile:field-saved', this.boundRefreshFromSave);
-
-        this.boundInputs.forEach((input) => {
-            input.removeEventListener('input', this.boundRefreshFromPage);
-            input.removeEventListener('change', this.boundRefreshFromPage);
-        });
     }
 
     handleFieldSaved(event) {
@@ -48,20 +40,6 @@ export default class extends Controller {
 
         this.setItemState(item, isDone);
         this.updateProgress();
-    }
-
-    bindPageInputs() {
-        this.itemTargets.forEach((item) => {
-            this.getItemInputs(item).forEach((input) => {
-                if (this.boundInputs.has(input)) {
-                    return;
-                }
-
-                input.addEventListener('input', this.boundRefreshFromPage);
-                input.addEventListener('change', this.boundRefreshFromPage);
-                this.boundInputs.add(input);
-            });
-        });
     }
 
     refreshFromPage() {
@@ -92,6 +70,7 @@ export default class extends Controller {
         this.barTarget.style.width = `${progress}%`;
         this.barTarget.setAttribute('aria-valuenow', progress);
         this.updatePreviewLink(requiredItems.length === doneItems.length);
+        this.element.hidden = requiredItems.length === doneItems.length;
     }
 
     isValueFilled(value) {
