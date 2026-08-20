@@ -1,0 +1,231 @@
+{#
+ Template: templates/email/document/account_deletion_warning.html.twig
+ Role: Email envoyé avant suppression d'un compte agence dont les documents obligatoires ne sont pas transmis.
+#}
+
+{% apply inline_css(source('email/document/style.css')) %}
+<!DOCTYPE html>
+<html lang="{{ app.request.locale|default('fr') }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Votre compte Boolts sera bientôt supprimé</title>
+</head>
+
+<body>
+
+<table
+    role="presentation"
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    class="mail-wrapper"
+>
+    <tr>
+        <td align="center">
+
+            <table
+                role="presentation"
+                width="600"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                class="mail-container"
+            >
+                <tr>
+                    <td class="mail-header">
+
+                        <table
+                            role="presentation"
+                            cellpadding="0"
+                            cellspacing="0"
+                            border="0"
+                            class="brand-table"
+                        >
+                            <tr>
+                                <td valign="middle">
+                                    <img
+                                        src="{{ absolute_url(asset('images/logo/mail.svg')) }}"
+                                        alt="Boolts"
+                                        class="brand-logo"
+                                        width="204"
+                                    >
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="mail-main">
+
+                        <h1 class="mail-title">
+                            Votre compte sera supprimé dans
+                            {{ daysBeforeDeletion }}
+                            {{ daysBeforeDeletion == 1 ? 'jour' : 'jours' }}
+                        </h1>
+
+                        <p class="mail-text">
+                            Bonjour {{ agenceName|default('AGENCE_NAME') }},
+                            vos documents obligatoires n’ont pas tous été transmis
+                            ou certains doivent être remplacés. Sans action de votre
+                            part, votre compte Boolts sera supprimé le
+                            {{ deletionDate|date('d/m/Y') }}.
+                        </p>
+
+                        <table
+                            role="presentation"
+                            cellpadding="0"
+                            cellspacing="0"
+                            border="0"
+                            class="button-wrapper"
+                        >
+                            <tr>
+                                <td>
+                                    <a
+                                        href="{{ dashboardUrl|default('#') }}"
+                                        class="primary-button"
+                                    >
+                                        Envoyer mes documents
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="support-block">
+                            <p>
+                                Vous avez des soucis pour vous connecter ?
+                                <br>
+                                Contactez notre support :
+                                <a href="mailto:contact@boolts.com">
+                                    contact@boolts.com
+                                </a>
+                            </p>
+                        </div>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="footer-top">
+
+                        <table
+                            role="presentation"
+                            width="100%"
+                            cellpadding="0"
+                            cellspacing="0"
+                            border="0"
+                        >
+                            <tr>
+                                <td
+                                    width="50%"
+                                    valign="bottom"
+                                    class="footer-column"
+                                >
+                                    <p class="footer-brand">
+                                        boolts
+                                    </p>
+
+                                    <div class="footer-address">
+                                        <p>
+                                            ©{{ 'now'|date('Y') }} Boolts
+                                        </p>
+                                    </div>
+                                </td>
+
+                                <td
+                                    width="50%"
+                                    valign="bottom"
+                                    align="right"
+                                    class="footer-column-right"
+                                >
+                                    <div class="social-icons">
+                                        <a
+                                            href="{{ instagramUrl|default('#') }}"
+                                            target="_blank"
+                                            aria-label="Instagram"
+                                        >
+                                            <img
+                                                src="{{ absolute_url(asset('images/logo/instagram.svg')) }}"
+                                                alt="Instagram"
+                                                width="20"
+                                                height="20"
+                                            >
+                                        </a>
+
+                                        <a
+                                            href="{{ facebookUrl|default('#') }}"
+                                            target="_blank"
+                                            aria-label="Facebook"
+                                        >
+                                            <img
+                                                src="{{ absolute_url(asset('images/logo/facebook.svg')) }}"
+                                                alt="Facebook"
+                                                width="20"
+                                                height="20"
+                                            >
+                                        </a>
+                                    </div>
+
+                                    <div class="footer-links">
+                                        <p>
+                                            <a
+                                                href="{{ cguUrl|default('#') }}"
+                                                target="_blank"
+                                            >
+                                                CGU
+                                            </a>
+                                        </p>
+
+                                        <p>
+                                            <a
+                                                href="{{ contactUrl|default('#') }}"
+                                                target="_blank"
+                                            >
+                                                Nous contacter
+                                            </a>
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="footer-legal">
+                        <p>
+                            Boolts is a registered trademark.
+                            Instagram and Facebook are trademarks of Meta Inc.,
+                            registered in the U.S. and other countries.
+                            <br>
+                            Vous avez reçu ce message parce que vous vous êtes
+                            inscrit sur notre site le
+                            {{ registrationDate|default('26/02/2026') }}.
+                        </p>
+
+                        <p>
+                            Vous ne souhaitez plus recevoir d’e-mail de notre part ?
+                            <a href="{{ unsubscribeUrl|default('#') }}">
+                                Cliquez ici.
+                            </a>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
+{% endapply %}

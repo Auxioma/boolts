@@ -12,6 +12,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Billing\Invoice;
+use App\Entity\Billing\Payment;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,6 +26,9 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
+    private const ROLE_AGENCY = 'ROLE_AGENCE';
+    private const ROLE_ADMIN = 'ROLE_ADMIN';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
@@ -41,6 +46,77 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * @return list<User>
+     */
+    public function findAgenciesForDocumentDeletionWarning(
+        \DateTimeImmutable $createdAtOrBefore,
+        \DateTimeImmutable $createdAtAfter,
+        int $daysBeforeDeletion,
+    ): array {
+        $warningField = match ($daysBeforeDeletion) {
+            30 => 'documentDeletionWarningThirtyDaysSentAt',
+            15 => 'documentDeletionWarningFifteenDaysSentAt',
+            5 => 'documentDeletionWarningFiveDaysSentAt',
+            default => throw new \InvalidArgumentException(\sprintf('Unsupported warning delay "%d".', $daysBeforeDeletion)),
+        };
+
+        return $this->baseDocumentDeletionAgencyQueryBuilder()
+            ->andWhere('u.createdAt <= :createdAtOrBefore')
+            ->andWhere('u.createdAt > :createdAtAfter')
+            ->andWhere(\sprintf('u.%s IS NULL', $warningField))
+            ->setParameter('createdAtOrBefore', $createdAtOrBefore)
+            ->setParameter('createdAtAfter', $createdAtAfter)
+            ->orderBy('u.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<User>
+     */
+    public function findAgenciesExpiredForMissingDocuments(
+        \DateTimeImmutable $createdAtOrBefore,
+    ): array {
+        return $this->baseDocumentDeletionAgencyQueryBuilder()
+            ->andWhere('u.createdAt <= :createdAtOrBefore')
+            ->setParameter('createdAtOrBefore', $createdAtOrBefore)
+            ->orderBy('u.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    private function baseDocumentDeletionAgencyQueryBuilder(): \Doctrine\ORM\QueryBuilder
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+        $paymentSubquery = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('1')
+            ->from(Payment::class, 'payment')
+            ->innerJoin('payment.billingProfile', 'paymentBillingProfile')
+            ->andWhere('payment.agency = u OR paymentBillingProfile.agency = u');
+        $invoiceSubquery = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('1')
+            ->from(Invoice::class, 'invoice')
+            ->innerJoin('invoice.billingProfile', 'invoiceBillingProfile')
+            ->andWhere('invoice.agency = u OR invoiceBillingProfile.agency = u');
+
+        return $queryBuilder
+            ->andWhere('u.deletedAt IS NULL')
+            ->andWhere('u.createdAt IS NOT NULL')
+            ->andWhere('u.roles LIKE :agencyRole')
+            ->andWhere('u.roles NOT LIKE :adminRole')
+            ->andWhere($queryBuilder->expr()->not(
+                $queryBuilder->expr()->exists($paymentSubquery->getDQL()),
+            ))
+            ->andWhere($queryBuilder->expr()->not(
+                $queryBuilder->expr()->exists($invoiceSubquery->getDQL()),
+            ))
+            ->setParameter('agencyRole', '%"'.self::ROLE_AGENCY.'"%')
+            ->setParameter('adminRole', '%"'.self::ROLE_ADMIN.'"%');
     }
 
     //    /**

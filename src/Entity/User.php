@@ -178,6 +178,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(options: ['default' => 0])]
     private int $visitAgency = 0;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $documentDeletionWarningThirtyDaysSentAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $documentDeletionWarningFifteenDaysSentAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $documentDeletionWarningFiveDaysSentAt = null;
+
     /**
      * @var Collection<int, UserDocumentRequest>
      */
@@ -839,6 +848,45 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function setVisitAgency(int $visitAgency): static
     {
         $this->visitAgency = max(0, $visitAgency);
+
+        return $this;
+    }
+
+    public function getDocumentDeletionWarningThirtyDaysSentAt(): ?\DateTimeImmutable
+    {
+        return $this->documentDeletionWarningThirtyDaysSentAt;
+    }
+
+    public function setDocumentDeletionWarningThirtyDaysSentAt(
+        ?\DateTimeImmutable $documentDeletionWarningThirtyDaysSentAt,
+    ): static {
+        $this->documentDeletionWarningThirtyDaysSentAt = $documentDeletionWarningThirtyDaysSentAt;
+
+        return $this;
+    }
+
+    public function getDocumentDeletionWarningFifteenDaysSentAt(): ?\DateTimeImmutable
+    {
+        return $this->documentDeletionWarningFifteenDaysSentAt;
+    }
+
+    public function setDocumentDeletionWarningFifteenDaysSentAt(
+        ?\DateTimeImmutable $documentDeletionWarningFifteenDaysSentAt,
+    ): static {
+        $this->documentDeletionWarningFifteenDaysSentAt = $documentDeletionWarningFifteenDaysSentAt;
+
+        return $this;
+    }
+
+    public function getDocumentDeletionWarningFiveDaysSentAt(): ?\DateTimeImmutable
+    {
+        return $this->documentDeletionWarningFiveDaysSentAt;
+    }
+
+    public function setDocumentDeletionWarningFiveDaysSentAt(
+        ?\DateTimeImmutable $documentDeletionWarningFiveDaysSentAt,
+    ): static {
+        $this->documentDeletionWarningFiveDaysSentAt = $documentDeletionWarningFiveDaysSentAt;
 
         return $this;
     }

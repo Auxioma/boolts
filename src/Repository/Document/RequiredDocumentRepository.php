@@ -25,4 +25,16 @@ final class RequiredDocumentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, RequiredDocument::class);
     }
+
+    public function countEnabledRequiredDocuments(): int
+    {
+        return (int) $this->createQueryBuilder('requiredDocument')
+            ->select('COUNT(requiredDocument.id)')
+            ->andWhere('requiredDocument.enabled = :enabled')
+            ->andWhere('requiredDocument.required = :required')
+            ->setParameter('enabled', true)
+            ->setParameter('required', true)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

@@ -59,6 +59,60 @@ final readonly class ClientDocumentNotificationMailer
         );
     }
 
+    public function sendAccountDeletionWarning(
+        User $client,
+        \DateTimeImmutable $deletionDate,
+        int $daysBeforeDeletion,
+    ): bool {
+        $recipientEmail = mb_trim((string) $client->getEmail());
+
+        if ('' === $recipientEmail) {
+            $this->logger->warning('Document account deletion warning skipped because client email is empty.', [
+                'clientId' => $client->getId(),
+                'daysBeforeDeletion' => $daysBeforeDeletion,
+            ]);
+
+            return false;
+        }
+
+        $email = (new TemplatedEmail())
+            ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
+            ->to(new Address($recipientEmail, $this->clientName($client)))
+            ->subject(\sprintf(
+                'Votre compte Boolts sera supprimé dans %d %s',
+                $daysBeforeDeletion,
+                1 === $daysBeforeDeletion ? 'jour' : 'jours',
+            ))
+            ->htmlTemplate('email/document/account_deletion_warning.html.twig')
+            ->context([
+                'user' => $client,
+                'agency' => $client,
+                'agenceName' => $this->clientName($client),
+                'dashboardUrl' => $this->urlGenerator->generate(
+                    'agence_immobiliere_dashboard',
+                    [],
+                    UrlGeneratorInterface::ABSOLUTE_URL,
+                ),
+                'registrationDate' => $client->getCreatedAt()?->format('d/m/Y'),
+                'deletionDate' => $deletionDate,
+                'daysBeforeDeletion' => $daysBeforeDeletion,
+            ]);
+
+        try {
+            $this->mailer->send($email);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Document account deletion warning could not be sent.', [
+                'exception' => $exception,
+                'clientId' => $client->getId(),
+                'daysBeforeDeletion' => $daysBeforeDeletion,
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
     private function sendDocumentNotification(
         User $client,
         UserDocumentSubmission $submission,
