@@ -10,6 +10,43 @@
 {% block title %}{{ 'professionnel.forgot_password.meta.title'|trans }}{% endblock %}
 
 {% block body %}
+{% set openingDays = [
+    {key: 'lundi', label: 'Lundi'},
+    {key: 'mardi', label: 'Mardi'},
+    {key: 'mercredi', label: 'Mercredi'},
+    {key: 'jeudi', label: 'Jeudi'},
+    {key: 'vendredi', label: 'Vendredi'},
+    {key: 'samedi', label: 'Samedi'},
+    {key: 'dimanche', label: 'Dimanche'},
+] %}
+
+{% set openingHoursByDay = {} %}
+{% for horaire in user.horaireOuvertures %}
+    {% if horaire.jour %}
+        {% set openingHoursByDay = openingHoursByDay|merge({(horaire.jour): horaire}) %}
+    {% endif %}
+{% endfor %}
+
+{% set openingHoursInitial = {} %}
+{% for openingDay in openingDays %}
+    {% set horaire = openingHoursByDay[openingDay.key] ?? null %}
+    {% set dayHours = {
+        isOpen: horaire and horaire.isOpen ? true : false,
+        ouvertureMatin: horaire and horaire.ouvertureMatin ? horaire.ouvertureMatin|date('H:i') : '',
+        fermetureMatin: horaire and horaire.fermetureMatin ? horaire.fermetureMatin|date('H:i') : '',
+        ouvertureApresMidi: horaire and horaire.ouvertureApresMidi ? horaire.ouvertureApresMidi|date('H:i') : '',
+        fermetureApresMidi: horaire and horaire.fermetureApresMidi ? horaire.fermetureApresMidi|date('H:i') : '',
+    } %}
+    {% set openingHoursInitial = openingHoursInitial|merge({(openingDay.key): dayHours}) %}
+{% endfor %}
+
+{% set openingHourFormsByDay = {} %}
+{% for hourForm in form.horaireOuvertures %}
+    {% if hourForm.jour.vars.value %}
+        {% set openingHourFormsByDay = openingHourFormsByDay|merge({(hourForm.jour.vars.value): hourForm}) %}
+    {% endif %}
+{% endfor %}
+
 <div class="bg-white d-flex flex-column" style="min-height: 100vh;">
     <div class="d-flex align-items-center justify-content-between flex-shrink-0 w-100" style="padding: 48px 132px;">
         <!-- Sidebar -->
@@ -50,118 +87,99 @@
             </div>
         </div>
 
-        <!-- Form Container -->
-        <div class="bg-white flex-grow-1" style="display: flex; flex-direction: column; gap: 48px; padding-bottom: 32px; border-radius: 24px;">
+        {{ form_start(form, {
+            attr: {
+                class: 'bg-white flex-grow-1',
+                style: 'display: flex; flex-direction: column; gap: 48px; padding-bottom: 32px; border-radius: 24px;',
+            },
+        }) }}
             <h1 class="fw-bold" style="font-size: 30px; line-height: 34px; color: #0B0F14; margin: 0;">Remplissez les<br>derniers détails...</h1>
+
+            {{ form_errors(form) }}
 
             <div class="d-flex flex-column" style="gap: 32px;">
                 <!-- Horaires Section -->
                 <div class="d-flex flex-column" style="gap: 16px;">
                     <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Horaires de l'agence (facultatif)</label>
-                    
-                    <div style="border-bottom: 2px solid #EBECEC; padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px;">
-                        <!-- Lundi -->
-                        <div class="d-flex align-items-center" style="gap: 24px;">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 140px;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Lundi</p>
-                                <input type="checkbox" checked style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Ouvert</p>
-                            </div>
-                            <div class="d-flex align-items-center" style="gap: 12px;">
-                                <input type="text" value="9:00 - 18:00" style="height: 44px; border: 2px solid #EBECEC; border-radius: 8px; padding: 12px 14px; font-size: 14px; width: 140px;">
-                                <button type="button" class="btn fw-bold" style="width: 24px; height: 24px; padding: 0; background-color: #5D00FF; border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
 
-                        <!-- Mardi -->
-                        <div class="d-flex align-items-center" style="gap: 24px;">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 140px;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Mardi</p>
-                                <input type="checkbox" checked style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Ouvert</p>
-                            </div>
-                            <div class="d-flex align-items-center" style="gap: 12px;">
-                                <input type="text" value="9:00 - 12:00" style="height: 44px; border: 2px solid #EBECEC; border-radius: 8px; padding: 12px 14px; font-size: 14px; width: 140px;">
-                                <input type="text" value="14:00 - 18:00" style="height: 44px; border: 2px solid #EBECEC; border-radius: 8px; padding: 12px 14px; font-size: 14px; width: 140px;">
-                                <button type="button" class="btn fw-bold" style="width: 24px; height: 24px; padding: 0; background-color: #dc3545; border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
+                    <div
+                        class="opening-hours"
+                        data-controller="opening-hours"
+                        data-opening-hours-initial-value="{{ openingHoursInitial|json_encode|e('html_attr') }}">
+                        {% for openingDay in openingDays %}
+                            {% set hourForm = openingHourFormsByDay[openingDay.key] ?? null %}
 
-                        <!-- Mercredi -->
-                        <div class="d-flex align-items-center" style="gap: 24px; height: 44px;">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 140px;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">Mercredi</p>
-                                <input type="checkbox" style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">Fermé</p>
-                            </div>
-                        </div>
+                            {% if hourForm %}
+                                <div class="opening-day is-closed" data-opening-hours-day>
+                                    {{ form_widget(hourForm.jour) }}
 
-                        <!-- Jeudi -->
-                        <div class="d-flex align-items-center" style="gap: 24px;">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 140px;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Jeudi</p>
-                                <input type="checkbox" checked style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Ouvert</p>
-                            </div>
-                            <div class="d-flex align-items-center" style="gap: 12px;">
-                                <input type="text" value="9:00 - 12:00" style="height: 44px; border: 2px solid #EBECEC; border-radius: 8px; padding: 12px 14px; font-size: 14px; width: 140px;">
-                                <input type="text" value="14:00 - 18:00" style="height: 44px; border: 2px solid #EBECEC; border-radius: 8px; padding: 12px 14px; font-size: 14px; width: 140px;">
-                                <button type="button" class="btn fw-bold" style="width: 24px; height: 24px; padding: 0; background-color: #dc3545; border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
+                                    <label class="opening-day__label">{{ openingDay.label }}</label>
 
-                        <!-- Vendredi -->
-                        <div class="d-flex align-items-center" style="gap: 24px;">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 140px;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Vendredi</p>
-                                <input type="checkbox" checked style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #0B0F14;">Ouvert</p>
-                            </div>
-                            <div class="d-flex align-items-center" style="gap: 12px;">
-                                <input type="text" value="9:00 - 12:00" style="height: 44px; border: 2px solid #EBECEC; border-radius: 8px; padding: 12px 14px; font-size: 14px; width: 140px;">
-                                <input type="text" value="14:00 - 18:00" style="height: 44px; border: 2px solid #EBECEC; border-radius: 8px; padding: 12px 14px; font-size: 14px; width: 140px;">
-                                <button type="button" class="btn fw-bold" style="width: 24px; height: 24px; padding: 0; background-color: #dc3545; border: none; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px;">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                            </div>
-                        </div>
+                                    <label class="contenue-des-page-des-parametres-switch">
+                                        {{ form_widget(hourForm.isOpen, {
+                                            attr: {
+                                                class: 'js-opening-toggle',
+                                                'data-action': 'change->opening-hours#toggle',
+                                            },
+                                        }) }}
+                                        <span class="contenue-des-page-des-parametres-switch-slider"></span>
+                                    </label>
 
-                        <!-- Samedi -->
-                        <div class="d-flex align-items-center" style="gap: 24px; height: 44px;">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 140px;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">Samedi</p>
-                                <input type="checkbox" style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">Fermé</p>
-                            </div>
-                        </div>
+                                    <span class="js-opening-status">Fermé</span>
 
-                        <!-- Dimanche -->
-                        <div class="d-flex align-items-center" style="gap: 24px; height: 44px;">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 140px;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">Dimanche</p>
-                                <input type="checkbox" style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF;">
-                                <p class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">Fermé</p>
-                            </div>
-                        </div>
+                                    <div class="opening-slot js-opening-first" hidden>
+                                        {{ form_widget(hourForm.ouvertureMatin) }}
+                                        <span class="opening-slot__separator">à</span>
+                                        {{ form_widget(hourForm.fermetureMatin) }}
+                                    </div>
+
+                                    <div class="opening-slot js-opening-second" hidden>
+                                        {{ form_widget(hourForm.ouvertureApresMidi) }}
+                                        <span class="opening-slot__separator">à</span>
+                                        {{ form_widget(hourForm.fermetureApresMidi) }}
+                                    </div>
+
+                                    <div class="opening-day__actions" hidden>
+                                        <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+
+                                        <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="opening-day__errors">
+                                        {{ form_errors(hourForm.ouvertureMatin) }}
+                                        {{ form_errors(hourForm.fermetureMatin) }}
+                                        {{ form_errors(hourForm.ouvertureApresMidi) }}
+                                        {{ form_errors(hourForm.fermetureApresMidi) }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
+
+                    {{ form_errors(form.horaireOuvertures) }}
                 </div>
 
                 <!-- Checkbox Acceptation -->
-                <div class="d-flex align-items-start" style="gap: 12px;">
-                    <input type="checkbox" style="width: 24px; height: 24px; cursor: pointer; accent-color: #5D00FF; flex-shrink: 0; margin-top: 2px;">
-                    <p class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">J'accepte les conditions d'utilisation de Boolts.*</p>
+                <div>
+                    <div class="d-flex align-items-start" style="gap: 12px;">
+                        {{ form_widget(form.acceptTerms, {
+                            attr: {
+                                class: 'step6-terms-input',
+                            },
+                        }) }}
+                        <label for="{{ form.acceptTerms.vars.id }}" class="mb-0 fw-medium" style="font-size: 14px; color: #858789;">J'accepte les conditions d'utilisation de Boolts.*</label>
+                    </div>
+                    {{ form_errors(form.acceptTerms) }}
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary fw-bold" style="height: 44px; background-color: #5D00FF; border: none; border-radius: 50px; font-size: 16px; line-height: 20px; padding: 10px 16px; color: white;">S'inscrire</button>
             </div>
-        </div>
+        {{ form_end(form) }}
     </div>
 </div>
 {% endblock %}
@@ -181,12 +199,14 @@
 
         input[type="text"],
         input[type="email"],
+        input[type="time"],
         textarea {
             font-family: 'Eudoxus Sans', sans-serif;
         }
 
         input[type="text"]:focus,
         input[type="email"]:focus,
+        input[type="time"]:focus,
         textarea:focus {
             border-color: #5D00FF;
             box-shadow: none;
@@ -205,6 +225,167 @@
         .btn-primary:hover {
             background-color: #4a00cc;
             border-color: #4a00cc;
+        }
+
+        .opening-hours {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: 2px solid #EBECEC;
+            padding-bottom: 16px;
+        }
+
+        .opening-day {
+            display: grid;
+            grid-template-columns: 110px 44px 58px minmax(150px, 1fr) minmax(150px, 1fr) 34px;
+            align-items: center;
+            gap: 12px;
+            min-height: 44px;
+        }
+
+        .opening-day__label,
+        .js-opening-status {
+            color: #0B0F14;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            margin: 0;
+        }
+
+        .opening-day.is-closed .opening-day__label,
+        .opening-day.is-closed .js-opening-status {
+            color: #858789;
+        }
+
+        .opening-slot {
+            display: grid;
+            grid-template-columns: 1fr 16px 1fr;
+            align-items: center;
+            gap: 6px;
+            min-height: 44px;
+            border: 2px solid #EBECEC;
+            border-radius: 8px;
+            padding: 4px 8px;
+            background-color: #FFFFFF;
+        }
+
+        .opening-slot__separator {
+            color: #858789;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .opening-slot input[type="time"] {
+            width: 100%;
+            min-width: 0;
+            height: 34px;
+            border: 0;
+            border-radius: 6px;
+            color: #0B0F14;
+            font-size: 14px;
+            background-color: transparent;
+        }
+
+        .opening-slot input[type="time"]:focus {
+            outline: 2px solid #5D00FF;
+            outline-offset: 1px;
+        }
+
+        .opening-day__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .js-opening-add,
+        .js-opening-remove {
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            border: 0;
+            border-radius: 50%;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .js-opening-add {
+            background-color: #5D00FF;
+        }
+
+        .js-opening-remove {
+            background-color: #dc3545;
+        }
+
+        .opening-day__errors {
+            grid-column: 1 / -1;
+            color: #dc3545;
+            font-size: 13px;
+        }
+
+        .opening-day__errors ul {
+            margin: 4px 0 0;
+            padding-left: 18px;
+        }
+
+        .contenue-des-page-des-parametres-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            margin-bottom: 0;
+        }
+
+        .contenue-des-page-des-parametres-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .contenue-des-page-des-parametres-switch-slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            border-radius: 999px;
+            background-color: #d1d5db;
+            transition: 0.2s ease;
+        }
+
+        .contenue-des-page-des-parametres-switch-slider::before {
+            content: "";
+            position: absolute;
+            left: 3px;
+            bottom: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #FFFFFF;
+            transition: 0.2s ease;
+        }
+
+        .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider {
+            background-color: #5D00FF;
+        }
+
+        .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider::before {
+            transform: translateX(20px);
+        }
+
+        .step6-terms-input {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 1199px) {
+            .opening-day {
+                grid-template-columns: 96px 44px 58px minmax(130px, 1fr) minmax(130px, 1fr) 34px;
+            }
         }
     </style>
 {% endblock %}

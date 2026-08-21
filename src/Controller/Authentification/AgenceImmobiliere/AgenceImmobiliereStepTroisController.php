@@ -12,10 +12,14 @@
 
 namespace App\Controller\Authentification\AgenceImmobiliere;
 
+use App\Entity\HoraireOuverture;
+use App\Entity\User;
 use App\Form\Authentification\CompleteProfileType;
 use App\Form\Authentification\StepCinqType;
 use App\Form\Authentification\StepQuatreType;
+use App\Form\Authentification\StepSixType;
 use App\Repository\UserRepository;
+use App\Security\AgenceImmobiliereAuthenticator;
 use App\Service\Billing\FreeAgencySubscriptionActivator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +31,16 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class AgenceImmobiliereStepTroisController extends AbstractController
 {
+    private const OPENING_DAYS = [
+        'lundi',
+        'mardi',
+        'mercredi',
+        'jeudi',
+        'vendredi',
+        'samedi',
+        'dimanche',
+    ];
+
     #[Route(
         path: [
             'fr' => '/fr/pro/step3',
@@ -163,8 +177,85 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         ],
         name: 'app_professionnelle_step_six'
     )]
-    public function step6(): Response
+    public function step6(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $em,
+        Security $security,
+    ): Response
     {
-        return $this->render('authentification/agence_immobiliere/step6.html.twig');
+        $session = $request->getSession();
+        $authUserId = $session->get('auth_user_id');
+
+        if (!$authUserId) {
+            return $this->redirectToRoute('agence_immobiliere_dashboard');
+        }
+
+        $user = $userRepository->find($authUserId);
+
+        if (!$user) {
+            return $this->redirectToRoute('app_professionnelle_register');
+        }
+
+        $this->ensureOpeningHours($user, $em);
+
+        $form = $this->createForm(StepSixType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            foreach ($user->getHoraireOuvertures() as $horaireOuverture) {
+                $em->persist($horaireOuverture);
+
+                if (!$horaireOuverture->isOpen()) {
+                    $horaireOuverture
+                        ->setOuvertureMatin(null)
+                        ->setFermetureMatin(null)
+                        ->setOuvertureApresMidi(null)
+                        ->setFermetureApresMidi(null)
+                    ;
+                }
+            }
+
+            $user->setIsVerified(true);
+            $em->flush();
+
+            $security->login($user, AgenceImmobiliereAuthenticator::class, 'main');
+
+            $session->remove('auth_user_id');
+            $session->remove('auth_step');
+
+            return $this->redirectToRoute('agence_immobiliere_dashboard');
+        }
+
+        return $this->render('authentification/agence_immobiliere/step6.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
+    }
+
+    private function ensureOpeningHours(User $user, EntityManagerInterface $em): void
+    {
+        $existingDays = [];
+
+        foreach ($user->getHoraireOuvertures() as $horaireOuverture) {
+            if (!$horaireOuverture->getJour()) {
+                continue;
+            }
+
+            $existingDays[$horaireOuverture->getJour()] = true;
+        }
+
+        foreach (self::OPENING_DAYS as $day) {
+            if (isset($existingDays[$day])) {
+                continue;
+            }
+
+            $horaireOuverture = (new HoraireOuverture())
+                ->setJour($day)
+            ;
+
+            $user->addHoraireOuverture($horaireOuverture);
+            $em->persist($horaireOuverture);
+        }
     }
 }
