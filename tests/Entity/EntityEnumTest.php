@@ -1,38 +1,44 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Tests\Entity;
 
 use App\Tests\Support\ProjectClassDiscovery;
-use BackedEnum;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use UnitEnum;
 
 final class EntityEnumTest extends TestCase
 {
     #[DataProvider('enumProvider')]
     public function testEveryEntityEnumHasCasesAndUniqueBackedValues(string $enumClass): void
     {
-        /** @var class-string<UnitEnum> $enumClass */
+        /** @var class-string<\UnitEnum> $enumClass */
         $cases = $enumClass::cases();
 
-        self::assertNotEmpty($cases, sprintf('%s doit définir au moins un case.', $enumClass));
+        self::assertNotEmpty($cases, \sprintf('%s doit définir au moins un case.', $enumClass));
 
-        if (!is_subclass_of($enumClass, BackedEnum::class)) {
+        if (!is_subclass_of($enumClass, \BackedEnum::class)) {
             return;
         }
 
         $values = array_map(
-            static fn (BackedEnum $case): int|string => $case->value,
+            static fn (\BackedEnum $case): int|string => $case->value,
             $cases
         );
 
         self::assertSame(
-            count($values),
-            count(array_unique($values, SORT_REGULAR)),
-            sprintf('%s contient des valeurs backed dupliquées.', $enumClass)
+            \count($values),
+            \count(array_unique($values, \SORT_REGULAR)),
+            \sprintf('%s contient des valeurs backed dupliquées.', $enumClass)
         );
     }
 

@@ -94,6 +94,6 @@ final class UserDocumentSubmissionCrudController extends AbstractCrudController
         $userLabel = $user?->getEntreprise() ?? $user?->getEmail() ?? 'Utilisateur inconnu';
         $documentLabel = $request->getRequiredDocument()?->getName() ?? 'Document inconnu';
 
-        return sprintf('%s — %s', $userLabel, $documentLabel);
+        return \sprintf('%s — %s', $userLabel, $documentLabel);
     }
 }

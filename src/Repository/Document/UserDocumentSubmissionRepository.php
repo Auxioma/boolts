@@ -48,7 +48,7 @@ final class UserDocumentSubmissionRepository extends ServiceEntityRepository
             ->innerJoin('submission.documentRequest', 'documentRequest')
             ->andWhere('documentRequest.user = :user')
             ->andWhere('submission.status IN (:statuses)')
-            ->andWhere(sprintf(
+            ->andWhere(\sprintf(
                 'NOT EXISTS (
                     SELECT newerSubmission.id
                     FROM %s newerSubmission
@@ -100,7 +100,7 @@ final class UserDocumentSubmissionRepository extends ServiceEntityRepository
             ->andWhere('requiredDocument.enabled = :enabled')
             ->andWhere('requiredDocument.required = :required')
             ->andWhere('submission.status IN (:statuses)')
-            ->andWhere(sprintf(
+            ->andWhere(\sprintf(
                 'NOT EXISTS (
                     SELECT newerSubmission.id
                     FROM %s newerSubmission
@@ -120,7 +120,7 @@ final class UserDocumentSubmissionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param list<int> $requiredDocumentIds
+     * @param list<int>                      $requiredDocumentIds
      * @param list<DocumentSubmissionStatus> $statuses
      *
      * @return list<UserDocumentSubmission>
@@ -144,7 +144,7 @@ final class UserDocumentSubmissionRepository extends ServiceEntityRepository
             ->innerJoin('documentRequest.requiredDocument', 'requiredDocument')
             ->andWhere('documentRequest.user = :user')
             ->andWhere('requiredDocument.id IN (:requiredDocumentIds)')
-            ->andWhere(sprintf(
+            ->andWhere(\sprintf(
                 'NOT EXISTS (
                     SELECT newerSubmission.id
                     FROM %s newerSubmission

@@ -1,0 +1,137 @@
+{#
+ Template: templates/authentification/agence_immobiliere/rest_password.html.twig
+ Role: Renders the authentification/agence_immobiliere Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'professionnel.forgot_password.meta.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="bg-white d-flex flex-column" style="min-height: 100vh;">
+    <div class="d-flex align-items-center justify-content-center flex-shrink-0 w-100" style="padding: 48px 132px 48px 132px;">
+        <!-- Sidebar -->
+        <div class="flex-shrink-0 position-relative" style="width: 359px; display: flex; flex-direction: column; gap: 74px;">
+            <!-- Decorative vertical line -->
+            <div style="position: absolute; left: 20px; top: 0; width: 3px; height: 361px; background: linear-gradient(to bottom, #5D00FF 25%, #d0d0d0 25%); z-index: 0;"></div>
+
+            <!-- Step 1 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations générales</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #d0d0d0; border-radius: 50%; font-size: 20px;">2</div>
+                <p class="mb-0 fw-bold" style="color: #858789; font-size: 16px; line-height: 20px;">Informations légales</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #d0d0d0; border-radius: 50%; font-size: 20px;">3</div>
+                <p class="mb-0 fw-bold" style="color: #858789; font-size: 16px; line-height: 20px;">Détails de l'agence 1/2</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #d0d0d0; border-radius: 50%; font-size: 20px;">4</div>
+                <p class="mb-0 fw-bold" style="color: #858789; font-size: 16px; line-height: 20px;">Détails de l'agence 2/2</p>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-white flex-grow-1" style="display: flex; flex-direction: column; gap: 48px; padding-bottom: 32px; border-radius: 24px;">
+            <h1 class="fw-bold" style="font-size: 30px; line-height: 34px; color: #0B0F14; max-width: 404px; margin: 0;">Remplissez les informations de votre compte</h1>
+
+                                                    <div class="formulaire mt-32">
+                                            {{ form_start(form) }}
+                                            <div class="">
+                                                <label for="email" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.lastname.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.nom) }}
+
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.firstname.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.prenom) }}
+
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.password.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.plainPassword.first) }}
+                                                <small class="d-block mb-16">
+                                                    {{ 'visiteur.register.profile.password.help'|trans }}
+                                                </small>
+
+                                                <label for="pwd" class="form-label mb-16">
+                                                    {{ 'professionnel.register.agency.password_confirm.label'|trans }}
+                                                </label>
+                                                {{ form_widget(form.plainPassword.second) }}
+
+                                                {% for label, messages in app.flashes %}
+                                                    {% if label in ['danger', 'error', 'warning'] %}
+                                                        {% for message in messages %}
+                                                            <span class="
+                                                                    flash-message mt-32 d-block
+                                                                    {% if label in ['danger', 'error'] %}flash-message-error{% endif %}
+                                                                    {% if label == 'warning' %}flash-message-error{% endif %}
+                                                                ">
+                                                                    {{ message|trans }}
+                                                                </span>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                {% endfor %}
+
+                                                <button class=" btn-submit w-100 text-white" type="submit">
+                                                    {{ 'professionnel.register.agency.submit'|trans }}
+                                                </button>
+                                            </div>
+                                            {{ form_end(form) }}
+                                        </div>  
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block stylesheets %}
+    <style>
+
+
+        .form-control {
+            color: #858789;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            border-color: #5D00FF;
+            box-shadow: none;
+            color: #0B0F14;
+        }
+
+        .form-control::placeholder {
+            color: #858789;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #5D00FF;
+            border-color: #5D00FF;
+        }
+
+        .btn-primary:hover {
+            background-color: #4a00cc;
+            border-color: #4a00cc;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

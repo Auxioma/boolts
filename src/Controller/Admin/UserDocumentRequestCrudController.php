@@ -99,6 +99,6 @@ final class UserDocumentRequestCrudController extends AbstractCrudController
 
         return '' !== $label
             ? $label
-            : ($user->getEmail() ?? sprintf('Utilisateur #%d', $user->getId()));
+            : ($user->getEmail() ?? \sprintf('Utilisateur #%d', $user->getId()));
     }
 }

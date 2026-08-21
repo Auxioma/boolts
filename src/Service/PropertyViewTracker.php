@@ -3,9 +3,11 @@
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
- * pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
 namespace App\Service;
@@ -68,7 +70,7 @@ final class PropertyViewTracker
             return false;
         }
 
-        /**
+        /*
          * On ne comptabilise que l'affichage réel de la page.
          *
          * Un POST du formulaire de contact ne doit pas
@@ -78,28 +80,28 @@ final class PropertyViewTracker
             return false;
         }
 
-        /**
+        /*
          * Le bien doit obligatoirement être enregistré.
          */
-        if ($property->getId() === null) {
+        if (null === $property->getId()) {
             return false;
         }
 
-        /**
+        /*
          * Ne pas compter les requêtes de préchargement navigateur.
          */
         if ($this->isPrefetch($request)) {
             return false;
         }
 
-        /**
+        /*
          * Ne pas compter les robots connus.
          */
         if ($this->isBot($request)) {
             return false;
         }
 
-        /**
+        /*
          * Ne jamais compter le propriétaire de l'annonce.
          */
         if (
@@ -160,7 +162,7 @@ final class PropertyViewTracker
         try {
             $this->entityManager->flush();
         } catch (UniqueConstraintViolationException) {
-            /**
+            /*
              * Deuxième protection.
              *
              * Si deux requêtes arrivent exactement au même moment,
@@ -180,7 +182,7 @@ final class PropertyViewTracker
         ?UserInterface $user,
         Response $response,
     ): string {
-        /**
+        /*
          * Utilisateur connecté.
          *
          * On utilise son ID.
@@ -190,11 +192,11 @@ final class PropertyViewTracker
          */
         if (
             $user instanceof User
-            && $user->getId() !== null
+            && null !== $user->getId()
         ) {
             return hash_hmac(
                 'sha256',
-                'user:' . $user->getId(),
+                'user:'.$user->getId(),
                 $this->kernelSecret,
             );
         }
@@ -209,7 +211,7 @@ final class PropertyViewTracker
 
         return hash_hmac(
             'sha256',
-            'anonymous:' . $visitorId,
+            'anonymous:'.$visitorId,
             $this->kernelSecret,
         );
     }
@@ -226,11 +228,11 @@ final class PropertyViewTracker
             self::COOKIE_NAME
         );
 
-        /**
+        /*
          * Le cookie existe et contient un UUID valide.
          */
         if (
-            is_string($visitorId)
+            \is_string($visitorId)
             && Uuid::isValid($visitorId)
         ) {
             return $visitorId;
@@ -312,8 +314,8 @@ final class PropertyViewTracker
      */
     private function isBot(Request $request): bool
     {
-        $userAgent = strtolower(
-            trim(
+        $userAgent = mb_strtolower(
+            mb_trim(
                 $request->headers->get(
                     'User-Agent',
                     ''
@@ -321,11 +323,11 @@ final class PropertyViewTracker
             )
         );
 
-        /**
+        /*
          * Pas de User-Agent :
          * on préfère ne pas compter.
          */
-        if ($userAgent === '') {
+        if ('' === $userAgent) {
             return true;
         }
 
@@ -364,11 +366,11 @@ final class PropertyViewTracker
      */
     private function isPrefetch(Request $request): bool
     {
-        $purpose = strtolower(
+        $purpose = mb_strtolower(
             $request->headers->get('Purpose', '')
         );
 
-        $secPurpose = strtolower(
+        $secPurpose = mb_strtolower(
             $request->headers->get('Sec-Purpose', '')
         );
 

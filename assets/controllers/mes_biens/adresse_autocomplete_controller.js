@@ -36,6 +36,10 @@ export default class extends Controller {
             type: String,
             default: 'mapbox',
         },
+        photonEndpoint: {
+            type: String,
+            default: 'https://photon.komoot.io/api/',
+        },
         types: {
             type: String,
             default: 'address,poi,street,place,locality,neighborhood,postcode,region,country',
@@ -92,8 +96,10 @@ export default class extends Controller {
             return;
         }
 
-        if (this.providerValue === 'nominatim') {
-            await this.fetchNominatimSuggestions(query);
+        const provider = this.providerValue.toLowerCase();
+
+        if (['photon', 'openstreetmap', 'osm', 'nominatim'].includes(provider)) {
+            await this.fetchPhotonSuggestions(query);
             return;
         }
 
@@ -145,18 +151,15 @@ export default class extends Controller {
         }
     }
 
-    async fetchNominatimSuggestions(query) {
+    async fetchPhotonSuggestions(query) {
         this.abortCurrentRequest();
         this.abortController = new AbortController();
 
-        const url = new URL('https://nominatim.openstreetmap.org/search');
+        const url = new URL(this.photonEndpointValue);
 
-        url.searchParams.set('format', 'jsonv2');
         url.searchParams.set('q', query);
-        url.searchParams.set('addressdetails', '1');
         url.searchParams.set('limit', String(this.limitValue));
-        url.searchParams.set('dedupe', '1');
-        url.searchParams.set('accept-language', this.languageValue || 'fr');
+        url.searchParams.set('lang', this.languageValue || 'fr');
 
         try {
             const response = await fetch(url.toString(), {
@@ -168,17 +171,17 @@ export default class extends Controller {
             });
 
             if (!response.ok) {
-                console.error('Erreur Nominatim search :', response.status, response.statusText);
+                console.error('Erreur Photon search :', response.status, response.statusText);
                 this.clearSuggestions();
                 return;
             }
 
             const data = await response.json();
 
-            this.suggestions = Array.isArray(data)
-                ? data.map((suggestion) => ({
+            this.suggestions = Array.isArray(data.features)
+                ? data.features.map((suggestion) => ({
                     ...suggestion,
-                    provider: 'nominatim',
+                    provider: 'photon',
                 }))
                 : [];
 
@@ -189,7 +192,7 @@ export default class extends Controller {
                 return;
             }
 
-            console.error('Erreur requête Nominatim search :', error);
+            console.error('Erreur requête Photon search :', error);
             this.clearSuggestions();
         }
     }
@@ -234,9 +237,11 @@ export default class extends Controller {
         const addressText = typeof suggestion.address === 'string'
             ? suggestion.address
             : '';
+        const photonProperties = suggestion.properties || {};
 
         const name = this.escapeHtml(
             suggestion.name ||
+            photonProperties.name ||
             suggestion.name_preferred ||
             suggestion.text ||
             suggestion.display_name?.split(',')[0] ||
@@ -246,6 +251,7 @@ export default class extends Controller {
         const fullAddress = this.escapeHtml(
             suggestion.full_address ||
             suggestion.place_formatted ||
+            this.buildPhotonFullAddress(suggestion) ||
             addressText ||
             suggestion.display_name ||
             ''
@@ -253,6 +259,8 @@ export default class extends Controller {
 
         const featureType = this.escapeHtml(
             suggestion.feature_type ||
+            photonProperties.type ||
+            photonProperties.osm_key ||
             suggestion.type ||
             suggestion.category ||
             suggestion.class ||
@@ -279,6 +287,18 @@ export default class extends Controller {
         this.isSelecting = true;
         this.clearPendingSearch();
         this.hideResults();
+
+        if (this.isPhotonSuggestion(suggestion)) {
+            this.fillFieldsFromPhoton(suggestion);
+            this.clearSuggestions();
+            this.hideResults();
+
+            setTimeout(() => {
+                this.isSelecting = false;
+            }, 300);
+
+            return;
+        }
 
         if (this.isNominatimSuggestion(suggestion)) {
             this.fillFieldsFromNominatim(suggestion);
@@ -422,6 +442,79 @@ export default class extends Controller {
         this.setTargetValue('locality', locality);
         this.setTargetValue('neighborhood', neighborhood);
         this.setTargetValue('poi', poi);
+    }
+
+    isPhotonSuggestion(suggestion) {
+        return suggestion?.provider === 'photon' ||
+            Boolean(suggestion?.type === 'Feature' && suggestion?.properties && !suggestion?.mapbox_id);
+    }
+
+    fillFieldsFromPhoton(suggestion) {
+        const properties = suggestion.properties || {};
+        const coordinates = suggestion.geometry?.coordinates || [];
+        const longitude = coordinates[0] ?? '';
+        const latitude = coordinates[1] ?? '';
+
+        const street = properties.street || '';
+        const houseNumber = properties.housenumber || properties.house_number || '';
+        const name = properties.name || '';
+        const streetAddress = [
+            houseNumber,
+            street,
+        ].filter(Boolean).join(' ');
+
+        const city =
+            properties.city ||
+            properties.locality ||
+            properties.district ||
+            properties.county ||
+            properties.state ||
+            '';
+        const postcode = properties.postcode || '';
+        const country = properties.country || '';
+        const countryCode = properties.countrycode
+            ? String(properties.countrycode).toUpperCase()
+            : '';
+        const fullAddress = this.buildPhotonFullAddress(suggestion);
+        const featureType = properties.type || properties.osm_key || '';
+        const osmId = [
+            properties.osm_type || '',
+            properties.osm_id || '',
+        ].filter(Boolean).join(':');
+
+        this.setTargetValue('adresse', streetAddress || name || fullAddress);
+        this.setTargetValue('codePostal', postcode);
+        this.setTargetValue('ville', city);
+        this.setSelectValueByTextOrValue('pays', country, countryCode);
+        this.setTargetValue('latitude', latitude);
+        this.setTargetValue('longitude', longitude);
+        this.setTargetValue('mapboxId', osmId ? `photon:${osmId}` : '');
+        this.setTargetValue('fullAddress', fullAddress);
+        this.setTargetValue('featureType', featureType);
+        this.setTargetValue('region', properties.state || '');
+        this.setTargetValue('district', properties.county || properties.district || '');
+        this.setTargetValue('locality', properties.locality || '');
+        this.setTargetValue('neighborhood', properties.neighbourhood || properties.neighborhood || '');
+        this.setTargetValue('poi', properties.osm_value || '');
+    }
+
+    buildPhotonFullAddress(suggestion) {
+        const properties = suggestion?.properties || {};
+        const street = [
+            properties.housenumber || properties.house_number,
+            properties.street,
+        ].filter(Boolean).join(' ');
+        const locality = [
+            properties.postcode,
+            properties.city || properties.locality || properties.district,
+        ].filter(Boolean).join(' ');
+
+        return [
+            street || properties.name,
+            locality,
+            properties.state,
+            properties.country,
+        ].filter(Boolean).join(', ');
     }
 
     isNominatimSuggestion(suggestion) {

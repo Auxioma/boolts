@@ -1,12 +1,19 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Tests\Controller;
 
 use App\Tests\Support\ProjectClassDiscovery;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -21,7 +28,7 @@ final class ControllerServiceTest extends KernelTestCase
 
         self::assertTrue(
             $container->has($controllerClass),
-            sprintf('Le contrôleur %s doit être enregistré comme service Symfony.', $controllerClass)
+            \sprintf('Le contrôleur %s doit être enregistré comme service Symfony.', $controllerClass)
         );
 
         self::assertInstanceOf($controllerClass, $container->get($controllerClass));
@@ -35,7 +42,7 @@ final class ControllerServiceTest extends KernelTestCase
         $controllers = [];
 
         foreach (ProjectClassDiscovery::concreteClassesIn('src/Controller') as $class) {
-            $reflection = new ReflectionClass($class);
+            $reflection = new \ReflectionClass($class);
 
             if ($reflection->isSubclassOf(AbstractController::class)) {
                 $controllers[] = $class;

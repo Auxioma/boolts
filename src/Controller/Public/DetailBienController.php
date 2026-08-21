@@ -3,12 +3,11 @@
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
- * Ce fichier fait partie d’un projet développé par Auxioma Web Agency
- * pour l’entreprise Pastelit Co.
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
  * Tous droits réservés.
  *
- * Ce code source est la propriété exclusive de Auxioma Web Agency
- * et Pastelit Co.
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
 namespace App\Controller\Public;
@@ -71,31 +70,29 @@ final class DetailBienController extends AbstractController
 
         $form->handleRequest($request);
 
-        /**
+        /*
          * Traitement du formulaire.
          */
         if (
             $form->isSubmitted()
             && $form->isValid()
         ) {
-            if ($agency === null) {
-                throw $this->createNotFoundException(
-                    'Aucune agence n’est associée à ce bien.'
-                );
+            if (null === $agency) {
+                throw $this->createNotFoundException('Aucune agence n’est associée à ce bien.');
             }
 
-            /**
+            /*
              * Association du message à l'agence.
              */
             $contactForm->setAgence($agency);
 
-            /**
+            /*
              * Enregistrement.
              */
             $this->entityManager->persist($contactForm);
             $this->entityManager->flush();
 
-            /**
+            /*
              * Envoi du mail.
              */
             $this->contactMailer->sendContactMessage(
@@ -122,19 +119,19 @@ final class DetailBienController extends AbstractController
             [
                 'property' => $property,
 
-                /**
+                /*
                  * Biens similaires.
                  */
                 'properties' => $bienSimilaire,
 
-                /**
+                /*
                  * Formulaire.
                  */
                 'form' => $form->createView(),
             ]
         );
 
-        /**
+        /*
          * Enregistrement sécurisé de la vue.
          *
          * Le service détermine automatiquement :

@@ -61,7 +61,7 @@ class MaintenanceSubscriber implements EventSubscriberInterface
         /*
          * Maintenance désactivée.
          */
-        if ($settings === null) {
+        if (null === $settings) {
             return;
         }
 
@@ -105,7 +105,7 @@ class MaintenanceSubscriber implements EventSubscriberInterface
          * Si une heure de fin est définie,
          * informer les clients HTTP du délai estimé.
          */
-        if ($settings->getEndsAt() !== null) {
+        if (null !== $settings->getEndsAt()) {
             $retryAfter = $settings->getEndsAt()->getTimestamp() - time();
 
             if ($retryAfter > 0) {
@@ -132,7 +132,7 @@ class MaintenanceSubscriber implements EventSubscriberInterface
          * IP actuelle de l'administrateur n'est pas dans la whitelist.
          */
         if (
-            $path === '/admin'
+            '/admin' === $path
             || str_starts_with($path, '/admin/')
         ) {
             return true;

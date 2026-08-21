@@ -84,7 +84,7 @@ class PropertyRepository extends ServiceEntityRepository
      */
     public function findPropertysByUserQuery(
         User $user,
-        string $search = null,
+        ?string $search = null,
         string $sort = 'p.createdAt',
         string $direction = 'DESC',
     ): QueryBuilder {
@@ -102,18 +102,17 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE);
 
         if ($search) {
-        $qb
-            ->andWhere(
-                'LOWER(p.referenceInterne) LIKE :search
+            $qb
+                ->andWhere(
+                    'LOWER(p.referenceInterne) LIKE :search
                 OR LOWER(pt.titreDuLogement) LIKE :search
                 OR LOWER(pt.ville) LIKE :search'
-            )
-            ->setParameter(
-                'search',
-                '%'.mb_strtolower($search).'%'
-            );
+                )
+                ->setParameter(
+                    'search',
+                    '%'.mb_strtolower($search).'%'
+                );
         }
-    
 
         if ('p.views' === $sort) {
             return $qb
@@ -233,13 +232,14 @@ class PropertyRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
     public function findPropertysByUserWithFiltersQuery(
-    User $user,
-    ?string $search = null,
-    array $filters = [],
-    string $sort = 'p.createdAt',
-    string $direction = 'DESC',
-    ?string $locale = null,
+        User $user,
+        ?string $search = null,
+        array $filters = [],
+        string $sort = 'p.createdAt',
+        string $direction = 'DESC',
+        ?string $locale = null,
     ): QueryBuilder {
         if (
             isset($filters['modal_filter'])
@@ -265,7 +265,7 @@ class PropertyRepository extends ServiceEntityRepository
                 'statuts',
                 [
                     StatutAnnonceImmobiliere::PUBLIEE,
-                    StatutAnnonceImmobiliere::DEPUBLIEE, 
+                    StatutAnnonceImmobiliere::DEPUBLIEE,
                     StatutAnnonceImmobiliere::BROUILLON,
                     StatutAnnonceImmobiliere::PENDING,
                 ]
@@ -284,26 +284,26 @@ class PropertyRepository extends ServiceEntityRepository
             null !== $search
             && '' !== mb_trim($search)
         ) {
-        $normalizedSearch = mb_strtolower(
-            mb_trim($search)
-        );
-
-        $qb
-            ->andWhere(
-                $qb->expr()->orX(
-                    'LOWER(p.referenceInterne) LIKE :search',
-                    'LOWER(p.slug) LIKE :search',
-                    'LOWER(pt.titreDuLogement) LIKE :search',
-                    'LOWER(pt.ville) LIKE :search',
-                    'LOWER(pt.pays) LIKE :search',
-                    'LOWER(pt.adresse) LIKE :search',
-                    'LOWER(pt.fullAddress) LIKE :search'
-                )
-            )
-            ->setParameter(
-                'search',
-                '%'.$normalizedSearch.'%'
+            $normalizedSearch = mb_strtolower(
+                mb_trim($search)
             );
+
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        'LOWER(p.referenceInterne) LIKE :search',
+                        'LOWER(p.slug) LIKE :search',
+                        'LOWER(pt.titreDuLogement) LIKE :search',
+                        'LOWER(pt.ville) LIKE :search',
+                        'LOWER(pt.pays) LIKE :search',
+                        'LOWER(pt.adresse) LIKE :search',
+                        'LOWER(pt.fullAddress) LIKE :search'
+                    )
+                )
+                ->setParameter(
+                    'search',
+                    '%'.$normalizedSearch.'%'
+                );
         }
 
         $natureDeLaPropriete = $this->normalizeSingleValue(
@@ -1150,6 +1150,7 @@ class PropertyRepository extends ServiceEntityRepository
             )
         );
     }
+
     private function addTextFilter(
         QueryBuilder $qb,
         string $field,

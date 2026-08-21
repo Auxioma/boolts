@@ -247,7 +247,7 @@ final class DashboardController extends AbstractController
         $imageCounts = $propertyImageRepository->countByPropertyIds($propertyIds);
         $boostedPropertyIds = $propertyRepository->findBoostedPropertyIds($propertyIds);
         $boostedPropertyIds = array_flip($boostedPropertyIds);
-        $filename = sprintf('biens-immobiliers-%s.csv', (new \DateTimeImmutable())->format('Ymd-His'));
+        $filename = \sprintf('biens-immobiliers-%s.csv', (new \DateTimeImmutable())->format('Ymd-His'));
         $baseUrl = $request->getSchemeAndHttpHost().$request->getBaseUrl();
 
         $response = new StreamedResponse(function () use (
@@ -258,7 +258,7 @@ final class DashboardController extends AbstractController
             $boostedPropertyIds,
             $baseUrl,
         ): void {
-            $output = fopen('php://output', 'wb');
+            $output = fopen('php://output', 'w');
 
             if (false === $output) {
                 throw new \RuntimeException('Impossible d’ouvrir le flux de sortie CSV.');
@@ -286,7 +286,7 @@ final class DashboardController extends AbstractController
         });
 
         $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
-        $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $filename));
+        $response->headers->set('Content-Disposition', \sprintf('attachment; filename="%s"', $filename));
 
         return $response;
     }
@@ -491,12 +491,12 @@ final class DashboardController extends AbstractController
         $location = $geoIpLocationService->locateIp($request->getClientIp());
         $countryCode = $location['countryCode'] ?? null;
 
-        if (!\is_string($countryCode) || '' === trim($countryCode)) {
+        if (!\is_string($countryCode) || '' === mb_trim($countryCode)) {
             return null;
         }
 
         return $paysRepository->findOneBy([
-            'iso' => mb_strtoupper(trim($countryCode)),
+            'iso' => mb_strtoupper(mb_trim($countryCode)),
         ]);
     }
 
@@ -582,7 +582,7 @@ final class DashboardController extends AbstractController
     ): array {
         $agency = $property->getUser();
         $currency = $agency?->getDevise();
-        $agencyName = mb_trim(sprintf('%s %s', $agency?->getPrenom() ?? '', $agency?->getNom() ?? ''));
+        $agencyName = mb_trim(\sprintf('%s %s', $agency?->getPrenom() ?? '', $agency?->getNom() ?? ''));
 
         return [
             $this->csvValue($property->getId()),
@@ -672,7 +672,7 @@ final class DashboardController extends AbstractController
             }
 
             $encodedPath = implode('/', array_map('rawurlencode', explode('/', $path)));
-            $urls[] = rtrim($baseUrl, '/').'/properties/'.$encodedPath;
+            $urls[] = mb_rtrim($baseUrl, '/').'/properties/'.$encodedPath;
         }
 
         return implode(' | ', array_values(array_unique($urls)));

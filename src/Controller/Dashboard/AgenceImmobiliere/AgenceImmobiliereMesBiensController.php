@@ -180,9 +180,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'property_pause_'.$property->getId(),
             $request->request->getString('_property_token')
         )) {
-            throw $this->createAccessDeniedException(
-                'Token CSRF invalide.'
-            );
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
         }
 
         $property->setStatut(
@@ -216,9 +214,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             !$user instanceof User
             || $property->getUser()?->getId() !== $user->getId()
         ) {
-            throw $this->createAccessDeniedException(
-                'Vous ne pouvez pas modifier cette annonce.'
-            );
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette annonce.');
         }
 
         $session = $request->getSession();
@@ -305,9 +301,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'property_reactivate_'.$property->getId(),
             $request->request->getString('_property_token')
         )) {
-            throw $this->createAccessDeniedException(
-                'Token CSRF invalide.'
-            );
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
         }
 
         $property->setStatut(
@@ -349,9 +343,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'property_delete_'.$property->getId(),
             $request->request->getString('_property_token')
         )) {
-            throw $this->createAccessDeniedException(
-                'Token CSRF invalide.'
-            );
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
         }
 
         $property->setStatut(
@@ -390,9 +382,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'property_bulk_action',
             $request->request->getString('_token')
         )) {
-            throw $this->createAccessDeniedException(
-                'Token CSRF invalide.'
-            );
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
         }
 
         $propertyIds = $request->request->all(
@@ -530,9 +520,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $user = $this->getUser();
 
         if (!$user instanceof User) {
-            throw $this->createAccessDeniedException(
-                'Vous devez être connecté pour gérer vos biens.'
-            );
+            throw $this->createAccessDeniedException('Vous devez être connecté pour gérer vos biens.');
         }
 
         /*
@@ -616,9 +604,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                         $session
                     );
 
-                    throw $this->createAccessDeniedException(
-                        'Vous ne pouvez pas modifier cette annonce.'
-                    );
+                    throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette annonce.');
                 }
             }
         } else {
@@ -781,9 +767,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                         null === $mesBiens->getUser()
                         || $mesBiens->getUser()?->getId() !== $user->getId()
                     ) {
-                        throw $this->createAccessDeniedException(
-                            'Vous ne pouvez pas modifier cette annonce.'
-                        );
+                        throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette annonce.');
                     }
                 }
 
@@ -893,9 +877,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     ->getId();
 
                 if (!$typeTransactionId) {
-                    throw new \LogicException(
-                        'La transaction sélectionnée ne possède pas d’identifiant.'
-                    );
+                    throw new \LogicException('La transaction sélectionnée ne possède pas d’identifiant.');
                 }
 
                 $session->set(
@@ -1116,7 +1098,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              * STEP 5 : BILAN ÉNERGÉTIQUE
              * ==============================================================
              */
-            if (5 === $step) { 
+            if (5 === $step) {
                 $entityManager->flush();
 
                 $this->syncTransactionSession(
@@ -1146,8 +1128,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              */
             if (6 === $step) {
                 foreach (
-                    $mesBiens->getPropertyImages()
-                    as $index => $propertyImage
+                    $mesBiens->getPropertyImages() as $index => $propertyImage
                 ) {
                     $propertyImage->setProperty(
                         $mesBiens
@@ -1534,7 +1515,6 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         }
     }
 
-
     /**
      * Indique si le pays du bien correspond à la France.
      *
@@ -1548,7 +1528,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         }
 
         $country = mb_strtolower(
-            trim($country),
+            mb_trim($country),
             'UTF-8'
         );
 

@@ -72,7 +72,7 @@ class MaintenanceSetting
 
     public function setTitle(string $title): static
     {
-        $this->title = trim($title);
+        $this->title = mb_trim($title);
 
         return $this;
     }
@@ -84,7 +84,7 @@ class MaintenanceSetting
 
     public function setMessage(string $message): static
     {
-        $this->message = trim($message);
+        $this->message = mb_trim($message);
 
         return $this;
     }
@@ -129,11 +129,11 @@ class MaintenanceSetting
 
         $date ??= new \DateTimeImmutable();
 
-        if ($this->startsAt !== null && $date < $this->startsAt) {
+        if (null !== $this->startsAt && $date < $this->startsAt) {
             return false;
         }
 
-        if ($this->endsAt !== null && $date >= $this->endsAt) {
+        if (null !== $this->endsAt && $date >= $this->endsAt) {
             return false;
         }
 

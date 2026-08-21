@@ -1,0 +1,188 @@
+{#
+ Template: templates/authentification/agence_immobiliere/rest_password.html.twig
+ Role: Renders the authentification/agence_immobiliere Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'professionnel.forgot_password.meta.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="bg-white d-flex flex-column" style="min-height: 100vh;">
+    <div class="d-flex align-items-center justify-content-center flex-shrink-0 w-100" style="padding: 48px 132px 48px 132px;">
+        <!-- Sidebar -->
+        <div class="flex-shrink-0 position-relative" style="width: 359px; display: flex; flex-direction: column; gap: 74px;">
+            <!-- Decorative vertical line -->
+            <div style="position: absolute; left: 20px; top: 0; width: 3px; height: 361px; background: linear-gradient(to bottom, #5D00FF 50%, #d0d0d0 50%); z-index: 0;"></div>
+
+            <!-- Step 1 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations générales</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations légales</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #d0d0d0; border-radius: 50%; font-size: 20px;">3</div>
+                <p class="mb-0 fw-bold" style="color: #858789; font-size: 16px; line-height: 20px;">Détails de l'agence 1/2</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #d0d0d0; border-radius: 50%; font-size: 20px;">4</div>
+                <p class="mb-0 fw-bold" style="color: #858789; font-size: 16px; line-height: 20px;">Détails de l'agence 2/2</p>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-white flex-grow-1" style="display: flex; flex-direction: column; gap: 48px; padding-bottom: 32px; border-radius: 24px;">
+            <h1 class="fw-bold" style="font-size: 30px; line-height: 34px; color: #0B0F14; margin: 0;">Quelques informations à propos de votre entreprise</h1>
+
+            {{ form_start(form) }}
+            <div class="d-flex flex-column" style="gap: 32px;">
+                <!-- Company Legal Name -->
+                <div class="d-flex flex-column" style="gap: 16px;">
+                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Nom légal de votre entreprise*</label>
+                    {{ form_widget(form.entreprise) }}
+                    {{ form_errors(form.entreprise) }}
+                </div>
+
+                <!-- Detail Section -->
+                <div
+                    class="d-flex flex-column"
+                    style="gap: 12px;"
+                    data-controller="mes-biens--adresse-autocomplete"
+                    data-mes-biens--adresse-autocomplete-provider-value="photon"
+                    data-mes-biens--adresse-autocomplete-language-value="{{ app.request.locale|default('fr') }}"
+                    data-mes-biens--adresse-autocomplete-limit-value="8"
+                >
+                    <!-- Company Legal Address -->
+                    <div class="d-flex flex-column position-relative" style="gap: 16px;">
+                        <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Adresse légale de votre entreprise*</label>
+                        {{ form_widget(form.adresse, {
+                            attr: {
+                                autocomplete: 'off',
+                                'data-mes-biens--adresse-autocomplete-target': 'adresse',
+                                'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur',
+                            },
+                        }) }}
+                        {{ form_errors(form.adresse) }}
+                        <small class="form-text" style="font-size: 12px; color: #858789;">
+                            Données d'adresse © OpenStreetMap contributors.
+                        </small>
+                        <div
+                            class="mapbox-autocomplete-results list-group shadow"
+                            style="position: absolute; top: 100%; left: 0; right: 0; z-index: 20; margin-top: 4px; max-height: 240px; overflow-y: auto;"
+                            data-mes-biens--adresse-autocomplete-target="results"
+                            hidden
+                        ></div>
+                    </div>
+
+                    <!-- Address 2 -->
+                    <div class="d-flex flex-column" style="gap: 16px;">
+                        <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Adresse 2 (facultatif)</label>
+                        {{ form_widget(form.adresseComplement) }}
+                        {{ form_errors(form.adresseComplement) }}
+                    </div>
+
+                    <!-- Postal Code and City Row -->
+                    <div class="d-flex" style="gap: 12px;">
+                        <div class="d-flex flex-column flex-grow-1" style="gap: 16px;">
+                            <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Code postal*</label>
+                            {{ form_widget(form.codePostal, {
+                                attr: {
+                                    autocomplete: 'off',
+                                    'data-mes-biens--adresse-autocomplete-target': 'codePostal',
+                                },
+                            }) }}
+                            {{ form_errors(form.codePostal) }}
+                        </div>
+                        <div class="d-flex flex-column flex-grow-1" style="gap: 16px;">
+                            <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Ville*</label>
+                            {{ form_widget(form.ville, {
+                                attr: {
+                                    autocomplete: 'off',
+                                    'data-mes-biens--adresse-autocomplete-target': 'ville',
+                                },
+                            }) }}
+                            {{ form_errors(form.ville) }}
+                        </div>
+                    </div>
+
+                    <!-- Country -->
+                    <div class="d-flex flex-column" style="gap: 16px;">
+                        <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Pays*</label>
+                        {{ form_widget(form.pays, {
+                            attr: {
+                                autocomplete: 'off',
+                                'data-mes-biens--adresse-autocomplete-target': 'pays',
+                            },
+                        }) }}
+                        {{ form_errors(form.pays) }}
+                    </div>
+                </div>
+
+                <!-- Info Text -->
+                <p class="fw-semibold" style="font-size: 14px; line-height: 1.4; color: #858789; margin: 0;">*Informations telles qu'affichées sur vos documents officiels</p>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary fw-bold" style="height: 44px; background-color: #5D00FF; border: none; border-radius: 50px; font-size: 16px; line-height: 20px; padding: 10px 16px; color: white;">Suivant</button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=Eudoxus+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Eudoxus Sans', sans-serif;
+        }
+
+        .form-control {
+            color: #858789;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            border-color: #5D00FF;
+            box-shadow: none;
+            color: #0B0F14;
+        }
+
+        .form-control::placeholder {
+            color: #858789;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #5D00FF;
+            border-color: #5D00FF;
+        }
+
+        .btn-primary:hover {
+            background-color: #4a00cc;
+            border-color: #4a00cc;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

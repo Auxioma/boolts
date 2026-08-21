@@ -30,8 +30,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 /**
  * @extends AbstractCrudController<Property>
@@ -196,7 +196,7 @@ class PropertyCrudController extends AbstractCrudController
     {
         $count = $items->count();
 
-        return sprintf('%d %s%s', $count, $label, 1 === $count ? '' : 's');
+        return \sprintf('%d %s%s', $count, $label, 1 === $count ? '' : 's');
     }
 
     private static function transactionPriceMode(CategoryBienTransaction $transaction): string

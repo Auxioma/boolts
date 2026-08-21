@@ -32,7 +32,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
 {
     private const OPENAI_API_URL = 'https://api.openai.com/v1/responses';
     private const OPENAI_MODEL = 'gpt-4.1-mini';
-    private const OPENAI_MAX_OUTPUT_TOKENS = 700; 
+    private const OPENAI_MAX_OUTPUT_TOKENS = 700;
 
     /**
      * Handles the __construct controller action.

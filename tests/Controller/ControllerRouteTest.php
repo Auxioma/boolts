@@ -1,13 +1,20 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Tests\Controller;
 
 use App\Tests\Support\ProjectClassDiscovery;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Routing\RouterInterface;
@@ -32,7 +39,7 @@ final class ControllerRouteTest extends KernelTestCase
         foreach ($routes as $name => $route) {
             $controller = $route->getDefault('_controller');
 
-            if (!is_string($controller)) {
+            if (!\is_string($controller)) {
                 continue;
             }
 
@@ -47,7 +54,7 @@ final class ControllerRouteTest extends KernelTestCase
 
         self::assertNotEmpty(
             $matchedRoutes,
-            sprintf('Aucune route Symfony ne référence le contrôleur %s.', $controllerClass)
+            \sprintf('Aucune route Symfony ne référence le contrôleur %s.', $controllerClass)
         );
     }
 
@@ -62,7 +69,7 @@ final class ControllerRouteTest extends KernelTestCase
         foreach ($routes as $name => $route) {
             $controller = $route->getDefault('_controller');
 
-            if (!is_string($controller) || !str_starts_with($controller, 'App\\Controller\\')) {
+            if (!\is_string($controller) || !str_starts_with($controller, 'App\\Controller\\')) {
                 continue;
             }
 
@@ -73,11 +80,11 @@ final class ControllerRouteTest extends KernelTestCase
                 $method = '__invoke';
             }
 
-            self::assertTrue(class_exists($class), sprintf('Route %s : classe %s introuvable.', $name, $class));
-            self::assertTrue(method_exists($class, $method), sprintf('Route %s : action %s::%s() introuvable.', $name, $class, $method));
+            self::assertTrue(class_exists($class), \sprintf('Route %s : classe %s introuvable.', $name, $class));
+            self::assertTrue(method_exists($class, $method), \sprintf('Route %s : action %s::%s() introuvable.', $name, $class, $method));
 
             $reflectionMethod = new \ReflectionMethod($class, $method);
-            self::assertTrue($reflectionMethod->isPublic(), sprintf('Route %s : %s::%s() doit être publique.', $name, $class, $method));
+            self::assertTrue($reflectionMethod->isPublic(), \sprintf('Route %s : %s::%s() doit être publique.', $name, $class, $method));
             ++$tested;
         }
 
@@ -92,7 +99,7 @@ final class ControllerRouteTest extends KernelTestCase
         $controllers = [];
 
         foreach (ProjectClassDiscovery::concreteClassesIn('src/Controller') as $class) {
-            $reflection = new ReflectionClass($class);
+            $reflection = new \ReflectionClass($class);
 
             if ($reflection->isSubclassOf(AbstractController::class)) {
                 $controllers[] = $class;

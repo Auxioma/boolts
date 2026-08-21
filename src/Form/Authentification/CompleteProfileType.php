@@ -107,19 +107,6 @@ class CompleteProfileType extends AbstractType
     'mapped' => false,
 ])
 
-            ->add('agreeTerms', CheckboxType::class, [
-                'attr' => [
-                    'class' => '"form-check-input',
-                ],
-                'mapped' => false,
-                'label' => 'form.terms.label',
-                'constraints' => [
-                    new IsTrue(
-                        message: 'form.terms.error.required'
-                    ),
-                ],
-            ])
-
         ;
     }
 

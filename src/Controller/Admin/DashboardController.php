@@ -17,8 +17,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Menu\MenuItemInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
@@ -99,7 +99,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(BoosterPurchaseCrudController::class, 'Boosts achetés', 'fas fa-rocket')
             ->setAction(Action::INDEX);
 
-
         yield MenuItem::section('Traductions', 'fas fa-language');
 
         yield MenuItem::linkTo(TranslationCrudController::class, 'Traductions', 'fas fa-language')
@@ -120,6 +119,5 @@ class DashboardController extends AbstractDashboardController
             'fas fa-network-wired'
         )
             ->setAction(Action::INDEX);
-            
-            }
+    }
 }

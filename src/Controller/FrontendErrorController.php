@@ -39,7 +39,7 @@ final class FrontendErrorController extends AbstractController
 
         $payload = json_decode($request->getContent(), true);
 
-        if (!\is_array($payload) || JSON_ERROR_NONE !== json_last_error()) {
+        if (!\is_array($payload) || \JSON_ERROR_NONE !== json_last_error()) {
             return new JsonResponse(['message' => 'Payload JSON invalide.'], Response::HTTP_BAD_REQUEST);
         }
 

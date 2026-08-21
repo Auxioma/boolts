@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Tests\Entity;
 
@@ -9,17 +17,16 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 final class EntityCollectionInitializationTest extends TestCase
 {
     #[DataProvider('entityProvider')]
     public function testMappedToManyCollectionsAreInitializedByConstructor(string $entityClass): void
     {
-        $reflection = new ReflectionClass($entityClass);
+        $reflection = new \ReflectionClass($entityClass);
         $constructor = $reflection->getConstructor();
 
-        if ($constructor !== null && $constructor->getNumberOfRequiredParameters() > 0) {
+        if (null !== $constructor && $constructor->getNumberOfRequiredParameters() > 0) {
             self::assertTrue(true);
 
             return;
@@ -29,8 +36,8 @@ final class EntityCollectionInitializationTest extends TestCase
         $tested = 0;
 
         foreach ($reflection->getProperties() as $property) {
-            $isCollectionAssociation = $property->getAttributes(ORM\OneToMany::class) !== []
-                || $property->getAttributes(ORM\ManyToMany::class) !== [];
+            $isCollectionAssociation = [] !== $property->getAttributes(ORM\OneToMany::class)
+                || [] !== $property->getAttributes(ORM\ManyToMany::class);
 
             if (!$isCollectionAssociation) {
                 continue;
@@ -47,15 +54,15 @@ final class EntityCollectionInitializationTest extends TestCase
             self::assertInstanceOf(
                 Collection::class,
                 $value,
-                sprintf('%s::$%s doit être initialisée comme Collection Doctrine.', $entityClass, $property->getName())
+                \sprintf('%s::$%s doit être initialisée comme Collection Doctrine.', $entityClass, $property->getName())
             );
             ++$tested;
         }
 
-        if ($tested === 0) {
+        if (0 === $tested) {
             self::assertNotEmpty(
                 $reflection->getAttributes(ORM\Entity::class),
-                sprintf('%s doit rester une entité Doctrine chargeable.', $entityClass)
+                \sprintf('%s doit rester une entité Doctrine chargeable.', $entityClass)
             );
         }
     }
@@ -68,9 +75,9 @@ final class EntityCollectionInitializationTest extends TestCase
         $entities = [];
 
         foreach (ProjectClassDiscovery::concreteClassesIn('src/Entity') as $class) {
-            $reflection = new ReflectionClass($class);
+            $reflection = new \ReflectionClass($class);
 
-            if ($reflection->getAttributes(ORM\Entity::class) !== []) {
+            if ([] !== $reflection->getAttributes(ORM\Entity::class)) {
                 $entities[] = $class;
             }
         }

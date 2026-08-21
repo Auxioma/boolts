@@ -28,6 +28,7 @@ class PropertyImageRepository extends ServiceEntityRepository
 
     /**
      * @param list<int> $propertyIds
+     *
      * @return array<int, int>
      */
     public function countByPropertyIds(array $propertyIds): array

@@ -100,7 +100,7 @@ final class AgenceImmobiliereOptController extends AbstractController
 
             $em->flush();
 
-            return $this->redirectToRoute('app_professionnelle_profile');
+            return $this->redirectToRoute('app_professionnelle_step_trois');
         }
 
         return $this->render('authentification/agence_immobiliere/otp.html.twig', [

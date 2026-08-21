@@ -1,13 +1,21 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 use Symfony\Component\Dotenv\Dotenv;
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 $dotenv = new Dotenv();
-$dotenv->usePutenv()->bootEnv(__DIR__ . '/.env');
+$dotenv->usePutenv()->bootEnv(__DIR__.'/.env');
 
 // Keep PHPStan aligned with var/cache/dev/App_KernelDevDebugContainer.xml.
 $_ENV['APP_ENV'] = $_SERVER['APP_ENV'] = 'dev';
@@ -30,11 +38,11 @@ $defaults = [
 ];
 
 foreach ($defaults as $name => $value) {
-    if (isset($_ENV[$name]) || isset($_SERVER[$name]) || getenv($name) !== false) {
+    if (isset($_ENV[$name]) || isset($_SERVER[$name]) || false !== getenv($name)) {
         continue;
     }
 
     $_ENV[$name] = $value;
     $_SERVER[$name] = $value;
-    putenv($name . '=' . $value);
+    putenv($name.'='.$value);
 }

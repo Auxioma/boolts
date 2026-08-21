@@ -32,8 +32,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 /**
  * @extends AbstractCrudController<BoosterTransaction>
@@ -125,7 +125,7 @@ class BoosterPurchaseCrudController extends AbstractCrudController
             return '';
         }
 
-        return sprintf(
+        return \sprintf(
             '#%d - %s au %s',
             $period->getId() ?? 0,
             $period->getPeriodStart()->format('d/m/Y'),

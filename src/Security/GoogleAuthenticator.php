@@ -108,8 +108,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         Request $request,
         TokenInterface $token,
         string $firewallName,
-    ): ?Response
-    {
+    ): ?Response {
         $request->getSession()->remove('google_register_type');
 
         $user = $token->getUser();

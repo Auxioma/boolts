@@ -171,7 +171,7 @@ final readonly class ClientDocumentNotificationMailer
             return $company;
         }
 
-        $fullName = mb_trim(sprintf(
+        $fullName = mb_trim(\sprintf(
             '%s %s',
             (string) $client->getPrenom(),
             (string) $client->getNom(),

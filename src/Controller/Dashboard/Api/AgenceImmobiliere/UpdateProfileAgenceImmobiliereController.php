@@ -323,7 +323,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
     private function hasFilledValue(?string $value): bool
     {
-        return '' !== trim($value ?? '');
+        return '' !== mb_trim($value ?? '');
     }
 
     private function hasAtLeastOneOpeningHour(array $openingHours): bool

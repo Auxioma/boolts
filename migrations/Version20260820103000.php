@@ -10,8 +10,6 @@
  * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
  */
 
-declare(strict_types=1);
-
 namespace DoctrineMigrations;
 
 use Doctrine\DBAL\Schema\Schema;

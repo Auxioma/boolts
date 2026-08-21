@@ -68,9 +68,9 @@ class MaintenanceAllowedIp
 
     public function setLabel(?string $label): static
     {
-        $label = $label !== null ? trim($label) : null;
+        $label = null !== $label ? mb_trim($label) : null;
 
-        $this->label = $label !== '' ? $label : null;
+        $this->label = '' !== $label ? $label : null;
 
         return $this;
     }
@@ -82,7 +82,7 @@ class MaintenanceAllowedIp
 
     public function setIpAddress(string $ipAddress): static
     {
-        $this->ipAddress = trim($ipAddress);
+        $this->ipAddress = mb_trim($ipAddress);
 
         return $this;
     }
@@ -132,13 +132,13 @@ class MaintenanceAllowedIp
     {
         $binary = @inet_pton($this->ipAddress);
 
-        if ($binary === false) {
+        if (false === $binary) {
             return;
         }
 
         $normalized = inet_ntop($binary);
 
-        if ($normalized !== false) {
+        if (false !== $normalized) {
             $this->ipAddress = $normalized;
         }
     }

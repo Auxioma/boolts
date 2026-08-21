@@ -1,0 +1,228 @@
+{#
+ Template: templates/authentification/agence_immobiliere/rest_password_step5.html.twig
+ Role: Renders the authentification/agence_immobiliere Twig view for step 5.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'professionnel.forgot_password.meta.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="bg-white d-flex flex-column" style="min-height: 100vh;">
+    <div class="d-flex align-items-center justify-content-center flex-shrink-0 w-100" style="padding: 48px 132px;">
+        <!-- Sidebar -->
+        <div class="flex-shrink-0 position-relative" style="width: 359px; display: flex; flex-direction: column; gap: 74px;">
+            <!-- Decorative vertical line -->
+            <div style="position: absolute; left: 20px; top: 0; width: 3px; height: 362px; background: linear-gradient(to bottom, #5D00FF 75%, #d0d0d0 75%); z-index: 0;"></div>
+
+            <!-- Step 1 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations générales</p>
+            </div> 
+
+            <!-- Step 2 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations légales</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Détails de l'agence 1/2</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
+                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #d0d0d0; border-radius: 50%; font-size: 20px;">4</div>
+                <p class="mb-0 fw-bold" style="color: #858789; font-size: 16px; line-height: 20px;">Détails de l'agence 2/2</p>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="bg-white flex-grow-1" style="display: flex; flex-direction: column; gap: 48px; padding-bottom: 32px; border-radius: 24px;">
+            <!-- Header with Title and Skip Button -->
+            <div class="d-flex align-items-end justify-content-between" style="gap: 16px;">
+                <h1 class="fw-bold mb-0" style="font-size: 30px; line-height: 34px; color: #0B0F14;">Remplissez la fiche publique de votre agence</h1>
+                <a href="{{ path('app_professionnelle_step_six') }}" class="btn btn-link fw-bold" style="color: #5D00FF; text-decoration: none; font-size: 16px; line-height: 20px; padding: 10px 16px; height: 44px;">Passer</a>
+            </div>
+
+            {{ form_start(form) }}
+            <div class="d-flex flex-column" style="gap: 32px;">
+                <!-- Profile Photo Section -->
+                <div class="d-flex flex-column" style="gap: 16px;">
+                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Photo de profil (facultatif)</label>
+                    <div style="display: flex; align-items: flex-start; gap: 16px; position: relative;">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden" style="width: 100px; height: 100px; background-color: #E8E9EB; flex-shrink: 0;">
+                            <img
+                                src="{{ user.imageName is not empty ? vich_uploader_asset(user, 'imageFile') : '' }}"
+                                alt=""
+                                style="width: 100%; height: 100%; object-fit: cover; {{ user.imageName is empty ? 'display: none;' : '' }}"
+                                data-step-five-image-preview
+                            >
+                            <i
+                                class="fas fa-user"
+                                style="font-size: 32px; color: #9D9FA1; {{ user.imageName is not empty ? 'display: none;' : '' }}"
+                                data-step-five-image-placeholder
+                            ></i>
+                        </div>
+                        {{ form_widget(form.imageFile.file, {
+                            attr: {
+                                class: 'visually-hidden',
+                                accept: 'image/*',
+                                'data-step-five-image-input': 'true',
+                            },
+                        }) }}
+                        <label for="{{ form.imageFile.file.vars.id }}" class="btn fw-bold" style="position: absolute; bottom: 0; left: 28px; height: 44px; padding: 10px 16px; background-color: white; border: 2px solid #5D00FF; color: #5D00FF; border-radius: 50px; font-size: 16px;">Ajouter</label>
+                    </div>
+                    {{ form_errors(form.imageFile.file) }}
+                </div>
+
+                <!-- Description -->
+                <div class="d-flex flex-column" style="gap: 16px;">
+                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Description (facultatif)</label>
+                    {{ form_widget(form.description) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <!-- Phone Number -->
+                <div class="d-flex flex-column" style="gap: 16px;">
+                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Numéro de téléphone de contact (facultatif)</label>
+                    {{ form_widget(form.numeroContact) }}
+                    {{ form_errors(form.numeroContact) }}
+                </div>
+
+                <!-- Email -->
+                <div class="d-flex flex-column" style="gap: 16px;">
+                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Adresse e-mail de contact (facultatif)</label>
+                    {{ form_widget(form.emailContact) }}
+                    {{ form_errors(form.emailContact) }}
+                </div>
+
+                <!-- Languages Section -->
+                <div class="d-flex flex-column" style="gap: 12px;">
+                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Langues parlées par l'agence (facultatif)</label>
+                    
+                    <!-- Search Bar -->
+                    <div class="d-flex align-items-center" style="border: 2px solid #EBECEC; border-radius: 8px; padding: 8px 8px; gap: 10px;">
+                        <i class="fas fa-search" style="color: #858789; font-size: 16px;"></i>
+                        {{ form_widget(form.langueParlers, {
+                            attr: {
+                                style: 'border: none; outline: none; flex: 1; font-size: 14px; color: #858789; background: transparent; min-height: 28px;',
+                            },
+                        }) }}
+                    </div>
+                    {{ form_errors(form.langueParlers) }}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary fw-bold" style="height: 44px; background-color: #5D00FF; border: none; border-radius: 50px; font-size: 16px; line-height: 20px; padding: 10px 16px; color: white;">Suivant</button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://fonts.googleapis.com/css2?family=Eudoxus+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Eudoxus Sans', sans-serif;
+        }
+
+        .form-control {
+            color: #858789;
+            font-weight: 500;
+        }
+
+        .form-control:focus {
+            border-color: #5D00FF;
+            box-shadow: none;
+            color: #0B0F14;
+        }
+
+        .form-control::placeholder {
+            color: #858789;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: #5D00FF;
+            border-color: #5D00FF;
+        }
+
+        .btn-primary:hover {
+            background-color: #4a00cc;
+            border-color: #4a00cc;
+        }
+
+        .btn-link:hover {
+            color: #4a00cc !important;
+        }
+
+        textarea.form-control {
+            font-family: 'Eudoxus Sans', sans-serif;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (() => {
+            const bindStepFiveImagePreview = () => {
+                const input = document.querySelector('[data-step-five-image-input]');
+
+                if (!input || input.dataset.previewBound === 'true') {
+                    return;
+                }
+
+                const preview = document.querySelector('[data-step-five-image-preview]');
+                const placeholder = document.querySelector('[data-step-five-image-placeholder]');
+
+                if (!preview) {
+                    return;
+                }
+
+                input.dataset.previewBound = 'true';
+
+                input.addEventListener('change', () => {
+                    const file = input.files && input.files[0] ? input.files[0] : null;
+
+                    if (!file || !file.type.startsWith('image/')) {
+                        return;
+                    }
+
+                    if (input.dataset.previewObjectUrl) {
+                        URL.revokeObjectURL(input.dataset.previewObjectUrl);
+                    }
+
+                    const objectUrl = URL.createObjectURL(file);
+
+                    input.dataset.previewObjectUrl = objectUrl;
+                    preview.src = objectUrl;
+                    preview.style.display = 'block';
+
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                });
+            };
+
+            document.addEventListener('DOMContentLoaded', bindStepFiveImagePreview);
+            document.addEventListener('turbo:load', bindStepFiveImagePreview);
+        })();
+    </script>
+{% endblock %}

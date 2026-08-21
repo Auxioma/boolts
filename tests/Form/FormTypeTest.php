@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Tests\Form;
 
@@ -8,7 +16,6 @@ use App\Tests\Support\ProjectClassDiscovery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use PHPUnit\Framework\Attributes\DataProvider;
-use ReflectionClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -37,7 +44,7 @@ final class FormTypeTest extends KernelTestCase
 
         self::assertTrue(
             $container->has($formTypeClass),
-            sprintf('Le FormType %s doit être enregistré dans le conteneur Symfony.', $formTypeClass)
+            \sprintf('Le FormType %s doit être enregistré dans le conteneur Symfony.', $formTypeClass)
         );
 
         self::assertInstanceOf($formTypeClass, $container->get($formTypeClass));
@@ -55,7 +62,7 @@ final class FormTypeTest extends KernelTestCase
         } catch (MissingOptionsException $exception) {
             // Un type avec options obligatoires est valide : l'important est que Symfony
             // l'ait correctement résolu et indique explicitement ses options requises.
-            self::assertNotSame('', trim($exception->getMessage()));
+            self::assertNotSame('', mb_trim($exception->getMessage()));
 
             return;
         }
@@ -67,10 +74,10 @@ final class FormTypeTest extends KernelTestCase
 
         $dataClass = $form->getConfig()->getDataClass();
 
-        if ($dataClass !== null) {
+        if (null !== $dataClass) {
             self::assertTrue(
                 class_exists($dataClass) || interface_exists($dataClass),
-                sprintf('%s déclare un data_class introuvable : %s', $formTypeClass, $dataClass)
+                \sprintf('%s déclare un data_class introuvable : %s', $formTypeClass, $dataClass)
             );
         }
     }
@@ -85,7 +92,7 @@ final class FormTypeTest extends KernelTestCase
         $prefix = $type->getBlockPrefix();
 
         self::assertIsString($prefix);
-        self::assertNotSame('', trim($prefix), sprintf('%s retourne un block prefix vide.', $formTypeClass));
+        self::assertNotSame('', mb_trim($prefix), \sprintf('%s retourne un block prefix vide.', $formTypeClass));
     }
 
     /**
@@ -96,7 +103,7 @@ final class FormTypeTest extends KernelTestCase
         $types = [];
 
         foreach (ProjectClassDiscovery::concreteClassesIn('src/Form') as $class) {
-            $reflection = new ReflectionClass($class);
+            $reflection = new \ReflectionClass($class);
 
             if ($reflection->isSubclassOf(AbstractType::class)) {
                 $types[] = $class;

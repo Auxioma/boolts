@@ -34,7 +34,7 @@ class MaintenanceManager
     {
         $settings = $this->getSettings();
 
-        if ($settings === null) {
+        if (null === $settings) {
             return null;
         }
 

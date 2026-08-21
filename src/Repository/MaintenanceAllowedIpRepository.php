@@ -28,32 +28,32 @@ class MaintenanceAllowedIpRepository extends ServiceEntityRepository
 
     public function isAllowed(?string $ipAddress): bool
     {
-        if ($ipAddress === null || $ipAddress === '') {
+        if (null === $ipAddress || '' === $ipAddress) {
             return false;
         }
 
         $normalizedIp = $this->normalizeIpAddress($ipAddress);
 
-        if ($normalizedIp === null) {
+        if (null === $normalizedIp) {
             return false;
         }
 
-        return $this->findOneBy([
+        return null !== $this->findOneBy([
             'ipAddress' => $normalizedIp,
             'enabled' => true,
-        ]) !== null;
+        ]);
     }
 
     private function normalizeIpAddress(string $ipAddress): ?string
     {
-        $binary = @inet_pton(trim($ipAddress));
+        $binary = @inet_pton(mb_trim($ipAddress));
 
-        if ($binary === false) {
+        if (false === $binary) {
             return null;
         }
 
         $normalized = inet_ntop($binary);
 
-        return $normalized !== false ? $normalized : null;
+        return false !== $normalized ? $normalized : null;
     }
 }

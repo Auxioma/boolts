@@ -1,25 +1,23 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Tests\Support;
-
-use DateTimeImmutable;
-use DateTimeInterface;
-use ReflectionClass;
-use ReflectionIntersectionType;
-use ReflectionNamedType;
-use ReflectionParameter;
-use ReflectionType;
-use ReflectionUnionType;
-use UnitEnum;
 
 final class TestValueFactory
 {
     /**
      * @return array{0: bool, 1: mixed}
      */
-    public static function forParameter(ReflectionParameter $parameter): array
+    public static function forParameter(\ReflectionParameter $parameter): array
     {
         return self::forType($parameter->getType(), $parameter->getName());
     }
@@ -27,15 +25,15 @@ final class TestValueFactory
     /**
      * @return array{0: bool, 1: mixed}
      */
-    public static function forType(?ReflectionType $type, string $name = ''): array
+    public static function forType(?\ReflectionType $type, string $name = ''): array
     {
-        if ($type === null || $type instanceof ReflectionIntersectionType) {
+        if (null === $type || $type instanceof \ReflectionIntersectionType) {
             return [false, null];
         }
 
-        if ($type instanceof ReflectionUnionType) {
+        if ($type instanceof \ReflectionUnionType) {
             foreach ($type->getTypes() as $unionType) {
-                if ($unionType->getName() === 'null') {
+                if ('null' === $unionType->getName()) {
                     continue;
                 }
 
@@ -49,7 +47,7 @@ final class TestValueFactory
             return [false, null];
         }
 
-        if (!$type instanceof ReflectionNamedType) {
+        if (!$type instanceof \ReflectionNamedType) {
             return [false, null];
         }
 
@@ -68,15 +66,15 @@ final class TestValueFactory
             };
         }
 
-        if (is_a($typeName, DateTimeInterface::class, true)) {
-            return [true, new DateTimeImmutable('2026-08-07 12:00:00')];
+        if (is_a($typeName, \DateTimeInterface::class, true)) {
+            return [true, new \DateTimeImmutable('2026-08-07 12:00:00')];
         }
 
         if (enum_exists($typeName)) {
-            /** @var class-string<UnitEnum> $typeName */
+            /** @var class-string<\UnitEnum> $typeName */
             $cases = $typeName::cases();
 
-            return $cases === [] ? [false, null] : [true, $cases[0]];
+            return [] === $cases ? [false, null] : [true, $cases[0]];
         }
 
         if (interface_exists($typeName)) {
@@ -87,7 +85,7 @@ final class TestValueFactory
             return [false, null];
         }
 
-        $reflection = new ReflectionClass($typeName);
+        $reflection = new \ReflectionClass($typeName);
 
         if (!$reflection->isInstantiable()) {
             return [false, null];
@@ -95,7 +93,7 @@ final class TestValueFactory
 
         $constructor = $reflection->getConstructor();
 
-        if ($constructor === null || $constructor->getNumberOfRequiredParameters() === 0) {
+        if (null === $constructor || 0 === $constructor->getNumberOfRequiredParameters()) {
             return [true, $reflection->newInstance()];
         }
 
@@ -104,7 +102,7 @@ final class TestValueFactory
 
     private static function stringValue(string $name): string
     {
-        $normalized = strtolower($name);
+        $normalized = mb_strtolower($name);
 
         return match (true) {
             str_contains($normalized, 'email') => 'phpunit13@boolts.test',
@@ -124,7 +122,7 @@ final class TestValueFactory
      */
     private static function arrayValue(string $name): array
     {
-        return strtolower($name) === 'roles'
+        return 'roles' === mb_strtolower($name)
             ? ['ROLE_TEST']
             : ['phpunit-13-test'];
     }

@@ -123,10 +123,10 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
         $uploadDirectory = $this->getUploadDirectory();
 
         if (!is_dir($uploadDirectory) && !mkdir($uploadDirectory, 0775, true) && !is_dir($uploadDirectory)) {
-            throw new \RuntimeException(sprintf('Impossible de créer le dossier de destination "%s".', $uploadDirectory));
+            throw new \RuntimeException(\sprintf('Impossible de créer le dossier de destination "%s".', $uploadDirectory));
         }
 
-        $imageName = sprintf('property-%06d-image-%02d-fixture.jpg', $generatedSet, $position);
+        $imageName = \sprintf('property-%06d-image-%02d-fixture.jpg', $generatedSet, $position);
         $targetPath = $uploadDirectory.'/'.$imageName;
 
         if (!is_file($targetPath) || false === @getimagesize($targetPath)) {
@@ -136,7 +136,7 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
         $size = filesize($targetPath);
 
         if (false === $size || $size <= 0) {
-            throw new \RuntimeException(sprintf('L’image générée "%s" est vide ou inaccessible.', $targetPath));
+            throw new \RuntimeException(\sprintf('L’image générée "%s" est vide ou inaccessible.', $targetPath));
         }
 
         return [
@@ -147,7 +147,7 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
 
     private function drawGeneratedImage(string $targetPath, int $generatedSet, int $position): void
     {
-        if (!function_exists('imagecreatetruecolor')) {
+        if (!\function_exists('imagecreatetruecolor')) {
             throw new \RuntimeException('L’extension PHP GD est requise pour générer les images de fixtures.');
         }
 
@@ -157,7 +157,7 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
             throw new \RuntimeException('Impossible de créer une image GD pour les fixtures.');
         }
 
-        $palette = self::PALETTES[($generatedSet + $position) % count(self::PALETTES)];
+        $palette = self::PALETTES[($generatedSet + $position) % \count(self::PALETTES)];
         [$wallRgb, $floorRgb, $accentRgb, $skyRgb] = $palette;
 
         $wall = $this->allocateColor($image, $wallRgb);
@@ -211,10 +211,10 @@ final class PropertyImageFixtures extends Fixture implements DependentFixtureInt
         imagefilledrectangle($image, 905, 548, 975, 690, $wallShadow);
         imagefilledellipse($image, 940, 485, 95, 95, $accentLight);
 
-        imagestring($image, 3, 32, 30, sprintf('BOOLTS %06d-%02d', $generatedSet, $position), $line);
+        imagestring($image, 3, 32, 30, \sprintf('BOOLTS %06d-%02d', $generatedSet, $position), $line);
 
         if (!imagejpeg($image, $targetPath, self::JPEG_QUALITY)) {
-            throw new \RuntimeException(sprintf('Impossible d’écrire l’image générée "%s".', $targetPath));
+            throw new \RuntimeException(\sprintf('Impossible d’écrire l’image générée "%s".', $targetPath));
         }
     }
 

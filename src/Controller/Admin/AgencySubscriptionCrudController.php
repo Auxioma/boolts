@@ -97,5 +97,4 @@ class AgencySubscriptionCrudController extends AbstractCrudController
 
         return $agency->getEntreprise() ?? $agency->getEmail() ?? '';
     }
-
 }

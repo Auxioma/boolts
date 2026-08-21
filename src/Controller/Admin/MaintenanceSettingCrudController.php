@@ -52,7 +52,7 @@ class MaintenanceSettingCrudController extends AbstractCrudController
     {
         $actions->disable(Action::DELETE);
 
-        if ($this->maintenanceSettingRepository->getSettings() !== null) {
+        if (null !== $this->maintenanceSettingRepository->getSettings()) {
             $actions->disable(Action::NEW);
         }
 
