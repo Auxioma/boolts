@@ -31,6 +31,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class AgenceImmobiliereStepTroisController extends AbstractController
 {
+    private const TRANSLATION_LOCALES = [
+        'fr',
+        'en',
+    ];
+
     private const OPENING_DAYS = [
         'lundi',
         'mardi',
@@ -117,7 +122,12 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->mergeNewTranslations();
+            $this->syncUserTranslations($user, [
+                'adresse' => $form->get('adresse')->getData(),
+                'adresseComplement' => $form->get('adresseComplement')->getData(),
+                'ville' => $form->get('ville')->getData(),
+            ]);
+
             $em->flush();
 
             return $this->redirectToRoute('app_professionnelle_step_cinq');
@@ -158,7 +168,10 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->mergeNewTranslations();
+            $this->syncUserTranslations($user, [
+                'description' => $form->get('description')->getData(),
+            ]);
+
             $em->flush();
 
             return $this->redirectToRoute('app_professionnelle_step_six');
@@ -231,6 +244,32 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
             'form' => $form->createView(),
             'user' => $user,
         ]);
+    }
+
+    /**
+     * @param array<string, ?string> $values
+     */
+    private function syncUserTranslations(User $user, array $values): void
+    {
+        foreach (self::TRANSLATION_LOCALES as $locale) {
+            $translation = $user->translate($locale);
+
+            foreach ($values as $field => $value) {
+                match ($field) {
+                    'adresse' => $translation->setAdresse($value),
+                    'adresseComplement' => $translation->setAdresseComplement($value),
+                    'ville' => $translation->setVille($value),
+                    'description' => $translation->setDescription($value),
+                    'adresseContact' => $translation->setAdresseContact($value),
+                    'adresseComplementContact' => $translation->setAdresseComplementContact($value),
+                    'villeContact' => $translation->setVilleContact($value),
+                    'paysContact' => $translation->setPaysContact($value),
+                    default => throw new \LogicException(sprintf('Champ de traduction User non supporté : %s.', $field)),
+                };
+            }
+        }
+
+        $user->mergeNewTranslations();
     }
 
     private function ensureOpeningHours(User $user, EntityManagerInterface $em): void

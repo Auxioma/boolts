@@ -29,6 +29,11 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {
+    private const GOOGLE_REGISTER_TYPE_SESSION_KEY = 'google_register_type';
+    private const GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY = 'google_professional_first_registration';
+    private const AUTH_USER_ID_SESSION_KEY = 'auth_user_id';
+    private const AUTH_STEP_SESSION_KEY = 'auth_step';
+
     public function __construct(
         private ClientRegistry $clientRegistry,
         private EntityManagerInterface $em,
@@ -45,12 +50,15 @@ class GoogleAuthenticator extends OAuth2Authenticator
     {
         $client = $this->clientRegistry->getClient('google');
         $accessToken = $this->fetchAccessToken($client);
-        $requestedRole = 'professionnel' === $request->getSession()->get('google_register_type')
+        $session = $request->getSession();
+        $session->remove(self::GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY);
+
+        $requestedRole = 'professionnel' === $session->get(self::GOOGLE_REGISTER_TYPE_SESSION_KEY)
             ? 'ROLE_AGENCE'
             : 'ROLE_USER';
 
         return new SelfValidatingPassport(
-            new UserBadge($accessToken->getToken(), function () use ($client, $accessToken, $requestedRole) {
+            new UserBadge($accessToken->getToken(), function () use ($client, $accessToken, $requestedRole, $session) {
                 /** @var GoogleUser $googleUser */
                 $googleUser = $client->fetchUserFromToken($accessToken);
 
@@ -68,6 +76,12 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
                     $this->em->persist($user);
                     $this->em->flush();
+
+                    if ('ROLE_AGENCE' === $requestedRole) {
+                        $session->set(self::AUTH_USER_ID_SESSION_KEY, $user->getId());
+                        $session->set(self::AUTH_STEP_SESSION_KEY, 'step4');
+                        $session->set(self::GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY, true);
+                    }
                 } else {
                     $changed = false;
 
@@ -109,7 +123,14 @@ class GoogleAuthenticator extends OAuth2Authenticator
         TokenInterface $token,
         string $firewallName,
     ): ?Response {
-        $request->getSession()->remove('google_register_type');
+        $session = $request->getSession();
+        $completeProfessionalRegistration = (bool) $session->get(
+            self::GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY,
+            false
+        );
+
+        $session->remove(self::GOOGLE_REGISTER_TYPE_SESSION_KEY);
+        $session->remove(self::GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY);
 
         $user = $token->getUser();
         $roles = $user instanceof User ? $user->getRoles() : [];
@@ -119,6 +140,13 @@ class GoogleAuthenticator extends OAuth2Authenticator
         }
 
         if (\in_array('ROLE_AGENCE', $roles, true)) {
+            if ($completeProfessionalRegistration && $user instanceof User) {
+                $session->set(self::AUTH_USER_ID_SESSION_KEY, $user->getId());
+                $session->set(self::AUTH_STEP_SESSION_KEY, 'step4');
+
+                return new RedirectResponse($this->urlGen->generate('app_professionnelle_step_quatre'));
+            }
+
             return new RedirectResponse($this->urlGen->generate('agence_immobiliere_dashboard'));
         }
 
@@ -127,11 +155,13 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $route = 'professionnel' === $request->getSession()->get('google_register_type')
+        $session = $request->getSession();
+        $route = 'professionnel' === $session->get(self::GOOGLE_REGISTER_TYPE_SESSION_KEY)
             ? 'app_professionnelle_connexion'
             : 'app_login';
 
-        $request->getSession()->remove('google_register_type');
+        $session->remove(self::GOOGLE_REGISTER_TYPE_SESSION_KEY);
+        $session->remove(self::GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY);
 
         return new RedirectResponse($this->urlGen->generate($route));
     }
