@@ -80,6 +80,7 @@ final class AgenceImmobiliereProfileController extends AbstractController
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             $user->setIsVerified(true);
+            $user->setAgencyRegistrationStep(null);
             $freeAgencySubscriptionActivator->activate($user);
             $em->flush();
 

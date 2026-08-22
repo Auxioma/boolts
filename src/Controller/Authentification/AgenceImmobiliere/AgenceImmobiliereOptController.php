@@ -15,6 +15,7 @@ namespace App\Controller\Authentification\AgenceImmobiliere;
 use App\Entity\User;
 use App\Form\Authentification\AuthCodeType;
 use App\Repository\UserRepository;
+use App\Service\Authentification\AgencyRegistrationProgress;
 use App\Service\Authentification\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +40,13 @@ final class AgenceImmobiliereOptController extends AbstractController
     /**
      * Handles the opt controller action.
      */
-    public function opt(Request $request, UserRepository $userRepository, EntityManagerInterface $em, EmailVerificationService $emailVerificationService): Response
+    public function opt(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $em,
+        EmailVerificationService $emailVerificationService,
+        AgencyRegistrationProgress $agencyRegistrationProgress,
+    ): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_professionnelle_register');
@@ -48,27 +55,41 @@ final class AgenceImmobiliereOptController extends AbstractController
         $session = $request->getSession();
         $authUserId = $session->get('auth_user_id');
 
+        if (!$authUserId) {
+            $this->addFlash('danger', 'Session expirée. Veuillez recommencer.');
+
+            return $this->redirectToRoute('app_professionnelle_register');
+        }
+
+        $user = $userRepository->find($authUserId);
+
+        if (!$user instanceof User) {
+            $session->remove('auth_user_id');
+            $session->remove('auth_step');
+
+            $this->addFlash('danger', 'Utilisateur introuvable.');
+
+            return $this->redirectToRoute('app_professionnelle_register');
+        }
+
+        if (!$agencyRegistrationProgress->isIncompleteAgencyRegistration($user)) {
+            $session->remove('auth_user_id');
+            $session->remove('auth_step');
+
+            return $this->redirectToRoute('app_professionnelle_connexion');
+        }
+
+        if (
+            AgencyRegistrationProgress::STEP_CODE !== $session->get('auth_step')
+            && !$user->getEmailAuthCode()
+        ) {
+            return $this->redirectToRoute($agencyRegistrationProgress->routeForCurrentStep($user));
+        }
+
         $codeForm = $this->createForm(AuthCodeType::class);
         $codeForm->handleRequest($request);
 
         if ($codeForm->isSubmitted() && $codeForm->isValid()) {
-            if (!$authUserId) {
-                $this->addFlash('danger', 'Session expirée. Veuillez recommencer.');
-
-                return $this->redirectToRoute('app_professionnelle_otp');
-            }
-
-            $user = $userRepository->find($authUserId);
-
-            if (!$user instanceof User) {
-                $session->remove('auth_user_id');
-                $session->remove('auth_step');
-
-                $this->addFlash('danger', 'Utilisateur introuvable.');
-
-                return $this->redirectToRoute('app_auth');
-            }
-
             if ($user->getFailedVerificationAttempts() >= 5) {
                 $this->addFlash('danger', 'Trop de tentatives. Veuillez demander un nouveau code.');
 
@@ -93,14 +114,23 @@ final class AgenceImmobiliereOptController extends AbstractController
                 return $this->redirectToRoute('app_professionnelle_otp');
             }
 
+            $currentStep = $agencyRegistrationProgress->currentStep($user);
+
+            if (AgencyRegistrationProgress::STEP_CODE === $currentStep) {
+                $currentStep = AgencyRegistrationProgress::STEP_PROFILE;
+            }
+
             $user
-                ->setIsVerified(true)
+                ->setAgencyRegistrationStep($currentStep)
+                ->setIsVerified(AgencyRegistrationProgress::STEP_PROFILE === $currentStep && !$user->getPassword())
                 ->clearEmailAuthCode()
             ;
 
+            $session->set('auth_step', $currentStep);
+
             $em->flush();
 
-            return $this->redirectToRoute('app_professionnelle_step_trois');
+            return $this->redirectToRoute($agencyRegistrationProgress->routeForStep($currentStep));
         }
 
         return $this->render('authentification/agence_immobiliere/otp.html.twig', [

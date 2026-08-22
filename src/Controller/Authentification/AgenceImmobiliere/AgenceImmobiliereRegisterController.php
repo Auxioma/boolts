@@ -15,6 +15,7 @@ namespace App\Controller\Authentification\AgenceImmobiliere;
 use App\Entity\User;
 use App\Form\Authentification\AuthEmailType;
 use App\Repository\UserRepository;
+use App\Service\Authentification\AgencyRegistrationProgress;
 use App\Service\Authentification\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +40,13 @@ final class AgenceImmobiliereRegisterController extends AbstractController
     /**
      * Handles the registerPro controller action.
      */
-    public function registerPro(Request $request, UserRepository $userRepository, EntityManagerInterface $em, EmailVerificationService $emailVerificationService): Response
+    public function registerPro(
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $em,
+        EmailVerificationService $emailVerificationService,
+        AgencyRegistrationProgress $agencyRegistrationProgress,
+    ): Response
     {
         /* si utilisateur deja en session, je redirige vers l'admin visiteur */
         if ($this->getUser()) {
@@ -47,8 +54,18 @@ final class AgenceImmobiliereRegisterController extends AbstractController
         }
 
         $session = $request->getSession();
-        $authStep = $session->get('auth_step', 'email');
         $authUserId = $session->get('auth_user_id');
+
+        if ($authUserId) {
+            $authUser = $userRepository->find($authUserId);
+
+            if ($authUser instanceof User && $agencyRegistrationProgress->isIncompleteAgencyRegistration($authUser)) {
+                return $this->redirectToRoute($agencyRegistrationProgress->routeForCurrentStep($authUser));
+            }
+
+            $session->remove('auth_user_id');
+            $session->remove('auth_step');
+        }
 
         /* creation du formulaire */
         $emailForm = $this->createForm(AuthEmailType::class);
@@ -59,15 +76,31 @@ final class AgenceImmobiliereRegisterController extends AbstractController
             $user = $userRepository->findOneBy(['email' => $email]);
 
             if ($user instanceof User) {
-                $this->addFlash('warning', 'Un compte existe déjà avec cette adresse. Connectez vous ici');
+                if ($agencyRegistrationProgress->isIncompleteAgencyRegistration($user)) {
+                    $step = $agencyRegistrationProgress->currentStep($user);
+                    $user->setAgencyRegistrationStep($step);
 
-                return $this->redirectToRoute('app_professionnelle_register');
+                    $emailVerificationService->prepare($user);
+                    $emailVerificationService->send($user);
+
+                    $session->set('auth_user_id', $user->getId());
+                    $session->set('auth_step', AgencyRegistrationProgress::STEP_CODE);
+
+                    $this->addFlash('success', 'Un code de vérification vient de vous être envoyé pour reprendre votre inscription.');
+
+                    return $this->redirectToRoute('app_professionnelle_otp');
+                }
+
+                $this->addFlash('warning', 'Un compte existe déjà avec cette adresse. Connectez-vous ici.');
+
+                return $this->redirectToRoute('app_professionnelle_connexion');
             }
 
             /* si pas de compte, je vais l'enregistrer en session et rediriger vers l'OTP */
             $user = new User();
             $user->setEmail($email);
             $user->setRoles(['ROLE_AGENCE']);
+            $user->setAgencyRegistrationStep(AgencyRegistrationProgress::STEP_CODE);
             $em->persist($user);
             $em->flush();
 
@@ -76,7 +109,7 @@ final class AgenceImmobiliereRegisterController extends AbstractController
             $emailVerificationService->send($user);
 
             $session->set('auth_user_id', $user->getId());
-            $session->set('auth_step', 'code');
+            $session->set('auth_step', AgencyRegistrationProgress::STEP_CODE);
 
             return $this->redirectToRoute('app_professionnelle_otp');
         }

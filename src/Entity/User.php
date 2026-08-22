@@ -75,6 +75,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\Column(options: ['default' => 0])]
     private int $failedVerificationAttempts = 0;
 
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $agencyRegistrationStep = null;
+
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $emailAuthEnabled = false;
 
@@ -442,6 +445,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     public function incrementFailedVerificationAttempts(): static
     {
         ++$this->failedVerificationAttempts;
+
+        return $this;
+    }
+
+    public function getAgencyRegistrationStep(): ?string
+    {
+        return $this->agencyRegistrationStep;
+    }
+
+    public function setAgencyRegistrationStep(?string $agencyRegistrationStep): static
+    {
+        $agencyRegistrationStep = null !== $agencyRegistrationStep ? mb_trim($agencyRegistrationStep) : null;
+
+        $this->agencyRegistrationStep = '' !== $agencyRegistrationStep ? $agencyRegistrationStep : null;
 
         return $this;
     }

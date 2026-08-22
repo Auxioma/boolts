@@ -13,6 +13,7 @@
 namespace App\Security;
 
 use App\Entity\User;
+use App\Service\Authentification\AgencyRegistrationProgress;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
@@ -74,12 +75,16 @@ class GoogleAuthenticator extends OAuth2Authenticator
                     $user->setPrenom($googleUser->getFirstName());
                     $user->setNom($googleUser->getLastName());
 
+                    if ('ROLE_AGENCE' === $requestedRole) {
+                        $user->setAgencyRegistrationStep(AgencyRegistrationProgress::STEP_ADDRESS);
+                    }
+
                     $this->em->persist($user);
                     $this->em->flush();
 
                     if ('ROLE_AGENCE' === $requestedRole) {
                         $session->set(self::AUTH_USER_ID_SESSION_KEY, $user->getId());
-                        $session->set(self::AUTH_STEP_SESSION_KEY, 'step4');
+                        $session->set(self::AUTH_STEP_SESSION_KEY, AgencyRegistrationProgress::STEP_ADDRESS);
                         $session->set(self::GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY, true);
                     }
                 } else {
@@ -142,7 +147,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         if (\in_array('ROLE_AGENCE', $roles, true)) {
             if ($completeProfessionalRegistration && $user instanceof User) {
                 $session->set(self::AUTH_USER_ID_SESSION_KEY, $user->getId());
-                $session->set(self::AUTH_STEP_SESSION_KEY, 'step4');
+                $session->set(self::AUTH_STEP_SESSION_KEY, AgencyRegistrationProgress::STEP_ADDRESS);
 
                 return new RedirectResponse($this->urlGen->generate('app_professionnelle_step_quatre'));
             }

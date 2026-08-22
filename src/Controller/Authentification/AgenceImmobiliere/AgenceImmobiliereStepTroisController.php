@@ -20,6 +20,7 @@ use App\Form\Authentification\StepQuatreType;
 use App\Form\Authentification\StepSixType;
 use App\Repository\UserRepository;
 use App\Security\AgenceImmobiliereAuthenticator;
+use App\Service\Authentification\AgencyRegistrationProgress;
 use App\Service\Billing\FreeAgencySubscriptionActivator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,21 +59,22 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         EntityManagerInterface $em,
         Security $security,
         UserPasswordHasherInterface $userPasswordHasher,
-        FreeAgencySubscriptionActivator $freeAgencySubscriptionActivator, ): Response
+        FreeAgencySubscriptionActivator $freeAgencySubscriptionActivator,
+        AgencyRegistrationProgress $agencyRegistrationProgress,
+    ): Response
     {
-        $session = $request->getSession();
-        $authUserId = $session->get('auth_user_id');
+        $registrationUser = $this->getRegistrationUser(
+            $request,
+            $userRepository,
+            $agencyRegistrationProgress,
+            AgencyRegistrationProgress::STEP_PROFILE,
+        );
 
-        if (!$authUserId) {
-            return $this->redirectToRoute('agence_immobiliere_dashboard');
+        if (!$registrationUser instanceof User) {
+            return $registrationUser;
         }
 
-        $user = $userRepository->find($authUserId);
-
-        if (!$user) {
-            return $this->redirectToRoute('app_professionnelle_register');
-        }
-
+        $user = $registrationUser;
         $form = $this->createForm(CompleteProfileType::class, $user);
         $form->handleRequest($request);
 
@@ -80,9 +82,14 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            $user->setIsVerified(false);
+            $user
+                ->setIsVerified(false)
+                ->setAgencyRegistrationStep(AgencyRegistrationProgress::STEP_ADDRESS)
+            ;
             $freeAgencySubscriptionActivator->activate($user);
             $em->flush();
+
+            $request->getSession()->set('auth_step', AgencyRegistrationProgress::STEP_ADDRESS);
 
             return $this->redirectToRoute('app_professionnelle_step_quatre');
         }
@@ -103,21 +110,21 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         EntityManagerInterface $em,
+        AgencyRegistrationProgress $agencyRegistrationProgress,
     ): Response
     {
-        $session = $request->getSession();
-        $authUserId = $session->get('auth_user_id');
+        $registrationUser = $this->getRegistrationUser(
+            $request,
+            $userRepository,
+            $agencyRegistrationProgress,
+            AgencyRegistrationProgress::STEP_ADDRESS,
+        );
 
-        if (!$authUserId) {
-            return $this->redirectToRoute('agence_immobiliere_dashboard');
+        if (!$registrationUser instanceof User) {
+            return $registrationUser;
         }
 
-        $user = $userRepository->find($authUserId);
-
-        if (!$user) {
-            return $this->redirectToRoute('app_professionnelle_register');
-        }
-
+        $user = $registrationUser;
         $form = $this->createForm(StepQuatreType::class, $user);
         $form->handleRequest($request);
 
@@ -128,7 +135,10 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
                 'ville' => $form->get('ville')->getData(),
             ]);
 
+            $user->setAgencyRegistrationStep(AgencyRegistrationProgress::STEP_PRESENTATION);
             $em->flush();
+
+            $request->getSession()->set('auth_step', AgencyRegistrationProgress::STEP_PRESENTATION);
 
             return $this->redirectToRoute('app_professionnelle_step_cinq');
         }
@@ -149,21 +159,21 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         EntityManagerInterface $em,
+        AgencyRegistrationProgress $agencyRegistrationProgress,
     ): Response
     {
-        $session = $request->getSession();
-        $authUserId = $session->get('auth_user_id');
+        $registrationUser = $this->getRegistrationUser(
+            $request,
+            $userRepository,
+            $agencyRegistrationProgress,
+            AgencyRegistrationProgress::STEP_PRESENTATION,
+        );
 
-        if (!$authUserId) {
-            return $this->redirectToRoute('agence_immobiliere_dashboard');
+        if (!$registrationUser instanceof User) {
+            return $registrationUser;
         }
 
-        $user = $userRepository->find($authUserId);
-
-        if (!$user) {
-            return $this->redirectToRoute('app_professionnelle_register');
-        }
-
+        $user = $registrationUser;
         $form = $this->createForm(StepCinqType::class, $user);
         $form->handleRequest($request);
 
@@ -172,7 +182,10 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
                 'description' => $form->get('description')->getData(),
             ]);
 
+            $user->setAgencyRegistrationStep(AgencyRegistrationProgress::STEP_OPENING_HOURS);
             $em->flush();
+
+            $request->getSession()->set('auth_step', AgencyRegistrationProgress::STEP_OPENING_HOURS);
 
             return $this->redirectToRoute('app_professionnelle_step_six');
         }
@@ -195,21 +208,21 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $em,
         Security $security,
+        AgencyRegistrationProgress $agencyRegistrationProgress,
     ): Response
     {
-        $session = $request->getSession();
-        $authUserId = $session->get('auth_user_id');
+        $registrationUser = $this->getRegistrationUser(
+            $request,
+            $userRepository,
+            $agencyRegistrationProgress,
+            AgencyRegistrationProgress::STEP_OPENING_HOURS,
+        );
 
-        if (!$authUserId) {
-            return $this->redirectToRoute('agence_immobiliere_dashboard');
+        if (!$registrationUser instanceof User) {
+            return $registrationUser;
         }
 
-        $user = $userRepository->find($authUserId);
-
-        if (!$user) {
-            return $this->redirectToRoute('app_professionnelle_register');
-        }
-
+        $user = $registrationUser;
         $this->ensureOpeningHours($user, $em);
 
         $form = $this->createForm(StepSixType::class, $user);
@@ -230,6 +243,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
             }
 
             $user->setIsVerified(true);
+            $user->setAgencyRegistrationStep(null);
             $em->flush();
 
             $security->login($user, AgenceImmobiliereAuthenticator::class, 'main');
@@ -244,6 +258,45 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
             'form' => $form->createView(),
             'user' => $user,
         ]);
+    }
+
+    private function getRegistrationUser(
+        Request $request,
+        UserRepository $userRepository,
+        AgencyRegistrationProgress $agencyRegistrationProgress,
+        string $expectedStep,
+    ): User|Response {
+        $session = $request->getSession();
+        $authUserId = $session->get('auth_user_id');
+
+        if (!$authUserId) {
+            return $this->redirectToRoute('app_professionnelle_register');
+        }
+
+        $user = $userRepository->find($authUserId);
+
+        if (!$user instanceof User) {
+            $session->remove('auth_user_id');
+            $session->remove('auth_step');
+
+            return $this->redirectToRoute('app_professionnelle_register');
+        }
+
+        if (!$agencyRegistrationProgress->isIncompleteAgencyRegistration($user)) {
+            $session->remove('auth_user_id');
+            $session->remove('auth_step');
+
+            return $this->redirectToRoute('app_professionnelle_connexion');
+        }
+
+        $expectedRoute = $agencyRegistrationProgress->routeForStep($expectedStep);
+        $currentRoute = $agencyRegistrationProgress->routeForCurrentStep($user);
+
+        if ($currentRoute !== $expectedRoute) {
+            return $this->redirectToRoute($currentRoute);
+        }
+
+        return $user;
     }
 
     /**
