@@ -48,6 +48,9 @@ class StepCinqType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Veuillez entrer votre numéro de téléphone',
+                    'autocomplete' => 'tel',
+                    'inputmode' => 'tel',
+                    'data-phone-target' => 'input',
                     'style' => 'height: 44px; border: 2px solid #EBECEC; border-radius: 8px; font-size: 14px; padding: 12px 14px;',
                 ],
             ])

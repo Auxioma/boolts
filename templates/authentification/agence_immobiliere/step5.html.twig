@@ -56,7 +56,12 @@
                 <a href="{{ path('app_professionnelle_step_six') }}" class="btn btn-link fw-bold" style="color: #5D00FF; text-decoration: none; font-size: 16px; line-height: 20px; padding: 10px 16px; height: 44px;">Passer</a>
             </div>
 
-            {{ form_start(form) }}
+            {{ form_start(form, {
+                attr: {
+                    'data-controller': 'phone',
+                    'data-action': 'submit->phone#prepareSubmit',
+                },
+            }) }}
             <div class="d-flex flex-column" style="gap: 32px;">
                 <!-- Profile Photo Section -->
                 <div class="d-flex flex-column" style="gap: 16px;">
@@ -156,6 +161,10 @@
         .form-control::placeholder {
             color: #858789;
             font-weight: 500;
+        }
+
+        .iti {
+            width: 100%;
         }
 
         .btn-primary {

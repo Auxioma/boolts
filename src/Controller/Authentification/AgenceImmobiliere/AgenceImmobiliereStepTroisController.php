@@ -81,6 +81,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $user->setNumeroContact($this->normalizeOptionalText($user->getTelephone()));
 
             $user
                 ->setIsVerified(false)
@@ -129,13 +130,26 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $adresse = $form->get('adresse')->getData();
+            $adresseComplement = $form->get('adresseComplement')->getData();
+            $ville = $form->get('ville')->getData();
+            $pays = $user->getPays();
+
             $this->syncUserTranslations($user, [
-                'adresse' => $form->get('adresse')->getData(),
-                'adresseComplement' => $form->get('adresseComplement')->getData(),
-                'ville' => $form->get('ville')->getData(),
+                'adresse' => $adresse,
+                'adresseComplement' => $adresseComplement,
+                'ville' => $ville,
+                'adresseContact' => $adresse,
+                'adresseComplementContact' => $adresseComplement,
+                'villeContact' => $ville,
+                'paysContact' => $pays?->getNom(),
             ]);
 
-            $user->setAgencyRegistrationStep(AgencyRegistrationProgress::STEP_PRESENTATION);
+            $user
+                ->setCodePostalContact($this->normalizeOptionalText($form->get('codePostal')->getData()))
+                ->setNumeroContact($this->normalizeOptionalText($user->getTelephone()))
+                ->setAgencyRegistrationStep(AgencyRegistrationProgress::STEP_PRESENTATION)
+            ;
             $em->flush();
 
             $request->getSession()->set('auth_step', AgencyRegistrationProgress::STEP_PRESENTATION);
@@ -324,6 +338,17 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         }
 
         $user->mergeNewTranslations();
+    }
+
+    private function normalizeOptionalText(?string $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        $value = mb_trim($value);
+
+        return '' === $value ? null : $value;
     }
 
     private function ensureOpeningHours(User $user, EntityManagerInterface $em): void
