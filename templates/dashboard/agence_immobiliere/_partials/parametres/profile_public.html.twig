@@ -12,25 +12,10 @@
 
 			{% set profileItems = [
                 {
-                    field: 'entreprise',
-                    label: 'Ajouter un nom d’agence',
-                    done: app.user.entreprise is not empty,
-                    selector: '#' ~ form.entreprise.vars.id,
-                    optional: false,
-                },
-                {
                     field: 'description',
                     label: 'Ajouter une description',
                     done: app.user.description is not empty,
                     selector: '#' ~ form.description.vars.id,
-                    optional: false,
-                },
-                {
-                    field: 'adresseContact',
-                    label: 'Ajouter une adresse postale',
-                    done: app.user.adresseContact is not empty and app.user.codePostalContact is not empty and app.user.villeContact is not empty and app.user.paysContact is not empty,
-                    selector: '#' ~ form.adresseContact.vars.id ~ ', #' ~ form.codePostalContact.vars.id ~ ', #' ~ form.villeContact.vars.id ~ ', #' ~ form.paysContact.vars.id,
-                    mode: 'all',
                     optional: false,
                 },
                 {
