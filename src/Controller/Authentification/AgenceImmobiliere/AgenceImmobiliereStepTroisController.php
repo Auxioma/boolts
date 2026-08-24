@@ -248,6 +248,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
 
             $security->login($user, AgenceImmobiliereAuthenticator::class, 'main');
 
+            $session = $request->getSession();
             $session->remove('auth_user_id');
             $session->remove('auth_step');
 

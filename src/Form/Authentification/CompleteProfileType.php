@@ -17,6 +17,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -39,6 +40,16 @@ class CompleteProfileType extends AbstractType
                 'attr' => [
                     'class' => 'form-control mb-16',
                     'placeholder' => 'Veuillez entrer votre prénom',
+                ],
+            ])
+            ->add('telephone', TelType::class, [
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Veuillez entrer votre numéro de téléphone',
+                    'autocomplete' => 'tel',
+                    'inputmode' => 'tel',
+                    'data-phone-target' => 'input',
                 ],
             ])
 ->add('plainPassword', RepeatedType::class, [

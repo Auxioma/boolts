@@ -49,7 +49,12 @@
             <h1 class="fw-bold" style="font-size: 30px; line-height: 34px; color: #0B0F14; max-width: 404px; margin: 0;">Remplissez les informations de votre compte</h1>
 
                                                     <div class="formulaire mt-32">
-                                            {{ form_start(form) }}
+                                            {{ form_start(form, {
+                                                attr: {
+                                                    'data-controller': 'phone',
+                                                    'data-action': 'submit->phone#prepareSubmit',
+                                                },
+                                            }) }}
                                             <div class="">
                                                 <label for="email" class="form-label mb-16">
                                                     {{ 'professionnel.register.agency.lastname.label'|trans }}
@@ -60,6 +65,14 @@
                                                     {{ 'professionnel.register.agency.firstname.label'|trans }}
                                                 </label>
                                                 {{ form_widget(form.prenom) }}
+
+                                                <label for="{{ form.telephone.vars.id }}" class="form-label mb-16">
+                                                    Numéro de téléphone
+                                                </label>
+                                                <div class="mb-16">
+                                                    {{ form_widget(form.telephone) }}
+                                                    {{ form_errors(form.telephone) }}
+                                                </div>
 
                                                 <label for="pwd" class="form-label mb-16">
                                                     {{ 'professionnel.register.agency.password.label'|trans }}
@@ -118,6 +131,10 @@
         .form-control::placeholder {
             color: #858789;
             font-weight: 500;
+        }
+
+        .formulaire .iti {
+            width: 100%;
         }
 
         .btn-primary {
