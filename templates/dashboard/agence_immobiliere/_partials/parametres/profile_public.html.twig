@@ -51,6 +51,10 @@
 			{% set publicProfileUrl = app.user.slug is not empty ? path('app_public_detail_agence', {slug: app.user.slug}) : '' %}
 			{% set profileComplete = totalDone == totalRequired %}
 			{% set publicProfileReady = publicProfileUrl is not empty and profileComplete %}
+			{% set hasContactAddress = app.user and (app.user.adresseContact is not empty or app.user.codePostalContact is not empty or app.user.villeContact is not empty or app.user.paysContact is not empty) %}
+			{% set hasContactNumber = app.user and app.user.numeroContact is not empty %}
+			{% set hasContactEmail = app.user and app.user.emailContact is not empty %}
+			{% set hasSpokenLanguages = app.user and app.user.langueParlers is not empty %}
 
 			<div class="complete-profile py-24 px-24 mt-32" data-controller="profile-progress"{% if profileComplete %} hidden{% endif %}>
 				<h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
@@ -265,8 +269,8 @@
 								</div>
 							</div>
 
-							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="adresseContact" data-field-save-multiple-param="true" data-field-save-output-param="#adresse-contact-value">
-								Définir
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="adresseContact" data-field-save-multiple-param="true" data-field-save-output-param="#adresse-contact-value" data-field-save-has-value-param="{{ hasContactAddress ? 'true' : 'false' }}">
+								{{ hasContactAddress ? 'Modifier' : 'Définir' }}
 							</button>
 						</div>
 					</div>
@@ -285,8 +289,8 @@
 										</p>
 									</div>
 
-									<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="numeroContact" data-field-save-input-param="#telephone-input" data-field-save-output-param="#numero-contact-value" data-field-save-whatsapp-switch-param="#whatsapp-switch" data-field-save-same-number-param="#same-number-checkbox" data-field-save-whatsapp-input-param="#whatsapp-phone">
-										Définir
+									<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="numeroContact" data-field-save-input-param="#telephone-input" data-field-save-output-param="#numero-contact-value" data-field-save-whatsapp-switch-param="#whatsapp-switch" data-field-save-same-number-param="#same-number-checkbox" data-field-save-whatsapp-input-param="#whatsapp-phone" data-field-save-has-value-param="{{ hasContactNumber ? 'true' : 'false' }}">
+										{{ hasContactNumber ? 'Modifier' : 'Définir' }}
 									</button>
 								</div>
 
@@ -363,8 +367,8 @@
 								</div>
 							</div>
 
-							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="emailContact" data-field-save-input-param="#{{ form.emailContact.vars.id }}" data-field-save-output-param="#email-contact-value">
-								Définir
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="emailContact" data-field-save-input-param="#{{ form.emailContact.vars.id }}" data-field-save-output-param="#email-contact-value" data-field-save-has-value-param="{{ hasContactEmail ? 'true' : 'false' }}">
+								{{ hasContactEmail ? 'Modifier' : 'Définir' }}
 							</button>
 						</div>
 					</div>
@@ -405,8 +409,8 @@
 								</div>
 							</div>
 
-							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="langueParlers" data-field-save-input-param="#{{ form.langueParlers.vars.id }}" data-field-save-output-param="#langues-parlees-value" data-field-save-multiple-param="true">
-								Définir
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="langueParlers" data-field-save-input-param="#{{ form.langueParlers.vars.id }}" data-field-save-output-param="#langues-parlees-value" data-field-save-multiple-param="true" data-field-save-has-value-param="{{ hasSpokenLanguages ? 'true' : 'false' }}">
+								{{ hasSpokenLanguages ? 'Modifier' : 'Définir' }}
 							</button>
 						</div>
 
@@ -580,6 +584,7 @@
 										{% set openingHoursSummary = openingHoursSummary|merge([openingDay.label ~ ' : ' ~ (slots is not empty ? slots|join(' / ') : 'Ouvert')]) %}
 									{% endif %}
 								{% endfor %}
+								{% set hasOpeningHours = openingHoursSummary is not empty %}
 
 								<p class="js-field-value mb-0" id="opening-hours-value">
 									{{ openingHoursSummary is not empty ? openingHoursSummary|join(' | ') : 'Tous les jours sont fermés par défaut' }}
@@ -858,8 +863,8 @@
 
 							</div>
 
-							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value">
-								Définir
+							<button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value" data-field-save-has-value-param="{{ hasOpeningHours ? 'true' : 'false' }}">
+								{{ hasOpeningHours ? 'Modifier' : 'Définir' }}
 							</button>
 						</div>
 					</div>

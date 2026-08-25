@@ -163,6 +163,7 @@ export default class extends Controller {
                     inputWrapper.classList.add('d-none');
                 }
 
+                this.updateButtonHasValue(button, finalValue, fieldName);
                 this.setButtonState(button, 'closed');
 
                 field.dataset.editing = 'false';
@@ -428,12 +429,67 @@ export default class extends Controller {
 
         const labels = {
             editing: 'Annuler',
-            closed: 'Modifier',
+            closed: this.getClosedButtonLabel(button),
             save: 'Enregistrer'
         };
 
         button.dataset.fieldSaveState = state;
         button.textContent = labels[state];
+    }
+
+    getClosedButtonLabel(button) {
+        if (!Object.prototype.hasOwnProperty.call(button.dataset, 'fieldSaveHasValueParam')) {
+            return 'Modifier';
+        }
+
+        return button.dataset.fieldSaveHasValueParam === 'true'
+            ? 'Modifier'
+            : 'Définir';
+    }
+
+    updateButtonHasValue(button, value, fieldName) {
+        if (!Object.prototype.hasOwnProperty.call(button.dataset, 'fieldSaveHasValueParam')) {
+            return;
+        }
+
+        button.dataset.fieldSaveHasValueParam = this.hasMeaningfulValue(value, fieldName)
+            ? 'true'
+            : 'false';
+    }
+
+    hasMeaningfulValue(value, fieldName = null) {
+        if (this.isOpeningHoursField(fieldName)) {
+            return this.hasOpeningHoursValue(value);
+        }
+
+        if (Array.isArray(value)) {
+            return value.some((item) => this.hasMeaningfulValue(item));
+        }
+
+        if (value && typeof value === 'object') {
+            return Object.values(value).some((item) => this.hasMeaningfulValue(item));
+        }
+
+        return String(value ?? '').trim() !== '';
+    }
+
+    hasOpeningHoursValue(value) {
+        if (!value || typeof value !== 'object') {
+            return false;
+        }
+
+        return Object.values(value).some((hours) => {
+            if (!hours || typeof hours !== 'object') {
+                return false;
+            }
+
+            return [
+                hours.ouvertureMatin,
+                hours.fermetureMatin,
+                hours.ouvertureApresMidi,
+                hours.fermetureApresMidi
+            ].some((hour) => String(hour ?? '').trim() !== '');
+        });
     }
 
     getFinalValue(field, input, isMultiple) {
