@@ -6,7 +6,7 @@
 <div
     class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres"
     id="cat4"
-    data-controller="payment-method"
+    data-controller="payment-method parametre--payment-menu"
     data-payment-method-public-key-value="{{ stripe_public_key }}"
     data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
     data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
@@ -990,69 +990,3 @@
 </style>
 
 <script src="https://js.stripe.com/v3/"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const menuButtons = document.querySelectorAll('[data-payment-menu-button]');
-
-        function closeAllPaymentMenus(exceptButton = null) {
-            menuButtons.forEach(function (button) {
-                if (button === exceptButton) {
-                    return;
-                }
-
-                const wrapper = button.closest('.saved-payment-method__menu-wrapper');
-                const menu = wrapper?.querySelector('[data-payment-menu]');
-
-                if (!menu) {
-                    return;
-                }
-
-                menu.hidden = true;
-                button.setAttribute('aria-expanded', 'false');
-            });
-        }
-
-        menuButtons.forEach(function (button) {
-            button.addEventListener('click', function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                const wrapper = button.closest('.saved-payment-method__menu-wrapper');
-                const menu = wrapper?.querySelector('[data-payment-menu]');
-
-                if (!menu) {
-                    return;
-                }
-
-                const willOpen = menu.hidden;
-
-                closeAllPaymentMenus(button);
-
-                menu.hidden = !willOpen;
-                button.setAttribute(
-                    'aria-expanded',
-                    willOpen ? 'true' : 'false'
-                );
-            });
-        });
-
-        document.addEventListener('click', function (event) {
-            if (
-                event.target.closest('.saved-payment-method__menu-wrapper')
-            ) {
-                return;
-            }
-
-            closeAllPaymentMenus();
-        });
-
-        document.addEventListener('keydown', function (event) {
-            if (event.key !== 'Escape') {
-                return;
-            }
-
-            closeAllPaymentMenus();
-        });
-    });
-</script>

@@ -80,7 +80,7 @@
 				{% endfor %}
 			</div>
 
-			<div class="card-information-public-profile my-32 py-18 px-24" data-controller="field-save" data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}" data-field-save-csrf-value="{{ csrf_token('profile_edit') }}">
+			<div class="card-information-public-profile my-32 py-18 px-24" data-controller="field-save parametre--profile-avatar parametre--whatsapp" data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}" data-field-save-csrf-value="{{ csrf_token('profile_edit') }}" data-parametre--profile-avatar-url-value="{{ path('api_profile_agence_immobiliere') }}" data-parametre--profile-avatar-csrf-value="{{ csrf_token('profile_edit') }}">
 				<div class="d-flex align-items-center gap-3">
 					<div class="position-relative">
 
@@ -1042,102 +1042,4 @@
 			</div>
 		</div>
 	</div>
-	<script>
-		// AVATAR
-const changeImageButton = document.querySelector('#change-image-button');
-const imageInput = document.querySelector('.js-image-input');
-const avatarPreview = document.querySelector('.js-avatar-preview');
-
-if (changeImageButton && imageInput) {
-changeImageButton.addEventListener('click', () => {
-imageInput.click();
-});
-
-imageInput.addEventListener('change', async (event) => {
-const file = event.target.files[0];
-
-if (! file) {
-return;
-}
-
-if (avatarPreview) {
-avatarPreview.src = URL.createObjectURL(file);
-}
-
-const formData = new FormData();
-formData.append('imageFile', file);
-formData.append('_token', '{{ csrf_token('profile_edit') }}');
-
-try {
-changeImageButton.textContent = '...';
-changeImageButton.disabled = true;
-
-const response = await fetch('{{ path('api_profile_agence_immobiliere') }}', {
-method: 'POST',
-headers: {
-'X-Requested-With': 'XMLHttpRequest'
-},
-body: formData
-});
-
-const data = await response.json();
-
-changeImageButton.textContent = data.success ? 'Modifier' : 'Erreur';
-} catch (e) {
-console.error(e);
-changeImageButton.textContent = 'Erreur';
-} finally {
-changeImageButton.disabled = false;
-}
-});
-}
-
-// WHATSAPP
-document.addEventListener('DOMContentLoaded', () => {
-const whatsappSwitch = document.querySelector('#whatsapp-switch');
-const checkboxWrapper = document.querySelector('#whatsapp-checkbox-wrapper');
-const sameNumberCheckbox = document.querySelector('#same-number-checkbox');
-const whatsappPhoneWrapper = document.querySelector('#whatsapp-phone-wrapper');
-const whatsappPhoneInput = document.querySelector('#whatsapp-phone');
-const telephoneInput = document.querySelector('#telephone-input');
-
-// console.log(whatsappSwitch, checkboxWrapper, sameNumberCheckbox, whatsappPhoneWrapper, whatsappPhoneInput, telephoneInput);
-
-if (! whatsappSwitch || ! checkboxWrapper || ! sameNumberCheckbox || ! whatsappPhoneWrapper || ! whatsappPhoneInput || ! telephoneInput) { // console.warn('WhatsApp switch: élément manquant');
-return;
-}
-
-whatsappSwitch.addEventListener('change', () => {
-if (whatsappSwitch.checked) {
-checkboxWrapper.classList.remove('d-none');
-sameNumberCheckbox.checked = true;
-whatsappPhoneWrapper.classList.add('d-none');
-whatsappPhoneInput.value = telephoneInput.value;
-} else {
-checkboxWrapper.classList.add('d-none');
-whatsappPhoneWrapper.classList.add('d-none');
-sameNumberCheckbox.checked = false;
-whatsappPhoneInput.value = '';
-}
-});
-
-sameNumberCheckbox.addEventListener('change', () => {
-if (sameNumberCheckbox.checked) {
-whatsappPhoneWrapper.classList.add('d-none');
-whatsappPhoneInput.value = telephoneInput.value;
-} else {
-whatsappPhoneWrapper.classList.remove('d-none');
-whatsappPhoneInput.value = '';
-whatsappPhoneInput.focus();
-}
-});
-
-telephoneInput.addEventListener('input', () => {
-if (whatsappSwitch.checked && sameNumberCheckbox.checked) {
-whatsappPhoneInput.value = telephoneInput.value;
-}
-});
-});
-	</script>
-
 </div>

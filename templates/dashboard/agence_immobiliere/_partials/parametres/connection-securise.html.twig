@@ -76,7 +76,12 @@
                     </div>
 
                     {# DoubleAuthentification #}
-                    <div class="formulaire js-2fa-wrapper">
+                    <div
+                        class="formulaire js-2fa-wrapper"
+                        data-controller="parametre--two-factor"
+                        data-parametre--two-factor-status-url-value="{{ path('account_2fa_status') }}"
+                        data-parametre--two-factor-toggle-url-value="{{ path('account_2fa_toggle') }}"
+                    >
 
                         <div class="d-flex justify-content-between align-items-center pt-32">
 
@@ -126,59 +131,3 @@
     </div>
 
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.getElementById('two-factor-switch');
-        const content = document.querySelector('.js-two-factor-content');
-
-        const refreshUI = (enabled) => {
-            toggle.checked = !!enabled;
-            content.classList.toggle('d-none', !enabled);
-        };
-
-        // État initial
-        fetch('/account/2fa/status', { credentials: 'same-origin' })
-            .then(r => r.ok ? r.json() : Promise.reject(r))
-            .then(d => refreshUI(d.enabled))
-            .catch(() => { /* silencieux */ });
-
-        toggle.addEventListener('change', async () => {
-            const desired = toggle.checked;
-
-            try {
-                const r = await fetch('/account/2fa/toggle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        // Décommente si CSRF requis côté serveur:
-                        // 'X-CSRF-TOKEN': '{{ csrf_token('toggle_2fa') }}'
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ enabled: desired })
-                });
-
-                const text = await r.text();
-                let data;
-                try { data = JSON.parse(text); } catch { data = text; }
-
-                if (!r.ok) {
-                    // Si redirection/401 → probablement page login
-                    console.error('Toggle 2FA error', r.status, data);
-                    toggle.checked = !desired;
-                    return;
-                }
-
-                if (data && typeof data.enabled !== 'undefined') {
-                    refreshUI(data.enabled);
-                } else {
-                    // Réponse inattendue
-                    toggle.checked = !desired;
-                }
-            } catch (e) {
-                toggle.checked = !desired;
-            }
-        });
-    });
-</script>

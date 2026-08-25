@@ -5,7 +5,11 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<div class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres" id="cat5">
+<div
+    class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres"
+    id="cat5"
+    data-controller="parametre--payment-history-menu"
+>
     <div class="row">
         <div class="col-10 mx-auto">
 
@@ -44,40 +48,3 @@
         </div>
     </div>
 </div>
-<script>
-    document.addEventListener('click', function (event) {
-        const toggleButton = event.target.closest('.js-payment-menu-toggle');
-        document.querySelectorAll('.js-payment-line').forEach((line) => {
-            const menu = line.querySelector('.js-payment-menu');
-            const button = line.querySelector('.js-payment-menu-toggle');
-            if (!menu || !button) {
-                return;
-            }
-            if (!toggleButton || !line.contains(toggleButton)) {
-                menu.classList.add('d-none');
-                button.setAttribute('aria-expanded', 'false');
-            }
-        });
-        if (!toggleButton) {
-            return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-
-        const line = toggleButton.closest('.js-payment-line');
-        const menu = line.querySelector('.js-payment-menu');
-
-        if (!menu) {
-            return;
-        }
-
-        const isOpen = !menu.classList.contains('d-none');
-        menu.classList.toggle('d-none', isOpen);
-
-        toggleButton.setAttribute(
-            'aria-expanded',
-            isOpen ? 'false' : 'true'
-        );
-    });
-
-</script>
