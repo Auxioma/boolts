@@ -421,9 +421,11 @@ final class DashboardController extends AbstractController
         return $this->documentUploadResponse(
             $request,
             true,
-            'Votre document a été téléversé et sera vérifié.',
+            'Votre document a été envoyé et sera vérifié.',
             Response::HTTP_OK,
             $documentsComplete,
+            false,
+            $submission->getOriginalFileName(),
         );
     }
 
@@ -434,6 +436,7 @@ final class DashboardController extends AbstractController
         int $status,
         bool $documentsComplete = false,
         bool $submissionLimitReached = false,
+        ?string $originalFileName = null,
     ): Response {
         if ($request->isXmlHttpRequest()) {
             return $this->json([
@@ -441,6 +444,7 @@ final class DashboardController extends AbstractController
                 'message' => $message,
                 'documentsComplete' => $documentsComplete,
                 'submissionLimitReached' => $submissionLimitReached,
+                'originalFileName' => $originalFileName,
             ], $status);
         }
 

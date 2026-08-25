@@ -154,7 +154,7 @@
                 class="finish-setup__formats"
                 data-document-formats
                 data-default-formats="(Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)"
-                {% if isSubmittedDocumentApproved %}hidden{% endif %}
+                {% if submittedFileName and not isSubmittedDocumentRejected %}hidden{% endif %}
             >
                 (Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)
             </p>
@@ -209,14 +209,21 @@
                     />
                 </svg>
 
-                <span data-upload-status>{{ submittedFileName and not isSubmittedDocumentRejected ? 'Téléversé' : 'Téléverser' }}</span>
+                <span data-upload-status>{{ submittedFileName and not isSubmittedDocumentRejected ? 'Envoyé' : 'Téléverser' }}</span>
                 </label>
                 <p
                     class="finish-setup__remove-file{{ submittedFileName ? ' finish-setup__remove-file--uploaded' : '' }}"
                     data-remove-file
                     {% if not submittedFileName %}hidden{% endif %}
                 >
-                    {{ submittedFileName ?: 'Supprimer' }}
+                    <span data-submitted-file-name>{{ submittedFileName ?: 'Supprimer' }}</span>
+                    <span
+                        class="finish-setup__sent-status"
+                        data-sent-status
+                        {% if not submittedFileName or isSubmittedDocumentApproved or isSubmittedDocumentRejected %}hidden{% endif %}
+                    >
+                        Envoyé
+                    </span>
                 </p>
                 <p class="finish-setup__document-approved"{% if not isSubmittedDocumentApproved %} hidden{% endif %}>
                     Document validé
@@ -313,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formats.hidden = false;
             uploadLabel.hidden = Boolean(input.files.length);
             removeFile.hidden = !input.files.length;
-            removeFile.textContent = 'Supprimer';
+            setSubmittedFileDisplay(removeFile, 'Supprimer');
             removeFile.classList.remove('finish-setup__remove-file--uploaded');
             approvedStatus.hidden = true;
             rejectedStatus.hidden = true;
@@ -332,6 +339,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return form.dataset.uploaded === 'true' || Boolean(input?.files?.length);
     };
+    const setSubmittedFileDisplay = (removeFile, fileName, sent = false) => {
+        const submittedFileName = removeFile.querySelector('[data-submitted-file-name]');
+        const sentStatus = removeFile.querySelector('[data-sent-status]');
+
+        if (submittedFileName) {
+            submittedFileName.textContent = fileName || 'Supprimer';
+        } else {
+            removeFile.textContent = fileName || 'Supprimer';
+        }
+
+        if (sentStatus) {
+            sentStatus.hidden = !sent;
+        }
+    };
     const updateContinueButton = () => {
         const allRequiredDocumentsSelected = forms
             .filter(isRequired)
@@ -342,6 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = async (form, options = {}) => {
         const input = form.querySelector('[data-document-upload]');
         const status = form.querySelector('[data-upload-status]');
+        const formats = form.parentElement.querySelector('[data-document-formats]');
         const errorFlash = form.parentElement.querySelector('[data-document-upload-error]');
         const formData = new FormData(form);
         const originalFileName = input.files[0]?.name ?? '';
@@ -381,13 +403,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             form.dataset.uploaded = 'true';
             form.dataset.submissionStatus = 'pending';
-            form.dataset.submittedFileName = originalFileName;
-            status.textContent = 'Téléversé';
+            const uploadedFileName = result.originalFileName || originalFileName;
+
+            form.dataset.submittedFileName = uploadedFileName;
+            status.textContent = 'Envoyé';
+            formats.hidden = true;
             errorFlash.hidden = true;
             const removeFile = form.querySelector('[data-remove-file]');
             const approvedStatus = form.querySelector('.finish-setup__document-approved');
             const rejectedStatus = form.querySelector('.finish-setup__document-rejected');
-            removeFile.textContent = originalFileName;
+            setSubmittedFileDisplay(removeFile, uploadedFileName, true);
+            removeFile.hidden = false;
             removeFile.classList.add('finish-setup__remove-file--uploaded');
             approvedStatus.hidden = true;
             rejectedStatus.hidden = true;
@@ -418,9 +444,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (input.files.length) {
                 form.dataset.uploaded = 'false';
                 formats.textContent = input.files[0].name;
+                formats.hidden = false;
                 uploadLabel.hidden = true;
                 removeFile.hidden = false;
-                removeFile.textContent = 'Supprimer';
+                setSubmittedFileDisplay(removeFile, 'Supprimer');
                 removeFile.classList.remove('finish-setup__remove-file--uploaded');
                 approvedStatus.hidden = true;
                 rejectedStatus.hidden = true;
@@ -428,12 +455,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const submittedFileName = form.dataset.submittedFileName || '';
                 const submissionStatus = form.dataset.submissionStatus || '';
 
-                status.textContent = 'Téléverser';
+                status.textContent = submittedFileName && submissionStatus !== 'rejected'
+                    ? 'Envoyé'
+                    : 'Téléverser';
                 formats.textContent = formats.dataset.defaultFormats;
-                formats.hidden = submissionStatus === 'approved';
+                formats.hidden = Boolean(submittedFileName && submissionStatus !== 'rejected');
                 uploadLabel.hidden = Boolean(submittedFileName && submissionStatus !== 'rejected');
                 removeFile.hidden = !submittedFileName;
-                removeFile.textContent = submittedFileName || 'Supprimer';
+                setSubmittedFileDisplay(
+                    removeFile,
+                    submittedFileName || 'Supprimer',
+                    Boolean(submittedFileName && submissionStatus === 'pending')
+                );
                 removeFile.classList.toggle('finish-setup__remove-file--uploaded', Boolean(submittedFileName));
                 approvedStatus.hidden = submissionStatus !== 'approved';
                 rejectedStatus.hidden = submissionStatus !== 'rejected';
@@ -810,6 +843,15 @@ document.addEventListener('DOMContentLoaded', () => {
 .finish-setup__remove-file--uploaded {
     color: var(--finish-grey);
     cursor: default;
+}
+
+.finish-setup__sent-status {
+    margin-left: 8px;
+    color: #198754;
+}
+
+.finish-setup__sent-status[hidden] {
+    display: none;
 }
 
 .finish-setup__document-approved {
