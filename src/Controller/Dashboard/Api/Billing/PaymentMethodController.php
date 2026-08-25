@@ -365,6 +365,132 @@ final class PaymentMethodController extends AbstractController
         }
     }
 
+    #[Route(
+        '/payment-method/{id}',
+        name: 'api_agency_billing_payment_method_delete',
+        requirements: ['id' => '\d+'],
+        methods: ['DELETE']
+    )]
+    /**
+     * Handles the deletePaymentMethod controller action.
+     */
+    public function deletePaymentMethod(Request $request, int $id): JsonResponse
+    {
+        if (!$this->isCsrfTokenValid(
+            'agency_payment_method',
+            (string) $request->headers->get('X-CSRF-TOKEN')
+        )) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Jeton CSRF invalide.',
+            ], 403);
+        }
+
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Utilisateur non authentifié.',
+            ], 401);
+        }
+
+        $billingProfile = $user->getBillingProfile();
+
+        if (!$billingProfile instanceof AgencyBillingProfile) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Profil de facturation introuvable.',
+            ], 404);
+        }
+
+        $paymentMethod = $this->paymentMethodRepository->find($id);
+
+        if (
+            !$paymentMethod instanceof AgencyPaymentMethod
+            || $paymentMethod->getBillingProfile() !== $billingProfile
+        ) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Moyen de paiement introuvable.',
+            ], 404);
+        }
+
+        if (!$paymentMethod->isActive()) {
+            return $this->json([
+                'success' => true,
+                'message' => 'Cette carte est déjà supprimée.',
+            ]);
+        }
+
+        try {
+            $wasDefault = $paymentMethod->isDefault();
+            $replacementPaymentMethod = $wasDefault
+                ? $this->findReplacementPaymentMethod(
+                    $billingProfile,
+                    $paymentMethod
+                )
+                : null;
+
+            $this->stripe->paymentMethods->detach(
+                $paymentMethod->getStripePaymentMethodId()
+            );
+
+            $paymentMethod
+                ->setIsActive(false)
+                ->setIsDefault(false)
+                ->setSetupStatus(PaymentMethodSetupStatus::DETACHED)
+                ->setDetachedAt(new \DateTimeImmutable());
+
+            if ($wasDefault) {
+                $billingProfile->setDefaultPaymentMethod(
+                    $replacementPaymentMethod
+                );
+
+                if ($replacementPaymentMethod instanceof AgencyPaymentMethod) {
+                    $replacementPaymentMethod->setIsDefault(true);
+                }
+
+                $this->syncStripeDefaultPaymentMethod(
+                    $billingProfile,
+                    $replacementPaymentMethod
+                );
+            }
+
+            $this->entityManager->flush();
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Le moyen de paiement a bien été supprimé.',
+            ]);
+        } catch (ApiErrorException $exception) {
+            $this->logger->error('Erreur Stripe pendant la suppression du moyen de paiement.', [
+                'message' => $exception->getMessage(),
+                'stripe_code' => $exception->getStripeCode(),
+                'payment_method_id' => $id,
+                'user_id' => $user->getId(),
+            ]);
+
+            return $this->json([
+                'success' => false,
+                'message' => 'Stripe : '.$exception->getMessage(),
+            ], 400);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Erreur interne pendant la suppression du moyen de paiement.', [
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'payment_method_id' => $id,
+                'user_id' => $user->getId(),
+            ]);
+
+            return $this->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
     private function getOrCreateBillingProfile(
         User $user,
     ): AgencyBillingProfile {
@@ -428,16 +554,50 @@ final class PaymentMethodController extends AbstractController
         $paymentMethod->setIsDefault(true);
         $billingProfile->setDefaultPaymentMethod($paymentMethod);
 
-        $this->stripe->customers->update(
-            $billingProfile->getStripeCustomerId(),
-            [
-                'invoice_settings' => [
-                    'default_payment_method' => $paymentMethod->getStripePaymentMethodId(),
-                ],
-            ]
+        $this->syncStripeDefaultPaymentMethod(
+            $billingProfile,
+            $paymentMethod
         );
 
         $this->entityManager->flush();
+    }
+
+    private function syncStripeDefaultPaymentMethod(
+        AgencyBillingProfile $billingProfile,
+        ?AgencyPaymentMethod $paymentMethod,
+    ): void {
+        $stripeCustomerId = $billingProfile->getStripeCustomerId();
+
+        if (
+            !\is_string($stripeCustomerId)
+            || !str_starts_with($stripeCustomerId, 'cus_')
+        ) {
+            return;
+        }
+
+        $this->stripe->customers->update(
+            $stripeCustomerId,
+            [
+                'invoice_settings' => [
+                    'default_payment_method' => $paymentMethod?->getStripePaymentMethodId(),
+                ],
+            ]
+        );
+    }
+
+    private function findReplacementPaymentMethod(
+        AgencyBillingProfile $billingProfile,
+        AgencyPaymentMethod $deletedPaymentMethod,
+    ): ?AgencyPaymentMethod {
+        foreach ($this->paymentMethodRepository->findActiveByBillingProfile(
+            $billingProfile
+        ) as $paymentMethod) {
+            if ($paymentMethod->getId() !== $deletedPaymentMethod->getId()) {
+                return $paymentMethod;
+            }
+        }
+
+        return null;
     }
 
     private function extractStripeId(mixed $value): ?string

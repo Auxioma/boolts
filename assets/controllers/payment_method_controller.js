@@ -18,7 +18,8 @@ export default class extends Controller {
         publicKey: String,
         createUrl: String,
         completeUrl: String,
-        csrf: String
+        csrf: String,
+        returnHash: String
     };
 
     stripe = null;
@@ -78,6 +79,14 @@ export default class extends Controller {
         if (event.key === 'Escape') {
             this.close();
         }
+    }
+
+    cardholderChanged() {
+        this.hideError();
+    }
+
+    countryChanged() {
+        this.hideError();
     }
 
     async initializeSetupIntent() {
@@ -324,8 +333,103 @@ export default class extends Controller {
         this.setLoading(false);
 
         window.setTimeout(() => {
-            window.location.reload();
+            this.reloadWithReturnHash();
         }, 700);
+    }
+
+    async delete(event) {
+        event.preventDefault();
+
+        const button = event.currentTarget;
+        const deleteUrl = button.dataset.paymentUrl;
+        const cardLast4 = button.dataset.cardLast4;
+
+        if (!deleteUrl) {
+            this.showPageError('La route de suppression est introuvable.');
+            return;
+        }
+
+        const confirmed = window.confirm(
+            cardLast4
+                ? `Supprimer la carte se terminant par ${cardLast4} ?`
+                : 'Supprimer cette carte bancaire ?'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            button.disabled = true;
+
+            const response = await fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': this.csrfValue
+                },
+                credentials: 'same-origin'
+            });
+
+            const data = await this.readJsonResponse(response);
+
+            if (!response.ok || data.success !== true) {
+                throw new Error(
+                    data.message
+                    || 'Le moyen de paiement n’a pas pu être supprimé.'
+                );
+            }
+
+            this.showPageSuccess(data.message);
+
+            window.setTimeout(() => {
+                this.reloadWithReturnHash();
+            }, 500);
+        } catch (error) {
+            console.error('Erreur de suppression Stripe :', error);
+            button.disabled = false;
+            this.showPageError(
+                error instanceof Error
+                    ? error.message
+                    : 'Impossible de supprimer la carte.'
+            );
+        }
+    }
+
+    async readJsonResponse(response) {
+        const rawResponse = await response.text();
+
+        try {
+            return JSON.parse(rawResponse);
+        } catch {
+            throw new Error(
+                `Le serveur a retourné une réponse non JSON (${response.status}).`
+            );
+        }
+    }
+
+    reloadWithReturnHash() {
+        this.replaceReturnHash();
+        window.location.reload();
+    }
+
+    replaceReturnHash() {
+        if (
+            !this.hasReturnHashValue
+            || !this.returnHashValue
+            || !window.history?.replaceState
+        ) {
+            return;
+        }
+
+        const url = new URL(window.location.href);
+        const returnHash = this.returnHashValue.startsWith('#')
+            ? this.returnHashValue
+            : `#${this.returnHashValue}`;
+
+        url.hash = returnHash;
+        window.history.replaceState(null, '', url);
     }
 
     setLoading(loading) {
@@ -373,5 +477,35 @@ export default class extends Controller {
 
         this.successTarget.textContent = '';
         this.successTarget.classList.add('d-none');
+    }
+
+    showPageSuccess(message) {
+        this.showPageMessage('.js-success-message', message);
+    }
+
+    showPageError(message) {
+        if (!this.showPageMessage('.js-error-message', message)) {
+            this.showError(message);
+        }
+    }
+
+    showPageMessage(selector, message) {
+        const element = document.querySelector(selector);
+
+        if (!element) {
+            return false;
+        }
+
+        element.textContent = message;
+        element.classList.remove('d-none');
+
+        window.clearTimeout(element.hideTimeout);
+
+        element.hideTimeout = window.setTimeout(() => {
+            element.classList.add('d-none');
+            element.textContent = '';
+        }, 3000);
+
+        return true;
     }
 }

@@ -14,6 +14,15 @@ export default class extends Controller {
             link.addEventListener('click', listener);
             this.cleanups.push(() => link.removeEventListener('click', listener));
         });
+
+        const hashListener = () => {
+            this.openFromHash();
+        };
+
+        window.addEventListener('hashchange', hashListener);
+        this.cleanups.push(() => window.removeEventListener('hashchange', hashListener));
+
+        this.openFromHash();
     }
 
     disconnect() {
@@ -25,11 +34,35 @@ export default class extends Controller {
         event.preventDefault();
 
         const target = link.dataset.tab;
-        const targetElement = target ? this.element.querySelector(`#${target}`) : null;
 
-        if (!targetElement) {
+        if (!this.activate(target, link)) {
             return;
         }
+
+        this.replaceHash(target);
+    }
+
+    openFromHash() {
+        const target = window.location.hash.replace(/^#/, '');
+
+        if (!target) {
+            return;
+        }
+
+        this.activate(target);
+    }
+
+    activate(target, link = null) {
+        const targetElement = target
+            ? this.contents.find((content) => content.id === target)
+            : null;
+
+        if (!targetElement) {
+            return false;
+        }
+
+        const targetLink = link
+            || this.links.find((item) => item.dataset.tab === target);
 
         this.links.forEach((item) => {
             item.classList.remove('active');
@@ -39,7 +72,24 @@ export default class extends Controller {
             content.classList.add('d-none');
         });
 
-        link.classList.add('active');
+        targetLink?.classList.add('active');
         targetElement.classList.remove('d-none');
+
+        return true;
+    }
+
+    replaceHash(target) {
+        if (!target || !window.history?.replaceState) {
+            return;
+        }
+
+        const url = new URL(window.location.href);
+
+        if (url.hash === `#${target}`) {
+            return;
+        }
+
+        url.hash = target;
+        window.history.replaceState(null, '', url);
     }
 }

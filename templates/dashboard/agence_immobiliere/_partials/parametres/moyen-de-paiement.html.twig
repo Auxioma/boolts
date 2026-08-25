@@ -11,6 +11,7 @@
     data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
     data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
     data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+    data-payment-method-return-hash-value="cat4"
 >
     <div class="row">
         <div class="col-10 mx-auto">
@@ -152,6 +153,7 @@
                                             <button
                                                 type="button"
                                                 class="saved-payment-method__menu-item saved-payment-method__menu-item--delete"
+                                                data-payment-url="{{ path('api_agency_billing_payment_method_delete', { id: paymentMethod.id }) }}"
                                                 data-payment-id="{{ paymentMethod.id }}"
                                                 data-card-last4="{{ paymentMethod.last4 }}"
                                                 data-action="click->payment-method#delete"
