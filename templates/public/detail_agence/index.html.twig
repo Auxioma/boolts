@@ -67,6 +67,15 @@
                                         <p class="d-md-none d-lg-none">+1 202 XXX XXXX</p>
                                         <p>{{ user.emailContact }}</p>
                                     </div>
+
+                                    {# Liste des langue parlé #}
+                                    <div>
+                                        <ul>
+                                            {% for langueParler in user.langueParlers %}
+                                                <li>{{ langueParler.name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
                                 </div>
                             </section>
 
