@@ -120,6 +120,10 @@ final class BillingFixtureData
 
     public static function agencyPlanCode(int $position): string
     {
+        if (0 === $position) {
+            return 'starter';
+        }
+
         return match ($position % 3) {
             0 => 'free',
             1 => 'starter',
