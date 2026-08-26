@@ -46,13 +46,28 @@ final class BoosterTransactionRepository extends ServiceEntityRepository
 
     public function countAvailableForAgency(User $agency, ?\DateTimeImmutable $now = null): int
     {
+        return $this->countAvailableBySourceForAgency($agency, $now)['total'];
+    }
+
+    /**
+     * @return array{subscription: int, independent: int, total: int}
+     */
+    public function countAvailableBySourceForAgency(User $agency, ?\DateTimeImmutable $now = null): array
+    {
         $now ??= new \DateTimeImmutable();
 
         $reusableBalance = $this->sumReusableCredits($agency, $now) - $this->sumReusableDebits($agency);
         $subscriptionBalance = $this->sumCurrentSubscriptionPeriodAllowance($agency, $now)
             - $this->sumCurrentSubscriptionPeriodDebits($agency, $now);
 
-        return max(0, $reusableBalance) + max(0, $subscriptionBalance);
+        $independent = max(0, $reusableBalance);
+        $subscription = max(0, $subscriptionBalance);
+
+        return [
+            'subscription' => $subscription,
+            'independent' => $independent,
+            'total' => $subscription + $independent,
+        ];
     }
 
     private function sumReusableCredits(User $agency, \DateTimeImmutable $now): int

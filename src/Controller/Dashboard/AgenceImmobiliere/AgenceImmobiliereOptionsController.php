@@ -98,7 +98,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
 
         $boosterPackPrices = $boosterPackPriceRepository->findActiveWithPackAndCurrency();
 
-        $currentSubscription = $agencySubscriptionRepository->findLatestForAgency($agency);
+        $currentSubscription = $agencySubscriptionRepository->findCurrentForAgency($agency);
 
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_options/index.html.twig',

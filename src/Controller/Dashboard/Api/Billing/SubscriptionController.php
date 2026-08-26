@@ -16,6 +16,7 @@ use App\Entity\Billing\AgencyPaymentMethod;
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\AgencySubscriptionPeriod;
 use App\Entity\Billing\Enum\PaymentAttemptStatus;
+use App\Entity\Billing\Enum\BoosterTransactionType;
 use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
 use App\Entity\Billing\Enum\PaymentStatus;
 use App\Entity\Billing\Enum\PaymentType;
@@ -25,7 +26,9 @@ use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\Billing\Payment;
 use App\Entity\Billing\PaymentAttempt;
 use App\Entity\Billing\SubscriptionPlanPrice;
+use App\Entity\Booster\BoosterTransaction;
 use App\Entity\User;
+use App\Repository\Billing\AgencySubscriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
@@ -52,6 +55,7 @@ final class SubscriptionController extends AbstractController
     public function __construct(
         private readonly StripeClient $stripe,
         private readonly EntityManagerInterface $entityManager,
+        private readonly AgencySubscriptionRepository $agencySubscriptionRepository,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -192,9 +196,11 @@ final class SubscriptionController extends AbstractController
 
     private function persistSubscription(User $agency, SubscriptionPlanPrice $planPrice, AgencyPaymentMethod $paymentMethod, Subscription $stripeSubscription): void
     {
-        $periodStart = (new \DateTimeImmutable())->setTimestamp((int) $stripeSubscription->current_period_start);
-        $periodEnd = (new \DateTimeImmutable())->setTimestamp((int) $stripeSubscription->current_period_end);
+        [$periodStart, $periodEnd] = $this->resolveSubscriptionPeriod($stripeSubscription);
+        $subscriptionItem = $this->firstSubscriptionItem($stripeSubscription);
         $invoiceId = \is_string($stripeSubscription->latest_invoice) ? $stripeSubscription->latest_invoice : null;
+
+        $this->closeOpenFreeSubscriptions($agency, $periodStart);
 
         $subscription = (new AgencySubscription())
             ->setAgency($agency)
@@ -206,7 +212,7 @@ final class SubscriptionController extends AbstractController
             ->setCurrentPeriodEnd($periodEnd)
             ->setProviderCustomerId($stripeSubscription->customer)
             ->setProviderSubscriptionId($stripeSubscription->id)
-            ->setProviderSubscriptionItemId($stripeSubscription->items->data[0]->id ?? null)
+            ->setProviderSubscriptionItemId(null !== $subscriptionItem ? $this->readStripeString($subscriptionItem, 'id') : null)
             ->setPropertyLimitSnapshot($planPrice->getPlan()->getPropertyLimit())
             ->setIncludedBoostsSnapshot($planPrice->getPlan()->getIncludedBoosts())
             ->setBoostDurationDaysSnapshot($planPrice->getPlan()->getBoostDurationDays())
@@ -249,12 +255,138 @@ final class SubscriptionController extends AbstractController
             ->setAmountMinor($planPrice->getAmountMinor())
             ->setCurrency($planPrice->getCurrency())
             ->setCompletedAt(new \DateTimeImmutable());
+        $subscriptionCredit = $this->createSubscriptionCreditTransaction(
+            $agency,
+            $period,
+            $payment,
+            $stripeSubscription->id,
+        );
 
         $this->entityManager->persist($subscription);
         $this->entityManager->persist($payment);
         $this->entityManager->persist($period);
         $this->entityManager->persist($attempt);
+        if ($subscriptionCredit instanceof BoosterTransaction) {
+            $this->entityManager->persist($subscriptionCredit);
+        }
         $this->entityManager->flush();
+    }
+
+    private function createSubscriptionCreditTransaction(
+        User $agency,
+        AgencySubscriptionPeriod $period,
+        Payment $payment,
+        string $stripeSubscriptionId,
+    ): ?BoosterTransaction {
+        if ($period->getIncludedBoosts() <= 0) {
+            return null;
+        }
+
+        return (new BoosterTransaction())
+            ->setAgency($agency)
+            ->setQuantity($period->getIncludedBoosts())
+            ->setType(BoosterTransactionType::SUBSCRIPTION_CREDIT)
+            ->setSubscriptionPeriod($period)
+            ->setPayment($payment)
+            ->setExpiresAt($period->getPeriodEnd())
+            ->setIdempotencyKey(\sprintf(
+                'subscription-credit-%s-%d',
+                $stripeSubscriptionId,
+                $period->getPeriodStart()->getTimestamp(),
+            ))
+            ->setDescription('Boosts inclus dans l’abonnement.');
+    }
+
+    /**
+     * @return array{0: \DateTimeImmutable, 1: \DateTimeImmutable}
+     */
+    private function resolveSubscriptionPeriod(Subscription $stripeSubscription): array
+    {
+        $subscriptionItem = $this->firstSubscriptionItem($stripeSubscription);
+        $periodStartTimestamp = null !== $subscriptionItem
+            ? $this->readStripeTimestamp($subscriptionItem, 'current_period_start')
+            : null;
+        $periodEndTimestamp = null !== $subscriptionItem
+            ? $this->readStripeTimestamp($subscriptionItem, 'current_period_end')
+            : null;
+
+        $periodStartTimestamp ??= $this->readStripeTimestamp($stripeSubscription, 'current_period_start');
+        $periodEndTimestamp ??= $this->readStripeTimestamp($stripeSubscription, 'current_period_end');
+
+        if (null === $periodStartTimestamp || null === $periodEndTimestamp) {
+            throw new \LogicException('Stripe n’a pas retourné les dates de période de l’abonnement.');
+        }
+
+        return [
+            (new \DateTimeImmutable())->setTimestamp($periodStartTimestamp),
+            (new \DateTimeImmutable())->setTimestamp($periodEndTimestamp),
+        ];
+    }
+
+    private function firstSubscriptionItem(Subscription $stripeSubscription): ?object
+    {
+        $subscriptionItem = $stripeSubscription->items->data[0] ?? null;
+
+        return \is_object($subscriptionItem) ? $subscriptionItem : null;
+    }
+
+    private function readStripeTimestamp(object $stripeObject, string $property): ?int
+    {
+        if (!isset($stripeObject->{$property}) || !is_numeric($stripeObject->{$property})) {
+            return null;
+        }
+
+        $timestamp = (int) $stripeObject->{$property};
+
+        return $timestamp > 0 ? $timestamp : null;
+    }
+
+    private function readStripeString(object $stripeObject, string $property): ?string
+    {
+        if (!isset($stripeObject->{$property}) || !\is_string($stripeObject->{$property})) {
+            return null;
+        }
+
+        return '' !== $stripeObject->{$property} ? $stripeObject->{$property} : null;
+    }
+
+    private function closeOpenFreeSubscriptions(User $agency, \DateTimeImmutable $endedAt): void
+    {
+        foreach ($this->agencySubscriptionRepository->findOpenFreeForAgency($agency) as $freeSubscription) {
+            $freeSubscription
+                ->setStatus(SubscriptionStatus::CANCELED)
+                ->setCancelAtPeriodEnd(false)
+                ->setCanceledAt($endedAt)
+                ->setEndedAt($endedAt);
+
+            if (null === $freeSubscription->getCurrentPeriodEnd() || $freeSubscription->getCurrentPeriodEnd() > $endedAt) {
+                $freeSubscription->setCurrentPeriodEnd($endedAt);
+            }
+
+            $this->closeOpenFreePeriods($freeSubscription, $endedAt);
+        }
+    }
+
+    private function closeOpenFreePeriods(AgencySubscription $freeSubscription, \DateTimeImmutable $endedAt): void
+    {
+        $periods = $this->entityManager->getRepository(AgencySubscriptionPeriod::class)
+            ->createQueryBuilder('period')
+            ->where('period.subscription = :subscription')
+            ->andWhere('period.status = :status')
+            ->andWhere('period.periodEnd >= :endedAt')
+            ->setParameter('subscription', $freeSubscription)
+            ->setParameter('status', SubscriptionPeriodStatus::FREE)
+            ->setParameter('endedAt', $endedAt)
+            ->getQuery()
+            ->getResult();
+
+        foreach ($periods as $period) {
+            $period->setStatus(SubscriptionPeriodStatus::CANCELED);
+
+            if ($period->getPeriodStart() <= $endedAt && $period->getPeriodEnd() > $endedAt) {
+                $period->setPeriodEnd($endedAt);
+            }
+        }
     }
 
     private function currencyCode(SubscriptionPlanPrice $planPrice): string

@@ -2,6 +2,7 @@
     <button
         class="btn achat-btn-outline-brand achat-boost-balance"
         type="button"
+        title="Boosts forfait : {{ boosts_forfait|default(0) }} - Boosts indépendants : {{ boosts_independants|default(0) }}"
     >
         <img
             src="https://www.figma.com/api/mcp/asset/4abf21cc-aaec-40db-aef8-19e91701de8e"
@@ -11,11 +12,23 @@
 
         <span>
             Boost : {{ boosts_restants|default(0) }}
+            <small>
+                (forfait {{ boosts_forfait|default(0) }} + indépendants {{ boosts_independants|default(0) }})
+            </small>
         </span>
     </button>
 {% else %}
-    <a href="#" class="btn dashboard-boost-button">
+    <a
+        href="#"
+        class="btn dashboard-boost-button"
+        title="Boosts forfait : {{ boosts_forfait|default(0) }} - Boosts indépendants : {{ boosts_independants|default(0) }}"
+    >
         <i class="icon-zap"></i>
-        Boost : {{ boosts_restants|default(0) }}
+        <span>
+            Boost : {{ boosts_restants|default(0) }}
+            <small>
+                (forfait {{ boosts_forfait|default(0) }} + indépendants {{ boosts_independants|default(0) }})
+            </small>
+        </span>
     </a>
 {% endif %}

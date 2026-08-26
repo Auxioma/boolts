@@ -34,8 +34,12 @@ final class BoostBalanceController extends AbstractController
             throw $this->createAccessDeniedException('Utilisateur non authentifié.');
         }
 
+        $boostBalance = $boosterTransactionRepository->countAvailableBySourceForAgency($user);
+
         return $this->render('dashboard/agence_immobiliere/_partials/boost_balance_button.html.twig', [
-            'boosts_restants' => $boosterTransactionRepository->countAvailableForAgency($user),
+            'boosts_restants' => $boostBalance['total'],
+            'boosts_forfait' => $boostBalance['subscription'],
+            'boosts_independants' => $boostBalance['independent'],
             'variant' => $variant,
         ]);
     }
