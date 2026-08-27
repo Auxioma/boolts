@@ -139,8 +139,10 @@ php bin/console messenger:consume async --env=prod --time-limit=3600
 Endpoint :
 
 ```text
-POST /stripe/webhook
+POST /webhook/stripe
 ```
+
+L'ancienne URL `POST /stripe/webhook` reste disponible comme alias de compatibilité.
 
 Événements gérés :
 

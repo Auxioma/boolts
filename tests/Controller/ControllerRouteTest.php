@@ -91,6 +91,18 @@ final class ControllerRouteTest extends KernelTestCase
         self::assertGreaterThan(0, $tested, 'Aucune route applicative App\\Controller n’a été trouvée.');
     }
 
+    public function testStripeWebhookRouteMatchesConfiguredDestination(): void
+    {
+        self::bootKernel();
+
+        $router = self::getContainer()->get(RouterInterface::class);
+        $route = $router->getRouteCollection()->get('stripe_webhook');
+
+        self::assertNotNull($route);
+        self::assertSame('/webhook/stripe', $route->getPath());
+        self::assertSame(['POST'], $route->getMethods());
+    }
+
     /**
      * @return array<string, array{0: class-string}>
      */

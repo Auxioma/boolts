@@ -45,7 +45,8 @@ final class StripeWebhookController extends AbstractController
     ) {
     }
 
-    #[Route('/stripe/webhook', name: 'stripe_webhook', methods: ['POST'])]
+    #[Route('/webhook/stripe', name: 'stripe_webhook', methods: ['POST'])]
+    #[Route('/stripe/webhook', name: 'stripe_webhook_legacy', methods: ['POST'])]
     public function __invoke(Request $request): JsonResponse
     {
         $payload = $request->getContent();
