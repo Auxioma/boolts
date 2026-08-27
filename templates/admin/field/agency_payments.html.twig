@@ -1,0 +1,161 @@
+{% macro amount_minor(amount_minor, currency_sign) %}
+    {{ (amount_minor|default(0) / 100)|number_format(2, ',', ' ') }}{% if currency_sign %} {{ currency_sign }}{% endif %}
+{% endmacro %}
+
+{% import _self as payments_format %}
+
+{% set data = field.formattedValue|default({}) %}
+{% set current_subscription = data.currentSubscription|default(null) %}
+{% set periods = data.periods|default([]) %}
+{% set totals = data.totals|default([]) %}
+{% set subscription_status_labels = {
+    free: 'Gratuit',
+    incomplete: 'Incomplet',
+    active: 'Actif',
+    past_due: 'Paiement en retard',
+    payment_failed: 'Paiement échoué',
+    cancel_scheduled: 'Résiliation programmée',
+    canceled: 'Résilié',
+    unpaid: 'Impayé',
+    expired: 'Expiré',
+} %}
+{% set period_status_labels = {
+    pending: 'En attente',
+    free: 'Gratuit',
+    paid: 'Payé',
+    failed: 'Échec',
+    canceled: 'Annulé',
+} %}
+{% set payment_status_labels = {
+    created: 'Créé',
+    pending: 'En attente',
+    requires_payment_method: 'Moyen de paiement requis',
+    requires_action: 'Action requise',
+    processing: 'Traitement',
+    authorized: 'Autorisé',
+    succeeded: 'Payé',
+    failed: 'Échec',
+    canceled: 'Annulé',
+    partially_refunded: 'Partiellement remboursé',
+    refunded: 'Remboursé',
+} %}
+{% set payment_type_labels = {
+    subscription_initial: 'Abonnement initial',
+    subscription_renewal: 'Renouvellement',
+    subscription_upgrade: 'Changement de forfait',
+    subscription_downgrade_adjustment: 'Ajustement',
+} %}
+
+<div class="vstack gap-3">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="border rounded-3 p-3 h-100">
+                <span class="d-block text-body-secondary small">Total payé par l’agence</span>
+                {% if totals is empty %}
+                    <strong class="fs-5">0,00</strong>
+                {% else %}
+                    {% for total in totals %}
+                        <strong class="fs-5 d-block">{{ payments_format.amount_minor(total.amountMinor, total.currencySign) }}</strong>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="border rounded-3 p-3 h-100">
+                <span class="d-block text-body-secondary small">Forfait actuel</span>
+                {% if current_subscription %}
+                    <strong>{{ current_subscription.plan.name }}</strong>
+                    <span class="badge text-bg-secondary ms-2">
+                        {{ subscription_status_labels[current_subscription.status.value]|default(current_subscription.status.value) }}
+                    </span>
+                    <div class="text-body-secondary mt-1">
+                        {% if current_subscription.currentPeriodStart and current_subscription.currentPeriodEnd %}
+                            Du {{ current_subscription.currentPeriodStart|date('d/m/Y H:i') }}
+                            au {{ current_subscription.currentPeriodEnd|date('d/m/Y H:i') }}
+                        {% else %}
+                            Dates de période non renseignées
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <strong>Aucun forfait enregistré</strong>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if periods is empty %}
+        <div class="text-body-secondary">Aucun forfait n’a encore été enregistré pour cette agence.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-sm table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Forfait</th>
+                        <th>Type</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                        <th>Statut forfait</th>
+                        <th>Paiement</th>
+                        <th>Statut paiement</th>
+                        <th class="text-end">Montant payé</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for period in periods %}
+                        {% set subscription = period.subscription %}
+                        {% set plan = subscription.plan %}
+                        {% set payment = period.payment %}
+                        <tr>
+                            <td>
+                                <strong>{{ plan.name }}</strong>
+                                {% if subscription.providerSubscriptionId %}
+                                    <span class="d-block small text-body-secondary">{{ subscription.providerSubscriptionId }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge text-bg-{{ plan.free ? 'secondary' : 'primary' }}">
+                                    {{ plan.free ? 'Gratuit' : 'Payant' }}
+                                </span>
+                            </td>
+                            <td>{{ period.periodStart|date('d/m/Y H:i') }}</td>
+                            <td>{{ period.periodEnd|date('d/m/Y H:i') }}</td>
+                            <td>{{ period_status_labels[period.status.value]|default(period.status.value) }}</td>
+                            <td>
+                                {% if payment %}
+                                    <strong>{{ payment.reference }}</strong>
+                                    <span class="d-block small text-body-secondary">
+                                        {{ payment_type_labels[payment.type.value]|default(payment.type.value) }}
+                                        {% if payment.paidAt %}
+                                            · {{ payment.paidAt|date('d/m/Y H:i') }}
+                                        {% endif %}
+                                    </span>
+                                {% else %}
+                                    <span class="text-body-secondary">Sans paiement</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if payment %}
+                                    {{ payment_status_labels[payment.status.value]|default(payment.status.value) }}
+                                    {% if payment.amountRefundedMinor > 0 %}
+                                        <span class="d-block small text-body-secondary">
+                                            Remboursé : {{ payments_format.amount_minor(payment.amountRefundedMinor, payment.currency.signe) }}
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                {% if payment %}
+                                    {{ payments_format.amount_minor(payment.amountPaidMinor - payment.amountRefundedMinor, payment.currency.signe) }}
+                                {% else %}
+                                    {{ payments_format.amount_minor(0, period.currency.signe) }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

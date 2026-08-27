@@ -79,6 +79,42 @@ final class PaymentRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return list<array{amountMinor: int, currencyName: ?string, currencySign: ?string}>
+     */
+    public function sumNetPaidByCurrencyForAgency(User $agency): array
+    {
+        $rows = $this->createQueryBuilder('payment')
+            ->select(
+                'currency.nom AS currencyName',
+                'currency.signe AS currencySign',
+                'COALESCE(SUM(payment.amountPaidMinor), 0) AS paidMinor',
+                'COALESCE(SUM(payment.amountRefundedMinor), 0) AS refundedMinor',
+            )
+            ->innerJoin('payment.currency', 'currency')
+            ->where('payment.agency = :agency')
+            ->andWhere('payment.status IN (:statuses)')
+            ->setParameter('agency', $agency)
+            ->setParameter('statuses', [
+                PaymentStatus::SUCCEEDED,
+                PaymentStatus::PARTIALLY_REFUNDED,
+                PaymentStatus::REFUNDED,
+            ])
+            ->groupBy('currency.id', 'currency.nom', 'currency.signe')
+            ->orderBy('currency.nom', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(
+            static fn (array $row): array => [
+                'amountMinor' => (int) $row['paidMinor'] - (int) $row['refundedMinor'],
+                'currencyName' => $row['currencyName'] ?? null,
+                'currencySign' => $row['currencySign'] ?? null,
+            ],
+            $rows,
+        );
+    }
+
     public function findLatestSucceededSubscriptionPaymentForSubscription(
         AgencySubscription $subscription,
     ): ?Payment {

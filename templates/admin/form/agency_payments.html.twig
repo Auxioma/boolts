@@ -1,0 +1,7 @@
+{% block agency_payments_widget %}
+    {% include 'admin/field/agency_payments.html.twig' with {
+        field: {
+            formattedValue: form.vars.data|default({})
+        }
+    } only %}
+{% endblock agency_payments_widget %}

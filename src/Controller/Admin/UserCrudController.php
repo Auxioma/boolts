@@ -16,7 +16,11 @@ use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
 use App\Entity\User;
+use App\Field\AgencyPaymentsField;
 use App\Field\UserDocumentsField;
+use App\Repository\Billing\AgencySubscriptionPeriodRepository;
+use App\Repository\Billing\AgencySubscriptionRepository;
+use App\Repository\Billing\PaymentRepository;
 use App\Repository\Document\RequiredDocumentRepository;
 use App\Service\Document\ClientDocumentNotificationMailer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -64,6 +68,9 @@ class UserCrudController extends AbstractCrudController
         private readonly UserPasswordHasherInterface $passwordHasher,
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly RequiredDocumentRepository $requiredDocumentRepository,
+        private readonly AgencySubscriptionRepository $agencySubscriptionRepository,
+        private readonly AgencySubscriptionPeriodRepository $agencySubscriptionPeriodRepository,
+        private readonly PaymentRepository $paymentRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -232,10 +239,58 @@ class UserCrudController extends AbstractCrudController
             BooleanField::new('emailAuthEnabled', 'Authentification par e-mail')->setColumns(4),
             FormField::addTab('Documents', 'fa fa-file-lines')->onlyWhenUpdating(),
             UserDocumentsField::new('documentRequests', false)->onlyWhenUpdating(),
+            FormField::addTab('Paiements', 'fa fa-credit-card')->onlyWhenUpdating(),
+            $this->agencyPaymentsField()->onlyWhenUpdating(),
 
             DateTimeField::new('createdAt', 'Créée le')->onlyOnDetail(),
             DateTimeField::new('updatedAt', 'Mise à jour le')->onlyOnDetail(),
             DateTimeField::new('lastLoginAt', 'Dernière connexion')->onlyOnDetail(),
+        ];
+    }
+
+    private function agencyPaymentsField(): AgencyPaymentsField
+    {
+        $agency = $this->getContext()?->getEntity()?->getInstance();
+        $data = $agency instanceof User
+            ? $this->agencyPaymentsData($agency)
+            : $this->emptyAgencyPaymentsData();
+
+        return AgencyPaymentsField::new('agencyPayments', false)
+            ->setFormTypeOption('data', $data)
+            ->formatValue(fn (mixed $value, ?User $agency): array => $agency instanceof User
+                ? $this->agencyPaymentsData($agency)
+                : $this->emptyAgencyPaymentsData());
+    }
+
+    /**
+     * @return array{
+     *     currentSubscription: object|null,
+     *     periods: list<object>,
+     *     totals: list<array{amountMinor: int, currencyName: ?string, currencySign: ?string}>
+     * }
+     */
+    private function agencyPaymentsData(User $agency): array
+    {
+        return [
+            'currentSubscription' => $this->agencySubscriptionRepository->findCurrentForAgency($agency),
+            'periods' => $this->agencySubscriptionPeriodRepository->findForAgency($agency),
+            'totals' => $this->paymentRepository->sumNetPaidByCurrencyForAgency($agency),
+        ];
+    }
+
+    /**
+     * @return array{
+     *     currentSubscription: null,
+     *     periods: list<object>,
+     *     totals: list<array{amountMinor: int, currencyName: ?string, currencySign: ?string}>
+     * }
+     */
+    private function emptyAgencyPaymentsData(): array
+    {
+        return [
+            'currentSubscription' => null,
+            'periods' => [],
+            'totals' => [],
         ];
     }
 

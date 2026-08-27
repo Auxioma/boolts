@@ -17,6 +17,7 @@ namespace App\Repository\Billing;
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\AgencySubscriptionPeriod;
 use App\Entity\Billing\Enum\SubscriptionPeriodStatus;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,6 +32,27 @@ final class AgencySubscriptionPeriodRepository extends ServiceEntityRepository
     public function findOneByProviderInvoiceId(string $providerInvoiceId): ?AgencySubscriptionPeriod
     {
         return $this->findOneBy(['providerInvoiceId' => $providerInvoiceId]);
+    }
+
+    /**
+     * @return list<AgencySubscriptionPeriod>
+     */
+    public function findForAgency(User $agency, int $limit = 50): array
+    {
+        return $this->createQueryBuilder('period')
+            ->addSelect('subscription', 'plan', 'payment', 'currency', 'paymentCurrency')
+            ->innerJoin('period.subscription', 'subscription')
+            ->innerJoin('subscription.plan', 'plan')
+            ->innerJoin('period.currency', 'currency')
+            ->leftJoin('period.payment', 'payment')
+            ->leftJoin('payment.currency', 'paymentCurrency')
+            ->where('subscription.agency = :agency')
+            ->setParameter('agency', $agency)
+            ->orderBy('period.periodStart', 'DESC')
+            ->addOrderBy('period.id', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 
     public function findOneForPeriod(
