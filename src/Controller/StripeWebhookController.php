@@ -13,7 +13,6 @@ use App\Service\Stripe\StripeInvoiceService;
 use App\Service\Stripe\StripeSubscriptionService;
 use App\Service\Subscription\SubscriptionDowngradeService;
 use App\Service\Subscription\SubscriptionPaymentRecoveryService;
-use App\Service\Subscription\SubscriptionPaymentService;
 use App\Service\Subscription\SubscriptionSynchronizationService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,7 +36,6 @@ final class StripeWebhookController extends AbstractController
         private readonly AgencySubscriptionRepository $subscriptionRepository,
         private readonly StripeSubscriptionService $stripeSubscriptionService,
         private readonly StripeInvoiceService $stripeInvoiceService,
-        private readonly SubscriptionPaymentService $paymentService,
         private readonly SubscriptionPaymentRecoveryService $recoveryService,
         private readonly SubscriptionSynchronizationService $synchronizationService,
         private readonly SubscriptionDowngradeService $downgradeService,
@@ -161,7 +159,7 @@ final class StripeWebhookController extends AbstractController
         }
 
         $stripeSubscription = $this->stripeSubscriptionService->retrieve($invoice->subscriptionId);
-        $this->paymentService->recordPaidInvoice($subscription, $stripeInvoice, $stripeSubscription);
+        $this->synchronizationService->synchronizeFromStripe($subscription, $stripeSubscription, $stripeInvoice);
     }
 
     private function handleInvoicePaymentFailed(Event $event): void

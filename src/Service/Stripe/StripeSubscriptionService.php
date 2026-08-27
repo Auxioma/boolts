@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Service\Stripe;
 
 use App\Dto\Subscription\StripeSubscriptionSnapshot;
+use App\Entity\Billing\AgencyPaymentMethod;
 use App\Entity\Billing\AgencySubscription;
-use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\SubscriptionPlanPrice;
+use Doctrine\ORM\EntityManagerInterface;
 use Stripe\StripeClient;
 use Stripe\Subscription as StripeSubscription;
 
@@ -15,6 +16,7 @@ final readonly class StripeSubscriptionService
 {
     public function __construct(
         private StripeClient $stripe,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -84,6 +86,52 @@ final readonly class StripeSubscriptionService
         );
     }
 
+    public function upgradeNow(
+        AgencySubscription $subscription,
+        SubscriptionPlanPrice $planPrice,
+        AgencyPaymentMethod $paymentMethod,
+    ): StripeSubscription {
+        $subscriptionId = $this->requireProviderSubscriptionId($subscription);
+        $subscriptionItemId = $subscription->getProviderSubscriptionItemId();
+
+        if (!\is_string($subscriptionItemId) || '' === $subscriptionItemId) {
+            throw new \LogicException('L’élément de l’abonnement Stripe est introuvable.');
+        }
+
+        $stripePriceId = $this->getOrCreateStripePrice($planPrice);
+
+        return $this->stripe->subscriptions->update(
+            $subscriptionId,
+            [
+                'items' => [[
+                    'id' => $subscriptionItemId,
+                    'price' => $stripePriceId,
+                ]],
+                'default_payment_method' => $paymentMethod->getStripePaymentMethodId(),
+                'billing_cycle_anchor' => 'now',
+                'proration_behavior' => 'none',
+                'payment_behavior' => 'error_if_incomplete',
+                'cancel_at_period_end' => false,
+                'metadata' => [
+                    'agency_id' => (string) $subscription->getAgency()->getId(),
+                    'subscription_plan_price_id' => (string) $planPrice->getId(),
+                ],
+                'expand' => [
+                    'latest_invoice.payment_intent',
+                    'items.data.price.product',
+                ],
+            ],
+            [
+                'idempotency_key' => \sprintf(
+                    'subscription-upgrade-%s-%s-%s',
+                    $subscriptionId,
+                    $stripePriceId,
+                    bin2hex(random_bytes(8)),
+                ),
+            ],
+        );
+    }
+
     public function getOrCreateStripePrice(SubscriptionPlanPrice $planPrice): string
     {
         $stripePriceId = $planPrice->getPaymentProviderPriceId();
@@ -105,6 +153,7 @@ final readonly class StripeSubscriptionService
         ]);
 
         $planPrice->setPaymentProviderPriceId($price->id);
+        $this->entityManager->flush();
 
         return $price->id;
     }

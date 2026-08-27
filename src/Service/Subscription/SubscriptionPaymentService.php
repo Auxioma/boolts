@@ -63,6 +63,7 @@ final readonly class SubscriptionPaymentService
         StripeSubscription $stripeSubscription,
         ?int $attemptNumber = null,
         SubscriptionHistoryEventType $eventType = SubscriptionHistoryEventType::RENEWAL_SUCCEEDED,
+        ?PaymentType $paymentType = null,
     ): Payment {
         $invoice = $this->stripeInvoiceService->snapshot($stripeInvoice);
         $stripeSubscriptionSnapshot = $this->stripeSubscriptionService->snapshot($stripeSubscription);
@@ -74,14 +75,21 @@ final readonly class SubscriptionPaymentService
             $stripeSubscriptionSnapshot,
             $attemptNumber,
             $eventType,
+            $paymentType,
         ): Payment {
             $payment = $this->paymentRepository->findOneByProviderInvoiceId($invoice->id);
             $wasAlreadySucceeded = $payment instanceof Payment
                 && PaymentStatus::SUCCEEDED === $payment->getStatus();
 
             if (!$payment instanceof Payment) {
-                $payment = $this->createPaymentSkeleton($subscription, $invoice);
+                $payment = $this->createPaymentSkeleton(
+                    $subscription,
+                    $invoice,
+                    $paymentType ?? PaymentType::SUBSCRIPTION_RENEWAL,
+                );
                 $this->entityManager->persist($payment);
+            } elseif ($paymentType instanceof PaymentType) {
+                $payment->setType($paymentType);
             }
 
             $period = $this->upsertSubscriptionPeriod($subscription, $payment, $invoice, SubscriptionPeriodStatus::PAID);
@@ -288,6 +296,7 @@ final readonly class SubscriptionPaymentService
     private function createPaymentSkeleton(
         AgencySubscription $subscription,
         StripeInvoiceSnapshot $invoice,
+        PaymentType $paymentType = PaymentType::SUBSCRIPTION_RENEWAL,
     ): Payment {
         $billingProfile = $subscription->getAgency()->getBillingProfile();
 
@@ -307,7 +316,7 @@ final readonly class SubscriptionPaymentService
             ->setAgency($subscription->getAgency())
             ->setBillingProfile($billingProfile)
             ->setSubscription($subscription)
-            ->setType(PaymentType::SUBSCRIPTION_RENEWAL)
+            ->setType($paymentType)
             ->setStatus(PaymentStatus::PENDING)
             ->setCurrency($currency)
             ->setProviderInvoiceId($invoice->id)

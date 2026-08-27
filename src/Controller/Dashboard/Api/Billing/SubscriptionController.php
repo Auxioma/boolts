@@ -22,7 +22,6 @@ use App\Entity\Billing\Enum\BoosterTransactionType;
 use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
 use App\Entity\Billing\Enum\PaymentStatus;
 use App\Entity\Billing\Enum\PaymentType;
-use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\Enum\SubscriptionPeriodStatus;
 use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\Billing\Payment;
@@ -31,6 +30,8 @@ use App\Entity\Billing\SubscriptionPlanPrice;
 use App\Entity\Booster\BoosterTransaction;
 use App\Entity\User;
 use App\Repository\Billing\AgencySubscriptionRepository;
+use App\Service\Stripe\StripeSubscriptionService;
+use App\Service\Subscription\SubscriptionSynchronizationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
@@ -58,6 +59,8 @@ final class SubscriptionController extends AbstractController
         private readonly StripeClient $stripe,
         private readonly EntityManagerInterface $entityManager,
         private readonly AgencySubscriptionRepository $agencySubscriptionRepository,
+        private readonly StripeSubscriptionService $stripeSubscriptionService,
+        private readonly SubscriptionSynchronizationService $subscriptionSynchronizationService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -115,29 +118,14 @@ final class SubscriptionController extends AbstractController
             return $this->json(['success' => false, 'message' => 'Aucune carte bancaire valide n’est disponible pour cet achat.'], 409);
         }
 
-        $existingSubscription = $this->entityManager->getRepository(AgencySubscription::class)
-            ->createQueryBuilder('subscription')
-            ->where('subscription.agency = :agency')
-            ->andWhere('subscription.status IN (:statuses)')
-            ->setParameter('agency', $agency)
-            ->setParameter('statuses', [
-                SubscriptionStatus::ACTIVE,
-                SubscriptionStatus::INCOMPLETE,
-                SubscriptionStatus::PAST_DUE,
-                SubscriptionStatus::PAYMENT_FAILED,
-                SubscriptionStatus::CANCEL_SCHEDULED,
-                SubscriptionStatus::UNPAID,
-            ])
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
+        $existingSubscription = $this->agencySubscriptionRepository->findOneActivePaidForAgency($agency);
 
         if ($existingSubscription instanceof AgencySubscription) {
-            return $this->json(['success' => false, 'message' => 'Un abonnement est déjà en cours.'], 409);
+            return $this->upgrade($existingSubscription, $planPrice, $paymentMethod);
         }
 
         try {
-            $stripePriceId = $this->getOrCreateStripePrice($planPrice);
+            $stripePriceId = $this->stripeSubscriptionService->getOrCreateStripePrice($planPrice);
             $stripeSubscription = $this->stripe->subscriptions->create([
                 'customer' => $billingProfile->getStripeCustomerId(),
                 'items' => [['price' => $stripePriceId]],
@@ -175,32 +163,6 @@ final class SubscriptionController extends AbstractController
 
             return $this->json(['success' => false, 'message' => 'Impossible de créer l’abonnement.'], 500);
         }
-    }
-
-    private function getOrCreateStripePrice(SubscriptionPlanPrice $planPrice): string
-    {
-        $stripePriceId = $planPrice->getPaymentProviderPriceId();
-
-        if (\is_string($stripePriceId) && str_starts_with($stripePriceId, 'price_')) {
-            return $stripePriceId;
-        }
-
-        $product = $this->stripe->products->create([
-            'name' => \sprintf('Abonnement %s', $planPrice->getPlan()->getName()),
-            'metadata' => ['subscription_plan_price_id' => (string) $planPrice->getId()],
-        ]);
-        $price = $this->stripe->prices->create([
-            'product' => $product->id,
-            'currency' => $this->currencyCode($planPrice),
-            'unit_amount' => $planPrice->getAmountMinor(),
-            'recurring' => ['interval' => SubscriptionBillingPeriod::ANNUAL === $planPrice->getBillingPeriod() ? 'year' : 'month'],
-            'metadata' => ['subscription_plan_price_id' => (string) $planPrice->getId()],
-        ]);
-
-        $planPrice->setPaymentProviderPriceId($price->id);
-        $this->entityManager->flush();
-
-        return $price->id;
     }
 
     private function persistSubscription(User $agency, SubscriptionPlanPrice $planPrice, AgencyPaymentMethod $paymentMethod, Subscription $stripeSubscription): void
@@ -440,14 +402,94 @@ final class SubscriptionController extends AbstractController
         }
     }
 
-    private function currencyCode(SubscriptionPlanPrice $planPrice): string
+    private function upgrade(
+        AgencySubscription $subscription,
+        SubscriptionPlanPrice $planPrice,
+        AgencyPaymentMethod $paymentMethod,
+    ): JsonResponse
     {
-        preg_match('/\\(([A-Z]{3})\\)/', (string) $planPrice->getCurrency()->getNom(), $matches);
-
-        if (!isset($matches[1])) {
-            throw new \LogicException('Le code ISO de la devise du forfait est introuvable.');
+        if (!\in_array($subscription->getStatus(), [SubscriptionStatus::ACTIVE, SubscriptionStatus::CANCEL_SCHEDULED], true)) {
+            return $this->json([
+                'success' => false,
+                'message' => 'L’abonnement actuel doit être actif pour changer de forfait.',
+            ], 409);
         }
 
-        return mb_strtolower($matches[1]);
+        $currentPlanPrice = $subscription->getPlanPrice();
+
+        if (!$currentPlanPrice instanceof SubscriptionPlanPrice) {
+            return $this->json(['success' => false, 'message' => 'Le prix de l’abonnement actuel est introuvable.'], 409);
+        }
+
+        if ($currentPlanPrice->getCurrency() !== $planPrice->getCurrency()) {
+            return $this->json(['success' => false, 'message' => 'La devise du nouveau forfait doit être identique.'], 409);
+        }
+
+        if ($planPrice->getAmountMinor() <= $currentPlanPrice->getAmountMinor()) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Vous pouvez uniquement choisir un forfait d’un montant supérieur.',
+            ], 409);
+        }
+
+        try {
+            $stripeSubscription = $this->stripeSubscriptionService->retrieve(
+                (string) $subscription->getProviderSubscriptionId(),
+            );
+            $stripeSnapshot = $this->stripeSubscriptionService->snapshot($stripeSubscription);
+
+            if ($stripeSnapshot->priceId === $planPrice->getPaymentProviderPriceId()) {
+                $this->subscriptionSynchronizationService->synchronizeFromStripe(
+                    $subscription,
+                    $stripeSubscription,
+                    paymentType: PaymentType::SUBSCRIPTION_UPGRADE,
+                );
+
+                return $this->json([
+                    'success' => true,
+                    'message' => 'Votre nouveau forfait est actif.',
+                    'subscriptionId' => $stripeSubscription->id,
+                    'status' => $stripeSubscription->status,
+                ]);
+            }
+
+            $stripeSubscription = $this->stripeSubscriptionService->upgradeNow(
+                $subscription,
+                $planPrice,
+                $paymentMethod,
+            );
+
+            $this->subscriptionSynchronizationService->synchronizeFromStripe(
+                $subscription,
+                $stripeSubscription,
+                paymentType: PaymentType::SUBSCRIPTION_UPGRADE,
+            );
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Votre nouveau forfait est actif.',
+                'subscriptionId' => $stripeSubscription->id,
+                'status' => $stripeSubscription->status,
+            ]);
+        } catch (ApiErrorException $exception) {
+            $this->logger->error('Erreur Stripe pendant le changement de forfait.', [
+                'message' => $exception->getMessage(),
+                'stripe_code' => $exception->getStripeCode(),
+                'agency_id' => $subscription->getAgency()->getId(),
+                'subscription_id' => $subscription->getId(),
+                'subscription_plan_price_id' => $planPrice->getId(),
+            ]);
+
+            return $this->json(['success' => false, 'message' => 'Stripe : '.$exception->getMessage()], 400);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Erreur interne pendant le changement de forfait.', [
+                'message' => $exception->getMessage(),
+                'agency_id' => $subscription->getAgency()->getId(),
+                'subscription_id' => $subscription->getId(),
+                'subscription_plan_price_id' => $planPrice->getId(),
+            ]);
+
+            return $this->json(['success' => false, 'message' => 'Impossible de changer de forfait.'], 500);
+        }
     }
 }

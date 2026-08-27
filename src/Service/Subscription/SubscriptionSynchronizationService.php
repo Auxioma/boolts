@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Service\Subscription;
 
 use App\Entity\Billing\AgencySubscription;
+use App\Entity\Billing\Enum\PaymentType;
 use App\Entity\Billing\Enum\SubscriptionHistoryEventType;
+use App\Entity\Billing\Enum\SubscriptionPeriodStatus;
 use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\Billing\SubscriptionPlanPrice;
+use App\Repository\Billing\AgencySubscriptionPeriodRepository;
 use App\Repository\Billing\SubscriptionPlanPriceRepository;
 use App\Service\Stripe\StripeInvoiceService;
 use App\Service\Stripe\StripeSubscriptionService;
@@ -20,6 +23,7 @@ final readonly class SubscriptionSynchronizationService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private AgencySubscriptionPeriodRepository $periodRepository,
         private SubscriptionPlanPriceRepository $planPriceRepository,
         private StripeSubscriptionService $stripeSubscriptionService,
         private StripeInvoiceService $stripeInvoiceService,
@@ -33,7 +37,21 @@ final readonly class SubscriptionSynchronizationService
         AgencySubscription $subscription,
         StripeSubscription $stripeSubscription,
         ?StripeInvoice $stripeInvoice = null,
+        ?PaymentType $paymentType = null,
     ): void {
+        $stripeSnapshot = $this->stripeSubscriptionService->snapshot($stripeSubscription);
+        $currentPriceId = $subscription->getProviderPriceId()
+            ?? $subscription->getPlanPrice()?->getPaymentProviderPriceId();
+
+        if (
+            null === $paymentType
+            && null !== $currentPriceId
+            && null !== $stripeSnapshot->priceId
+            && $currentPriceId !== $stripeSnapshot->priceId
+        ) {
+            $paymentType = PaymentType::SUBSCRIPTION_UPGRADE;
+        }
+
         $stripeInvoice ??= $this->stripeInvoiceService->latestInvoiceFromSubscription($stripeSubscription);
 
         if ($stripeInvoice instanceof StripeInvoice) {
@@ -44,12 +62,14 @@ final readonly class SubscriptionSynchronizationService
                     ? SubscriptionHistoryEventType::PAYMENT_RECOVERED
                     : SubscriptionHistoryEventType::RENEWAL_SUCCEEDED;
 
+                $this->synchronizeSubscriptionFields($subscription, $stripeSubscription);
                 $this->paymentService->recordPaidInvoice(
                     $subscription,
                     $stripeInvoice,
                     $stripeSubscription,
                     null,
                     $eventType,
+                    $paymentType,
                 );
 
                 return;
@@ -67,6 +87,8 @@ final readonly class SubscriptionSynchronizationService
         $snapshot = $this->stripeSubscriptionService->snapshot($stripeSubscription);
         $oldStatus = $subscription->getStatus();
         $oldPlan = $subscription->getPlan()->getCode();
+        $oldPriceId = $subscription->getProviderPriceId()
+            ?? $subscription->getPlanPrice()?->getPaymentProviderPriceId();
 
         $status = $this->mapStripeStatus($snapshot->status, $snapshot->cancelAtPeriodEnd);
 
@@ -90,10 +112,20 @@ final readonly class SubscriptionSynchronizationService
         }
 
         if (null !== $snapshot->priceId) {
+            if (
+                null !== $oldPriceId
+                && $oldPriceId !== $snapshot->priceId
+                && $snapshot->currentPeriodStart instanceof \DateTimeImmutable
+            ) {
+                $this->deactivatePreviousPeriod($subscription, $snapshot->currentPeriodStart);
+            }
+
             $this->syncLocalPlanPrice($subscription, $snapshot->priceId);
         }
 
-        if ($oldStatus !== $status) {
+        $newPlan = $subscription->getPlan()->getCode();
+
+        if ($oldStatus !== $status || $oldPlan !== $newPlan) {
             $subscription->setStatus($status);
 
             $this->historyRecorder->record(
@@ -102,7 +134,7 @@ final readonly class SubscriptionSynchronizationService
                 oldStatus: $oldStatus,
                 newStatus: $status,
                 oldPlan: $oldPlan,
-                newPlan: $subscription->getPlan()->getCode(),
+                newPlan: $newPlan,
                 providerInvoiceId: $snapshot->latestInvoiceId,
                 metadata: [
                     'stripe_status' => $snapshot->status,
@@ -139,6 +171,30 @@ final readonly class SubscriptionSynchronizationService
             ->setBoostDurationDaysSnapshot($planPrice->getPlan()->getBoostDurationDays())
             ->setAmountSnapshotMinor($planPrice->getAmountMinor())
             ->setCurrencySnapshot($planPrice->getCurrency());
+    }
+
+    private function deactivatePreviousPeriod(
+        AgencySubscription $subscription,
+        \DateTimeImmutable $upgradedAt,
+    ): void {
+        $period = $this->periodRepository->findPaidContaining($subscription, $upgradedAt)
+            ?? $this->periodRepository->findLatestPaidBefore($subscription, $upgradedAt);
+
+        if (null === $period) {
+            $this->logger->warning('[SUBSCRIPTION UPGRADE] Previous paid period not found.', [
+                'subscription' => $subscription->getId(),
+                'agency' => $subscription->getAgency()->getId(),
+                'upgraded_at' => $upgradedAt->format(\DATE_ATOM),
+            ]);
+
+            return;
+        }
+
+        $period->setStatus(SubscriptionPeriodStatus::CANCELED);
+
+        if ($upgradedAt > $period->getPeriodStart()) {
+            $period->setPeriodEnd($upgradedAt);
+        }
     }
 
     private function mapStripeStatus(

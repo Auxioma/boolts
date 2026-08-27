@@ -47,6 +47,14 @@ Une erreur réseau Stripe ou HTTP 5xx ne modifie pas `paymentFailureCount`.
 
 `POST /account/subscription/reactivate` annule la résiliation tant que la période n'est pas terminée.
 
+## Workflow Montée En Gamme
+
+1. Seul un prix actif dont le montant est strictement supérieur au prix actuel, dans la même devise, est accepté.
+2. Le prix de l'élément de la Subscription Stripe existante est remplacé avec `billing_cycle_anchor=now` et `proration_behavior=none`.
+3. Stripe facture immédiatement le montant complet du prix mensuel ou annuel sélectionné.
+4. Après confirmation du paiement, l'ancienne période locale est clôturée et le nouveau forfait devient immédiatement actif.
+5. La facture est enregistrée avec le type `SUBSCRIPTION_UPGRADE`; le webhook peut rejouer la synchronisation sans dupliquer le paiement.
+
 ## Modèle De Données
 
 La migration `migrations/Version20260826154500.php` ajoute :

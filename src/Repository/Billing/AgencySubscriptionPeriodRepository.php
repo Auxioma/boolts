@@ -16,6 +16,7 @@ namespace App\Repository\Billing;
 
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\AgencySubscriptionPeriod;
+use App\Entity\Billing\Enum\SubscriptionPeriodStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -41,9 +42,48 @@ final class AgencySubscriptionPeriodRepository extends ServiceEntityRepository
             ->where('period.subscription = :subscription')
             ->andWhere('period.periodStart = :periodStart')
             ->andWhere('period.periodEnd = :periodEnd')
+            ->andWhere('period.status != :canceledStatus')
             ->setParameter('subscription', $subscription)
             ->setParameter('periodStart', $periodStart)
             ->setParameter('periodEnd', $periodEnd)
+            ->setParameter('canceledStatus', SubscriptionPeriodStatus::CANCELED)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findPaidContaining(
+        AgencySubscription $subscription,
+        \DateTimeImmutable $date,
+    ): ?AgencySubscriptionPeriod {
+        return $this->createQueryBuilder('period')
+            ->where('period.subscription = :subscription')
+            ->andWhere('period.status = :status')
+            ->andWhere('period.periodStart <= :date')
+            ->andWhere('period.periodEnd > :date')
+            ->setParameter('subscription', $subscription)
+            ->setParameter('status', SubscriptionPeriodStatus::PAID)
+            ->setParameter('date', $date)
+            ->orderBy('period.periodStart', 'DESC')
+            ->addOrderBy('period.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findLatestPaidBefore(
+        AgencySubscription $subscription,
+        \DateTimeImmutable $date,
+    ): ?AgencySubscriptionPeriod {
+        return $this->createQueryBuilder('period')
+            ->where('period.subscription = :subscription')
+            ->andWhere('period.status = :status')
+            ->andWhere('period.periodStart < :date')
+            ->setParameter('subscription', $subscription)
+            ->setParameter('status', SubscriptionPeriodStatus::PAID)
+            ->setParameter('date', $date)
+            ->orderBy('period.periodStart', 'DESC')
+            ->addOrderBy('period.id', 'DESC')
+            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }
