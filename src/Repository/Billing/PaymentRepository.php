@@ -16,6 +16,7 @@ namespace App\Repository\Billing;
 
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\Payment;
+use App\Entity\Billing\Enum\PaymentStatus;
 use App\Entity\Billing\Enum\PaymentType;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -76,5 +77,29 @@ final class PaymentRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findLatestSucceededSubscriptionPaymentForSubscription(
+        AgencySubscription $subscription,
+    ): ?Payment {
+        return $this->createQueryBuilder('payment')
+            ->leftJoin('payment.paymentMethod', 'paymentMethod')
+            ->addSelect('paymentMethod')
+            ->where('payment.subscription = :subscription')
+            ->andWhere('payment.status = :status')
+            ->andWhere('payment.type IN (:types)')
+            ->setParameter('subscription', $subscription)
+            ->setParameter('status', PaymentStatus::SUCCEEDED)
+            ->setParameter('types', [
+                PaymentType::SUBSCRIPTION_INITIAL,
+                PaymentType::SUBSCRIPTION_RENEWAL,
+                PaymentType::SUBSCRIPTION_UPGRADE,
+                PaymentType::SUBSCRIPTION_DOWNGRADE_ADJUSTMENT,
+            ])
+            ->orderBy('payment.paidAt', 'DESC')
+            ->addOrderBy('payment.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

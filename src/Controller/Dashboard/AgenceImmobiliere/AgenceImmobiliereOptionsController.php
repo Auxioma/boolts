@@ -27,6 +27,7 @@ use App\Entity\Booster\BoosterTransaction;
 use App\Entity\User;
 use App\Repository\Billing\AgencyPaymentMethodRepository;
 use App\Repository\Billing\AgencySubscriptionRepository;
+use App\Repository\Billing\PaymentRepository;
 use App\Repository\Billing\SubscriptionPlanPriceRepository;
 use App\Repository\Booster\BoosterPackPriceRepository;
 use App\Security\Voter\AgencyDocumentVoter;
@@ -70,6 +71,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
         BoosterPackPriceRepository $boosterPackPriceRepository,
         AgencySubscriptionRepository $agencySubscriptionRepository,
+        PaymentRepository $paymentRepository,
     ): Response {
         $agency = $this->getUser();
 
@@ -99,6 +101,18 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         $boosterPackPrices = $boosterPackPriceRepository->findActiveWithPackAndCurrency();
 
         $currentSubscription = $agencySubscriptionRepository->findCurrentForAgency($agency);
+        $currentSubscriptionPayment = null;
+
+        if (null !== $currentSubscription && !$currentSubscription->getPlan()->isIsFree()) {
+            $currentSubscriptionPayment = $paymentRepository->findLatestSucceededSubscriptionPaymentForSubscription(
+                $currentSubscription,
+            );
+        }
+
+        $currentPaymentCard = $this->buildPaymentCardDisplay(
+            $currentSubscriptionPayment,
+            $agency->getBillingProfile()?->getDefaultPaymentMethod(),
+        );
 
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_options/index.html.twig',
@@ -106,6 +120,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'forfaits' => $forfaits,
                 'packs_boost' => $boosterPackPrices,
                 'abonnement_actuel' => $currentSubscription,
+                'abonnement_actuel_payment_card' => $currentPaymentCard,
             ]
         );
     }
@@ -387,5 +402,68 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         }
 
         return mb_strtolower($matches[1]);
+    }
+
+    /**
+     * @return array{brand: string, last4: ?string}|null
+     */
+    private function buildPaymentCardDisplay(
+        ?Payment $payment,
+        ?AgencyPaymentMethod $fallbackPaymentMethod,
+    ): ?array {
+        $snapshot = $payment instanceof Payment ? $payment->getPaymentMethodSnapshot() : [];
+        $paymentMethod = $payment instanceof Payment ? $payment->getPaymentMethod() : null;
+        $paymentMethod ??= $fallbackPaymentMethod;
+
+        $brand = $this->stringFromSnapshot($snapshot, 'brand') ?? $paymentMethod?->getBrand();
+        $last4 = $this->stringFromSnapshot($snapshot, 'last4') ?? $paymentMethod?->getLast4();
+
+        $brand = \is_string($brand) ? trim($brand) : '';
+        $last4 = \is_string($last4) ? trim($last4) : null;
+
+        if ('' === $brand && (null === $last4 || '' === $last4)) {
+            return null;
+        }
+
+        return [
+            'brand' => $this->cardBrandLabel($brand),
+            'last4' => '' === $last4 ? null : $last4,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $snapshot
+     */
+    private function stringFromSnapshot(array $snapshot, string $key): ?string
+    {
+        $value = $snapshot[$key] ?? null;
+
+        if (!\is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return '' === $value ? null : $value;
+    }
+
+    private function cardBrandLabel(string $brand): string
+    {
+        $normalizedBrand = mb_strtolower(str_replace([' ', '-'], '_', trim($brand)));
+
+        return match ($normalizedBrand) {
+            'visa' => 'VISA',
+            'mastercard' => 'Mastercard',
+            'amex', 'american_express' => 'American Express',
+            'cartes_bancaires' => 'Carte Bancaire',
+            'diners', 'diners_club' => 'Diners Club',
+            'discover' => 'Discover',
+            'jcb' => 'JCB',
+            'unionpay' => 'UnionPay',
+            'link' => 'Link',
+            default => '' === trim($brand)
+                ? 'Carte bancaire'
+                : mb_convert_case(str_replace('_', ' ', trim($brand)), \MB_CASE_TITLE, 'UTF-8'),
+        };
     }
 }

@@ -665,6 +665,65 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<Property>
+     */
+    public function findActiveBoostedForHome(
+        ?string $country,
+        ?string $city,
+        string $locale,
+        int|string $transactionTypeId,
+        int $limit = 10,
+    ): array {
+        $now = new \DateTimeImmutable();
+
+        $qb = $this->createQueryBuilder('p')
+            ->select('DISTINCT p')
+            ->innerJoin('p.user', 'agency')
+            ->addSelect('agency')
+            ->leftJoin('agency.devise', 'currency')
+            ->addSelect('currency')
+            ->leftJoin('p.translations', 'pt')
+            ->addSelect('pt')
+            ->leftJoin('p.typeBien', 'typeBien')
+            ->addSelect('typeBien')
+            ->leftJoin('p.typeTransaction', 'typeTransaction')
+            ->addSelect('typeTransaction')
+            ->innerJoin(PropertyBoost::class, 'boost', 'WITH', 'boost.property = p')
+            ->addSelect('boost.startsAt AS HIDDEN boostStartsAt')
+            ->andWhere('p.statut = :statut')
+            ->andWhere('pt.locale = :locale')
+            ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
+            ->andWhere('boost.status = :boostStatus')
+            ->andWhere('boost.canceledAt IS NULL')
+            ->andWhere('boost.startsAt <= :now')
+            ->andWhere('boost.endsAt >= :now')
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
+            ->setParameter('locale', $locale)
+            ->setParameter('transactionTypeId', $transactionTypeId)
+            ->setParameter('boostStatus', PropertyBoostStatus::ACTIVE->value)
+            ->setParameter('now', $now)
+            ->orderBy('boostStartsAt', 'DESC')
+            ->addOrderBy('p.createdAt', 'DESC')
+            ->setMaxResults($limit);
+
+        if (null !== $country && '' !== mb_trim($country)) {
+            $qb
+                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
+                ->setParameter('country', mb_trim($country));
+        }
+
+        if (null !== $city && '' !== mb_trim($city)) {
+            $qb
+                ->andWhere('LOWER(pt.ville) = LOWER(:city)')
+                ->setParameter('city', mb_trim($city));
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * filtre des bien similaire.
      */
     public function getBienSimilaire(Property $property, int $limit = 6): array
@@ -787,8 +846,18 @@ class PropertyRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.propertyViews', 'pv')
             ->leftJoin('p.translations', 'pt')
+            ->innerJoin('p.user', 'agency')
+            ->addSelect('agency')
+            ->leftJoin('agency.devise', 'currency')
+            ->addSelect('currency')
+            ->leftJoin('p.typeBien', 'typeBien')
+            ->addSelect('typeBien')
+            ->leftJoin('p.typeTransaction', 'typeTransaction')
+            ->addSelect('typeTransaction')
             ->addSelect('COUNT(pv.id) AS HIDDEN viewsCount')
+            ->andWhere('p.statut = :statut')
             ->andWhere('pt.locale = :locale')
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
             ->setParameter('locale', $locale)
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
             ->setParameter('transactionTypeId', $id)
@@ -828,7 +897,17 @@ class PropertyRepository extends ServiceEntityRepository
     ): array {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.translations', 'pt')
+            ->innerJoin('p.user', 'agency')
+            ->addSelect('agency')
+            ->leftJoin('agency.devise', 'currency')
+            ->addSelect('currency')
+            ->leftJoin('p.typeBien', 'typeBien')
+            ->addSelect('typeBien')
+            ->leftJoin('p.typeTransaction', 'typeTransaction')
+            ->addSelect('typeTransaction')
+            ->andWhere('p.statut = :statut')
             ->andWhere('pt.locale = :locale')
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
             ->setParameter('locale', $locale)
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
             ->setParameter('transactionTypeId', $id)

@@ -145,9 +145,12 @@ final readonly class SubscriptionPaymentService
             $oldPlan = $subscription->getPlan()->getCode();
             $currentPeriodStart = $stripeSubscriptionSnapshot->currentPeriodStart ?? $period->getPeriodStart();
             $currentPeriodEnd = $stripeSubscriptionSnapshot->currentPeriodEnd ?? $period->getPeriodEnd();
+            $subscriptionStatus = $stripeSubscriptionSnapshot->cancelAtPeriodEnd
+                ? SubscriptionStatus::CANCEL_SCHEDULED
+                : SubscriptionStatus::ACTIVE;
 
             $subscription
-                ->setStatus(SubscriptionStatus::ACTIVE)
+                ->setStatus($subscriptionStatus)
                 ->setCurrentPeriodStart($currentPeriodStart)
                 ->setCurrentPeriodEnd($currentPeriodEnd)
                 ->setCancelAtPeriodEnd($stripeSubscriptionSnapshot->cancelAtPeriodEnd)

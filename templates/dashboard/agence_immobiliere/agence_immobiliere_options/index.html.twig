@@ -32,6 +32,18 @@
                             {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button', {variant: 'options'})) }}
                         </div>
 
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success mt-24 mb-0" role="status">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+
+                        {% for message in app.flashes('error') %}
+                            <div class="alert alert-danger mt-24 mb-0" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+
                         {# =====================================================
                            ABONNEMENTS
                            ===================================================== #}
@@ -111,50 +123,111 @@
 
                                             </p>
 
-                                            <div class="achat-feature-list">
-
-                                                {% if plan.description %}
+                                            {% if isCurrentPlan and abonnement_actuel and not plan.isFree %}
+                                                <div class="achat-feature-list">
                                                     <p>
-                                                        {{ plan.description }}
-                                                    </p>
-                                                {% endif %}
-
-                                                <p>
-                                                    <strong>
-                                                        ✓
-                                                        {{ plan.propertyLimit is null
-                                                            ? 'Biens illimités'
-                                                            : plan.propertyLimit ~ ' biens'
+                                                        <strong>
+                                                            {{ abonnement_actuel.cancelAtPeriodEnd
+                                                                ? 'Fin des droits'
+                                                                : 'Prochain prélèvement'
+                                                            }}:
+                                                        </strong>
+                                                        {{ abonnement_actuel.currentPeriodEnd
+                                                            ? abonnement_actuel.currentPeriodEnd|date('d/m/Y')
+                                                            : 'Non renseigné'
                                                         }}
-                                                    </strong>
-                                                </p>
+                                                    </p>
 
-                                                <p>
-                                                    <strong>
-                                                        ✓
-                                                        {{ plan.includedBoosts }}
-                                                        boost{{ plan.includedBoosts > 1 ? 's' : '' }}
-                                                        inclus
-                                                    </strong>
-                                                </p>
+                                                    <p>
+                                                        <strong>
+                                                            Paiement:
+                                                        </strong>
+                                                        {% if abonnement_actuel_payment_card %}
+                                                            {{ abonnement_actuel_payment_card.brand }}
+                                                            {% if abonnement_actuel_payment_card.last4 %}
+                                                                ••••{{ abonnement_actuel_payment_card.last4 }}
+                                                            {% endif %}
+                                                        {% else %}
+                                                            Non renseigné
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            {% else %}
+                                                <div class="achat-feature-list">
 
-                                                <p>
-                                                    Durée d’un boost :
-                                                    {{ plan.boostDurationDays }}
-                                                    jours
-                                                </p>
-                                            </div>
+                                                    {% if plan.description %}
+                                                        <p>
+                                                            {{ plan.description }}
+                                                        </p>
+                                                    {% endif %}
+
+                                                    <p>
+                                                        <strong>
+                                                            ✓
+                                                            {{ plan.propertyLimit is null
+                                                                ? 'Biens illimités'
+                                                                : plan.propertyLimit ~ ' biens'
+                                                            }}
+                                                        </strong>
+                                                    </p>
+
+                                                    <p>
+                                                        <strong>
+                                                            ✓
+                                                            {{ plan.includedBoosts }}
+                                                            boost{{ plan.includedBoosts > 1 ? 's' : '' }}
+                                                            inclus
+                                                        </strong>
+                                                    </p>
+
+                                                    <p>
+                                                        Durée d’un boost :
+                                                        {{ plan.boostDurationDays }}
+                                                        jours
+                                                    </p>
+                                                </div>
+                                            {% endif %}
                                         </div>
 
                                         {% if isCurrentPlan %}
 
-                                            <button
-                                                class="btn achat-current-plan achat-subscribed-plan-button"
-                                                type="button"
-                                                disabled
-                                            >
-                                                Résilier l’abonnement
-                                            </button>
+                                            {% if abonnement_actuel and not plan.isFree and not abonnement_actuel.cancelAtPeriodEnd %}
+                                                <form
+                                                    method="post"
+                                                    action="{{ path('account_subscription_cancel') }}"
+                                                    class="mb-0 w-100"
+                                                >
+                                                    <input
+                                                        type="hidden"
+                                                        name="_token"
+                                                        value="{{ csrf_token('account_subscription_cancel') }}"
+                                                    >
+
+                                                    <input
+                                                        type="hidden"
+                                                        name="_redirect_route"
+                                                        value="agence_immobiliere_options"
+                                                    >
+
+                                                    <button
+                                                        class="btn achat-current-plan achat-subscribed-plan-button"
+                                                        type="submit"
+                                                    >
+                                                        Résilier l’abonnement
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <button
+                                                    class="btn achat-current-plan achat-subscribed-plan-button"
+                                                    type="button"
+                                                    disabled
+                                                >
+                                                    {{ abonnement_actuel and abonnement_actuel.cancelAtPeriodEnd
+                                                        ? 'Résiliation programmée'
+                                                        : 'Résilier l’abonnement'
+                                                    }}
+                                                </button>
+                                            {% endif %}
 
                                         {% else %}
 

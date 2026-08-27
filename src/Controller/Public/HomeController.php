@@ -128,8 +128,19 @@ final class HomeController extends AbstractController
             2
         );
 
-        $aLaUneLocation = $this->propertyRepository->findBy([], null, 10);
-        $aLaUneVente = $this->propertyRepository->findBy([], null, 10);
+        $aLaUneLocation = $this->propertyRepository->findActiveBoostedForHome(
+            $country,
+            $city,
+            $locale,
+            2
+        );
+
+        $aLaUneVente = $this->propertyRepository->findActiveBoostedForHome(
+            $country,
+            $city,
+            $locale,
+            1
+        );
         /**
          * je vais vérifier si l'utilisateur a un cookie de session pour retrouver ses recherches récentes.
          * Si le cookie existe, je vais récupérer l'UUID  et le nom de la ville de la recherche et je vais vérifier si la recherche existe dans la base de données.
@@ -194,8 +205,19 @@ final class HomeController extends AbstractController
         $logementPopulaireLocation = $this->propertyRepository->logementPopulaire($country, $city, $request->getLocale(), '2');
         $logementAjouterRecementLocation = $this->propertyRepository->logemntRecementAjouter($country, $city, $request->getLocale(), '2');
 
-        $aLaUneLocation = $this->propertyRepository->findBy([], null, 10);
-        $aLaUneVente = $this->propertyRepository->findBy([], null, 10);
+        $aLaUneLocation = $this->propertyRepository->findActiveBoostedForHome(
+            $country,
+            $city,
+            $request->getLocale(),
+            '2'
+        );
+
+        $aLaUneVente = $this->propertyRepository->findActiveBoostedForHome(
+            $country,
+            $city,
+            $request->getLocale(),
+            '1'
+        );
 
         return $this->render('public/home/_partials/_property_sections.html.twig', [
             'logementPopulaireVente' => $logementPopulaireVente,

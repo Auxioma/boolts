@@ -33,7 +33,7 @@ final class SubscriptionLifecycleController extends AbstractController
         if (!$this->isCsrfTokenValid('account_subscription_cancel', $this->readCsrfToken($request))) {
             $this->addFlash('error', 'Jeton de sécurité invalide.');
 
-            return $this->redirectToBillingSettings();
+            return $this->redirectAfterLifecycleAction($request);
         }
 
         try {
@@ -48,7 +48,7 @@ final class SubscriptionLifecycleController extends AbstractController
             $this->addFlash('error', 'Impossible de programmer la résiliation de votre abonnement.');
         }
 
-        return $this->redirectToBillingSettings();
+        return $this->redirectAfterLifecycleAction($request);
     }
 
     #[Route('/reactivate', name: 'reactivate', methods: ['POST'])]
@@ -57,7 +57,7 @@ final class SubscriptionLifecycleController extends AbstractController
         if (!$this->isCsrfTokenValid('account_subscription_reactivate', $this->readCsrfToken($request))) {
             $this->addFlash('error', 'Jeton de sécurité invalide.');
 
-            return $this->redirectToBillingSettings();
+            return $this->redirectAfterLifecycleAction($request);
         }
 
         try {
@@ -72,7 +72,7 @@ final class SubscriptionLifecycleController extends AbstractController
             $this->addFlash('error', 'Impossible de réactiver votre abonnement.');
         }
 
-        return $this->redirectToBillingSettings();
+        return $this->redirectAfterLifecycleAction($request);
     }
 
     #[Route('/customer-portal', name: 'customer_portal', methods: ['GET', 'POST'])]
@@ -125,6 +125,14 @@ final class SubscriptionLifecycleController extends AbstractController
     private function redirectToBillingSettings(): RedirectResponse
     {
         return new RedirectResponse($this->billingSettingsUrl());
+    }
+
+    private function redirectAfterLifecycleAction(Request $request): RedirectResponse
+    {
+        return match ((string) $request->request->get('_redirect_route')) {
+            'agence_immobiliere_options' => $this->redirectToRoute('agence_immobiliere_options'),
+            default => $this->redirectToBillingSettings(),
+        };
     }
 
     private function billingSettingsUrl(): string
