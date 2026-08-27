@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Subscription;
 
 use App\Repository\Billing\AgencySubscriptionRepository;
+use App\Entity\Billing\AgencySubscription;
 use App\Service\Stripe\StripeSubscriptionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -26,87 +27,130 @@ final readonly class SubscriptionProcessor
     ) {
     }
 
-    public function process(?\DateTimeImmutable $now = null): void
+    public function process(?\DateTimeImmutable $now = null): SubscriptionProcessingReport
     {
         $now ??= new \DateTimeImmutable();
+        $report = new SubscriptionProcessingReport($now, $this->batchSize);
 
-        $this->processActiveSubscriptions($now);
-        $this->processPaymentFailures($now);
-        $this->processDefinitivePaymentFailures($now);
-        $this->processCanceledSubscriptions($now);
-        $this->processSubscriptionsToSynchronize($now);
+        $this->processActiveSubscriptions($now, $report);
+        $this->processPaymentFailures($now, $report);
+        $this->processDefinitivePaymentFailures($now, $report);
+        $this->processCanceledSubscriptions($now, $report);
+        $this->processSubscriptionsToSynchronize($now, $report);
+
+        return $report;
     }
 
-    private function processActiveSubscriptions(\DateTimeImmutable $now): void
+    private function processActiveSubscriptions(
+        \DateTimeImmutable $now,
+        SubscriptionProcessingReport $report,
+    ): void
     {
-        foreach ($this->subscriptionRepository->findActiveSubscriptionsToProcess($now, $this->batchSize) as $subscription) {
+        $subscriptions = $this->subscriptionRepository->findActiveSubscriptionsToProcess($now, $this->batchSize);
+        $report->startPhase('ACTIVE_RENEWAL', \count($subscriptions));
+
+        foreach ($subscriptions as $subscription) {
             $this->guardedProcess(
                 'ACTIVE_RENEWAL',
-                (int) $subscription->getId(),
+                $subscription,
                 fn () => $this->renewalService->processActiveSubscription($subscription),
+                $report,
             );
         }
 
         $this->entityManager->clear();
     }
 
-    private function processPaymentFailures(\DateTimeImmutable $now): void
+    private function processPaymentFailures(
+        \DateTimeImmutable $now,
+        SubscriptionProcessingReport $report,
+    ): void
     {
-        foreach ($this->subscriptionRepository->findFailedSubscriptionsToRetry($now, $this->batchSize) as $subscription) {
+        $subscriptions = $this->subscriptionRepository->findFailedSubscriptionsToRetry($now, $this->batchSize);
+        $report->startPhase('PAYMENT_RETRY', \count($subscriptions));
+
+        foreach ($subscriptions as $subscription) {
             $this->guardedProcess(
                 'PAYMENT_RETRY',
-                (int) $subscription->getId(),
+                $subscription,
                 fn () => $this->recoveryService->processRetry($subscription, $now),
+                $report,
             );
         }
 
         $this->entityManager->clear();
     }
 
-    private function processDefinitivePaymentFailures(\DateTimeImmutable $now): void
+    private function processDefinitivePaymentFailures(
+        \DateTimeImmutable $now,
+        SubscriptionProcessingReport $report,
+    ): void
     {
-        foreach ($this->subscriptionRepository->findFailedSubscriptionsToFinalize($now, $this->batchSize) as $subscription) {
+        $subscriptions = $this->subscriptionRepository->findFailedSubscriptionsToFinalize($now, $this->batchSize);
+        $report->startPhase('PAYMENT_FAILURE_FINALIZATION', \count($subscriptions));
+
+        foreach ($subscriptions as $subscription) {
             $this->guardedProcess(
                 'PAYMENT_FAILURE_FINALIZATION',
-                (int) $subscription->getId(),
+                $subscription,
                 fn () => $this->recoveryService->finalizeDefinitiveFailure($subscription, $now),
+                $report,
             );
         }
 
         $this->entityManager->clear();
     }
 
-    private function processCanceledSubscriptions(\DateTimeImmutable $now): void
+    private function processCanceledSubscriptions(
+        \DateTimeImmutable $now,
+        SubscriptionProcessingReport $report,
+    ): void
     {
-        foreach ($this->subscriptionRepository->findCanceledSubscriptionsToFinalize($now, $this->batchSize) as $subscription) {
+        $subscriptions = $this->subscriptionRepository->findCanceledSubscriptionsToFinalize($now, $this->batchSize);
+        $report->startPhase('CANCELLATION_FINALIZATION', \count($subscriptions));
+
+        foreach ($subscriptions as $subscription) {
             $this->guardedProcess(
                 'CANCELLATION_FINALIZATION',
-                (int) $subscription->getId(),
+                $subscription,
                 fn () => $this->cancellationService->finalizeCancellation($subscription, $now),
+                $report,
             );
         }
 
         $this->entityManager->clear();
     }
 
-    private function processSubscriptionsToSynchronize(\DateTimeImmutable $now): void
+    private function processSubscriptionsToSynchronize(
+        \DateTimeImmutable $now,
+        SubscriptionProcessingReport $report,
+    ): void
     {
         $staleBefore = $now->modify('-6 hours');
+        $subscriptions = $this->subscriptionRepository->findSubscriptionsToSynchronize($staleBefore, $this->batchSize);
+        $report->startPhase('STRIPE_SYNCHRONIZATION', \count($subscriptions));
 
-        foreach ($this->subscriptionRepository->findSubscriptionsToSynchronize($staleBefore, $this->batchSize) as $subscription) {
+        foreach ($subscriptions as $subscription) {
             $subscriptionId = $subscription->getProviderSubscriptionId();
 
             if (!\is_string($subscriptionId) || '' === $subscriptionId) {
+                $report->skipped(
+                    'STRIPE_SYNCHRONIZATION',
+                    $subscription,
+                    'Identifiant d’abonnement Stripe absent.',
+                );
+
                 continue;
             }
 
             $this->guardedProcess(
                 'STRIPE_SYNCHRONIZATION',
-                (int) $subscription->getId(),
+                $subscription,
                 fn () => $this->synchronizationService->synchronizeFromStripe(
                     $subscription,
                     $this->stripeSubscriptionService->retrieve($subscriptionId),
                 ),
+                $report,
             );
         }
 
@@ -118,15 +162,18 @@ final readonly class SubscriptionProcessor
      */
     private function guardedProcess(
         string $action,
-        int $subscriptionId,
+        AgencySubscription $subscription,
         callable $operation,
+        SubscriptionProcessingReport $report,
     ): void {
         try {
             $operation();
+            $report->succeeded($action, $subscription);
         } catch (\Throwable $exception) {
+            $report->failed($action, $subscription, $exception);
             $this->logger->error('[SUBSCRIPTION CRON] Subscription processing failed.', [
                 'action' => $action,
-                'subscription' => $subscriptionId,
+                'subscription' => $subscription->getId(),
                 'message' => $exception->getMessage(),
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),

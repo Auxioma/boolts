@@ -128,6 +128,15 @@ CRON recommandé :
 */15 * * * * php /chemin/projet/bin/console app:subscriptions:process --env=prod
 ```
 
+La commande affiche :
+
+- les paramètres d'exécution et l'état du verrou anti-concurrence ;
+- le bilan des renouvellements, relances, échecs définitifs, résiliations et synchronisations Stripe ;
+- une ligne par abonnement avec son agence, son forfait, son statut, son échéance, son identifiant Stripe et le résultat ;
+- les totaux, la durée et le chemin du journal `var/log/{env}.subscription.log`.
+
+Elle retourne un code d'échec si une opération individuelle échoue, tout en continuant à traiter les autres abonnements du lot.
+
 Messenger doit être consommé en production :
 
 ```bash
