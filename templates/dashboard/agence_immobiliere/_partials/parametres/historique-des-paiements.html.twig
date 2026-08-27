@@ -26,42 +26,46 @@
 
                 {% if subscription_payments is defined and subscription_payments is not empty %}
                     {% for payment in subscription_payments %}
-                        {% set payment_status_label = {
-                            created: 'CRÉÉ',
-                            pending: 'EN ATTENTE',
-                            requires_payment_method: 'À RÉGULARISER',
-                            requires_action: 'ACTION REQUISE',
-                            processing: 'EN COURS',
-                            authorized: 'AUTORISÉ',
-                            succeeded: 'PAYÉ',
-                            failed: 'ÉCHOUÉ',
-                            canceled: 'ANNULÉ',
-                            partially_refunded: 'PARTIELLEMENT REMBOURSÉ',
-                            refunded: 'REMBOURSÉ',
-                        }[payment.status.value]|default(payment.status.value|upper) %}
+                        {% set payment_method = payment.paymentMethod %}
+                        {% set payment_method_snapshot = payment.paymentMethodSnapshot %}
+                        {% set payment_card_brand = payment_method and payment_method.brand
+                            ? payment_method.brand
+                            : payment_method_snapshot.brand|default(null)
+                        %}
+                        {% set payment_card_brand_key = payment_card_brand ? payment_card_brand|lower : 'card' %}
+                        {% set payment_card_label = {
+                            visa: 'Visa',
+                            mastercard: 'Mastercard',
+                            amex: 'American Express',
+                            american_express: 'American Express',
+                            cartes_bancaires: 'Cartes Bancaires',
+                            diners: 'Diners Club',
+                            discover: 'Discover',
+                            eftpos_au: 'Eftpos',
+                            jcb: 'JCB',
+                            link: 'Link',
+                            unionpay: 'UnionPay',
+                            card: 'Carte bancaire',
+                        }[payment_card_brand_key]|default(payment_card_brand|default('Carte bancaire')|capitalize) %}
+                        {% set payment_card_last4 = payment_method and payment_method.last4
+                            ? payment_method.last4
+                            : payment_method_snapshot.last4|default(null)
+                        %}
+                        {% set purchase_date = payment.paidAt|default(payment.createdAt) %}
                         {% set currency_sign = payment.currency ? payment.currency.signe|default('€') : '€' %}
 
                         <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
                             <div class="d-flex justify-content-between align-items-start pb-20 {{ not loop.last ? 'ligne-border-bottom' }}">
                                 <div>
                                     <h3 class="mb-0">
-                                        {{ payment.paidAt ? payment.paidAt|date('d/m/Y') : payment.createdAt|date('d/m/Y') }}
-                                        · {{ payment_status_label }}
+                                        {{ payment_card_label }}
+                                        {% if payment_card_last4 %}
+                                            {{ payment_card_last4 }}
+                                        {% endif %}
                                     </h3>
 
                                     <p class="mt-12 mb-0 js-field-value">
-                                        {% if payment.billingPeriodStart and payment.billingPeriodEnd %}
-                                            Période :
-                                            {{ payment.billingPeriodStart|date('d/m/Y') }}
-                                            →
-                                            {{ payment.billingPeriodEnd|date('d/m/Y') }}
-                                        {% else %}
-                                            Période non renseignée
-                                        {% endif %}
-
-                                        {% if payment.providerInvoiceId %}
-                                            · Facture {{ payment.providerInvoiceId }}
-                                        {% endif %}
+                                        {{ purchase_date|date('d/m/Y') }}
                                     </p>
                                 </div>
 

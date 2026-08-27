@@ -60,6 +60,8 @@ final class PaymentRepository extends ServiceEntityRepository
     public function findSubscriptionPaymentsForAgency(User $agency, int $limit = 24): array
     {
         return $this->createQueryBuilder('payment')
+            ->leftJoin('payment.paymentMethod', 'paymentMethod')
+            ->addSelect('paymentMethod')
             ->where('payment.agency = :agency')
             ->andWhere('payment.type IN (:types)')
             ->setParameter('agency', $agency)
