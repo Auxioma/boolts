@@ -230,9 +230,9 @@
         cancelAtPeriodEnd: abonnement_actuel.cancelAtPeriodEnd,
     } : null %}
     {% set selectedPeriod = subscription ? subscription.billingPeriod : 'monthly' %}
-    {% set currentAmountMinor = abonnement_actuel and not abonnement_actuel.plan.isFree
-        ? abonnement_actuel.amountSnapshotMinor
-        : 0
+    {% set currentPlanPriceId = abonnement_actuel and abonnement_actuel.planPrice
+        ? abonnement_actuel.planPrice.id
+        : null
     %}
 
     <main
@@ -574,17 +574,18 @@
                                 {% set monthlyPrice = forfait.monthly %}
                                 {% set annualPrice = forfait.annual %}
                                 {% set displayedPrice = selectedPeriod == 'annual' ? annualPrice : monthlyPrice %}
-                                {% set canSubscribeMonthly = monthlyPrice
-                                    and monthlyPrice.amountMinor > currentAmountMinor
+                                {% set canSubscribeMonthly = not plan.isFree
+                                    and monthlyPrice
+                                    and monthlyPrice.id != currentPlanPriceId
                                 %}
-                                {% set canSubscribeAnnual = annualPrice
-                                    and annualPrice.amountMinor > currentAmountMinor
+                                {% set canSubscribeAnnual = not plan.isFree
+                                    and annualPrice
+                                    and annualPrice.id != currentPlanPriceId
                                 %}
                                 {% set canSubscribe = selectedPeriod == 'annual'
                                     ? canSubscribeAnnual
                                     : canSubscribeMonthly
                                 %}
-
                                 {% set isCurrentPlan =
                                     abonnement_actuel
                                     and abonnement_actuel.plan.id == plan.id
@@ -694,48 +695,7 @@
                                             {% endif %}
                                         </div>
 
-                                        {% if isCurrentPlan %}
-
-                                            {% if abonnement_actuel and not plan.isFree and not abonnement_actuel.cancelAtPeriodEnd %}
-                                                <form
-                                                    method="post"
-                                                    action="{{ path('account_subscription_cancel') }}"
-                                                    class="mb-0 w-100"
-                                                >
-                                                    <input
-                                                        type="hidden"
-                                                        name="_token"
-                                                        value="{{ csrf_token('account_subscription_cancel') }}"
-                                                    >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="_redirect_route"
-                                                        value="agence_immobiliere_options"
-                                                    >
-
-                                                    <button
-                                                        class="btn achat-current-plan achat-subscribed-plan-button"
-                                                        type="submit"
-                                                    >
-                                                        Résilier l’abonnement
-                                                    </button>
-                                                </form>
-                                            {% else %}
-                                                <button
-                                                    class="btn achat-current-plan achat-subscribed-plan-button"
-                                                    type="button"
-                                                    disabled
-                                                >
-                                                    {{ abonnement_actuel and abonnement_actuel.cancelAtPeriodEnd
-                                                        ? 'Résiliation programmée'
-                                                        : 'Résilier l’abonnement'
-                                                    }}
-                                                </button>
-                                            {% endif %}
-
-                                        {% else %}
-
+                                        {% if not plan.isFree %}
                                             <a
                                                 href="{{ path('agence_immobiliere_achat', {
                                                     id: plan.id,
@@ -756,7 +716,6 @@
                                             >
                                                 Souscrire
                                             </a>
-
                                         {% endif %}
 
                                     </article>
