@@ -24,24 +24,69 @@
                 data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
             >
 
-                {% for i in 1..4 %}
-                    <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
-                        <div class="d-flex justify-content-between align-items-start pb-20 {{ not loop.last ? 'ligne-border-bottom' }}">
-                            <div>
-                                <h3 class="mb-0">
-                                    Mastercard {{ random(1000, 9999) }}
-                                </h3>
-                                <p class="mt-12 mb-0 js-field-value">
-                                    Date d’expiration :
-                                    {{ '%02d'|format(random(1, 12)) }}/{{ random(2027, 2032) }}
+                {% if subscription_payments is defined and subscription_payments is not empty %}
+                    {% for payment in subscription_payments %}
+                        {% set payment_status_label = {
+                            created: 'CRÉÉ',
+                            pending: 'EN ATTENTE',
+                            requires_payment_method: 'À RÉGULARISER',
+                            requires_action: 'ACTION REQUISE',
+                            processing: 'EN COURS',
+                            authorized: 'AUTORISÉ',
+                            succeeded: 'PAYÉ',
+                            failed: 'ÉCHOUÉ',
+                            canceled: 'ANNULÉ',
+                            partially_refunded: 'PARTIELLEMENT REMBOURSÉ',
+                            refunded: 'REMBOURSÉ',
+                        }[payment.status.value]|default(payment.status.value|upper) %}
+                        {% set currency_sign = payment.currency ? payment.currency.signe|default('€') : '€' %}
+
+                        <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
+                            <div class="d-flex justify-content-between align-items-start pb-20 {{ not loop.last ? 'ligne-border-bottom' }}">
+                                <div>
+                                    <h3 class="mb-0">
+                                        {{ payment.paidAt ? payment.paidAt|date('d/m/Y') : payment.createdAt|date('d/m/Y') }}
+                                        · {{ payment_status_label }}
+                                    </h3>
+
+                                    <p class="mt-12 mb-0 js-field-value">
+                                        {% if payment.billingPeriodStart and payment.billingPeriodEnd %}
+                                            Période :
+                                            {{ payment.billingPeriodStart|date('d/m/Y') }}
+                                            →
+                                            {{ payment.billingPeriodEnd|date('d/m/Y') }}
+                                        {% else %}
+                                            Période non renseignée
+                                        {% endif %}
+
+                                        {% if payment.providerInvoiceId %}
+                                            · Facture {{ payment.providerInvoiceId }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
+                                    {{ ((payment.amountPaidMinor > 0 ? payment.amountPaidMinor : payment.amountTotalMinor) / 100)|number_format(2, ',', ' ') }}
+                                    {{ currency_sign }}
                                 </p>
                             </div>
-                            <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
-                                19.99€
-                            </p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="js-editable-field formulaire">
+                        <div class="d-flex justify-content-between align-items-start pb-20">
+                            <div>
+                                <h3 class="mb-0">
+                                    Aucun paiement d’abonnement
+                                </h3>
+
+                                <p class="mt-12 mb-0 js-field-value">
+                                    Les renouvellements Stripe apparaîtront ici après synchronisation.
+                                </p>
+                            </div>
                         </div>
                     </div>
-                {% endfor %}
+                {% endif %}
 
             </div>
 

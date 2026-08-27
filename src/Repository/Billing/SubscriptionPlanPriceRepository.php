@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -77,6 +79,18 @@ final class SubscriptionPlanPriceRepository extends ServiceEntityRepository
             ->addOrderBy('plan.position', 'ASC')
             ->addOrderBy('price.id', 'ASC')
             ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findOneByPaymentProviderPriceId(string $paymentProviderPriceId): ?SubscriptionPlanPrice
+    {
+        return $this->createQueryBuilder('price')
+            ->addSelect('plan', 'currency')
+            ->innerJoin('price.plan', 'plan')
+            ->innerJoin('price.currency', 'currency')
+            ->where('price.paymentProviderPriceId = :paymentProviderPriceId')
+            ->setParameter('paymentProviderPriceId', $paymentProviderPriceId)
             ->getQuery()
             ->getOneOrNullResult();
     }

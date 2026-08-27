@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -74,6 +76,29 @@ class PropertyRepository extends ServiceEntityRepository
             )
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * @return list<Property>
+     */
+    public function findPublishedPropertiesExceedingQuota(
+        User $agency,
+        int $allowedPublishedProperties,
+    ): array {
+        if ($allowedPublishedProperties < 0) {
+            $allowedPublishedProperties = 0;
+        }
+
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.user = :agency')
+            ->andWhere('p.statut = :publishedStatus')
+            ->setParameter('agency', $agency)
+            ->setParameter('publishedStatus', StatutAnnonceImmobiliere::PUBLIEE)
+            ->orderBy('p.createdAt', 'DESC')
+            ->addOrderBy('p.id', 'DESC')
+            ->setFirstResult($allowedPublishedProperties)
+            ->getQuery()
+            ->getResult();
     }
 
     /**

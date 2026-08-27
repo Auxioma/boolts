@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -20,6 +22,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PaymentAttemptRepository::class)]
 #[ORM\Table(name: 'payment_attempt')]
+#[ORM\Index(name: 'idx_payment_attempt_subscription_invoice', columns: ['subscription_id', 'provider_invoice_id'])]
+#[ORM\UniqueConstraint(name: 'uniq_payment_attempt_invoice_number', columns: ['subscription_id', 'provider_invoice_id', 'attempt_number'])]
 class PaymentAttempt
 {
     use TimestampableTrait;
@@ -30,6 +34,10 @@ class PaymentAttempt
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Payment $payment;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
+    private ?AgencySubscription $subscription = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -43,6 +51,9 @@ class PaymentAttempt
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $providerPaymentIntentId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $providerInvoiceId = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $providerChargeId = null;
@@ -66,12 +77,17 @@ class PaymentAttempt
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $failureMessage = null;
 
+    // Nullable for legacy rows created before retry timestamps were stored.
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $attemptedAt = null;
+
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $completedAt = null;
 
     public function __construct()
     {
         $this->initializeTimestamps();
+        $this->attemptedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -87,6 +103,18 @@ class PaymentAttempt
     public function setPayment(Payment $payment): static
     {
         $this->payment = $payment;
+
+        return $this;
+    }
+
+    public function getSubscription(): ?AgencySubscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?AgencySubscription $subscription): static
+    {
+        $this->subscription = $subscription;
 
         return $this;
     }
@@ -135,6 +163,18 @@ class PaymentAttempt
     public function setProviderPaymentIntentId(?string $providerPaymentIntentId): static
     {
         $this->providerPaymentIntentId = $providerPaymentIntentId;
+
+        return $this;
+    }
+
+    public function getProviderInvoiceId(): ?string
+    {
+        return $this->providerInvoiceId;
+    }
+
+    public function setProviderInvoiceId(?string $providerInvoiceId): static
+    {
+        $this->providerInvoiceId = $providerInvoiceId;
 
         return $this;
     }
@@ -219,6 +259,18 @@ class PaymentAttempt
     public function setFailureMessage(?string $failureMessage): static
     {
         $this->failureMessage = $failureMessage;
+
+        return $this;
+    }
+
+    public function getAttemptedAt(): ?\DateTimeImmutable
+    {
+        return $this->attemptedAt;
+    }
+
+    public function setAttemptedAt(\DateTimeImmutable $attemptedAt): static
+    {
+        $this->attemptedAt = $attemptedAt;
 
         return $this;
     }

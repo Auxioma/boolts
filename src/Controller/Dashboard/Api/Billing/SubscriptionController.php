@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -118,7 +120,14 @@ final class SubscriptionController extends AbstractController
             ->where('subscription.agency = :agency')
             ->andWhere('subscription.status IN (:statuses)')
             ->setParameter('agency', $agency)
-            ->setParameter('statuses', [SubscriptionStatus::ACTIVE, SubscriptionStatus::INCOMPLETE, SubscriptionStatus::PAST_DUE])
+            ->setParameter('statuses', [
+                SubscriptionStatus::ACTIVE,
+                SubscriptionStatus::INCOMPLETE,
+                SubscriptionStatus::PAST_DUE,
+                SubscriptionStatus::PAYMENT_FAILED,
+                SubscriptionStatus::CANCEL_SCHEDULED,
+                SubscriptionStatus::UNPAID,
+            ])
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
@@ -199,6 +208,9 @@ final class SubscriptionController extends AbstractController
         [$periodStart, $periodEnd] = $this->resolveSubscriptionPeriod($stripeSubscription);
         $subscriptionItem = $this->firstSubscriptionItem($stripeSubscription);
         $invoiceId = \is_string($stripeSubscription->latest_invoice) ? $stripeSubscription->latest_invoice : null;
+        $now = new \DateTimeImmutable();
+        $providerPriceId = $this->resolveStripePriceId($subscriptionItem) ?? $planPrice->getPaymentProviderPriceId();
+        $providerProductId = $this->resolveStripeProductId($subscriptionItem);
 
         $this->closeOpenFreeSubscriptions($agency, $periodStart);
 
@@ -213,11 +225,16 @@ final class SubscriptionController extends AbstractController
             ->setProviderCustomerId($stripeSubscription->customer)
             ->setProviderSubscriptionId($stripeSubscription->id)
             ->setProviderSubscriptionItemId(null !== $subscriptionItem ? $this->readStripeString($subscriptionItem, 'id') : null)
+            ->setProviderPriceId($providerPriceId)
+            ->setProviderProductId($providerProductId)
+            ->setProviderLatestInvoiceId($invoiceId)
             ->setPropertyLimitSnapshot($planPrice->getPlan()->getPropertyLimit())
             ->setIncludedBoostsSnapshot($planPrice->getPlan()->getIncludedBoosts())
             ->setBoostDurationDaysSnapshot($planPrice->getPlan()->getBoostDurationDays())
             ->setAmountSnapshotMinor($planPrice->getAmountMinor())
-            ->setCurrencySnapshot($planPrice->getCurrency());
+            ->setCurrencySnapshot($planPrice->getCurrency())
+            ->setLastSuccessfulPaymentAt($now)
+            ->setLastStripeSyncAt($now);
 
         $payment = (new Payment())
             ->setReference('SUB-'.mb_strtoupper(bin2hex(random_bytes(8))))
@@ -234,7 +251,10 @@ final class SubscriptionController extends AbstractController
             ->setProviderInvoiceId($invoiceId)
             ->setPaymentMethodSnapshot(['brand' => $paymentMethod->getBrand(), 'last4' => $paymentMethod->getLast4()])
             ->setMetadata(['stripe_subscription_id' => $stripeSubscription->id])
-            ->setPaidAt(new \DateTimeImmutable());
+            ->setBillingPeriodStart($periodStart)
+            ->setBillingPeriodEnd($periodEnd)
+            ->setAttemptNumber(1)
+            ->setPaidAt($now);
 
         $period = (new AgencySubscriptionPeriod())
             ->setSubscription($subscription)
@@ -249,12 +269,15 @@ final class SubscriptionController extends AbstractController
             ->setProviderInvoiceId($invoiceId);
 
         $attempt = (new PaymentAttempt())
+            ->setSubscription($subscription)
             ->setPayment($payment)
             ->setPaymentMethod($paymentMethod)
             ->setStatus(PaymentAttemptStatus::SUCCEEDED)
+            ->setProviderInvoiceId($invoiceId)
             ->setAmountMinor($planPrice->getAmountMinor())
             ->setCurrency($planPrice->getCurrency())
-            ->setCompletedAt(new \DateTimeImmutable());
+            ->setAttemptedAt($now)
+            ->setCompletedAt($now);
         $subscriptionCredit = $this->createSubscriptionCreditTransaction(
             $agency,
             $period,
@@ -348,6 +371,34 @@ final class SubscriptionController extends AbstractController
         }
 
         return '' !== $stripeObject->{$property} ? $stripeObject->{$property} : null;
+    }
+
+    private function resolveStripePriceId(?object $subscriptionItem): ?string
+    {
+        if (null === $subscriptionItem || !isset($subscriptionItem->price) || !\is_object($subscriptionItem->price)) {
+            return null;
+        }
+
+        return $this->readStripeString($subscriptionItem->price, 'id');
+    }
+
+    private function resolveStripeProductId(?object $subscriptionItem): ?string
+    {
+        if (null === $subscriptionItem || !isset($subscriptionItem->price) || !\is_object($subscriptionItem->price)) {
+            return null;
+        }
+
+        $product = $subscriptionItem->price->product ?? null;
+
+        if (\is_string($product) && '' !== $product) {
+            return $product;
+        }
+
+        if (\is_object($product)) {
+            return $this->readStripeString($product, 'id');
+        }
+
+        return null;
     }
 
     private function closeOpenFreeSubscriptions(User $agency, \DateTimeImmutable $endedAt): void

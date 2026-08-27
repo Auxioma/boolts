@@ -15,6 +15,8 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\ProfileAgenceType;
 use App\Repository\Billing\AgencyPaymentMethodRepository;
+use App\Repository\Billing\AgencySubscriptionRepository;
+use App\Repository\Billing\PaymentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +38,8 @@ final class AgenceImmobiliereParametresController extends AbstractController
      */
     public function index(
         AgencyPaymentMethodRepository $paymentMethodRepository,
+        AgencySubscriptionRepository $subscriptionRepository,
+        PaymentRepository $paymentRepository,
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
     ): Response {
@@ -59,6 +63,8 @@ final class AgenceImmobiliereParametresController extends AbstractController
                 'form' => $form->createView(),
                 'stripe_public_key' => $stripePublicKey,
                 'payment_methods' => $paymentMethods,
+                'current_subscription' => $subscriptionRepository->findCurrentForAgency($user),
+                'subscription_payments' => $paymentRepository->findSubscriptionPaymentsForAgency($user),
             ]
         );
     }

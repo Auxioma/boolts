@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -29,6 +31,7 @@ enum StatutAnnonceImmobiliere: string
     case PUBLIEE = 'publiee';
     case DEPUBLIEE = 'depubliee';
     case SUSPENDUE = 'suspendue';
+    case SUSPENDED_BY_PLAN = 'suspended_by_plan';
     case EXPIREE = 'expiree';
 
     /*
@@ -66,6 +69,7 @@ enum StatutAnnonceImmobiliere: string
             self::PUBLIEE => 'Publiée',
             self::DEPUBLIEE => 'Dépubliée',
             self::SUSPENDUE => 'Suspendue',
+            self::SUSPENDED_BY_PLAN => 'Suspendue par limitation de forfait',
             self::EXPIREE => 'Expirée',
 
             self::DISPONIBLE => 'Disponible',
@@ -96,6 +100,7 @@ enum StatutAnnonceImmobiliere: string
             self::PUBLIEE => 'badge bg-success',
             self::DEPUBLIEE => 'badge bg-secondary',
             self::SUSPENDUE => 'badge bg-danger',
+            self::SUSPENDED_BY_PLAN => 'badge bg-danger',
             self::EXPIREE => 'badge bg-dark',
 
             self::DISPONIBLE => 'badge bg-primary',
@@ -126,6 +131,7 @@ enum StatutAnnonceImmobiliere: string
             self::PUBLIEE => 'eye',
             self::DEPUBLIEE => 'eye-off',
             self::SUSPENDUE => 'ban',
+            self::SUSPENDED_BY_PLAN => 'ban',
             self::EXPIREE => 'calendar-x',
 
             self::DISPONIBLE => 'badge-check',
@@ -183,6 +189,7 @@ enum StatutAnnonceImmobiliere: string
             'Publiée' => self::PUBLIEE,
             'Dépubliée' => self::DEPUBLIEE,
             'Suspendue' => self::SUSPENDUE,
+            'Suspendue par limitation de forfait' => self::SUSPENDED_BY_PLAN,
             'Expirée' => self::EXPIREE,
 
             'Disponible' => self::DISPONIBLE,

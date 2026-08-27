@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -42,6 +44,11 @@ final class BoosterTransactionRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BoosterTransaction::class);
+    }
+
+    public function findOneByIdempotencyKey(string $idempotencyKey): ?BoosterTransaction
+    {
+        return $this->findOneBy(['idempotencyKey' => $idempotencyKey]);
     }
 
     public function countAvailableForAgency(User $agency, ?\DateTimeImmutable $now = null): int

@@ -12,6 +12,13 @@ parameters:
     app.2fa.from_name: 'Boolts'
     stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'
     stripe.public_key: '%env(STRIPE_PUBLIC_KEY)%'
+    stripe.webhook_secret: '%env(STRIPE_WEBHOOK_SECRET)%'
+    app.url: '%env(APP_URL)%'
+    app.subscription_batch_size: 100
+    # app_driven: Boolts appelle /v1/invoices/{id}/pay sur l'invoice ouverte existante.
+    # En production, désactiver/configurer Stripe Smart Retries pour ne pas avoir deux moteurs de relance concurrents.
+    # stripe_managed: Boolts observe uniquement les relances Stripe et synchronise la base.
+    app.subscription_retry_strategy: 'app_driven'
 
 services:
     # default configuration for services in *this* file
@@ -76,4 +83,27 @@ services:
     App\Service\PropertyViewTracker:
         arguments:
             $kernelSecret: '%kernel.secret%'
+
+    App\Service\Subscription\:
+        resource: '../src/Service/Subscription/'
+        bind:
+            $logger: '@monolog.logger.subscription'
+
+    App\Command\ProcessSubscriptionsCommand:
+        arguments:
+            $logger: '@monolog.logger.subscription'
+
+    App\Controller\StripeWebhookController:
+        arguments:
+            $logger: '@monolog.logger.subscription'
+
+    App\Controller\Account\SubscriptionLifecycleController:
+        arguments:
+            $logger: '@monolog.logger.subscription'
+
+    App\MessageHandler\Billing\SendSubscriptionEmailMessageHandler:
+        arguments:
+            $logger: '@monolog.logger.subscription'
+            $mailerFromEmail: '%env(MAILER_FROM_EMAIL)%'
+            $mailerFromName: '%env(MAILER_FROM_NAME)%'
 

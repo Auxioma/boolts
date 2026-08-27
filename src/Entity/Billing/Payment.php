@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -23,6 +25,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PaymentRepository::class)]
 #[ORM\Table(name: 'payment')]
+#[ORM\Index(name: 'idx_payment_subscription_type', columns: ['subscription_id', 'type'])]
 class Payment
 {
     use TimestampableTrait;
@@ -106,7 +109,7 @@ class Payment
     #[ORM\Column(length: 255, nullable: true, unique: true)]
     private ?string $providerChargeId = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255, nullable: true, unique: true)]
     private ?string $providerInvoiceId = null;
 
     #[ORM\Column(length: 255, nullable: true, unique: true)]
@@ -120,6 +123,15 @@ class Payment
 
     #[ORM\Column(type: 'json')]
     private array $metadata = [];
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $billingPeriodStart = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $billingPeriodEnd = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $attemptNumber = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $failureCode = null;
@@ -481,6 +493,42 @@ class Payment
     public function setMetadata(array $metadata): static
     {
         $this->metadata = $metadata;
+
+        return $this;
+    }
+
+    public function getBillingPeriodStart(): ?\DateTimeImmutable
+    {
+        return $this->billingPeriodStart;
+    }
+
+    public function setBillingPeriodStart(?\DateTimeImmutable $billingPeriodStart): static
+    {
+        $this->billingPeriodStart = $billingPeriodStart;
+
+        return $this;
+    }
+
+    public function getBillingPeriodEnd(): ?\DateTimeImmutable
+    {
+        return $this->billingPeriodEnd;
+    }
+
+    public function setBillingPeriodEnd(?\DateTimeImmutable $billingPeriodEnd): static
+    {
+        $this->billingPeriodEnd = $billingPeriodEnd;
+
+        return $this;
+    }
+
+    public function getAttemptNumber(): ?int
+    {
+        return $this->attemptNumber;
+    }
+
+    public function setAttemptNumber(?int $attemptNumber): static
+    {
+        $this->attemptNumber = null === $attemptNumber ? null : max(1, $attemptNumber);
 
         return $this;
     }

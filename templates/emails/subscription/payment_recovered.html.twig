@@ -1,0 +1,5 @@
+<p>Bonjour,</p>
+
+<p>Votre paiement a bien été régularisé.</p>
+
+<p>Votre abonnement est de nouveau actif{% if current_period_end is defined and current_period_end %} jusqu'au {{ current_period_end|date('d/m/Y') }}{% endif %}.</p>

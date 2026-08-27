@@ -4,6 +4,7 @@ monolog:
         - deprecation
         - frontend
         - success
+        - subscription
 
     handlers:
         # Errors and more severe events (critical, alert, emergency).
@@ -34,6 +35,12 @@ monolog:
             level: info
             max_level: info
             channels: [success]
+
+        subscription:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.subscription.log"
+            level: info
+            channels: [subscription]
 
         # Preserve diagnostics without duplicating errors, warnings, or business-success logs.
         application:

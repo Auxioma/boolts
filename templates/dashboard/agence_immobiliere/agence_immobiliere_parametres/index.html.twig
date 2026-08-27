@@ -39,10 +39,16 @@
                                 {
                                     stripe_public_key: stripe_public_key,
                                     payment_methods: payment_methods,
+                                    current_subscription: current_subscription,
                                 },
                             ) }}
 
-                            {{ include('dashboard/agence_immobiliere/_partials/parametres/historique-des-paiements.html.twig') }}
+                            {{ include(
+                                'dashboard/agence_immobiliere/_partials/parametres/historique-des-paiements.html.twig',
+                                {
+                                    subscription_payments: subscription_payments,
+                                },
+                            ) }}
                             {{ include('dashboard/agence_immobiliere/_partials/parametres/langue_et_devise.html.twig') }}
 
                             <div class="js-success-message flash-message flash-message-success message-flash-profile d-none"></div>

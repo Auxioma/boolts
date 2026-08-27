@@ -1,0 +1,5 @@
+<p>Bonjour,</p>
+
+<p>Votre résiliation est programmée.</p>
+
+<p>Vous conservez votre forfait {{ plan|default('payant')|upper }}{% if current_period_end is defined and current_period_end %} jusqu'au {{ current_period_end|date('d/m/Y') }}{% endif %}. Aucun nouveau renouvellement ne sera déclenché après cette période.</p>

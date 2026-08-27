@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -21,6 +23,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AgencySubscriptionRepository::class)]
 #[ORM\Table(name: 'agency_subscription')]
+#[ORM\Index(name: 'idx_agency_subscription_status_period_end', columns: ['status', 'current_period_end'])]
+#[ORM\Index(name: 'idx_agency_subscription_retry', columns: ['status', 'next_payment_retry_at'])]
 class AgencySubscription
 {
     use TimestampableTrait;
@@ -59,6 +63,9 @@ class AgencySubscription
     private ?\DateTimeImmutable $canceledAt = null;
 
     #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $cancelRequestedAt = null;
+
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $endedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -69,6 +76,36 @@ class AgencySubscription
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $providerSubscriptionItemId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $providerPriceId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $providerProductId = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $providerLatestInvoiceId = null;
+
+    #[ORM\Column(options: ['default' => 0])]
+    private int $paymentFailureCount = 0;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $firstPaymentFailureAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastPaymentFailureAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $nextPaymentRetryAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $paymentRecoveryDeadline = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastSuccessfulPaymentAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $lastStripeSyncAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $propertyLimitSnapshot = null;
@@ -205,6 +242,18 @@ class AgencySubscription
         return $this;
     }
 
+    public function getCancelRequestedAt(): ?\DateTimeImmutable
+    {
+        return $this->cancelRequestedAt;
+    }
+
+    public function setCancelRequestedAt(?\DateTimeImmutable $cancelRequestedAt): static
+    {
+        $this->cancelRequestedAt = $cancelRequestedAt;
+
+        return $this;
+    }
+
     public function getEndedAt(): ?\DateTimeImmutable
     {
         return $this->endedAt;
@@ -249,6 +298,133 @@ class AgencySubscription
     public function setProviderSubscriptionItemId(?string $providerSubscriptionItemId): static
     {
         $this->providerSubscriptionItemId = $providerSubscriptionItemId;
+
+        return $this;
+    }
+
+    public function getProviderPriceId(): ?string
+    {
+        return $this->providerPriceId;
+    }
+
+    public function setProviderPriceId(?string $providerPriceId): static
+    {
+        $this->providerPriceId = $providerPriceId;
+
+        return $this;
+    }
+
+    public function getProviderProductId(): ?string
+    {
+        return $this->providerProductId;
+    }
+
+    public function setProviderProductId(?string $providerProductId): static
+    {
+        $this->providerProductId = $providerProductId;
+
+        return $this;
+    }
+
+    public function getProviderLatestInvoiceId(): ?string
+    {
+        return $this->providerLatestInvoiceId;
+    }
+
+    public function setProviderLatestInvoiceId(?string $providerLatestInvoiceId): static
+    {
+        $this->providerLatestInvoiceId = $providerLatestInvoiceId;
+
+        return $this;
+    }
+
+    public function getPaymentFailureCount(): int
+    {
+        return $this->paymentFailureCount;
+    }
+
+    public function setPaymentFailureCount(int $paymentFailureCount): static
+    {
+        $this->paymentFailureCount = max(0, $paymentFailureCount);
+
+        return $this;
+    }
+
+    public function incrementPaymentFailureCount(): static
+    {
+        ++$this->paymentFailureCount;
+
+        return $this;
+    }
+
+    public function getFirstPaymentFailureAt(): ?\DateTimeImmutable
+    {
+        return $this->firstPaymentFailureAt;
+    }
+
+    public function setFirstPaymentFailureAt(?\DateTimeImmutable $firstPaymentFailureAt): static
+    {
+        $this->firstPaymentFailureAt = $firstPaymentFailureAt;
+
+        return $this;
+    }
+
+    public function getLastPaymentFailureAt(): ?\DateTimeImmutable
+    {
+        return $this->lastPaymentFailureAt;
+    }
+
+    public function setLastPaymentFailureAt(?\DateTimeImmutable $lastPaymentFailureAt): static
+    {
+        $this->lastPaymentFailureAt = $lastPaymentFailureAt;
+
+        return $this;
+    }
+
+    public function getNextPaymentRetryAt(): ?\DateTimeImmutable
+    {
+        return $this->nextPaymentRetryAt;
+    }
+
+    public function setNextPaymentRetryAt(?\DateTimeImmutable $nextPaymentRetryAt): static
+    {
+        $this->nextPaymentRetryAt = $nextPaymentRetryAt;
+
+        return $this;
+    }
+
+    public function getPaymentRecoveryDeadline(): ?\DateTimeImmutable
+    {
+        return $this->paymentRecoveryDeadline;
+    }
+
+    public function setPaymentRecoveryDeadline(?\DateTimeImmutable $paymentRecoveryDeadline): static
+    {
+        $this->paymentRecoveryDeadline = $paymentRecoveryDeadline;
+
+        return $this;
+    }
+
+    public function getLastSuccessfulPaymentAt(): ?\DateTimeImmutable
+    {
+        return $this->lastSuccessfulPaymentAt;
+    }
+
+    public function setLastSuccessfulPaymentAt(?\DateTimeImmutable $lastSuccessfulPaymentAt): static
+    {
+        $this->lastSuccessfulPaymentAt = $lastSuccessfulPaymentAt;
+
+        return $this;
+    }
+
+    public function getLastStripeSyncAt(): ?\DateTimeImmutable
+    {
+        return $this->lastStripeSyncAt;
+    }
+
+    public function setLastStripeSyncAt(?\DateTimeImmutable $lastStripeSyncAt): static
+    {
+        $this->lastStripeSyncAt = $lastStripeSyncAt;
 
         return $this;
     }

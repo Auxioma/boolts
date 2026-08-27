@@ -19,6 +19,140 @@
                 Moyens de paiement
             </h2>
 
+            {% if current_subscription is defined and current_subscription %}
+                {% set subscription_status_label = {
+                    free: 'Gratuit',
+                    incomplete: 'Paiement à confirmer',
+                    active: 'Actif',
+                    past_due: 'Paiement en retard',
+                    payment_failed: 'Paiement échoué',
+                    cancel_scheduled: 'Résiliation programmée',
+                    canceled: 'Résilié',
+                    unpaid: 'Impayé',
+                    expired: 'Expiré',
+                }[current_subscription.status.value]|default(current_subscription.status.value) %}
+                {% set billing_period_label = current_subscription.planPrice
+                    ? {
+                        monthly: 'Mensuelle',
+                        annual: 'Annuelle',
+                    }[current_subscription.planPrice.billingPeriod.value]|default(current_subscription.planPrice.billingPeriod.value)
+                    : 'Non renseignée'
+                %}
+                {% set currency_sign = current_subscription.currencySnapshot ? current_subscription.currencySnapshot.signe|default('€') : '€' %}
+                {% set current_period_end = current_subscription.currentPeriodEnd %}
+
+                <div class="card-information-public-profile my-32 py-18 px-24 subscription-summary">
+                    <div class="subscription-summary__header">
+                        <div>
+                            <h5 class="mb-8 mode-de-paiement-profile">
+                                Abonnement
+                            </h5>
+
+                            <p class="mb-0 subscription-summary__plan">
+                                {{ current_subscription.plan.name }}
+                            </p>
+                        </div>
+
+                        <span class="subscription-summary__status subscription-summary__status--{{ current_subscription.status.value }}">
+                            {{ subscription_status_label }}
+                        </span>
+                    </div>
+
+                    <div class="subscription-summary__grid mt-24">
+                        <div>
+                            <span>Forfait</span>
+                            <strong>{{ current_subscription.plan.name }}</strong>
+                        </div>
+
+                        <div>
+                            <span>Périodicité</span>
+                            <strong>{{ billing_period_label }}</strong>
+                        </div>
+
+                        <div>
+                            <span>
+                                {{ current_subscription.cancelAtPeriodEnd ? 'Fin des droits' : 'Prochain renouvellement' }}
+                            </span>
+                            <strong>
+                                {{ current_period_end ? current_period_end|date('d/m/Y') : 'Non renseigné' }}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Prix</span>
+                            <strong>
+                                {{ (current_subscription.amountSnapshotMinor / 100)|number_format(2, ',', ' ') }}
+                                {{ currency_sign }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    {% if current_subscription.status.value in ['past_due', 'payment_failed', 'unpaid'] %}
+                        <div class="subscription-summary__notice subscription-summary__notice--warning mt-24">
+                            Votre dernier paiement a échoué. Tentative :
+                            {{ current_subscription.paymentFailureCount }} / 5.
+                            Merci de mettre à jour votre moyen de paiement.
+                        </div>
+                    {% elseif current_subscription.status.value == 'cancel_scheduled' %}
+                        <div class="subscription-summary__notice mt-24">
+                            Votre abonnement est résilié. Vous conservez votre forfait
+                            {{ current_subscription.plan.name }}
+                            jusqu’au
+                            {{ current_period_end ? current_period_end|date('d/m/Y') : 'terme de la période payée' }}.
+                        </div>
+                    {% endif %}
+
+                    <div class="subscription-summary__actions mt-24">
+                        <a
+                            href="{{ path('account_subscription_customer_portal') }}"
+                            class="btn-add-payment py-10 px-16"
+                        >
+                            Mettre à jour mon moyen de paiement
+                        </a>
+
+                        {% if not current_subscription.plan.free %}
+                            {% if current_subscription.cancelAtPeriodEnd %}
+                                <form
+                                    method="post"
+                                    action="{{ path('account_subscription_reactivate') }}"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="_token"
+                                        value="{{ csrf_token('account_subscription_reactivate') }}"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="subscription-summary__secondary-button"
+                                    >
+                                        Réactiver
+                                    </button>
+                                </form>
+                            {% elseif current_subscription.status.value in ['active', 'past_due', 'payment_failed'] %}
+                                <form
+                                    method="post"
+                                    action="{{ path('account_subscription_cancel') }}"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="_token"
+                                        value="{{ csrf_token('account_subscription_cancel') }}"
+                                    >
+
+                                    <button
+                                        type="submit"
+                                        class="subscription-summary__danger-button"
+                                    >
+                                        Résilier mon abonnement
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
             <div class="card-information-public-profile my-32 py-18 px-24">
                 <div class="connexion-securite">
                     <h5 class="mb-32 mode-de-paiement-profile">
@@ -988,6 +1122,147 @@
 
     body.payment-modal-open {
         overflow: hidden;
+    }
+
+    .subscription-summary__header,
+    .subscription-summary__actions {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+    }
+
+    .subscription-summary__plan {
+        color: #111111;
+
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 24px;
+    }
+
+    .subscription-summary__status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 30px;
+        padding: 6px 10px;
+
+        color: #174f2d;
+        background: #e8f6ed;
+
+        border-radius: 6px;
+
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px;
+        white-space: nowrap;
+    }
+
+    .subscription-summary__status--past_due,
+    .subscription-summary__status--payment_failed,
+    .subscription-summary__status--unpaid,
+    .subscription-summary__status--cancel_scheduled {
+        color: #7a3f00;
+        background: #fff1da;
+    }
+
+    .subscription-summary__status--canceled,
+    .subscription-summary__status--expired {
+        color: #842029;
+        background: #f8d7da;
+    }
+
+    .subscription-summary__grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .subscription-summary__grid span {
+        display: block;
+        margin-bottom: 5px;
+
+        color: #7b7f86;
+
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 15px;
+        text-transform: uppercase;
+    }
+
+    .subscription-summary__grid strong {
+        display: block;
+
+        color: #111111;
+
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 20px;
+    }
+
+    .subscription-summary__notice {
+        padding: 12px 14px;
+
+        color: #4f3300;
+        background: #fff7e8;
+
+        border: 1px solid #ffe0ac;
+        border-radius: 8px;
+
+        font-size: 13px;
+        line-height: 19px;
+    }
+
+    .subscription-summary__notice--warning {
+        color: #842029;
+        background: #f8d7da;
+
+        border-color: #f5c2c7;
+    }
+
+    .subscription-summary__secondary-button,
+    .subscription-summary__danger-button {
+        min-height: 42px;
+        padding: 9px 14px;
+
+        background: #ffffff;
+
+        border-radius: 8px;
+
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 18px;
+
+        cursor: pointer;
+    }
+
+    .subscription-summary__secondary-button {
+        color: #111111;
+        border: 1px solid #d5d9e2;
+    }
+
+    .subscription-summary__danger-button {
+        color: #d91e31;
+        border: 1px solid #f3a3ad;
+    }
+
+    @media (max-width: 991px) {
+        .subscription-summary__grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575px) {
+        .subscription-summary__header,
+        .subscription-summary__actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .subscription-summary__grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
