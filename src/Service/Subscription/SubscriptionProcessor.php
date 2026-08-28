@@ -15,6 +15,7 @@ final readonly class SubscriptionProcessor
 {
     public function __construct(
         private AgencySubscriptionRepository $subscriptionRepository,
+        private FreeSubscriptionRenewalService $freeRenewalService,
         private SubscriptionRenewalService $renewalService,
         private SubscriptionPaymentRecoveryService $recoveryService,
         private SubscriptionCancellationService $cancellationService,
@@ -32,6 +33,7 @@ final readonly class SubscriptionProcessor
         $now ??= new \DateTimeImmutable();
         $report = new SubscriptionProcessingReport($now, $this->batchSize);
 
+        $this->processFreeSubscriptions($now, $report);
         $this->processActiveSubscriptions($now, $report);
         $this->processPaymentFailures($now, $report);
         $this->processDefinitivePaymentFailures($now, $report);
@@ -39,6 +41,25 @@ final readonly class SubscriptionProcessor
         $this->processSubscriptionsToSynchronize($now, $report);
 
         return $report;
+    }
+
+    private function processFreeSubscriptions(
+        \DateTimeImmutable $now,
+        SubscriptionProcessingReport $report,
+    ): void {
+        $subscriptions = $this->subscriptionRepository->findFreeSubscriptionsToRenew($now, $this->batchSize);
+        $report->startPhase('FREE_RENEWAL', \count($subscriptions));
+
+        foreach ($subscriptions as $subscription) {
+            $this->guardedProcess(
+                'FREE_RENEWAL',
+                $subscription,
+                fn () => $this->freeRenewalService->renew($subscription, $now),
+                $report,
+            );
+        }
+
+        $this->entityManager->clear();
     }
 
     private function processActiveSubscriptions(

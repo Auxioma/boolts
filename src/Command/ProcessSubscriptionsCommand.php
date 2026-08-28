@@ -67,6 +67,7 @@ final class ProcessSubscriptionsCommand extends Command
         }
 
         $phaseLabels = [
+            'FREE_RENEWAL' => 'Renouvellements gratuits',
             'ACTIVE_RENEWAL' => 'Renouvellements actifs',
             'PAYMENT_RETRY' => 'Relances de paiement',
             'PAYMENT_FAILURE_FINALIZATION' => 'Échecs de paiement définitifs',

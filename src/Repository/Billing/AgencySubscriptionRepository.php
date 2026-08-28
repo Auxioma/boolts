@@ -153,6 +153,33 @@ final class AgencySubscriptionRepository extends ServiceEntityRepository
     /**
      * @return list<AgencySubscription>
      */
+    public function findFreeSubscriptionsToRenew(
+        \DateTimeImmutable $now,
+        int $limit = 100,
+    ): array {
+        return $this->createQueryBuilder('subscription')
+            ->addSelect('agency', 'plan', 'price', 'currency')
+            ->innerJoin('subscription.agency', 'agency')
+            ->innerJoin('subscription.plan', 'plan')
+            ->leftJoin('subscription.planPrice', 'price')
+            ->leftJoin('price.currency', 'currency')
+            ->where('subscription.status = :status')
+            ->andWhere('plan.isFree = :free')
+            ->andWhere('subscription.endedAt IS NULL')
+            ->andWhere('subscription.currentPeriodEnd IS NULL OR subscription.currentPeriodEnd <= :now')
+            ->setParameter('status', SubscriptionStatus::FREE)
+            ->setParameter('free', true)
+            ->setParameter('now', $now)
+            ->orderBy('subscription.currentPeriodEnd', 'ASC')
+            ->addOrderBy('subscription.id', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<AgencySubscription>
+     */
     public function findFailedSubscriptionsToRetry(
         \DateTimeImmutable $now,
         int $limit = 100,
