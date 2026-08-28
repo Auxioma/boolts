@@ -289,10 +289,14 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter(
                 'statuts',
                 [
+                    // Les brouillons sont affichés dans leur propre section
+                    // sur la page "Mes biens" et sont donc exclus de la
+                    // liste principale paginée / filtrable.
                     StatutAnnonceImmobiliere::PUBLIEE,
                     StatutAnnonceImmobiliere::DEPUBLIEE,
-                    StatutAnnonceImmobiliere::BROUILLON,
                     StatutAnnonceImmobiliere::PENDING,
+                    StatutAnnonceImmobiliere::REFUSEE,
+                    StatutAnnonceImmobiliere::SUSPENDUE,
                 ]
             );
 

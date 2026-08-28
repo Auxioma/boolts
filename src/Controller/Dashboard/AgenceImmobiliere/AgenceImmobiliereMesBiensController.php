@@ -19,6 +19,7 @@ use App\Entity\Property;
 use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Form\Filter\ModalFilterType;
+use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\PropertyRepository;
 use App\Service\Billing\AgencyPropertyQuotaCalculator;
 use App\Service\MapboxAddressTranslator;
@@ -39,6 +40,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         PropertyRepository $propertyRepository,
         PaginatorInterface $paginator,
         Request $request,
+        AgencyPropertyQuotaCalculator $agencyPropertyQuotaCalculator,
+        BoosterTransactionRepository $boosterTransactionRepository,
     ): Response {
         $user = $this->getUser();
 
@@ -98,10 +101,56 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             10
         );
 
+        /*
+         * Identifie, parmi les annonces de la page courante, celles qui
+         * disposent d'un boost actif afin d'afficher le badge "Boostée"
+         * et de masquer le bouton "Booster".
+         */
+        $pageItems = $properties->getItems();
+
+        if (!\is_array($pageItems)) {
+            $pageItems = iterator_to_array($pageItems);
+        }
+
+        $pagePropertyIds = array_values(
+            array_filter(
+                array_map(
+                    static fn (Property $property): ?int => $property->getId(),
+                    $pageItems
+                )
+            )
+        );
+
+        $boostedPropertyIds = $propertyRepository->findBoostedPropertyIds(
+            $pagePropertyIds
+        );
+
+        /*
+         * Brouillons : affichés dans leur propre section.
+         * Règle métier : 4 brouillons maximum par utilisateur, purge
+         * automatique au bout de 3 mois (mail de prévenance 30 jours avant).
+         */
+        $drafts = $propertyRepository->findBy(
+            [
+                'user' => $user,
+                'statut' => StatutAnnonceImmobiliere::BROUILLON,
+            ],
+            ['updatedAt' => 'DESC'],
+            4
+        );
+
+        $quota = $agencyPropertyQuotaCalculator->calculate($user);
+        $boostBalance = $boosterTransactionRepository
+            ->countAvailableBySourceForAgency($user);
+
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_mes_biens/list.html.twig',
             [
                 'properties' => $properties,
+                'drafts' => $drafts,
+                'boostedPropertyIds' => $boostedPropertyIds,
+                'annoncesRestantes' => $quota['remaining'],
+                'boostsRestants' => $boostBalance['total'],
                 'filterForm' => $filterForm->createView(),
                 'modal_filter' => $filters,
                 'searchValue' => $search,

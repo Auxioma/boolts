@@ -4,6 +4,14 @@
 
 {% block body %}
 
+{% set statusLabels = {
+    'publiee': 'Publiée',
+    'depubliee': 'Pause',
+    'pending': 'En attente',
+    'refusee': 'Refusée',
+    'suspendue': 'Suspendue',
+} %}
+
 <main id="dashboard" class="dashboard">
 
     <div class="container-fluid">
@@ -18,168 +26,190 @@
 
                         <div class="agence-mes-biens-list">
 
-                            <div class="mes-biens-immobilier">
+                            {# ===================================================
+                               EN-TÊTE : titre + compteurs (annonces / boosts)
+                               =================================================== #}
+                            <div class="mes-biens-header mb-24">
 
-                                <div class="d-flex justify-content-between align-items-start mb-32">
+                                <h1>Mes biens</h1>
 
-                                    <div>
-                                        <h1>
-                                            Mes biens
-                                        </h1>
+                                <div class="mes-biens-badges">
 
-                                        <p class="description-page">
-                                            Retrouvez ici toutes vos annonces immobilières.
-                                        </p>
-                                    </div>
+                                    <span class="mes-biens-badge">
+                                        <i class="icon-building-2" aria-hidden="true"></i>
+                                        Annonces restantes : {{ annoncesRestantes is null ? '∞' : annoncesRestantes }}
+                                    </span>
 
-                                    <a
-                                        href="{{ path('agence_immobiliere_mes_biens', { token: random(2147483647) }) }}"
-                                        class="btn-deposer-annonce"
-                                    >
-                                        <i class="icon-circle-plus"></i>
-                                        Déposer une annonce
-                                    </a>
+                                    <span class="mes-biens-badge">
+                                        <i class="icon-zap" aria-hidden="true"></i>
+                                        Boost : {{ boostsRestants }}
+                                    </span>
 
                                 </div>
 
-                                <div class="property-tools mb-24">
+                            </div>
 
-                                    <form
-                                        method="get"
-                                        action="{{ path('agence_immobiliere_mes_biens_list') }}"
-                                        class="property-search"
+                            {# ===================================================
+                               BARRE DE RECHERCHE / FILTRES / TRI / DÉPÔT
+                               =================================================== #}
+                            <div class="property-tools mb-24">
+
+                                <form
+                                    method="get"
+                                    action="{{ path('agence_immobiliere_mes_biens_list') }}"
+                                    class="property-search"
+                                    role="search"
+                                >
+
+                                    <input
+                                        type="search"
+                                        name="search"
+                                        value="{{ app.request.query.get('search') }}"
+                                        placeholder="Rechercher un bien, une référence, une ville ou un pays"
+                                        autocomplete="off"
                                     >
 
-                                        <button
-                                            type="submit"
-                                            class="property-search-submit"
-                                            aria-label="Rechercher"
-                                        >
-                                            <i
-                                                class="icon-search"
-                                                aria-hidden="true"
-                                            ></i>
-                                        </button>
-
+                                    {% if app.request.query.get('sort') %}
                                         <input
-                                            type="search"
-                                            name="search"
-                                            value="{{ app.request.query.get('search') }}"
-                                            placeholder="Rechercher un bien, une référence, une ville ou un pays"
-                                            autocomplete="off"
+                                            type="hidden"
+                                            name="sort"
+                                            value="{{ app.request.query.get('sort') }}"
                                         >
+                                    {% endif %}
 
-                                        {% if app.request.query.get('sort') %}
-                                            <input
-                                                type="hidden"
-                                                name="sort"
-                                                value="{{ app.request.query.get('sort') }}"
-                                            >
-                                        {% endif %}
+                                    {% if app.request.query.get('direction') %}
+                                        <input
+                                            type="hidden"
+                                            name="direction"
+                                            value="{{ app.request.query.get('direction') }}"
+                                        >
+                                    {% endif %}
 
-                                        {% if app.request.query.get('direction') %}
-                                            <input
-                                                type="hidden"
-                                                name="direction"
-                                                value="{{ app.request.query.get('direction') }}"
-                                            >
-                                        {% endif %}
+                                    {% for key, value in app.request.query.all('modal_filter') %}
 
-                                        {% for key, value in app.request.query.all('modal_filter') %}
+                                        {% if value is iterable %}
 
-                                            {% if value is iterable %}
-
-                                                {% for childKey, childValue in value %}
-                                                    <input
-                                                        type="hidden"
-                                                        name="modal_filter[{{ key }}][{{ childKey }}]"
-                                                        value="{{ childValue }}"
-                                                    >
-                                                {% endfor %}
-
-                                            {% else %}
-
+                                            {% for childKey, childValue in value %}
                                                 <input
                                                     type="hidden"
-                                                    name="modal_filter[{{ key }}]"
-                                                    value="{{ value }}"
+                                                    name="modal_filter[{{ key }}][{{ childKey }}]"
+                                                    value="{{ childValue }}"
                                                 >
+                                            {% endfor %}
 
-                                            {% endif %}
+                                        {% else %}
 
-                                        {% endfor %}
+                                            <input
+                                                type="hidden"
+                                                name="modal_filter[{{ key }}]"
+                                                value="{{ value }}"
+                                            >
 
-                                    </form>
+                                        {% endif %}
+
+                                    {% endfor %}
 
                                     <button
-                                        type="button"
-                                        class="btn-dashboard-filter"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#booltsFiltersModal"
+                                        type="submit"
+                                        class="property-search-submit"
+                                        aria-label="Rechercher"
                                     >
-                                        <i class="icon-filter"></i>
-                                        Filtres
+                                        <i class="icon-search" aria-hidden="true"></i>
                                     </button>
 
-                                    <a
-                                        href="{{ path('agence_immobiliere_mes_biens_list', {
-                                            sort: 'createdAt',
-                                            direction: 'DESC'
-                                        }) }}"
-                                        class="btn-dashboard-filter"
+                                </form>
+
+                                <button
+                                    type="button"
+                                    class="btn-dashboard-filter"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#booltsFiltersModal"
+                                >
+                                    <i class="icon-filter"></i>
+                                    Filtres
+                                </button>
+
+                                <a
+                                    href="{{ path('agence_immobiliere_mes_biens_list', {
+                                        sort: 'createdAt',
+                                        direction: 'DESC'
+                                    }) }}"
+                                    class="btn-dashboard-filter"
+                                >
+                                    <i class="icon-arrow-down-up"></i>
+                                    Trier
+                                </a>
+
+                                <a
+                                    href="{{ path('agence_immobiliere_mes_biens', { token: random(2147483647) }) }}"
+                                    class="btn-deposer-annonce"
+                                >
+                                    <i class="icon-plus"></i>
+                                    Déposer une annonce
+                                </a>
+
+                            </div>
+
+                            {% if drafts is not empty or properties|length %}
+
+                                <form
+                                    method="post"
+                                    action="{{ path('agence_immobiliere_mes_biens_bulk_action') }}"
+                                    data-controller="mes-biens--property-bulk-actions"
+                                >
+
+                                    <input
+                                        type="hidden"
+                                        name="_token"
+                                        value="{{ csrf_token('property_bulk_action') }}"
                                     >
-                                        <i class="icon-arrow-down-up"></i>
-                                        Trier
-                                    </a>
 
-                                </div>
-
-                                <div class="property-count mb-24">
-                                    {{ properties.getTotalItemCount }}
-                                    bien{{ properties.getTotalItemCount > 1 ? 's' }}
-                                </div>
-
-                                {% if properties|length %}
-
-                                    <form
-                                        method="post"
-                                        action="{{ path('agence_immobiliere_mes_biens_bulk_action') }}"
-                                        data-controller="mes-biens--property-bulk-actions"
+                                    <input
+                                        type="hidden"
+                                        name="action"
+                                        value=""
                                     >
 
-                                        <input
-                                            type="hidden"
-                                            name="_token"
-                                            value="{{ csrf_token('property_bulk_action') }}"
-                                        >
+                                    {# ===========================================
+                                       BARRE D'OUTILS : sélection + actions groupées
+                                       =========================================== #}
+                                    {% if properties|length %}
 
-                                        <input
-                                            type="hidden"
-                                            name="action"
-                                            value=""
-                                        >
+                                    <div class="property-toolbar mb-24">
 
-                                        <div class="property-bulk-actions mb-24">
+                                        <label class="property-select-all">
 
-                                            <label class="select-all">
+                                            <input
+                                                type="checkbox"
+                                                data-mes-biens--property-bulk-actions-target="selectAll"
+                                                data-action="change->mes-biens--property-bulk-actions#toggleAll"
+                                            >
 
-                                                <input
-                                                    type="checkbox"
-                                                    data-mes-biens--property-bulk-actions-target="selectAll"
-                                                    data-action="change->mes-biens--property-bulk-actions#toggleAll"
-                                                >
-
-                                                Tout sélectionner
-
-                                            </label>
+                                            <span>Tout sélectionner</span>
 
                                             <span
                                                 class="property-selection-count"
                                                 data-mes-biens--property-bulk-actions-target="counter"
                                             ></span>
 
+                                        </label>
+
+                                        <div class="property-bulk-actions">
+
+                                            {# TODO: action groupée "Booster" — endpoint back-end à implémenter #}
                                             <button
                                                 type="button"
+                                                class="bulk-action bulk-action--boost"
+                                                disabled
+                                                data-mes-biens--property-bulk-actions-target="action"
+                                            >
+                                                <i class="icon-rocket"></i>
+                                                Booster
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="bulk-action"
                                                 disabled
                                                 data-mes-biens--property-bulk-actions-target="action"
                                                 data-action="click->mes-biens--property-bulk-actions#setAction"
@@ -191,6 +221,7 @@
 
                                             <button
                                                 type="button"
+                                                class="bulk-action"
                                                 disabled
                                                 data-mes-biens--property-bulk-actions-target="action"
                                                 data-action="click->mes-biens--property-bulk-actions#setAction"
@@ -202,7 +233,7 @@
 
                                             <button
                                                 type="button"
-                                                class="danger"
+                                                class="bulk-action bulk-action--danger"
                                                 disabled
                                                 data-mes-biens--property-bulk-actions-target="action"
                                                 data-action="click->mes-biens--property-bulk-actions#setAction"
@@ -214,210 +245,320 @@
 
                                         </div>
 
-                                        <div class="properties-list">
+                                    </div>
 
-                                            {% for property in properties %}
+                                    {% endif %}
 
-                                                {% set firstImage = property.propertyImages|first %}
+                                    {# ===========================================
+                                       BROUILLONS
+                                       Règle métier : 4 brouillons max par utilisateur,
+                                       purge auto après 3 mois (mail 30 jours avant).
+                                       =========================================== #}
+                                    {% if drafts is not empty %}
 
-                                                {% set uploadedImage = firstImage
-                                                    ? vich_uploader_asset(firstImage, 'imageFile')
-                                                    : null
-                                                %}
+                                        <section class="mes-biens-card mes-biens-drafts mb-24">
 
-                                                <article class="property-row">
+                                            <div class="mes-biens-drafts-grid">
 
-                                                    <a
-                                                        href="{{ path('app_public_detail_bien', {
-                                                            slug: property.slug
-                                                        }) }}"
-                                                        class="property-row-clickable"
-                                                        aria-label="Voir le détail de {{ property.titreDuLogement ?: 'cette annonce' }}"
-                                                    ></a>
+                                                {% for draft in drafts %}
 
-                                                    <div class="property-checkbox">
+                                                    <article class="draft-row">
 
-                                                        <input
-                                                            type="checkbox"
-                                                            name="properties[]"
-                                                            value="{{ property.id }}"
-                                                            data-mes-biens--property-bulk-actions-target="checkbox"
-                                                            data-action="change->mes-biens--property-bulk-actions#refresh"
-                                                        >
+                                                        <span class="draft-thumb">
+                                                            <i class="icon-file-text"></i>
+                                                        </span>
 
-                                                    </div>
+                                                        <div class="draft-info">
 
-                                                    <div class="property-row-image">
-
-                                                        {% if uploadedImage %}
-
-                                                            <img
-                                                                src="{{ uploadedImage }}"
-                                                                alt="{{ property.titreDuLogement ?: 'Annonce immobilière' }}"
+                                                            <a
+                                                                href="{{ path('agence_immobiliere_mes_biens_edit', {
+                                                                    id: draft.id
+                                                                }) }}"
+                                                                class="draft-title"
                                                             >
+                                                                {{ draft.titreDuLogement ?: 'Brouillon #' ~ loop.index }}
+                                                            </a>
 
-                                                        {% else %}
-
-                                                            <div class="property-image-empty">
-                                                                <i class="icon-image-off"></i>
-                                                            </div>
-
-                                                        {% endif %}
-
-                                                    </div>
-
-                                                    <div class="property-row-content">
-
-                                                        <div class="property-card-header">
-
-                                                            <h2>
-                                                                {{ property.titreDuLogement
-                                                                    ?: 'Annonce sans titre'
-                                                                }}
-                                                            </h2>
-
-                                                            <span class="property-status">
-                                                                {{ property.statut.label }}
-                                                            </span>
+                                                            <p class="draft-meta">
+                                                                Modifié le
+                                                                {{ (draft.updatedAt ?? draft.createdAt)|date('d/m/Y à H:i') }}
+                                                            </p>
 
                                                         </div>
 
-                                                        <p class="property-type">
+                                                        <div class="draft-actions">
 
-                                                            {{ property.typeBien
-                                                                ? property.typeBien.name
-                                                                : 'Type non renseigné'
-                                                            }}
-
-                                                            {% if property.typeTransaction %}
-                                                                · {{ property.typeTransaction.name }}
-                                                            {% endif %}
-
-                                                        </p>
-
-                                                        <p class="property-location">
-
-                                                            <i class="icon-map-pin"></i>
-
-                                                            {{ property.ville
-                                                                ?: 'Localisation non renseignée'
-                                                            }}
-
-                                                            {% if property.pays %}
-                                                                , {{ property.pays }}
-                                                            {% endif %}
-
-                                                        </p>
-
-                                                        <small>
-                                                            Réf.
-                                                            {{ property.referenceInterne ?: property.slug }}
-                                                        </small>
-
-                                                    </div>
-
-                                                    <div class="property-row-actions">
-
-                                                        <a
-                                                            href="{{ path('agence_immobiliere_mes_biens_edit', {
-                                                                id: property.id
-                                                            }) }}"
-                                                            title="Modifier l’annonce"
-                                                            class="property-edit-link"
-                                                        >
-                                                            <i class="icon-pencil"></i>
-                                                        </a>
-
-                                                        {% if property.statut.value == 'publiee' %}
+                                                            <a
+                                                                href="{{ path('agence_immobiliere_mes_biens_edit', {
+                                                                    id: draft.id
+                                                                }) }}"
+                                                                class="row-icon-btn"
+                                                                title="Modifier le brouillon"
+                                                            >
+                                                                <i class="icon-pencil"></i>
+                                                            </a>
 
                                                             <button
                                                                 type="submit"
-                                                                title="Mettre en pause"
-                                                                formaction="{{ path('agence_immobiliere_mes_biens_pause', {
-                                                                    id: property.id
+                                                                class="row-icon-btn row-icon-btn--wide"
+                                                                title="Supprimer le brouillon"
+                                                                formaction="{{ path('agence_immobiliere_mes_biens_delete', {
+                                                                    id: draft.id
                                                                 }) }}"
                                                                 formmethod="post"
                                                                 name="_property_token"
-                                                                value="{{ csrf_token('property_pause_' ~ property.id) }}"
+                                                                value="{{ csrf_token('property_delete_' ~ draft.id) }}"
+                                                                onclick="return confirm('Supprimer ce brouillon ?');"
                                                             >
-                                                                <i class="icon-pause"></i>
+                                                                <i class="icon-trash"></i>
                                                             </button>
 
-                                                        {% elseif property.statut.value == 'depubliee' %}
+                                                        </div>
 
-                                                            <button
-                                                                type="submit"
-                                                                title="Réactiver"
-                                                                formaction="{{ path('agence_immobiliere_mes_biens_reactivate', {
-                                                                    id: property.id
-                                                                }) }}"
-                                                                formmethod="post"
-                                                                name="_property_token"
-                                                                value="{{ csrf_token('property_reactivate_' ~ property.id) }}"
-                                                            >
-                                                                <i class="icon-play"></i>
-                                                            </button>
+                                                    </article>
 
-                                                        {% endif %}
+                                                {% endfor %}
 
-                                                        <button
-                                                            type="submit"
-                                                            title="Supprimer"
-                                                            formaction="{{ path('agence_immobiliere_mes_biens_delete', {
-                                                                id: property.id
-                                                            }) }}"
-                                                            formmethod="post"
-                                                            name="_property_token"
-                                                            value="{{ csrf_token('property_delete_' ~ property.id) }}"
-                                                            onclick="return confirm('Supprimer cette annonce ?');"
-                                                        >
-                                                            <i class="icon-trash"></i>
-                                                        </button>
-
-                                                        <button
-                                                            type="button"
-                                                            title="Plus d’actions"
-                                                        >
-                                                            <i class="icon-more-vertical"></i>
-                                                        </button>
-
-                                                    </div>
-
-                                                </article>
-
-                                            {% endfor %}
-
-                                        </div>
-
-                                        {% if properties.pageCount > 1 %}
-
-                                            <div class="property-pagination mt-32">
-                                                {{ knp_pagination_render(properties) }}
                                             </div>
 
-                                        {% endif %}
+                                        </section>
 
-                                    </form>
+                                    {% endif %}
 
-                                {% else %}
+                                    {# ===========================================
+                                       LISTE DES ANNONCES
+                                       =========================================== #}
+                                    {% if properties|length %}
 
-                                    <div class="property-empty">
+                                        <section class="mes-biens-card mes-biens-listings">
 
-                                        <i class="icon-building-2"></i>
+                                            <div class="property-listings">
 
-                                        <h2>
-                                            Vous n’avez pas encore de bien
-                                        </h2>
+                                                {% for property in properties %}
 
-                                        <p>
-                                            Déposez votre première annonce pour la retrouver ici.
-                                        </p>
+                                                    {% set firstImage = property.propertyImages|first %}
 
-                                    </div>
+                                                    {% set uploadedImage = firstImage
+                                                        ? vich_uploader_asset(firstImage, 'imageFile')
+                                                        : null
+                                                    %}
 
-                                {% endif %}
+                                                    {% set isBoosted = property.id in boostedPropertyIds %}
+                                                    {% set price = property.prix ?? property.montantLoyerHorsCharge %}
 
-                            </div>
+                                                    <article class="property-listing">
+
+                                                        <label class="property-listing-check">
+
+                                                            <input
+                                                                type="checkbox"
+                                                                name="properties[]"
+                                                                value="{{ property.id }}"
+                                                                data-mes-biens--property-bulk-actions-target="checkbox"
+                                                                data-action="change->mes-biens--property-bulk-actions#refresh"
+                                                            >
+
+                                                        </label>
+
+                                                        <a
+                                                            href="{{ path('app_public_detail_bien', {
+                                                                slug: property.slug
+                                                            }) }}"
+                                                            class="property-listing-image"
+                                                            aria-label="Voir le détail de {{ property.titreDuLogement ?: 'cette annonce' }}"
+                                                        >
+
+                                                            {% if uploadedImage %}
+                                                                <img
+                                                                    src="{{ uploadedImage }}"
+                                                                    alt="{{ property.titreDuLogement ?: 'Annonce immobilière' }}"
+                                                                >
+                                                            {% else %}
+                                                                <span class="property-listing-image-empty">
+                                                                    <i class="icon-image-off"></i>
+                                                                </span>
+                                                            {% endif %}
+
+                                                        </a>
+
+                                                        <div class="property-listing-body">
+
+                                                            <a
+                                                                href="{{ path('app_public_detail_bien', {
+                                                                    slug: property.slug
+                                                                }) }}"
+                                                                class="property-listing-title"
+                                                            >
+                                                                {{ property.titreDuLogement ?: 'Annonce sans titre' }}
+                                                            </a>
+
+                                                            <div class="property-listing-price-row">
+
+                                                                {% if price %}
+                                                                    <span class="property-listing-price">
+                                                                        {{ price|number_format(0, ',', ' ') }}
+                                                                        {{ property.user.devise.signe|default('€') }}
+                                                                    </span>
+                                                                {% endif %}
+
+                                                                <span class="status-badge status-badge--{{ property.statut.value }}">
+                                                                    {{ statusLabels[property.statut.value] ?? property.statut.label }}
+                                                                </span>
+
+                                                                {% if isBoosted %}
+                                                                    <span class="status-badge status-badge--boosted">
+                                                                        Boostée
+                                                                    </span>
+                                                                {% endif %}
+
+                                                            </div>
+
+                                                            <p class="property-listing-location">
+                                                                <strong>
+                                                                    {{ property.ville ?: 'Localisation non renseignée' }}{% if property.pays %}, {{ property.pays }}{% endif %}
+                                                                </strong>
+                                                                <span>
+                                                                    &nbsp;-&nbsp;
+                                                                    {%- if property.updatedAt -%}
+                                                                        Modifiée le {{ property.updatedAt|date('d/m/Y') }}
+                                                                    {%- else -%}
+                                                                        Créée le {{ property.createdAt|date('d/m/Y') }}
+                                                                    {%- endif -%}
+                                                                </span>
+                                                            </p>
+
+                                                            <p class="property-listing-ref">
+                                                                {{ property.referenceInterne ?: property.slug }}
+                                                            </p>
+
+                                                        </div>
+
+                                                        <div class="property-listing-actions">
+
+                                                            {% if property.statut.value == 'publiee' and not isBoosted %}
+                                                                <a
+                                                                    href="{{ path('agence_immobiliere_boost', {
+                                                                        id: property.id
+                                                                    }) }}"
+                                                                    class="btn-booster"
+                                                                >
+                                                                    <i class="icon-rocket"></i>
+                                                                    Booster
+                                                                </a>
+                                                            {% endif %}
+
+                                                            <a
+                                                                href="{{ path('agence_immobiliere_mes_biens_edit', {
+                                                                    id: property.id
+                                                                }) }}"
+                                                                class="row-icon-btn"
+                                                                title="Modifier l’annonce"
+                                                            >
+                                                                <i class="icon-pencil"></i>
+                                                            </a>
+
+                                                            <div class="dropdown property-listing-menu">
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="row-icon-btn"
+                                                                    data-bs-toggle="dropdown"
+                                                                    aria-expanded="false"
+                                                                    aria-label="Plus d’actions"
+                                                                >
+                                                                    <i class="icon-more-vertical"></i>
+                                                                </button>
+
+                                                                <div class="dropdown-menu dropdown-menu-end property-menu">
+
+                                                                    {% if property.statut.value == 'publiee' %}
+                                                                        <button
+                                                                            type="submit"
+                                                                            class="property-menu-item"
+                                                                            formaction="{{ path('agence_immobiliere_mes_biens_pause', {
+                                                                                id: property.id
+                                                                            }) }}"
+                                                                            formmethod="post"
+                                                                            name="_property_token"
+                                                                            value="{{ csrf_token('property_pause_' ~ property.id) }}"
+                                                                        >
+                                                                            <i class="icon-pause"></i>
+                                                                            Mettre en pause
+                                                                        </button>
+                                                                    {% elseif property.statut.value == 'depubliee' %}
+                                                                        <button
+                                                                            type="submit"
+                                                                            class="property-menu-item"
+                                                                            formaction="{{ path('agence_immobiliere_mes_biens_reactivate', {
+                                                                                id: property.id
+                                                                            }) }}"
+                                                                            formmethod="post"
+                                                                            name="_property_token"
+                                                                            value="{{ csrf_token('property_reactivate_' ~ property.id) }}"
+                                                                        >
+                                                                            <i class="icon-play"></i>
+                                                                            Réactiver
+                                                                        </button>
+                                                                    {% endif %}
+
+                                                                    <button
+                                                                        type="submit"
+                                                                        class="property-menu-item property-menu-item--danger"
+                                                                        formaction="{{ path('agence_immobiliere_mes_biens_delete', {
+                                                                            id: property.id
+                                                                        }) }}"
+                                                                        formmethod="post"
+                                                                        name="_property_token"
+                                                                        value="{{ csrf_token('property_delete_' ~ property.id) }}"
+                                                                        onclick="return confirm('Supprimer cette annonce ?');"
+                                                                    >
+                                                                        <i class="icon-trash"></i>
+                                                                        Supprimer
+                                                                    </button>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </article>
+
+                                                {% endfor %}
+
+                                            </div>
+
+                                            {% if properties.pageCount > 1 %}
+                                                <div class="mes-biens-pagination">
+                                                    {{ knp_pagination_render(properties, 'pagination/agence_pagination.html.twig') }}
+                                                </div>
+                                            {% endif %}
+
+                                        </section>
+
+                                    {% endif %}
+
+                                </form>
+
+                            {% endif %}
+
+                            {% if drafts is empty and not properties|length %}
+
+                                <div class="property-empty">
+
+                                    <i class="icon-building-2"></i>
+
+                                    <h2>
+                                        Vous n’avez pas encore de bien
+                                    </h2>
+
+                                    <p>
+                                        Déposez votre première annonce pour la retrouver ici.
+                                    </p>
+
+                                </div>
+
+                            {% endif %}
 
                         </div>
 
