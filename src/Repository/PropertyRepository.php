@@ -552,6 +552,54 @@ class PropertyRepository extends ServiceEntityRepository
         );
     }
 
+        /**
+     * les brouillons
+     */
+    public function findDraftsByUser(
+    User $user,
+    int $limit = 4,
+    ): array {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.translations', 'pt')
+            ->addSelect('pt')
+            ->leftJoin('p.propertyImages', 'pi')
+            ->addSelect('pi')
+            ->leftJoin('p.typeBien', 'typeBien')
+            ->addSelect('typeBien')
+            ->leftJoin('p.typeTransaction', 'typeTransaction')
+            ->addSelect('typeTransaction')
+            ->andWhere('p.user = :user')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('user', $user)
+            ->setParameter(
+                'statut',
+                StatutAnnonceImmobiliere::BROUILLON
+            )
+            ->orderBy('p.updatedAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * brouillon count
+     */
+    public function countDraftsByUser(
+    User $user,
+    ): int {
+        return (int) $this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->andWhere('p.user = :user')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('user', $user)
+            ->setParameter(
+                'statut',
+                StatutAnnonceImmobiliere::BROUILLON
+            )
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     /**
      * @param list<int> $propertyIds
      * @return list<int>

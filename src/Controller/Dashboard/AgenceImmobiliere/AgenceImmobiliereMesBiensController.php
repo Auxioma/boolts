@@ -101,6 +101,17 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             10
         );
 
+        $drafts = $propertyRepository
+            ->findDraftsByUser(
+                $user,
+                4
+            );
+
+        $draftCount = $propertyRepository
+            ->countDraftsByUser(
+                $user
+            );
+
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_mes_biens/list.html.twig',
             [
@@ -111,7 +122,107 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 'sortValue' => $sort,
                 'directionValue' => $direction,
                 'totalResults' => $properties->getTotalItemCount(),
+                'drafts' => $drafts,
+                'draftCount' => $draftCount,
+                'hasDrafts' => $draftCount > 0,
+                'canCreateDraft' => $draftCount < 4,
             ]
+        );
+    }
+
+    #[Route('/brouillon/{id}/continuer',name: 'mes_biens_draft_continue',methods: ['GET'])]
+    public function continueDraft(
+        Property $property,
+        Request $request,
+    ): Response {
+        $user = $this->getUser();
+
+        if (
+            !$user instanceof User
+            || $property->getUser()?->getId() !== $user->getId()
+            || StatutAnnonceImmobiliere::BROUILLON !== $property->getStatut()
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $session = $request->getSession();
+
+        $session->set(
+            'mes_biens_property_id',
+            $property->getId()
+        );
+
+        $session->set(
+            'mes_biens_reached_step',
+            8
+        );
+
+        $transaction = $property
+            ->getTypeTransaction();
+
+        if ($transaction) {
+            $slugFr = $transaction
+                ->translate('fr')
+                ->getSlug();
+
+            $typeTransactionCode = match ($slugFr) {
+                'vente' => '1',
+                'location' => '2',
+                default => null,
+            };
+
+            if (null !== $typeTransactionCode) {
+                $session->set(
+                    'typeTransaction',
+                    $typeTransactionCode
+                );
+            }
+        }
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens',
+            [
+                'step' => 1,
+            ]
+        );
+    }
+
+    #[Route('/brouillon/{id}/supprimer',name: 'mes_biens_draft_delete',methods: ['POST'])]
+    public function deleteDraft(
+        Property $property,
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $user = $this->getUser();
+
+        if (
+            !$user instanceof User
+            || $property->getUser()?->getId() !== $user->getId()
+            || StatutAnnonceImmobiliere::BROUILLON !== $property->getStatut()
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'property_draft_delete_'.$property->getId(),
+            $request->request->getString('_token')
+        )) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $property->setStatut(
+            StatutAnnonceImmobiliere::SUPPRIMEE
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Le brouillon a été supprimé.'
+        );
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens_list'
         );
     }
 

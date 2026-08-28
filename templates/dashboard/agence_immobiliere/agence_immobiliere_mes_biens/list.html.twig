@@ -30,16 +30,27 @@
                                         <p class="description-page">
                                             Retrouvez ici toutes vos annonces immobilières.
                                         </p>
+
                                     </div>
-
-                                    <a
-                                        href="{{ path('agence_immobiliere_mes_biens') }}"
-                                        class="btn-deposer-annonce"
-                                    >
-                                        <i class="icon-circle-plus"></i>
-                                        Déposer une annonce
-                                    </a>
-
+                                    {% if hasDrafts %}
+                                        <button
+                                            type="button"
+                                            class="btn-deposer-annonce"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#draftResumeModal"
+                                        >
+                                            <i class="icon-circle-plus"></i>
+                                            Déposer une annonce
+                                        </button>
+                                    {% else %}
+                                        <a
+                                            href="{{ path('agence_immobiliere_mes_biens') }}"
+                                            class="btn-deposer-annonce"
+                                        >
+                                            <i class="icon-circle-plus"></i>
+                                            Déposer une annonce
+                                        </a>
+                                    {% endif %}
                                 </div>
 
                                 <div class="property-tools mb-24">
@@ -334,6 +345,83 @@
 
                                         </div>
 
+                                        {% if drafts is defined and drafts|length %}
+
+                                            <div class="property-drafts mb-24">
+
+                                                {% for draft in drafts %}
+
+                                                    <div class="property-draft-item">
+
+                                                        <a
+                                                            href="{{ path('agence_immobiliere_mes_biens_draft_continue', {
+                                                                id: draft.id
+                                                            }) }}"
+                                                            class="property-draft-main"
+                                                        >
+
+                                                            <div class="property-draft-icon">
+                                                                <i class="icon-file-text"></i>
+                                                            </div>
+
+                                                            <div class="property-draft-content">
+
+                                                                <strong>
+                                                                    {% if draft.typeBien %}
+                                                                        {{ draft.typeBien.name }}
+                                                                    {% else %}
+                                                                        Brouillon #{{ loop.index }}
+                                                                    {% endif %}
+
+                                                                    {% if draft.typeTransaction %}
+                                                                        {{ draft.typeTransaction.name|lower }}
+                                                                    {% endif %}
+                                                                </strong>
+
+                                                                <small>
+                                                                    Modifié le
+                                                                    {{ draft.updatedAt|date('d M Y à H:i') }}
+                                                                </small>
+
+                                                            </div>
+
+                                                        </a>
+
+                                                        <div class="property-draft-actions">
+
+                                                            <a
+                                                                href="{{ path('agence_immobiliere_mes_biens_draft_continue', {
+                                                                    id: draft.id
+                                                                }) }}"
+                                                                title="Modifier le brouillon"
+                                                            >
+                                                                <i class="icon-pencil"></i>
+                                                            </a>
+
+                                                            <button
+                                                                type="submit"
+                                                                title="Supprimer le brouillon"
+                                                                formaction="{{ path('agence_immobiliere_mes_biens_draft_delete', {
+                                                                    id: draft.id
+                                                                }) }}"
+                                                                formmethod="post"
+                                                                name="_token"
+                                                                value="{{ csrf_token('property_draft_delete_' ~ draft.id) }}"
+                                                                onclick="return confirm('Supprimer ce brouillon ?');"
+                                                            >
+                                                                <i class="icon-trash"></i>
+                                                            </button>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                {% endfor %}
+
+                                            </div>
+
+                                        {% endif %}
+
                                         <div class="properties-list">
 
                                             {% for property in properties %}
@@ -426,18 +514,13 @@
                                                             {% if property.pays %}
                                                                 , {{ property.pays }}
                                                             {% endif %}
-
                                                         </p>
-
                                                         <small>
                                                             Réf.
                                                             {{ property.referenceInterne ?: property.slug }}
                                                         </small>
-
                                                     </div>
-
                                                     <div class="property-row-actions">
-
                                                         <a
                                                             href="{{ path('agence_immobiliere_mes_biens_edit', {
                                                                 id: property.id
@@ -447,9 +530,7 @@
                                                         >
                                                             <i class="icon-pencil"></i>
                                                         </a>
-
                                                         {% if property.statut.value == 'publiee' %}
-
                                                             <button
                                                                 type="submit"
                                                                 title="Mettre en pause"
@@ -462,9 +543,7 @@
                                                             >
                                                                 <i class="icon-pause"></i>
                                                             </button>
-
                                                         {% elseif property.statut.value == 'depubliee' %}
-
                                                             <button
                                                                 type="submit"
                                                                 title="Réactiver"
@@ -477,9 +556,7 @@
                                                             >
                                                                 <i class="icon-play"></i>
                                                             </button>
-
                                                         {% endif %}
-
                                                         <button
                                                             type="submit"
                                                             title="Supprimer"
@@ -493,62 +570,40 @@
                                                         >
                                                             <i class="icon-trash"></i>
                                                         </button>
-
                                                         <button
                                                             type="button"
                                                             title="Plus d’actions"
                                                         >
                                                             <i class="icon-more-vertical"></i>
                                                         </button>
-
                                                     </div>
-
                                                 </article>
-
                                             {% endfor %}
-
                                         </div>
-
                                         {% if properties.pageCount > 1 %}
-
                                             <div class="property-pagination mt-32">
                                                 {{ knp_pagination_render(properties) }}
                                             </div>
-
                                         {% endif %}
-
                                     </form>
-
                                 {% else %}
-
                                     <div class="property-empty">
-
                                         <i class="icon-building-2"></i>
-
                                         <h2>
                                             Vous n’avez pas encore de bien
                                         </h2>
-
                                         <p>
                                             Déposez votre première annonce pour la retrouver ici.
                                         </p>
-
                                     </div>
-
                                 {% endif %}
-
                             </div>
-
                         </div>
-
                     </div>
                 </div>
-
             </div>
-
         </div>
     </div>
-
 </main>
 
 {% include 'composant/_search/_search.html.twig' with {
@@ -556,7 +611,64 @@
     totalResults: properties.getTotalItemCount,
     filterCountUrl: path('agence_immobiliere_mes_biens_filters_count')
 } %}
-
+{% if hasDrafts %}
+    {% set latestDraft = drafts|first %}
+    <div
+        class="modal fade"
+        id="draftResumeModal"
+        tabindex="-1"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content draft-resume-modal">
+                <button
+                    type="button"
+                    class="draft-resume-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                >
+                    &times;
+                </button>
+                <h2>
+                    Vous avez déjà un ou des brouillons
+                </h2>
+                {% if latestDraft %}
+                    <p>
+                        Voulez-vous reprendre le dernier brouillon en cours
+                        modifié le
+                        {{ latestDraft.updatedAt|date('d M Y à H:i') }} ?
+                    </p>
+                {% endif %}
+                <div class="draft-resume-actions">
+                    {% if canCreateDraft %}
+                        <a
+                            href="{{ path('agence_immobiliere_mes_biens', {
+                                new: 1
+                            }) }}"
+                            class="draft-resume-new"
+                        >
+                            Non, créer une annonce
+                        </a>
+                    {% else %}
+                        <span class="draft-limit-message">
+                            Vous avez atteint la limite de 4 brouillons.
+                        </span>
+                    {% endif %}
+                    {% if latestDraft %}
+                        <a
+                            href="{{ path('agence_immobiliere_mes_biens_draft_continue', {
+                                id: latestDraft.id
+                            }) }}"
+                            class="draft-resume-continue"
+                        >
+                            Continuer le brouillon
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const sort = document.querySelector('.property-sort');
