@@ -15,6 +15,7 @@ namespace App\Controller\Admin;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
+use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\User;
 use App\Field\AgencyPaymentsField;
 use App\Field\UserDocumentsField;
@@ -28,6 +29,7 @@ use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
@@ -100,6 +102,11 @@ class UserCrudController extends AbstractCrudController
         return $assets->addJsFile('js/admin-user-documents.js');
     }
 
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions->disable(Action::BATCH_DELETE);
+    }
+
     public function createIndexQueryBuilder(
         SearchDto $searchDto,
         EntityDto $entityDto,
@@ -108,6 +115,7 @@ class UserCrudController extends AbstractCrudController
     ): QueryBuilder {
         $queryBuilder = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
         $role = $this->selectedRole();
+        $queryBuilder->andWhere('entity.deletedAt IS NULL');
 
         if (self::ROLE_AGENCY === $role) {
             return $queryBuilder
@@ -124,6 +132,31 @@ class UserCrudController extends AbstractCrudController
         }
 
         return $queryBuilder;
+    }
+
+    public function deleteEntity(EntityManagerInterface $entityManager, object $entityInstance): void
+    {
+        if (!$entityInstance instanceof User) {
+            parent::deleteEntity($entityManager, $entityInstance);
+
+            return;
+        }
+
+        $currentUser = $this->getUser();
+
+        if ($currentUser instanceof User && $currentUser->getId() === $entityInstance->getId()) {
+            $this->addFlash('warning', 'Vous ne pouvez pas supprimer votre propre compte depuis cette page.');
+
+            return;
+        }
+
+        foreach ($entityInstance->getProperties() as $property) {
+            $property->setStatut(StatutAnnonceImmobiliere::SUPPRIMEE);
+        }
+
+        $entityInstance->softDelete();
+        $entityManager->flush();
+        $this->addFlash('success', 'Le compte a été supprimé.');
     }
 
     public function configureFields(string $pageName): iterable

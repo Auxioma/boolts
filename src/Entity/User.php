@@ -174,7 +174,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     #[ORM\OneToOne(
         mappedBy: 'agency',
         targetEntity: AgencyBillingProfile::class,
-        cascade: ['persist', 'remove']
+        cascade: ['persist']
     )]
     private ?AgencyBillingProfile $billingProfile = null;
 

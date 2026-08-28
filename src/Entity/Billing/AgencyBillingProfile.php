@@ -38,7 +38,7 @@ class AgencyBillingProfile
         referencedColumnName: 'id',
         nullable: false,
         unique: true,
-        onDelete: 'CASCADE'
+        onDelete: 'RESTRICT'
     )]
     private ?User $agency = null;
 
