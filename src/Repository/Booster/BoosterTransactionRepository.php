@@ -51,6 +51,33 @@ final class BoosterTransactionRepository extends ServiceEntityRepository
         return $this->findOneBy(['idempotencyKey' => $idempotencyKey]);
     }
 
+    /**
+     * Retourne l'achat de pack réutilisable (hors forfait) encore valide qui
+     * expire le plus tôt, afin d'en dériver la durée du boost à appliquer.
+     */
+    public function findEarliestExpiringReusablePackCredit(
+        User $agency,
+        ?\DateTimeImmutable $now = null,
+    ): ?BoosterTransaction {
+        $now ??= new \DateTimeImmutable();
+
+        return $this->createQueryBuilder('transaction')
+            ->where('transaction.agency = :agency')
+            ->andWhere('transaction.type = :type')
+            ->andWhere('transaction.boosterPack IS NOT NULL')
+            ->andWhere('transaction.subscriptionPeriod IS NULL')
+            ->andWhere('transaction.quantity > 0')
+            ->andWhere('transaction.expiresAt IS NULL OR transaction.expiresAt >= :now')
+            ->setParameter('agency', $agency)
+            ->setParameter('type', BoosterTransactionType::PACK_PURCHASE->value)
+            ->setParameter('now', $now)
+            ->orderBy('transaction.expiresAt', 'ASC')
+            ->addOrderBy('transaction.createdAt', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function countAvailableForAgency(User $agency, ?\DateTimeImmutable $now = null): int
     {
         return $this->countAvailableBySourceForAgency($agency, $now)['total'];

@@ -22,6 +22,8 @@ use App\Form\Filter\ModalFilterType;
 use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\PropertyRepository;
 use App\Service\Billing\AgencyPropertyQuotaCalculator;
+use App\Service\Booster\BoostException;
+use App\Service\Booster\PropertyBoostService;
 use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,6 +44,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         Request $request,
         AgencyPropertyQuotaCalculator $agencyPropertyQuotaCalculator,
         BoosterTransactionRepository $boosterTransactionRepository,
+        PropertyBoostService $propertyBoostService,
     ): Response {
         $user = $this->getUser();
 
@@ -142,6 +145,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $quota = $agencyPropertyQuotaCalculator->calculate($user);
         $boostBalance = $boosterTransactionRepository
             ->countAvailableBySourceForAgency($user);
+        $boostPreview = $propertyBoostService->preview($user);
 
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_mes_biens/list.html.twig',
@@ -151,6 +155,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 'boostedPropertyIds' => $boostedPropertyIds,
                 'annoncesRestantes' => $quota['remaining'],
                 'boostsRestants' => $boostBalance['total'],
+                'boostPreview' => $boostPreview,
                 'filterForm' => $filterForm->createView(),
                 'modal_filter' => $filters,
                 'searchValue' => $search,
@@ -242,6 +247,58 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'success',
             'L’annonce a été mise en pause.'
         );
+
+        return $this->redirectToRoute(
+            'agence_immobiliere_mes_biens_list'
+        );
+    }
+
+    #[Route(
+        '/{id}/booster',
+        name: 'mes_biens_boost',
+        methods: ['POST']
+    )]
+    public function boost(
+        Property $property,
+        Request $request,
+        PropertyBoostService $propertyBoostService,
+    ): Response {
+        $user = $this->getUser();
+
+        if (
+            !$user instanceof User
+            || $property->getUser()?->getId() !== $user->getId()
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'property_boost_'.$property->getId(),
+            $request->request->getString('_property_token')
+        )) {
+            throw $this->createAccessDeniedException('Token CSRF invalide.');
+        }
+
+        $wasPaused = StatutAnnonceImmobiliere::DEPUBLIEE === $property->getStatut();
+
+        try {
+            $boost = $propertyBoostService->boost($property, $user);
+
+            $this->addFlash(
+                'success',
+                \sprintf(
+                    $wasPaused
+                        ? 'L’annonce a été republiée et boostée jusqu’au %s.'
+                        : 'L’annonce est boostée jusqu’au %s.',
+                    $boost->getEndsAt()->format('d/m/Y')
+                )
+            );
+        } catch (BoostException $exception) {
+            $this->addFlash(
+                'danger',
+                $exception->getMessage()
+            );
+        }
 
         return $this->redirectToRoute(
             'agence_immobiliere_mes_biens_list'

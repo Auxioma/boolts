@@ -35,6 +35,37 @@ final class AgencySubscriptionPeriodRepository extends ServiceEntityRepository
     }
 
     /**
+     * Période d'abonnement en cours (gratuite ou payée) contenant la date donnée.
+     *
+     * Sert de rattachement aux débits de boosts consommés sur le forfait.
+     */
+    public function findActiveForAgency(
+        User $agency,
+        ?\DateTimeImmutable $now = null,
+    ): ?AgencySubscriptionPeriod {
+        $now ??= new \DateTimeImmutable();
+
+        return $this->createQueryBuilder('period')
+            ->addSelect('subscription')
+            ->innerJoin('period.subscription', 'subscription')
+            ->where('subscription.agency = :agency')
+            ->andWhere('period.status IN (:statuses)')
+            ->andWhere('period.periodStart <= :now')
+            ->andWhere('period.periodEnd >= :now')
+            ->setParameter('agency', $agency)
+            ->setParameter('statuses', [
+                SubscriptionPeriodStatus::FREE->value,
+                SubscriptionPeriodStatus::PAID->value,
+            ])
+            ->setParameter('now', $now)
+            ->orderBy('period.periodStart', 'DESC')
+            ->addOrderBy('period.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @return list<AgencySubscriptionPeriod>
      */
     public function findForAgency(User $agency, int $limit = 50): array

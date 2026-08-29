@@ -435,16 +435,16 @@
 
                                                         <div class="property-listing-actions">
 
-                                                            {% if property.statut.value == 'publiee' and not isBoosted %}
-                                                                <a
-                                                                    href="{{ path('agence_immobiliere_boost', {
-                                                                        id: property.id
-                                                                    }) }}"
+                                                            {% if property.statut.value in ['publiee', 'depubliee'] and not isBoosted %}
+                                                                <button
+                                                                    type="button"
                                                                     class="btn-booster"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#boostModal{{ property.id }}"
                                                                 >
                                                                     <i class="icon-rocket"></i>
                                                                     Booster
-                                                                </a>
+                                                                </button>
                                                             {% endif %}
 
                                                             <a
@@ -523,6 +523,127 @@
                                                         </div>
 
                                                     </article>
+
+                                                    {# ===========================================
+                                                       MODAL DE CONFIRMATION DU BOOST
+                                                       =========================================== #}
+                                                    {% if property.statut.value in ['publiee', 'depubliee'] and not isBoosted %}
+                                                        <div
+                                                            class="modal fade boost-confirm-modal"
+                                                            id="boostModal{{ property.id }}"
+                                                            tabindex="-1"
+                                                            aria-labelledby="boostModalLabel{{ property.id }}"
+                                                            aria-hidden="true"
+                                                        >
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <div class="modal-content boost-confirm-content">
+
+                                                                    <div class="modal-header boost-confirm-header">
+                                                                        <h2
+                                                                            class="modal-title boost-confirm-title"
+                                                                            id="boostModalLabel{{ property.id }}"
+                                                                        >
+                                                                            <i class="icon-rocket"></i>
+                                                                            Booster cette annonce
+                                                                        </h2>
+                                                                        <button
+                                                                            type="button"
+                                                                            class="boost-confirm-close"
+                                                                            data-bs-dismiss="modal"
+                                                                            aria-label="Fermer"
+                                                                        >
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <div class="modal-body boost-confirm-body">
+
+                                                                        <p class="boost-confirm-listing">
+                                                                            {{ property.titreDuLogement ?: 'Annonce sans titre' }}
+                                                                        </p>
+
+                                                                        {% if boostPreview.available < 1 %}
+                                                                            <p class="boost-confirm-empty">
+                                                                                Vous n’avez plus de boost disponible.
+                                                                                Achetez un pack boost pour mettre cette annonce en avant.
+                                                                            </p>
+                                                                        {% else %}
+                                                                            <ul class="boost-confirm-details">
+                                                                                <li>
+                                                                                    <span>Boosts restants</span>
+                                                                                    <strong>{{ boostPreview.available }}</strong>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <span>Durée de mise en avant</span>
+                                                                                    <strong>
+                                                                                        {{ boostPreview.durationDays }}
+                                                                                        jour{{ boostPreview.durationDays > 1 ? 's' : '' }}
+                                                                                    </strong>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <span>Boost décompté sur</span>
+                                                                                    <strong>
+                                                                                        {{ boostPreview.source == 'subscription'
+                                                                                            ? 'votre forfait'
+                                                                                            : 'vos boosts achetés' }}
+                                                                                    </strong>
+                                                                                </li>
+                                                                            </ul>
+
+                                                                            {% if property.statut.value == 'depubliee' %}
+                                                                                <p class="boost-confirm-warning">
+                                                                                    Cette annonce est en pause : elle sera
+                                                                                    republiée automatiquement lors du boost.
+                                                                                </p>
+                                                                            {% endif %}
+
+                                                                            <p class="boost-confirm-warning">
+                                                                                Cette action est définitive : le boost sera activé
+                                                                                immédiatement et décompté de votre solde.
+                                                                            </p>
+                                                                        {% endif %}
+
+                                                                    </div>
+
+                                                                    <div class="modal-footer boost-confirm-footer">
+
+                                                                        <button
+                                                                            type="button"
+                                                                            class="boost-confirm-cancel"
+                                                                            data-bs-dismiss="modal"
+                                                                        >
+                                                                            Annuler
+                                                                        </button>
+
+                                                                        {% if boostPreview.available >= 1 %}
+                                                                            <button
+                                                                                type="submit"
+                                                                                class="boost-confirm-submit"
+                                                                                formaction="{{ path('agence_immobiliere_mes_biens_boost', {
+                                                                                    id: property.id
+                                                                                }) }}"
+                                                                                formmethod="post"
+                                                                                name="_property_token"
+                                                                                value="{{ csrf_token('property_boost_' ~ property.id) }}"
+                                                                            >
+                                                                                <i class="icon-rocket"></i>
+                                                                                Confirmer le boost
+                                                                            </button>
+                                                                        {% else %}
+                                                                            <a
+                                                                                href="{{ path('agence_immobiliere_options') }}"
+                                                                                class="boost-confirm-submit"
+                                                                            >
+                                                                                Voir les packs boost
+                                                                            </a>
+                                                                        {% endif %}
+
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
 
                                                 {% endfor %}
 

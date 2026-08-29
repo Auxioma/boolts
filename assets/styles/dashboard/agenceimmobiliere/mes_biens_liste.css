@@ -536,6 +536,7 @@ LISTE DES ANNONCES
     font-weight: 700;
     white-space: nowrap;
     text-decoration: none;
+    cursor: pointer;
     transition: background .2s ease, color .2s ease;
 }
 
@@ -625,6 +626,155 @@ PAGINATION (réutilise .agence-pagination)
 
 .agence-mes-biens-list .property-empty p {
     color: #858789;
+}
+
+/* -----------------------------------------
+MODAL DE CONFIRMATION DU BOOST
+----------------------------------------- */
+.agence-mes-biens-list .boost-confirm-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.agence-mes-biens-list .boost-confirm-header {
+    align-items: center;
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid #EBECEC;
+}
+
+.agence-mes-biens-list .boost-confirm-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: #0B0F14;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.agence-mes-biens-list .boost-confirm-title i {
+    color: #5D00FF;
+    font-size: 22px;
+}
+
+.agence-mes-biens-list .boost-confirm-close {
+    border: none;
+    background: transparent;
+    color: #858789;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.agence-mes-biens-list .boost-confirm-close:hover {
+    color: #0B0F14;
+}
+
+.agence-mes-biens-list .boost-confirm-body {
+    padding: 20px 24px;
+}
+
+.agence-mes-biens-list .boost-confirm-listing {
+    margin: 0 0 16px;
+    color: #0B0F14;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.agence-mes-biens-list .boost-confirm-details {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid #EBECEC;
+    border-radius: 12px;
+}
+
+.agence-mes-biens-list .boost-confirm-details li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    font-size: 14px;
+}
+
+.agence-mes-biens-list .boost-confirm-details li + li {
+    border-top: 1px solid #EBECEC;
+}
+
+.agence-mes-biens-list .boost-confirm-details span {
+    color: #858789;
+}
+
+.agence-mes-biens-list .boost-confirm-details strong {
+    color: #0B0F14;
+    font-weight: 700;
+    text-align: right;
+}
+
+.agence-mes-biens-list .boost-confirm-warning {
+    margin: 16px 0 0;
+    color: #858789;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.agence-mes-biens-list .boost-confirm-empty {
+    margin: 0;
+    padding: 16px;
+    border: 1px solid #EBECEC;
+    border-radius: 12px;
+    color: #0B0F14;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.agence-mes-biens-list .boost-confirm-footer {
+    gap: 12px;
+    padding: 16px 24px 24px;
+    border-top: 1px solid #EBECEC;
+}
+
+.agence-mes-biens-list .boost-confirm-cancel,
+.agence-mes-biens-list .boost-confirm-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.agence-mes-biens-list .boost-confirm-cancel {
+    border: 2px solid #EBECEC;
+    background: #FFFFFF;
+    color: #0B0F14;
+}
+
+.agence-mes-biens-list .boost-confirm-cancel:hover {
+    border-color: #858789;
+}
+
+.agence-mes-biens-list .boost-confirm-submit {
+    border: 2px solid #5D00FF;
+    background: #5D00FF;
+    color: #FFFFFF;
+}
+
+.agence-mes-biens-list .boost-confirm-submit i {
+    font-size: 18px;
+}
+
+.agence-mes-biens-list .boost-confirm-submit:hover {
+    background: #4A00CC;
+    border-color: #4A00CC;
+    color: #FFFFFF;
 }
 
 /* -----------------------------------------

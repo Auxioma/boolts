@@ -16,9 +16,10 @@ use App\Entity\Billing\Enum\PropertyBoostStatus;
 use App\Entity\Property;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
+use App\Repository\Booster\PropertyBoostRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PropertyBoostRepository::class)]
 #[ORM\Table(name: 'property_boost')]
 class PropertyBoost
 {
