@@ -541,6 +541,18 @@ export default class extends Controller {
         }
 
         if (!isMultiple) {
+            // Pour un <select> simple, la valeur envoyée au serveur est l'ID de
+            // l'option ; on affiche en revanche son libellé pour éviter que l'ID
+            // brut reste visible en attendant un rechargement de la page.
+            if (input && input.tagName === 'SELECT' && !input.multiple) {
+                const selectedOption = input.selectedOptions[0];
+                const label = selectedOption && selectedOption.value !== ''
+                    ? selectedOption.textContent.trim()
+                    : '';
+
+                return label !== '' ? label : '***';
+            }
+
             return value || '***';
         }
 
