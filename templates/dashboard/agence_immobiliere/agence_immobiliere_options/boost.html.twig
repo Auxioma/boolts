@@ -12,13 +12,15 @@
 {% block body %}
 
 <div
-    data-controller="payment-method"
-   data-payment-method-public-key-value="{{ stripe_public_key }}"
+    data-controller="payment-method options--boost-purchase"
+    data-payment-method-public-key-value="{{ stripe_public_key }}"
     data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
     data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
     data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
-    data-boost-payment-url="{{ path('agence_immobiliere_boost_payment', {id: boost_price.id}) }}"
-    data-boost-payment-csrf="{{ csrf_token('agency_boost_purchase') }}"
+    data-options--boost-purchase-payment-url-value="{{ path('agence_immobiliere_boost_payment', {id: boost_price.id}) }}"
+    data-options--boost-purchase-payment-csrf-value="{{ csrf_token('agency_boost_purchase') }}"
+    data-options--boost-purchase-redirect-url-value="{{ path('agence_immobiliere_options') }}"
+    data-options--boost-purchase-default-payment-method-id-value="{{ default_payment_method ? default_payment_method.id : '' }}"
 >
     <main id="dashboard" class="dashboard">
         <div class="container-fluid">
@@ -69,6 +71,7 @@
                                                         <p
                                                             class="achat-forfait-bank-card-name"
                                                             id="selected-card-name"
+                                                            data-options--boost-purchase-target="selectedCardName"
                                                         >
                                                             {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
                                                             {{ default_payment_method.last4 }}
@@ -77,6 +80,7 @@
                                                         <p
                                                             class="achat-forfait-bank-card-expiration"
                                                             id="selected-card-expiration"
+                                                            data-options--boost-purchase-target="selectedCardExpiration"
                                                         >
                                                             Date d’expiration :
                                                             {{ '%02d'|format(default_payment_method.expMonth) }}/{{ default_payment_method.expYear }}
@@ -90,6 +94,8 @@
                                                             id="show-payment-methods"
                                                             aria-controls="payment-methods-block"
                                                             aria-expanded="false"
+                                                            data-options--boost-purchase-target="showPaymentMethodsButton"
+                                                            data-action="options--boost-purchase#showPaymentMethods"
                                                         >
                                                             Modifier
                                                         </button>
@@ -114,6 +120,7 @@
                                                 class="achat-forfait-section d-none"
                                                 id="payment-methods-block"
                                                 aria-hidden="true"
+                                                data-options--boost-purchase-target="paymentBlock"
                                             >
                                                 <h2 class="achat-forfait-section-title">
                                                     Choisissez une autre carte bancaire
@@ -121,7 +128,10 @@
 
                                                 <div class="achat-forfait-payment-list">
                                                     {% for payment_method in other_payment_methods %}
-                                                        <label class="achat-forfait-payment-option">
+                                                        <label
+                                                            class="achat-forfait-payment-option"
+                                                            data-options--boost-purchase-target="paymentOption"
+                                                        >
                                                             <input
                                                                 type="radio"
                                                                 name="payment-method"
@@ -129,6 +139,8 @@
                                                                 class="visually-hidden"
                                                                 data-card-name="{{ payment_method.brand|default('Carte bancaire')|capitalize }} {{ payment_method.last4 }}"
                                                                 data-card-expiration="Date d’expiration : {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}"
+                                                                data-options--boost-purchase-target="paymentMethod"
+                                                                data-action="change->options--boost-purchase#selectPaymentMethod"
                                                             >
 
                                                             <span class="achat-forfait-bank-card-content">
@@ -151,6 +163,7 @@
                                                         type="button"
                                                         class="btn achat-forfait-primary-button"
                                                         id="confirm-payment-method"
+                                                        data-action="options--boost-purchase#confirmPaymentMethod"
                                                     >
                                                         Utiliser cette méthode de paiement
                                                     </button>
@@ -159,6 +172,7 @@
                                                         type="button"
                                                         class="btn achat-forfait-outline-button"
                                                         id="cancel-payment-method"
+                                                        data-action="options--boost-purchase#hidePaymentMethods"
                                                     >
                                                         Annuler
                                                     </button>
@@ -193,13 +207,19 @@
                                             type="button"
                                             class="btn achat-forfait-primary-button"
                                             id="boost-payment-button"
-                                            data-default-payment-method-id="{{ default_payment_method ? default_payment_method.id : '' }}"
+                                            data-options--boost-purchase-target="purchaseButton"
+                                            data-action="options--boost-purchase#purchase"
                                             {% if not default_payment_method %}disabled{% endif %}
                                         >
                                             Acheter le pack boost
                                         </button>
 
-                                        <p id="boost-payment-card" class="mt-16 mb-0" aria-live="polite">
+                                        <p
+                                            id="boost-payment-card"
+                                            class="mt-16 mb-0"
+                                            aria-live="polite"
+                                            data-options--boost-purchase-target="selectedCardSummary"
+                                        >
                                             {% if default_payment_method %}
                                                 Carte débitée :
                                                 {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
@@ -209,7 +229,12 @@
                                             {% endif %}
                                         </p>
 
-                                        <p id="boost-payment-message" class="mt-16 mb-0" role="status"></p>
+                                        <p
+                                            id="boost-payment-message"
+                                            class="mt-16 mb-0"
+                                            role="status"
+                                            data-options--boost-purchase-target="purchaseMessage"
+                                        ></p>
                                     </aside>
                                 </div>
 
@@ -409,153 +434,5 @@
 }
 </style>
 <script src="https://js.stripe.com/v3/"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const showButton = document.getElementById('show-payment-methods');
-        const cancelButton = document.getElementById('cancel-payment-method');
-        const confirmButton = document.getElementById('confirm-payment-method');
-        const paymentBlock = document.getElementById('payment-methods-block');
-        const selectedCardName = document.getElementById('selected-card-name');
-        const selectedCardExpiration = document.getElementById('selected-card-expiration');
-        const paymentOptions = document.querySelectorAll('.achat-forfait-payment-option');
-        const boostPaymentButton = document.getElementById('boost-payment-button');
-        const boostPaymentMessage = document.getElementById('boost-payment-message');
-        const boostPaymentContainer = document.querySelector('[data-boost-payment-url]');
-        const boostPaymentCard = document.getElementById('boost-payment-card');
-        let selectedPaymentMethodId = boostPaymentButton?.dataset.defaultPaymentMethodId || null;
-
-        if (boostPaymentButton && boostPaymentContainer) {
-            boostPaymentButton.addEventListener('click', async function () {
-                if (!selectedPaymentMethodId) {
-                    if (boostPaymentMessage) {
-                        boostPaymentMessage.textContent = 'Veuillez ajouter ou sélectionner une carte bancaire.';
-                    }
-
-                    return;
-                }
-
-                boostPaymentButton.disabled = true;
-                boostPaymentButton.textContent = 'Traitement…';
-
-                try {
-                    const response = await fetch(boostPaymentContainer.dataset.boostPaymentUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Accept: 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': boostPaymentContainer.dataset.boostPaymentCsrf
-                        },
-                        credentials: 'same-origin',
-                        body: JSON.stringify({
-                            paymentMethodId: Number(selectedPaymentMethodId)
-                        })
-                    });
-                    const data = await response.json();
-
-                    if (!response.ok || data.success !== true) {
-                        throw new Error(data.message || 'Le paiement n’a pas pu être effectué.');
-                    }
-
-                    if (boostPaymentMessage) {
-                        boostPaymentMessage.textContent = data.message;
-                    }
-
-                    window.setTimeout(function () {
-                        window.location.href = '{{ path('agence_immobiliere_options') }}';
-                    }, 800);
-                } catch (error) {
-                    if (boostPaymentMessage) {
-                        boostPaymentMessage.textContent = error instanceof Error
-                            ? error.message
-                            : 'Le paiement n’a pas pu être effectué.';
-                    }
-
-                    boostPaymentButton.disabled = false;
-                    boostPaymentButton.textContent = 'Acheter le pack boost';
-                }
-            });
-        }
-
-        if (!showButton || !cancelButton || !confirmButton || !paymentBlock) {
-            return;
-        }
-
-        function showPaymentMethods() {
-            paymentBlock.classList.remove('d-none');
-            paymentBlock.setAttribute('aria-hidden', 'false');
-            showButton.setAttribute('aria-expanded', 'true');
-
-            paymentBlock.scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
-        }
-
-        function hidePaymentMethods() {
-            paymentBlock.classList.add('d-none');
-            paymentBlock.setAttribute('aria-hidden', 'true');
-            showButton.setAttribute('aria-expanded', 'false');
-        }
-
-        showButton.addEventListener('click', showPaymentMethods);
-        cancelButton.addEventListener('click', hidePaymentMethods);
-
-        function selectPaymentMethod(radio) {
-            if (selectedCardName) {
-                selectedCardName.textContent = radio.dataset.cardName || '';
-            }
-
-            if (selectedCardExpiration) {
-                selectedCardExpiration.textContent = radio.dataset.cardExpiration || '';
-            }
-
-            selectedPaymentMethodId = radio.value;
-
-            if (boostPaymentCard) {
-                boostPaymentCard.textContent = `Carte débitée : ${radio.dataset.cardName || ''}`;
-            }
-        }
-
-        paymentOptions.forEach(function (option) {
-            const radio = option.querySelector('input[name="payment-method"]');
-
-            if (!radio) {
-                return;
-            }
-
-            radio.addEventListener('change', function () {
-                paymentOptions.forEach(function (item) {
-                    item.classList.remove(
-                        'achat-forfait-payment-option-selected'
-                    );
-                });
-
-                if (radio.checked) {
-                    option.classList.add(
-                        'achat-forfait-payment-option-selected'
-                    );
-
-                    selectPaymentMethod(radio);
-                    hidePaymentMethods();
-                }
-            });
-        });
-
-        confirmButton.addEventListener('click', function () {
-            const selectedRadio = document.querySelector(
-                'input[name="payment-method"]:checked'
-            );
-
-            if (!selectedRadio) {
-                return;
-            }
-
-            selectPaymentMethod(selectedRadio);
-
-            hidePaymentMethods();
-        });
-    });
-</script>
 
 {% endblock %}
