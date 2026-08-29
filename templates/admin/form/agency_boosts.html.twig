@@ -3,6 +3,7 @@
         field: {
             formattedValue: form.vars.data|default([])
         },
-        agency_id: form.parent.vars.data.id
+        agency_id: form.parent.vars.data.id,
+        boost_metrics: form.vars.boost_metrics|default({})
     } only %}
 {% endblock agency_boosts_widget %}

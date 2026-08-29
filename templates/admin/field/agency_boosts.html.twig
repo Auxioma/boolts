@@ -1,5 +1,6 @@
 {% set boosts = field.formattedValue|default([]) %}
 {% set agency_id = agency_id|default(null) %}
+{% set boost_metrics = boost_metrics|default({}) %}
 
 {% if boosts is empty %}
     <div class="text-body-secondary">Aucun boost actif pour cette agence.</div>
@@ -12,6 +13,7 @@
                     <th>Source</th>
                     <th>Début</th>
                     <th>Fin</th>
+                    <th>Performance</th>
                     <th>Statut</th>
                     <th class="text-end">Actions</th>
                 </tr>
@@ -20,14 +22,27 @@
                 {% for boost in boosts %}
                     {% set debit = boost.boosterTransaction %}
                     {% set from_subscription = debit.subscriptionPeriod is not null %}
+                    {% set metric = boost_metrics[boost.id]|default(null) %}
                     <tr data-boost-row>
                         <td>
-                            <strong>{{ boost.property.titreDuLogement ?: 'Annonce #' ~ boost.property.id }}</strong>
+                            {% if metric and metric.editUrl %}
+                                <a href="{{ metric.editUrl }}" class="fw-bold text-decoration-none">
+                                    {{ boost.property.titreDuLogement ?: 'Annonce #' ~ boost.property.id }}
+                                </a>
+                            {% else %}
+                                <strong>{{ boost.property.titreDuLogement ?: 'Annonce #' ~ boost.property.id }}</strong>
+                            {% endif %}
                             <span class="d-block small text-body-secondary">#{{ boost.property.id }}</span>
                         </td>
                         <td>{{ from_subscription ? 'Forfait' : 'Boost acheté' }}</td>
                         <td>{{ boost.startsAt|date('d/m/Y H:i') }}</td>
                         <td>{{ boost.endsAt|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% set boost_views = metric ? metric.views : 0 %}
+                            <span class="badge text-bg-light border" title="Vues de l’annonce entre le début et la fin du boost">
+                                {{ boost_views }} vue{{ boost_views > 1 ? 's' : '' }}
+                            </span>
+                        </td>
                         <td><span class="badge text-bg-success">Actif</span></td>
                         <td class="text-end">
                             <div class="d-inline-flex gap-2">

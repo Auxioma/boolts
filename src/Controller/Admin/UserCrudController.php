@@ -26,6 +26,7 @@ use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Billing\PaymentRepository;
 use App\Repository\Booster\PropertyBoostRepository;
 use App\Repository\Document\RequiredDocumentRepository;
+use App\Repository\PropertyViewRepository;
 use App\Service\Booster\AdminBoostManager;
 use App\Service\Document\ClientDocumentNotificationMailer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -78,6 +79,7 @@ class UserCrudController extends AbstractCrudController
         private readonly AgencySubscriptionPeriodRepository $agencySubscriptionPeriodRepository,
         private readonly PaymentRepository $paymentRepository,
         private readonly PropertyBoostRepository $propertyBoostRepository,
+        private readonly PropertyViewRepository $propertyViewRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -313,9 +315,42 @@ class UserCrudController extends AbstractCrudController
 
         return AgencyBoostsField::new('agencyBoosts', false)
             ->setFormTypeOption('data', $boosts)
+            ->setFormTypeOption('boost_metrics', $this->boostMetrics($boosts))
             ->formatValue(fn (mixed $value, ?User $agency): array => $agency instanceof User
                 ? $this->propertyBoostRepository->findActiveForAgency($agency)
                 : []);
+    }
+
+    /**
+     * Vues de l'annonce sur la fenêtre du boost et lien vers la fiche du bien.
+     *
+     * @param list<PropertyBoost> $boosts
+     *
+     * @return array<int, array{views: int, editUrl: string}>
+     */
+    private function boostMetrics(array $boosts): array
+    {
+        $metrics = [];
+
+        foreach ($boosts as $boost) {
+            $property = $boost->getProperty();
+
+            $metrics[$boost->getId()] = [
+                'views' => $this->propertyViewRepository->countByPropertyBetween(
+                    $property,
+                    $boost->getStartsAt(),
+                    $boost->getEndsAt(),
+                ),
+                'editUrl' => $this->adminUrlGenerator
+                    ->unset('role')
+                    ->setController(PropertyCrudController::class)
+                    ->setAction(Action::EDIT)
+                    ->setEntityId($property->getId())
+                    ->generateUrl(),
+            ];
+        }
+
+        return $metrics;
     }
 
     /**

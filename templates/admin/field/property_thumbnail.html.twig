@@ -1,0 +1,12 @@
+{% set image = field.formattedValue|default(null) %}
+
+{% if image is not null and image.imageName is not empty %}
+    <img
+        src="{{ vich_uploader_asset(image, 'imageFile') }}"
+        alt="{{ entity.instance.titreDuLogement|default('') }}"
+        loading="lazy"
+        style="width: 72px; height: 54px; object-fit: cover; border-radius: 4px; display: block;"
+    >
+{% else %}
+    <span class="text-body-secondary">—</span>
+{% endif %}

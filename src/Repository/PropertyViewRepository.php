@@ -12,6 +12,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Property;
 use App\Entity\PropertyView;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -55,6 +56,27 @@ class PropertyViewRepository extends ServiceEntityRepository
         }
 
         return $counts;
+    }
+
+    /**
+     * Nombre de vues d'une annonce sur une fenêtre de temps donnée
+     * (par exemple la période de mise en avant d'un boost).
+     */
+    public function countByPropertyBetween(
+        Property $property,
+        \DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+    ): int {
+        return (int) $this->createQueryBuilder('pv')
+            ->select('COUNT(pv.id)')
+            ->andWhere('pv.property = :property')
+            ->andWhere('pv.viewedAt >= :start')
+            ->andWhere('pv.viewedAt <= :end')
+            ->setParameter('property', $property)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     /**

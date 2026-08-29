@@ -14,6 +14,8 @@ namespace App\Form\Admin;
 
 use App\Entity\Booster\PropertyBoost;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -27,7 +29,18 @@ final class AgencyBoostsType extends AbstractType
             'mapped' => false,
             'required' => false,
             'disabled' => true,
+            'boost_metrics' => [],
         ]);
+
+        $resolver->setAllowedTypes('boost_metrics', 'array');
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     */
+    public function buildView(FormView $view, FormInterface $form, array $options): void
+    {
+        $view->vars['boost_metrics'] = $options['boost_metrics'];
     }
 
     public function getBlockPrefix(): string
