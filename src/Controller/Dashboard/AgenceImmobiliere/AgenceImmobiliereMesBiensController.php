@@ -1365,6 +1365,18 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              * ==============================================================
              */
             if (8 === $step) {
+                /*
+                 * Dernière étape : l'annonce quitte l'état brouillon et
+                 * passe en attente de validation. On ne touche pas au
+                 * statut d'une annonce déjà validée / publiée que l'on
+                 * ne fait que modifier.
+                 */
+                if (StatutAnnonceImmobiliere::BROUILLON === $mesBiens->getStatut()) {
+                    $mesBiens->setStatut(
+                        StatutAnnonceImmobiliere::PENDING
+                    );
+                }
+
                 $entityManager->flush();
 
                 /*

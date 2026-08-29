@@ -12,6 +12,7 @@
 
 namespace App\Security;
 
+use App\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,12 +59,34 @@ class AgenceImmobiliereAuthenticator extends AbstractLoginFormAuthenticator
         TokenInterface $token,
         string $firewallName,
     ): ?Response {
+        $user = $token->getUser();
+        $roles = $user instanceof User ? $user->getRoles() : [];
+
+        if (\in_array('ROLE_ADMIN', $roles, true)) {
+            return new RedirectResponse(
+                $this->urlGenerator->generate('admin')
+            );
+        }
+
+        /*
+         * Une agence qui se connecte depuis /pro/login est toujours
+         * redirigée vers son tableau de bord, sans tenir compte de
+         * l'éventuelle URL cible mémorisée par le firewall.
+         */
+        if (\in_array('ROLE_AGENCE', $roles, true)) {
+            $this->removeTargetPath($request->getSession(), $firewallName);
+
+            return new RedirectResponse(
+                $this->urlGenerator->generate('agence_immobiliere_dashboard')
+            );
+        }
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
         return new RedirectResponse(
-            $this->urlGenerator->generate('agence_immobiliere_dashboard')
+            $this->urlGenerator->generate('app_visiteur_dashboard')
         );
     }
 
