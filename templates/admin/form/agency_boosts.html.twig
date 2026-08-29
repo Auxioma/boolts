@@ -1,0 +1,8 @@
+{% block agency_boosts_widget %}
+    {% include 'admin/field/agency_boosts.html.twig' with {
+        field: {
+            formattedValue: form.vars.data|default([])
+        },
+        agency_id: form.parent.vars.data.id
+    } only %}
+{% endblock agency_boosts_widget %}

@@ -1,0 +1,64 @@
+{% set boosts = field.formattedValue|default([]) %}
+{% set agency_id = agency_id|default(null) %}
+
+{% if boosts is empty %}
+    <div class="text-body-secondary">Aucun boost actif pour cette agence.</div>
+{% else %}
+    <div class="table-responsive" data-admin-agency-boosts>
+        <table class="table table-sm table-striped align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Annonce</th>
+                    <th>Source</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Statut</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for boost in boosts %}
+                    {% set debit = boost.boosterTransaction %}
+                    {% set from_subscription = debit.subscriptionPeriod is not null %}
+                    <tr data-boost-row>
+                        <td>
+                            <strong>{{ boost.property.titreDuLogement ?: 'Annonce #' ~ boost.property.id }}</strong>
+                            <span class="d-block small text-body-secondary">#{{ boost.property.id }}</span>
+                        </td>
+                        <td>{{ from_subscription ? 'Forfait' : 'Boost acheté' }}</td>
+                        <td>{{ boost.startsAt|date('d/m/Y H:i') }}</td>
+                        <td>{{ boost.endsAt|date('d/m/Y H:i') }}</td>
+                        <td><span class="badge text-bg-success">Actif</span></td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-boost-action="cancel"
+                                    data-url="{{ path('admin_agency_boost_cancel', {user: agency_id, boost: boost.id}) }}"
+                                    data-token-name="_boost_token_{{ boost.id }}"
+                                    data-token="{{ csrf_token('cancel_agency_boost_' ~ boost.id) }}"
+                                    data-confirm="Annuler ce boost ? L’annonce ne sera plus mise en avant."
+                                >
+                                    Effacer
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-sm btn-danger"
+                                    data-boost-action="refund"
+                                    data-url="{{ path('admin_agency_boost_refund', {user: agency_id, boost: boost.id}) }}"
+                                    data-token-name="_boost_token_{{ boost.id }}"
+                                    data-token="{{ csrf_token('refund_agency_boost_' ~ boost.id) }}"
+                                    data-confirm="Annuler ce boost et recréditer le boost à l’agence ?"
+                                >
+                                    Effacer + recréditer
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="text-danger mb-0 mt-2 d-none" role="alert" data-boost-error></p>
+    </div>
+{% endif %}

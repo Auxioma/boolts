@@ -12,17 +12,21 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Booster\PropertyBoost;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\User;
+use App\Field\AgencyBoostsField;
 use App\Field\AgencyPaymentsField;
 use App\Field\UserDocumentsField;
 use App\Repository\Billing\AgencySubscriptionPeriodRepository;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Billing\PaymentRepository;
+use App\Repository\Booster\PropertyBoostRepository;
 use App\Repository\Document\RequiredDocumentRepository;
+use App\Service\Booster\AdminBoostManager;
 use App\Service\Document\ClientDocumentNotificationMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
@@ -73,6 +77,7 @@ class UserCrudController extends AbstractCrudController
         private readonly AgencySubscriptionRepository $agencySubscriptionRepository,
         private readonly AgencySubscriptionPeriodRepository $agencySubscriptionPeriodRepository,
         private readonly PaymentRepository $paymentRepository,
+        private readonly PropertyBoostRepository $propertyBoostRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -99,7 +104,9 @@ class UserCrudController extends AbstractCrudController
 
     public function configureAssets(Assets $assets): Assets
     {
-        return $assets->addJsFile('js/admin-user-documents.js');
+        return $assets
+            ->addJsFile('js/admin-user-documents.js')
+            ->addJsFile('js/admin-agency-boosts.js');
     }
 
     public function configureActions(Actions $actions): Actions
@@ -274,6 +281,8 @@ class UserCrudController extends AbstractCrudController
             UserDocumentsField::new('documentRequests', false)->onlyWhenUpdating(),
             FormField::addTab('Paiements', 'fa fa-credit-card')->onlyWhenUpdating(),
             $this->agencyPaymentsField()->onlyWhenUpdating(),
+            FormField::addTab('Boosts', 'fa fa-rocket')->onlyWhenUpdating(),
+            $this->agencyBoostsField()->onlyWhenUpdating(),
 
             DateTimeField::new('createdAt', 'Créée le')->onlyOnDetail(),
             DateTimeField::new('updatedAt', 'Mise à jour le')->onlyOnDetail(),
@@ -293,6 +302,20 @@ class UserCrudController extends AbstractCrudController
             ->formatValue(fn (mixed $value, ?User $agency): array => $agency instanceof User
                 ? $this->agencyPaymentsData($agency)
                 : $this->emptyAgencyPaymentsData());
+    }
+
+    private function agencyBoostsField(): AgencyBoostsField
+    {
+        $agency = $this->getContext()?->getEntity()?->getInstance();
+        $boosts = $agency instanceof User
+            ? $this->propertyBoostRepository->findActiveForAgency($agency)
+            : [];
+
+        return AgencyBoostsField::new('agencyBoosts', false)
+            ->setFormTypeOption('data', $boosts)
+            ->formatValue(fn (mixed $value, ?User $agency): array => $agency instanceof User
+                ? $this->propertyBoostRepository->findActiveForAgency($agency)
+                : []);
     }
 
     /**
@@ -522,6 +545,93 @@ class UserCrudController extends AbstractCrudController
         }
 
         return $documentRequest;
+    }
+
+    #[Route(
+        '/admin/agency/{user}/boost/{boost}/cancel',
+        name: 'admin_agency_boost_cancel',
+        methods: ['POST'],
+    )]
+    #[IsGranted('ROLE_ADMIN')]
+    public function cancelAgencyBoost(
+        User $user,
+        PropertyBoost $boost,
+        Request $request,
+        AdminBoostManager $adminBoostManager,
+    ): Response {
+        $this->assertBoostBelongsToAgency($user, $boost);
+
+        if (!$this->isCsrfTokenValid(
+            'cancel_agency_boost_'.$boost->getId(),
+            $request->request->getString('_boost_token_'.$boost->getId()),
+        )) {
+            return $this->boostActionResponse($request, $user, false, 'Jeton CSRF invalide.', Response::HTTP_FORBIDDEN);
+        }
+
+        $adminBoostManager->cancel($boost);
+
+        return $this->boostActionResponse($request, $user, true, 'Le boost a été effacé.', Response::HTTP_OK);
+    }
+
+    #[Route(
+        '/admin/agency/{user}/boost/{boost}/refund',
+        name: 'admin_agency_boost_refund',
+        methods: ['POST'],
+    )]
+    #[IsGranted('ROLE_ADMIN')]
+    public function refundAgencyBoost(
+        User $user,
+        PropertyBoost $boost,
+        Request $request,
+        AdminBoostManager $adminBoostManager,
+    ): Response {
+        $this->assertBoostBelongsToAgency($user, $boost);
+
+        if (!$this->isCsrfTokenValid(
+            'refund_agency_boost_'.$boost->getId(),
+            $request->request->getString('_boost_token_'.$boost->getId()),
+        )) {
+            return $this->boostActionResponse($request, $user, false, 'Jeton CSRF invalide.', Response::HTTP_FORBIDDEN);
+        }
+
+        $adminBoostManager->cancelAndRefund($boost);
+
+        return $this->boostActionResponse(
+            $request,
+            $user,
+            true,
+            'Le boost a été effacé et recrédité à l’agence.',
+            Response::HTTP_OK,
+        );
+    }
+
+    private function assertBoostBelongsToAgency(User $user, PropertyBoost $boost): void
+    {
+        if (
+            !\in_array(self::ROLE_AGENCY, $user->getRoles(), true)
+            || $boost->getAgency()->getId() !== $user->getId()
+        ) {
+            throw $this->createNotFoundException();
+        }
+    }
+
+    private function boostActionResponse(
+        Request $request,
+        User $user,
+        bool $success,
+        string $message,
+        int $status,
+    ): Response {
+        if ($request->isXmlHttpRequest()) {
+            return $this->json([
+                'success' => $success,
+                'message' => $message,
+            ], $status);
+        }
+
+        $this->addFlash($success ? 'success' : 'warning', $message);
+
+        return $this->redirectToUserEdit($user);
     }
 
     private function redirectToUserEdit(User $user): RedirectResponse

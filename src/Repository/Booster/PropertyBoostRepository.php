@@ -15,6 +15,7 @@ namespace App\Repository\Booster;
 use App\Entity\Billing\Enum\PropertyBoostStatus;
 use App\Entity\Booster\PropertyBoost;
 use App\Entity\Property;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -46,5 +47,31 @@ final class PropertyBoostRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
 
         return $count > 0;
+    }
+
+    /**
+     * Boosts actifs (non expirés, non annulés) d'une agence, du plus
+     * proche de son terme au plus lointain.
+     *
+     * @return list<PropertyBoost>
+     */
+    public function findActiveForAgency(User $agency, ?\DateTimeImmutable $now = null): array
+    {
+        $now ??= new \DateTimeImmutable();
+
+        return $this->createQueryBuilder('boost')
+            ->addSelect('property', 'transaction')
+            ->innerJoin('boost.property', 'property')
+            ->innerJoin('boost.boosterTransaction', 'transaction')
+            ->where('boost.agency = :agency')
+            ->andWhere('boost.status = :status')
+            ->andWhere('boost.canceledAt IS NULL')
+            ->andWhere('boost.endsAt >= :now')
+            ->setParameter('agency', $agency)
+            ->setParameter('status', PropertyBoostStatus::ACTIVE->value)
+            ->setParameter('now', $now)
+            ->orderBy('boost.endsAt', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }
