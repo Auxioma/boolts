@@ -21,9 +21,12 @@ use App\Entity\PropertyImage;
 use App\Entity\User;
 use App\Field\PropertyImagesField;
 use App\Repository\CategoryBienTransactionRepository;
+use App\Service\Import\PropertyCsvImporter;
+use App\Service\Import\PropertyImportReport;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -45,6 +48,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\NumericFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @extends AbstractCrudController<Property>
@@ -111,7 +119,134 @@ class PropertyCrudController extends AbstractCrudController
             );
         }
 
+        // Ajouté en dernier => affiché en premier, juste à côté de « Vente ».
+        $actions->add(
+            Crud::PAGE_INDEX,
+            Action::new('propertyImportCsv', 'Importer (CSV)', 'fa fa-file-import')
+                ->createAsGlobalAction()
+                ->linkToCrudAction('importCsv'),
+        );
+
         return $actions;
+    }
+
+    /**
+     * Page d'import CSV de biens immobiliers.
+     *
+     * GET  : affiche le formulaire (et le lien de téléchargement du modèle) ;
+     * GET  + ?download=template : télécharge le modèle CSV vide ;
+     * POST : traite le fichier téléversé et affiche le rapport d'import.
+     */
+    #[AdminRoute('/import-csv', name: 'import_csv', options: ['methods' => ['GET', 'POST']])]
+    public function importCsv(
+        Request $request,
+        PropertyCsvImporter $importer,
+    ): Response {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if ('template' === $request->query->get('download')) {
+            return $this->streamCsvTemplate($importer);
+        }
+
+        $backToIndexUrl = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::INDEX)
+            ->generateUrl();
+
+        $importUrl = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('importCsv')
+            ->generateUrl();
+
+        $templateUrl = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('importCsv')
+            ->set('download', 'template')
+            ->generateUrl();
+
+        $report = null;
+
+        if ($request->isMethod('POST')) {
+            $report = $this->handleImportUpload($request, $importer);
+        }
+
+        return $this->render('admin/property/import.html.twig', [
+            'report' => $report,
+            'columns' => $importer->templateColumns(),
+            'import_url' => $importUrl,
+            'template_url' => $templateUrl,
+            'back_to_index_url' => $backToIndexUrl,
+        ]);
+    }
+
+    private function handleImportUpload(Request $request, PropertyCsvImporter $importer): ?PropertyImportReport
+    {
+        if (!$this->isCsrfTokenValid('property_csv_import', $request->request->getString('_token'))) {
+            $this->addFlash('danger', 'Jeton CSRF invalide, veuillez réessayer.');
+
+            return null;
+        }
+
+        $file = $request->files->get('csv_file');
+
+        if (!$file instanceof UploadedFile || !$file->isValid()) {
+            $this->addFlash('danger', 'Aucun fichier CSV valide n’a été reçu.');
+
+            return null;
+        }
+
+        $extension = mb_strtolower((string) $file->getClientOriginalExtension());
+        $mimeType = (string) $file->getMimeType();
+
+        $allowedMimes = ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel', 'application/octet-stream'];
+
+        if ('csv' !== $extension && !\in_array($mimeType, $allowedMimes, true)) {
+            $this->addFlash('danger', 'Le fichier doit être un CSV.');
+
+            return null;
+        }
+
+        try {
+            $report = $importer->import($file->getPathname());
+        } catch (\Throwable $exception) {
+            $this->addFlash('danger', 'Import impossible : '.$exception->getMessage());
+
+            return null;
+        }
+
+        if ($report->getCreated() > 0) {
+            $this->addFlash('success', $report->summaryLine());
+        } elseif (!$report->hasErrors()) {
+            $this->addFlash('warning', 'Aucun bien importé (fichier vide ?).');
+        } else {
+            $this->addFlash('warning', $report->summaryLine());
+        }
+
+        return $report;
+    }
+
+    private function streamCsvTemplate(PropertyCsvImporter $importer): StreamedResponse
+    {
+        $columns = $importer->templateColumns();
+
+        $response = new StreamedResponse(static function () use ($columns): void {
+            $output = fopen('php://output', 'w');
+
+            if (false === $output) {
+                throw new FileException('Impossible d’ouvrir le flux de sortie CSV.');
+            }
+
+            // BOM UTF-8 pour Excel + délimiteur « ; » cohérent avec l'export.
+            fwrite($output, "\xEF\xBB\xBF");
+            fputcsv($output, $columns, ';');
+
+            fclose($output);
+        });
+
+        $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
+        $response->headers->set('Content-Disposition', 'attachment; filename="modele-import-biens.csv"');
+
+        return $response;
     }
 
     /**

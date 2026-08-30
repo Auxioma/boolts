@@ -1,0 +1,120 @@
+{#
+ Template: templates/admin/property/import.html.twig
+ Role: Page d'import CSV des biens immobiliers (back-office EasyAdmin).
+ Context: Rendue par App\Controller\Admin\PropertyCrudController::importCsv().
+#}
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_title %}Importer des biens immobiliers (CSV){% endblock %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-12 col-xl-8">
+
+            <div class="mb-3">
+                <a href="{{ back_to_index_url }}" class="btn btn-link ps-0">
+                    <i class="fa fa-arrow-left"></i> Retour à la liste des biens
+                </a>
+            </div>
+
+            {% if report is not null %}
+                <div class="card mb-4">
+                    <div class="card-header">Résultat de l’import</div>
+                    <div class="card-body">
+                        <p class="{{ report.created > 0 ? 'text-success' : 'text-body-secondary' }} fw-bold mb-3">
+                            {{ report.summaryLine }}
+                        </p>
+
+                        {% if report.errors is not empty %}
+                            <h3 class="h6 text-danger">Erreurs ({{ report.errors|length }})</h3>
+                            <ul class="small text-danger">
+                                {% for error in report.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% if report.warnings is not empty %}
+                            <h3 class="h6 text-warning-emphasis">Avertissements ({{ report.warnings|length }})</h3>
+                            <ul class="small text-warning-emphasis">
+                                {% for warning in report.warnings %}
+                                    <li>{{ warning }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% if report.created > 0 %}
+                            <a href="{{ back_to_index_url }}" class="btn btn-primary mt-2">
+                                Voir les {{ report.created }} bien(s) importé(s)
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card mb-4">
+                <div class="card-header">Fichier à importer</div>
+                <div class="card-body">
+                    <form method="post" action="{{ import_url }}" enctype="multipart/form-data">
+                        <input type="hidden" name="_token" value="{{ csrf_token('property_csv_import') }}">
+
+                        <div class="mb-3">
+                            <label for="csv_file" class="form-label">Fichier CSV</label>
+                            <input type="file" id="csv_file" name="csv_file" accept=".csv,text/csv" class="form-control" required>
+                            <div class="form-text">
+                                Séparateur <code>;</code> ou <code>,</code> — encodage UTF-8 — première ligne = en-têtes.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-file-import"></i> Lancer l’import
+                        </button>
+                        <a href="{{ template_url }}" class="btn btn-outline-secondary">
+                            <i class="fa fa-download"></i> Télécharger le modèle CSV
+                        </a>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Règles d’import</div>
+                <div class="card-body small">
+                    <ul>
+                        <li>Le CSV ne contient <strong>aucun ID</strong>. Chaque ligne crée un nouveau bien.</li>
+                        <li>
+                            <strong>Agence</strong> : colonne <code>agence_email</code> (ou <code>agence_nom</code>).
+                            L’utilisateur doit exister et avoir le rôle agence.
+                        </li>
+                        <li>
+                            <strong>Type de bien / transaction / caractéristiques / statut</strong> : renseignés
+                            par libellé ou slug, dans n’importe quelle langue. La valeur est rapprochée des
+                            données existantes (insensible à la casse et aux accents). Une valeur inconnue pour le
+                            type de bien ou la transaction fait échouer la ligne ; une caractéristique inconnue est
+                            ignorée avec un avertissement.
+                        </li>
+                        <li>
+                            <strong>Statut</strong> : valeur de la colonne <code>statut</code>
+                            (ex. <code>brouillon</code>, <code>publiee</code>, <code>pending</code>…) ;
+                            <code>brouillon</code> par défaut si la colonne est vide.
+                        </li>
+                        <li>
+                            <strong>Multilingue</strong> : colonnes traduisibles suffixées par la langue
+                            (<code>titre_fr</code>, <code>titre_en</code>…). Si une langue manque pour un champ,
+                            la valeur de la langue renseignée est utilisée par défaut.
+                        </li>
+                        <li>
+                            <strong>Caractéristiques</strong> et <strong>images</strong> : plusieurs valeurs
+                            séparées par <code>|</code>. Les images sont téléchargées depuis leur URL
+                            (jusqu’à 20 par bien).
+                        </li>
+                        <li>Montants : point ou virgule décimale acceptés. Dates : <code>AAAA-MM-JJ</code> ou <code>JJ/MM/AAAA</code>.</li>
+                    </ul>
+
+                    <p class="mb-1 fw-bold">Colonnes attendues</p>
+                    <p class="font-monospace text-body-secondary">{{ columns|join(' · ') }}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
