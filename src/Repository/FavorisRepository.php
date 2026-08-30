@@ -40,15 +40,14 @@ class FavorisRepository extends ServiceEntityRepository
     }
 
     /**
+     * Nombre total de favoris (toutes périodes confondues) par annonce.
+     *
      * @param list<int> $propertyIds
      *
      * @return array<int, int>
      */
-    public function countByPropertyIds(
-        array $propertyIds,
-        ?\DateTimeImmutable $start,
-        \DateTimeImmutable $end,
-    ): array {
+    public function countByPropertyIds(array $propertyIds): array
+    {
         if ([] === $propertyIds) {
             return [];
         }

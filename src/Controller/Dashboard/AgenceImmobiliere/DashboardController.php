@@ -215,8 +215,8 @@ final class DashboardController extends AbstractController
 
         return $this->render('dashboard/agence_immobiliere/dashboard/_property_performance.html.twig', [
             'affiche_performance_annonce' => $affichePerformanceAnnonce,
-            'view_counts' => $propertyViewRepository->countByPropertyIds($propertyIds, $start, $end),
-            'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds, $start, $end),
+            'view_counts' => $propertyViewRepository->countByPropertyIds($propertyIds),
+            'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds),
             'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
             'boosts_restants' => $boosterTransactionRepository->countAvailableForAgency($user),
         ]);

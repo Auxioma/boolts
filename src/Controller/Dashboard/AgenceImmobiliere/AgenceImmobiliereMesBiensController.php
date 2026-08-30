@@ -33,8 +33,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/mes/biens', name: 'agence_immobiliere_')]
+#[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
     #[Route('/liste', name: 'mes_biens_list', methods: ['GET'])]
@@ -58,13 +60,20 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $sort = $request->query->getString(
             'sort',
-            'p.createdAt'
+            'p.updatedAt'
         );
 
-        $direction = $request->query->getString(
-            'direction',
-            'DESC'
+        if (!\in_array($sort, PropertyRepository::MES_BIENS_SORTS, true)) {
+            $sort = 'p.updatedAt';
+        }
+
+        $direction = mb_strtoupper(
+            $request->query->getString('direction', 'DESC')
         );
+
+        if (!\in_array($direction, ['ASC', 'DESC'], true)) {
+            $direction = 'DESC';
+        }
 
         $filter = new ModalFilter();
 
@@ -101,7 +110,18 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 1,
                 $request->query->getInt('page', 1)
             ),
-            10
+            10,
+            [
+                /*
+                 * Le tri est géré manuellement par le repository via les
+                 * paramètres "sort" / "direction". On déplace les paramètres
+                 * de tri automatique du KnpPaginator pour l'empêcher
+                 * d'ajouter un "ORDER BY p.views" (champ non mappé) et de
+                 * lever "There is no such field [views]".
+                 */
+                'sortFieldParameterName' => '_sort',
+                'sortDirectionParameterName' => '_direction',
+            ]
         );
 
         /*

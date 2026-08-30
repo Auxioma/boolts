@@ -258,11 +258,24 @@ class PropertyRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Options de tri autorisées pour la liste "Mes biens" de l'agence.
+     *
+     * Toute autre valeur retombe sur le tri par défaut
+     * (date de modification, du plus récent au plus ancien).
+     */
+    public const array MES_BIENS_SORTS = [
+        'p.updatedAt',
+        'p.createdAt',
+        'p.views',
+        'favorisCount',
+    ];
+
     public function findPropertysByUserWithFiltersQuery(
         User $user,
         ?string $search = null,
         array $filters = [],
-        string $sort = 'p.createdAt',
+        string $sort = 'p.updatedAt',
         string $direction = 'DESC',
         ?string $locale = null,
     ): QueryBuilder {
@@ -277,6 +290,10 @@ class PropertyRepository extends ServiceEntityRepository
 
         if (!\in_array($direction, ['ASC', 'DESC'], true)) {
             $direction = 'DESC';
+        }
+
+        if (!\in_array($sort, self::MES_BIENS_SORTS, true)) {
+            $sort = 'p.updatedAt';
         }
 
         $qb = $this->createQueryBuilder('p')
@@ -596,6 +613,12 @@ class PropertyRepository extends ServiceEntityRepository
                 );
         }
 
+        /*
+         * Tri par nombre de visites (vues) de l'annonce.
+         *
+         * direction = DESC -> du plus vu au moins vu
+         * direction = ASC  -> du moins vu au plus vu
+         */
         if ('p.views' === $sort) {
             return $qb
                 ->leftJoin(
@@ -609,9 +632,16 @@ class PropertyRepository extends ServiceEntityRepository
                 ->orderBy(
                     'viewsCount',
                     $direction
-                );
+                )
+                ->addOrderBy('p.id', $direction);
         }
 
+        /*
+         * Tri par nombre de favoris de l'annonce.
+         *
+         * direction = DESC -> du plus de favoris au moins de favoris
+         * direction = ASC  -> du moins de favoris au plus de favoris
+         */
         if ('favorisCount' === $sort) {
             return $qb
                 ->leftJoin(
@@ -627,13 +657,34 @@ class PropertyRepository extends ServiceEntityRepository
                 ->orderBy(
                     'favorisCount',
                     $direction
-                );
+                )
+                ->addOrderBy('p.id', $direction);
         }
 
-        return $qb->orderBy(
-            'p.createdAt',
-            $direction
-        );
+        /*
+         * Tri par date de création de l'annonce.
+         */
+        if ('p.createdAt' === $sort) {
+            return $qb
+                ->orderBy('p.createdAt', $direction)
+                ->addOrderBy('p.id', $direction);
+        }
+
+        /*
+         * Tri par défaut : date de dernière modification de l'annonce.
+         *
+         * direction = DESC -> de la plus récemment modifiée à la plus ancienne
+         * direction = ASC  -> de la plus ancienne à la plus récemment modifiée
+         *
+         * COALESCE : updatedAt peut être null sur d'anciennes données,
+         * on retombe alors sur la date de création.
+         */
+        return $qb
+            ->addSelect(
+                'COALESCE(p.updatedAt, p.createdAt) AS HIDDEN lastModifiedAt'
+            )
+            ->orderBy('lastModifiedAt', $direction)
+            ->addOrderBy('p.id', $direction);
     }
 
     /**

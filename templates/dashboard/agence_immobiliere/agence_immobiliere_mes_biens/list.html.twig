@@ -129,16 +129,59 @@
                                     Filtres
                                 </button>
 
-                                <a
-                                    href="{{ path('agence_immobiliere_mes_biens_list', {
-                                        sort: 'createdAt',
-                                        direction: 'DESC'
-                                    }) }}"
-                                    class="btn-dashboard-filter"
-                                >
-                                    <i class="icon-arrow-down-up"></i>
-                                    Trier
-                                </a>
+                                {% set routeName = app.request.attributes.get('_route') %}
+                                {% set baseParams = app.request.query.all|merge({ page: 1 }) %}
+
+                                {% set currentSort = sortValue|default('p.updatedAt') %}
+                                {% set currentDirection = directionValue|default('DESC')|lower %}
+
+                                {% set sortOptions = [
+                                    { sort: 'p.updatedAt',  direction: 'desc', label: 'Date de modification (récent → ancien)', short: 'Modif. récente → ancienne' },
+                                    { sort: 'p.updatedAt',  direction: 'asc',  label: 'Date de modification (ancien → récent)', short: 'Modif. ancienne → récente' },
+                                    { sort: 'p.views',      direction: 'desc', label: 'Vues (plus → moins)',                     short: 'Vues : plus → moins' },
+                                    { sort: 'p.views',      direction: 'asc',  label: 'Vues (moins → plus)',                     short: 'Vues : moins → plus' },
+                                    { sort: 'favorisCount', direction: 'desc', label: 'Favoris (plus → moins)',                  short: 'Favoris : plus → moins' },
+                                    { sort: 'favorisCount', direction: 'asc',  label: 'Favoris (moins → plus)',                  short: 'Favoris : moins → plus' },
+                                ] %}
+
+                                {% set currentLabel = 'Modif. récente → ancienne' %}
+                                {% for option in sortOptions %}
+                                    {% if option.sort == currentSort and option.direction == currentDirection %}
+                                        {% set currentLabel = option.short %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                <div class="agence-filter-sort" data-controller="agence-sort">
+
+                                    <button
+                                        type="button"
+                                        class="btn-dashboard-filter"
+                                        data-action="click->agence-sort#toggle"
+                                        data-agence-sort-target="button"
+                                        aria-expanded="false"
+                                    >
+                                        <i class="icon-arrow-down-up"></i>
+                                        Tri : {{ currentLabel }}
+                                    </button>
+
+                                    <div
+                                        class="agence-filter-sort__dropdown d-none"
+                                        data-agence-sort-target="menu"
+                                        role="menu"
+                                        aria-label="Trier les annonces"
+                                    >
+                                        {% for option in sortOptions %}
+                                            <a
+                                                href="{{ path(routeName, baseParams|merge({ sort: option.sort, direction: option.direction })) }}"
+                                                class="agence-filter-sort__item {{ option.sort == currentSort and option.direction == currentDirection ? 'agence-filter-sort__item--active' : '' }}"
+                                                role="menuitem"
+                                            >
+                                                {{ option.label }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
 
                                 <a
                                     href="{{ path('agence_immobiliere_mes_biens', { token: random(2147483647) }) }}"
