@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Account;
 
+use App\Entity\Billing\AgencySubscription;
 use App\Entity\User;
+use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Service\Stripe\StripeCustomerService;
 use App\Service\Subscription\SubscriptionCancellationService;
+use App\Service\Subscription\SubscriptionPlanChangeService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,6 +24,8 @@ final class SubscriptionLifecycleController extends AbstractController
 {
     public function __construct(
         private readonly SubscriptionCancellationService $cancellationService,
+        private readonly SubscriptionPlanChangeService $planChangeService,
+        private readonly AgencySubscriptionRepository $subscriptionRepository,
         private readonly StripeCustomerService $stripeCustomerService,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly LoggerInterface $logger,
@@ -70,6 +75,38 @@ final class SubscriptionLifecycleController extends AbstractController
             ]);
 
             $this->addFlash('error', 'Impossible de réactiver votre abonnement.');
+        }
+
+        return $this->redirectAfterLifecycleAction($request);
+    }
+
+    #[Route('/cancel-plan-change', name: 'cancel_plan_change', methods: ['POST'])]
+    public function cancelPlanChange(Request $request): RedirectResponse
+    {
+        if (!$this->isCsrfTokenValid('account_subscription_cancel_plan_change', $this->readCsrfToken($request))) {
+            $this->addFlash('error', 'Jeton de sécurité invalide.');
+
+            return $this->redirectAfterLifecycleAction($request);
+        }
+
+        $subscription = $this->subscriptionRepository->findOneActivePaidForAgency($this->agency());
+
+        if (!$subscription instanceof AgencySubscription || !$subscription->hasPendingPlanChange()) {
+            $this->addFlash('error', 'Aucun changement de forfait n’est programmé.');
+
+            return $this->redirectAfterLifecycleAction($request);
+        }
+
+        try {
+            $this->planChangeService->cancelScheduledDowngrade($subscription);
+            $this->addFlash('success', 'Le changement de forfait programmé a été annulé.');
+        } catch (\Throwable $exception) {
+            $this->logger->error('[SUBSCRIPTION] Unable to cancel scheduled plan change from customer area.', [
+                'agency' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
+                'message' => $exception->getMessage(),
+            ]);
+
+            $this->addFlash('error', 'Impossible d’annuler le changement de forfait programmé.');
         }
 
         return $this->redirectAfterLifecycleAction($request);

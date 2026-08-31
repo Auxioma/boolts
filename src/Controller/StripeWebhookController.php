@@ -135,6 +135,9 @@ final class StripeWebhookController extends AbstractController
             'invoice.payment_failed' => $this->handleInvoicePaymentFailed($event),
             'customer.subscription.updated' => $this->handleSubscriptionUpdated($event),
             'customer.subscription.deleted' => $this->handleSubscriptionDeleted($event),
+            'subscription_schedule.released',
+            'subscription_schedule.aborted',
+            'subscription_schedule.canceled' => $this->handleSubscriptionScheduleEnded($event),
             default => null,
         };
     }
@@ -206,6 +209,46 @@ final class StripeWebhookController extends AbstractController
         $this->synchronizationService->synchronizeSubscriptionFields($subscription, $stripeSubscription);
         $this->entityManager->flush();
         $this->downgradeService->downgradeToFree($subscription, DowngradeReason::STRIPE_SUBSCRIPTION_DELETED);
+    }
+
+    /**
+     * When a subscription schedule ends (released after a scheduled downgrade took
+     * effect, or aborted/canceled), re-sync the underlying subscription from Stripe.
+     * The synchronisation service clears the local pending-plan-change fields once
+     * it sees the target price as active.
+     */
+    private function handleSubscriptionScheduleEnded(Event $event): void
+    {
+        $schedule = $event->data->object ?? null;
+
+        if (!\is_object($schedule)) {
+            return;
+        }
+
+        $subscriptionId = null;
+
+        foreach (['subscription', 'released_subscription'] as $property) {
+            $value = $schedule->{$property} ?? null;
+
+            if (\is_string($value) && str_starts_with($value, 'sub_')) {
+                $subscriptionId = $value;
+
+                break;
+            }
+        }
+
+        if (null === $subscriptionId) {
+            return;
+        }
+
+        $subscription = $this->subscriptionRepository->findOneByProviderSubscriptionId($subscriptionId);
+
+        if (null === $subscription) {
+            return;
+        }
+
+        $stripeSubscription = $this->stripeSubscriptionService->retrieve($subscriptionId);
+        $this->synchronizationService->synchronizeFromStripe($subscription, $stripeSubscription);
     }
 
     private function resolveInvoice(mixed $value): StripeInvoice

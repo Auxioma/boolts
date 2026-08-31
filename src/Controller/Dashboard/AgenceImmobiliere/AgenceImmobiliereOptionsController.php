@@ -134,6 +134,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         Request $request,
         SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
         AgencyPaymentMethodRepository $paymentMethodRepository,
+        AgencySubscriptionRepository $agencySubscriptionRepository,
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
     ): Response {
@@ -176,6 +177,17 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             static fn (AgencyPaymentMethod $paymentMethod): bool => $paymentMethod !== $defaultPaymentMethod
         ));
 
+        $currentSubscription = $agency instanceof User
+            ? $agencySubscriptionRepository->findOneActivePaidForAgency($agency)
+            : null;
+        $currentPlanPrice = $currentSubscription?->getPlanPrice();
+
+        $isDowngrade = $currentPlanPrice instanceof SubscriptionPlanPrice
+            && $currentPlanPrice->getId() !== $planPrice->getId()
+            && $currentPlanPrice->getCurrency() === $planPrice->getCurrency()
+            && $planPrice->getAmountMinor() < $currentPlanPrice->getAmountMinor()
+            && !$currentSubscription->getCancelAtPeriodEnd();
+
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_options/achat.html.twig',
             [
@@ -185,6 +197,9 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'default_payment_method' => $defaultPaymentMethod,
                 'other_payment_methods' => $otherPaymentMethods,
                 'stripe_public_key' => $stripePublicKey,
+                'is_downgrade' => $isDowngrade,
+                'current_plan' => $currentPlanPrice?->getPlan(),
+                'downgrade_effective_at' => $isDowngrade ? $currentSubscription->getCurrentPeriodEnd() : null,
             ]
         );
     }
@@ -418,8 +433,8 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         $brand = $this->stringFromSnapshot($snapshot, 'brand') ?? $paymentMethod?->getBrand();
         $last4 = $this->stringFromSnapshot($snapshot, 'last4') ?? $paymentMethod?->getLast4();
 
-        $brand = \is_string($brand) ? trim($brand) : '';
-        $last4 = \is_string($last4) ? trim($last4) : null;
+        $brand = \is_string($brand) ? mb_trim($brand) : '';
+        $last4 = \is_string($last4) ? mb_trim($last4) : null;
 
         if ('' === $brand && (null === $last4 || '' === $last4)) {
             return null;
@@ -442,14 +457,14 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             return null;
         }
 
-        $value = trim($value);
+        $value = mb_trim($value);
 
         return '' === $value ? null : $value;
     }
 
     private function cardBrandLabel(string $brand): string
     {
-        $normalizedBrand = mb_strtolower(str_replace([' ', '-'], '_', trim($brand)));
+        $normalizedBrand = mb_strtolower(str_replace([' ', '-'], '_', mb_trim($brand)));
 
         return match ($normalizedBrand) {
             'visa' => 'VISA',
@@ -461,9 +476,9 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             'jcb' => 'JCB',
             'unionpay' => 'UnionPay',
             'link' => 'Link',
-            default => '' === trim($brand)
+            default => '' === mb_trim($brand)
                 ? 'Carte bancaire'
-                : mb_convert_case(str_replace('_', ' ', trim($brand)), \MB_CASE_TITLE, 'UTF-8'),
+                : mb_convert_case(str_replace('_', ' ', mb_trim($brand)), \MB_CASE_TITLE, 'UTF-8'),
         };
     }
 }

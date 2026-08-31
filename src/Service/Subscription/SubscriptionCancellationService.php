@@ -42,6 +42,8 @@ final readonly class SubscriptionCancellationService
             throw new \LogicException('Aucun abonnement payant actif n’est disponible pour cette agence.');
         }
 
+        $this->releasePendingPlanChange($subscription);
+
         $stripeSubscription = $this->stripeSubscriptionService->scheduleCancellationAtPeriodEnd($subscription);
         $snapshot = $this->stripeSubscriptionService->snapshot($stripeSubscription);
         $now = new \DateTimeImmutable();
@@ -209,5 +211,35 @@ final readonly class SubscriptionCancellationService
 
             throw $exception;
         }
+    }
+
+    /**
+     * A cancellation and a scheduled paid-to-paid downgrade cannot both be armed on
+     * the same Stripe subscription: releasing the schedule first hands billing control
+     * back to the subscription so it can be cancelled at period end.
+     */
+    private function releasePendingPlanChange(AgencySubscription $subscription): void
+    {
+        if (!$subscription->hasPendingPlanChange()) {
+            return;
+        }
+
+        $scheduleId = $subscription->getProviderScheduleId();
+
+        if (\is_string($scheduleId) && '' !== $scheduleId) {
+            $this->stripeSubscriptionService->releaseSchedule($scheduleId);
+        }
+
+        $subscription->clearPendingPlanChange();
+
+        $this->historyRecorder->record(
+            subscription: $subscription,
+            eventType: SubscriptionHistoryEventType::PLAN_CHANGE_CANCELED,
+            oldStatus: $subscription->getStatus(),
+            newStatus: $subscription->getStatus(),
+            oldPlan: $subscription->getPlan()->getCode(),
+            newPlan: $subscription->getPlan()->getCode(),
+            metadata: ['reason' => 'superseded_by_cancellation'],
+        );
     }
 }

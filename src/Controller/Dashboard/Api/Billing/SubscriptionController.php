@@ -17,8 +17,8 @@ namespace App\Controller\Dashboard\Api\Billing;
 use App\Entity\Billing\AgencyPaymentMethod;
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\AgencySubscriptionPeriod;
-use App\Entity\Billing\Enum\PaymentAttemptStatus;
 use App\Entity\Billing\Enum\BoosterTransactionType;
+use App\Entity\Billing\Enum\PaymentAttemptStatus;
 use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
 use App\Entity\Billing\Enum\PaymentStatus;
 use App\Entity\Billing\Enum\PaymentType;
@@ -29,8 +29,10 @@ use App\Entity\Billing\PaymentAttempt;
 use App\Entity\Billing\SubscriptionPlanPrice;
 use App\Entity\Booster\BoosterTransaction;
 use App\Entity\User;
+use App\Exception\PlanChangeException;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Service\Stripe\StripeSubscriptionService;
+use App\Service\Subscription\SubscriptionPlanChangeService;
 use App\Service\Subscription\SubscriptionSynchronizationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -61,6 +63,7 @@ final class SubscriptionController extends AbstractController
         private readonly AgencySubscriptionRepository $agencySubscriptionRepository,
         private readonly StripeSubscriptionService $stripeSubscriptionService,
         private readonly SubscriptionSynchronizationService $subscriptionSynchronizationService,
+        private readonly SubscriptionPlanChangeService $planChangeService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -121,7 +124,7 @@ final class SubscriptionController extends AbstractController
         $existingSubscription = $this->agencySubscriptionRepository->findOneActivePaidForAgency($agency);
 
         if ($existingSubscription instanceof AgencySubscription) {
-            return $this->upgrade($existingSubscription, $planPrice, $paymentMethod);
+            return $this->changePlan($existingSubscription, $planPrice, $paymentMethod);
         }
 
         try {
@@ -163,6 +166,76 @@ final class SubscriptionController extends AbstractController
 
             return $this->json(['success' => false, 'message' => 'Impossible de créer l’abonnement.'], 500);
         }
+    }
+
+    /**
+     * Routes an already-subscribed agency to the right flow depending on how the
+     * chosen plan price compares to the current one: higher or equal amount is an
+     * immediate change (existing upgrade path), a strictly lower amount is deferred
+     * to the end of the paid period via a Stripe subscription schedule.
+     */
+    private function changePlan(
+        AgencySubscription $subscription,
+        SubscriptionPlanPrice $planPrice,
+        AgencyPaymentMethod $paymentMethod,
+    ): JsonResponse {
+        $currentPlanPrice = $subscription->getPlanPrice();
+
+        if (!$currentPlanPrice instanceof SubscriptionPlanPrice) {
+            return $this->json(['success' => false, 'message' => 'Le prix de l’abonnement actuel est introuvable.'], 409);
+        }
+
+        if ($planPrice->getId() === $currentPlanPrice->getId()) {
+            return $this->json(['success' => false, 'message' => 'C’est déjà votre forfait actuel.'], 409);
+        }
+
+        if ($planPrice->getAmountMinor() < $currentPlanPrice->getAmountMinor()) {
+            return $this->scheduleDowngrade($subscription, $planPrice, $paymentMethod);
+        }
+
+        return $this->upgrade($subscription, $planPrice, $paymentMethod);
+    }
+
+    private function scheduleDowngrade(
+        AgencySubscription $subscription,
+        SubscriptionPlanPrice $planPrice,
+        AgencyPaymentMethod $paymentMethod,
+    ): JsonResponse {
+        try {
+            $updated = $this->planChangeService->scheduleDowngrade($subscription, $planPrice, $paymentMethod);
+        } catch (PlanChangeException $exception) {
+            return $this->json(['success' => false, 'message' => $exception->getMessage()], 409);
+        } catch (ApiErrorException $exception) {
+            $this->logger->error('Erreur Stripe pendant la programmation du changement de forfait.', [
+                'message' => $exception->getMessage(),
+                'stripe_code' => $exception->getStripeCode(),
+                'agency_id' => $subscription->getAgency()->getId(),
+                'subscription_plan_price_id' => $planPrice->getId(),
+            ]);
+
+            return $this->json(['success' => false, 'message' => 'Stripe : '.$exception->getMessage()], 400);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Erreur interne pendant la programmation du changement de forfait.', [
+                'message' => $exception->getMessage(),
+                'agency_id' => $subscription->getAgency()->getId(),
+                'subscription_plan_price_id' => $planPrice->getId(),
+            ]);
+
+            return $this->json(['success' => false, 'message' => 'Impossible de programmer le changement de forfait.'], 500);
+        }
+
+        $effectiveAt = $updated->getPendingPlanChangeEffectiveAt();
+
+        return $this->json([
+            'success' => true,
+            'scheduled' => true,
+            'effectiveAt' => $effectiveAt?->format(\DATE_ATOM),
+            'message' => \sprintf(
+                'Votre passage au forfait %s sera effectif le %s. Aucun paiement aujourd’hui : il sera prélevé à cette date lors du renouvellement.',
+                $planPrice->getPlan()->getName(),
+                $effectiveAt?->format('d/m/Y') ?? 'à la fin de votre période en cours',
+            ),
+        ], 200);
     }
 
     private function persistSubscription(User $agency, SubscriptionPlanPrice $planPrice, AgencyPaymentMethod $paymentMethod, Subscription $stripeSubscription): void
@@ -406,8 +479,7 @@ final class SubscriptionController extends AbstractController
         AgencySubscription $subscription,
         SubscriptionPlanPrice $planPrice,
         AgencyPaymentMethod $paymentMethod,
-    ): JsonResponse
-    {
+    ): JsonResponse {
         if (!\in_array($subscription->getStatus(), [SubscriptionStatus::ACTIVE, SubscriptionStatus::CANCEL_SCHEDULED], true)) {
             return $this->json([
                 'success' => false,
@@ -433,6 +505,17 @@ final class SubscriptionController extends AbstractController
         }
 
         try {
+            if ($subscription->hasPendingPlanChange()) {
+                $scheduleId = $subscription->getProviderScheduleId();
+
+                if (\is_string($scheduleId) && '' !== $scheduleId) {
+                    $this->stripeSubscriptionService->releaseSchedule($scheduleId);
+                }
+
+                $subscription->clearPendingPlanChange();
+                $this->entityManager->flush();
+            }
+
             $stripeSubscription = $this->stripeSubscriptionService->retrieve(
                 (string) $subscription->getProviderSubscriptionId(),
             );

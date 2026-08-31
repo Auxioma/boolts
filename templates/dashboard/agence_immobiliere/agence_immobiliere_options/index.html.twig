@@ -513,6 +513,59 @@
 
                 {% endif %}
 
+
+                {% if abonnement_actuel and abonnement_actuel.hasPendingPlanChange %}
+
+                    <div class="subscription-cancellation-info">
+
+                        Changement de forfait programmé pour
+
+                        <strong>{{ abonnement_actuel.pendingPlanPrice.plan.name }}</strong>
+
+                        {% if abonnement_actuel.pendingPlanChangeEffectiveAt %}
+                            le
+                            <strong>
+                                {{ abonnement_actuel.pendingPlanChangeEffectiveAt|date('d/m/Y') }}
+                            </strong>
+                        {% else %}
+                            à la fin de votre période en cours
+                        {% endif %}.
+
+                        Le paiement de
+
+                        <strong>
+                            {{ (abonnement_actuel.pendingPlanPrice.amountMinor / 100)|number_format(2, ',', ' ') }}
+                            {{ abonnement_actuel.pendingPlanPrice.currency.signe }}
+                        </strong>
+
+                        sera effectué ce jour-là. D'ici là, votre forfait actuel reste inchangé.
+
+                        <form
+                            method="post"
+                            action="{{ path('account_subscription_cancel_plan_change') }}"
+                            class="mt-2"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="{{ csrf_token('account_subscription_cancel_plan_change') }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="_redirect_route"
+                                value="agence_immobiliere_options"
+                            >
+
+                            <button type="submit" class="btn-subscription-cancel">
+                                Annuler le changement programmé
+                            </button>
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
             </section>
 
 

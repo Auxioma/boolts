@@ -86,6 +86,19 @@ class AgencySubscription
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $providerLatestInvoiceId = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $providerScheduleId = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?SubscriptionPlanPrice $pendingPlanPrice = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $pendingPlanChangeEffectiveAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $pendingPlanChangeRequestedAt = null;
+
     #[ORM\Column(options: ['default' => 0])]
     private int $paymentFailureCount = 0;
 
@@ -334,6 +347,69 @@ class AgencySubscription
     public function setProviderLatestInvoiceId(?string $providerLatestInvoiceId): static
     {
         $this->providerLatestInvoiceId = $providerLatestInvoiceId;
+
+        return $this;
+    }
+
+    public function getProviderScheduleId(): ?string
+    {
+        return $this->providerScheduleId;
+    }
+
+    public function setProviderScheduleId(?string $providerScheduleId): static
+    {
+        $this->providerScheduleId = $providerScheduleId;
+
+        return $this;
+    }
+
+    public function getPendingPlanPrice(): ?SubscriptionPlanPrice
+    {
+        return $this->pendingPlanPrice;
+    }
+
+    public function setPendingPlanPrice(?SubscriptionPlanPrice $pendingPlanPrice): static
+    {
+        $this->pendingPlanPrice = $pendingPlanPrice;
+
+        return $this;
+    }
+
+    public function getPendingPlanChangeEffectiveAt(): ?\DateTimeImmutable
+    {
+        return $this->pendingPlanChangeEffectiveAt;
+    }
+
+    public function setPendingPlanChangeEffectiveAt(?\DateTimeImmutable $pendingPlanChangeEffectiveAt): static
+    {
+        $this->pendingPlanChangeEffectiveAt = $pendingPlanChangeEffectiveAt;
+
+        return $this;
+    }
+
+    public function getPendingPlanChangeRequestedAt(): ?\DateTimeImmutable
+    {
+        return $this->pendingPlanChangeRequestedAt;
+    }
+
+    public function setPendingPlanChangeRequestedAt(?\DateTimeImmutable $pendingPlanChangeRequestedAt): static
+    {
+        $this->pendingPlanChangeRequestedAt = $pendingPlanChangeRequestedAt;
+
+        return $this;
+    }
+
+    public function hasPendingPlanChange(): bool
+    {
+        return $this->pendingPlanPrice instanceof SubscriptionPlanPrice;
+    }
+
+    public function clearPendingPlanChange(): static
+    {
+        $this->pendingPlanPrice = null;
+        $this->pendingPlanChangeEffectiveAt = null;
+        $this->pendingPlanChangeRequestedAt = null;
+        $this->providerScheduleId = null;
 
         return $this;
     }

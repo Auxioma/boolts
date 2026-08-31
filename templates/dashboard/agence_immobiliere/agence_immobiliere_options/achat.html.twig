@@ -204,6 +204,23 @@
                                             </strong>
                                         </div>
 
+                                        {% if is_downgrade %}
+                                            <p class="achat-forfait-downgrade-note mt-16 mb-16">
+                                                Vous passez à un forfait inférieur ({{ plan.name }}).
+                                                Ce changement prendra effet
+                                                {% if downgrade_effective_at %}
+                                                    le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>,
+                                                {% else %}
+                                                    à la fin de votre période en cours,
+                                                {% endif %}
+                                                lors du renouvellement de votre abonnement actuel.
+                                                <strong>Aucun montant n’est prélevé aujourd’hui</strong> :
+                                                le paiement de
+                                                {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                {{ plan_price.currency.signe }} sera effectué ce jour-là.
+                                            </p>
+                                        {% endif %}
+
                                         <button
                                             type="button"
                                             class="btn achat-forfait-primary-button"
@@ -212,7 +229,7 @@
                                             data-action="options--purchase#subscribe"
                                             {% if not default_payment_method %}disabled{% endif %}
                                         >
-                                            S’abonner
+                                            {{ is_downgrade ? 'Programmer le changement' : 'S’abonner' }}
                                         </button>
 
                                         <p

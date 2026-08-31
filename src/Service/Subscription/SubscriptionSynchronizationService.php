@@ -123,6 +123,8 @@ final readonly class SubscriptionSynchronizationService
             $this->syncLocalPlanPrice($subscription, $snapshot->priceId);
         }
 
+        $this->resolvePendingPlanChange($subscription, $snapshot->priceId);
+
         $newPlan = $subscription->getPlan()->getCode();
 
         if ($oldStatus !== $status || $oldPlan !== $newPlan) {
@@ -151,6 +153,49 @@ final readonly class SubscriptionSynchronizationService
             'local_status' => $subscription->getStatus()->value,
             'latest_invoice' => $snapshot->latestInvoiceId,
         ]);
+    }
+
+    /**
+     * Clears a scheduled paid-to-paid downgrade once Stripe reports the target
+     * price as the subscription's active price, i.e. the schedule's second phase
+     * has started and been billed. The plan/limit swap itself is already done by
+     * {@see syncLocalPlanPrice()}; here we release the now-consumed schedule so the
+     * subscription is managed standalone again.
+     */
+    private function resolvePendingPlanChange(
+        AgencySubscription $subscription,
+        ?string $activePriceId,
+    ): void {
+        if (null === $activePriceId || !$subscription->hasPendingPlanChange()) {
+            return;
+        }
+
+        $pendingPlanPrice = $subscription->getPendingPlanPrice();
+
+        if (null === $pendingPlanPrice || $pendingPlanPrice->getPaymentProviderPriceId() !== $activePriceId) {
+            return;
+        }
+
+        $scheduleId = $subscription->getProviderScheduleId();
+
+        if (\is_string($scheduleId) && '' !== $scheduleId) {
+            $this->stripeSubscriptionService->releaseSchedule($scheduleId);
+        }
+
+        $this->historyRecorder->record(
+            subscription: $subscription,
+            eventType: SubscriptionHistoryEventType::PLAN_CHANGE_APPLIED,
+            oldStatus: $subscription->getStatus(),
+            newStatus: $subscription->getStatus(),
+            oldPlan: $subscription->getPlan()->getCode(),
+            newPlan: $pendingPlanPrice->getPlan()->getCode(),
+            metadata: [
+                'effective_at' => $subscription->getPendingPlanChangeEffectiveAt()?->format(\DATE_ATOM),
+                'schedule_id' => $scheduleId,
+            ],
+        );
+
+        $subscription->clearPendingPlanChange();
     }
 
     private function syncLocalPlanPrice(
