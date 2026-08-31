@@ -279,7 +279,9 @@
                         </h2>
 
 
-        {% if subscription is defined and subscription %}
+        {# Le cadre « Abonnement » n'a de sens que pour un forfait payant.
+           Sur une offre gratuite, on n'affiche que le choix des forfaits et des boosts. #}
+        {% if subscription and not subscription.plan.isFree %}
 
             <section class="subscription-card">
 
@@ -567,15 +569,6 @@
                 {% endif %}
 
             </section>
-
-
-        {% else %}
-            <section class="subscription-card">
-                <p class="subscription-card-subtitle">
-                    Aucun abonnement actif.
-                </p>
-            </section>
-
 
         {% endif %}
 
