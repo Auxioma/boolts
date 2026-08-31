@@ -7,19 +7,83 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AgenceImmobiliereMesFacturesController!{% endblock %}
+{% block title %}Mes factures{% endblock %}
 
 {% block body %}
-    <main id=dashboard" class="dashboard">
-        <div class="container-fluid">
-            <div class="row">
-                {# div 4 pour le menu du dashboard #}
+    {% set invoices = invoices|default([
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
+    ]) %}
+
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid dashboard-container">
+            <div class="row g-0">
+
+                {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                {# contenu du dashboard #}
-                <div class="col-8">
-                    <h2>factures</h2>
+                {# Contenu principal #}
+                <div class="col-10 dashboard-main">
+                    <div class="dashboard-content">
+                        <section class="invoices-page">
+                            <h1 class="invoices-page__title">Mes factures</h1>
+
+                            <form class="invoices-search" method="get" role="search">
+                                <input
+                                    type="search"
+                                    name="q"
+                                    class="invoices-search__input"
+                                    placeholder="Recherchez une facture, une date"
+                                    value="{{ app.request.query.get('q') }}"
+                                >
+
+                                <button type="submit" class="invoices-search__button" aria-label="Rechercher">
+                                    <i class="icon-search" aria-hidden="true"></i>
+                                </button>
+                            </form>
+
+                            <div class="invoices-card">
+                                <div class="invoices-list">
+                                    {% for invoice in invoices %}
+                                        <div class="invoice-row">
+                                            <div class="invoice-row__info">
+                                                <p class="invoice-row__reference">{{ invoice.reference }}</p>
+
+                                                <p class="invoice-row__date">{{ invoice.created_at }}</p>
+                                            </div>
+
+                                            <div class="invoice-row__actions">
+                                                <a href="{{ invoice.view_url|default('#') }}" class="invoice-action">
+                                                    <i class="icon-eye" aria-hidden="true"></i>
+                                                    Voir
+                                                </a>
+
+                                                <a href="{{ invoice.download_url|default('#') }}" class="invoice-action" download>
+                                                    <i class="icon-download" aria-hidden="true"></i>
+                                                    Télécharger
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="invoice-row">
+                                            <p class="invoice-row__date">Vous n'avez aucune facture pour le moment.</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
+
             </div>
         </div>
     </main>

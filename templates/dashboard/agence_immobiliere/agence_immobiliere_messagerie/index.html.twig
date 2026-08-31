@@ -7,19 +7,106 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AgenceImmobiliereMessagerieController!{% endblock %}
+{% block title %}Messagerie{% endblock %}
 
 {% block body %}
-    <main id=dashboard" class="dashboard">
-        <div class="container-fluid">
-            <div class="row">
-                {# div 4 pour le menu du dashboard #}
+    {% set conversations = conversations|default([
+        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.', active: true },
+        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
+        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
+        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
+        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
+        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
+    ]) %}
+
+    {% set messages = messages|default([
+        { author: 'client', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03' },
+        { author: 'agency', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03' },
+    ]) %}
+
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid dashboard-container">
+            <div class="row g-0">
+
+                {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                {# contenu du dashboard #}
-                <div class="col-8">
-                    <h2>messagerie</h2>
+                {# Contenu principal #}
+                <div class="col-10 p-0">
+                    <div class="messagerie">
+
+                        {# Liste des conversations #}
+                        <aside class="messagerie__list">
+                            {% for conversation in conversations %}
+                                <a href="{{ conversation.url|default('#') }}" class="messagerie-conv{{ conversation.active|default(false) ? ' messagerie-conv--active' }}">
+                                    <span class="messagerie-conv__thumb">
+                                        {% if conversation.thumbnail is defined and conversation.thumbnail %}
+                                            <img src="{{ conversation.thumbnail }}" alt="">
+                                        {% else %}
+                                            <i class="icon-image" aria-hidden="true"></i>
+                                        {% endif %}
+                                    </span>
+
+                                    <span class="messagerie-conv__body">
+                                        <span class="messagerie-conv__head">
+                                            <span class="messagerie-conv__name">{{ conversation.name }}</span>
+                                            <span class="messagerie-conv__date">{{ conversation.date }}</span>
+                                        </span>
+
+                                        <span class="messagerie-conv__subject">{{ conversation.subject }}</span>
+
+                                        <span class="messagerie-conv__preview">{{ conversation.preview }}</span>
+                                    </span>
+                                </a>
+                            {% endfor %}
+                        </aside>
+
+                        {# Fil de discussion #}
+                        <section class="messagerie__thread">
+                            <div class="messagerie-thread__scroll">
+                                <div class="messagerie-thread__inner">
+                                    <p class="messagerie-thread__day">3 Janvier 2026</p>
+
+                                    {% for message in messages %}
+                                        {% set is_agency = message.author == 'agency' %}
+                                        <div class="chat-bubble chat-bubble--{{ is_agency ? 'agency' : 'client' }}">
+                                            <p class="chat-bubble__body">{{ message.text|nl2br }}</p>
+
+                                            <span class="chat-bubble__meta">
+                                                <span>{{ message.time }}</span>
+                                                {% if is_agency %}
+                                                    <i class="icon-check-check" aria-hidden="true"></i>
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <form class="messagerie-composer" method="post" action="{{ send_message_url|default('') }}">
+                                <button type="button" class="messagerie-composer__attach" aria-label="Joindre une image">
+                                    <i class="icon-image" aria-hidden="true"></i>
+                                </button>
+
+                                <div class="messagerie-composer__bar">
+                                    <input
+                                        type="text"
+                                        name="message"
+                                        class="messagerie-composer__input"
+                                        placeholder="Écrivez votre message ici..."
+                                        autocomplete="off"
+                                    >
+
+                                    <button type="submit" class="messagerie-composer__send" aria-label="Envoyer">
+                                        <i class="icon-send" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+
+                    </div>
                 </div>
+
             </div>
         </div>
     </main>

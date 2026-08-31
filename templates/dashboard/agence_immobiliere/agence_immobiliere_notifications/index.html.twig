@@ -7,20 +7,90 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AgenceImmobiliereNotificationsController!{% endblock %}
+{% block title %}Notifications{% endblock %}
 
 {% block body %}
-    <main id=dashboard" class="dashboard">
-        <div class="container-fluid">
-            <div class="row">
-                {# div 4 pour le menu du dashboard #}
+    {% set notifications = notifications|default([
+        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: false },
+        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: false },
+        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: true },
+        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: true },
+        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: true },
+    ]) %}
+
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid dashboard-container">
+            <div class="row g-0">
+
+                {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                {# contenu du dashboard #}
-                <div class="col-8">
-                    <h2>notification</h2>
+                {# Contenu principal #}
+                <div class="col-10 dashboard-main">
+                    <div class="dashboard-content">
+                        <section class="notifications-page">
+                            <h1 class="notifications-page__title">Notifications</h1>
+
+                            <div class="notifications-page__body">
+                                <div class="notifications-filter" role="tablist">
+                                    <button type="button" class="notifications-filter__button active" data-filter="all">
+                                        Toutes
+                                    </button>
+
+                                    <button type="button" class="notifications-filter__button" data-filter="unread">
+                                        Non lues
+                                    </button>
+                                </div>
+
+                                <div class="notifications-feed">
+                                    {% for notification in notifications %}
+                                        <article class="notification-card{{ notification.read ? ' notification-card--read' }}" data-read="{{ notification.read ? 'true' : 'false' }}">
+                                            {% if not notification.read %}
+                                                <span class="notification-card__dot" aria-hidden="true"></span>
+                                            {% endif %}
+
+                                            <p class="notification-card__text">{{ notification.message }}</p>
+
+                                            <p class="notification-card__date">{{ notification.date }}</p>
+                                        </article>
+                                    {% else %}
+                                        <p class="notification-card__text">Vous n'avez aucune notification.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
+
             </div>
         </div>
     </main>
+
+    <script>
+        (function () {
+            var root = document.querySelector('.notifications-page');
+
+            if (!root) {
+                return;
+            }
+
+            var buttons = root.querySelectorAll('.notifications-filter__button');
+            var cards = root.querySelectorAll('.notification-card');
+
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var filter = button.getAttribute('data-filter');
+
+                    buttons.forEach(function (item) {
+                        item.classList.toggle('active', item === button);
+                    });
+
+                    cards.forEach(function (card) {
+                        var isRead = card.getAttribute('data-read') === 'true';
+                        card.hidden = filter === 'unread' && isRead;
+                    });
+                });
+            });
+        })();
+    </script>
 {% endblock %}
