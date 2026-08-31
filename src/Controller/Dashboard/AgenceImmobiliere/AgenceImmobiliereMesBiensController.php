@@ -350,9 +350,17 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             $property->getId()
         );
 
+        /*
+         * On positionne le stepper sur l'étape correspondant aux données
+         * déjà enregistrées en base pour ce bien, au lieu de repartir de
+         * l'étape 1. Une annonce complète (publiée) reprend donc directement
+         * à l'étape 8, un brouillon partiel à la première étape encore vide.
+         */
+        $resumeStep = $this->resolveEditResumeStep($property);
+
         $session->set(
             'mes_biens_reached_step',
-            8
+            $resumeStep
         );
 
         $transaction = $property->getTypeTransaction();
@@ -396,12 +404,87 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             true
         );
 
+        $parameters = [
+            'step' => $resumeStep,
+        ];
+
+        if ($transaction && $transaction->getId()) {
+            $parameters['typeTransaction'] = $transaction->getId();
+        }
+
         return $this->redirectToRoute(
             'agence_immobiliere_mes_biens',
-            [
-                'step' => 1,
-            ]
+            $parameters
         );
+    }
+
+    /**
+     * Détermine l'étape du tunnel « Mes biens » à laquelle reprendre la
+     * modification d'un bien, en fonction des champs déjà renseignés en base.
+     *
+     * La valeur retournée correspond à la première étape encore vide (ou à
+     * l'étape 8 lorsque tout est renseigné). Les étapes 5 (bilan énergétique)
+     * n'existe que pour un bien situé en France.
+     */
+    private function resolveEditResumeStep(Property $property): int
+    {
+        $isFrance = $this->isFranceCountry($property->getPays());
+
+        // Étape 8 : prix / loyer.
+        if (null !== $property->getPrix()
+            || null !== $property->getMontantLoyerHorsCharge()
+        ) {
+            return 8;
+        }
+
+        // Étape 7 : description.
+        if (null !== $property->getTitreDuLogement()
+            || null !== $property->getDescriptionLogement()
+        ) {
+            return 8;
+        }
+
+        // Étape 6 : photos.
+        if (!$property->getPropertyImages()->isEmpty()) {
+            return 7;
+        }
+
+        // Étape 5 : bilan énergétique (France uniquement).
+        if ($isFrance
+            && (null !== $property->getDpeLettre()
+                || null !== $property->getDpe()
+                || null !== $property->getGes())
+        ) {
+            return 6;
+        }
+
+        // Étape 4 : caractéristiques.
+        if (null !== $property->getSurfaceTotal()
+            || null !== $property->getAnneeConstruction()
+            || !$property->getCaracteristique()->isEmpty()
+        ) {
+            return $isFrance ? 5 : 6;
+        }
+
+        // Étape 3 : adresse.
+        if (null !== $property->getMapboxId()
+            || null !== $property->getFullAddress()
+            || null !== $property->getVille()
+        ) {
+            return 4;
+        }
+
+        // Étape 2 : type de transaction.
+        if (null !== $property->getTypeTransaction()) {
+            return 3;
+        }
+
+        // Étape 1 : type de bien.
+        if (null !== $property->getTypeBien()) {
+            return 2;
+        }
+
+        return 1;
     }
 
     #[Route(
