@@ -12,8 +12,14 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\AgencyNotification;
+use App\Entity\User;
+use App\Repository\AgencyNotificationRepository;
 use App\Security\Voter\AgencyDocumentVoter;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -31,14 +37,59 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class AgenceImmobiliereNotificationsController extends AbstractController
 {
-    #[Route('/dashboard/agence/immobiliere/agence/immobiliere/notifications', name: 'notifications')]
+    /**
+     * Nombre maximum de notifications affichées sur la page.
+     */
+    private const FEED_LIMIT = 100;
+
+    #[Route('/dashboard/agence/immobiliere/agence/immobiliere/notifications', name: 'notifications', methods: ['GET'])]
     /**
      * Handles the index controller action.
      */
-    public function index(): Response
+    public function index(AgencyNotificationRepository $notificationRepository): Response
     {
+        $agency = $this->getUser();
+
+        if (!$agency instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_notifications/index.html.twig', [
             'controller_name' => 'AgenceImmobiliereNotificationsController',
+            'notifications' => $notificationRepository->findLatestForAgency($agency, self::FEED_LIMIT),
+            'unreadCount' => $notificationRepository->countUnreadForAgency($agency),
+        ]);
+    }
+
+    #[Route('/{id<\d+>}/lue', name: 'notifications_mark_read', methods: ['POST'])]
+    /**
+     * Passe une notification de l'agence courante en « lue » (appel AJAX
+     * déclenché au survol de la carte).
+     */
+    public function markAsRead(
+        AgencyNotification $notification,
+        Request $request,
+        AgencyNotificationRepository $notificationRepository,
+        EntityManagerInterface $entityManager,
+    ): JsonResponse {
+        $agency = $this->getUser();
+
+        if (!$agency instanceof User || $notification->getAgency()->getId() !== $agency->getId()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid('agency_notification_read', (string) $request->headers->get('X-CSRF-TOKEN'))) {
+            return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], 403);
+        }
+
+        if (!$notification->isRead()) {
+            $notification->markAsRead();
+            $entityManager->flush();
+        }
+
+        return $this->json([
+            'success' => true,
+            'unreadCount' => $notificationRepository->countUnreadForAgency($agency),
         ]);
     }
 }

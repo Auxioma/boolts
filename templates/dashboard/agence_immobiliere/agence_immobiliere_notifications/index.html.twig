@@ -10,13 +10,8 @@
 {% block title %}Notifications{% endblock %}
 
 {% block body %}
-    {% set notifications = notifications|default([
-        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: false },
-        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: false },
-        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: true },
-        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: true },
-        { message: 'Bienvenue sur boolts.com. Veuillez compléter votre inscription en déposant les documents demandés.', date: '04/02/2026', read: true },
-    ]) %}
+    {% set notifications = notifications|default([]) %}
+    {% set unreadCount = unreadCount|default(0) %}
 
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
@@ -39,19 +34,22 @@
 
                                     <button type="button" class="notifications-filter__button" data-filter="unread">
                                         Non lues
+                                        <span class="notifications-filter__count" data-unread-count>{{ unreadCount }}</span>
                                     </button>
                                 </div>
 
-                                <div class="notifications-feed">
+                                <div class="notifications-feed" data-csrf-token="{{ csrf_token('agency_notification_read') }}">
                                     {% for notification in notifications %}
-                                        <article class="notification-card{{ notification.read ? ' notification-card--read' }}" data-read="{{ notification.read ? 'true' : 'false' }}">
+                                        <article class="notification-card{{ notification.read ? ' notification-card--read' }}"
+                                                 data-read="{{ notification.read ? 'true' : 'false' }}"
+                                                 data-mark-read-url="{{ path('agence_immobiliere_notifications_mark_read', { id: notification.id }) }}">
                                             {% if not notification.read %}
                                                 <span class="notification-card__dot" aria-hidden="true"></span>
                                             {% endif %}
 
-                                            <p class="notification-card__text">{{ notification.message }}</p>
+                                            <p class="notification-card__text">{{ notification.nom }}</p>
 
-                                            <p class="notification-card__date">{{ notification.date }}</p>
+                                            <p class="notification-card__date">{{ notification.date|date('d/m/Y') }}</p>
                                         </article>
                                     {% else %}
                                         <p class="notification-card__text">Vous n'avez aucune notification.</p>
@@ -74,21 +72,85 @@
                 return;
             }
 
+            var feed = root.querySelector('.notifications-feed');
             var buttons = root.querySelectorAll('.notifications-filter__button');
             var cards = root.querySelectorAll('.notification-card');
+            var unreadBadge = root.querySelector('[data-unread-count]');
+            var csrfToken = feed ? feed.getAttribute('data-csrf-token') : '';
+
+            function activeFilter() {
+                var active = root.querySelector('.notifications-filter__button.active');
+
+                return active ? active.getAttribute('data-filter') : 'all';
+            }
+
+            function applyFilter(filter) {
+                cards.forEach(function (card) {
+                    var isRead = card.getAttribute('data-read') === 'true';
+                    card.hidden = filter === 'unread' && isRead;
+                });
+            }
+
+            function setUnreadBadge(count) {
+                if (unreadBadge && typeof count === 'number' && !isNaN(count)) {
+                    unreadBadge.textContent = String(Math.max(0, count));
+                }
+            }
 
             buttons.forEach(function (button) {
                 button.addEventListener('click', function () {
-                    var filter = button.getAttribute('data-filter');
-
                     buttons.forEach(function (item) {
                         item.classList.toggle('active', item === button);
                     });
 
-                    cards.forEach(function (card) {
-                        var isRead = card.getAttribute('data-read') === 'true';
-                        card.hidden = filter === 'unread' && isRead;
-                    });
+                    applyFilter(button.getAttribute('data-filter'));
+                });
+            });
+
+            cards.forEach(function (card) {
+                card.addEventListener('mouseenter', function () {
+                    if (card.getAttribute('data-read') === 'true' || card.dataset.marking === 'true') {
+                        return;
+                    }
+
+                    var url = card.getAttribute('data-mark-read-url');
+
+                    if (!url) {
+                        return;
+                    }
+
+                    card.dataset.marking = 'true';
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                        .then(function (response) {
+                            return response.ok ? response.json() : Promise.reject(response);
+                        })
+                        .then(function (data) {
+                            card.setAttribute('data-read', 'true');
+                            card.classList.add('notification-card--read');
+
+                            var dot = card.querySelector('.notification-card__dot');
+
+                            if (dot) {
+                                dot.remove();
+                            }
+
+                            setUnreadBadge(data && data.unreadCount);
+
+                            if (activeFilter() === 'unread') {
+                                card.hidden = true;
+                            }
+                        })
+                        .catch(function () {})
+                        .finally(function () {
+                            delete card.dataset.marking;
+                        });
                 });
             });
         })();
