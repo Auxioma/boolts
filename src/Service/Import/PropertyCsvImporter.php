@@ -29,6 +29,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Vich\UploaderBundle\FileAbstraction\ReplacingFile;
 
 /**
  * Import de biens immobiliers depuis un fichier CSV (back-office).
@@ -486,7 +487,6 @@ final class PropertyCsvImporter
 
         $position = 1;
         $temporaryFiles = [];
-        $attached = false;
 
         try {
             foreach (preg_split('/[|;,\s]+/', $value) ?: [] as $url) {
@@ -513,17 +513,38 @@ final class PropertyCsvImporter
                 $image = new PropertyImage();
                 $image->setProperty($property);
                 $image->setPosition((string) $position);
-                $image->setImageFile(new File($temporaryPath));
+                /*
+                 * VichUploaderBundle n'« upload » que les File de type UploadedFile
+                 * ou ReplacingFile (cf. UploadHandler::hasUploadedFile()). Un
+                 * Symfony\...\File\File nu est ignoré silencieusement : la ligne
+                 * property_image est créée mais image_name reste NULL et aucun
+                 * fichier n'est copié. ReplacingFile est prévu pour ce cas.
+                 */
+                $image->setImageFile(new ReplacingFile($temporaryPath));
 
                 $property->addPropertyImage($image);
                 $this->entityManager->persist($image);
 
-                ++$position;
-                $attached = true;
-            }
+                try {
+                    $this->entityManager->flush();
+                    ++$position;
+                } catch (\Throwable $exception) {
+                    $this->logger->error('Import CSV bien : image non enregistrée', [
+                        'url' => $url,
+                        'exception' => $exception,
+                    ]);
+                    $report->addWarning($lineNumber, \sprintf(
+                        'image non enregistrée (%s) : %s',
+                        $exception->getMessage(),
+                        $url,
+                    ));
 
-            if ($attached) {
-                $this->entityManager->flush();
+                    if (!$this->entityManager->isOpen()) {
+                        // Le flush en échec a fermé l'EntityManager : plus rien
+                        // ne peut être enregistré pour ce bien.
+                        break;
+                    }
+                }
             }
         } finally {
             foreach ($temporaryFiles as $temporaryPath) {

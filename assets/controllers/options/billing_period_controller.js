@@ -1,7 +1,12 @@
 import { Controller } from '@hotwired/stimulus';
 
+/*
+ * Toggle mensuel / annuel de la page « Options et abonnements ».
+ * Chaque périodicité a son propre bloc de cartes (`group`) : on affiche
+ * celui de la période choisie et on masque l'autre.
+ */
 export default class extends Controller {
-    static targets = ['option', 'price', 'period', 'subscriptionLink'];
+    static targets = ['option', 'group'];
 
     select(event) {
         const selectedPeriod = event.currentTarget.dataset.period;
@@ -13,31 +18,11 @@ export default class extends Controller {
             option.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
 
-        this.priceTargets.forEach((price) => {
-            const newPrice = price.dataset[selectedPeriod];
-
-            if (newPrice?.trim()) {
-                price.textContent = newPrice;
-            }
-        });
-
-        this.periodTargets.forEach((period) => {
-            period.textContent = selectedPeriod === 'annual' ? '/an' : '/mois';
-        });
-
-        this.subscriptionLinkTargets.forEach((link) => {
-            const newUrl = selectedPeriod === 'annual'
-                ? link.dataset.annualUrl
-                : link.dataset.monthlyUrl;
-            const isAvailable = selectedPeriod === 'annual'
-                ? link.dataset.annualAvailable === '1'
-                : link.dataset.monthlyAvailable === '1';
-
-            link.classList.toggle('d-none', !isAvailable);
-
-            if (newUrl && isAvailable) {
-                link.href = newUrl;
-            }
+        this.groupTargets.forEach((group) => {
+            group.classList.toggle(
+                'd-none',
+                group.dataset.period !== selectedPeriod,
+            );
         });
     }
 }

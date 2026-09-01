@@ -11,6 +11,62 @@
  Caractéristiques d'un forfait : contenu libre saisi dans la description
  (une puce par ligne non vide) ; à défaut, valeurs calculées du forfait.
 #}
+{#
+ Carte d'un forfait pour une périodicité donnée.
+ entry = { plan, price } ; period = 'monthly' | 'annual'.
+#}
+{% macro plan_card(entry, period, currentPlanPriceId, abonnement_actuel) %}
+    {% import _self as forfait_ui %}
+
+    {% set plan = entry.plan %}
+    {% set price = entry.price %}
+    {% set canSubscribe = not plan.isFree and price.id != currentPlanPriceId %}
+    {% set isCurrentPlan = abonnement_actuel
+        and abonnement_actuel.planPrice
+        and abonnement_actuel.planPrice.id == price.id
+    %}
+
+    <div class="col-12 col-lg-4 d-flex">
+        <article
+            class="achat-pricing-card {{ plan.isFree ? 'achat-basic-card' : '' }} {{ isCurrentPlan ? 'achat-current-pricing-card' : '' }} w-100"
+        >
+            <div>
+                <h3>
+                    {{ plan.name }}
+                </h3>
+
+                <p class="achat-price">
+                    {% if plan.isFree %}
+                        Gratuit
+                    {% else %}
+                        <span class="achat-price-value">
+                            {{ (price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                            {{ price.currency.signe }}
+                        </span>
+
+                        <span class="achat-price-period">
+                            {{ period == 'annual' ? '/an' : '/mois' }}
+                        </span>
+                    {% endif %}
+                </p>
+
+                <div class="achat-feature-list">
+                    {{ forfait_ui.plan_features(plan) }}
+                </div>
+            </div>
+
+            {% if not plan.isFree %}
+                <a
+                    href="{{ path('agence_immobiliere_achat', { id: plan.id, period: period }) }}"
+                    class="btn achat-btn-brand achat-subscribe-link w-100 {{ canSubscribe ? '' : 'd-none' }}"
+                >
+                    Souscrire
+                </a>
+            {% endif %}
+        </article>
+    </div>
+{% endmacro %}
+
 {% macro plan_features(plan) %}
     {% if plan.description|trim %}
         {% for ligne in plan.description|split("\n") %}
@@ -656,111 +712,30 @@
                             </button>
                         </div>
 
-                        <section class="row g-4 achat-plans-grid">
-
-                            {% for forfait in forfaits %}
-
-                                {% set plan = forfait.plan %}
-                                {% set monthlyPrice = forfait.monthly %}
-                                {% set annualPrice = forfait.annual %}
-                                {% set displayedPrice = selectedPeriod == 'annual' ? annualPrice : monthlyPrice %}
-                                {% set canSubscribeMonthly = not plan.isFree
-                                    and monthlyPrice
-                                    and monthlyPrice.id != currentPlanPriceId
-                                %}
-                                {% set canSubscribeAnnual = not plan.isFree
-                                    and annualPrice
-                                    and annualPrice.id != currentPlanPriceId
-                                %}
-                                {% set canSubscribe = selectedPeriod == 'annual'
-                                    ? canSubscribeAnnual
-                                    : canSubscribeMonthly
-                                %}
-                                {% set isCurrentPlan =
-                                    abonnement_actuel
-                                    and abonnement_actuel.plan.id == plan.id
-                                %}
-
-                                <div class="col-12 col-lg-4 d-flex">
-                                    <article
-                                        class="achat-pricing-card {{ plan.isFree ? 'achat-basic-card' : '' }} {{ isCurrentPlan ? 'achat-current-pricing-card' : '' }} w-100"
-                                    >
-                                        <div>
-                                            <h3>
-                                                {{ plan.name }}
-                                            </h3>
-
-                                            <p class="achat-price">
-
-                                                {% if plan.isFree %}
-
-                                                    Gratuit
-
-                                                {% elseif displayedPrice %}
-
-                                                    <span
-                                                        class="achat-price-value"
-                                                        data-options--billing-period-target="price"
-                                                        data-monthly="{{ monthlyPrice ? (monthlyPrice.amountMinor / 100)|number_format(2, ',', ' ') ~ ' ' ~ monthlyPrice.currency.signe : '' }}"
-                                                        data-annual="{{ annualPrice ? (annualPrice.amountMinor / 100)|number_format(2, ',', ' ') ~ ' ' ~ annualPrice.currency.signe : '' }}"
-                                                    >
-                                                        {{ (displayedPrice.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                        {{ displayedPrice.currency.signe }}
-                                                    </span>
-
-                                                    <span
-                                                        class="achat-price-period"
-                                                        data-options--billing-period-target="period"
-                                                    >
-                                                        {{ selectedPeriod == 'annual' ? '/an' : '/mois' }}
-                                                    </span>
-
-                                                {% endif %}
-
-                                            </p>
-
-                                            <div class="achat-feature-list">
-                                                {{ forfait_ui.plan_features(plan) }}
-                                            </div>
-                                        </div>
-
-                                        {% if not plan.isFree %}
-                                            <a
-                                                href="{{ path('agence_immobiliere_achat', {
-                                                    id: plan.id,
-                                                    period: selectedPeriod,
-                                                }) }}"
-                                                data-monthly-url="{{ path('agence_immobiliere_achat', {
-                                                    id: plan.id,
-                                                    period: 'monthly',
-                                                }) }}"
-                                                data-annual-url="{{ path('agence_immobiliere_achat', {
-                                                    id: plan.id,
-                                                    period: 'annual',
-                                                }) }}"
-                                                data-monthly-available="{{ canSubscribeMonthly ? '1' : '0' }}"
-                                                data-annual-available="{{ canSubscribeAnnual ? '1' : '0' }}"
-                                                data-options--billing-period-target="subscriptionLink"
-                                                class="btn {{ plan.isFree ? 'achat-btn-outline-brand' : 'achat-btn-brand' }} achat-subscribe-link w-100 {{ canSubscribe ? '' : 'd-none' }}"
-                                            >
-                                                Souscrire
-                                            </a>
-                                        {% endif %}
-
-                                    </article>
-                                </div>
-
-                            {% else %}
-
-                                <div class="col-12">
-                                    <p>
-                                        Aucun forfait n’est disponible pour le moment.
-                                    </p>
-                                </div>
-
-                            {% endfor %}
-
-                        </section>
+                        {% for period, entries in forfaits %}
+                            <section
+                                class="row g-4 achat-plans-grid {{ selectedPeriod == period ? '' : 'd-none' }}"
+                                data-options--billing-period-target="group"
+                                data-period="{{ period }}"
+                            >
+                                {% for entry in entries %}
+                                    {{ forfait_ui.plan_card(
+                                        entry,
+                                        period,
+                                        currentPlanPriceId,
+                                        abonnement_actuel,
+                                    ) }}
+                                {% else %}
+                                    <div class="col-12">
+                                        <p>
+                                            Aucun forfait
+                                            {{ period == 'annual' ? 'annuel' : 'mensuel' }}
+                                            n’est disponible pour le moment.
+                                        </p>
+                                    </div>
+                                {% endfor %}
+                            </section>
+                        {% endfor %}
 
                         {# =====================================================
                            BOOSTS

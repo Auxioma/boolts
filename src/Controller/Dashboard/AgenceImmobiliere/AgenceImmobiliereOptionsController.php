@@ -82,21 +82,19 @@ final class AgenceImmobiliereOptionsController extends AbstractController
 
         $subscriptionPrices = $subscriptionPlanPriceRepository->findActiveWithPlanAndCurrency();
 
-        $forfaits = [];
+        // Un forfait = un plan + son unique prix. On regroupe les forfaits par
+        // périodicité pour que le toggle affiche soit le bloc mensuel, soit le
+        // bloc annuel. L'ordre suit plan.position (voir la requête du repository).
+        $forfaits = [
+            SubscriptionBillingPeriod::MONTHLY->value => [],
+            SubscriptionBillingPeriod::ANNUAL->value => [],
+        ];
 
         foreach ($subscriptionPrices as $subscriptionPrice) {
-            $plan = $subscriptionPrice->getPlan();
-            $planId = $plan->getId();
-
-            if (!isset($forfaits[$planId])) {
-                $forfaits[$planId] = [
-                    'plan' => $plan,
-                    'monthly' => null,
-                    'annual' => null,
-                ];
-            }
-
-            $forfaits[$planId][$subscriptionPrice->getBillingPeriod()->value] = $subscriptionPrice;
+            $forfaits[$subscriptionPrice->getBillingPeriod()->value][] = [
+                'plan' => $subscriptionPrice->getPlan(),
+                'price' => $subscriptionPrice,
+            ];
         }
 
         $boosterPackPrices = $boosterPackPriceRepository->findActiveWithPackAndCurrency();

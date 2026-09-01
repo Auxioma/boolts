@@ -22,7 +22,10 @@ use Doctrine\Persistence\ObjectManager;
 
 final class SubscriptionPlanPriceFixtures extends Fixture implements DependentFixtureInterface
 {
-    public const FREE_PLAN_PRICE_REFERENCE = 'subscription_plan_price_free_monthly';
+    public const SUBSCRIPTION_PLAN_PRICE_REFERENCE_PREFIX = 'subscription_plan_price_';
+
+    /** Prix du forfait gratuit par défaut (mensuel, 0), utilisé par les autres fixtures. */
+    public const FREE_PLAN_PRICE_REFERENCE = self::SUBSCRIPTION_PLAN_PRICE_REFERENCE_PREFIX.'free_monthly';
 
     public function load(ObjectManager $manager): void
     {
@@ -34,18 +37,26 @@ final class SubscriptionPlanPriceFixtures extends Fixture implements DependentFi
             throw new \RuntimeException('La devise EUR doit être chargée avant les prix des abonnements.');
         }
 
-        $plan = $this->getReference(SubscriptionPlanFixtures::FREE_PLAN_REFERENCE, SubscriptionPlan::class);
+        foreach (BillingFixtureData::SUBSCRIPTION_PLANS as $data) {
+            $plan = $this->getReference(
+                SubscriptionPlanFixtures::SUBSCRIPTION_PLAN_REFERENCE_PREFIX.$data['code'],
+                SubscriptionPlan::class,
+            );
 
-        $price = new SubscriptionPlanPrice();
-        $price
-            ->setPlan($plan)
-            ->setCurrency($currency)
-            ->setAmountMinor(0)
-            ->setBillingPeriod(SubscriptionBillingPeriod::MONTHLY)
-            ->setIsActive(true);
+            $price = new SubscriptionPlanPrice();
+            $price
+                ->setPlan($plan)
+                ->setCurrency($currency)
+                ->setAmountMinor($data['amountMinor'])
+                ->setBillingPeriod(SubscriptionBillingPeriod::from($data['billingPeriod']))
+                ->setIsActive(true);
 
-        $manager->persist($price);
-        $this->addReference(self::FREE_PLAN_PRICE_REFERENCE, $price);
+            $manager->persist($price);
+            $this->addReference(
+                self::SUBSCRIPTION_PLAN_PRICE_REFERENCE_PREFIX.str_replace('-', '_', $data['code']),
+                $price,
+            );
+        }
 
         $manager->flush();
     }
