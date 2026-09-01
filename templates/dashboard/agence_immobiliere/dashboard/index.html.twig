@@ -873,29 +873,25 @@
 
                             <div class="notifications-list">
 
-                                <div class="notification-item">
-                                    <span class="notification-dot"></span>
+                                {% for notification in notifications %}
+                                    <div class="notification-item{{ notification.read ? ' is-read' : '' }}">
+                                        <span class="notification-dot"></span>
 
-                                    <p class="notification-text">
-                                        Bienvenue sur
-                                        <strong>boolts.com</strong>.
-                                        Veuillez compléter votre inscription en déposant les documents demandés.
-                                    </p>
-                                </div>
-
-                                <div class="notification-item">
-                                    <span class="notification-dot"></span>
-
-                                    <p class="notification-text">
-                                        Your listing
-                                        <strong>House on the Beverly Hills</strong>
-                                        has been approved.
-                                    </p>
-                                </div>
+                                        <p class="notification-text">
+                                            {{ notification.nom }}
+                                        </p>
+                                    </div>
+                                {% else %}
+                                    <div class="notification-item">
+                                        <p class="notification-text">
+                                            Aucune notification pour le moment.
+                                        </p>
+                                    </div>
+                                {% endfor %}
 
                             </div>
 
-                            <a href="#" class="btn notifications-more-button">
+                            <a href="{{ path('agence_immobiliere_notifications') }}" class="btn notifications-more-button">
                                 Voir plus
                             </a>
                         </section>

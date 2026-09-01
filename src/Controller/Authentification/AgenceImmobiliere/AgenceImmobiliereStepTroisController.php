@@ -12,6 +12,7 @@
 
 namespace App\Controller\Authentification\AgenceImmobiliere;
 
+use App\Entity\AgencyNotification;
 use App\Entity\HoraireOuverture;
 use App\Entity\User;
 use App\Form\Authentification\CompleteProfileType;
@@ -258,6 +259,12 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
 
             $user->setIsVerified(true);
             $user->setAgencyRegistrationStep(null);
+
+            $notification = (new AgencyNotification())
+                ->setAgency($user)
+                ->setNom('Votre compte est en attente de validation. Déposez les documents demandés.');
+            $em->persist($notification);
+
             $em->flush();
 
             $security->login($user, AgenceImmobiliereAuthenticator::class, 'main');

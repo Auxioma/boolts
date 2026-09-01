@@ -22,6 +22,7 @@ use App\Entity\Property;
 use App\Entity\PropertyImage;
 use App\Entity\User;
 use App\Form\Documents\AskDocumentsType;
+use App\Repository\AgencyNotificationRepository;
 use App\Repository\AgencyProfileDailyVisitRepository;
 use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\Document\RequiredDocumentRepository;
@@ -75,6 +76,7 @@ final class DashboardController extends AbstractController
         UserDocumentSubmissionRepository $userDocumentSubmissionRepository,
         GeoIpLocationService $geoIpLocationService,
         PaysRepository $paysRepository,
+        AgencyNotificationRepository $agencyNotificationRepository,
     ): Response {
         $statistics = $this->statistics(
             $request,
@@ -156,6 +158,7 @@ final class DashboardController extends AbstractController
 
         return $this->render('dashboard/agence_immobiliere/dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
+            'notifications' => $agencyNotificationRepository->findLatestForAgency($user, 2),
             'statistics' => $statistics,
             'statistics_chart' => $this->buildChart($chartBuilder, $statistics),
             'performance_query_parameters' => $performanceQueryParameters,
