@@ -34,28 +34,104 @@
                         <div class="container-fluid achat-forfait-container">
                             <div class="row achat-forfait-row">
 
+                                {% if is_downgrade %}
+                                    <div class="col-12">
+                                        <h1 class="achat-forfait-main-title mb-24">
+                                            Changement de forfait
+                                        </h1>
+
+                                        <div class="achat-forfait-plan-compare">
+                                            <div class="achat-forfait-plan-compare-card">
+                                                <p class="achat-forfait-plan-compare-label">
+                                                    Forfait actuel
+                                                </p>
+
+                                                <p class="achat-forfait-plan-compare-name">
+                                                    {{ current_plan.name }}
+                                                </p>
+
+                                                {% if current_plan_price %}
+                                                    <p class="achat-forfait-plan-compare-price">
+                                                        {{ (current_plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                        {{ current_plan_price.currency.signe }}/{{ current_plan_price.billingPeriod.value == 'annual' ? 'an' : 'mois' }}
+                                                    </p>
+                                                {% endif %}
+                                            </div>
+
+                                            <span class="achat-forfait-plan-compare-arrow" aria-hidden="true">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </span>
+
+                                            <div class="achat-forfait-plan-compare-card achat-forfait-plan-compare-card-new">
+                                                <p class="achat-forfait-plan-compare-label">
+                                                    Nouveau forfait
+                                                </p>
+
+                                                <p class="achat-forfait-plan-compare-name">
+                                                    {{ plan.name }}
+                                                </p>
+
+                                                <p class="achat-forfait-plan-compare-price">
+                                                    {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                    {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="achat-forfait-explain">
+                                            <h2 class="achat-forfait-section-title">
+                                                Que va-t-il se passer ?
+                                            </h2>
+
+                                            <ul class="achat-forfait-explain-list">
+                                                <li>
+                                                    {% if downgrade_effective_at %}
+                                                        Le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>,
+                                                    {% else %}
+                                                        À la fin de votre période en cours,
+                                                    {% endif %}
+                                                    votre nouveau forfait
+                                                    <strong>« {{ plan.name }} »</strong>
+                                                    prendra effet et vous serez facturé de
+                                                    <strong>
+                                                        {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                        {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
+                                                    </strong>.
+                                                </li>
+
+                                                <li>
+                                                    Jusqu’à cette date, vous continuerez de profiter des avantages de votre forfait
+                                                    <strong>« {{ current_plan.name }} »</strong>.
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
                                 <div class="col-12 col-xl-6">
                                     <section class="achat-forfait-card achat-forfait-purchase-card">
 
-                                        <h1 class="achat-forfait-main-title">
-                                            Récapitulatif de votre achat
-                                        </h1>
+                                        {% if not is_downgrade %}
+                                            <h1 class="achat-forfait-main-title">
+                                                Récapitulatif de votre achat
+                                            </h1>
+
+                                            <section class="achat-forfait-section">
+                                                <h2 class="achat-forfait-section-title">
+                                                    Article
+                                                </h2>
+
+                                                <div class="achat-forfait-product-description">
+                                                    <p class="achat-forfait-product-name">
+                                                        1 x Abonnement {{ plan.name }}
+                                                    </p>
+                                                </div>
+                                            </section>
+                                        {% endif %}
 
                                         <section class="achat-forfait-section">
                                             <h2 class="achat-forfait-section-title">
-                                                Article
-                                            </h2>
-
-                                            <div class="achat-forfait-product-description">
-                                                <p class="achat-forfait-product-name">
-                                                    1 x Abonnement {{ plan.name }}
-                                                </p>
-                                            </div>
-                                        </section>
-
-                                        <section class="achat-forfait-section">
-                                            <h2 class="achat-forfait-section-title">
-                                                Carte bancaire par défaut
+                                                {{ is_downgrade ? 'Moyen de paiement' : 'Carte bancaire par défaut' }}
                                             </h2>
 
                                             {% if default_payment_method %}
@@ -195,30 +271,41 @@
 
                                 <div class="col-12 col-xl-6">
                                     <aside class="achat-forfait-card achat-forfait-summary-card">
-                                        <div class="achat-forfait-total">
-                                            <strong>Montant total :</strong>
-
-                                            <strong>
-                                                {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
-                                            </strong>
-                                        </div>
-
                                         {% if is_downgrade %}
-                                            <p class="achat-forfait-downgrade-note mt-16 mb-16">
-                                                Vous passez à un forfait inférieur ({{ plan.name }}).
-                                                Ce changement prendra effet
-                                                {% if downgrade_effective_at %}
-                                                    le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>,
-                                                {% else %}
-                                                    à la fin de votre période en cours,
-                                                {% endif %}
-                                                lors du renouvellement de votre abonnement actuel.
-                                                <strong>Aucun montant n’est prélevé aujourd’hui</strong> :
-                                                le paiement de
-                                                {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                {{ plan_price.currency.signe }} sera effectué ce jour-là.
+                                            <p class="achat-forfait-legal-text">
+                                                En confirmant ce changement de forfait, vous acceptez les
+                                                conditions générales de vente de Boolts ainsi que notre
+                                                politique de confidentialité.
                                             </p>
+
+                                            <div class="achat-forfait-total">
+                                                <div class="achat-forfait-total-label">
+                                                    <strong>Montant :</strong>
+
+                                                    <p class="achat-forfait-legal-text achat-forfait-total-note">
+                                                        Le montant sera prélevé
+                                                        {% if downgrade_effective_at %}
+                                                            le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>.
+                                                        {% else %}
+                                                            à la fin de votre période en cours.
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+
+                                                <strong>
+                                                    {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                    {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
+                                                </strong>
+                                            </div>
+                                        {% else %}
+                                            <div class="achat-forfait-total">
+                                                <strong>Montant total :</strong>
+
+                                                <strong>
+                                                    {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                    {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
+                                                </strong>
+                                            </div>
                                         {% endif %}
 
                                         <button
@@ -229,7 +316,7 @@
                                             data-action="options--purchase#subscribe"
                                             {% if not default_payment_method %}disabled{% endif %}
                                         >
-                                            {{ is_downgrade ? 'Programmer le changement' : 'S’abonner' }}
+                                            {{ is_downgrade ? 'Changer de forfait' : 'S’abonner' }}
                                         </button>
 
                                         <p

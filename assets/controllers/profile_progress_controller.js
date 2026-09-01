@@ -25,9 +25,7 @@ export default class extends Controller {
             previewLink.dataset.enabledHref = event.detail.publicProfileUrl || '';
         }
 
-        const item = this.itemTargets.find((element) => {
-            return element.dataset.field === field;
-        });
+        const item = this.itemTargets.find((element) => this.matchesItemField(element, field));
 
         if (!item) {
             this.refreshFromPage();
@@ -52,6 +50,18 @@ export default class extends Controller {
         });
 
         this.updateProgress();
+    }
+
+    matchesItemField(item, field) {
+        if (item.dataset.field === field) {
+            return true;
+        }
+
+        return String(item.dataset.fieldAliases ?? '')
+            .split(',')
+            .map((alias) => alias.trim())
+            .filter(Boolean)
+            .includes(field);
     }
 
     updateProgress() {

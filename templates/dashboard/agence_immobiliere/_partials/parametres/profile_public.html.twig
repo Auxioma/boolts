@@ -10,7 +10,21 @@
 		<div class="col-10 mx-auto">
 			<h2 class="mb-0">Fiche agence</h2>
 
+			{% set hasOpeningHours = false %}
+			{% for horaire in app.user.horaireOuvertures %}
+				{% if horaire.open and (horaire.ouvertureMatin or horaire.fermetureMatin or horaire.ouvertureApresMidi or horaire.fermetureApresMidi) %}
+					{% set hasOpeningHours = true %}
+				{% endif %}
+			{% endfor %}
+
 			{% set profileItems = [
+                {
+                    field: 'imageName',
+                    aliases: 'imageFile',
+                    label: 'Ajouter une photo de profil',
+                    done: app.user.imageName is not empty,
+                    optional: false,
+                },
                 {
                     field: 'description',
                     label: 'Ajouter une description',
@@ -19,25 +33,31 @@
                     optional: false,
                 },
                 {
-                    field: 'langueParlers',
-                    label: 'Ajouter les langues parlées par l’agence',
-                    done: app.user.langueParlers is not empty,
-                    selector: '#' ~ form.langueParlers.vars.id,
+                    field: 'emailContact',
+                    label: 'Ajouter une adresse mail de contact',
+                    done: app.user.emailContact is not empty,
+                    selector: '#' ~ form.emailContact.vars.id,
                     optional: false,
                 },
                 {
-                    field: 'emailContact',
-                    label: 'Ajouter une adresse mail',
-                    done: app.user.emailContact is not empty,
-                    selector: '#' ~ form.emailContact.vars.id,
-                    optional: true,
+                    field: 'openingHours',
+                    label: 'Ajouter vos horaires',
+                    done: hasOpeningHours,
+                    optional: false,
                 },
                 {
                     field: 'numeroContact',
-                    label: 'Ajouter un numéro',
+                    label: 'Ajouter un numéro de contact',
                     done: app.user.numeroContact is not empty,
                     selector: '#telephone-input',
-                    optional: true,
+                    optional: false,
+                },
+                {
+                    field: 'langueParlers',
+                    label: 'Ajouter vos langues parlées',
+                    done: app.user.langueParlers is not empty,
+                    selector: '#' ~ form.langueParlers.vars.id,
+                    optional: false,
                 },
             ] %}
 
@@ -64,7 +84,7 @@
 				</div>
 
 				{% for item in profileItems %}
-					<p class="{{ loop.first ? 'mb-0' : 'mt-2 mb-0' }} {% if item.done %} active {% endif %}" data-profile-progress-target="item" data-field="{{ item.field }}" data-optional="{{ item.optional ? 'true' : 'false' }}" data-done="{{ item.done ? 'true' : 'false' }}" data-required-selector="{{ item.selector|default('') }}" data-required-mode="{{ item.mode|default('any') }}">
+					<p class="{{ loop.first ? 'mb-0' : 'mt-2 mb-0' }} {% if item.done %} active {% endif %}" data-profile-progress-target="item" data-field="{{ item.field }}" data-field-aliases="{{ item.aliases|default('') }}" data-optional="{{ item.optional ? 'true' : 'false' }}" data-done="{{ item.done ? 'true' : 'false' }}" data-required-selector="{{ item.selector|default('') }}" data-required-mode="{{ item.mode|default('any') }}">
 						<span data-profile-progress-target="icon">
 							{% if item.done %}
 								<i class="icon-check mr-8"></i>

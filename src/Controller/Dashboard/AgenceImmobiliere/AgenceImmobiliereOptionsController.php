@@ -199,6 +199,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'stripe_public_key' => $stripePublicKey,
                 'is_downgrade' => $isDowngrade,
                 'current_plan' => $currentPlanPrice?->getPlan(),
+                'current_plan_price' => $currentPlanPrice,
                 'downgrade_effective_at' => $isDowngrade ? $currentSubscription->getCurrentPeriodEnd() : null,
             ]
         );

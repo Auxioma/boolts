@@ -68,6 +68,16 @@ export default class extends Controller {
             const data = await response.json();
 
             this.changeImageButton.textContent = data.success ? 'Modifier' : 'Erreur';
+
+            if (data.success) {
+                window.dispatchEvent(new CustomEvent('profile:field-saved', {
+                    detail: {
+                        field: 'imageName',
+                        value: data.imageName ?? file.name,
+                        publicProfileUrl: data.publicProfileUrl ?? null
+                    }
+                }));
+            }
         } catch (error) {
             console.error(error);
             this.changeImageButton.textContent = 'Erreur';
