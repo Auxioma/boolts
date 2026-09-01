@@ -29,6 +29,7 @@ use App\Repository\Billing\InvoiceRepository;
 use App\Repository\Billing\PaymentAttemptRepository;
 use App\Repository\Billing\PaymentRepository;
 use App\Repository\Booster\BoosterTransactionRepository;
+use App\Service\Billing\InvoiceNumberGenerator;
 use App\Service\Stripe\StripeInvoiceService;
 use App\Service\Stripe\StripePaymentService;
 use App\Service\Stripe\StripeSubscriptionService;
@@ -49,6 +50,7 @@ final readonly class SubscriptionPaymentService
         private AgencySubscriptionPeriodRepository $periodRepository,
         private InvoiceRepository $invoiceRepository,
         private BoosterTransactionRepository $boosterTransactionRepository,
+        private InvoiceNumberGenerator $invoiceNumberGenerator,
         private StripeInvoiceService $stripeInvoiceService,
         private StripePaymentService $stripePaymentService,
         private StripeSubscriptionService $stripeSubscriptionService,
@@ -392,7 +394,7 @@ final readonly class SubscriptionPaymentService
             }
 
             $localInvoice = (new Invoice())
-                ->setNumber($invoice->number)
+                ->setNumber($this->invoiceNumberGenerator->next())
                 ->setAgency($subscription->getAgency())
                 ->setBillingProfile($billingProfile)
                 ->setSubscription($subscription)

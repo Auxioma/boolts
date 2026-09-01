@@ -1,0 +1,261 @@
+{#
+ Template: templates/dashboard/agence_immobiliere/facture/show.html.twig
+ Role: Document de facture Boolts, partagé par l'affichage HTML et la génération PDF (dompdf).
+ Context: `invoice` (App\Entity\Billing\Invoice), `pdf_mode` (bool).
+ Maintenance: mise en page en tables (compatibilité dompdf) ; ne pas introduire de flex/grid.
+#}
+{% macro money(minor, sign) %}
+{{- (minor / 100)|number_format(2, ',', ' ') }} {{ sign -}}
+{% endmacro %}
+{% import _self as fmt %}
+{% set currency_sign = invoice.currency.signe|default('€') %}
+{% set seller = invoice.sellerSnapshot %}
+{% set customer = invoice.customerSnapshot %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture {{ invoice.number }}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: "DejaVu Sans", "Inter", Arial, sans-serif;
+            color: #0A1633;
+            font-size: 12px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+        .sheet { width: 100%; max-width: 760px; margin: 0 auto; padding: 32px; }
+        .toolbar {
+            max-width: 760px;
+            margin: 16px auto 0;
+            padding: 0 32px;
+            text-align: right;
+        }
+        .toolbar a, .toolbar button {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 8px 16px;
+            border: 1px solid #D5D9E2;
+            border-radius: 8px;
+            background: #fff;
+            color: #0A1633;
+            font-size: 12px;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .toolbar a.primary { background: #FF8A1E; border-color: #FF8A1E; color: #fff; }
+        h1 { font-size: 22px; margin: 0 0 4px; }
+        .muted { color: #6B7280; }
+        .mt-24 { margin-top: 24px; }
+        .mt-16 { margin-top: 16px; }
+        table { width: 100%; border-collapse: collapse; }
+        td, th { vertical-align: top; }
+        .parties td { width: 50%; padding-right: 16px; }
+        .parties h2 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            color: #6B7280;
+            margin: 0 0 6px;
+        }
+        .lines { margin-top: 24px; }
+        .lines th {
+            text-align: left;
+            border-bottom: 2px solid #0A1633;
+            padding: 8px 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+        }
+        .lines td { padding: 10px 6px; border-bottom: 1px solid #E5E7EB; }
+        .num { text-align: right; white-space: nowrap; }
+        .totals { margin-top: 16px; }
+        .totals td { padding: 4px 6px; }
+        .totals .num { width: 140px; }
+        .totals .grand td {
+            border-top: 2px solid #0A1633;
+            font-weight: bold;
+            font-size: 14px;
+            padding-top: 8px;
+        }
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .status.paid { background: #E7F7ED; color: #1B7F3B; }
+        .status.other { background: #FDECEC; color: #B42318; }
+        .legal { margin-top: 32px; font-size: 10px; color: #6B7280; }
+        @media print { .toolbar { display: none; } }
+    </style>
+</head>
+<body>
+
+{% if not pdf_mode %}
+    <div class="toolbar">
+        <button type="button" onclick="window.print()">Imprimer</button>
+        <a class="primary" href="{{ path('agence_immobiliere_facture_download', { id: invoice.id }) }}">
+            Télécharger le PDF
+        </a>
+    </div>
+{% endif %}
+
+<div class="sheet">
+
+    <table>
+        <tr>
+            <td>
+                <h1>Facture</h1>
+                <div class="muted">N° <strong>{{ invoice.number }}</strong></div>
+                <div class="muted">
+                    Date d’émission :
+                    {{ (invoice.issuedAt ?? invoice.createdAt)|date('d/m/Y') }}
+                </div>
+                {% if invoice.paidAt %}
+                    <div class="muted">Payée le : {{ invoice.paidAt|date('d/m/Y') }}</div>
+                {% endif %}
+            </td>
+            <td class="num">
+                {% if invoice.status.value == 'paid' %}
+                    <span class="status paid">Payée</span>
+                {% else %}
+                    <span class="status other">{{ invoice.status.value|capitalize }}</span>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <table class="parties mt-24">
+        <tr>
+            <td>
+                <h2>Émetteur</h2>
+                <strong>{{ seller.name|default('Boolts') }}</strong><br>
+                {% if seller.legal_name is defined %}{{ seller.legal_name }}<br>{% endif %}
+                {% if seller.address_line1 is defined %}{{ seller.address_line1 }}<br>{% endif %}
+                {% if seller.address_line2 is defined %}{{ seller.address_line2 }}<br>{% endif %}
+                {% if seller.postal_code is defined or seller.city is defined %}
+                    {{ seller.postal_code|default('') }} {{ seller.city|default('') }}<br>
+                {% endif %}
+                {% if seller.country is defined %}{{ seller.country }}<br>{% endif %}
+                {% if seller.siren is defined %}SIREN : {{ seller.siren }}<br>{% endif %}
+                {% if seller.vat_number is defined %}N° TVA : {{ seller.vat_number }}<br>{% endif %}
+                {% if seller.email is defined %}{{ seller.email }}<br>{% endif %}
+                {% if seller.website is defined %}{{ seller.website }}{% endif %}
+            </td>
+            <td>
+                <h2>Client</h2>
+                {% if customer.legal_name is defined %}
+                    <strong>{{ customer.legal_name }}</strong><br>
+                {% elseif customer.commercial_name is defined %}
+                    <strong>{{ customer.commercial_name }}</strong><br>
+                {% endif %}
+                {% if customer.contact_name is defined %}{{ customer.contact_name }}<br>{% endif %}
+                {% if customer.address_line1 is defined %}{{ customer.address_line1 }}<br>{% endif %}
+                {% if customer.address_line2 is defined %}{{ customer.address_line2 }}<br>{% endif %}
+                {% if customer.postal_code is defined or customer.city is defined %}
+                    {{ customer.postal_code|default('') }} {{ customer.city|default('') }}<br>
+                {% endif %}
+                {% if customer.region is defined %}{{ customer.region }}<br>{% endif %}
+                {% if customer.country_code is defined %}{{ customer.country_code }}<br>{% endif %}
+                {% if customer.email is defined %}{{ customer.email }}{% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <table class="lines">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th class="num">Qté</th>
+                <th class="num">Prix unitaire</th>
+                <th class="num">Montant</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in invoice.lines %}
+                <tr>
+                    <td>
+                        {{ line.description }}
+                        {% if line.periodStart and line.periodEnd %}
+                            <br><span class="muted">
+                                Période du {{ line.periodStart|date('d/m/Y') }}
+                                au {{ line.periodEnd|date('d/m/Y') }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="num">{{ line.quantity|number_format(0) }}</td>
+                    <td class="num">{{ fmt.money(line.unitAmountMinor, currency_sign) }}</td>
+                    <td class="num">{{ fmt.money(line.totalMinor, currency_sign) }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td>Abonnement Boolts</td>
+                    <td class="num">1</td>
+                    <td class="num">{{ fmt.money(invoice.subtotalMinor, currency_sign) }}</td>
+                    <td class="num">{{ fmt.money(invoice.subtotalMinor, currency_sign) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="totals">
+        <tr>
+            <td></td>
+            <td class="num muted">Sous-total</td>
+            <td class="num">{{ fmt.money(invoice.subtotalMinor, currency_sign) }}</td>
+        </tr>
+        {% if invoice.discountTotalMinor > 0 %}
+            <tr>
+                <td></td>
+                <td class="num muted">Remise</td>
+                <td class="num">- {{ fmt.money(invoice.discountTotalMinor, currency_sign) }}</td>
+            </tr>
+        {% endif %}
+        {% if invoice.taxTotalMinor > 0 %}
+            <tr>
+                <td></td>
+                <td class="num muted">TVA</td>
+                <td class="num">{{ fmt.money(invoice.taxTotalMinor, currency_sign) }}</td>
+            </tr>
+        {% endif %}
+        <tr class="grand">
+            <td></td>
+            <td class="num">Total</td>
+            <td class="num">{{ fmt.money(invoice.totalMinor, currency_sign) }}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="num muted">Montant payé</td>
+            <td class="num">{{ fmt.money(invoice.amountPaidMinor, currency_sign) }}</td>
+        </tr>
+        {% if invoice.amountDueMinor > 0 %}
+            <tr>
+                <td></td>
+                <td class="num muted">Reste dû</td>
+                <td class="num">{{ fmt.money(invoice.amountDueMinor, currency_sign) }}</td>
+            </tr>
+        {% endif %}
+    </table>
+
+    {#
+     Mention TVA : adapter selon le régime réel de l'entité facturante
+     (assujettie / franchise en base / autoliquidation…). Laissée neutre par défaut.
+    #}
+    {% if invoice.taxTotalMinor == 0 %}
+        <p class="legal">Montants exprimés dans la devise indiquée. TVA : voir conditions applicables à votre pays.</p>
+    {% endif %}
+
+    <p class="legal">
+        Facture générée par Boolts. Pour toute question relative à cette facture,
+        contactez {{ seller.email|default('le support Boolts') }}.
+    </p>
+
+</div>
+</body>
+</html>

@@ -18,6 +18,8 @@ use App\Entity\Devise;
 use App\Entity\Shared\TimestampableTrait;
 use App\Entity\User;
 use App\Repository\Billing\InvoiceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
@@ -116,9 +118,25 @@ class Invoice
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $voidedAt = null;
 
+    /**
+     * @var Collection<int, InvoiceLine>
+     */
+    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceLine::class)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $lines;
+
     public function __construct()
     {
         $this->initializeTimestamps();
+        $this->lines = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, InvoiceLine>
+     */
+    public function getLines(): Collection
+    {
+        return $this->lines;
     }
 
     public function getId(): ?int

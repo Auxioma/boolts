@@ -32,6 +32,7 @@ use App\Entity\Booster\BoosterTransaction;
 use App\Entity\User;
 use App\Exception\PlanChangeException;
 use App\Repository\Billing\AgencySubscriptionRepository;
+use App\Service\Billing\SubscriptionInvoiceIssuer;
 use App\Service\Stripe\StripeSubscriptionService;
 use App\Service\Subscription\SubscriptionPlanChangeService;
 use App\Service\Subscription\SubscriptionSynchronizationService;
@@ -65,6 +66,7 @@ final class SubscriptionController extends AbstractController
         private readonly StripeSubscriptionService $stripeSubscriptionService,
         private readonly SubscriptionSynchronizationService $subscriptionSynchronizationService,
         private readonly SubscriptionPlanChangeService $planChangeService,
+        private readonly SubscriptionInvoiceIssuer $invoiceIssuer,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -329,6 +331,16 @@ final class SubscriptionController extends AbstractController
             $this->entityManager->persist($subscriptionCredit);
         }
         $this->entityManager->persist($this->buildPlanActivatedNotification($agency, $planPrice));
+
+        $this->invoiceIssuer->issueForInitialPurchase(
+            $subscription,
+            $period,
+            $payment,
+            $planPrice,
+            $invoiceId,
+            $now,
+        );
+
         $this->entityManager->flush();
     }
 

@@ -23,6 +23,7 @@ export default class extends Controller {
     };
 
     stripe = null;
+    stripePromise = null;
     elements = null;
     cardNumberElement = null;
     cardExpiryElement = null;
@@ -47,12 +48,94 @@ export default class extends Controller {
             return;
         }
 
-        if (typeof window.Stripe !== 'function') {
-            this.showError('Stripe.js n’est pas chargé dans la page.');
-            return;
+        // Stripe.js est chargé en bas de page : il peut ne pas être encore
+        // disponible quand Stimulus connecte le contrôleur. On lance le
+        // préchargement sans bloquer ; ensureStripe() ré-attend au besoin.
+        this.ensureStripe().catch(() => {
+            // L’erreur éventuelle sera affichée à l’ouverture de la modale.
+        });
+    }
+
+    /**
+     * Garantit que window.Stripe est disponible et que this.stripe est
+     * instancié. Résout avec l’instance Stripe, rejette si le script ne
+     * peut pas être chargé.
+     */
+    ensureStripe() {
+        if (this.stripe) {
+            return Promise.resolve(this.stripe);
         }
 
-        this.stripe = window.Stripe(this.publicKeyValue);
+        if (!this.stripePromise) {
+            this.stripePromise = this.loadStripeJs()
+                .then(() => {
+                    if (typeof window.Stripe !== 'function') {
+                        throw new Error(
+                            'Stripe.js n’est pas chargé dans la page.'
+                        );
+                    }
+
+                    this.stripe = window.Stripe(this.publicKeyValue);
+
+                    return this.stripe;
+                })
+                .catch((error) => {
+                    this.stripePromise = null;
+                    throw error;
+                });
+        }
+
+        return this.stripePromise;
+    }
+
+    loadStripeJs() {
+        if (typeof window.Stripe === 'function') {
+            return Promise.resolve();
+        }
+
+        const existing = document.querySelector(
+            'script[src^="https://js.stripe.com/v3"]'
+        );
+
+        if (existing) {
+            return this.waitForScript(existing);
+        }
+
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://js.stripe.com/v3/';
+            script.async = true;
+            script.addEventListener('load', () => resolve(), { once: true });
+            script.addEventListener(
+                'error',
+                () => reject(new Error('Impossible de charger Stripe.js.')),
+                { once: true }
+            );
+            document.head.appendChild(script);
+        });
+    }
+
+    waitForScript(script) {
+        return new Promise((resolve, reject) => {
+            if (typeof window.Stripe === 'function') {
+                resolve();
+                return;
+            }
+
+            const timeout = window.setTimeout(() => {
+                reject(new Error('Le chargement de Stripe.js a expiré.'));
+            }, 10000);
+
+            script.addEventListener('load', () => {
+                window.clearTimeout(timeout);
+                resolve();
+            }, { once: true });
+
+            script.addEventListener('error', () => {
+                window.clearTimeout(timeout);
+                reject(new Error('Impossible de charger Stripe.js.'));
+            }, { once: true });
+        });
     }
 
     async open() {
@@ -95,6 +178,8 @@ export default class extends Controller {
         try {
             this.setLoading(true);
             this.hideError();
+
+            await this.ensureStripe();
 
             const response = await fetch(this.createUrlValue, {
                 method: 'POST',

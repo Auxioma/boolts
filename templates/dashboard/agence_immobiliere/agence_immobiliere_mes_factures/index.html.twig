@@ -10,20 +10,6 @@
 {% block title %}Mes factures{% endblock %}
 
 {% block body %}
-    {% set invoices = invoices|default([
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-        { reference: 'INV-2026-C6D2', created_at: 'Créé le 29 Juin 2026' },
-    ]) %}
-
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
             <div class="row g-0">
@@ -42,8 +28,8 @@
                                     type="search"
                                     name="q"
                                     class="invoices-search__input"
-                                    placeholder="Recherchez une facture, une date"
-                                    value="{{ app.request.query.get('q') }}"
+                                    placeholder="Recherchez un numéro de facture"
+                                    value="{{ search|default('') }}"
                                 >
 
                                 <button type="submit" class="invoices-search__button" aria-label="Rechercher">
@@ -54,20 +40,33 @@
                             <div class="invoices-card">
                                 <div class="invoices-list">
                                     {% for invoice in invoices %}
+                                        {% set issued_at = invoice.issuedAt ?? invoice.createdAt %}
                                         <div class="invoice-row">
                                             <div class="invoice-row__info">
-                                                <p class="invoice-row__reference">{{ invoice.reference }}</p>
+                                                <p class="invoice-row__reference">{{ invoice.number }}</p>
 
-                                                <p class="invoice-row__date">{{ invoice.created_at }}</p>
+                                                <p class="invoice-row__date">
+                                                    Créé le {{ issued_at|format_datetime('long', 'none', locale='fr') }}
+                                                    · {{ (invoice.totalMinor / 100)|number_format(2, ',', ' ') }}
+                                                    {{ invoice.currency.signe|default('€') }}
+                                                </p>
                                             </div>
 
                                             <div class="invoice-row__actions">
-                                                <a href="{{ invoice.view_url|default('#') }}" class="invoice-action">
+                                                <a
+                                                    href="{{ path('agence_immobiliere_facture_show', { id: invoice.id }) }}"
+                                                    class="invoice-action"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                >
                                                     <i class="icon-eye" aria-hidden="true"></i>
                                                     Voir
                                                 </a>
 
-                                                <a href="{{ invoice.download_url|default('#') }}" class="invoice-action" download>
+                                                <a
+                                                    href="{{ path('agence_immobiliere_facture_download', { id: invoice.id }) }}"
+                                                    class="invoice-action"
+                                                >
                                                     <i class="icon-download" aria-hidden="true"></i>
                                                     Télécharger
                                                 </a>

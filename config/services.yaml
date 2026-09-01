@@ -15,6 +15,22 @@ parameters:
     stripe.webhook_secret: '%env(STRIPE_WEBHOOK_SECRET)%'
     app.url: '%env(APP_URL)%'
     app.subscription_batch_size: 100
+    # Mentions légales du vendeur imprimées sur les factures Boolts.
+    # Renseignez les champs vides (raison sociale, adresse, SIREN, TVA) avec les
+    # informations réelles de l'entité facturante : ils n'apparaissent sur la
+    # facture que lorsqu'ils sont non vides.
+    app.invoice_seller:
+        name: 'Boolts'
+        legal_name: ''
+        address_line1: ''
+        address_line2: ''
+        postal_code: ''
+        city: ''
+        country: ''
+        siren: ''
+        vat_number: ''
+        email: 'facturation@boolts.com'
+        website: '%app.url%'
     # app_driven: Boolts appelle /v1/invoices/{id}/pay sur l'invoice ouverte existante.
     # En production, désactiver/configurer Stripe Smart Retries pour ne pas avoir deux moteurs de relance concurrents.
     # stripe_managed: Boolts observe uniquement les relances Stripe et synchronise la base.

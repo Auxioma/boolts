@@ -12,8 +12,11 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\User;
+use App\Repository\Billing\InvoiceRepository;
 use App\Security\Voter\AgencyDocumentVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -35,10 +38,20 @@ final class AgenceImmobiliereMesFacturesController extends AbstractController
     /**
      * Handles the index controller action.
      */
-    public function index(): Response
+    public function index(Request $request, InvoiceRepository $invoiceRepository): Response
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Utilisateur non authentifié.');
+        }
+
+        $search = $request->query->getString('q');
+
         return $this->render('dashboard/agence_immobiliere/agence_immobiliere_mes_factures/index.html.twig', [
             'controller_name' => 'AgenceImmobiliereMesFacturesController',
+            'invoices' => $invoiceRepository->findForAgency($user, $search),
+            'search' => $search,
         ]);
     }
 }

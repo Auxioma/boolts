@@ -25,7 +25,7 @@ class InvoiceLine
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'lines')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private Invoice $invoice;
 
