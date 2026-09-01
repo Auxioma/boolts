@@ -13,6 +13,7 @@
 namespace App\Controller\Admin;
 
 use App\Admin\Filter\PropertyTranslationFilter;
+use App\Entity\AgencyNotification;
 use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
@@ -23,7 +24,9 @@ use App\Field\PropertyImagesField;
 use App\Repository\CategoryBienTransactionRepository;
 use App\Service\Import\PropertyCsvImporter;
 use App\Service\Import\PropertyImportReport;
+use App\Service\Property\PropertyNotificationLabeler;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
@@ -62,7 +65,68 @@ class PropertyCrudController extends AbstractCrudController
     public function __construct(
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly CategoryBienTransactionRepository $categoryBienTransactionRepository,
+        private readonly PropertyNotificationLabeler $propertyNotificationLabeler,
     ) {
+    }
+
+    /**
+     * À l'enregistrement d'un bien depuis EasyAdmin : si le statut vient de
+     * passer à « Publiée » ou « Refusée », on notifie l'agence propriétaire
+     * (message d'acceptation ou de refus, libellé identique au reste du
+     * back-office agence).
+     */
+    public function updateEntity(EntityManagerInterface $entityManager, object $entityInstance): void
+    {
+        if ($entityInstance instanceof Property) {
+            $this->queueStatusChangeNotification($entityManager, $entityInstance);
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function queueStatusChangeNotification(
+        EntityManagerInterface $entityManager,
+        Property $property,
+    ): void {
+        $originalData = $entityManager
+            ->getUnitOfWork()
+            ->getOriginalEntityData($property);
+
+        $previousStatut = $originalData['statut'] ?? null;
+
+        // Selon la version de Doctrine, la donnée d'origine d'une colonne
+        // « enumType » peut être l'enum lui-même ou sa valeur scalaire.
+        $previousValue = $previousStatut instanceof StatutAnnonceImmobiliere
+            ? $previousStatut->value
+            : $previousStatut;
+
+        $newStatut = $property->getStatut();
+
+        if ($previousValue === $newStatut->value) {
+            return;
+        }
+
+        $message = match ($newStatut) {
+            StatutAnnonceImmobiliere::PUBLIEE => $this->propertyNotificationLabeler->acceptedLabel($property),
+            StatutAnnonceImmobiliere::REFUSEE => $this->propertyNotificationLabeler->refusedLabel($property),
+            default => null,
+        };
+
+        if (null === $message) {
+            return;
+        }
+
+        $agency = $property->getUser();
+
+        if (!$agency instanceof User) {
+            return;
+        }
+
+        $entityManager->persist(
+            (new AgencyNotification())
+                ->setAgency($agency)
+                ->setNom($message)
+        );
     }
 
     public static function getEntityFqcn(): string
@@ -376,7 +440,7 @@ class PropertyCrudController extends AbstractCrudController
 
         return [
             FormField::addTab('Informations générales', 'fa fa-building'),
-            IdField::new('id', 'ID'),
+            IdField::new('id', 'ID')->hideOnForm(),
             TextField::new('referenceInterne', 'Référence interne')->setColumns(4),
             TextField::new('titreDuLogement', 'Titre')->setColumns(8),
             AssociationField::new('user', 'Agence')

@@ -15,6 +15,7 @@ namespace App\DataFixtures;
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\Billing\SubscriptionPlan;
+use App\Entity\Billing\SubscriptionPlanPrice;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -27,6 +28,10 @@ final class AgencySubscriptionFixtures extends Fixture implements DependentFixtu
     public function load(ObjectManager $manager): void
     {
         $plan = $this->getReference(SubscriptionPlanFixtures::FREE_PLAN_REFERENCE, SubscriptionPlan::class);
+        $planPrice = $this->getReference(
+            SubscriptionPlanPriceFixtures::FREE_PLAN_PRICE_REFERENCE,
+            SubscriptionPlanPrice::class,
+        );
         $startedAt = (new \DateTimeImmutable('first day of this month'))->setTime(0, 0);
 
         for ($i = 1; $i <= UserFixtures::AGENCY_COUNT; ++$i) {
@@ -35,6 +40,7 @@ final class AgencySubscriptionFixtures extends Fixture implements DependentFixtu
             $subscription = (new AgencySubscription())
                 ->setAgency($agency)
                 ->setPlan($plan)
+                ->setPlanPrice($planPrice)
                 ->setStatus(SubscriptionStatus::FREE)
                 ->setStartedAt($startedAt)
                 ->setCurrentPeriodStart($startedAt)
@@ -42,7 +48,8 @@ final class AgencySubscriptionFixtures extends Fixture implements DependentFixtu
                 ->setPropertyLimitSnapshot($plan->getPropertyLimit())
                 ->setIncludedBoostsSnapshot($plan->getIncludedBoosts())
                 ->setBoostDurationDaysSnapshot($plan->getBoostDurationDays())
-                ->setAmountSnapshotMinor(0);
+                ->setAmountSnapshotMinor(0)
+                ->setCurrencySnapshot($planPrice->getCurrency());
 
             $manager->persist($subscription);
             $this->addReference(self::AGENCY_SUBSCRIPTION_REFERENCE_PREFIX.$i, $subscription);
@@ -56,6 +63,7 @@ final class AgencySubscriptionFixtures extends Fixture implements DependentFixtu
         return [
             UserFixtures::class,
             SubscriptionPlanFixtures::class,
+            SubscriptionPlanPriceFixtures::class,
         ];
     }
 }

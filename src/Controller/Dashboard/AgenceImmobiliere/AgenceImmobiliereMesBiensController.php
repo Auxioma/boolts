@@ -12,6 +12,7 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\AgencyNotification;
 use App\Entity\CategoryBienTransaction;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Filter\ModalFilter;
@@ -26,6 +27,7 @@ use App\Service\Booster\BoostException;
 use App\Service\Booster\PropertyBoostService;
 use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
+use App\Service\Property\PropertyNotificationLabeler;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -282,6 +284,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         Property $property,
         Request $request,
         PropertyBoostService $propertyBoostService,
+        EntityManagerInterface $entityManager,
+        PropertyNotificationLabeler $propertyNotificationLabeler,
     ): Response {
         $user = $this->getUser();
 
@@ -303,6 +307,18 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         try {
             $boost = $propertyBoostService->boost($property, $user);
+
+            /*
+             * Notification agence : le Boost vient d'être activé sur l'annonce.
+             */
+            $entityManager->persist(
+                (new AgencyNotification())
+                    ->setAgency($user)
+                    ->setNom(
+                        $propertyNotificationLabeler->boostActiveLabel($property)
+                    )
+            );
+            $entityManager->flush();
 
             $this->addFlash(
                 'success',
@@ -707,6 +723,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         EntityManagerInterface $entityManager,
         NumericSlugGenerator $numericSlugGenerator,
         MapboxAddressTranslator $mapboxAddressTranslator,
+        PropertyNotificationLabeler $propertyNotificationLabeler,
     ): Response {
         $session = $request->getSession();
 
@@ -1469,14 +1486,33 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              */
             if (8 === $step) {
                 /*
-                 * Dernière étape : l'annonce quitte l'état brouillon et
-                 * passe en attente de validation. On ne touche pas au
-                 * statut d'une annonce déjà validée / publiée que l'on
-                 * ne fait que modifier.
+                 * Dernière étape : l'annonce quitte l'état brouillon (ou
+                 * refusé, après correction) et repasse en attente de
+                 * validation. On ne touche pas au statut d'une annonce déjà
+                 * validée / publiée que l'on ne fait que modifier.
                  */
-                if (StatutAnnonceImmobiliere::BROUILLON === $mesBiens->getStatut()) {
+                if (\in_array(
+                    $mesBiens->getStatut(),
+                    [
+                        StatutAnnonceImmobiliere::BROUILLON,
+                        StatutAnnonceImmobiliere::REFUSEE,
+                    ],
+                    true
+                )) {
                     $mesBiens->setStatut(
                         StatutAnnonceImmobiliere::PENDING
+                    );
+
+                    /*
+                     * Notification agence : l'annonce vient d'être soumise
+                     * et attend la validation d'un administrateur.
+                     */
+                    $entityManager->persist(
+                        (new AgencyNotification())
+                            ->setAgency($user)
+                            ->setNom(
+                                $propertyNotificationLabeler->pendingLabel($mesBiens)
+                            )
                     );
                 }
 

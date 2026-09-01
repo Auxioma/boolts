@@ -392,6 +392,12 @@ LISTE DES ANNONCES
     cursor: pointer;
 }
 
+.agence-mes-biens-list .property-listing-check--disabled,
+.agence-mes-biens-list .property-listing-check input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
 .agence-mes-biens-list .property-listing-image {
     position: relative;
     flex-shrink: 0;

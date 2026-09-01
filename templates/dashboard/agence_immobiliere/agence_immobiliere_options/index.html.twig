@@ -7,6 +7,45 @@
 
 {% extends 'base.html.twig' %}
 
+{#
+ Caractéristiques d'un forfait : contenu libre saisi dans la description
+ (une puce par ligne non vide) ; à défaut, valeurs calculées du forfait.
+#}
+{% macro plan_features(plan) %}
+    {% if plan.description|trim %}
+        {% for ligne in plan.description|split("\n") %}
+            {% if ligne|trim is not empty %}
+                <p>{{ ligne|trim }}</p>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>
+            <strong>
+                ✓
+                {{ plan.propertyLimit is null
+                    ? 'Biens illimités'
+                    : plan.propertyLimit ~ ' biens'
+                }}
+            </strong>
+        </p>
+
+        <p>
+            <strong>
+                ✓
+                {{ plan.includedBoosts }}
+                boost{{ plan.includedBoosts > 1 ? 's' : '' }}
+                inclus
+            </strong>
+        </p>
+
+        <p>
+            Durée d’un boost :
+            {{ plan.boostDurationDays }}
+            jours
+        </p>
+    {% endif %}
+{% endmacro %}
+
 {% block title %}
     Options et abonnements
 {% endblock %}
@@ -220,6 +259,8 @@
 {% endblock %}
 
 {% block body %}
+    {% import _self as forfait_ui %}
+
     {% set subscription = abonnement_actuel ? {
         plan: abonnement_actuel.plan,
         status: abonnement_actuel.status.value,
@@ -258,13 +299,16 @@
                             {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button', {variant: 'options'})) }}
                         </div>
 
-                        {% for message in app.flashes('success') %}
+                        {# Flashes propres à l'espace « Options et abonnements ».
+                           Les clés génériques (success/error/warning/danger) posées
+                           par d'autres pages ne doivent pas apparaître ici. #}
+                        {% for message in app.flashes('subscription_success') %}
                             <div class="alert alert-success mt-24 mb-0" role="status">
                                 {{ message }}
                             </div>
                         {% endfor %}
 
-                        {% for message in app.flashes('error') %}
+                        {% for message in app.flashes('subscription_error') %}
                             <div class="alert alert-danger mt-24 mb-0" role="alert">
                                 {{ message }}
                             </div>
@@ -675,70 +719,9 @@
 
                                             </p>
 
-                                            {% if isCurrentPlan and abonnement_actuel and not plan.isFree %}
-                                                <div class="achat-feature-list">
-                                                    <p>
-                                                        <strong>
-                                                            {{ abonnement_actuel.cancelAtPeriodEnd
-                                                                ? 'Fin des droits'
-                                                                : 'Prochain prélèvement'
-                                                            }}:
-                                                        </strong>
-                                                        {{ abonnement_actuel.currentPeriodEnd
-                                                            ? abonnement_actuel.currentPeriodEnd|date('d/m/Y')
-                                                            : 'Non renseigné'
-                                                        }}
-                                                    </p>
-
-                                                    <p>
-                                                        <strong>
-                                                            Paiement:
-                                                        </strong>
-                                                        {% if abonnement_actuel_payment_card %}
-                                                            {{ abonnement_actuel_payment_card.brand }}
-                                                            {% if abonnement_actuel_payment_card.last4 %}
-                                                                ••••{{ abonnement_actuel_payment_card.last4 }}
-                                                            {% endif %}
-                                                        {% else %}
-                                                            Non renseigné
-                                                        {% endif %}
-                                                    </p>
-                                                </div>
-                                            {% else %}
-                                                <div class="achat-feature-list">
-
-                                                    {% if plan.description %}
-                                                        <p>
-                                                            {{ plan.description }}
-                                                        </p>
-                                                    {% endif %}
-
-                                                    <p>
-                                                        <strong>
-                                                            ✓
-                                                            {{ plan.propertyLimit is null
-                                                                ? 'Biens illimités'
-                                                                : plan.propertyLimit ~ ' biens'
-                                                            }}
-                                                        </strong>
-                                                    </p>
-
-                                                    <p>
-                                                        <strong>
-                                                            ✓
-                                                            {{ plan.includedBoosts }}
-                                                            boost{{ plan.includedBoosts > 1 ? 's' : '' }}
-                                                            inclus
-                                                        </strong>
-                                                    </p>
-
-                                                    <p>
-                                                        Durée d’un boost :
-                                                        {{ plan.boostDurationDays }}
-                                                        jours
-                                                    </p>
-                                                </div>
-                                            {% endif %}
+                                            <div class="achat-feature-list">
+                                                {{ forfait_ui.plan_features(plan) }}
+                                            </div>
                                         </div>
 
                                         {% if not plan.isFree %}

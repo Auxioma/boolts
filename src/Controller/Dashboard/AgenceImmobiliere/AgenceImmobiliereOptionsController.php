@@ -12,6 +12,7 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Entity\AgencyNotification;
 use App\Entity\Billing\AgencyPaymentMethod;
 use App\Entity\Billing\Enum\BoosterTransactionType;
 use App\Entity\Billing\Enum\PaymentAttemptStatus;
@@ -379,9 +380,25 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 ->setCurrency($boostPrice->getCurrency())
                 ->setCompletedAt(new \DateTimeImmutable());
 
+            $boostQuantity = $boostPrice->getBoosterPack()->getBoostQuantity();
+
+            /*
+             * Notification agence : les crédits Boost achetés viennent d'être
+             * crédités sur le compte.
+             */
+            $boostNotification = (new AgencyNotification())
+                ->setAgency($agency)
+                ->setNom(\sprintf(
+                    1 === $boostQuantity
+                        ? '%d crédit Boost a été ajouté à votre compte.'
+                        : '%d crédits Boost ont été ajoutés à votre compte.',
+                    $boostQuantity,
+                ));
+
             $entityManager->persist($payment);
             $entityManager->persist($boostTransaction);
             $entityManager->persist($paymentAttempt);
+            $entityManager->persist($boostNotification);
             $entityManager->flush();
 
             return $this->json([

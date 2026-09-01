@@ -12,6 +12,7 @@
 
 namespace App\Service\Booster;
 
+use App\Entity\AgencyNotification;
 use App\Entity\Billing\Enum\BoosterTransactionType;
 use App\Entity\Billing\Enum\PropertyBoostStatus;
 use App\Entity\Booster\BoosterTransaction;
@@ -41,6 +42,12 @@ final class PropertyBoostService
      * Durée de repli (en jours) lorsqu'aucune source ne fournit de durée.
      */
     private const FALLBACK_DURATION_DAYS = 7;
+
+    /**
+     * Seuil (crédits Boost restants, forfait + achats confondus) à partir
+     * duquel l'agence est prévenue que son solde devient faible.
+     */
+    private const LOW_BALANCE_THRESHOLD = 3;
 
     /**
      * @var list<StatutAnnonceImmobiliere>
@@ -165,6 +172,28 @@ final class PropertyBoostService
 
         $this->entityManager->persist($transaction);
         $this->entityManager->persist($boost);
+
+        /*
+         * Solde de crédits Boost (forfait + achats) après consommation de ce
+         * boost. On prévient l'agence une seule fois, au moment où le solde
+         * franchit le seuil bas.
+         */
+        $remainingBalance = $balance['total'] - 1;
+
+        if ($balance['total'] > self::LOW_BALANCE_THRESHOLD
+            && $remainingBalance <= self::LOW_BALANCE_THRESHOLD
+        ) {
+            $this->entityManager->persist(
+                (new AgencyNotification())
+                    ->setAgency($agency)
+                    ->setNom(\sprintf(
+                        'Votre solde de crédits Boost est faible (%d %s).',
+                        $remainingBalance,
+                        1 === $remainingBalance ? 'restant' : 'restants',
+                    ))
+            );
+        }
+
         $this->entityManager->flush();
 
         return $boost;

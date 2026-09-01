@@ -12,18 +12,33 @@ export default class extends Controller {
         this.refresh();
     }
 
+    // Cases éligibles à « Tout sélectionner ».
+    // Les annonces « En attente » (pending) en sont exclues.
+    get selectableCheckboxes() {
+        return this.checkboxTargets.filter(
+            (checkbox) => checkbox.dataset.status !== 'pending'
+        );
+    }
+
     toggleAll() {
         const checked = this.selectAllTarget.checked;
 
         this.checkboxTargets.forEach((checkbox) => {
-            checkbox.checked = checked;
+            // Les annonces « En attente » ne sont jamais sélectionnées via
+            // « Tout sélectionner » : on les décoche systématiquement, même
+            // si elles avaient été cochées manuellement.
+            checkbox.checked = checkbox.dataset.status === 'pending'
+                ? false
+                : checked;
         });
 
         this.refresh();
     }
 
     refresh() {
-        const selected = this.checkboxTargets.filter(
+        const selectable = this.selectableCheckboxes;
+
+        const selected = selectable.filter(
             (checkbox) => checkbox.checked
         );
 
@@ -41,7 +56,7 @@ export default class extends Controller {
         });
 
         if (this.hasSelectAllTarget) {
-            const total = this.checkboxTargets.length;
+            const total = selectable.length;
 
             this.selectAllTarget.checked =
                 total > 0 && selectedCount === total;

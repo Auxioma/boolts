@@ -391,14 +391,21 @@
 
                                                     <article class="property-listing">
 
-                                                        <label class="property-listing-check">
+                                                        {% set isPending = property.statut.value == 'pending' %}
+
+                                                        <label class="property-listing-check{{ isPending ? ' property-listing-check--disabled' : '' }}">
 
                                                             <input
                                                                 type="checkbox"
                                                                 name="properties[]"
                                                                 value="{{ property.id }}"
                                                                 data-mes-biens--property-bulk-actions-target="checkbox"
+                                                                data-status="{{ property.statut.value }}"
                                                                 data-action="change->mes-biens--property-bulk-actions#refresh"
+                                                                {% if isPending %}
+                                                                    disabled
+                                                                    title="Annonce en attente de validation : sélection impossible"
+                                                                {% endif %}
                                                             >
 
                                                         </label>

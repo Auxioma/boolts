@@ -12,6 +12,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\AgencyNotification;
 use App\Entity\Booster\PropertyBoost;
 use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
@@ -21,6 +22,7 @@ use App\Entity\User;
 use App\Field\AgencyBoostsField;
 use App\Field\AgencyPaymentsField;
 use App\Field\UserDocumentsField;
+use App\Repository\AgencyNotificationRepository;
 use App\Repository\Billing\AgencySubscriptionPeriodRepository;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Billing\PaymentRepository;
@@ -80,6 +82,7 @@ class UserCrudController extends AbstractCrudController
         private readonly PaymentRepository $paymentRepository,
         private readonly PropertyBoostRepository $propertyBoostRepository,
         private readonly PropertyViewRepository $propertyViewRepository,
+        private readonly AgencyNotificationRepository $agencyNotificationRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -436,9 +439,64 @@ class UserCrudController extends AbstractCrudController
             } else {
                 $this->hashPassword($entityInstance);
             }
+
+            $this->notifyDocumentReviewOutcome($entityInstance, $entityManager);
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    /**
+     * À l'enregistrement de la fiche agence, prévient l'agence de l'issue de la revue de ses documents :
+     * - au moins un document refusé : demande de nouveau dépôt ;
+     * - tous les documents validés : compte validé.
+     */
+    private function notifyDocumentReviewOutcome(User $user, EntityManagerInterface $entityManager): void
+    {
+        if (!\in_array(self::ROLE_AGENCY, $user->getRoles(), true)) {
+            return;
+        }
+
+        $documentRequests = $user->getDocumentRequests();
+
+        if (0 === $documentRequests->count()) {
+            return;
+        }
+
+        $hasRejected = false;
+        $allApproved = true;
+
+        foreach ($documentRequests as $documentRequest) {
+            $status = $documentRequest->getStatus();
+
+            if (DocumentRequestStatus::REJECTED === $status) {
+                $hasRejected = true;
+            }
+
+            if (DocumentRequestStatus::APPROVED !== $status) {
+                $allApproved = false;
+            }
+        }
+
+        if ($hasRejected) {
+            $message = 'Un ou plusieurs de vos documents n’ont pas été acceptés. Redéposez les documents.';
+        } elseif ($allApproved) {
+            $message = 'Votre compte a été validé.';
+        } else {
+            return;
+        }
+
+        $lastNotification = $this->agencyNotificationRepository->findLatestForAgency($user, 1)[0] ?? null;
+
+        if (null !== $lastNotification && $lastNotification->getNom() === $message) {
+            return;
+        }
+
+        $notification = (new AgencyNotification())
+            ->setAgency($user)
+            ->setNom($message);
+
+        $entityManager->persist($notification);
     }
 
     #[Route(

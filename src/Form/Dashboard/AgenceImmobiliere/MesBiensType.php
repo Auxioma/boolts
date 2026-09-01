@@ -25,6 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -169,7 +170,11 @@ class MesBiensType extends AbstractType
         if (7 === $step) {
             $builder
                 ->add('titreDuLogement')
-                ->add('descriptionLogement')
+                ->add('descriptionLogement', TextareaType::class, [
+                    'attr' => [
+                        'rows' => 5,
+                    ],
+                ])
                 ->add('referenceInterne')
             ;
         }

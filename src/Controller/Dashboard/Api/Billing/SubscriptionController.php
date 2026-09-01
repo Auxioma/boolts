@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Dashboard\Api\Billing;
 
+use App\Entity\AgencyNotification;
 use App\Entity\Billing\AgencyPaymentMethod;
 use App\Entity\Billing\AgencySubscription;
 use App\Entity\Billing\AgencySubscriptionPeriod;
@@ -327,7 +328,27 @@ final class SubscriptionController extends AbstractController
         if ($subscriptionCredit instanceof BoosterTransaction) {
             $this->entityManager->persist($subscriptionCredit);
         }
+        $this->entityManager->persist($this->buildPlanActivatedNotification($agency, $planPrice));
         $this->entityManager->flush();
+    }
+
+    /**
+     * Notifie l'agence que son abonnement (souscription initiale ou montée en gamme) est actif.
+     */
+    private function notifyPlanActivated(User $agency, SubscriptionPlanPrice $planPrice): void
+    {
+        $this->entityManager->persist($this->buildPlanActivatedNotification($agency, $planPrice));
+        $this->entityManager->flush();
+    }
+
+    private function buildPlanActivatedNotification(User $agency, SubscriptionPlanPrice $planPrice): AgencyNotification
+    {
+        return (new AgencyNotification())
+            ->setAgency($agency)
+            ->setNom(\sprintf(
+                'Votre abonnement %s a été activé.',
+                $planPrice->getPlan()->getName(),
+            ));
     }
 
     private function createSubscriptionCreditTransaction(
@@ -528,6 +549,8 @@ final class SubscriptionController extends AbstractController
                     paymentType: PaymentType::SUBSCRIPTION_UPGRADE,
                 );
 
+                $this->notifyPlanActivated($subscription->getAgency(), $planPrice);
+
                 return $this->json([
                     'success' => true,
                     'message' => 'Votre nouveau forfait est actif.',
@@ -547,6 +570,8 @@ final class SubscriptionController extends AbstractController
                 $stripeSubscription,
                 paymentType: PaymentType::SUBSCRIPTION_UPGRADE,
             );
+
+            $this->notifyPlanActivated($subscription->getAgency(), $planPrice);
 
             return $this->json([
                 'success' => true,
