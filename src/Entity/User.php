@@ -201,6 +201,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     )]
     private Collection $documentRequests;
 
+    /**
+     * @var Collection<int, AgencyNotification>
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'agency',
+        targetEntity: AgencyNotification::class,
+        cascade: ['persist'],
+        orphanRemoval: true
+    )]
+    private Collection $agencyNotifications;
+
     public function __construct()
     {
         $this->properties = new ArrayCollection();
@@ -210,6 +221,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $this->propertyViews = new ArrayCollection();
         $this->langueParlers = new ArrayCollection();
         $this->documentRequests = new ArrayCollection();
+        $this->agencyNotifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -935,6 +947,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
                 $documentRequest->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AgencyNotification>
+     */
+    public function getAgencyNotifications(): Collection
+    {
+        return $this->agencyNotifications;
+    }
+
+    public function addAgencyNotification(AgencyNotification $agencyNotification): static
+    {
+        if (!$this->agencyNotifications->contains($agencyNotification)) {
+            $this->agencyNotifications->add($agencyNotification);
+            $agencyNotification->setAgency($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAgencyNotification(AgencyNotification $agencyNotification): static
+    {
+        $this->agencyNotifications->removeElement($agencyNotification);
 
         return $this;
     }
