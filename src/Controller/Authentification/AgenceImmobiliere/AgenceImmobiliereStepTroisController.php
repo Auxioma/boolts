@@ -23,6 +23,7 @@ use App\Repository\UserRepository;
 use App\Security\AgenceImmobiliereAuthenticator;
 use App\Service\Authentification\AgencyRegistrationProgress;
 use App\Service\Billing\FreeAgencySubscriptionActivator;
+use App\Service\Registration\RegistrationLocaleResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -224,6 +225,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         EntityManagerInterface $em,
         Security $security,
         AgencyRegistrationProgress $agencyRegistrationProgress,
+        RegistrationLocaleResolver $registrationLocaleResolver,
     ): Response
     {
         $registrationUser = $this->getRegistrationUser(
@@ -266,6 +268,10 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
             $em->persist($notification);
 
             $em->flush();
+
+            // Dernière étape : on fige la langue parlée, la devise et le fuseau
+            // horaire à partir du navigateur / de Cloudflare / de l'IP.
+            $registrationLocaleResolver->apply($user);
 
             $security->login($user, AgenceImmobiliereAuthenticator::class, 'main');
 

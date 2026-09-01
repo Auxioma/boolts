@@ -10,6 +10,12 @@
 {% block title %}{{ 'visiteur.register.profile.meta.title'|trans }}{% endblock %}
 
 {% block body %}
+    <div
+        data-controller="registration-locale"
+        data-registration-locale-url-value="{{ path('app_registration_locale') }}"
+        data-registration-locale-token-value="{{ csrf_token('registration_locale') }}"
+    ></div>
+
     <main>
         <div class="container-fluid">
             <div class="row bg-white">

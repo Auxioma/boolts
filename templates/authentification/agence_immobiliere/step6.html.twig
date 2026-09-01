@@ -47,6 +47,12 @@
     {% endif %}
 {% endfor %}
 
+<div
+    data-controller="registration-locale"
+    data-registration-locale-url-value="{{ path('app_registration_locale') }}"
+    data-registration-locale-token-value="{{ csrf_token('registration_locale') }}"
+></div>
+
 <div class="bg-white d-flex flex-column" style="min-height: 100vh;">
     <div class="d-flex align-items-center justify-content-between flex-shrink-0 w-100" style="padding: 48px 132px;">
         <!-- Sidebar -->

@@ -14,6 +14,7 @@ namespace App\Controller\Authentification\Visiteurs;
 
 use App\Form\Authentification\CompleteProfileType;
 use App\Repository\UserRepository;
+use App\Service\Registration\RegistrationLocaleResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,7 +50,7 @@ final class VisiteurProfileCompleteController extends AbstractController
     /**
      * Handles the index controller action.
      */
-    public function index(Request $request, UserRepository $userRepository, EntityManagerInterface $em, Security $security, UserPasswordHasherInterface $userPasswordHasher): Response
+    public function index(Request $request, UserRepository $userRepository, EntityManagerInterface $em, Security $security, UserPasswordHasherInterface $userPasswordHasher, RegistrationLocaleResolver $registrationLocaleResolver): Response
     {
         $session = $request->getSession();
         $authUserId = $session->get('auth_user_id');
@@ -74,6 +75,10 @@ final class VisiteurProfileCompleteController extends AbstractController
 
             $user->setIsVerified(true);
             $em->flush();
+
+            // Dernière étape : langue parlée, devise et fuseau horaire déduits
+            // du navigateur / de Cloudflare / de l'IP.
+            $registrationLocaleResolver->apply($user);
 
             /** Send confirmation email */
             $email = (new TemplatedEmail())
