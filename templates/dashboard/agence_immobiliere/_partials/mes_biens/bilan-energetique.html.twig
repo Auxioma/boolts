@@ -33,7 +33,7 @@
                     <div class="position-relative">
                         {{ form_widget(form.dpe, {
                             attr: {
-                                class: 'form-control pe-120',
+                                class: 'form-control pe-120 js-dpe-input',
                                 placeholder: '0',
                                 'data-mes-biens-required-field': 'true',
                             },
@@ -48,9 +48,9 @@
                 </div>
 
                 <div class="mt-32">
-                    <div class="energy-scale">
+                    <div class="energy-scale js-dpe-scale">
                         {% for child in form.dpeLettre %}
-                            <div class="energy-item energy-{{ child.vars.value|lower }} {% if child.vars.checked %}active{% endif %}">
+                            <div class="energy-item energy-{{ child.vars.value|lower }} {% if child.vars.checked %}active{% endif %}" data-letter="{{ child.vars.value|lower }}">
                                 {{ form_widget(child, {
                                     attr: {
                                         class: 'd-none',
@@ -87,7 +87,7 @@
                     <div class="position-relative">
                         {{ form_widget(form.ges, {
                             attr: {
-                                class: 'form-control pe-120',
+                                class: 'form-control pe-120 js-ges-input',
                                 placeholder: '0',
                                 'data-mes-biens-required-field': 'true',
                             },
@@ -99,6 +99,35 @@
                     </div>
 
                     {{ form_errors(form.ges) }}
+                </div>
+
+                <div class="mt-32">
+                    <div class="energy-scale js-ges-scale">
+                        {% for child in form.gesLettre %}
+                            <div class="energy-item ges-{{ child.vars.value|lower }} {% if child.vars.checked %}active{% endif %}" data-letter="{{ child.vars.value|lower }}">
+                                {{ form_widget(child, {
+                                    attr: {
+                                        class: 'd-none',
+                                        'data-mes-biens-required-group': 'gesLettre',
+                                    },
+                                }) }}
+
+                                {{ child.vars.label }}
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-16">
+                        <small>
+                            Peu d’émissions
+                        </small>
+
+                        <small>
+                            Beaucoup d’émissions
+                        </small>
+                    </div>
+
+                    {{ form_errors(form.gesLettre) }}
                 </div>
 
                 <div class="mt-32 mb-24">
@@ -187,6 +216,7 @@
                 {% do form.dpeMax.setRendered %}
                 {% do form.dateIndexationEnergie.setRendered %}
                 {% do form.dpeLettre.setRendered %}
+                {% do form.gesLettre.setRendered %}
 
             </div>
         </div>
@@ -194,9 +224,51 @@
 </div>
 
 <script>
-    document.querySelectorAll('.energy-item').forEach(function (item) {
-        item.addEventListener('click', function () {
-            const scale = item.closest('.energy-scale');
+    (function () {
+        // Seuils officiels du DPE (arrêté du 31 mars 2021, méthode 3CL), source ademe.fr.
+        // Bornes supérieures incluses ; au-delà du dernier seuil : G.
+        const DPE_THRESHOLDS = [
+            { letter: 'a', max: 70 },
+            { letter: 'b', max: 110 },
+            { letter: 'c', max: 180 },
+            { letter: 'd', max: 250 },
+            { letter: 'e', max: 330 },
+            { letter: 'f', max: 420 },
+        ];
+
+        const GES_THRESHOLDS = [
+            { letter: 'a', max: 6 },
+            { letter: 'b', max: 11 },
+            { letter: 'c', max: 30 },
+            { letter: 'd', max: 50 },
+            { letter: 'e', max: 70 },
+            { letter: 'f', max: 100 },
+        ];
+
+        function letterFromValue(rawValue, thresholds) {
+            const value = parseFloat(String(rawValue).replace(',', '.'));
+
+            if (Number.isNaN(value)) {
+                return null;
+            }
+
+            const match = thresholds.find(function (threshold) {
+                return value <= threshold.max;
+            });
+
+            return match ? match.letter : 'g';
+        }
+
+        function selectLetter(scale, letter) {
+            if (!scale) {
+                return;
+            }
+
+            const item = scale.querySelector('[data-letter="' + letter + '"]');
+
+            if (!item) {
+                return;
+            }
 
             scale.querySelectorAll('.energy-item').forEach(function (el) {
                 el.classList.remove('active');
@@ -210,6 +282,34 @@
                 input.checked = true;
                 input.dispatchEvent(new Event('change', { bubbles: true }));
             }
+        }
+
+        function bindAutoLetter(inputSelector, scaleSelector, thresholds) {
+            const input = document.querySelector(inputSelector);
+            const scale = document.querySelector(scaleSelector);
+
+            if (!input || !scale) {
+                return;
+            }
+
+            input.addEventListener('input', function () {
+                const letter = letterFromValue(input.value, thresholds);
+
+                if (letter) {
+                    selectLetter(scale, letter);
+                }
+            });
+        }
+
+        // La saisie de la valeur propose automatiquement la lettre correspondante,
+        // mais l'agence immobilière reste libre de cliquer une autre lettre ensuite.
+        bindAutoLetter('.js-dpe-input', '.js-dpe-scale', DPE_THRESHOLDS);
+        bindAutoLetter('.js-ges-input', '.js-ges-scale', GES_THRESHOLDS);
+
+        document.querySelectorAll('.energy-item').forEach(function (item) {
+            item.addEventListener('click', function () {
+                selectLetter(item.closest('.energy-scale'), item.dataset.letter);
+            });
         });
-    });
+    })();
 </script>

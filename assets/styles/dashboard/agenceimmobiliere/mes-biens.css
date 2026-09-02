@@ -292,6 +292,44 @@
 .energy-item.active.energy-g {
     color: #FFFFFF;
 }
+
+.ges-a {
+    color: #91D9FA;
+}
+
+.ges-b {
+    color: #80BDDD;
+}
+
+.ges-c {
+    color: #6FA0C2;
+}
+
+.ges-d {
+    color: #587598;
+}
+
+.ges-e {
+    color: #47577C;
+}
+
+.ges-f {
+    color: #363A60;
+}
+
+.ges-g {
+    color: #1F1238;
+}
+
+.energy-item.active.ges-a,
+.energy-item.active.ges-b,
+.energy-item.active.ges-c,
+.energy-item.active.ges-d,
+.energy-item.active.ges-e,
+.energy-item.active.ges-f,
+.energy-item.active.ges-g {
+    color: #FFFFFF;
+}
 .kwhep-m-an {
     color: #858789;
     text-align: right;

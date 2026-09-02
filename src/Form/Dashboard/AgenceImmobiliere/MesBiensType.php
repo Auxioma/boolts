@@ -151,6 +151,20 @@ class MesBiensType extends AbstractType
                     'multiple' => false,
                     'required' => true,
                 ])
+                ->add('gesLettre', ChoiceType::class, [
+                    'choices' => [
+                        'A' => 'A',
+                        'B' => 'B',
+                        'C' => 'C',
+                        'D' => 'D',
+                        'E' => 'E',
+                        'F' => 'F',
+                        'G' => 'G',
+                    ],
+                    'expanded' => true,
+                    'multiple' => false,
+                    'required' => true,
+                ])
             ;
         }
 

@@ -94,6 +94,7 @@ class Property implements TranslatableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $ges = null;
 
+    #[Assert\NotBlank(groups: ['step_5'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $gesLettre = null;
 
