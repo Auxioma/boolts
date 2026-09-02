@@ -34,6 +34,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Intl\Countries;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -231,6 +232,190 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             'total' => $count,
             'totalResults' => $count,
         ]);
+    }
+
+    /**
+     * Auto-complétion du filtre « Localisation » (modale de filtres de la
+     * page « Mes biens ») : les suggestions proviennent uniquement des pays
+     * réellement saisis par l'agence sur ses propres annonces.
+     */
+    #[Route(
+        '/liste/filtres/pays',
+        name: 'mes_biens_filter_countries',
+        methods: ['GET']
+    )]
+    public function filterCountries(
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(
+                ['results' => []],
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
+        $query = mb_trim($request->query->getString('q'));
+
+        $results = [];
+
+        foreach (
+            $propertyRepository->findAgencyFilterCountries(
+                $user,
+                '' !== $query ? $query : null,
+                $request->getLocale()
+            ) as $name
+        ) {
+            $code = $this->resolveCountryCode($name) ?? mb_strtoupper($name);
+
+            $results[] = [
+                'label' => $name,
+                'name' => $name,
+                'country_name' => $name,
+                'code' => $code,
+                'country_code' => $code,
+                'display_name' => $name,
+            ];
+        }
+
+        return $this->json(['results' => $results]);
+    }
+
+    /**
+     * Auto-complétion des villes saisies par l'agence, restreinte au pays
+     * éventuellement sélectionné dans la modale de filtres.
+     */
+    #[Route(
+        '/liste/filtres/villes',
+        name: 'mes_biens_filter_cities',
+        methods: ['GET']
+    )]
+    public function filterCities(
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(
+                ['results' => []],
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
+        $query = mb_trim($request->query->getString('q'));
+        $countryName = mb_trim($request->query->getString('country_name'));
+
+        $results = [];
+
+        foreach (
+            $propertyRepository->findAgencyFilterCities(
+                $user,
+                '' !== $query ? $query : null,
+                '' !== $countryName ? $countryName : null,
+                $request->getLocale()
+            ) as $ville
+        ) {
+            $results[] = [
+                'city_name' => $ville,
+                'name' => $ville,
+                'label' => $ville,
+                'country_name' => $countryName,
+                'display_name' => '' !== $countryName
+                    ? $ville.' — '.$countryName
+                    : $ville,
+            ];
+        }
+
+        return $this->json(['results' => $results]);
+    }
+
+    /**
+     * Auto-complétion des quartiers saisis par l'agence, restreinte à la
+     * ville éventuellement sélectionnée dans la modale de filtres.
+     */
+    #[Route(
+        '/liste/filtres/quartiers',
+        name: 'mes_biens_filter_districts',
+        methods: ['GET']
+    )]
+    public function filterDistricts(
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(
+                ['results' => []],
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
+        $query = mb_trim($request->query->getString('q'));
+        $cityName = mb_trim($request->query->getString('city_name'));
+
+        $results = [];
+
+        foreach (
+            $propertyRepository->findAgencyFilterDistricts(
+                $user,
+                '' !== $query ? $query : null,
+                '' !== $cityName ? $cityName : null,
+                $request->getLocale()
+            ) as $quartier
+        ) {
+            $results[] = [
+                'name' => $quartier,
+                'district_name' => $quartier,
+                'city_name' => $cityName,
+                'display_name' => '' !== $cityName
+                    ? $quartier.' — '.$cityName
+                    : $quartier,
+            ];
+        }
+
+        return $this->json(['results' => $results]);
+    }
+
+    /**
+     * Résout le code ISO 3166-1 alpha-2 d'un pays à partir de son nom
+     * (français ou anglais). Retourne null si aucun code ne correspond.
+     */
+    private function resolveCountryCode(string $name): ?string
+    {
+        static $map = null;
+
+        if (null === $map) {
+            $map = [];
+
+            foreach (['fr', 'en'] as $locale) {
+                try {
+                    foreach (Countries::getNames($locale) as $code => $countryName) {
+                        $map[$this->normalizeCountryKey($countryName)] = $code;
+                    }
+                } catch (\Throwable) {
+                    continue;
+                }
+            }
+        }
+
+        return $map[$this->normalizeCountryKey($name)] ?? null;
+    }
+
+    private function normalizeCountryKey(string $value): string
+    {
+        $value = mb_strtolower(mb_trim($value));
+
+        if (class_exists(\Normalizer::class)) {
+            $value = \Normalizer::normalize($value, \Normalizer::FORM_D) ?: $value;
+        }
+
+        $value = preg_replace('/[\x{0300}-\x{036f}]/u', '', $value) ?? $value;
+
+        return preg_replace('/\s+/u', ' ', $value) ?? $value;
     }
 
     #[Route(

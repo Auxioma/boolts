@@ -20,12 +20,13 @@ security:
             lazy: true
             provider: app_user_provider
 
-            entry_point: App\Security\VisiteurAuthenticator
+            entry_point: App\Security\AppEntryPoint
 
             custom_authenticators:
                 - App\Security\GoogleAuthenticator
                 - App\Security\VisiteurAuthenticator
                 - App\Security\AgenceImmobiliereAuthenticator
+                - App\Security\AdminAuthenticator
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -60,6 +61,10 @@ security:
         - { path: ^/2fa, roles: IS_AUTHENTICATED_2FA_IN_PROGRESS }
         - { path: ^/connect/google, roles: PUBLIC_ACCESS, requires_channel: https }
         # - { path: '^/(fr/)?pro/(login|signup|signup/verify|reset-password(?:/.*)?)$', roles: PUBLIC_ACCESS, requires_channel: https }
+
+        # La page de connexion du back-office doit rester publique, sinon
+        # elle serait elle-même protégée par la règle ^/admin ci-dessous.
+        - { path: ^/admin/login$, roles: PUBLIC_ACCESS, requires_channel: https }
 
         - {
             path: ^/admin,

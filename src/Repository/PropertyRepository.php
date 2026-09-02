@@ -271,6 +271,19 @@ class PropertyRepository extends ServiceEntityRepository
         'favorisCount',
     ];
 
+    /**
+     * Statuts affichés dans la liste principale paginée / filtrable
+     * de la page « Mes biens » de l'agence (les brouillons ont leur
+     * propre section et sont donc exclus).
+     */
+    public const array MES_BIENS_LISTED_STATUTS = [
+        StatutAnnonceImmobiliere::PUBLIEE,
+        StatutAnnonceImmobiliere::DEPUBLIEE,
+        StatutAnnonceImmobiliere::PENDING,
+        StatutAnnonceImmobiliere::REFUSEE,
+        StatutAnnonceImmobiliere::SUSPENDUE,
+    ];
+
     public function findPropertysByUserWithFiltersQuery(
         User $user,
         ?string $search = null,
@@ -305,16 +318,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->andWhere('p.statut IN (:statuts)')
             ->setParameter(
                 'statuts',
-                [
-                    // Les brouillons sont affichés dans leur propre section
-                    // sur la page "Mes biens" et sont donc exclus de la
-                    // liste principale paginée / filtrable.
-                    StatutAnnonceImmobiliere::PUBLIEE,
-                    StatutAnnonceImmobiliere::DEPUBLIEE,
-                    StatutAnnonceImmobiliere::PENDING,
-                    StatutAnnonceImmobiliere::REFUSEE,
-                    StatutAnnonceImmobiliere::SUSPENDUE,
-                ]
+                self::MES_BIENS_LISTED_STATUTS
             );
 
         if (
@@ -445,42 +449,12 @@ class PropertyRepository extends ServiceEntityRepository
             $villes
         );
 
-        if ([] !== $quartiers) {
-            if (
-                $this
-                    ->getClassMetadata()
-                    ->hasField('quartier')
-            ) {
-                $this->addTextFilter(
-                    $qb,
-                    'p.quartier',
-                    'quartier',
-                    $quartiers
-                );
-            } elseif (
-                $this
-                    ->getClassMetadata()
-                    ->hasField('neighborhood')
-            ) {
-                $this->addTextFilter(
-                    $qb,
-                    'p.neighborhood',
-                    'quartier',
-                    $quartiers
-                );
-            } elseif (
-                $this
-                    ->getClassMetadata()
-                    ->hasField('district')
-            ) {
-                $this->addTextFilter(
-                    $qb,
-                    'p.district',
-                    'quartier',
-                    $quartiers
-                );
-            }
-        }
+        /*
+         * Le quartier n'est pas porté par Property mais par sa traduction
+         * (PropertyTranslation::$neighborhood / $district). On filtre donc
+         * sur l'alias "pt" déjà joint, en acceptant l'un ou l'autre champ.
+         */
+        $this->addTranslationDistrictFilter($qb, $quartiers);
 
         if (
             $this
@@ -1734,5 +1708,201 @@ class PropertyRepository extends ServiceEntityRepository
             ->orderBy('p.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Pays distincts réellement saisis par l'agence sur ses propres biens.
+     * Alimente l'auto-complétion du filtre « Localisation » de la page
+     * « Mes biens ».
+     *
+     * @return list<string>
+     */
+    public function findAgencyFilterCountries(
+        User $user,
+        ?string $query = null,
+        ?string $locale = null,
+    ): array {
+        $qb = $this->agencyLocationBaseQuery($user, $locale)
+            ->select('DISTINCT pt.pays AS value')
+            ->andWhere('pt.pays IS NOT NULL')
+            ->andWhere("TRIM(pt.pays) <> ''")
+            ->orderBy('pt.pays', 'ASC')
+            ->setMaxResults(20);
+
+        $this->applyLocationQueryLike($qb, 'pt.pays', $query);
+
+        return $this->extractLocationValues($qb);
+    }
+
+    /**
+     * Villes distinctes saisies par l'agence, éventuellement restreintes
+     * à un pays.
+     *
+     * @return list<string>
+     */
+    public function findAgencyFilterCities(
+        User $user,
+        ?string $query = null,
+        ?string $countryName = null,
+        ?string $locale = null,
+    ): array {
+        $qb = $this->agencyLocationBaseQuery($user, $locale)
+            ->select('DISTINCT pt.ville AS value')
+            ->andWhere('pt.ville IS NOT NULL')
+            ->andWhere("TRIM(pt.ville) <> ''")
+            ->orderBy('pt.ville', 'ASC')
+            ->setMaxResults(20);
+
+        if (null !== $countryName && '' !== mb_trim($countryName)) {
+            $qb
+                ->andWhere('LOWER(pt.pays) LIKE :countryName')
+                ->setParameter(
+                    'countryName',
+                    '%'.mb_strtolower(mb_trim($countryName)).'%'
+                );
+        }
+
+        $this->applyLocationQueryLike($qb, 'pt.ville', $query);
+
+        return $this->extractLocationValues($qb);
+    }
+
+    /**
+     * Quartiers distincts saisis par l'agence (champ neighborhood ou
+     * district de la traduction), éventuellement restreints à une ville.
+     *
+     * @return list<string>
+     */
+    public function findAgencyFilterDistricts(
+        User $user,
+        ?string $query = null,
+        ?string $cityName = null,
+        ?string $locale = null,
+    ): array {
+        $qb = $this->agencyLocationBaseQuery($user, $locale)
+            ->select('pt.neighborhood AS neighborhood', 'pt.district AS district')
+            ->setMaxResults(300);
+
+        if (null !== $cityName && '' !== mb_trim($cityName)) {
+            $qb
+                ->andWhere('LOWER(pt.ville) LIKE :cityName')
+                ->setParameter(
+                    'cityName',
+                    '%'.mb_strtolower(mb_trim($cityName)).'%'
+                );
+        }
+
+        $needle = (null !== $query && '' !== mb_trim($query))
+            ? mb_strtolower(mb_trim($query))
+            : null;
+
+        $values = [];
+
+        foreach ($qb->getQuery()->getScalarResult() as $row) {
+            foreach ([$row['neighborhood'] ?? null, $row['district'] ?? null] as $candidate) {
+                $candidate = mb_trim((string) ($candidate ?? ''));
+
+                if ('' === $candidate) {
+                    continue;
+                }
+
+                if (null !== $needle && !str_contains(mb_strtolower($candidate), $needle)) {
+                    continue;
+                }
+
+                $values[mb_strtolower($candidate)] = $candidate;
+            }
+        }
+
+        ksort($values);
+
+        return array_values(\array_slice($values, 0, 20));
+    }
+
+    private function agencyLocationBaseQuery(User $user, ?string $locale): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->innerJoin('p.translations', 'pt')
+            ->andWhere('p.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('p.statut IN (:statuts)')
+            ->setParameter('statuts', self::MES_BIENS_LISTED_STATUTS);
+
+        if (null !== $locale && '' !== mb_trim($locale)) {
+            $qb
+                ->andWhere('pt.locale = :locale')
+                ->setParameter('locale', $locale);
+        }
+
+        return $qb;
+    }
+
+    private function applyLocationQueryLike(QueryBuilder $qb, string $field, ?string $query): void
+    {
+        if (null === $query || '' === mb_trim($query)) {
+            return;
+        }
+
+        $qb
+            ->andWhere(\sprintf('LOWER(%s) LIKE :locationQuery', $field))
+            ->setParameter(
+                'locationQuery',
+                '%'.mb_strtolower(mb_trim($query)).'%'
+            );
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function extractLocationValues(QueryBuilder $qb): array
+    {
+        $values = [];
+
+        foreach ($qb->getQuery()->getScalarResult() as $row) {
+            $value = mb_trim((string) ($row['value'] ?? ''));
+
+            if ('' !== $value) {
+                $values[mb_strtolower($value)] = $value;
+            }
+        }
+
+        return array_values($values);
+    }
+
+    /**
+     * Filtre "quartier" pour la liste « Mes biens » : le champ est porté
+     * par la traduction (pt.neighborhood / pt.district), pas par Property.
+     *
+     * @param list<string> $values
+     */
+    private function addTranslationDistrictFilter(QueryBuilder $qb, array $values): void
+    {
+        if ([] === $values) {
+            return;
+        }
+
+        $orX = $qb->expr()->orX();
+
+        foreach ($values as $index => $value) {
+            $value = mb_trim((string) $value);
+
+            if ('' === $value) {
+                continue;
+            }
+
+            $parameterName = 'quartier_'.$index;
+
+            $orX->add(\sprintf('LOWER(pt.neighborhood) LIKE :%s', $parameterName));
+            $orX->add(\sprintf('LOWER(pt.district) LIKE :%s', $parameterName));
+
+            $qb->setParameter(
+                $parameterName,
+                '%'.mb_strtolower($value).'%'
+            );
+        }
+
+        if ($orX->count() > 0) {
+            $qb->andWhere($orX);
+        }
     }
 }

@@ -746,7 +746,10 @@
 {% include 'composant/_search/_search.html.twig' with {
     formModal: filterForm,
     totalResults: properties.getTotalItemCount,
-    filterCountUrl: path('agence_immobiliere_mes_biens_filters_count')
+    filterCountUrl: path('agence_immobiliere_mes_biens_filters_count'),
+    locationCountryUrl: path('agence_immobiliere_mes_biens_filter_countries'),
+    locationCityUrl: path('agence_immobiliere_mes_biens_filter_cities'),
+    locationDistrictUrl: path('agence_immobiliere_mes_biens_filter_districts')
 } %}
 
 {% endblock %}

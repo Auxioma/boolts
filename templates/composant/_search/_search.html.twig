@@ -2,6 +2,16 @@
 {% set filterCountUrl = filterCountUrl|default(path('app_public_search_count')) %}
 
 {#
+    URLs d'auto-complétion de la localisation (pays / ville / quartier).
+    Par défaut : recherche mondiale (GeoNames) pour la recherche publique.
+    La page « Mes biens » de l'agence surcharge ces URLs pour ne proposer
+    que les localisations réellement saisies par l'agence.
+#}
+{% set locationCountryUrl = locationCountryUrl|default(path('app_geo_country_autocomplete')) %}
+{% set locationCityUrl = locationCityUrl|default(path('app_geo_city_autocomplete')) %}
+{% set locationDistrictUrl = locationDistrictUrl|default(path('app_geo_district_autocomplete')) %}
+
+{#
     Modal Bootstrap des filtres.
     Ce formulaire utilise formModal en méthode GET pour envoyer les filtres dans l'URL.
 #}
@@ -281,9 +291,9 @@
                     class="accordion-item boolts-filter-item"
                     data-controller="boolts-location"
                     data-action="boolts-location:reset@window->boolts-location#reset"
-                    data-boolts-location-country-url-value="{{ path('app_geo_country_autocomplete') }}"
-                    data-boolts-location-city-url-value="{{ path('app_geo_city_autocomplete') }}"
-                    data-boolts-location-district-url-value="{{ path('app_geo_district_autocomplete') }}"
+                    data-boolts-location-country-url-value="{{ locationCountryUrl }}"
+                    data-boolts-location-city-url-value="{{ locationCityUrl }}"
+                    data-boolts-location-district-url-value="{{ locationDistrictUrl }}"
                 >
                     <h3 class="accordion-header" id="headingLocation">
                         <button
