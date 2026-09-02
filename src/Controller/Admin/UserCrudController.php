@@ -551,7 +551,7 @@ class UserCrudController extends AbstractCrudController
             true,
             'Le document a été validé.',
             Response::HTTP_OK,
-            ['status' => 'approved', 'statusLabel' => 'Document validé'],
+            ['card' => $this->renderDocumentCard($documentRequest, $user)],
         );
     }
 
@@ -619,12 +619,20 @@ class UserCrudController extends AbstractCrudController
             true,
             'Le document a été refusé.',
             Response::HTTP_OK,
-            [
-                'status' => 'rejected',
-                'statusLabel' => 'Refusé',
-                'rejectionReason' => $reason,
-            ],
+            ['card' => $this->renderDocumentCard($documentRequest, $user)],
         );
+    }
+
+    /**
+     * Rendu HTML d'une carte document, identique au rendu du formulaire EasyAdmin,
+     * afin que le JavaScript puisse remplacer la carte sans recharger la page.
+     */
+    private function renderDocumentCard(UserDocumentRequest $documentRequest, User $user): string
+    {
+        return $this->renderView('admin/form/_user_document_card.html.twig', [
+            'documentRequest' => $documentRequest,
+            'userId' => $user->getId(),
+        ]);
     }
 
     private function documentRequestForUser(

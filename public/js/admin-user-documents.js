@@ -53,37 +53,18 @@ document.addEventListener('click', async (event) => {
             throw new Error(result.message ?? 'La mise à jour du document a échoué.');
         }
 
-        updateCard(card, result);
+        // Le serveur renvoie la carte re-rendue : on la remplace telle quelle,
+        // l'affichage reflète donc l'état réel sans recharger la page.
+        if (typeof result.card === 'string' && result.card.trim() !== '') {
+            card.outerHTML = result.card;
+        } else {
+            window.location.reload();
+        }
     } catch (error) {
         showError(card, error.message ?? 'La mise à jour du document a échoué.');
         setBusy(card, false);
     }
 });
-
-function updateCard(card, result) {
-    const badge = card.querySelector('[data-document-status]');
-    badge.textContent = result.statusLabel;
-    badge.classList.remove('text-bg-secondary', 'text-bg-success', 'text-bg-danger');
-    badge.classList.add(result.status === 'approved' ? 'text-bg-success' : 'text-bg-danger');
-
-    const submissionStatus = card.querySelector('[data-submission-status]');
-
-    if (submissionStatus) {
-        submissionStatus.textContent = result.statusLabel;
-        submissionStatus.classList.toggle('text-success', result.status === 'approved');
-        submissionStatus.classList.toggle('fw-bold', result.status === 'approved');
-    }
-
-    card.querySelector('[data-document-actions]')?.remove();
-
-    if (result.rejectionReason) {
-        const reason = document.createElement('p');
-        reason.className = 'text-danger mb-0 mt-3';
-        reason.innerHTML = '<strong>Motif du refus :</strong> ';
-        reason.append(document.createTextNode(result.rejectionReason));
-        card.querySelector('[data-document-error]').before(reason);
-    }
-}
 
 function setBusy(card, busy) {
     card.querySelectorAll('[data-document-actions] button').forEach((button) => {
