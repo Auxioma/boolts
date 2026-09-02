@@ -32,7 +32,7 @@ use App\Entity\Booster\BoosterTransaction;
 use App\Entity\User;
 use App\Exception\PlanChangeException;
 use App\Repository\Billing\AgencySubscriptionRepository;
-use App\Service\Billing\SubscriptionInvoiceIssuer;
+use App\Service\Billing\InvoiceIssuer;
 use App\Service\Stripe\StripeSubscriptionService;
 use App\Service\Subscription\SubscriptionPlanChangeService;
 use App\Service\Subscription\SubscriptionSynchronizationService;
@@ -66,7 +66,7 @@ final class SubscriptionController extends AbstractController
         private readonly StripeSubscriptionService $stripeSubscriptionService,
         private readonly SubscriptionSynchronizationService $subscriptionSynchronizationService,
         private readonly SubscriptionPlanChangeService $planChangeService,
-        private readonly SubscriptionInvoiceIssuer $invoiceIssuer,
+        private readonly InvoiceIssuer $invoiceIssuer,
         private readonly LoggerInterface $logger,
     ) {
     }

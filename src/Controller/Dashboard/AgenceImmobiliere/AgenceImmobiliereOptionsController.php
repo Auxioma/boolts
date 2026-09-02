@@ -32,6 +32,7 @@ use App\Repository\Billing\PaymentRepository;
 use App\Repository\Billing\SubscriptionPlanPriceRepository;
 use App\Repository\Booster\BoosterPackPriceRepository;
 use App\Security\Voter\AgencyDocumentVoter;
+use App\Service\Billing\InvoiceIssuer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
@@ -269,6 +270,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         EntityManagerInterface $entityManager,
         StripeClient $stripe,
         LoggerInterface $logger,
+        InvoiceIssuer $invoiceIssuer,
     ): JsonResponse {
         if (!$this->isCsrfTokenValid('agency_boost_purchase', (string) $request->headers->get('X-CSRF-TOKEN'))) {
             return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], 403);
@@ -338,6 +340,8 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 return $this->json(['success' => false, 'message' => 'Le paiement Stripe n’a pas été confirmé.'], 402);
             }
 
+            $now = new \DateTimeImmutable();
+
             $payment = (new Payment())
                 ->setReference('BOOST-'.mb_strtoupper(bin2hex(random_bytes(8))))
                 ->setAgency($agency)
@@ -357,7 +361,9 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                     'last4' => $paymentMethod->getLast4(),
                 ])
                 ->setMetadata(['booster_pack_price_id' => $boostPrice->getId()])
-                ->setPaidAt(new \DateTimeImmutable());
+                ->setPaidAt($now);
+
+            $invoiceIssuer->issueForBoosterPack($agency, $payment, $boostPrice, $now);
 
             $boostTransaction = (new BoosterTransaction())
                 ->setAgency($agency)

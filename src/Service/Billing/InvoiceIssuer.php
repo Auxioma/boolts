@@ -23,19 +23,22 @@ use App\Entity\Billing\Invoice;
 use App\Entity\Billing\InvoiceLine;
 use App\Entity\Billing\Payment;
 use App\Entity\Billing\SubscriptionPlanPrice;
+use App\Entity\Booster\BoosterPackPrice;
+use App\Entity\Devise;
+use App\Entity\User;
 use App\Repository\Billing\InvoiceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
- * Émet la facture Boolts liée à la souscription initiale d’un forfait.
+ * Émet les factures Boolts (abonnement initial, pack boost) au fil des achats.
  *
- * La facture est créée immédiatement (dans le flux d’achat), avec un numéro
- * « I-100001 » attribué par {@see InvoiceNumberGenerator}. Si la facture Stripe
- * correspondante a déjà été enregistrée en base (course avec le webhook
- * `invoice.paid`), aucune nouvelle facture n’est créée.
+ * Le numéro « I-100001 » est attribué par {@see InvoiceNumberGenerator}. La
+ * facture et sa ligne sont persistées mais pas flushées : c’est l’appelant qui
+ * décide du moment du flush (généralement dans la même transaction que le
+ * paiement).
  */
-final readonly class SubscriptionInvoiceIssuer
+final readonly class InvoiceIssuer
 {
     /**
      * @param array<string, string> $sellerIdentity
@@ -64,25 +67,92 @@ final readonly class SubscriptionInvoiceIssuer
         }
 
         $agency = $subscription->getAgency();
+        $amountMinor = $planPrice->getAmountMinor();
+        $isAnnual = 'annual' === $planPrice->getBillingPeriod()->value;
+
+        $invoice = $this->newInvoice($agency, $payment, InvoiceType::SUBSCRIPTION, $planPrice->getCurrency(), $amountMinor, $issuedAt)
+            ->setSubscription($subscription)
+            ->setSubscriptionPeriod($period)
+            ->setProviderInvoiceId($providerInvoiceId);
+
+        $line = $this->newLine(
+            $invoice,
+            'subscription',
+            \sprintf(
+                'Abonnement %s — %s',
+                $planPrice->getPlan()->getName(),
+                $isAnnual ? 'annuel' : 'mensuel',
+            ),
+            $amountMinor,
+        )
+            ->setPeriodStart($period->getPeriodStart())
+            ->setPeriodEnd($period->getPeriodEnd());
+
+        $this->entityManager->persist($invoice);
+        $this->entityManager->persist($line);
+
+        return $invoice;
+    }
+
+    public function issueForBoosterPack(
+        User $agency,
+        Payment $payment,
+        BoosterPackPrice $boostPrice,
+        \DateTimeImmutable $issuedAt,
+    ): Invoice {
+        $amountMinor = $boostPrice->getAmountMinor();
+        $pack = $boostPrice->getBoosterPack();
+        $quantity = $pack->getBoostQuantity();
+
+        $invoice = $this->newInvoice(
+            $agency,
+            $payment,
+            InvoiceType::BOOSTER_PACK,
+            $boostPrice->getCurrency(),
+            $amountMinor,
+            $issuedAt,
+        );
+
+        $line = $this->newLine(
+            $invoice,
+            'booster_pack',
+            \sprintf(
+                'Pack boost %s (%d boost%s)',
+                $pack->getName(),
+                $quantity,
+                $quantity > 1 ? 's' : '',
+            ),
+            $amountMinor,
+        );
+
+        $this->entityManager->persist($invoice);
+        $this->entityManager->persist($line);
+
+        return $invoice;
+    }
+
+    private function newInvoice(
+        User $agency,
+        Payment $payment,
+        InvoiceType $type,
+        Devise $currency,
+        int $amountMinor,
+        \DateTimeImmutable $issuedAt,
+    ): Invoice {
         $billingProfile = $agency->getBillingProfile();
 
         if (!$billingProfile instanceof AgencyBillingProfile) {
             throw new \LogicException('Profil de facturation manquant pour émettre la facture.');
         }
 
-        $amountMinor = $planPrice->getAmountMinor();
-        $isAnnual = 'annual' === $planPrice->getBillingPeriod()->value;
-
-        $invoice = (new Invoice())
+        return (new Invoice())
             ->setNumber($this->numberGenerator->next())
             ->setAgency($agency)
             ->setBillingProfile($billingProfile)
-            ->setSubscription($subscription)
-            ->setSubscriptionPeriod($period)
             ->setPayment($payment)
             ->setStatus(InvoiceStatus::PAID)
-            ->setType(InvoiceType::SUBSCRIPTION)
-            ->setCurrency($planPrice->getCurrency())
+            ->setType($type)
+            ->setCurrency($currency)
             ->setSubtotalMinor($amountMinor)
             ->setDiscountTotalMinor(0)
             ->setTaxableTotalMinor($amountMinor)
@@ -92,20 +162,18 @@ final readonly class SubscriptionInvoiceIssuer
             ->setAmountDueMinor(0)
             ->setAmountRefundedMinor(0)
             ->setSellerSnapshot($this->sellerSnapshot())
-            ->setCustomerSnapshot($this->customerSnapshot($subscription))
+            ->setCustomerSnapshot($this->customerSnapshot($agency))
             ->setTaxSnapshot([])
-            ->setProviderInvoiceId($providerInvoiceId)
             ->setIssuedAt($issuedAt)
             ->setPaidAt($issuedAt);
+    }
 
-        $line = (new InvoiceLine())
+    private function newLine(Invoice $invoice, string $type, string $description, int $amountMinor): InvoiceLine
+    {
+        return (new InvoiceLine())
             ->setInvoice($invoice)
-            ->setType('subscription')
-            ->setDescription(\sprintf(
-                'Abonnement %s — %s',
-                $planPrice->getPlan()->getName(),
-                $isAnnual ? 'annuel' : 'mensuel',
-            ))
+            ->setType($type)
+            ->setDescription($description)
             ->setQuantity('1.000')
             ->setUnitAmountMinor($amountMinor)
             ->setSubtotalMinor($amountMinor)
@@ -113,14 +181,7 @@ final readonly class SubscriptionInvoiceIssuer
             ->setTaxableAmountMinor($amountMinor)
             ->setTaxAmountMinor(0)
             ->setTotalMinor($amountMinor)
-            ->setPeriodStart($period->getPeriodStart())
-            ->setPeriodEnd($period->getPeriodEnd())
             ->setPosition(0);
-
-        $this->entityManager->persist($invoice);
-        $this->entityManager->persist($line);
-
-        return $invoice;
     }
 
     /**
@@ -137,9 +198,8 @@ final readonly class SubscriptionInvoiceIssuer
     /**
      * @return array<string, int|string|null>
      */
-    private function customerSnapshot(AgencySubscription $subscription): array
+    private function customerSnapshot(User $agency): array
     {
-        $agency = $subscription->getAgency();
         $billingProfile = $agency->getBillingProfile();
 
         return array_filter([
