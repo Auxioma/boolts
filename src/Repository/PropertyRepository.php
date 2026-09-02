@@ -694,6 +694,17 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
+     * Biens « À la Une » de la page d'accueil : annonces publiées dont le
+     * boost est validé (statut ACTIF, non annulé) et dont on est aujourd'hui
+     * dans la fenêtre [startsAt ; endsAt].
+     *
+     * Localisation à repli progressif — la langue (locale) est toujours
+     * conservée :
+     *   1. ville + pays exacts (comme les autres sections d'accueil) ;
+     *   2. sinon, pays seul ;
+     *   3. sinon, sans filtre géographique (un boost est une promotion
+     *      payée : on préfère l'afficher partout plutôt que masquer le bloc).
+     *
      * @return list<Property>
      */
     public function findActiveBoostedForHome(
@@ -702,6 +713,53 @@ class PropertyRepository extends ServiceEntityRepository
         string $locale,
         int|string $transactionTypeId,
         int $limit = 10,
+    ): array {
+        $hasCountry = null !== $country && '' !== mb_trim($country);
+        $hasCity = null !== $city && '' !== mb_trim($city);
+
+        // 1. Ville + pays exacts.
+        $results = $this->queryActiveBoostedForHome(
+            $country,
+            $city,
+            $locale,
+            $transactionTypeId,
+            $limit
+        );
+
+        // 2. Repli : pays seul (uniquement si une ville avait été demandée).
+        if ([] === $results && $hasCity && $hasCountry) {
+            $results = $this->queryActiveBoostedForHome(
+                $country,
+                null,
+                $locale,
+                $transactionTypeId,
+                $limit
+            );
+        }
+
+        // 3. Repli : sans filtre géographique (langue conservée).
+        if ([] === $results && ($hasCountry || $hasCity)) {
+            $results = $this->queryActiveBoostedForHome(
+                null,
+                null,
+                $locale,
+                $transactionTypeId,
+                $limit
+            );
+        }
+
+        return $results;
+    }
+
+    /**
+     * @return list<Property>
+     */
+    private function queryActiveBoostedForHome(
+        ?string $country,
+        ?string $city,
+        string $locale,
+        int|string $transactionTypeId,
+        int $limit,
     ): array {
         $now = new \DateTimeImmutable();
 
