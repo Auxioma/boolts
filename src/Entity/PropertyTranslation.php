@@ -29,39 +29,39 @@ class PropertyTranslation implements TranslationInterface
     private ?int $id = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $adresse = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $ville = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $pays = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $fullAddress = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $region = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $district = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $locality = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $neighborhood = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $poi = null;
 
     #[Assert\NotBlank(groups: ['step_7'])]

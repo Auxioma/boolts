@@ -59,7 +59,7 @@ class Property implements TranslatableInterface
     private ?string $longitude = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $mapboxId = null;
 
     #[Assert\NotBlank(groups: ['step_3'])]
