@@ -55,13 +55,6 @@
                                                 </label>
                                                 {{ form_widget(form.plainPassword.second) }}
 
-                                                <div class="form-check-therms mb-32">
-                                                    <label class="form-check-label">
-                                                        {{ form_widget(form.agreeTerms) }}
-                                                        {{ 'visiteur.register.profile.terms.label'|trans }}
-                                                    </label>
-                                                </div>
-
                                                 {% for label, messages in app.flashes %}
                                                     {% if label in ['danger', 'error', 'warning'] %}
                                                         {% for message in messages %}

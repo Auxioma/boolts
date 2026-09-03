@@ -210,6 +210,14 @@ class MesBiensType extends AbstractType
         }
 
         $builder
+            ->add('saveAndExit', SubmitType::class, [
+                'label' => 'Enregistrer et quitter',
+                'validation_groups' => false,
+                'attr' => [
+                    'class' => 'btn-retour py-10 px-16',
+                    'formnovalidate' => 'formnovalidate',
+                ],
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Suivant',
                 'attr' => [

@@ -1,0 +1,50 @@
+{#
+ Template: templates/email/property/submission_pending.html.twig
+ Role: Renders the agency email sent after a property is submitted for validation.
+ Context: Provided by App\Service\Property\AgencyPropertySubmissionMailer.
+ Maintenance: Preserve context keys used by the mailer.
+#}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre annonce a été envoyée pour validation</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
+    <h1>Votre annonce a bien été envoyée</h1>
+
+    <p>Bonjour {{ agencyName|default('') }},</p>
+
+    <p>
+        Votre annonce « {{ propertyTitle }} » a été créée et elle est actuellement en cours d’analyse par Boolts.
+    </p>
+
+    <table role="presentation" cellpadding="6" cellspacing="0" border="0">
+        <tr>
+            <td><strong>Statut</strong></td>
+            <td>{{ property.statut.label }}</td>
+        </tr>
+        <tr>
+            <td><strong>Type de transaction</strong></td>
+            <td>{{ property.typeTransaction.name|default('Non renseigné') }}</td>
+        </tr>
+        <tr>
+            <td><strong>Type de bien</strong></td>
+            <td>{{ property.typeBien.name|default('Non renseigné') }}</td>
+        </tr>
+        <tr>
+            <td><strong>Ville</strong></td>
+            <td>{{ property.ville|default('Non renseignée') }}</td>
+        </tr>
+    </table>
+
+    <p>
+        Vous pouvez suivre son statut depuis votre espace Mes biens :
+        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+    </p>
+
+    <p>À bientôt,<br>L’équipe Boolts</p>
+</body>
+</html>

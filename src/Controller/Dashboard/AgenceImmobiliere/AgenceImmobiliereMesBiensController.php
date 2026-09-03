@@ -27,10 +27,12 @@ use App\Service\Booster\BoostException;
 use App\Service\Booster\PropertyBoostService;
 use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
+use App\Service\Property\AgencyPropertySubmissionMailer;
 use App\Service\Property\PropertyNotificationLabeler;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -916,6 +918,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         EntityManagerInterface $entityManager,
         NumericSlugGenerator $numericSlugGenerator,
         MapboxAddressTranslator $mapboxAddressTranslator,
+        AgencyPropertySubmissionMailer $agencyPropertySubmissionMailer,
         PropertyNotificationLabeler $propertyNotificationLabeler,
     ): Response {
         $session = $request->getSession();
@@ -1136,6 +1139,30 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             );
 
         if ($form->isSubmitted() && !$showLimitAnnonceModal) {
+            if (
+                $form->has('saveAndExit')
+                && $form->get('saveAndExit')->isClicked()
+            ) {
+                $this->saveMesBiensDraftStep(
+                    step: $step,
+                    mesBiens: $mesBiens,
+                    user: $user,
+                    form: $form,
+                    session: $session,
+                    entityManager: $entityManager,
+                    numericSlugGenerator: $numericSlugGenerator,
+                    mapboxAddressTranslator: $mapboxAddressTranslator,
+                );
+
+                $this->clearMesBiensSession(
+                    $session
+                );
+
+                return $this->redirectToRoute(
+                    'agence_immobiliere_mes_biens_list'
+                );
+            }
+
             /*
              * ==============================================================
              * STEP 1 : TYPE DE BIEN
@@ -1368,79 +1395,10 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              * ==============================================================
              */
             if (3 === $step) {
-                $mapboxId = $mesBiens
-                    ->getMapboxId();
-
-                $sessionToken = $mesBiens
-                    ->getSessionIdMapbox();
-
-                $isFixtureMapboxId = null !== $mapboxId
-                    && str_starts_with(
-                        $mapboxId,
-                        'fixture-'
-                    );
-
-                if (
-                    $mapboxId
-                    && !$isFixtureMapboxId
-                ) {
-                    foreach (
-                        ['fr', 'en'] as $locale
-                    ) {
-                        $address = $mapboxAddressTranslator
-                            ->translateByMapboxId(
-                                mapboxId: $mapboxId,
-                                sessionToken: $sessionToken,
-                                locale: $locale
-                            );
-
-                        if (null === $address) {
-                            continue;
-                        }
-
-                        $translation = $mesBiens->translate(
-                            $locale
-                        );
-
-                        $translation->setAdresse(
-                            $address['adresse']
-                        );
-
-                        $translation->setVille(
-                            $address['ville']
-                        );
-
-                        $translation->setPays(
-                            $address['pays']
-                        );
-
-                        $translation->setFullAddress(
-                            $address['fullAddress']
-                        );
-
-                        $translation->setRegion(
-                            $address['region']
-                        );
-
-                        $translation->setDistrict(
-                            $address['district']
-                        );
-
-                        $translation->setLocality(
-                            $address['locality']
-                        );
-
-                        $translation->setNeighborhood(
-                            $address['neighborhood']
-                        );
-
-                        $translation->setPoi(
-                            $address['poi']
-                        );
-                    }
-
-                    $mesBiens->mergeNewTranslations();
-                }
+                $this->syncAddressTranslationsFromMapbox(
+                    $mesBiens,
+                    $mapboxAddressTranslator
+                );
 
                 $entityManager->flush();
 
@@ -1546,20 +1504,9 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              * ==============================================================
              */
             if (6 === $step) {
-                foreach (
-                    $mesBiens->getPropertyImages() as $index => $propertyImage
-                ) {
-                    $propertyImage->setProperty(
-                        $mesBiens
-                    );
-
-                    $propertyImage->setPosition(
-                        $index + 1
-                    );
-                }
-
-                $entityManager->persist(
-                    $mesBiens
+                $this->syncPropertyImages(
+                    $mesBiens,
+                    $entityManager
                 );
 
                 $entityManager->flush();
@@ -1590,42 +1537,10 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              * ==============================================================
              */
             if (7 === $step) {
-                /*
-                 * Traduction du titre et de la description.
-                 */
-                $mesBiens
-                    ->translate('fr')
-                    ->setTitreDuLogement(
-                        $form
-                            ->get('titreDuLogement')
-                            ->getData()
-                    );
-
-                $mesBiens
-                    ->translate('fr')
-                    ->setDescriptionLogement(
-                        $form
-                            ->get('descriptionLogement')
-                            ->getData()
-                    );
-
-                $mesBiens
-                    ->translate('en')
-                    ->setTitreDuLogement(
-                        $form
-                            ->get('titreDuLogement')
-                            ->getData()
-                    );
-
-                $mesBiens
-                    ->translate('en')
-                    ->setDescriptionLogement(
-                        $form
-                            ->get('descriptionLogement')
-                            ->getData()
-                    );
-
-                $mesBiens->mergeNewTranslations();
+                $this->syncDescriptionTranslationsFromForm(
+                    $mesBiens,
+                    $form
+                );
 
                 $entityManager->flush();
 
@@ -1678,6 +1593,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
              * ==============================================================
              */
             if (8 === $step) {
+                $shouldSendAgencySubmissionEmail = false;
+
                 /*
                  * Dernière étape : l'annonce quitte l'état brouillon (ou
                  * refusé, après correction) et repasse en attente de
@@ -1696,6 +1613,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                         StatutAnnonceImmobiliere::PENDING
                     );
 
+                    $shouldSendAgencySubmissionEmail = true;
+
                     /*
                      * Notification agence : l'annonce vient d'être soumise
                      * et attend la validation d'un administrateur.
@@ -1710,6 +1629,13 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 }
 
                 $entityManager->flush();
+
+                if ($shouldSendAgencySubmissionEmail) {
+                    $agencyPropertySubmissionMailer->sendSubmissionPendingNotification(
+                        $user,
+                        $mesBiens
+                    );
+                }
 
                 /*
                  * On récupère l'ID AVANT de nettoyer la session.
@@ -1824,6 +1750,210 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     ),
             ]
         );
+    }
+
+    private function saveMesBiensDraftStep(
+        int $step,
+        Property $mesBiens,
+        User $user,
+        FormInterface $form,
+        SessionInterface $session,
+        EntityManagerInterface $entityManager,
+        NumericSlugGenerator $numericSlugGenerator,
+        MapboxAddressTranslator $mapboxAddressTranslator,
+    ): void {
+        if (null === $mesBiens->getId()) {
+            if (null === $mesBiens->getTypeBien()) {
+                return;
+            }
+
+            $mesBiens->setSlug(
+                $numericSlugGenerator->generate(
+                    16
+                )
+            );
+
+            $mesBiens->setUser(
+                $user
+            );
+
+            $entityManager->persist(
+                $mesBiens
+            );
+        } elseif (
+            null === $mesBiens->getUser()
+            || $mesBiens->getUser()?->getId() !== $user->getId()
+        ) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier cette annonce.');
+        }
+
+        if (3 === $step) {
+            $this->syncAddressTranslationsFromMapbox(
+                $mesBiens,
+                $mapboxAddressTranslator
+            );
+        }
+
+        if (6 === $step) {
+            $this->syncPropertyImages(
+                $mesBiens,
+                $entityManager
+            );
+        }
+
+        if (7 === $step) {
+            $this->syncDescriptionTranslationsFromForm(
+                $mesBiens,
+                $form
+            );
+        }
+
+        $entityManager->flush();
+
+        if (null !== $mesBiens->getId()) {
+            $session->set(
+                'mes_biens_property_id',
+                $mesBiens->getId()
+            );
+        }
+
+        $this->syncTransactionSession(
+            $mesBiens,
+            $session
+        );
+    }
+
+    private function syncAddressTranslationsFromMapbox(
+        Property $mesBiens,
+        MapboxAddressTranslator $mapboxAddressTranslator,
+    ): void {
+        $mapboxId = $mesBiens
+            ->getMapboxId();
+
+        $sessionToken = $mesBiens
+            ->getSessionIdMapbox();
+
+        $isFixtureMapboxId = null !== $mapboxId
+            && str_starts_with(
+                $mapboxId,
+                'fixture-'
+            );
+
+        if (
+            !$mapboxId
+            || $isFixtureMapboxId
+        ) {
+            return;
+        }
+
+        foreach (
+            ['fr', 'en'] as $locale
+        ) {
+            $address = $mapboxAddressTranslator
+                ->translateByMapboxId(
+                    mapboxId: $mapboxId,
+                    sessionToken: $sessionToken,
+                    locale: $locale
+                );
+
+            if (null === $address) {
+                continue;
+            }
+
+            $translation = $mesBiens->translate(
+                $locale
+            );
+
+            $translation->setAdresse(
+                $address['adresse']
+            );
+
+            $translation->setVille(
+                $address['ville']
+            );
+
+            $translation->setPays(
+                $address['pays']
+            );
+
+            $translation->setFullAddress(
+                $address['fullAddress']
+            );
+
+            $translation->setRegion(
+                $address['region']
+            );
+
+            $translation->setDistrict(
+                $address['district']
+            );
+
+            $translation->setLocality(
+                $address['locality']
+            );
+
+            $translation->setNeighborhood(
+                $address['neighborhood']
+            );
+
+            $translation->setPoi(
+                $address['poi']
+            );
+        }
+
+        $mesBiens->mergeNewTranslations();
+    }
+
+    private function syncPropertyImages(
+        Property $mesBiens,
+        EntityManagerInterface $entityManager,
+    ): void {
+        foreach (
+            $mesBiens->getPropertyImages() as $index => $propertyImage
+        ) {
+            $propertyImage->setProperty(
+                $mesBiens
+            );
+
+            $propertyImage->setPosition(
+                $index + 1
+            );
+        }
+
+        $entityManager->persist(
+            $mesBiens
+        );
+    }
+
+    private function syncDescriptionTranslationsFromForm(
+        Property $mesBiens,
+        FormInterface $form,
+    ): void {
+        $title = $form
+            ->get('titreDuLogement')
+            ->getData();
+
+        $description = $form
+            ->get('descriptionLogement')
+            ->getData();
+
+        foreach (
+            ['fr', 'en'] as $locale
+        ) {
+            $translation = $mesBiens->translate(
+                $locale
+            );
+
+            $translation->setTitreDuLogement(
+                $title
+            );
+
+            $translation->setDescriptionLogement(
+                $description
+            );
+        }
+
+        $mesBiens->mergeNewTranslations();
     }
 
     /**

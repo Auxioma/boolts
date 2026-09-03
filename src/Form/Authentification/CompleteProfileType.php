@@ -80,6 +80,9 @@ class CompleteProfileType extends AbstractType
         'attr' => [
             'class' => 'form-control password-input',
             'placeholder' => 'Veuillez entrer votre mot de passe',
+            'minlength' => 12,
+            'data-password-strength-target' => 'input',
+            'data-action' => 'input->password-strength#check',
         ],
 
         'constraints' => [
@@ -87,7 +90,7 @@ class CompleteProfileType extends AbstractType
                 message: 'form.password.error.blank'
             ),
             new Length(
-                min: 8,
+                min: 12,
                 max: 4096,
                 minMessage: 'form.password.error.min',
                 maxMessage: 'form.password.error.max',
@@ -117,7 +120,6 @@ class CompleteProfileType extends AbstractType
     'invalid_message' => 'form.password.error.mismatch',
     'mapped' => false,
 ])
-
         ;
     }
 

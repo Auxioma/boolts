@@ -49,10 +49,14 @@
             <h1 class="fw-bold" style="font-size: 30px; line-height: 34px; color: #0B0F14; max-width: 404px; margin: 0;">Remplissez les informations de votre compte</h1>
 
                                                     <div class="formulaire mt-32">
+                                            {% set _pwd_locale_en = app.request.locale starts with 'en' %}
                                             {{ form_start(form, {
                                                 attr: {
-                                                    'data-controller': 'phone',
+                                                    'data-controller': 'phone password-strength',
                                                     'data-action': 'submit->phone#prepareSubmit',
+                                                    'data-password-strength-min-value': '12',
+                                                    'data-password-strength-label-progress-value': _pwd_locale_en ? '{count} / {min} characters' : '{count} / {min} caractères',
+                                                    'data-password-strength-label-valid-value': _pwd_locale_en ? 'Minimum length reached' : 'Longueur minimale atteinte',
                                                 },
                                             }) }}
                                             <div class="">
@@ -78,6 +82,7 @@
                                                     {{ 'professionnel.register.agency.password.label'|trans }}
                                                 </label>
                                                 {{ form_widget(form.plainPassword.first) }}
+                                                <div data-password-strength-target="meter" class="mt-8 mb-16"></div>
                                                 <small class="d-block mb-16">
                                                     {{ 'visiteur.register.profile.password.help'|trans }}
                                                 </small>
@@ -101,7 +106,8 @@
                                                     {% endif %}
                                                 {% endfor %}
 
-                                                <button class=" btn-submit w-100 text-white" type="submit">
+                                                <button class=" btn-submit w-100 text-white" type="submit"
+                                                        data-password-strength-target="submit">
                                                     {{ 'professionnel.register.agency.submit'|trans }}
                                                 </button>
                                             </div>
@@ -145,6 +151,42 @@
         .btn-primary:hover {
             background-color: #4a00cc;
             border-color: #4a00cc;
+        }
+
+        /* --- Password strength stepper --- */
+        .password-strength__track {
+            display: flex;
+            gap: 4px;
+        }
+        .password-strength__segment {
+            flex: 1 1 0;
+            height: 6px;
+            border-radius: 999px;
+            background-color: #e5e7eb;
+            transition: background-color .15s ease;
+        }
+        .password-strength__segment.is-filled[data-level="0"] {
+            background-color: #ef4444;
+        }
+        .password-strength__segment.is-filled[data-level="1"] {
+            background-color: #f59e0b;
+        }
+        .password-strength__segment.is-filled[data-level="2"] {
+            background-color: #22c55e;
+        }
+        .password-strength__label {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #858789;
+        }
+        .password-strength__label[data-level="2"] {
+            color: #16a34a;
+        }
+        .btn-submit:disabled,
+        .btn-submit.is-disabled {
+            opacity: .5;
+            cursor: not-allowed;
         }
     </style>
 {% endblock %}
