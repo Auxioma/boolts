@@ -59,6 +59,8 @@
                                     action="{{ path('agence_immobiliere_mes_biens_list') }}"
                                     class="property-search"
                                     role="search"
+                                    data-controller="mes-biens--search-suggestions"
+                                    data-mes-biens--search-suggestions-url-value="{{ path('agence_immobiliere_mes_biens_search_suggestions') }}"
                                 >
 
                                     <input
@@ -67,6 +69,8 @@
                                         value="{{ app.request.query.get('search') }}"
                                         placeholder="Rechercher un bien, une référence, une ville ou un pays"
                                         autocomplete="off"
+                                        data-mes-biens--search-suggestions-target="input"
+                                        data-action="input->mes-biens--search-suggestions#onInput keydown->mes-biens--search-suggestions#onKeydown"
                                     >
 
                                     {% if app.request.query.get('sort') %}
@@ -116,6 +120,13 @@
                                     >
                                         <i class="icon-search" aria-hidden="true"></i>
                                     </button>
+
+                                    <div
+                                        class="property-search-suggestions"
+                                        role="listbox"
+                                        data-mes-biens--search-suggestions-target="results"
+                                        hidden
+                                    ></div>
 
                                 </form>
 

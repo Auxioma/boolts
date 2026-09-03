@@ -1769,6 +1769,111 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
+     * Suggestions d'auto-complétion pour la barre de recherche libre de la
+     * liste « Mes biens ».
+     *
+     * Les valeurs proposées proviennent exactement des colonnes interrogées
+     * par le LIKE de {@see findPropertysByUserWithFiltersQuery()} : référence
+     * interne, titre du logement, ville, pays et adresse des biens de
+     * l'agence. Le slug (identifiant numérique) est volontairement exclu car
+     * il n'a pas de sens comme suggestion.
+     *
+     * @return list<array{value: string, type: string}>
+     */
+    public function findAgencySearchSuggestions(
+        User $user,
+        ?string $query = null,
+        ?string $locale = null,
+        int $limit = 10,
+    ): array {
+        $needle = (null !== $query && '' !== mb_trim($query))
+            ? mb_strtolower(mb_trim($query))
+            : null;
+
+        $qb = $this->agencyLocationBaseQuery($user, $locale)
+            ->select(
+                'p.referenceInterne AS reference',
+                'pt.titreDuLogement AS titre',
+                'pt.ville AS ville',
+                'pt.pays AS pays',
+                'pt.adresse AS adresse',
+                'pt.fullAddress AS fullAddress'
+            )
+            ->setMaxResults(500);
+
+        if (null !== $needle) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        'LOWER(p.referenceInterne) LIKE :suggestQuery',
+                        'LOWER(pt.titreDuLogement) LIKE :suggestQuery',
+                        'LOWER(pt.ville) LIKE :suggestQuery',
+                        'LOWER(pt.pays) LIKE :suggestQuery',
+                        'LOWER(pt.adresse) LIKE :suggestQuery',
+                        'LOWER(pt.fullAddress) LIKE :suggestQuery'
+                    )
+                )
+                ->setParameter('suggestQuery', '%'.$needle.'%');
+        }
+
+        /*
+         * fullAddress partage le même type d'affichage que adresse : on veut
+         * une seule entrée « Adresse » par valeur distincte.
+         */
+        $fieldTypes = [
+            'reference' => 'reference',
+            'titre' => 'titre',
+            'ville' => 'ville',
+            'pays' => 'pays',
+            'adresse' => 'adresse',
+            'fullAddress' => 'adresse',
+        ];
+
+        $suggestions = [];
+
+        foreach ($qb->getQuery()->getScalarResult() as $row) {
+            foreach ($fieldTypes as $column => $type) {
+                $value = mb_trim((string) ($row[$column] ?? ''));
+
+                if ('' === $value) {
+                    continue;
+                }
+
+                $lower = mb_strtolower($value);
+
+                if (null !== $needle && !str_contains($lower, $needle)) {
+                    continue;
+                }
+
+                if (isset($suggestions[$lower])) {
+                    continue;
+                }
+
+                $suggestions[$lower] = [
+                    'value' => $value,
+                    'type' => $type,
+                    'rank' => (null !== $needle && str_starts_with($lower, $needle)) ? 0 : 1,
+                ];
+            }
+        }
+
+        uasort(
+            $suggestions,
+            static fn (array $a, array $b): int => [$a['rank'], $a['value']] <=> [$b['rank'], $b['value']]
+        );
+
+        return array_values(
+            array_map(
+                static fn (array $item): array => [
+                    'value' => $item['value'],
+                    'type' => $item['type'],
+                ],
+                \array_slice($suggestions, 0, max(1, $limit))
+            )
+        );
+    }
+
+    /**
      * Pays distincts réellement saisis par l'agence sur ses propres biens.
      * Alimente l'auto-complétion du filtre « Localisation » de la page
      * « Mes biens ».

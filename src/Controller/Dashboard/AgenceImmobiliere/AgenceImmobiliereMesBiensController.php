@@ -383,6 +383,42 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     }
 
     /**
+     * Auto-suggestion de la barre de recherche libre de la liste « Mes biens ».
+     *
+     * Les propositions sont extraites des mêmes colonnes que celles balayées
+     * par le LIKE de PropertyRepository::findPropertysByUserWithFiltersQuery()
+     * (référence, titre, ville, pays, adresse), limitées aux biens de l'agence.
+     */
+    #[Route(
+        '/liste/recherche/suggestions',
+        name: 'mes_biens_search_suggestions',
+        methods: ['GET']
+    )]
+    public function searchSuggestions(
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(
+                ['results' => []],
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
+        $query = mb_trim($request->query->getString('q'));
+
+        $results = $propertyRepository->findAgencySearchSuggestions(
+            $user,
+            '' !== $query ? $query : null,
+            $request->getLocale()
+        );
+
+        return $this->json(['results' => $results]);
+    }
+
+    /**
      * Résout le code ISO 3166-1 alpha-2 d'un pays à partir de son nom
      * (français ou anglais). Retourne null si aucun code ne correspond.
      */

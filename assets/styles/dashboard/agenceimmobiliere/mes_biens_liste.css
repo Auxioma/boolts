@@ -61,6 +61,7 @@ BARRE RECHERCHE / FILTRES / TRI / DÉPÔT
 }
 
 .agence-mes-biens-list .property-search {
+    position: relative;
     flex: 1 1 280px;
     min-width: 240px;
     display: flex;
@@ -71,6 +72,61 @@ BARRE RECHERCHE / FILTRES / TRI / DÉPÔT
     border: 2px solid #EBECEC;
     border-radius: 70px;
     background: #FFFFFF;
+}
+
+.agence-mes-biens-list .property-search-suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 30;
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 6px;
+    border: 2px solid #EBECEC;
+    border-radius: 20px;
+    background: #FFFFFF;
+    box-shadow: 0 12px 32px rgba(11, 15, 20, 0.12);
+}
+
+.agence-mes-biens-list .property-search-suggestion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    color: #0B0F14;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+}
+
+.agence-mes-biens-list .property-search-suggestion:hover,
+.agence-mes-biens-list .property-search-suggestion.is-active {
+    background: #F4F0FF;
+}
+
+.agence-mes-biens-list .property-search-suggestion__value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.agence-mes-biens-list .property-search-suggestion__type {
+    flex-shrink: 0;
+    color: #858789;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .agence-mes-biens-list .property-search input {
