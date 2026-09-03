@@ -24,7 +24,6 @@ use App\Entity\User;
 use App\Form\Documents\AskDocumentsType;
 use App\Repository\AgencyNotificationRepository;
 use App\Repository\AgencyProfileDailyVisitRepository;
-use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\Document\RequiredDocumentRepository;
 use App\Repository\Document\UserDocumentRequestRepository;
 use App\Repository\Document\UserDocumentSubmissionRepository;
@@ -34,6 +33,7 @@ use App\Repository\PropertyImageRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
 use App\Security\Voter\AgencyDocumentVoter;
+use App\Service\Booster\PropertyBoostService;
 use App\Service\Document\AdminDocumentNotificationMailer;
 use App\Service\GeoIpLocationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -182,7 +182,7 @@ final class DashboardController extends AbstractController
         PropertyRepository $propertyRepository,
         PropertyViewRepository $propertyViewRepository,
         FavorisRepository $favorisRepository,
-        BoosterTransactionRepository $boosterTransactionRepository,
+        PropertyBoostService $propertyBoostService,
         PaginatorInterface $paginator,
     ): Response {
         $user = $this->getUser();
@@ -216,12 +216,14 @@ final class DashboardController extends AbstractController
             }
         }
 
+        $boostPreview = $propertyBoostService->preview($user);
+
         return $this->render('dashboard/agence_immobiliere/dashboard/_property_performance.html.twig', [
             'affiche_performance_annonce' => $affichePerformanceAnnonce,
             'view_counts' => $propertyViewRepository->countByPropertyIds($propertyIds),
             'favorite_counts' => $favorisRepository->countByPropertyIds($propertyIds),
             'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
-            'boosts_restants' => $boosterTransactionRepository->countAvailableForAgency($user),
+            'boostPreview' => $boostPreview,
         ]);
     }
 

@@ -522,8 +522,16 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         }
 
         return $this->redirectToRoute(
-            'agence_immobiliere_mes_biens_list'
+            $this->boostRedirectRoute($request)
         );
+    }
+
+    private function boostRedirectRoute(Request $request): string
+    {
+        return match ($request->request->getString('_redirect_route')) {
+            'agence_immobiliere_dashboard' => 'agence_immobiliere_dashboard',
+            default => 'agence_immobiliere_mes_biens_list',
+        };
     }
 
     #[Route(

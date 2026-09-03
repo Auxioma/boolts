@@ -3,8 +3,6 @@
     data-dashboard-property-performance-target="frame"
 >
     {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
-    {% set boosts_restants = boosts_restants|default(0) %}
-    {% set no_boost_available = boosts_restants <= 0 %}
 
     <div
         class="property-list{{ documents_validated ? '' : ' dashboard-preview-blur' }}"
@@ -56,10 +54,8 @@
                     <button
                         class="btn property-boost-button"
                         type="button"
-                        {% if no_boost_available %}
-                            data-bs-toggle="modal"
-                            data-bs-target="#property-performance-no-boost-modal"
-                        {% endif %}
+                        data-bs-toggle="modal"
+                        data-bs-target="#propertyPerformanceBoostModal{{ property.id }}"
                     >
                         <i class="icon-zap"></i>
                         Booster
@@ -67,47 +63,111 @@
                 {% endif %}
 
             </article>
+
+            {% if property.id not in boosted_property_ids %}
+                <div
+                    id="propertyPerformanceBoostModal{{ property.id }}"
+                    class="modal fade"
+                    tabindex="-1"
+                    aria-labelledby="propertyPerformanceBoostModalTitle{{ property.id }}"
+                    aria-hidden="true"
+                >
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content property-performance-boost-modal">
+                            <div class="modal-header">
+                                <h2
+                                    id="propertyPerformanceBoostModalTitle{{ property.id }}"
+                                    class="modal-title fs-5"
+                                >
+                                    Booster cette annonce
+                                </h2>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p class="property-performance-boost-listing">
+                                    {{ property.titreDuLogement ?: property.referenceInterne ?: 'Annonce sans titre' }}
+                                </p>
+
+                                {% if boostPreview.available < 1 %}
+                                    <p class="property-performance-boost-empty">
+                                        Vous n’avez plus de boost disponible.
+                                        Achetez un pack boost pour mettre cette annonce en avant.
+                                    </p>
+                                {% else %}
+                                    <ul class="property-performance-boost-details">
+                                        <li>
+                                            <span>Boosts restants</span>
+                                            <strong>{{ boostPreview.available }}</strong>
+                                        </li>
+                                        <li>
+                                            <span>Durée de mise en avant</span>
+                                            <strong>
+                                                {{ boostPreview.durationDays }}
+                                                jour{{ boostPreview.durationDays > 1 ? 's' : '' }}
+                                            </strong>
+                                        </li>
+                                        <li>
+                                            <span>Boost décompté sur</span>
+                                            <strong>
+                                                {{ boostPreview.source == 'subscription'
+                                                    ? 'votre forfait'
+                                                    : 'vos boosts achetés' }}
+                                            </strong>
+                                        </li>
+                                    </ul>
+
+                                    <p class="property-performance-boost-warning">
+                                        Cette action est définitive : le boost sera activé
+                                        immédiatement et décompté de votre solde.
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    Annuler
+                                </button>
+
+                                {% if boostPreview.available >= 1 %}
+                                    <form
+                                        method="post"
+                                        action="{{ path('agence_immobiliere_mes_biens_boost', {id: property.id}) }}"
+                                        data-turbo-frame="_top"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="_property_token"
+                                            value="{{ csrf_token('property_boost_' ~ property.id) }}"
+                                        >
+                                        <input
+                                            type="hidden"
+                                            name="_redirect_route"
+                                            value="agence_immobiliere_dashboard"
+                                        >
+
+                                        <button type="submit" class="btn btn-primary">
+                                            Confirmer le boost
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a
+                                        class="btn btn-primary"
+                                        href="{{ path('agence_immobiliere_options') }}#boosts"
+                                        data-turbo-frame="_top"
+                                    >
+                                        Voir les packs boost
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
         {% else %}
             <p class="mb-0">Aucune annonce à afficher.</p>
         {% endfor %}
     </div>
-
-    {% if no_boost_available %}
-        <div
-            id="property-performance-no-boost-modal"
-            class="modal fade"
-            tabindex="-1"
-            aria-labelledby="property-performance-no-boost-modal-title"
-            aria-hidden="true"
-        >
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 id="property-performance-no-boost-modal-title" class="modal-title fs-5">
-                            Vous avez besoin de boost
-                        </h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        Vous avez besoin de créditer des boosts avant de faire cette action.
-                        Rendez-vous sur la page dédiée afin d’en ajouter à votre compte.
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <a
-                            class="btn btn-primary"
-                            href="{{ path('agence_immobiliere_options') }}#boosts"
-                            data-turbo-frame="_top"
-                        >
-                            Obtenir des boosts
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
 
     {{ knp_pagination_render(
         affiche_performance_annonce,

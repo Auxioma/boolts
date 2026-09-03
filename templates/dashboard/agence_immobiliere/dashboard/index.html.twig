@@ -36,6 +36,20 @@
                             {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
                         </div>
 
+                        {% set dashboardFlashTypes = {
+                            success: 'success',
+                            danger: 'danger',
+                            error: 'danger',
+                            warning: 'warning',
+                        } %}
+                        {% for label, alertType in dashboardFlashTypes %}
+                            {% for message in app.flashes(label) %}
+                                <div class="alert alert-{{ alertType }} mb-24" role="{{ label == 'success' ? 'status' : 'alert' }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+
                         {% if not documents_complete %}
                         {# Finalisation du compte #}
                         <div data-controller="dashboard-account-completion documents--upload">
