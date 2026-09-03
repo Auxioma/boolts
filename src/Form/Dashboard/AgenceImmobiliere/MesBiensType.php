@@ -16,8 +16,10 @@ use App\Entity\Caracteristique;
 use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
 use App\Entity\Property;
+use App\Service\Intl\CountryNameResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -33,6 +35,11 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class MesBiensType extends AbstractType
 {
+    public function __construct(
+        private readonly CountryNameResolver $countryNameResolver,
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $step = $options['step'];
@@ -84,6 +91,28 @@ class MesBiensType extends AbstractType
                     'placeholder' => 'Saisissez le pays',
                 ])
                 ->add('neighborhood')
+            ;
+
+            /*
+             * En base, "pays" est stocké sous forme de libellé ("France",
+             * "Belgique"…) — c'est ce qu'écrit MapboxAddressTranslator et ce
+             * que compare la recherche publique. Or CountryType attend un code
+             * ISO 3166-1 alpha-2. Sans conversion, le pays enregistré n'est
+             * jamais présélectionné quand on revient sur l'étape.
+             *
+             * transform()        : libellé (ou code déjà valide) -> code ISO
+             * reverseTransform() : code ISO -> libellé, pour conserver le
+             *                      format attendu par le reste de l'application.
+             */
+            $builder->get('pays')->addModelTransformer(new CallbackTransformer(
+                fn (?string $stored): ?string => $this->countryNameResolver->toAlphaTwoCode($stored),
+                fn (?string $code): ?string => $this->countryNameResolver->toName(
+                    $code,
+                    \Locale::getDefault()
+                ) ?? $code,
+            ));
+
+            $builder
                 ->add('locality')
                 ->add('mapboxId', HiddenType::class)
                 ->add('fullAddress', HiddenType::class)
