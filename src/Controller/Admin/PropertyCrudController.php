@@ -24,6 +24,7 @@ use App\Field\PropertyImagesField;
 use App\Repository\CategoryBienTransactionRepository;
 use App\Service\Import\PropertyCsvImporter;
 use App\Service\Import\PropertyImportReport;
+use App\Service\Property\AgencyPropertySubmissionMailer;
 use App\Service\Property\PropertyNotificationLabeler;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -66,6 +67,7 @@ class PropertyCrudController extends AbstractCrudController
         private readonly AdminUrlGenerator $adminUrlGenerator,
         private readonly CategoryBienTransactionRepository $categoryBienTransactionRepository,
         private readonly PropertyNotificationLabeler $propertyNotificationLabeler,
+        private readonly AgencyPropertySubmissionMailer $agencyPropertySubmissionMailer,
     ) {
     }
 
@@ -77,17 +79,32 @@ class PropertyCrudController extends AbstractCrudController
      */
     public function updateEntity(EntityManagerInterface $entityManager, object $entityInstance): void
     {
+        $becamePublished = false;
+
         if ($entityInstance instanceof Property) {
-            $this->queueStatusChangeNotification($entityManager, $entityInstance);
+            $becamePublished = $this->queueStatusChangeNotification($entityManager, $entityInstance);
         }
 
         parent::updateEntity($entityManager, $entityInstance);
+
+        if ($becamePublished && $entityInstance instanceof Property) {
+            $agency = $entityInstance->getUser();
+
+            if ($agency instanceof User) {
+                $this->agencyPropertySubmissionMailer->sendPublicationNotification($agency, $entityInstance);
+            }
+        }
     }
 
+    /**
+     * Enregistre la notification agence liée au changement de statut et
+     * indique si l'annonce vient de passer à « Publiée » (auquel cas
+     * {@see updateEntity} déclenche l'e-mail de publication).
+     */
     private function queueStatusChangeNotification(
         EntityManagerInterface $entityManager,
         Property $property,
-    ): void {
+    ): bool {
         $originalData = $entityManager
             ->getUnitOfWork()
             ->getOriginalEntityData($property);
@@ -103,7 +120,7 @@ class PropertyCrudController extends AbstractCrudController
         $newStatut = $property->getStatut();
 
         if ($previousValue === $newStatut->value) {
-            return;
+            return false;
         }
 
         $message = match ($newStatut) {
@@ -113,13 +130,13 @@ class PropertyCrudController extends AbstractCrudController
         };
 
         if (null === $message) {
-            return;
+            return false;
         }
 
         $agency = $property->getUser();
 
         if (!$agency instanceof User) {
-            return;
+            return false;
         }
 
         $entityManager->persist(
@@ -127,6 +144,8 @@ class PropertyCrudController extends AbstractCrudController
                 ->setAgency($agency)
                 ->setNom($message)
         );
+
+        return StatutAnnonceImmobiliere::PUBLIEE === $newStatut;
     }
 
     public static function getEntityFqcn(): string

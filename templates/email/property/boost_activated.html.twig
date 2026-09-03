@@ -1,0 +1,57 @@
+{#
+ Template: templates/email/property/boost_activated.html.twig
+ Role: Renders the agency email sent once a boost has been activated on a property.
+ Context: Provided by App\Service\Property\AgencyPropertySubmissionMailer.
+ Maintenance: Preserve context keys used by the mailer.
+#}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le boost de votre annonce est activé</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
+    <h1>Votre annonce est boostée</h1>
+
+    <p>Bonjour {{ agencyName|default('') }},</p>
+
+    <p>
+        Le boost de votre annonce « {{ propertyTitle }} » vient d’être activé. Elle sera
+        mise en avant sur Boolts{% if boostEndsAt is defined and boostEndsAt is not null %}
+        jusqu’au {{ boostEndsAt|date('d/m/Y') }}{% endif %}.
+    </p>
+
+    <table role="presentation" cellpadding="6" cellspacing="0" border="0">
+        <tr>
+            <td><strong>Statut</strong></td>
+            <td>{{ property.statut.label }}</td>
+        </tr>
+        {% if boostEndsAt is defined and boostEndsAt is not null %}
+        <tr>
+            <td><strong>Boost actif jusqu’au</strong></td>
+            <td>{{ boostEndsAt|date('d/m/Y') }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td><strong>Ville</strong></td>
+            <td>{{ property.ville|default('Non renseignée') }}</td>
+        </tr>
+    </table>
+
+    {% if publicUrl is defined and publicUrl is not null %}
+        <p>
+            Voir l’annonce en ligne :
+            <a href="{{ publicUrl }}">{{ publicUrl }}</a>
+        </p>
+    {% endif %}
+
+    <p>
+        Vous pouvez gérer votre annonce depuis votre espace Mes biens :
+        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+    </p>
+
+    <p>À bientôt,<br>L’équipe Boolts</p>
+</body>
+</html>

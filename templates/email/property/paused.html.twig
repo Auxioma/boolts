@@ -1,0 +1,47 @@
+{#
+ Template: templates/email/property/paused.html.twig
+ Role: Renders the agency email sent once a property has been paused (unpublished).
+ Context: Provided by App\Service\Property\AgencyPropertySubmissionMailer.
+ Maintenance: Preserve context keys used by the mailer.
+#}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre annonce a été mise en pause</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
+    <h1>Votre annonce est en pause</h1>
+
+    <p>Bonjour {{ agencyName|default('') }},</p>
+
+    <p>
+        Votre annonce « {{ propertyTitle }} » a été mise en pause. Elle n’est plus visible
+        publiquement sur Boolts tant qu’elle n’a pas été réactivée.
+    </p>
+
+    <table role="presentation" cellpadding="6" cellspacing="0" border="0">
+        <tr>
+            <td><strong>Statut</strong></td>
+            <td>{{ property.statut.label }}</td>
+        </tr>
+        <tr>
+            <td><strong>Type de bien</strong></td>
+            <td>{{ property.typeBien.name|default('Non renseigné') }}</td>
+        </tr>
+        <tr>
+            <td><strong>Ville</strong></td>
+            <td>{{ property.ville|default('Non renseignée') }}</td>
+        </tr>
+    </table>
+
+    <p>
+        Vous pouvez la réactiver à tout moment depuis votre espace Mes biens :
+        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+    </p>
+
+    <p>À bientôt,<br>L’équipe Boolts</p>
+</body>
+</html>

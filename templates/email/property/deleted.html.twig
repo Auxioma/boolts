@@ -1,0 +1,48 @@
+{#
+ Template: templates/email/property/deleted.html.twig
+ Role: Renders the agency email sent once a property has been deleted.
+ Context: Provided by App\Service\Property\AgencyPropertySubmissionMailer.
+ Maintenance: Preserve context keys used by the mailer.
+#}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre annonce a été supprimée</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
+    <h1>Votre annonce a été supprimée</h1>
+
+    <p>Bonjour {{ agencyName|default('') }},</p>
+
+    <p>
+        Votre annonce « {{ propertyTitle }} » a été supprimée. Elle n’apparaît plus sur
+        Boolts et ne peut plus être consultée par les visiteurs.
+    </p>
+
+    <table role="presentation" cellpadding="6" cellspacing="0" border="0">
+        <tr>
+            <td><strong>Type de transaction</strong></td>
+            <td>{{ property.typeTransaction.name|default('Non renseigné') }}</td>
+        </tr>
+        <tr>
+            <td><strong>Type de bien</strong></td>
+            <td>{{ property.typeBien.name|default('Non renseigné') }}</td>
+        </tr>
+        <tr>
+            <td><strong>Ville</strong></td>
+            <td>{{ property.ville|default('Non renseignée') }}</td>
+        </tr>
+    </table>
+
+    <p>
+        Si cette suppression n’est pas volontaire, contactez l’équipe Boolts au plus vite.
+        Vous pouvez créer une nouvelle annonce depuis votre espace Mes biens :
+        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+    </p>
+
+    <p>À bientôt,<br>L’équipe Boolts</p>
+</body>
+</html>

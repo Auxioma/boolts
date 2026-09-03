@@ -465,6 +465,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         Property $property,
         Request $request,
         EntityManagerInterface $entityManager,
+        AgencyPropertySubmissionMailer $agencyPropertySubmissionMailer,
     ): Response {
         $user = $this->getUser();
 
@@ -488,6 +489,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $entityManager->flush();
 
+        $agencyPropertySubmissionMailer->sendPausedNotification($user, $property);
+
         $this->addFlash(
             'success',
             'L’annonce a été mise en pause.'
@@ -509,6 +512,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         PropertyBoostService $propertyBoostService,
         EntityManagerInterface $entityManager,
         PropertyNotificationLabeler $propertyNotificationLabeler,
+        AgencyPropertySubmissionMailer $agencyPropertySubmissionMailer,
     ): Response {
         $user = $this->getUser();
 
@@ -542,6 +546,12 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     )
             );
             $entityManager->flush();
+
+            $agencyPropertySubmissionMailer->sendBoostActivatedNotification(
+                $user,
+                $property,
+                $boost->getEndsAt()
+            );
 
             $this->addFlash(
                 'success',
@@ -743,6 +753,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         Property $property,
         Request $request,
         EntityManagerInterface $entityManager,
+        AgencyPropertySubmissionMailer $agencyPropertySubmissionMailer,
     ): Response {
         $user = $this->getUser();
 
@@ -766,6 +777,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $entityManager->flush();
 
+        $agencyPropertySubmissionMailer->sendReactivatedNotification($user, $property);
+
         $this->addFlash(
             'success',
             'L’annonce a été réactivée.'
@@ -785,6 +798,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         Property $property,
         Request $request,
         EntityManagerInterface $entityManager,
+        AgencyPropertySubmissionMailer $agencyPropertySubmissionMailer,
     ): Response {
         $user = $this->getUser();
 
@@ -808,6 +822,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $entityManager->flush();
 
+        $agencyPropertySubmissionMailer->sendDeletedNotification($user, $property);
+
         $this->addFlash(
             'success',
             'L’annonce a été supprimée.'
@@ -827,6 +843,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         Request $request,
         PropertyRepository $propertyRepository,
         EntityManagerInterface $entityManager,
+        AgencyPropertySubmissionMailer $agencyPropertySubmissionMailer,
     ): Response {
         $user = $this->getUser();
 
@@ -916,6 +933,14 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         }
 
         $entityManager->flush();
+
+        foreach ($properties as $property) {
+            $agencyPropertySubmissionMailer->sendStatusChangeNotification(
+                $user,
+                $property,
+                $newStatus
+            );
+        }
 
         $message = match ($action) {
             'pause' => \sprintf(
