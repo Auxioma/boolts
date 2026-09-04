@@ -100,47 +100,7 @@ final class HomeController extends AbstractController
 
         $locale = $request->getLocale();
 
-        $logementPopulaireVente = $this->propertyRepository->logementPopulaire(
-            $country,
-            $city,
-            $locale,
-            1
-        );
-
-        $logementAjouterRecementVente = $this->propertyRepository->logemntRecementAjouter(
-            $country,
-            $city,
-            $locale,
-            1
-        );
-
-        $logementPopulaireLocation = $this->propertyRepository->logementPopulaire(
-            $country,
-            $city,
-            $locale,
-            2
-        );
-
-        $logementAjouterRecementLocation = $this->propertyRepository->logemntRecementAjouter(
-            $country,
-            $city,
-            $locale,
-            2
-        );
-
-        $aLaUneLocation = $this->propertyRepository->findActiveBoostedForHome(
-            $country,
-            $city,
-            $locale,
-            2
-        );
-
-        $aLaUneVente = $this->propertyRepository->findActiveBoostedForHome(
-            $country,
-            $city,
-            $locale,
-            1
-        );
+        $sections = $this->buildPropertySections($country, $city, $locale);
         /**
          * je vais vérifier si l'utilisateur a un cookie de session pour retrouver ses recherches récentes.
          * Si le cookie existe, je vais récupérer l'UUID  et le nom de la ville de la recherche et je vais vérifier si la recherche existe dans la base de données.
@@ -156,15 +116,10 @@ final class HomeController extends AbstractController
         }
 
         return $this->render('public/home/index.html.twig', [
+            ...$sections,
             'form' => $form->createView(),
             'transactions' => $transactions,
             'mapbox_public_token' => $this->mapboxPublicToken,
-            'logementPopulaireVente' => $logementPopulaireVente,
-            'logementAjouterRecementVente' => $logementAjouterRecementVente,
-            'logementPopulaireLocation' => $logementPopulaireLocation,
-            'logementAjouterRecementLocation' => $logementAjouterRecementLocation,
-            'aLaUneLocation' => $aLaUneLocation,
-            'aLaUneVente' => $aLaUneVente,
             'lastSearchSession' => $lastSearchSession,
         ]);
     }
@@ -180,8 +135,10 @@ final class HomeController extends AbstractController
     /**
      * Handles the propertiesByCity controller action.
      */
-    public function propertiesByCity(Request $request): Response
-    {
+    public function propertiesByCity(
+        Request $request,
+        IpLocationService $ipLocationService,
+    ): Response {
         /*if (!$request->isXmlHttpRequest()) {
             throw $this->createNotFoundException(
                 'Cette route est réservée aux requêtes AJAX.'
@@ -192,40 +149,56 @@ final class HomeController extends AbstractController
         $country = mb_trim((string) $request->query->get('country'));
 
         $session = $request->getSession();
-        $session->set('city', $city);
-        $session->set('country', $country);
 
-        if ('' === $city || mb_strlen($city) > 120) {
+        /*
+         * Aucune ville transmise : l'utilisateur a désactivé / refusé la
+         * géolocalisation du navigateur. On oublie la ville mémorisée et on
+         * revient à la requête initiale (biens localisés via l'adresse IP).
+         */
+        if ('' === $city) {
+            $session->remove('city');
+            $session->remove('country');
+
+            $location = $ipLocationService->locate($request->getClientIp());
+            $country = $location['country'] ?? 'France';
+
+            return $this->render(
+                'public/home/_partials/_property_sections.html.twig',
+                $this->buildPropertySections($country, null, $request->getLocale())
+            );
+        }
+
+        if (mb_strlen($city) > 120) {
             return new Response('Ville invalide.', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $logementPopulaireVente = $this->propertyRepository->logementPopulaire($country, $city, $request->getLocale(), '1');
-        $logementAjouterRecementVente = $this->propertyRepository->logemntRecementAjouter($country, $city, $request->getLocale(), '1');
+        $session->set('city', $city);
+        $session->set('country', $country);
 
-        $logementPopulaireLocation = $this->propertyRepository->logementPopulaire($country, $city, $request->getLocale(), '2');
-        $logementAjouterRecementLocation = $this->propertyRepository->logemntRecementAjouter($country, $city, $request->getLocale(), '2');
-
-        $aLaUneLocation = $this->propertyRepository->findActiveBoostedForHome(
-            $country,
-            $city,
-            $request->getLocale(),
-            '2'
+        return $this->render(
+            'public/home/_partials/_property_sections.html.twig',
+            $this->buildPropertySections($country, $city, $request->getLocale())
         );
+    }
 
-        $aLaUneVente = $this->propertyRepository->findActiveBoostedForHome(
-            $country,
-            $city,
-            $request->getLocale(),
-            '1'
-        );
-
-        return $this->render('public/home/_partials/_property_sections.html.twig', [
-            'logementPopulaireVente' => $logementPopulaireVente,
-            'logementAjouterRecementVente' => $logementAjouterRecementVente,
-            'logementPopulaireLocation' => $logementPopulaireLocation,
-            'logementAjouterRecementLocation' => $logementAjouterRecementLocation,
-            'aLaUneLocation' => $aLaUneLocation,
-            'aLaUneVente' => $aLaUneVente,
-        ]);
+    /**
+     * Construit les six listes de biens affichées sur la page d'accueil
+     * (populaires / récents / à la une, en vente et en location).
+     *
+     * @return array<string, mixed>
+     */
+    private function buildPropertySections(
+        ?string $country,
+        ?string $city,
+        string $locale,
+    ): array {
+        return [
+            'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 1),
+            'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 1),
+            'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 2),
+            'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 2),
+            'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 2),
+            'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 1),
+        ];
     }
 }

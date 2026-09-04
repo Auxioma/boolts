@@ -27,7 +27,8 @@ export default class extends Controller {
             );
 
             if (!location.city) {
-                console.info('Aucune ville détectée.');
+                console.info('Aucune ville détectée, retour à la requête initiale.');
+                await this.resetToInitial();
                 return;
             }
 
@@ -46,7 +47,47 @@ export default class extends Controller {
             }
 
             console.info(
-                'Les biens filtrés par adresse IP sont conservés :',
+                'Géolocalisation indisponible, retour à la requête initiale :',
+                error.message
+            );
+
+            await this.resetToInitial();
+        }
+    }
+
+    /**
+     * L'utilisateur a refusé / désactivé la géolocalisation du navigateur :
+     * on demande au serveur d'oublier la ville mémorisée en session et de
+     * renvoyer les biens de la requête initiale (localisés via l'adresse IP).
+     */
+    async resetToInitial() {
+        try {
+            this.abortController?.abort();
+            this.abortController = new AbortController();
+
+            const url = new URL(this.urlValue, window.location.origin);
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Accept: 'text/html',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                signal: this.abortController.signal,
+            });
+
+            if (!response.ok) {
+                return;
+            }
+
+            this.contentTarget.innerHTML = await response.text();
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            console.info(
+                'Impossible de restaurer la requête initiale :',
                 error.message
             );
         }
