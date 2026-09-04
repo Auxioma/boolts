@@ -205,39 +205,50 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const searchHeroes = document.querySelectorAll('.home-bt-search-hero');
+(() => {
+    const bindHomeBtSearchTabs = () => {
+        const searchHeroes = document.querySelectorAll('.home-bt-search-hero');
 
-    searchHeroes.forEach(function (hero) {
-        const tabs = hero.querySelectorAll('.home-bt-search-tab');
-        const transactionInput = hero.querySelector('[data-home-bt-transaction-input]');
+        searchHeroes.forEach(function (hero) {
+            if (hero.dataset.searchTabsBound === 'true') {
+                return;
+            }
 
-        if (!tabs.length || !transactionInput) {
-            return;
-        }
+            const tabs = hero.querySelectorAll('.home-bt-search-tab');
+            const transactionInput = hero.querySelector('[data-home-bt-transaction-input]');
 
-        tabs.forEach(function (tab) {
-            tab.addEventListener('click', function () {
-                tabs.forEach(function (item) {
-                    item.classList.remove('active');
-                    item.setAttribute('aria-selected', 'false');
+            if (!tabs.length || !transactionInput) {
+                return;
+            }
+
+            hero.dataset.searchTabsBound = 'true';
+
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(function (item) {
+                        item.classList.remove('active');
+                        item.setAttribute('aria-selected', 'false');
+                    });
+
+                    tab.classList.add('active');
+                    tab.setAttribute('aria-selected', 'true');
+
+                    /*
+                     * EntityType :
+                     * On met l'id de CategoryBienTransaction dans le select caché.
+                     * Symfony convertira cet id en vraie entité.
+                     */
+                    transactionInput.value = tab.dataset.homeBtTransactionId || '';
+
+                    transactionInput.dispatchEvent(new Event('change', {
+                        bubbles: true,
+                    }));
                 });
-
-                tab.classList.add('active');
-                tab.setAttribute('aria-selected', 'true');
-
-                /*
-                 * EntityType :
-                 * On met l'id de CategoryBienTransaction dans le select caché.
-                 * Symfony convertira cet id en vraie entité.
-                 */
-                transactionInput.value = tab.dataset.homeBtTransactionId || '';
-
-                transactionInput.dispatchEvent(new Event('change', {
-                    bubbles: true,
-                }));
             });
         });
-    });
-});
+    };
+
+    document.addEventListener('DOMContentLoaded', bindHomeBtSearchTabs);
+    document.addEventListener('turbo:load', bindHomeBtSearchTabs);
+})();
 </script>

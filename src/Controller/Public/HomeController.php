@@ -209,9 +209,9 @@ final class HomeController extends AbstractController
     ): array {
         return [
             'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 1, $latitude, $longitude),
-            'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 1),
+            'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 1, $latitude, $longitude),
             'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 2, $latitude, $longitude),
-            'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 2),
+            'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 2, $latitude, $longitude),
             'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 2),
             'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 1),
         ];

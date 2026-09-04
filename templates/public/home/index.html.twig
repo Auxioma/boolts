@@ -207,22 +207,4 @@
             {{ include('composant/_footer/navbar_footer.html.twig') }}
         {% endif %}
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('[data-tab-button]').forEach((button) => {
-                button.addEventListener('click', () => {
-                    const tab = button.dataset.tabButton;
-
-                    document.querySelectorAll('[data-tab-button]').forEach((item) => {
-                        item.classList.toggle('active', item.dataset.tabButton === tab);
-                    });
-
-                    document.querySelectorAll('[data-tab-panel]').forEach((panel) => {
-                        panel.classList.toggle('active', panel.dataset.tabPanel === tab);
-                    });
-                });
-            });
-        });
-    </script>
 {% endblock %}

@@ -931,6 +931,12 @@ class PropertyRepository extends ServiceEntityRepository
      */
     private const int MAX_ENGAGEMENT_CANDIDATES = 500;
 
+    /**
+     * Même logique que {@see MAX_ENGAGEMENT_CANDIDATES}, mais pour le tri
+     * "récemment ajoutés" (date décroissante, distance en départage).
+     */
+    private const int MAX_RECENT_CANDIDATES = 500;
+
     private const float EARTH_RADIUS_KM = 6371.0;
 
     /**
@@ -1078,17 +1084,30 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
-     * Logement Ajouter Ressament, filtré par la date de update.
-     */
-    /**
      * Retourne les logements récemment ajoutés.
+     *
+     * Tri : date de mise à jour décroissante en priorité (le tri reste
+     * chronologique, y compris avec géolocalisation) ; en cas d'égalité, le
+     * bien le plus proche de l'utilisateur passe devant.
+     *
+     * Si aucune coordonnée n'est fournie (géolocalisation refusée /
+     * indisponible), on retombe sur le filtrage ville/pays existant, trié
+     * uniquement en base de données. Sinon, comme pour {@see logementPopulaire()},
+     * on élargit la recherche à tous les biens publiés (pas de filtre
+     * ville/pays, potentiellement trop restrictif) puisqu'on dispose d'un
+     * critère de proximité plus fiable.
      */
     public function logemntRecementAjouter(
         ?string $country,
         ?string $city,
         string $locale,
         int|string $id,
+        ?float $latitude = null,
+        ?float $longitude = null,
+        int $limit = 10,
     ): array {
+        $hasCoordinates = null !== $latitude && null !== $longitude;
+
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.translations', 'pt')
             ->innerJoin('p.user', 'agency')
@@ -1105,24 +1124,49 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('locale', $locale)
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
             ->setParameter('transactionTypeId', $id)
-            ->orderBy('p.updatedAt', 'DESC')
-            ->setMaxResults(10);
+            ->orderBy('p.updatedAt', 'DESC');
 
-        if (null !== $country && '' !== mb_trim($country)) {
-            $qb
-                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
-                ->setParameter('country', mb_trim($country));
+        if (!$hasCoordinates) {
+            $qb->setMaxResults($limit);
+
+            if (null !== $country && '' !== mb_trim($country)) {
+                $qb
+                    ->andWhere('LOWER(pt.pays) = LOWER(:country)')
+                    ->setParameter('country', mb_trim($country));
+            }
+
+            if (null !== $city && '' !== mb_trim($city)) {
+                $qb
+                    ->andWhere('LOWER(pt.ville) = LOWER(:city)')
+                    ->setParameter('city', mb_trim($city));
+            }
+
+            return $qb
+                ->getQuery()
+                ->getResult();
         }
 
-        if (null !== $city && '' !== mb_trim($city)) {
-            $qb
-                ->andWhere('LOWER(pt.ville) = LOWER(:city)')
-                ->setParameter('city', mb_trim($city));
-        }
-
-        return $qb
+        $properties = $qb
+            ->setMaxResults(self::MAX_RECENT_CANDIDATES)
             ->getQuery()
             ->getResult();
+
+        usort(
+            $properties,
+            static function (Property $a, Property $b) use ($latitude, $longitude): int {
+                $updatedAtA = $a->getUpdatedAt() ?? \DateTimeImmutable::createFromFormat('U', '0');
+                $updatedAtB = $b->getUpdatedAt() ?? \DateTimeImmutable::createFromFormat('U', '0');
+
+                if ($updatedAtA != $updatedAtB) {
+                    return $updatedAtB <=> $updatedAtA;
+                }
+
+                return self::distanceToUserKm($a, $latitude, $longitude)
+                    <=> self::distanceToUserKm($b, $latitude, $longitude);
+            }
+        );
+
+        return \array_slice($properties, 0, $limit);
     }
 
     public function findBySearchAndMapBoundsQueryBuilder(

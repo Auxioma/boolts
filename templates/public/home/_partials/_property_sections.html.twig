@@ -5,7 +5,7 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-            <section class="home-bt-listings">
+            <section class="home-bt-listings" data-controller="home--property-tabs">
                 <div class="container-xl home-bt-container">
                     <div class="home-bt-search-header">
                         <h2 class="home-bt-search-title">
@@ -17,6 +17,9 @@
                                 type="button"
                                 class="home-bt-main-tab active"
                                 data-tab-button="location"
+                                data-home--property-tabs-target="button"
+                                data-action="click->home--property-tabs#select"
+                                data-home--property-tabs-tab-param="location"
                             >
                                 En location
                             </button>
@@ -25,6 +28,9 @@
                                 type="button"
                                 class="home-bt-main-tab"
                                 data-tab-button="vente"
+                                data-home--property-tabs-target="button"
+                                data-action="click->home--property-tabs#select"
+                                data-home--property-tabs-tab-param="vente"
                             >
                                 En vente
                             </button>
@@ -90,6 +96,7 @@
                         <div
                             class="home-bt-tab-panel{{ panel.active ? ' active' : '' }}"
                             data-tab-panel="{{ panel.key }}"
+                            data-home--property-tabs-target="panel"
                         >
                             {% for section in panel.sections %}
                                 {% set isFeatured = section.featured|default(false) %}
