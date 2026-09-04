@@ -919,17 +919,42 @@ class PropertyRepository extends ServiceEntityRepository
     }
 
     /**
-     * logment les plus populaire a paris.
+     * Un favori est un signal d'intérêt bien plus fort qu'une simple vue :
+     * on le pondère pour calculer le "taux d'engagement" d'une annonce.
      */
+    private const int FAVORI_ENGAGEMENT_WEIGHT = 5;
+
+    /**
+     * Nombre maximum de candidats remontés de la base avant tri final en
+     * PHP (engagement + distance). Les biens au-delà de ce rang n'ont de
+     * toute façon aucune chance d'entrer dans le top affiché.
+     */
+    private const int MAX_ENGAGEMENT_CANDIDATES = 500;
+
+    private const float EARTH_RADIUS_KM = 6371.0;
+
     /**
      * Retourne les logements les plus populaires.
+     *
+     * Tri : taux d'engagement (vues + favoris pondérés) décroissant ;
+     * en cas d'égalité, le bien le plus proche de l'utilisateur (distance
+     * calculée à partir de sa géolocalisation navigateur) passe devant.
+     *
+     * Si aucune coordonnée n'est fournie (géolocalisation refusée /
+     * indisponible), on retombe sur le filtrage ville/pays existant, trié
+     * uniquement en base de données.
      */
     public function logementPopulaire(
         ?string $country,
         ?string $city,
         string $locale,
         int|string $id,
+        ?float $latitude = null,
+        ?float $longitude = null,
+        int $limit = 10,
     ): array {
+        $hasCoordinates = null !== $latitude && null !== $longitude;
+
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.propertyViews', 'pv')
             ->leftJoin('p.translations', 'pt')
@@ -941,33 +966,115 @@ class PropertyRepository extends ServiceEntityRepository
             ->addSelect('typeBien')
             ->leftJoin('p.typeTransaction', 'typeTransaction')
             ->addSelect('typeTransaction')
-            ->addSelect('COUNT(pv.id) AS HIDDEN viewsCount')
+            ->leftJoin(Favoris::class, 'f', 'WITH', 'f.property = p')
             ->andWhere('p.statut = :statut')
             ->andWhere('pt.locale = :locale')
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
             ->setParameter('locale', $locale)
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
             ->setParameter('transactionTypeId', $id)
-            ->groupBy('p.id')
-            ->orderBy('viewsCount', 'DESC')
-            ->addOrderBy('p.createdAt', 'DESC')
-            ->setMaxResults(10);
+            ->groupBy('p.id');
 
-        if (null !== $country && '' !== mb_trim($country)) {
+        if (!$hasCoordinates) {
             $qb
-                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
-                ->setParameter('country', mb_trim($country));
+                ->addSelect(\sprintf(
+                    '(COUNT(DISTINCT pv.id) + COUNT(DISTINCT f.id) * %d) AS HIDDEN engagementScore',
+                    self::FAVORI_ENGAGEMENT_WEIGHT
+                ))
+                ->orderBy('engagementScore', 'DESC')
+                ->addOrderBy('p.createdAt', 'DESC')
+                ->setMaxResults($limit);
+
+            if (null !== $country && '' !== mb_trim($country)) {
+                $qb
+                    ->andWhere('LOWER(pt.pays) = LOWER(:country)')
+                    ->setParameter('country', mb_trim($country));
+            }
+
+            if (null !== $city && '' !== mb_trim($city)) {
+                $qb
+                    ->andWhere('LOWER(pt.ville) = LOWER(:city)')
+                    ->setParameter('city', mb_trim($city));
+            }
+
+            return $qb
+                ->getQuery()
+                ->getResult();
         }
 
-        if (null !== $city && '' !== mb_trim($city)) {
-            $qb
-                ->andWhere('LOWER(pt.ville) = LOWER(:city)')
-                ->setParameter('city', mb_trim($city));
-        }
-
-        return $qb
+        /*
+         * Coordonnées disponibles : on considère tous les biens publiés
+         * (aucun filtrage ville/pays, moins précis qu'une vraie distance),
+         * on récupère vues/favoris pour calculer l'engagement en PHP, puis
+         * on trie par engagement décroissant et, à égalité, par proximité
+         * croissante.
+         */
+        $rows = $qb
+            ->addSelect('COUNT(DISTINCT pv.id) AS viewsCount')
+            ->addSelect('COUNT(DISTINCT f.id) AS favorisCount')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setMaxResults(self::MAX_ENGAGEMENT_CANDIDATES)
             ->getQuery()
             ->getResult();
+
+        usort(
+            $rows,
+            static function (array $a, array $b) use ($latitude, $longitude): int {
+                $engagementA = (int) $a['viewsCount'] + (int) $a['favorisCount'] * self::FAVORI_ENGAGEMENT_WEIGHT;
+                $engagementB = (int) $b['viewsCount'] + (int) $b['favorisCount'] * self::FAVORI_ENGAGEMENT_WEIGHT;
+
+                if ($engagementA !== $engagementB) {
+                    return $engagementB <=> $engagementA;
+                }
+
+                return self::distanceToUserKm($a[0], $latitude, $longitude)
+                    <=> self::distanceToUserKm($b[0], $latitude, $longitude);
+            }
+        );
+
+        return array_map(
+            static fn (array $row): Property => $row[0],
+            \array_slice($rows, 0, $limit)
+        );
+    }
+
+    /**
+     * Distance (km) entre un bien et l'utilisateur. Un bien sans
+     * coordonnées est renvoyé en fin de classement (distance infinie)
+     * plutôt qu'exclu du tri par engagement.
+     */
+    private static function distanceToUserKm(Property $property, float $latitude, float $longitude): float
+    {
+        $propertyLatitude = $property->getLatitude();
+        $propertyLongitude = $property->getLongitude();
+
+        if (null === $propertyLatitude || null === $propertyLongitude) {
+            return \PHP_FLOAT_MAX;
+        }
+
+        return self::haversineDistanceKm(
+            $latitude,
+            $longitude,
+            (float) $propertyLatitude,
+            (float) $propertyLongitude
+        );
+    }
+
+    private static function haversineDistanceKm(
+        float $latitude1,
+        float $longitude1,
+        float $latitude2,
+        float $longitude2,
+    ): float {
+        $latitude1Rad = deg2rad($latitude1);
+        $latitude2Rad = deg2rad($latitude2);
+        $deltaLatitude = deg2rad($latitude2 - $latitude1);
+        $deltaLongitude = deg2rad($longitude2 - $longitude1);
+
+        $a = sin($deltaLatitude / 2) ** 2
+            + cos($latitude1Rad) * cos($latitude2Rad) * sin($deltaLongitude / 2) ** 2;
+
+        return self::EARTH_RADIUS_KM * 2 * atan2(sqrt($a), sqrt(1 - $a));
     }
 
     /**

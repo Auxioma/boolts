@@ -97,10 +97,12 @@ final class HomeController extends AbstractController
         $session = $request->getSession();
 
         $city = $session->get('city', null);
+        $latitude = $session->get('latitude', null);
+        $longitude = $session->get('longitude', null);
 
         $locale = $request->getLocale();
 
-        $sections = $this->buildPropertySections($country, $city, $locale);
+        $sections = $this->buildPropertySections($country, $city, $locale, $latitude, $longitude);
         /**
          * je vais vérifier si l'utilisateur a un cookie de session pour retrouver ses recherches récentes.
          * Si le cookie existe, je vais récupérer l'UUID  et le nom de la ville de la recherche et je vais vérifier si la recherche existe dans la base de données.
@@ -148,16 +150,25 @@ final class HomeController extends AbstractController
         $city = mb_trim((string) $request->query->get('city'));
         $country = mb_trim((string) $request->query->get('country'));
 
+        $latitudeParam = $request->query->get('latitude');
+        $longitudeParam = $request->query->get('longitude');
+
+        $latitude = is_numeric($latitudeParam) ? (float) $latitudeParam : null;
+        $longitude = is_numeric($longitudeParam) ? (float) $longitudeParam : null;
+
         $session = $request->getSession();
 
         /*
          * Aucune ville transmise : l'utilisateur a désactivé / refusé la
-         * géolocalisation du navigateur. On oublie la ville mémorisée et on
-         * revient à la requête initiale (biens localisés via l'adresse IP).
+         * géolocalisation du navigateur. On oublie la ville et les
+         * coordonnées mémorisées et on revient à la requête initiale (biens
+         * localisés via l'adresse IP).
          */
         if ('' === $city) {
             $session->remove('city');
             $session->remove('country');
+            $session->remove('latitude');
+            $session->remove('longitude');
 
             $location = $ipLocationService->locate($request->getClientIp());
             $country = $location['country'] ?? 'France';
@@ -174,10 +185,12 @@ final class HomeController extends AbstractController
 
         $session->set('city', $city);
         $session->set('country', $country);
+        $session->set('latitude', $latitude);
+        $session->set('longitude', $longitude);
 
         return $this->render(
             'public/home/_partials/_property_sections.html.twig',
-            $this->buildPropertySections($country, $city, $request->getLocale())
+            $this->buildPropertySections($country, $city, $request->getLocale(), $latitude, $longitude)
         );
     }
 
@@ -191,11 +204,13 @@ final class HomeController extends AbstractController
         ?string $country,
         ?string $city,
         string $locale,
+        ?float $latitude = null,
+        ?float $longitude = null,
     ): array {
         return [
-            'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 1),
+            'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 1, $latitude, $longitude),
             'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 1),
-            'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 2),
+            'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($country, $city, $locale, 2, $latitude, $longitude),
             'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 2),
             'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 2),
             'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 1),
