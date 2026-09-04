@@ -22,7 +22,11 @@
                 <div class="connexion-securite">
 
                     {# langue préféré #}
-                    <div class="js-editable-field formulaire">
+                    <div
+                        class="js-editable-field formulaire"
+                        data-controller="single-select-autocomplete"
+                        data-single-select-autocomplete-no-results-text-value="Aucune langue trouvée"
+                    >
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
                                 <h3 class="mb-0">Langue préférée</h3>
@@ -32,20 +36,39 @@
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input w-75">
-                                    {{ form_widget(form.langues, {
-                                        attr: {
-                                            class: 'form-control',
-                                            'data-name': 'langues',
-                                        },
-                                    }) }}
+                                    <div class="agency-autocomplete">
+                                        {{ form_widget(form.langues, {
+                                            attr: {
+                                                class: 'd-none',
+                                                'data-name': 'langues',
+                                                'data-single-select-autocomplete-target': 'select',
+                                            },
+                                        }) }}
+
+                                        <div class="agency-autocomplete-search">
+                                            <input
+                                                type="text"
+                                                class="form-control agency-autocomplete-input rounded-70 pl-44"
+                                                placeholder="Rechercher une langue..."
+                                                autocomplete="off"
+                                                data-single-select-autocomplete-target="search"
+                                                data-action="input->single-select-autocomplete#search focus->single-select-autocomplete#show keydown->single-select-autocomplete#handleKeydown blur->single-select-autocomplete#hideLater"
+                                            >
+
+                                            <i class="icon-search agency-autocomplete-icon"></i>
+                                        </div>
+
+                                        <div class="agency-autocomplete-results d-none" data-single-select-autocomplete-target="results"></div>
+                                    </div>
                                 </div>
                             </div>
 
                             <button
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
+                                data-action="click->field-save#handle click->single-select-autocomplete#focusSearch"
                                 data-field-save-field-param="langues"
+                                data-field-save-input-param="#{{ form.langues.vars.id }}"
                                 data-field-save-multiple-param="false"
                                 data-field-save-output-param="#langue-value"
                             >
@@ -56,7 +79,11 @@
                         <span class="flash-message flash-message-error js-field-error d-none"></span>
                     </div>
 
-                    {# devise #}<div class="js-editable-field formulaire my-20">
+                    {# devise #}<div
+                        class="js-editable-field formulaire my-20"
+                        data-controller="single-select-autocomplete"
+                        data-single-select-autocomplete-no-results-text-value="Aucune devise trouvée"
+                    >
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
                                 <h3 class="mb-0">Devise préférée</h3>
@@ -66,20 +93,39 @@
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input w-75">
-                                    {{ form_widget(form.devise, {
-                                        attr: {
-                                            class: 'form-control',
-                                            'data-name': 'devise',
-                                        },
-                                    }) }}
+                                    <div class="agency-autocomplete">
+                                        {{ form_widget(form.devise, {
+                                            attr: {
+                                                class: 'd-none',
+                                                'data-name': 'devise',
+                                                'data-single-select-autocomplete-target': 'select',
+                                            },
+                                        }) }}
+
+                                        <div class="agency-autocomplete-search">
+                                            <input
+                                                type="text"
+                                                class="form-control agency-autocomplete-input rounded-70 pl-44"
+                                                placeholder="Rechercher une devise..."
+                                                autocomplete="off"
+                                                data-single-select-autocomplete-target="search"
+                                                data-action="input->single-select-autocomplete#search focus->single-select-autocomplete#show keydown->single-select-autocomplete#handleKeydown blur->single-select-autocomplete#hideLater"
+                                            >
+
+                                            <i class="icon-search agency-autocomplete-icon"></i>
+                                        </div>
+
+                                        <div class="agency-autocomplete-results d-none" data-single-select-autocomplete-target="results"></div>
+                                    </div>
                                 </div>
                             </div>
 
                             <button
                                 type="button"
                                 class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
-                                data-action="click->field-save#handle"
+                                data-action="click->field-save#handle click->single-select-autocomplete#focusSearch"
                                 data-field-save-field-param="devise"
+                                data-field-save-input-param="#{{ form.devise.vars.id }}"
                                 data-field-save-multiple-param="false"
                                 data-field-save-output-param="#devise-value"
                             >

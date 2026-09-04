@@ -12,10 +12,14 @@
 
 namespace App\Form\Dashboard\AgenceImmobiliere;
 
+use App\Entity\Devise;
 use App\Entity\FuseauHoraire;
+use App\Entity\Langues;
 use App\Entity\LangueParler;
 use App\Entity\User;
+use App\Repository\DeviseRepository;
 use App\Repository\FuseauHoraireRepository;
+use App\Repository\LanguesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -152,12 +156,26 @@ class ProfileAgenceType extends AbstractType
             ])
 
             ->add('langues', EntityType::class, [
-                'class' => \App\Entity\Langues::class,
+                'class' => Langues::class,
                 'choice_label' => 'name',
                 'required' => false,
+                'placeholder' => 'Sélectionner une langue',
+                'query_builder' => static function (LanguesRepository $repository) {
+                    return $repository->createQueryBuilder('langue')
+                        ->orderBy('langue.name', 'ASC');
+                },
             ])
 
-            ->add('devise')
+            ->add('devise', EntityType::class, [
+                'class' => Devise::class,
+                'choice_label' => 'nom',
+                'required' => false,
+                'placeholder' => 'Sélectionner une devise',
+                'query_builder' => static function (DeviseRepository $repository) {
+                    return $repository->createQueryBuilder('devise')
+                        ->orderBy('devise.nom', 'ASC');
+                },
+            ])
             ->add('fuseauHoraire', EntityType::class, [
                 'class' => FuseauHoraire::class,
                 'choice_label' => 'nom',
