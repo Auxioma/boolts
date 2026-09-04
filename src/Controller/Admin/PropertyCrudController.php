@@ -36,6 +36,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\BatchActionDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
@@ -162,14 +163,30 @@ class PropertyCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le statut du bien')
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détail du bien immobilier')
             ->setDefaultSort(['createdAt' => 'DESC'])
-            ->addFormTheme('admin/form/property_images.html.twig');
+            ->addFormTheme('admin/form/property_images.html.twig')
+            ->askConfirmationOnBatchActions('Voulez-vous vraiment appliquer l’action « %action_name% » aux %num_items% biens sélectionnés ?');
     }
 
     public function configureActions(Actions $actions): Actions
     {
         $actions
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->disable(Action::NEW, Action::DELETE);
+            ->disable(Action::NEW, Action::DELETE)
+            ->addBatchAction(
+                Action::new('propertyBatchPublish', 'Publier la sélection', 'fa fa-check')
+                    ->linkToCrudAction('publishBatch')
+                    ->addCssClass('btn btn-success')
+            )
+            ->addBatchAction(
+                Action::new('propertyBatchReject', 'Refuser la sélection', 'fa fa-ban')
+                    ->linkToCrudAction('rejectBatch')
+                    ->addCssClass('btn btn-warning')
+            )
+            ->addBatchAction(
+                Action::new('propertyBatchDelete', 'Supprimer la sélection', 'fa fa-trash')
+                    ->linkToCrudAction('deleteBatch')
+                    ->addCssClass('btn btn-danger')
+            );
 
         // Les actions globales sont affichées dans l'ordre inverse de leur ajout ;
         // on ajoute donc Vendu, Location puis Vente pour obtenir Vente | Location | Vendu.
@@ -211,6 +228,167 @@ class PropertyCrudController extends AbstractCrudController
         );
 
         return $actions;
+    }
+
+    /**
+     * Suppression en masse des biens sélectionnés dans la liste (action de lot).
+     *
+     * Les entités sont supprimées une à une via l'EntityManager (et non via
+     * une requête SQL groupée) afin que les événements Doctrine s'exécutent
+     * normalement (suppression des fichiers d'images liés, etc.).
+     *
+     * @param BatchActionDto<Property> $batchActionDto
+     */
+    #[AdminRoute('/delete-batch', name: 'delete_batch', options: ['methods' => ['POST']])]
+    public function deleteBatch(BatchActionDto $batchActionDto, EntityManagerInterface $entityManager): Response
+    {
+        $this->assertValidBatchActionDto($batchActionDto);
+
+        $deletedCount = 0;
+
+        foreach ($batchActionDto->getEntityIds() as $entityId) {
+            $property = $entityManager->find(Property::class, $entityId);
+
+            if (!$property instanceof Property) {
+                continue;
+            }
+
+            $entityManager->remove($property);
+            ++$deletedCount;
+        }
+
+        $entityManager->flush();
+
+        if ($deletedCount > 0) {
+            $this->addFlash('success', \sprintf('%d bien%s supprimé%s.', $deletedCount, $deletedCount > 1 ? 's' : '', $deletedCount > 1 ? 's' : ''));
+        } else {
+            $this->addFlash('warning', 'Aucun bien n’a été supprimé.');
+        }
+
+        return $this->redirectToPropertyIndex();
+    }
+
+    /**
+     * Publication en masse des biens sélectionnés (action de lot) : passe leur
+     * statut à « Publiée » et notifie chaque agence, comme lors d'une
+     * publication individuelle depuis le formulaire d'édition.
+     *
+     * @param BatchActionDto<Property> $batchActionDto
+     */
+    #[AdminRoute('/publish-batch', name: 'publish_batch', options: ['methods' => ['POST']])]
+    public function publishBatch(BatchActionDto $batchActionDto, EntityManagerInterface $entityManager): Response
+    {
+        return $this->changeStatusBatch($batchActionDto, $entityManager, StatutAnnonceImmobiliere::PUBLIEE);
+    }
+
+    /**
+     * Refus en masse des biens sélectionnés (action de lot) : passe leur
+     * statut à « Refusée » et notifie chaque agence.
+     *
+     * @param BatchActionDto<Property> $batchActionDto
+     */
+    #[AdminRoute('/reject-batch', name: 'reject_batch', options: ['methods' => ['POST']])]
+    public function rejectBatch(BatchActionDto $batchActionDto, EntityManagerInterface $entityManager): Response
+    {
+        return $this->changeStatusBatch($batchActionDto, $entityManager, StatutAnnonceImmobiliere::REFUSEE);
+    }
+
+    /**
+     * @param BatchActionDto<Property> $batchActionDto
+     */
+    private function changeStatusBatch(
+        BatchActionDto $batchActionDto,
+        EntityManagerInterface $entityManager,
+        StatutAnnonceImmobiliere $targetStatut,
+    ): Response {
+        $this->assertValidBatchActionDto($batchActionDto);
+
+        $updatedProperties = [];
+
+        foreach ($batchActionDto->getEntityIds() as $entityId) {
+            $property = $entityManager->find(Property::class, $entityId);
+
+            if (!$property instanceof Property || $targetStatut === $property->getStatut()) {
+                continue;
+            }
+
+            $property->setStatut($targetStatut);
+
+            $message = match ($targetStatut) {
+                StatutAnnonceImmobiliere::PUBLIEE => $this->propertyNotificationLabeler->acceptedLabel($property),
+                StatutAnnonceImmobiliere::REFUSEE => $this->propertyNotificationLabeler->refusedLabel($property),
+                default => null,
+            };
+
+            $agency = $property->getUser();
+
+            if (null !== $message && $agency instanceof User) {
+                $entityManager->persist(
+                    (new AgencyNotification())
+                        ->setAgency($agency)
+                        ->setNom($message)
+                );
+            }
+
+            $updatedProperties[] = $property;
+        }
+
+        $entityManager->flush();
+
+        if (StatutAnnonceImmobiliere::PUBLIEE === $targetStatut) {
+            foreach ($updatedProperties as $property) {
+                $agency = $property->getUser();
+
+                if ($agency instanceof User) {
+                    $this->agencyPropertySubmissionMailer->sendPublicationNotification($agency, $property);
+                }
+            }
+        }
+
+        $updatedCount = \count($updatedProperties);
+
+        if ($updatedCount > 0) {
+            $this->addFlash(
+                'success',
+                \sprintf('%d bien%s mis à jour (statut « %s »).', $updatedCount, $updatedCount > 1 ? 's' : '', $targetStatut->label()),
+            );
+        } else {
+            $this->addFlash('warning', 'Aucun bien n’a été mis à jour.');
+        }
+
+        return $this->redirectToPropertyIndex();
+    }
+
+    /**
+     * Vérifie le jeton CSRF et le type d'entité d'une action de lot déclenchée
+     * depuis la liste des biens.
+     *
+     * @param BatchActionDto<Property> $batchActionDto
+     */
+    private function assertValidBatchActionDto(BatchActionDto $batchActionDto): void
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $expectedCsrfTokenId = 'ea-batch-action-'.$batchActionDto->getName().'-'.$batchActionDto->getEntityFqcn();
+
+        if (!$this->isCsrfTokenValid($expectedCsrfTokenId, $batchActionDto->getCsrfToken())) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        if (Property::class !== $batchActionDto->getEntityFqcn()) {
+            throw $this->createAccessDeniedException('Type d’entité inattendu.');
+        }
+    }
+
+    private function redirectToPropertyIndex(): Response
+    {
+        $indexUrl = $this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction(Action::INDEX)
+            ->unset('page')
+            ->generateUrl();
+
+        return $this->redirect($indexUrl);
     }
 
     /**
