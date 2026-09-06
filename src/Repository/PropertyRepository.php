@@ -712,43 +712,44 @@ class PropertyRepository extends ServiceEntityRepository
         ?string $city,
         string $locale,
         int|string $transactionTypeId,
+        ?float $latitude = null,
+        ?float $longitude = null,
         int $limit = 10,
     ): array {
+        // Géolocalisation navigateur autorisée : on affiche tous les biens
+        // boostés du pays (déterminé via l'IP), triés du plus proche au plus
+        // loin — pas de filtre ville, qui serait trop restrictif ici.
+        if (null !== $latitude && null !== $longitude) {
+            $results = $this->queryActiveBoostedForHome($country, null, $locale, $transactionTypeId);
+
+            usort(
+                $results,
+                static fn (Property $a, Property $b): int => self::distanceToUserKm($a, $latitude, $longitude)
+                    <=> self::distanceToUserKm($b, $latitude, $longitude)
+            );
+
+            return \array_slice($results, 0, $limit);
+        }
+
         $hasCountry = null !== $country && '' !== mb_trim($country);
         $hasCity = null !== $city && '' !== mb_trim($city);
 
         // 1. Ville + pays exacts.
-        $results = $this->queryActiveBoostedForHome(
-            $country,
-            $city,
-            $locale,
-            $transactionTypeId,
-            $limit
-        );
+        $results = $this->queryActiveBoostedForHome($country, $city, $locale, $transactionTypeId);
 
         // 2. Repli : pays seul (uniquement si une ville avait été demandée).
         if ([] === $results && $hasCity && $hasCountry) {
-            $results = $this->queryActiveBoostedForHome(
-                $country,
-                null,
-                $locale,
-                $transactionTypeId,
-                $limit
-            );
+            $results = $this->queryActiveBoostedForHome($country, null, $locale, $transactionTypeId);
         }
 
         // 3. Repli : sans filtre géographique (langue conservée).
         if ([] === $results && ($hasCountry || $hasCity)) {
-            $results = $this->queryActiveBoostedForHome(
-                null,
-                null,
-                $locale,
-                $transactionTypeId,
-                $limit
-            );
+            $results = $this->queryActiveBoostedForHome(null, null, $locale, $transactionTypeId);
         }
 
-        return $results;
+        shuffle($results);
+
+        return \array_slice($results, 0, $limit);
     }
 
     /**
@@ -759,7 +760,6 @@ class PropertyRepository extends ServiceEntityRepository
         ?string $city,
         string $locale,
         int|string $transactionTypeId,
-        int $limit,
     ): array {
         $now = new \DateTimeImmutable();
 
@@ -776,7 +776,6 @@ class PropertyRepository extends ServiceEntityRepository
             ->leftJoin('p.typeTransaction', 'typeTransaction')
             ->addSelect('typeTransaction')
             ->innerJoin(PropertyBoost::class, 'boost', 'WITH', 'boost.property = p')
-            ->addSelect('boost.startsAt AS HIDDEN boostStartsAt')
             ->andWhere('p.statut = :statut')
             ->andWhere('pt.locale = :locale')
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
@@ -788,10 +787,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('locale', $locale)
             ->setParameter('transactionTypeId', $transactionTypeId)
             ->setParameter('boostStatus', PropertyBoostStatus::ACTIVE->value)
-            ->setParameter('now', $now)
-            ->orderBy('boostStartsAt', 'DESC')
-            ->addOrderBy('p.createdAt', 'DESC')
-            ->setMaxResults($limit);
+            ->setParameter('now', $now);
 
         if (null !== $country && '' !== mb_trim($country)) {
             $qb
@@ -925,6 +921,13 @@ class PropertyRepository extends ServiceEntityRepository
     private const int FAVORI_ENGAGEMENT_WEIGHT = 5;
 
     /**
+     * Poids plancher utilisé pour le tirage pondéré de {@see logementPopulaire()} :
+     * un bien sans aucune vue ni favori garde une petite chance d'être tiré
+     * (poids nul = probabilité nulle, ce qui l'exclurait définitivement).
+     */
+    private const int MIN_ENGAGEMENT_WEIGHT = 1;
+
+    /**
      * Nombre maximum de candidats remontés de la base avant tri final en
      * PHP (engagement + distance). Les biens au-delà de ce rang n'ont de
      * toute façon aucune chance d'entrer dans le top affiché.
@@ -942,25 +945,17 @@ class PropertyRepository extends ServiceEntityRepository
     /**
      * Retourne les logements les plus populaires.
      *
-     * Tri : taux d'engagement (vues + favoris pondérés) décroissant ;
-     * en cas d'égalité, le bien le plus proche de l'utilisateur (distance
-     * calculée à partir de sa géolocalisation navigateur) passe devant.
-     *
-     * Si aucune coordonnée n'est fournie (géolocalisation refusée /
-     * indisponible), on retombe sur le filtrage ville/pays existant, trié
-     * uniquement en base de données.
+     * Sélection : tirage aléatoire pondéré (sans remise) parmi les biens
+     * publiés du pays (déterminé via l'IP) — un bien avec beaucoup de vues
+     * et de favoris a statistiquement plus de chances d'être tiré, mais rien
+     * n'est jamais garanti ni exclu. Voir {@see weightedRandomSample()}.
      */
     public function logementPopulaire(
         ?string $country,
-        ?string $city,
         string $locale,
         int|string $id,
-        ?float $latitude = null,
-        ?float $longitude = null,
         int $limit = 10,
     ): array {
-        $hasCoordinates = null !== $latitude && null !== $longitude;
-
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.propertyViews', 'pv')
             ->leftJoin('p.translations', 'pt')
@@ -973,74 +968,68 @@ class PropertyRepository extends ServiceEntityRepository
             ->leftJoin('p.typeTransaction', 'typeTransaction')
             ->addSelect('typeTransaction')
             ->leftJoin(Favoris::class, 'f', 'WITH', 'f.property = p')
+            ->addSelect('COUNT(DISTINCT pv.id) AS viewsCount')
+            ->addSelect('COUNT(DISTINCT f.id) AS favorisCount')
             ->andWhere('p.statut = :statut')
             ->andWhere('pt.locale = :locale')
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
             ->setParameter('locale', $locale)
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
             ->setParameter('transactionTypeId', $id)
-            ->groupBy('p.id');
+            ->groupBy('p.id')
+            ->setMaxResults(self::MAX_ENGAGEMENT_CANDIDATES);
 
-        if (!$hasCoordinates) {
+        if (null !== $country && '' !== mb_trim($country)) {
             $qb
-                ->addSelect(\sprintf(
-                    '(COUNT(DISTINCT pv.id) + COUNT(DISTINCT f.id) * %d) AS HIDDEN engagementScore',
-                    self::FAVORI_ENGAGEMENT_WEIGHT
-                ))
-                ->orderBy('engagementScore', 'DESC')
-                ->addOrderBy('p.createdAt', 'DESC')
-                ->setMaxResults($limit);
-
-            if (null !== $country && '' !== mb_trim($country)) {
-                $qb
-                    ->andWhere('LOWER(pt.pays) = LOWER(:country)')
-                    ->setParameter('country', mb_trim($country));
-            }
-
-            if (null !== $city && '' !== mb_trim($city)) {
-                $qb
-                    ->andWhere('LOWER(pt.ville) = LOWER(:city)')
-                    ->setParameter('city', mb_trim($city));
-            }
-
-            return $qb
-                ->getQuery()
-                ->getResult();
+                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
+                ->setParameter('country', mb_trim($country));
         }
 
-        /*
-         * Coordonnées disponibles : on considère tous les biens publiés
-         * (aucun filtrage ville/pays, moins précis qu'une vraie distance),
-         * on récupère vues/favoris pour calculer l'engagement en PHP, puis
-         * on trie par engagement décroissant et, à égalité, par proximité
-         * croissante.
-         */
-        $rows = $qb
-            ->addSelect('COUNT(DISTINCT pv.id) AS viewsCount')
-            ->addSelect('COUNT(DISTINCT f.id) AS favorisCount')
-            ->orderBy('p.createdAt', 'DESC')
-            ->setMaxResults(self::MAX_ENGAGEMENT_CANDIDATES)
-            ->getQuery()
-            ->getResult();
+        $rows = $qb->getQuery()->getResult();
+
+        return self::weightedRandomSample($rows, $limit);
+    }
+
+    /**
+     * Tirage aléatoire pondéré sans remise (méthode de Efraimidis-Spirakis) :
+     * chaque ligne reçoit une clé aléatoire dont l'exposant dépend de son
+     * poids, puis on garde les $limit clés les plus hautes. Plus le poids
+     * est élevé, plus la clé tend statistiquement vers 1 — sans qu'un bien
+     * à faible engagement soit pour autant exclu d'office.
+     *
+     * @param list<array{0: Property, viewsCount: int|string, favorisCount: int|string}> $rows
+     *
+     * @return list<Property>
+     */
+    private static function weightedRandomSample(array $rows, int $limit): array
+    {
+        if ([] === $rows) {
+            return [];
+        }
+
+        $keyedRows = array_map(
+            static function (array $row): array {
+                $weight = (int) $row['viewsCount'] + (int) $row['favorisCount'] * self::FAVORI_ENGAGEMENT_WEIGHT;
+                $weight = max($weight, self::MIN_ENGAGEMENT_WEIGHT);
+
+                $randomUnit = mt_rand(1, mt_getrandmax()) / mt_getrandmax();
+
+                return [
+                    'key' => $randomUnit ** (1 / $weight),
+                    'property' => $row[0],
+                ];
+            },
+            $rows
+        );
 
         usort(
-            $rows,
-            static function (array $a, array $b) use ($latitude, $longitude): int {
-                $engagementA = (int) $a['viewsCount'] + (int) $a['favorisCount'] * self::FAVORI_ENGAGEMENT_WEIGHT;
-                $engagementB = (int) $b['viewsCount'] + (int) $b['favorisCount'] * self::FAVORI_ENGAGEMENT_WEIGHT;
-
-                if ($engagementA !== $engagementB) {
-                    return $engagementB <=> $engagementA;
-                }
-
-                return self::distanceToUserKm($a[0], $latitude, $longitude)
-                    <=> self::distanceToUserKm($b[0], $latitude, $longitude);
-            }
+            $keyedRows,
+            static fn (array $a, array $b): int => $b['key'] <=> $a['key']
         );
 
         return array_map(
-            static fn (array $row): Property => $row[0],
-            \array_slice($rows, 0, $limit)
+            static fn (array $row): Property => $row['property'],
+            \array_slice($keyedRows, 0, $limit)
         );
     }
 
@@ -1090,11 +1079,11 @@ class PropertyRepository extends ServiceEntityRepository
      * chronologique, y compris avec géolocalisation) ; en cas d'égalité, le
      * bien le plus proche de l'utilisateur passe devant.
      *
-     * Si aucune coordonnée n'est fournie (géolocalisation refusée /
-     * indisponible), on retombe sur le filtrage ville/pays existant, trié
-     * uniquement en base de données. Sinon, comme pour {@see logementPopulaire()},
-     * on élargit la recherche à tous les biens publiés (pas de filtre
-     * ville/pays, potentiellement trop restrictif) puisqu'on dispose d'un
+     * Le pays (déterminé via l'IP) est toujours appliqué comme filtre. Si
+     * aucune coordonnée n'est fournie (géolocalisation refusée /
+     * indisponible), on filtre en plus sur la ville, trié uniquement en base
+     * de données. Sinon, on élargit la recherche à tout le pays (pas de
+     * filtre ville, potentiellement trop restrictif) puisqu'on dispose d'un
      * critère de proximité plus fiable.
      */
     public function logemntRecementAjouter(
@@ -1126,14 +1115,14 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('transactionTypeId', $id)
             ->orderBy('p.updatedAt', 'DESC');
 
+        if (null !== $country && '' !== mb_trim($country)) {
+            $qb
+                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
+                ->setParameter('country', mb_trim($country));
+        }
+
         if (!$hasCoordinates) {
             $qb->setMaxResults($limit);
-
-            if (null !== $country && '' !== mb_trim($country)) {
-                $qb
-                    ->andWhere('LOWER(pt.pays) = LOWER(:country)')
-                    ->setParameter('country', mb_trim($country));
-            }
 
             if (null !== $city && '' !== mb_trim($city)) {
                 $qb
