@@ -885,6 +885,8 @@ class PropertyRepository extends ServiceEntityRepository
             ->leftJoin('p.translations', 'pt')
             ->andWhere('pt.locale = :locale')
             ->setParameter('locale', $locale)
+            ->andWhere('p.statut = :statut')
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
         ;
 
         if (null === $transactionTypeId || empty($pays)) {
