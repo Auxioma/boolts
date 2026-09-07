@@ -15,7 +15,6 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 use App\Entity\AgencyNotification;
 use App\Entity\User;
 use App\Repository\AgencyNotificationRepository;
-use App\Security\Voter\AgencyDocumentVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,12 +23,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+// La messagerie et les autres pages du dashboard restent conditionnées à la
+// validation des documents (AgencyDocumentVoter), mais les notifications sont
+// toujours accessibles : l'agence doit pouvoir y lire l'issue de la revue de
+// ses documents (acceptation / refus) avant même que le compte soit validé.
 #[Route('/immobiliere/notifications', name: 'agence_immobiliere_')]
 #[IsGranted('ROLE_AGENCE')]
-#[IsGranted(
-    AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD,
-    message: 'Vos documents doivent être validés pour accéder à cette page.',
-)]
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereNotificationsController.
  *

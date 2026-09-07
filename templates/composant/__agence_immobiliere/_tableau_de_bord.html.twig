@@ -35,9 +35,12 @@
             </a>
         </div>
 
+        {# Les notifications restent toujours accessibles, même si les documents
+           de l'agence ne sont pas encore déposés ou validés : c'est là que
+           l'agence lit l'issue de la revue de ses documents. #}
         <div class="px-10 py-10 mt-8 color-active">
-            <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_notifications') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_notifications' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
+            <a href="{{ path('agence_immobiliere_notifications') }}"
+               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_notifications' ? 'active' : '' }}">
                 <span>
                     <i class="icon-bell mr-10"></i>
                     Notifications
