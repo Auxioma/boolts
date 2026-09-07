@@ -191,6 +191,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
     private ?\DateTimeImmutable $documentDeletionWarningFiveDaysSentAt = null;
 
     /**
+     * Dernier résultat de la revue documentaire notifié par e-mail à l'agence
+     * ("approved" ou "rejected"). Permet de n'envoyer qu'un seul e-mail par
+     * résultat, même si la fiche est réenregistrée plusieurs fois.
+     */
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $documentReviewOutcomeNotified = null;
+
+    /**
      * @var Collection<int, UserDocumentRequest>
      */
     #[ORM\OneToMany(
@@ -916,6 +924,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         ?\DateTimeImmutable $documentDeletionWarningFiveDaysSentAt,
     ): static {
         $this->documentDeletionWarningFiveDaysSentAt = $documentDeletionWarningFiveDaysSentAt;
+
+        return $this;
+    }
+
+    public function getDocumentReviewOutcomeNotified(): ?string
+    {
+        return $this->documentReviewOutcomeNotified;
+    }
+
+    public function setDocumentReviewOutcomeNotified(
+        ?string $documentReviewOutcomeNotified,
+    ): static {
+        $this->documentReviewOutcomeNotified = $documentReviewOutcomeNotified;
 
         return $this;
     }

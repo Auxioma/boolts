@@ -1,0 +1,93 @@
+{#
+ Template: templates/emails/subscription/subscription_downgrade_scheduled.html.twig
+ Role: Récapitulatif envoyé à l'agence quand un passage à un forfait d'un montant inférieur est programmé (effet différé en fin de période).
+ Context: App\MessageHandler\Billing\SendSubscriptionEmailMessageHandler + contexte du SubscriptionEmailLog.
+ Maintenance: le contenu s'adapte à l'ancien et au nouveau forfait, à la périodicité et à la date d'effet.
+#}
+
+<p>Bonjour,</p>
+
+<p>
+    Nous avons bien enregistré votre demande de passage
+    {% if previous_plan_name is defined and previous_plan_name %}
+        du forfait <strong>{{ previous_plan_name }}</strong> vers
+    {% else %}
+        vers
+    {% endif %}
+    <strong>{{ plan_name|default('Boolts') }}</strong>
+    en formule
+    {% if billing_period == 'annual' %}annuelle{% else %}mensuelle{% endif %}.
+</p>
+
+<p>
+    S’agissant d’un forfait d’un montant inférieur, le changement
+    <strong>n’est pas immédiat</strong> : aucun paiement n’est effectué aujourd’hui.
+    Il prendra effet
+    {% if effective_at is defined and effective_at %}
+        le <strong>{{ effective_at|date('d/m/Y') }}</strong>,
+    {% else %}
+        à la fin de votre période en cours,
+    {% endif %}
+    au renouvellement de votre abonnement. D’ici là, vous conservez votre forfait actuel
+    et l’ensemble de ses avantages.
+</p>
+
+<table role="presentation" cellpadding="6" cellspacing="0" border="0">
+    {% if previous_plan_name is defined and previous_plan_name %}
+    <tr>
+        <td><strong>Forfait actuel</strong></td>
+        <td>
+            {{ previous_plan_name }}
+            {% if previous_amount_minor is defined and previous_amount_minor is not null %}
+                ({{ (previous_amount_minor / 100)|number_format(2, ',', ' ') }} {{ currency_sign|default('') }})
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td><strong>Nouveau forfait</strong></td>
+        <td>{{ plan_name|default('Boolts') }}</td>
+    </tr>
+    <tr>
+        <td><strong>Périodicité</strong></td>
+        <td>{% if billing_period == 'annual' %}Annuelle{% else %}Mensuelle{% endif %}</td>
+    </tr>
+    {% if amount_minor is defined and amount_minor is not null %}
+    <tr>
+        <td><strong>Nouveau montant</strong></td>
+        <td>
+            {{ (amount_minor / 100)|number_format(2, ',', ' ') }} {{ currency_sign|default('') }}
+            {% if billing_period == 'annual' %}/ an{% else %}/ mois{% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td><strong>Prise d’effet</strong></td>
+        <td>
+            {% if effective_at is defined and effective_at %}
+                {{ effective_at|date('d/m/Y') }}
+            {% else %}
+                Fin de la période en cours
+            {% endif %}
+        </td>
+    </tr>
+    {% if property_limit is defined and property_limit is not null %}
+    <tr>
+        <td><strong>Annonces incluses (à compter de la prise d’effet)</strong></td>
+        <td>{{ property_limit }}</td>
+    </tr>
+    {% endif %}
+    {% if included_boosts is defined and included_boosts is not null %}
+    <tr>
+        <td><strong>Crédits Boost inclus par période (à compter de la prise d’effet)</strong></td>
+        <td>{{ included_boosts }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+<p>
+    Vous pouvez annuler ce changement tant qu’il n’a pas pris effet, depuis votre espace :
+    <a href="{{ portal_url }}">Gérer mon abonnement</a>
+</p>
+
+<p>À bientôt,<br>L’équipe Boolts</p>

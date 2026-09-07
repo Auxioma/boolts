@@ -6,6 +6,9 @@ namespace App\Entity\Billing\Enum;
 
 enum SubscriptionEmailType: string
 {
+    case SUBSCRIPTION_PURCHASED = 'subscription_purchased';
+    case SUBSCRIPTION_UPGRADED = 'subscription_upgraded';
+    case SUBSCRIPTION_DOWNGRADE_SCHEDULED = 'subscription_downgrade_scheduled';
     case PAYMENT_FAILED_FIRST_ATTEMPT = 'payment_failed_first_attempt';
     case PAYMENT_RETRY_FAILED = 'payment_retry_failed';
     case PAYMENT_RECOVERED = 'payment_recovered';
@@ -17,6 +20,9 @@ enum SubscriptionEmailType: string
     public function subject(): string
     {
         return match ($this) {
+            self::SUBSCRIPTION_PURCHASED => 'Récapitulatif de votre achat d’abonnement',
+            self::SUBSCRIPTION_UPGRADED => 'Votre changement de forfait est confirmé',
+            self::SUBSCRIPTION_DOWNGRADE_SCHEDULED => 'Votre changement de forfait est programmé',
             self::PAYMENT_FAILED_FIRST_ATTEMPT => 'Échec du renouvellement de votre abonnement',
             self::PAYMENT_RETRY_FAILED => 'Nouvelle tentative de renouvellement échouée',
             self::PAYMENT_RECOVERED => 'Votre abonnement est de nouveau actif',

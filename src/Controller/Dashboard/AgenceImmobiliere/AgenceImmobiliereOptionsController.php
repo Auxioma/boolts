@@ -33,6 +33,7 @@ use App\Repository\Billing\SubscriptionPlanPriceRepository;
 use App\Repository\Booster\BoosterPackPriceRepository;
 use App\Security\Voter\AgencyDocumentVoter;
 use App\Service\Billing\InvoiceIssuer;
+use App\Service\Booster\BoosterPackPurchaseMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Stripe\Exception\ApiErrorException;
@@ -271,6 +272,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         StripeClient $stripe,
         LoggerInterface $logger,
         InvoiceIssuer $invoiceIssuer,
+        BoosterPackPurchaseMailer $purchaseMailer,
     ): JsonResponse {
         if (!$this->isCsrfTokenValid('agency_boost_purchase', (string) $request->headers->get('X-CSRF-TOKEN'))) {
             return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], 403);
@@ -404,6 +406,18 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             $entityManager->persist($paymentAttempt);
             $entityManager->persist($boostNotification);
             $entityManager->flush();
+
+            /*
+             * E-mail de confirmation à l'agence : contenu adapté au pack acheté
+             * (nombre de crédits, durée, montant, expiration). L'échec d'envoi
+             * est journalisé sans compromettre l'achat déjà finalisé.
+             */
+            $purchaseMailer->sendPurchaseConfirmation(
+                $agency,
+                $boostPrice,
+                $payment,
+                $boostTransaction->getExpiresAt(),
+            );
 
             return $this->json([
                 'success' => true,

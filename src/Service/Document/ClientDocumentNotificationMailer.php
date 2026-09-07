@@ -12,7 +12,6 @@
 
 namespace App\Service\Document;
 
-use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -31,31 +30,35 @@ final readonly class ClientDocumentNotificationMailer
     ) {
     }
 
-    public function sendApprovedDocumentNotification(
-        User $client,
-        UserDocumentSubmission $submission,
-    ): void {
-        $this->sendDocumentNotification(
+    /**
+     * E-mail unique de synthèse envoyé à l'agence lorsque la revue de ses
+     * documents est finalisée depuis l'administration : tous les documents
+     * sont validés.
+     */
+    public function sendApprovedDocumentsReviewSummary(User $client): void
+    {
+        $this->sendReviewSummaryNotification(
             client: $client,
-            submission: $submission,
             subject: 'Vos documents ont été validés',
             template: 'email/document/valider.html.twig',
-            failureMessage: 'Document approval notification could not be sent.',
-            emptyEmailMessage: 'Document approval notification skipped because client email is empty.',
+            failureMessage: 'Document review approval summary could not be sent.',
+            emptyEmailMessage: 'Document review approval summary skipped because client email is empty.',
         );
     }
 
-    public function sendRejectedDocumentNotification(
-        User $client,
-        UserDocumentSubmission $submission,
-    ): void {
-        $this->sendDocumentNotification(
+    /**
+     * E-mail unique de synthèse envoyé à l'agence lorsque la revue de ses
+     * documents est finalisée depuis l'administration : au moins un document
+     * a été refusé.
+     */
+    public function sendRejectedDocumentsReviewSummary(User $client): void
+    {
+        $this->sendReviewSummaryNotification(
             client: $client,
-            submission: $submission,
             subject: 'Un ou plusieurs de vos documents n’ont pas été acceptés',
             template: 'email/document/refus.html.twig',
-            failureMessage: 'Document rejection notification could not be sent.',
-            emptyEmailMessage: 'Document rejection notification skipped because client email is empty.',
+            failureMessage: 'Document review rejection summary could not be sent.',
+            emptyEmailMessage: 'Document review rejection summary skipped because client email is empty.',
         );
     }
 
@@ -113,9 +116,8 @@ final readonly class ClientDocumentNotificationMailer
         return true;
     }
 
-    private function sendDocumentNotification(
+    private function sendReviewSummaryNotification(
         User $client,
-        UserDocumentSubmission $submission,
         string $subject,
         string $template,
         string $failureMessage,
@@ -126,7 +128,6 @@ final readonly class ClientDocumentNotificationMailer
         if ('' === $recipientEmail) {
             $this->logger->warning($emptyEmailMessage, [
                 'clientId' => $client->getId(),
-                'submissionId' => $submission->getId(),
             ]);
 
             return;
@@ -141,15 +142,12 @@ final readonly class ClientDocumentNotificationMailer
                 'user' => $client,
                 'agency' => $client,
                 'agenceName' => $this->clientName($client),
-                'submission' => $submission,
-                'documentRequest' => $submission->getDocumentRequest(),
                 'dashboardUrl' => $this->urlGenerator->generate(
                     'agence_immobiliere_dashboard',
                     [],
                     UrlGeneratorInterface::ABSOLUTE_URL,
                 ),
                 'registrationDate' => $client->getCreatedAt()?->format('d/m/Y'),
-                'rejectionReason' => $submission->getRejectionReason(),
             ]);
 
         try {
@@ -158,7 +156,6 @@ final readonly class ClientDocumentNotificationMailer
             $this->logger->error($failureMessage, [
                 'exception' => $exception,
                 'clientId' => $client->getId(),
-                'submissionId' => $submission->getId(),
             ]);
         }
     }

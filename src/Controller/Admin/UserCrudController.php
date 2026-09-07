@@ -84,6 +84,7 @@ class UserCrudController extends AbstractCrudController
         private readonly PropertyViewRepository $propertyViewRepository,
         private readonly AgencyNotificationRepository $agencyNotificationRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ClientDocumentNotificationMailer $clientDocumentNotificationMailer,
     ) {
     }
 
@@ -447,9 +448,14 @@ class UserCrudController extends AbstractCrudController
     }
 
     /**
-     * À l'enregistrement de la fiche agence, prévient l'agence de l'issue de la revue de ses documents :
-     * - au moins un document refusé : demande de nouveau dépôt ;
-     * - tous les documents validés : compte validé.
+     * À l'enregistrement de la fiche agence, prévient l'agence de l'issue de la revue de ses documents.
+     *
+     * Un seul e-mail de synthèse est envoyé (et non plus un e-mail par document) :
+     * - au moins un document refusé : e-mail de refus, demande de nouveau dépôt ;
+     * - 100 % des documents validés : e-mail de validation du compte.
+     *
+     * L'e-mail (comme la notification interne) n'est envoyé qu'une fois par résultat :
+     * réenregistrer la fiche sans changement ne renvoie rien.
      */
     private function notifyDocumentReviewOutcome(User $user, EntityManagerInterface $entityManager): void
     {
@@ -479,12 +485,26 @@ class UserCrudController extends AbstractCrudController
         }
 
         if ($hasRejected) {
+            $outcome = DocumentRequestStatus::REJECTED;
             $message = 'Un ou plusieurs de vos documents n’ont pas été acceptés. Redéposez les documents.';
         } elseif ($allApproved) {
+            $outcome = DocumentRequestStatus::APPROVED;
             $message = 'Votre compte a été validé.';
         } else {
             return;
         }
+
+        if ($user->getDocumentReviewOutcomeNotified() === $outcome->value) {
+            return;
+        }
+
+        if (DocumentRequestStatus::REJECTED === $outcome) {
+            $this->clientDocumentNotificationMailer->sendRejectedDocumentsReviewSummary($user);
+        } else {
+            $this->clientDocumentNotificationMailer->sendApprovedDocumentsReviewSummary($user);
+        }
+
+        $user->setDocumentReviewOutcomeNotified($outcome->value);
 
         $lastNotification = $this->agencyNotificationRepository->findLatestForAgency($user, 1)[0] ?? null;
 
@@ -510,7 +530,6 @@ class UserCrudController extends AbstractCrudController
         UserDocumentSubmission $submission,
         Request $request,
         EntityManagerInterface $entityManager,
-        ClientDocumentNotificationMailer $clientDocumentNotificationMailer,
     ): Response {
         $documentRequest = $this->documentRequestForUser($user, $submission);
         $tokenId = 'approve_document_'.$submission->getId();
@@ -543,7 +562,9 @@ class UserCrudController extends AbstractCrudController
         $documentRequest->markAsCompleted();
         $entityManager->flush();
 
-        $clientDocumentNotificationMailer->sendApprovedDocumentNotification($user, $submission);
+        // L'e-mail n'est plus envoyé document par document : un e-mail de
+        // synthèse unique est expédié à l'enregistrement de la fiche
+        // (voir notifyDocumentReviewOutcome()).
 
         return $this->documentActionResponse(
             $request,
@@ -566,7 +587,6 @@ class UserCrudController extends AbstractCrudController
         UserDocumentSubmission $submission,
         Request $request,
         EntityManagerInterface $entityManager,
-        ClientDocumentNotificationMailer $clientDocumentNotificationMailer,
     ): Response {
         $documentRequest = $this->documentRequestForUser($user, $submission);
         $tokenId = 'reject_document_'.$submission->getId();
@@ -611,7 +631,9 @@ class UserCrudController extends AbstractCrudController
         $documentRequest->setStatus(DocumentRequestStatus::REJECTED);
         $entityManager->flush();
 
-        $clientDocumentNotificationMailer->sendRejectedDocumentNotification($user, $submission);
+        // L'e-mail n'est plus envoyé document par document : un e-mail de
+        // synthèse unique est expédié à l'enregistrement de la fiche
+        // (voir notifyDocumentReviewOutcome()).
 
         return $this->documentActionResponse(
             $request,

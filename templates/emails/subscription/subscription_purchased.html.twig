@@ -1,0 +1,83 @@
+{#
+ Template: templates/emails/subscription/subscription_purchased.html.twig
+ Role: Récapitulatif envoyé à l'agence après l'achat d'un forfait payant (mensuel ou annuel).
+ Context: App\MessageHandler\Billing\SendSubscriptionEmailMessageHandler + contexte du SubscriptionEmailLog.
+ Maintenance: le contenu s'adapte à la périodicité et au forfait acheté.
+#}
+
+<p>Bonjour,</p>
+
+<p>
+    Nous vous confirmons l’achat de votre abonnement
+    <strong>{{ plan_name|default('Boolts') }}</strong>
+    en formule
+    {% if billing_period == 'annual' %}annuelle{% else %}mensuelle{% endif %}.
+</p>
+
+<p>Récapitulatif de votre achat :</p>
+
+<table role="presentation" cellpadding="6" cellspacing="0" border="0">
+    <tr>
+        <td><strong>Forfait</strong></td>
+        <td>{{ plan_name|default('Boolts') }}</td>
+    </tr>
+    <tr>
+        <td><strong>Périodicité</strong></td>
+        <td>{% if billing_period == 'annual' %}Annuelle{% else %}Mensuelle{% endif %}</td>
+    </tr>
+    {% if amount_minor is defined and amount_minor is not null %}
+    <tr>
+        <td><strong>Montant réglé</strong></td>
+        <td>
+            {{ (amount_minor / 100)|number_format(2, ',', ' ') }} {{ currency_sign|default('') }}
+            {% if billing_period == 'annual' %}/ an{% else %}/ mois{% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    {% if payment_reference is defined and payment_reference %}
+    <tr>
+        <td><strong>Référence de paiement</strong></td>
+        <td>{{ payment_reference }}</td>
+    </tr>
+    {% endif %}
+    {% if period_start is defined and period_start %}
+    <tr>
+        <td><strong>Période en cours</strong></td>
+        <td>
+            du {{ period_start|date('d/m/Y') }}
+            {% if period_end is defined and period_end %}au {{ period_end|date('d/m/Y') }}{% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    {% if period_end is defined and period_end %}
+    <tr>
+        <td><strong>Prochain renouvellement</strong></td>
+        <td>{{ period_end|date('d/m/Y') }}</td>
+    </tr>
+    {% endif %}
+    {% if property_limit is defined and property_limit is not null %}
+    <tr>
+        <td><strong>Annonces incluses</strong></td>
+        <td>{{ property_limit }}</td>
+    </tr>
+    {% endif %}
+    {% if included_boosts is defined and included_boosts is not null and included_boosts > 0 %}
+    <tr>
+        <td><strong>Crédits Boost inclus par période</strong></td>
+        <td>{{ included_boosts }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+<p>
+    Votre abonnement est actif immédiatement. Il se renouvellera automatiquement
+    {% if billing_period == 'annual' %}chaque année{% else %}chaque mois{% endif %}
+    {% if period_end is defined and period_end %}, à compter du {{ period_end|date('d/m/Y') }}{% endif %}.
+</p>
+
+<p>
+    Vous pouvez gérer votre abonnement et votre moyen de paiement depuis votre espace :
+    <a href="{{ portal_url }}">Gérer mon abonnement</a>
+</p>
+
+<p>À bientôt,<br>L’équipe Boolts</p>

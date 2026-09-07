@@ -23,6 +23,7 @@ use App\Entity\Billing\Enum\PaymentAttemptStatus;
 use App\Entity\Billing\Enum\PaymentMethodSetupStatus;
 use App\Entity\Billing\Enum\PaymentStatus;
 use App\Entity\Billing\Enum\PaymentType;
+use App\Entity\Billing\Enum\SubscriptionEmailType;
 use App\Entity\Billing\Enum\SubscriptionPeriodStatus;
 use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\Billing\Payment;
@@ -34,6 +35,7 @@ use App\Exception\PlanChangeException;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Service\Billing\InvoiceIssuer;
 use App\Service\Stripe\StripeSubscriptionService;
+use App\Service\Subscription\SubscriptionEmailDispatcher;
 use App\Service\Subscription\SubscriptionPlanChangeService;
 use App\Service\Subscription\SubscriptionSynchronizationService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -67,6 +69,7 @@ final class SubscriptionController extends AbstractController
         private readonly SubscriptionSynchronizationService $subscriptionSynchronizationService,
         private readonly SubscriptionPlanChangeService $planChangeService,
         private readonly InvoiceIssuer $invoiceIssuer,
+        private readonly SubscriptionEmailDispatcher $emailDispatcher,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -204,6 +207,12 @@ final class SubscriptionController extends AbstractController
         SubscriptionPlanPrice $planPrice,
         AgencyPaymentMethod $paymentMethod,
     ): JsonResponse {
+        // Le forfait porté par l'abonnement ne change qu'à la prise d'effet ;
+        // on capture l'actuel maintenant pour le récapitulatif « actuel → nouveau ».
+        $currentPlanPrice = $subscription->getPlanPrice();
+        $previousPlanName = $currentPlanPrice?->getPlan()->getName();
+        $previousAmountMinor = $currentPlanPrice?->getAmountMinor();
+
         try {
             $updated = $this->planChangeService->scheduleDowngrade($subscription, $planPrice, $paymentMethod);
         } catch (PlanChangeException $exception) {
@@ -228,6 +237,34 @@ final class SubscriptionController extends AbstractController
         }
 
         $effectiveAt = $updated->getPendingPlanChangeEffectiveAt();
+
+        /*
+         * Récapitulatif à l'agence : passage à un forfait de montant inférieur
+         * programmé pour la fin de période (aucun paiement immédiat). Contenu
+         * adapté à la périodicité et aux deux forfaits ; dédupliqué et envoyé de
+         * façon asynchrone via le journal d'e-mails d'abonnement.
+         */
+        $this->emailDispatcher->dispatchOnce(
+            $updated,
+            SubscriptionEmailType::SUBSCRIPTION_DOWNGRADE_SCHEDULED,
+            \sprintf(
+                'downgrade-scheduled-%s-%d-%d',
+                (string) $updated->getProviderSubscriptionId(),
+                (int) $planPrice->getId(),
+                $effectiveAt?->getTimestamp() ?? time(),
+            ),
+            [
+                'previous_plan_name' => $previousPlanName,
+                'previous_amount_minor' => $previousAmountMinor,
+                'plan_name' => $planPrice->getPlan()->getName(),
+                'billing_period' => $planPrice->getBillingPeriod()->value,
+                'amount_minor' => $planPrice->getAmountMinor(),
+                'currency_sign' => $planPrice->getCurrency()->getSigne(),
+                'effective_at' => $effectiveAt?->format(\DATE_ATOM),
+                'property_limit' => $planPrice->getPlan()->getPropertyLimit(),
+                'included_boosts' => $planPrice->getPlan()->getIncludedBoosts(),
+            ],
+        );
 
         return $this->json([
             'success' => true,
@@ -342,6 +379,28 @@ final class SubscriptionController extends AbstractController
         );
 
         $this->entityManager->flush();
+
+        /*
+         * Récapitulatif d'achat à l'agence : contenu adapté à la périodicité
+         * (mensuelle/annuelle) et au forfait souscrit. Dédupliqué et envoyé de
+         * façon asynchrone via le journal d'e-mails d'abonnement.
+         */
+        $this->emailDispatcher->dispatchOnce(
+            $subscription,
+            SubscriptionEmailType::SUBSCRIPTION_PURCHASED,
+            'purchased-'.$stripeSubscription->id,
+            [
+                'plan_name' => $planPrice->getPlan()->getName(),
+                'billing_period' => $planPrice->getBillingPeriod()->value,
+                'amount_minor' => $planPrice->getAmountMinor(),
+                'currency_sign' => $planPrice->getCurrency()->getSigne(),
+                'payment_reference' => $payment->getReference(),
+                'period_start' => $periodStart->format(\DATE_ATOM),
+                'period_end' => $periodEnd->format(\DATE_ATOM),
+                'property_limit' => $planPrice->getPlan()->getPropertyLimit(),
+                'included_boosts' => $planPrice->getPlan()->getIncludedBoosts(),
+            ],
+        );
     }
 
     /**
@@ -351,6 +410,47 @@ final class SubscriptionController extends AbstractController
     {
         $this->entityManager->persist($this->buildPlanActivatedNotification($agency, $planPrice));
         $this->entityManager->flush();
+    }
+
+    /**
+     * Notifie l'agence de sa montée en gamme (upgrade vers un montant supérieur)
+     * et lui envoie le récapitulatif « ancien → nouveau forfait ». Le contenu
+     * s'adapte à la périodicité et au forfait ; l'envoi est dédupliqué et
+     * asynchrone via le journal d'e-mails d'abonnement.
+     */
+    private function notifyPlanUpgraded(
+        AgencySubscription $subscription,
+        SubscriptionPlanPrice $newPlanPrice,
+        string $previousPlanName,
+        int $previousAmountMinor,
+    ): void {
+        $this->notifyPlanActivated($subscription->getAgency(), $newPlanPrice);
+
+        $periodStart = $subscription->getCurrentPeriodStart();
+        $periodEnd = $subscription->getCurrentPeriodEnd();
+
+        $this->emailDispatcher->dispatchOnce(
+            $subscription,
+            SubscriptionEmailType::SUBSCRIPTION_UPGRADED,
+            \sprintf(
+                'upgraded-%s-%d-%d',
+                (string) $subscription->getProviderSubscriptionId(),
+                (int) $newPlanPrice->getId(),
+                $periodStart?->getTimestamp() ?? time(),
+            ),
+            [
+                'previous_plan_name' => $previousPlanName,
+                'previous_amount_minor' => $previousAmountMinor,
+                'plan_name' => $newPlanPrice->getPlan()->getName(),
+                'billing_period' => $newPlanPrice->getBillingPeriod()->value,
+                'amount_minor' => $newPlanPrice->getAmountMinor(),
+                'currency_sign' => $newPlanPrice->getCurrency()->getSigne(),
+                'period_start' => $periodStart?->format(\DATE_ATOM),
+                'period_end' => $periodEnd?->format(\DATE_ATOM),
+                'property_limit' => $newPlanPrice->getPlan()->getPropertyLimit(),
+                'included_boosts' => $newPlanPrice->getPlan()->getIncludedBoosts(),
+            ],
+        );
     }
 
     private function buildPlanActivatedNotification(User $agency, SubscriptionPlanPrice $planPrice): AgencyNotification
@@ -526,6 +626,11 @@ final class SubscriptionController extends AbstractController
             return $this->json(['success' => false, 'message' => 'Le prix de l’abonnement actuel est introuvable.'], 409);
         }
 
+        // Capturé avant la synchronisation Stripe qui remplace le forfait porté
+        // par l'abonnement : sert au récapitulatif « ancien → nouveau forfait ».
+        $previousPlanName = $currentPlanPrice->getPlan()->getName();
+        $previousAmountMinor = $currentPlanPrice->getAmountMinor();
+
         if ($currentPlanPrice->getCurrency() !== $planPrice->getCurrency()) {
             return $this->json(['success' => false, 'message' => 'La devise du nouveau forfait doit être identique.'], 409);
         }
@@ -561,7 +666,7 @@ final class SubscriptionController extends AbstractController
                     paymentType: PaymentType::SUBSCRIPTION_UPGRADE,
                 );
 
-                $this->notifyPlanActivated($subscription->getAgency(), $planPrice);
+                $this->notifyPlanUpgraded($subscription, $planPrice, $previousPlanName, $previousAmountMinor);
 
                 return $this->json([
                     'success' => true,
@@ -583,7 +688,7 @@ final class SubscriptionController extends AbstractController
                 paymentType: PaymentType::SUBSCRIPTION_UPGRADE,
             );
 
-            $this->notifyPlanActivated($subscription->getAgency(), $planPrice);
+            $this->notifyPlanUpgraded($subscription, $planPrice, $previousPlanName, $previousAmountMinor);
 
             return $this->json([
                 'success' => true,

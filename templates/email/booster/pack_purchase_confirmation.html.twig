@@ -1,0 +1,83 @@
+{#
+ Template: templates/email/booster/pack_purchase_confirmation.html.twig
+ Role: Renders the agency email sent once a booster pack purchase has been confirmed.
+ Context: Provided by App\Service\Booster\BoosterPackPurchaseMailer.
+ Maintenance: Preserve context keys used by the mailer. Le contenu s'adapte au pack acheté.
+#}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de votre achat — Pack boost {{ packName }}</title>
+</head>
+<body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
+    <h1>Votre achat est confirmé</h1>
+
+    <p>Bonjour {{ agencyName|default('') }},</p>
+
+    <p>
+        Nous vous confirmons l’achat du <strong>pack boost {{ packName }}</strong>.
+        {% if boostQuantity == 1 %}
+            <strong>1 crédit Boost</strong> vient d’être ajouté à votre compte.
+        {% else %}
+            <strong>{{ boostQuantity }} crédits Boost</strong> viennent d’être ajoutés à votre compte.
+        {% endif %}
+    </p>
+
+    {% if packDescription is not empty %}
+        <p>{{ packDescription }}</p>
+    {% endif %}
+
+    <table role="presentation" cellpadding="6" cellspacing="0" border="0">
+        <tr>
+            <td><strong>Pack</strong></td>
+            <td>{{ packName }}</td>
+        </tr>
+        <tr>
+            <td><strong>Crédits Boost ajoutés</strong></td>
+            <td>{{ boostQuantity }}</td>
+        </tr>
+        <tr>
+            <td><strong>Durée de mise en avant par boost</strong></td>
+            <td>{{ boostDurationDays }} jour{{ boostDurationDays > 1 ? 's' : '' }}</td>
+        </tr>
+        <tr>
+            <td><strong>Montant réglé</strong></td>
+            <td>{{ amount|number_format(2, ',', ' ') }} {{ currencySign }}</td>
+        </tr>
+        <tr>
+            <td><strong>Référence de paiement</strong></td>
+            <td>{{ paymentReference }}</td>
+        </tr>
+        <tr>
+            <td><strong>Date d’achat</strong></td>
+            <td>{{ purchasedAt|date('d/m/Y') }}</td>
+        </tr>
+        {% if creditsExpireAt is not null %}
+        <tr>
+            <td><strong>Crédits valables jusqu’au</strong></td>
+            <td>{{ creditsExpireAt|date('d/m/Y') }}</td>
+        </tr>
+        {% endif %}
+    </table>
+
+    <p>
+        {% if boostQuantity == 1 %}
+            Vous pouvez dès à présent utiliser ce crédit pour booster une annonce
+        {% else %}
+            Vous pouvez dès à présent utiliser ces crédits pour booster vos annonces
+        {% endif %}
+        depuis votre espace Mes biens :
+        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+    </p>
+
+    <p>
+        Retrouvez le détail de vos achats et de votre solde de crédits Boost dans
+        vos options : <a href="{{ optionsUrl }}">Mes options</a>
+    </p>
+
+    <p>À bientôt,<br>L’équipe Boolts</p>
+</body>
+</html>

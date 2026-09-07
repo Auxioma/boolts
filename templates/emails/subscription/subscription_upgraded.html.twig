@@ -1,0 +1,87 @@
+{#
+ Template: templates/emails/subscription/subscription_upgraded.html.twig
+ Role: Récapitulatif envoyé à l'agence après une montée en gamme (upgrade) vers un forfait d'un montant supérieur.
+ Context: App\MessageHandler\Billing\SendSubscriptionEmailMessageHandler + contexte du SubscriptionEmailLog.
+ Maintenance: le contenu s'adapte à l'ancien et au nouveau forfait ainsi qu'à la périodicité.
+#}
+
+<p>Bonjour,</p>
+
+<p>
+    Nous vous confirmons le changement de votre abonnement
+    {% if previous_plan_name is defined and previous_plan_name %}
+        de <strong>{{ previous_plan_name }}</strong> vers
+    {% else %}
+        vers
+    {% endif %}
+    <strong>{{ plan_name|default('Boolts') }}</strong>
+    en formule
+    {% if billing_period == 'annual' %}annuelle{% else %}mensuelle{% endif %}.
+</p>
+
+<p>Votre nouveau forfait est actif immédiatement.</p>
+
+<table role="presentation" cellpadding="6" cellspacing="0" border="0">
+    {% if previous_plan_name is defined and previous_plan_name %}
+    <tr>
+        <td><strong>Ancien forfait</strong></td>
+        <td>
+            {{ previous_plan_name }}
+            {% if previous_amount_minor is defined and previous_amount_minor is not null %}
+                ({{ (previous_amount_minor / 100)|number_format(2, ',', ' ') }} {{ currency_sign|default('') }})
+            {% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td><strong>Nouveau forfait</strong></td>
+        <td>{{ plan_name|default('Boolts') }}</td>
+    </tr>
+    <tr>
+        <td><strong>Périodicité</strong></td>
+        <td>{% if billing_period == 'annual' %}Annuelle{% else %}Mensuelle{% endif %}</td>
+    </tr>
+    {% if amount_minor is defined and amount_minor is not null %}
+    <tr>
+        <td><strong>Nouveau montant</strong></td>
+        <td>
+            {{ (amount_minor / 100)|number_format(2, ',', ' ') }} {{ currency_sign|default('') }}
+            {% if billing_period == 'annual' %}/ an{% else %}/ mois{% endif %}
+        </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td><strong>Prise d’effet</strong></td>
+        <td>Immédiate{% if period_start is defined and period_start %} ({{ period_start|date('d/m/Y') }}){% endif %}</td>
+    </tr>
+    {% if period_end is defined and period_end %}
+    <tr>
+        <td><strong>Prochain renouvellement</strong></td>
+        <td>{{ period_end|date('d/m/Y') }}</td>
+    </tr>
+    {% endif %}
+    {% if property_limit is defined and property_limit is not null %}
+    <tr>
+        <td><strong>Annonces incluses</strong></td>
+        <td>{{ property_limit }}</td>
+    </tr>
+    {% endif %}
+    {% if included_boosts is defined and included_boosts is not null and included_boosts > 0 %}
+    <tr>
+        <td><strong>Crédits Boost inclus par période</strong></td>
+        <td>{{ included_boosts }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+<p>
+    Le prorata éventuel entre votre ancien et votre nouveau forfait est géré
+    automatiquement et apparaîtra sur votre prochaine facture.
+</p>
+
+<p>
+    Vous pouvez gérer votre abonnement et votre moyen de paiement depuis votre espace :
+    <a href="{{ portal_url }}">Gérer mon abonnement</a>
+</p>
+
+<p>À bientôt,<br>L’équipe Boolts</p>
