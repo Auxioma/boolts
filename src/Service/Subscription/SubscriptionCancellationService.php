@@ -84,8 +84,12 @@ final readonly class SubscriptionCancellationService
             'cancel-requested-'.$subscription->getProviderSubscriptionId(),
             [
                 'plan' => $subscription->getPlan()->getCode(),
+                'plan_name' => $subscription->getPlan()->getName(),
+                'cancel_requested_at' => ($subscription->getCancelRequestedAt() ?? $now)->format(\DATE_ATOM),
+                'effective_at' => $subscription->getCurrentPeriodEnd()?->format(\DATE_ATOM),
                 'current_period_end' => $subscription->getCurrentPeriodEnd()?->format(\DATE_ATOM),
             ],
+            immediate: true,
         );
 
         $this->entityManager->flush();

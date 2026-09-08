@@ -1,5 +1,59 @@
+{#
+ Template: templates/emails/subscription/subscription_cancel_requested.html.twig
+ Role: Confirmation envoyée immédiatement à l'agence lorsqu'elle clique sur « Résilier mon abonnement ».
+ Context: App\MessageHandler\Billing\SendSubscriptionEmailMessageHandler + contexte du SubscriptionEmailLog.
+ Maintenance: le contenu s'adapte au forfait en cours et à la date d'effet (fin de la période déjà payée).
+#}
+
 <p>Bonjour,</p>
 
-<p>Votre résiliation est programmée.</p>
+<p>
+    Nous avons bien enregistré votre demande de résiliation
+    {% if plan_name is defined and plan_name %}
+        du forfait <strong>{{ plan_name }}</strong>
+    {% elseif plan is defined and plan %}
+        du forfait <strong>{{ plan|upper }}</strong>
+    {% endif %}.
+</p>
 
-<p>Vous conservez votre forfait {{ plan|default('payant')|upper }}{% if current_period_end is defined and current_period_end %} jusqu'au {{ current_period_end|date('d/m/Y') }}{% endif %}. Aucun nouveau renouvellement ne sera déclenché après cette période.</p>
+<p>
+    Votre résiliation <strong>n'est pas immédiate</strong> : votre abonnement
+    {% if effective_at is defined and effective_at %}
+        prendra fin le <strong>{{ effective_at|date('d/m/Y') }}</strong>,
+    {% else %}
+        prendra fin à l'issue de la période déjà réglée,
+    {% endif %}
+    au terme de la période que vous avez déjà payée. D'ici là, vous conservez
+    votre forfait actuel et l'ensemble de ses avantages. Aucun nouveau
+    renouvellement ne sera facturé après cette date.
+</p>
+
+<table role="presentation" cellpadding="6" cellspacing="0" border="0">
+    <tr>
+        <td><strong>Forfait résilié</strong></td>
+        <td>{{ plan_name|default(plan|default('payant')|upper) }}</td>
+    </tr>
+    {% if cancel_requested_at is defined and cancel_requested_at %}
+    <tr>
+        <td><strong>Demande enregistrée le</strong></td>
+        <td>{{ cancel_requested_at|date('d/m/Y') }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td><strong>Fin de l'abonnement</strong></td>
+        <td>
+            {% if effective_at is defined and effective_at %}
+                {{ effective_at|date('d/m/Y') }}
+            {% else %}
+                Fin de la période en cours
+            {% endif %}
+        </td>
+    </tr>
+</table>
+
+<p>
+    Vous pouvez annuler cette résiliation tant qu'elle n'a pas pris effet, depuis votre espace :
+    <a href="{{ portal_url }}">Gérer mon abonnement</a>
+</p>
+
+<p>À bientôt,<br>L'équipe Boolts</p>

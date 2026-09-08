@@ -10,7 +10,10 @@ framework:
                     max_retries: 3
                     multiplier: 2
             failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            # Traitement synchrone (dans le process courant) pour les e-mails
+            # transactionnels qui doivent partir immédiatement, ex. la
+            # confirmation de résiliation affichée juste après le clic.
+            sync: 'sync://'
 
         default_bus: messenger.bus.default
 
