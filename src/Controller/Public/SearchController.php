@@ -199,6 +199,7 @@ final class SearchController extends AbstractController
     #[Route(
         '/public/search/{searchToken}',
         name: 'app_public_search_results',
+        requirements: ['searchToken' => '[0-9a-f]{32}'],
         methods: ['GET']
     )]
     /**
@@ -403,8 +404,134 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
+        '/public/search/resume',
+        name: 'app_public_search_resume',
+        methods: ['GET']
+    )]
+    /**
+     * Reprend la dernière recherche mémorisée dans le cookie
+     * "property_search_token" et redirige vers la page de résultats.
+     */
+    public function resume(Request $request): Response
+    {
+        $token = $request->cookies->get('property_search_token');
+
+        if (null === $token || !Uuid::isValid($token)) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        $sessionRecherche = $this->entityManager
+            ->getRepository(PropertySearchSession::class)
+            ->findOneBy([
+                'uuid' => Uuid::fromString($token),
+            ]);
+
+        /*
+         * Recherche introuvable ou expirée : on oublie le cookie
+         * et on renvoie l'utilisateur sur l'accueil.
+         */
+        if (
+            !$sessionRecherche instanceof PropertySearchSession
+            || $sessionRecherche->isExpired()
+        ) {
+            $response = $this->redirectToRoute('app_home');
+
+            $response->headers->clearCookie(
+                'property_search_token',
+                '/',
+                null,
+                $request->isSecure(),
+                true,
+                Cookie::SAMESITE_LAX
+            );
+
+            return $response;
+        }
+
+        /*
+         * Reconstruction des critères à partir des filtres stockés
+         * en base, avec repli sur les colonnes principales.
+         */
+        $criteria = $sessionRecherche->getFilters() ?? [];
+
+        $criteria['transactionTypeId'] ??= $sessionRecherche->getTransactionTypeId();
+        $criteria['ville'] ??= $sessionRecherche->getVille();
+        $criteria['cp'] ??= $sessionRecherche->getCp();
+        $criteria['pays'] ??= $sessionRecherche->getPays();
+
+        /*
+         * Nouveau token temporaire de session, comme pour une
+         * recherche classique effectuée depuis le formulaire.
+         */
+        $searchToken = bin2hex(random_bytes(16));
+
+        $request->getSession()->set(
+            'property_search_'.$searchToken,
+            $criteria
+        );
+
+        /*
+         * Prolongation de la durée de vie de la recherche mémorisée.
+         */
+        $sessionRecherche->refreshUpdatedAt();
+        $sessionRecherche->setExpiresAt(
+            new \DateTimeImmutable('+30 days')
+        );
+
+        $this->entityManager->flush();
+
+        $response = $this->redirectToRoute(
+            'app_public_search_results',
+            [
+                'searchToken' => $searchToken,
+                'view' => 'list',
+            ]
+        );
+
+        $response->headers->setCookie(
+            Cookie::create('property_search_token')
+                ->withValue($token)
+                ->withExpires(
+                    new \DateTimeImmutable('+30 days')
+                )
+                ->withPath('/')
+                ->withSecure($request->isSecure())
+                ->withHttpOnly(true)
+                ->withSameSite(Cookie::SAMESITE_LAX)
+        );
+
+        return $response;
+    }
+
+    #[Route(
+        '/public/search/forget',
+        name: 'app_public_search_forget',
+        methods: ['GET']
+    )]
+    /**
+     * Supprime le cookie "property_search_token" (bouton "Annuler")
+     * puis redirige vers l'accueil.
+     */
+    public function forget(Request $request): Response
+    {
+        $response = $this->redirectToRoute('app_home');
+
+        $response->headers->clearCookie(
+            'property_search_token',
+            '/',
+            null,
+            $request->isSecure(),
+            true,
+            Cookie::SAMESITE_LAX
+        );
+
+        return $response;
+    }
+
+    #[Route(
         '/public/search/{searchToken}/map-bounds',
         name: 'app_public_search_map_bounds',
+        requirements: ['searchToken' => '[0-9a-f]{32}'],
         methods: ['GET']
     )]
     /**

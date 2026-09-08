@@ -257,16 +257,20 @@
 
                                                             {% set addressParts = [] %}
 
-                                                            {% if bienImmobilier.showAdresse|default(false) %}
-                                                                {% if bienImmobilier.neighborhood is not empty %}
-                                                                    {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
-                                                                {% endif %}
+                                                            {% if bienImmobilier.showAdresse|default(false) and bienImmobilier.adresse is not empty %}
+                                                                {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                                            {% elseif bienImmobilier.neighborhood is not empty %}
+                                                                {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
+                                                            {% endif %}
 
-                                                                {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
-                                                                    {% set addressParts = addressParts|merge([
-                                                                        (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
-                                                                    ]) %}
-                                                                {% endif %}
+                                                            {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                                                                {% set addressParts = addressParts|merge([
+                                                                    (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
+                                                                ]) %}
+                                                            {% endif %}
+
+                                                            {% if bienImmobilier.pays is not empty %}
+                                                                {% set addressParts = addressParts|merge([bienImmobilier.pays]) %}
                                                             {% endif %}
 
                                                             {% set propertyAddress = addressParts|join(', ') %}

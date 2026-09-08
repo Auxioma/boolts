@@ -96,14 +96,20 @@
 
                                         {% set addressParts = [] %}
 
-                                        {% if bienImmobilier.adresse is not empty %}
+                                        {% if bienImmobilier.showAdresse and bienImmobilier.adresse is not empty %}
                                             {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                        {% elseif bienImmobilier.neighborhood is not empty %}
+                                            {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
                                         {% endif %}
 
                                         {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
                                             {% set addressParts = addressParts|merge([
                                             (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
                                         ]) %}
+                                        {% endif %}
+
+                                        {% if bienImmobilier.pays is not empty %}
+                                            {% set addressParts = addressParts|merge([bienImmobilier.pays]) %}
                                         {% endif %}
 
                                         {% set detailUrl = path('app_public_detail_bien', {

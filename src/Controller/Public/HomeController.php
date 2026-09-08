@@ -114,7 +114,7 @@ final class HomeController extends AbstractController
         if (null !== $verificationCookie && Uuid::isValid($verificationCookie)) {
             $lastSearchSession = $this->propertySearchSessionRepository->findOneBy([
                 'uuid' => Uuid::fromString($verificationCookie),
-            ])->getVille();
+            ])?->getVille();
         }
 
         return $this->render('public/home/index.html.twig', [
