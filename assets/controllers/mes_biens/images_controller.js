@@ -315,29 +315,38 @@ export default class extends Controller {
             return;
         }
 
-        const prototypeData = this.createPrototypeWrapper();
-
-        if (!prototypeData) {
-            return;
-        }
-
-        prototypeData.fileInput.addEventListener('change', () => {
-            const file = prototypeData.fileInput.files[0];
-
-            if (!file) {
-                return;
-            }
-
-            this.fillCardWithFile(card, file, prototypeData.wrapper);
-        });
-
-        prototypeData.fileInput.click();
+        this.openFilePicker(card);
     }
 
     openFileInputFromBrowseCard() {
         const card = this.getEmptyCards()[0] || this.createEmptyCard();
 
-        this.openFileInputForCard(card);
+        this.openFilePicker(card);
+    }
+
+    /**
+     * Ouvre le sélecteur de fichiers du système en autorisant la sélection
+     * multiple. Chaque image choisie est ensuite placée dans sa propre carte,
+     * exactement comme lors d'un glisser-déposer.
+     */
+    openFilePicker(targetCard) {
+        const picker = document.createElement('input');
+
+        picker.type = 'file';
+        picker.accept = 'image/*';
+        picker.multiple = true;
+        picker.classList.add('d-none');
+
+        picker.addEventListener('change', () => {
+            if (picker.files && picker.files.length > 0) {
+                this.handleDroppedFiles(picker.files, targetCard);
+            }
+
+            picker.remove();
+        });
+
+        this.element.appendChild(picker);
+        picker.click();
     }
 
     handleDroppedFiles(files, targetCard) {
@@ -349,7 +358,10 @@ export default class extends Controller {
             return;
         }
 
-        validFiles.forEach((file, index) => {
+        const freeSlots = Math.max(this.maxImagesValue - this.getFilledCards().length, 0);
+        const filesToProcess = validFiles.slice(0, freeSlots);
+
+        filesToProcess.forEach((file, index) => {
             let card = null;
 
             if (index === 0 && targetCard && targetCard.classList.contains('is-empty')) {
@@ -362,6 +374,14 @@ export default class extends Controller {
                 return;
             }
 
+            /*
+             * L'aperçu est généré de façon asynchrone (FileReader) : on marque
+             * donc la carte comme remplie immédiatement pour que le fichier
+             * suivant de la sélection ne réutilise pas la même carte.
+             */
+            card.classList.remove('is-empty');
+            card.classList.add('is-filled');
+
             const prototypeData = this.createPrototypeWrapper();
 
             if (!prototypeData) {
@@ -371,6 +391,11 @@ export default class extends Controller {
             this.setInputFile(prototypeData.fileInput, file);
             this.fillCardWithFile(card, file, prototypeData.wrapper);
         });
+
+        this.normalizeGrid();
+        this.ensureMinimumCards();
+        this.ensureOneEmptyCardIfPossible();
+        this.notifySubmitController();
     }
 
     moveCardToCover(card) {
