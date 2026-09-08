@@ -263,6 +263,30 @@
             color: #ffffff;
         }
 
+        .btn-subscription-resume {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0 22px;
+            border: 1px solid #2a7f48;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2a7f48;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 1;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+
+        .btn-subscription-resume:hover {
+            background: #2a7f48;
+            border-color: #2a7f48;
+            color: #ffffff;
+        }
+
         .subscription-cancellation-info {
             margin-top: 20px;
             padding: 15px 18px;
@@ -610,6 +634,28 @@
 
                         puis votre compte repassera automatiquement
                         sur le forfait gratuit.
+
+                        <form
+                            method="post"
+                            action="{{ path('account_subscription_reactivate') }}"
+                            class="mt-2"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="{{ csrf_token('account_subscription_reactivate') }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="_redirect_route"
+                                value="agence_immobiliere_options"
+                            >
+
+                            <button type="submit" class="btn-subscription-resume">
+                                Annuler la résiliation
+                            </button>
+                        </form>
 
                     </div>
 

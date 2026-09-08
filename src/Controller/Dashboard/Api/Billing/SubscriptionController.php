@@ -241,8 +241,9 @@ final class SubscriptionController extends AbstractController
         /*
          * Récapitulatif à l'agence : passage à un forfait de montant inférieur
          * programmé pour la fin de période (aucun paiement immédiat). Contenu
-         * adapté à la périodicité et aux deux forfaits ; dédupliqué et envoyé de
-         * façon asynchrone via le journal d'e-mails d'abonnement.
+         * adapté à la périodicité et aux deux forfaits ; dédupliqué et envoyé
+         * dans la requête courante, comme la confirmation de résiliation, pour
+         * que l'agence reçoive le récapitulatif juste après son action.
          */
         $this->emailDispatcher->dispatchOnce(
             $updated,
@@ -264,6 +265,7 @@ final class SubscriptionController extends AbstractController
                 'property_limit' => $planPrice->getPlan()->getPropertyLimit(),
                 'included_boosts' => $planPrice->getPlan()->getIncludedBoosts(),
             ],
+            immediate: true,
         );
 
         return $this->json([
@@ -381,9 +383,10 @@ final class SubscriptionController extends AbstractController
         $this->entityManager->flush();
 
         /*
-         * Récapitulatif d'achat à l'agence : contenu adapté à la périodicité
-         * (mensuelle/annuelle) et au forfait souscrit. Dédupliqué et envoyé de
-         * façon asynchrone via le journal d'e-mails d'abonnement.
+         * Récapitulatif d'achat à l'agence lors de la première souscription :
+         * contenu adapté à la périodicité (mensuelle/annuelle) et au forfait
+         * souscrit. Dédupliqué et envoyé dans la requête courante, comme la
+         * confirmation de résiliation, pour une réception immédiate.
          */
         $this->emailDispatcher->dispatchOnce(
             $subscription,
@@ -400,6 +403,7 @@ final class SubscriptionController extends AbstractController
                 'property_limit' => $planPrice->getPlan()->getPropertyLimit(),
                 'included_boosts' => $planPrice->getPlan()->getIncludedBoosts(),
             ],
+            immediate: true,
         );
     }
 
@@ -416,7 +420,7 @@ final class SubscriptionController extends AbstractController
      * Notifie l'agence de sa montée en gamme (upgrade vers un montant supérieur)
      * et lui envoie le récapitulatif « ancien → nouveau forfait ». Le contenu
      * s'adapte à la périodicité et au forfait ; l'envoi est dédupliqué et
-     * asynchrone via le journal d'e-mails d'abonnement.
+     * effectué dans la requête courante, comme la confirmation de résiliation.
      */
     private function notifyPlanUpgraded(
         AgencySubscription $subscription,
@@ -450,6 +454,7 @@ final class SubscriptionController extends AbstractController
                 'property_limit' => $newPlanPrice->getPlan()->getPropertyLimit(),
                 'included_boosts' => $newPlanPrice->getPlan()->getIncludedBoosts(),
             ],
+            immediate: true,
         );
     }
 
