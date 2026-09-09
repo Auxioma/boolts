@@ -702,11 +702,30 @@ final class SearchController extends AbstractController
             $filter->getSelectedCountryName()
         );
 
-        /*
-         * La ville sélectionnée est prioritaire.
-         * selectedValue sert de valeur de secours.
-         */
+        $selectedFeatureType = mb_strtolower(
+            (string) $this->cleanValue(
+                $filter->getSelectedFeatureType()
+            )
+        );
+
         $ville = $selectedCityName ?: $selectedValue;
+        $cp = $selectedPostalCode;
+
+        /*
+         * Les champs cachés Mapbox sont corrects, mais selectedValue
+         * représente le type choisi : pays, ville ou code postal.
+         * On évite donc de l'utiliser comme ville pour les pays/codes postaux.
+         */
+        if ('country' === $selectedFeatureType) {
+            $ville = null;
+            $cp = null;
+        } elseif ('postcode' === $selectedFeatureType) {
+            $ville = null;
+            $cp = $selectedPostalCode ?: $selectedValue;
+        } elseif (\in_array($selectedFeatureType, ['place', 'locality'], true)) {
+            $ville = $selectedCityName ?: $selectedValue;
+            $cp = null;
+        }
 
         return [
             'transactionTypeId' => $transactionType?->getId(),
@@ -727,7 +746,7 @@ final class SearchController extends AbstractController
              * Valeurs utilisées par la recherche Doctrine.
              */
             'ville' => $ville,
-            'cp' => $selectedPostalCode,
+            'cp' => $cp,
             'pays' => $selectedCountryName,
 
             /*
@@ -758,9 +777,9 @@ final class SearchController extends AbstractController
                 $filter->getSelectedMapboxId()
             ),
 
-            'selectedFeatureType' => $this->cleanValue(
-                $filter->getSelectedFeatureType()
-            ),
+            'selectedFeatureType' => '' !== $selectedFeatureType
+                ? $selectedFeatureType
+                : null,
         ];
     }
 
