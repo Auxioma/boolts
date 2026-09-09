@@ -12,6 +12,7 @@
 
 namespace App\Controller\Public;
 
+use App\Entity\Search\PropertySearchSession;
 use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\CategoryBienTransactionRepository;
@@ -112,9 +113,13 @@ final class HomeController extends AbstractController
         $lastSearchSession = null;
 
         if (null !== $verificationCookie && Uuid::isValid($verificationCookie)) {
-            $lastSearchSession = $this->propertySearchSessionRepository->findOneBy([
+            $searchSession = $this->propertySearchSessionRepository->findOneBy([
                 'uuid' => Uuid::fromString($verificationCookie),
-            ])?->getVille();
+            ]);
+
+            if (null !== $searchSession && !$searchSession->isExpired()) {
+                $lastSearchSession = $this->buildLastSearchSessionLabel($searchSession);
+            }
         }
 
         return $this->render('public/home/index.html.twig', [
@@ -215,5 +220,29 @@ final class HomeController extends AbstractController
             'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 2, $latitude, $longitude),
             'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 1, $latitude, $longitude),
         ];
+    }
+
+    private function buildLastSearchSessionLabel(PropertySearchSession $searchSession): ?string
+    {
+        $ville = $this->cleanSearchSessionValue($searchSession->getVille());
+        $cp = $this->cleanSearchSessionValue($searchSession->getCp());
+        $pays = $this->cleanSearchSessionValue($searchSession->getPays());
+
+        if (null !== $ville) {
+            return $ville;
+        }
+
+        if (null !== $cp && null !== $pays) {
+            return $cp.', '.$pays;
+        }
+
+        return $cp ?? $pays;
+    }
+
+    private function cleanSearchSessionValue(?string $value): ?string
+    {
+        $value = mb_trim((string) $value);
+
+        return '' === $value ? null : $value;
     }
 }
