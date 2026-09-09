@@ -814,22 +814,41 @@ class PropertyRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p');
 
         $ville = $property->getVille();
+        $ville = null !== $ville ? mb_trim($ville) : null;
+        $ville = '' !== $ville ? $ville : null;
+
+        $pays = $property->getPays();
+        $pays = null !== $pays ? mb_trim($pays) : null;
+        $pays = '' !== $pays ? $pays : null;
         $typeBien = $property->getTypeBien();
         $prix = $property->getPrix();
         $loyerHC = $property->getMontantLoyerHorsCharge();
 
         $qb
             ->andWhere('p.id != :currentId')
+            ->andWhere('p.statut = :publishedStatus')
             ->setParameter('currentId', $property->getId())
+            ->setParameter('publishedStatus', StatutAnnonceImmobiliere::PUBLIEE)
             ->setMaxResults($limit)
         ;
 
-        /*if ($ville) {
+        if ($ville || $pays) {
             $qb
-                ->andWhere('p.ville = :ville')
-                ->setParameter('ville', $ville)
+                ->innerJoin('p.translations', 'pt')
             ;
-        }*/
+        }
+
+        if ($ville) {
+            $qb
+                ->andWhere('LOWER(pt.ville) = LOWER(:ville)')
+                ->setParameter('ville', $ville);
+        }
+
+        if ($pays) {
+            $qb
+                ->andWhere('LOWER(pt.pays) = LOWER(:pays)')
+                ->setParameter('pays', $pays);
+        }
 
         if ($typeBien) {
             $qb
@@ -841,7 +860,7 @@ class PropertyRepository extends ServiceEntityRepository
         /*
          * Si c'est une vente, on compare le prix avec une marge de 20%
          */
-        /*if ($prix) {
+        if ($prix) {
             $prixMin = $prix * 0.8;
             $prixMax = $prix * 1.2;
 
@@ -850,7 +869,7 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('prixMin', $prixMin)
                 ->setParameter('prixMax', $prixMax)
             ;
-        }*/
+        }
 
         /*
          * Si c'est une location, on compare le loyer hors charge avec une marge de 20%
