@@ -24,6 +24,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class CompleteProfileType extends AbstractType
 {
@@ -94,6 +95,18 @@ class CompleteProfileType extends AbstractType
                 max: 4096,
                 minMessage: 'form.password.error.min',
                 maxMessage: 'form.password.error.max',
+            ),
+            new Regex(
+                pattern: '/[A-Z]/',
+                message: 'Le mot de passe doit contenir au moins une majuscule.',
+            ),
+            new Regex(
+                pattern: '/[a-z]/',
+                message: 'Le mot de passe doit contenir au moins une minuscule.',
+            ),
+            new Regex(
+                pattern: '/\d/',
+                message: 'Le mot de passe doit contenir au moins un chiffre.',
             ),
         ],
     ],

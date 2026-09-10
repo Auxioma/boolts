@@ -21,7 +21,11 @@ export default class extends Controller {
     static values = {
         min: { type: Number, default: 12 },
         labelProgress: { type: String, default: '{count} / {min} caractères' },
-        labelValid: { type: String, default: 'Longueur minimale atteinte' },
+        labelValid: { type: String, default: 'Mot de passe valide' },
+        labelComplexity: {
+            type: String,
+            default: 'Ajoutez une majuscule, une minuscule et un chiffre',
+        },
     };
 
     connect() {
@@ -56,13 +60,21 @@ export default class extends Controller {
     }
 
     check() {
-        const length = this.hasInputTarget ? this.inputTarget.value.length : 0;
+        const value = this.hasInputTarget ? this.inputTarget.value : '';
+        const length = value.length;
         const filled = Math.min(length, this.minValue);
-        const isValid = length >= this.minValue;
+
+        // Complexity requirements: at least one uppercase, one lowercase, one digit.
+        const hasUpper = /[A-Z]/.test(value);
+        const hasLower = /[a-z]/.test(value);
+        const hasDigit = /\d/.test(value);
+        const meetsComplexity = hasUpper && hasLower && hasDigit;
+
+        const isValid = length >= this.minValue && meetsComplexity;
 
         // Strength level drives the colour: 0 weak, 1 medium, 2 strong.
         let level = 0;
-        if (length >= this.minValue) {
+        if (isValid) {
             level = 2;
         } else if (length >= Math.ceil(this.minValue / 2)) {
             level = 1;
@@ -76,11 +88,17 @@ export default class extends Controller {
         }
 
         if (this.label) {
-            this.label.textContent = isValid
-                ? this.labelValidValue
-                : this.labelProgressValue
-                      .replace('{count}', String(length))
-                      .replace('{min}', String(this.minValue));
+            let text;
+            if (isValid) {
+                text = this.labelValidValue;
+            } else if (length >= this.minValue && !meetsComplexity) {
+                text = this.labelComplexityValue;
+            } else {
+                text = this.labelProgressValue
+                    .replace('{count}', String(length))
+                    .replace('{min}', String(this.minValue));
+            }
+            this.label.textContent = text;
             this.label.dataset.level = String(level);
         }
 
