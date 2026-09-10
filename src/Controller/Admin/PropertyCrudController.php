@@ -44,6 +44,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\BooleanFilter;
@@ -680,10 +682,10 @@ class PropertyCrudController extends AbstractCrudController
             TextField::new('sessionIdMapbox', 'ID de session Mapbox')->hideOnIndex()->setColumns(12),
 
             FormField::addTab('Caractéristiques', 'fa fa-sliders'),
-            TextField::new('surfaceTotal', 'Surface totale')->hideOnIndex()->setColumns(4),
+            NumberField::new('surfaceTotal', 'Surface totale')->setNumDecimals(2)->hideOnIndex()->setColumns(4),
             TextField::new('chambres', 'Chambres')->hideOnIndex()->setColumns(4),
             TextField::new('salleDeBains', 'Salles de bains')->hideOnIndex()->setColumns(4),
-            TextField::new('anneeConstruction', 'Année de construction')->hideOnIndex()->setColumns(4),
+            IntegerField::new('anneeConstruction', 'Année de construction')->hideOnIndex()->setColumns(4),
             AssociationField::new('caracteristique', 'Caractéristiques')
                 ->formatValue(static fn (Collection $characteristics): string => self::collectionCount($characteristics, 'caractéristique'))
                 ->setFormTypeOption('choice_label', 'nom')
@@ -700,11 +702,13 @@ class PropertyCrudController extends AbstractCrudController
             DateField::new('dateIndexationEnergie', 'Date d’indexation énergie')->hideOnIndex()->setColumns(4),
 
             FormField::addTab('Prix', 'fa fa-money-bill'),
-            TextField::new('prix', 'Prix de vente')
+            NumberField::new('prix', 'Prix de vente')
+                ->setNumDecimals(2)
                 ->hideOnIndex()
                 ->addCssClass('property-price-sale')
                 ->setColumns(6),
-            TextField::new('montantLoyerHorsCharge', 'Loyer hors charges')
+            NumberField::new('montantLoyerHorsCharge', 'Loyer hors charges')
+                ->setNumDecimals(2)
                 ->hideOnIndex()
                 ->addCssClass('property-price-rental')
                 ->setColumns(4),

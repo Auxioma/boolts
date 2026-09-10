@@ -76,10 +76,8 @@ final class PropertyCsvImporter
         'mapbox_id' => 'setMapboxId',
         'session_id_mapbox' => 'setSessionIdMapbox',
         'feature_type' => 'setFeatureType',
-        'annee_construction' => 'setAnneeConstruction',
         'chambres' => 'setChambres',
         'salle_de_bains' => 'setSalleDeBains',
-        'surface_total' => 'setSurfaceTotal',
         'dpe' => 'setDpe',
         'dpe_min' => 'setDpeMin',
         'dpe_max' => 'setDpeMax',
@@ -87,13 +85,23 @@ final class PropertyCsvImporter
     ];
 
     /**
-     * Champs numériques (montants) : normalisés (virgule -> point, espaces retirés).
+     * Champs numériques (montants + surface : colonnes NUMERIC) : normalisés
+     * (virgule -> point, espaces retirés, valeur non numérique ignorée).
      */
     private const array DECIMAL_FIELDS = [
+        'surface_total' => 'setSurfaceTotal',
         'prix' => 'setPrix',
         'montant_loyer_hors_charge' => 'setMontantLoyerHorsCharge',
         'montant_depot_de_garantie' => 'setMontantDepotDeGarantie',
         'montant_des_charges' => 'setMontantDesCharges',
+    ];
+
+    /**
+     * Champs entiers (colonnes SMALLINT/INT) : on garde le premier groupe de
+     * 4 chiffres ("1990-2000" -> 1990), sinon la valeur est ignorée.
+     */
+    private const array INTEGER_FIELDS = [
+        'annee_construction' => 'setAnneeConstruction',
     ];
 
     private const int MAX_IMAGES_PER_PROPERTY = 20;
@@ -167,6 +175,7 @@ final class PropertyCsvImporter
         ];
 
         $columns = array_merge($columns, array_keys(self::DECIMAL_FIELDS));
+        $columns = array_merge($columns, array_keys(self::INTEGER_FIELDS));
         $columns = array_merge($columns, array_keys(self::SCALAR_FIELDS));
         $columns[] = 'dpe_lettre';
         $columns[] = 'ges_lettre';
@@ -274,6 +283,14 @@ final class PropertyCsvImporter
 
         foreach (self::DECIMAL_FIELDS as $column => $setter) {
             $value = $this->parseDecimal($row[$column] ?? null);
+
+            if (null !== $value) {
+                $property->{$setter}($value);
+            }
+        }
+
+        foreach (self::INTEGER_FIELDS as $column => $setter) {
+            $value = $this->parseYear($row[$column] ?? null);
 
             if (null !== $value) {
                 $property->{$setter}($value);
@@ -901,7 +918,27 @@ final class PropertyCsvImporter
         $value = str_replace([' ', "\u{00a0}"], '', $value);
         $value = str_replace(',', '.', $value);
 
+        // Retire une unité en fin de valeur ("250000€", "120m²").
+        $value = preg_replace('/[^\d.]+$/u', '', $value) ?? '';
+
         return is_numeric($value) ? $value : null;
+    }
+
+    /**
+     * Année de construction (colonne SMALLINT) : premier groupe de 4 chiffres,
+     * sinon null.
+     */
+    private function parseYear(?string $value): ?int
+    {
+        $value = $this->clean($value);
+
+        if (null === $value) {
+            return null;
+        }
+
+        return 1 === preg_match('/\d{4}/', $value, $matches)
+            ? (int) $matches[0]
+            : null;
     }
 
     private function parseBool(?string $value): ?bool

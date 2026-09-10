@@ -75,8 +75,8 @@ class Property implements TranslatableInterface
     private ?string $codeIsoPays = null;
 
     #[Assert\NotBlank(groups: ['step_4'])]
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $anneeConstruction = null;
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $anneeConstruction = null;
 
     #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
@@ -87,7 +87,7 @@ class Property implements TranslatableInterface
     private ?string $salleDeBains = null;
 
     #[Assert\NotBlank(groups: ['step_4'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $surfaceTotal = null;
 
     #[Assert\NotBlank(groups: ['step_5'])]
@@ -129,7 +129,7 @@ class Property implements TranslatableInterface
     private Collection $propertyImages;
 
     #[Assert\NotBlank(groups: ['step_8'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 14, scale: 2, nullable: true)]
     private ?string $prix = null;
 
     #[Assert\NotBlank(groups: ['step_8'])]
@@ -137,7 +137,7 @@ class Property implements TranslatableInterface
     private ?string $referenceInterne = null;
 
     #[Assert\NotBlank(groups: ['step_8'])]
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2, nullable: true)]
     private ?string $montantLoyerHorsCharge = null;
 
     #[Assert\NotBlank(groups: ['step_8'])]
@@ -421,12 +421,12 @@ class Property implements TranslatableInterface
         return $this;
     }
 
-    public function getAnneeConstruction(): ?string
+    public function getAnneeConstruction(): ?int
     {
         return $this->anneeConstruction;
     }
 
-    public function setAnneeConstruction(?string $anneeConstruction): static
+    public function setAnneeConstruction(?int $anneeConstruction): static
     {
         $this->anneeConstruction = $anneeConstruction;
 

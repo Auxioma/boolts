@@ -284,6 +284,19 @@ class PropertyRepository extends ServiceEntityRepository
         StatutAnnonceImmobiliere::SUSPENDUE,
     ];
 
+    /**
+     * Prix retenu par les filtres « Fourchette de prix » : le prix de vente
+     * s'il est renseigné, sinon le loyer hors charges.
+     *
+     * NULLIF(..., 0) est indispensable : la colonne non pertinente n'est pas
+     * NULL mais vaut "0" (une location a prix = "0", une vente a
+     * montant_loyer_hors_charge = "0"). Un simple COALESCE renverrait donc
+     * toujours ce "0" pour les locations, et aucune fourchette de loyer ne
+     * pouvait fonctionner. NULLIF ramène "0" et "" à NULL pour que COALESCE
+     * bascule sur la bonne colonne.
+     */
+    private const string PRICE_RANGE_EXPRESSION = 'COALESCE(NULLIF(p.prix, 0), NULLIF(p.montantLoyerHorsCharge, 0))';
+
     public function findPropertysByUserWithFiltersQuery(
         User $user,
         ?string $search = null,
@@ -522,10 +535,7 @@ class PropertyRepository extends ServiceEntityRepository
         ) {
             $this->addRangeFilter(
                 $qb,
-                'COALESCE(
-                    p.prix,
-                    p.montantLoyerHorsCharge
-                )',
+                self::PRICE_RANGE_EXPRESSION,
                 $filters,
                 'minPrix',
                 'maxPrix'
@@ -1374,7 +1384,7 @@ class PropertyRepository extends ServiceEntityRepository
         ) {
             $this->addRangeFilter(
                 $qb,
-                'COALESCE(p.prix, p.montantLoyerHorsCharge)',
+                self::PRICE_RANGE_EXPRESSION,
                 $filters,
                 'minPrix',
                 'maxPrix'
@@ -1570,20 +1580,48 @@ class PropertyRepository extends ServiceEntityRepository
         string $minKey,
         string $maxKey,
     ): void {
-        $min = $this->normalizeSingleValue($filters[$minKey] ?? null);
-        $max = $this->normalizeSingleValue($filters[$maxKey] ?? null);
+        $min = $this->normalizeRangeBound($filters[$minKey] ?? null);
+        $max = $this->normalizeRangeBound($filters[$maxKey] ?? null);
+
+        /*
+         * Bornes inversées par l'agence (faute de frappe : min 300000 / max 30000).
+         * On les remet dans l'ordre plutôt que de produire un
+         * "champ >= 300000 AND champ <= 30000" qui ne renvoie jamais rien.
+         */
+        if (null !== $min && null !== $max && $min > $max) {
+            [$min, $max] = [$max, $min];
+        }
 
         if (null !== $min) {
             $qb
                 ->andWhere(\sprintf('%s >= :%s', $field, $minKey))
-                ->setParameter($minKey, (float) $min);
+                ->setParameter($minKey, $min);
         }
 
         if (null !== $max) {
             $qb
                 ->andWhere(\sprintf('%s <= :%s', $field, $maxKey))
-                ->setParameter($maxKey, (float) $max);
+                ->setParameter($maxKey, $max);
         }
+    }
+
+    /**
+     * Borne de filtre min/max : renvoie un nombre exploitable, ou null si la
+     * saisie est vide ou non numérique. Sans ce garde-fou, "(float) 'abc'" vaut
+     * 0 et un "champ <= 0" viderait la liste ; une virgule décimale ("12,5")
+     * est acceptée.
+     */
+    private function normalizeRangeBound(mixed $value): ?float
+    {
+        $value = $this->normalizeSingleValue($value);
+
+        if (null === $value) {
+            return null;
+        }
+
+        $value = str_replace([' ', "\u{00a0}", ','], ['', '', '.'], $value);
+
+        return is_numeric($value) ? (float) $value : null;
     }
 
     private function normalizeSingleValue(mixed $value, array $preferredKeys = []): ?string
@@ -1910,7 +1948,7 @@ class PropertyRepository extends ServiceEntityRepository
         ) {
             $this->addRangeFilter(
                 $qb,
-                'COALESCE(p.prix, p.montantLoyerHorsCharge)',
+                self::PRICE_RANGE_EXPRESSION,
                 $filters,
                 'minPrix',
                 'maxPrix'

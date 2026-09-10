@@ -27,6 +27,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -137,8 +138,10 @@ class MesBiensType extends AbstractType
                 ->add('salleDeBains', HiddenType::class, [
                     'required' => false,
                 ])
-                ->add('surfaceTotal')
-                ->add('anneeConstruction')
+                ->add('surfaceTotal', TextType::class)
+                ->add('anneeConstruction', TextType::class, [
+                    'required' => false,
+                ])
                 ->add('caracteristique', EntityType::class, [
                     'class' => Caracteristique::class,
                     'choice_label' => 'nom',
@@ -153,6 +156,12 @@ class MesBiensType extends AbstractType
                     },
                 ])
             ;
+
+            // Colonnes numériques (NUMERIC / SMALLINT) : on tolère la saisie
+            // libre ("150 m2", "1 200", "12,5", "vers 1983") mais on ne persiste
+            // qu'un nombre propre, sinon la valeur est ignorée.
+            $this->addNumericCleanup($builder, 'surfaceTotal');
+            $this->addNumericCleanup($builder, 'anneeConstruction', true);
         }
 
         if (5 === $step) {
@@ -222,16 +231,22 @@ class MesBiensType extends AbstractType
         if (8 === $step) {
             if ('2' === $typeTransaction) {
                 $builder
-                    ->add('montantLoyerHorsCharge')
+                    ->add('montantLoyerHorsCharge', TextType::class)
                     ->add('montantDepotDeGarantie')
                     ->add('montantDesCharges')
                 ;
+
+                // montant_loyer_hors_charge est désormais une colonne NUMERIC.
+                $this->addNumericCleanup($builder, 'montantLoyerHorsCharge');
             }
 
             if ('1' === $typeTransaction) {
                 $builder
-                    ->add('prix')
+                    ->add('prix', TextType::class)
                 ;
+
+                // prix est désormais une colonne NUMERIC.
+                $this->addNumericCleanup($builder, 'prix');
             }
         }
 
@@ -252,6 +267,53 @@ class MesBiensType extends AbstractType
                 ],
             ])
         ;
+    }
+
+    /**
+     * Nettoie une saisie « libre » (unités, espaces, virgule décimale) avant
+     * qu'elle n'atteigne une colonne numérique de Property. Une valeur qui
+     * n'est toujours pas un nombre après nettoyage est ramenée à null plutôt
+     * que de faire échouer l'enregistrement.
+     *
+     * @param FormBuilderInterface<mixed> $builder
+     * @param bool                        $integer true pour un entier (année) :
+     *                                             on garde le premier groupe de
+     *                                             4 chiffres ; false pour un
+     *                                             montant décimal
+     */
+    private function addNumericCleanup(FormBuilderInterface $builder, string $field, bool $integer = false): void
+    {
+        $builder->get($field)->addModelTransformer(new CallbackTransformer(
+            static function (int|string|null $value): string {
+                if (null === $value || '' === $value) {
+                    return '';
+                }
+
+                // Évite d'afficher "150.00" (NUMERIC) là où l'agence a saisi "150".
+                if (is_numeric($value) && (float) $value === floor((float) $value)) {
+                    return (string) (int) (float) $value;
+                }
+
+                return (string) $value;
+            },
+            static function (?string $value) use ($integer): int|string|null {
+                if (null === $value) {
+                    return null;
+                }
+
+                $value = str_replace([' ', "\u{00a0}", ','], ['', '', '.'], mb_trim($value));
+
+                if ($integer) {
+                    return 1 === preg_match('/\d{1,4}/', $value, $matches)
+                        ? (int) $matches[0]
+                        : null;
+                }
+
+                $value = preg_replace('/[^0-9.]/', '', $value) ?? '';
+
+                return is_numeric($value) ? $value : null;
+            }
+        ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
