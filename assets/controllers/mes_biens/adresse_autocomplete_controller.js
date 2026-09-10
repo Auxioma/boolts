@@ -15,6 +15,7 @@ export default class extends Controller {
         'mapboxId',
         'fullAddress',
         'featureType',
+        'codeIsoPays',
         'region',
         'district',
         'locality',
@@ -431,6 +432,8 @@ export default class extends Controller {
 
         this.setSelectValueByTextOrValue('pays', country, countryCode);
 
+        this.setTargetValue('codeIsoPays', this.normalizeCountryCode(countryCode));
+
         this.setTargetValue('latitude', latitude);
         this.setTargetValue('longitude', longitude);
 
@@ -486,6 +489,7 @@ export default class extends Controller {
         this.setTargetValue('codePostal', postcode);
         this.setTargetValue('ville', city);
         this.setSelectValueByTextOrValue('pays', country, countryCode);
+        this.setTargetValue('codeIsoPays', this.normalizeCountryCode(countryCode));
         this.setTargetValue('latitude', latitude);
         this.setTargetValue('longitude', longitude);
         this.setTargetValue('mapboxId', osmId ? `photon:${osmId}` : '');
@@ -563,6 +567,7 @@ export default class extends Controller {
         this.setTargetValue('codePostal', postcode);
         this.setTargetValue('ville', city);
         this.setSelectValueByTextOrValue('pays', country, countryCode);
+        this.setTargetValue('codeIsoPays', this.normalizeCountryCode(countryCode));
         this.setTargetValue('latitude', suggestion.lat || '');
         this.setTargetValue('longitude', suggestion.lon || '');
         this.setTargetValue('fullAddress', displayName);
@@ -785,6 +790,7 @@ export default class extends Controller {
         this.setTargetValue('locality', '');
         this.setTargetValue('neighborhood', '');
         this.setTargetValue('poi', '');
+        this.setTargetValue('codeIsoPays', '');
         this.setTargetValue('latitude', '');
         this.setTargetValue('longitude', '');
     }
@@ -849,6 +855,15 @@ export default class extends Controller {
         }
 
         return value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    normalizeCountryCode(value) {
+        const code = String(value ?? '')
+            .trim()
+            .toUpperCase()
+            .split('-')[0];
+
+        return /^[A-Z]{2,3}$/.test(code) ? code : '';
     }
 
     normalizeText(value) {

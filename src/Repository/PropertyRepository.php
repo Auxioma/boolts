@@ -705,10 +705,14 @@ class PropertyRepository extends ServiceEntityRepository
      *   3. sinon, sans filtre géographique (un boost est une promotion
      *      payée : on préfère l'afficher partout plutôt que masquer le bloc).
      *
+     * Le pays est comparé via son code ISO 3166-1 (Property::$codeIsoPays),
+     * pas via le libellé traduit "pt.pays" : le code est stable quelle que
+     * soit la langue de l'annonce ou celle du visiteur.
+     *
      * @return list<Property>
      */
     public function findActiveBoostedForHome(
-        ?string $country,
+        ?string $countryIsoCode,
         ?string $city,
         string $locale,
         int|string $transactionTypeId,
@@ -720,7 +724,7 @@ class PropertyRepository extends ServiceEntityRepository
         // boostés du pays (déterminé via l'IP), triés du plus proche au plus
         // loin — pas de filtre ville, qui serait trop restrictif ici.
         if (null !== $latitude && null !== $longitude) {
-            $results = $this->queryActiveBoostedForHome($country, null, $locale, $transactionTypeId);
+            $results = $this->queryActiveBoostedForHome($countryIsoCode, null, $locale, $transactionTypeId);
 
             usort(
                 $results,
@@ -731,19 +735,19 @@ class PropertyRepository extends ServiceEntityRepository
             return \array_slice($results, 0, $limit);
         }
 
-        $hasCountry = null !== $country && '' !== mb_trim($country);
+        $hasCountryIsoCode = null !== $countryIsoCode && '' !== mb_trim($countryIsoCode);
         $hasCity = null !== $city && '' !== mb_trim($city);
 
         // 1. Ville + pays exacts.
-        $results = $this->queryActiveBoostedForHome($country, $city, $locale, $transactionTypeId);
+        $results = $this->queryActiveBoostedForHome($countryIsoCode, $city, $locale, $transactionTypeId);
 
         // 2. Repli : pays seul (uniquement si une ville avait été demandée).
-        if ([] === $results && $hasCity && $hasCountry) {
-            $results = $this->queryActiveBoostedForHome($country, null, $locale, $transactionTypeId);
+        if ([] === $results && $hasCity && $hasCountryIsoCode) {
+            $results = $this->queryActiveBoostedForHome($countryIsoCode, null, $locale, $transactionTypeId);
         }
 
         // 3. Repli : sans filtre géographique (langue conservée).
-        if ([] === $results && ($hasCountry || $hasCity)) {
+        if ([] === $results && ($hasCountryIsoCode || $hasCity)) {
             $results = $this->queryActiveBoostedForHome(null, null, $locale, $transactionTypeId);
         }
 
@@ -756,7 +760,7 @@ class PropertyRepository extends ServiceEntityRepository
      * @return list<Property>
      */
     private function queryActiveBoostedForHome(
-        ?string $country,
+        ?string $countryIsoCode,
         ?string $city,
         string $locale,
         int|string $transactionTypeId,
@@ -789,10 +793,10 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('boostStatus', PropertyBoostStatus::ACTIVE->value)
             ->setParameter('now', $now);
 
-        if (null !== $country && '' !== mb_trim($country)) {
+        if (null !== $countryIsoCode && '' !== mb_trim($countryIsoCode)) {
             $qb
-                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
-                ->setParameter('country', mb_trim($country));
+                ->andWhere('UPPER(p.codeIsoPays) = UPPER(:countryIsoCode)')
+                ->setParameter('countryIsoCode', mb_trim($countryIsoCode));
         }
 
         if (null !== $city && '' !== mb_trim($city)) {
@@ -817,9 +821,13 @@ class PropertyRepository extends ServiceEntityRepository
         $ville = null !== $ville ? mb_trim($ville) : null;
         $ville = '' !== $ville ? $ville : null;
 
-        $pays = $property->getPays();
-        $pays = null !== $pays ? mb_trim($pays) : null;
-        $pays = '' !== $pays ? $pays : null;
+        /*
+         * On compare le pays via son code ISO 3166-1 (non traduisible) plutôt
+         * que via le libellé "pt.pays", qui varie selon la langue de l'annonce.
+         */
+        $codeIsoPays = $property->getCodeIsoPays();
+        $codeIsoPays = null !== $codeIsoPays ? mb_trim($codeIsoPays) : null;
+        $codeIsoPays = '' !== $codeIsoPays ? $codeIsoPays : null;
         $typeBien = $property->getTypeBien();
         $prix = $property->getPrix();
         $loyerHC = $property->getMontantLoyerHorsCharge();
@@ -832,22 +840,17 @@ class PropertyRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
         ;
 
-        if ($ville || $pays) {
-            $qb
-                ->innerJoin('p.translations', 'pt')
-            ;
-        }
-
         if ($ville) {
             $qb
+                ->innerJoin('p.translations', 'pt')
                 ->andWhere('LOWER(pt.ville) = LOWER(:ville)')
                 ->setParameter('ville', $ville);
         }
 
-        if ($pays) {
+        if ($codeIsoPays) {
             $qb
-                ->andWhere('LOWER(pt.pays) = LOWER(:pays)')
-                ->setParameter('pays', $pays);
+                ->andWhere('UPPER(p.codeIsoPays) = UPPER(:codeIsoPays)')
+                ->setParameter('codeIsoPays', $codeIsoPays);
         }
 
         if ($typeBien) {
@@ -892,6 +895,11 @@ class PropertyRepository extends ServiceEntityRepository
 
     /**
      * filtre de recherche de des bien immobilier de la page d'acceuil.
+     *
+     * Le pays est comparé en priorité via son code ISO 3166-1
+     * (Property::$codeIsoPays), insensible à la langue. Le libellé "pt.pays"
+     * ne sert plus que de repli pour les annonces pas encore rattachées à un
+     * code ISO.
      */
     public function findBySearchQueryBuilder(
         ?int $transactionTypeId,
@@ -899,6 +907,7 @@ class PropertyRepository extends ServiceEntityRepository
         ?string $cp,
         ?string $pays,
         ?string $locale,
+        ?string $paysIsoCode = null,
     ): QueryBuilder {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.translations', 'pt')
@@ -908,7 +917,10 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
         ;
 
-        if (null === $transactionTypeId || empty($pays)) {
+        $paysIsoCode = null !== $paysIsoCode ? mb_trim($paysIsoCode) : '';
+        $pays = null !== $pays ? mb_trim($pays) : '';
+
+        if (null === $transactionTypeId || ('' === $paysIsoCode && '' === $pays)) {
             return $qb->andWhere('p.id IS NULL');
         }
 
@@ -916,9 +928,15 @@ class PropertyRepository extends ServiceEntityRepository
             ->andWhere('IDENTITY(p.typeTransaction) = :transactionTypeId')
             ->setParameter('transactionTypeId', $transactionTypeId);
 
-        $qb
-            ->andWhere('pt.pays = :pays')
-            ->setParameter('pays', mb_trim($pays));
+        if ('' !== $paysIsoCode) {
+            $qb
+                ->andWhere('UPPER(p.codeIsoPays) = UPPER(:paysIsoCode)')
+                ->setParameter('paysIsoCode', $paysIsoCode);
+        } else {
+            $qb
+                ->andWhere('pt.pays = :pays')
+                ->setParameter('pays', $pays);
+        }
 
         if (!empty($ville)) {
             $qb
@@ -970,9 +988,12 @@ class PropertyRepository extends ServiceEntityRepository
      * publiés du pays (déterminé via l'IP) — un bien avec beaucoup de vues
      * et de favoris a statistiquement plus de chances d'être tiré, mais rien
      * n'est jamais garanti ni exclu. Voir {@see weightedRandomSample()}.
+     *
+     * Le pays est filtré via son code ISO 3166-1 (Property::$codeIsoPays),
+     * insensible à la langue, et non via le libellé traduit "pt.pays".
      */
     public function logementPopulaire(
-        ?string $country,
+        ?string $countryIsoCode,
         string $locale,
         int|string $id,
         int $limit = 10,
@@ -1000,10 +1021,10 @@ class PropertyRepository extends ServiceEntityRepository
             ->groupBy('p.id')
             ->setMaxResults(self::MAX_ENGAGEMENT_CANDIDATES);
 
-        if (null !== $country && '' !== mb_trim($country)) {
+        if (null !== $countryIsoCode && '' !== mb_trim($countryIsoCode)) {
             $qb
-                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
-                ->setParameter('country', mb_trim($country));
+                ->andWhere('UPPER(p.codeIsoPays) = UPPER(:countryIsoCode)')
+                ->setParameter('countryIsoCode', mb_trim($countryIsoCode));
         }
 
         $rows = $qb->getQuery()->getResult();
@@ -1106,9 +1127,12 @@ class PropertyRepository extends ServiceEntityRepository
      * de données. Sinon, on élargit la recherche à tout le pays (pas de
      * filtre ville, potentiellement trop restrictif) puisqu'on dispose d'un
      * critère de proximité plus fiable.
+     *
+     * Le pays est comparé via son code ISO 3166-1 (Property::$codeIsoPays),
+     * stable quelle que soit la langue, et non via le libellé "pt.pays".
      */
     public function logemntRecementAjouter(
-        ?string $country,
+        ?string $countryIsoCode,
         ?string $city,
         string $locale,
         int|string $id,
@@ -1136,10 +1160,10 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('transactionTypeId', $id)
             ->orderBy('p.updatedAt', 'DESC');
 
-        if (null !== $country && '' !== mb_trim($country)) {
+        if (null !== $countryIsoCode && '' !== mb_trim($countryIsoCode)) {
             $qb
-                ->andWhere('LOWER(pt.pays) = LOWER(:country)')
-                ->setParameter('country', mb_trim($country));
+                ->andWhere('UPPER(p.codeIsoPays) = UPPER(:countryIsoCode)')
+                ->setParameter('countryIsoCode', mb_trim($countryIsoCode));
         }
 
         if (!$hasCoordinates) {
@@ -1189,13 +1213,15 @@ class PropertyRepository extends ServiceEntityRepository
         float $south,
         float $east,
         float $west,
+        ?string $paysIsoCode = null,
     ): QueryBuilder {
         $queryBuilder = $this->findBySearchQueryBuilder(
             $transactionTypeId,
             $ville,
             $cp,
             $pays,
-            $locale
+            $locale,
+            $paysIsoCode
         );
 
         $queryBuilder

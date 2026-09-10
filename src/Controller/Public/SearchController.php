@@ -337,7 +337,8 @@ final class SearchController extends AbstractController
                         $mapBounds['north'],
                         $mapBounds['south'],
                         $mapBounds['east'],
-                        $mapBounds['west']
+                        $mapBounds['west'],
+                        $criteria['selectedCountryCode'] ?? null
                     );
             } else {
                 /*
@@ -350,7 +351,8 @@ final class SearchController extends AbstractController
                         $criteria['ville'],
                         $criteria['cp'],
                         $criteria['pays'],
-                        $locale
+                        $locale,
+                        $criteria['selectedCountryCode'] ?? null
                     );
             }
         }
@@ -627,7 +629,8 @@ final class SearchController extends AbstractController
                     $north,
                     $south,
                     $east,
-                    $west
+                    $west,
+                    $criteria['selectedCountryCode'] ?? null
                 );
         }
 

@@ -234,6 +234,12 @@
                         },
                     }) }}
 
+                    {{ form_widget(form.codeIsoPays, {
+                        attr: {
+                            'data-mes-biens--adresse-autocomplete-target': 'codeIsoPays',
+                        },
+                    }) }}
+
                     {{ form_widget(form.region, {
                         attr: {
                             'data-mes-biens--adresse-autocomplete-target': 'region',

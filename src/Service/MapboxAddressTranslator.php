@@ -70,11 +70,17 @@ class MapboxAddressTranslator
         $properties = $feature['properties'] ?? [];
         $context = $properties['context'] ?? [];
 
+        $codeIsoPays = $context['country']['country_code']
+            ?? $context['country']['country_code_alpha_3']
+            ?? $context['country']['short_code']
+            ?? null;
+
         return [
             'adresse' => $properties['name'] ?? null,
             'fullAddress' => $properties['full_address'] ?? $properties['place_formatted'] ?? null,
             'ville' => $context['place']['name'] ?? $context['locality']['name'] ?? null,
             'pays' => $context['country']['name'] ?? null,
+            'codeIsoPays' => null !== $codeIsoPays ? mb_strtoupper(mb_trim((string) $codeIsoPays)) : null,
             'region' => $context['region']['name'] ?? null,
             'district' => $context['district']['name'] ?? null,
             'locality' => $context['locality']['name'] ?? null,

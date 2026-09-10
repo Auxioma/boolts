@@ -66,6 +66,14 @@ class Property implements TranslatableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $featureType = null;
 
+    /*
+     * Code ISO 3166-1 (alpha-2 le plus souvent, ex. "FR") renvoyé par Mapbox
+     * pour le pays de l'adresse. Non traduisible : il sert de repère technique
+     * fiable là où "pays" ne contient qu'un libellé localisé ("France").
+     */
+    #[ORM\Column(length: 10, nullable: true)]
+    private ?string $codeIsoPays = null;
+
     #[Assert\NotBlank(groups: ['step_4'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $anneeConstruction = null;
@@ -394,6 +402,20 @@ class Property implements TranslatableInterface
     public function setFeatureType(?string $featureType): static
     {
         $this->featureType = $featureType;
+
+        return $this;
+    }
+
+    public function getCodeIsoPays(): ?string
+    {
+        return $this->codeIsoPays;
+    }
+
+    public function setCodeIsoPays(?string $codeIsoPays): static
+    {
+        $codeIsoPays = null !== $codeIsoPays ? mb_strtoupper(mb_trim($codeIsoPays)) : null;
+
+        $this->codeIsoPays = '' !== $codeIsoPays ? $codeIsoPays : null;
 
         return $this;
     }

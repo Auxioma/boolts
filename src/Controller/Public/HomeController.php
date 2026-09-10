@@ -66,10 +66,15 @@ final class HomeController extends AbstractController
         $ip = $request->getClientIp();
         $location = $ipLocationService->locate($ip);
 
+        /*
+         * On raisonne en code ISO 3166-1 (ex. "FR") et non plus sur le libellé
+         * du pays : les annonces sont filtrées via Property::$codeIsoPays, qui
+         * ne dépend ni de la langue de l'annonce ni de celle du visiteur.
+         */
         if (null === $location) {
-            $country = 'France';
+            $countryIsoCode = 'FR';
         } else {
-            $country = $location['country'];
+            $countryIsoCode = $location['countryCode'] ?? 'FR';
         }
 
         $transactions = $categoryBienTransactionRepository->findBy([], [
@@ -103,7 +108,7 @@ final class HomeController extends AbstractController
 
         $locale = $request->getLocale();
 
-        $sections = $this->buildPropertySections($country, $city, $locale, $latitude, $longitude);
+        $sections = $this->buildPropertySections($countryIsoCode, $city, $locale, $latitude, $longitude);
         /**
          * je vais vérifier si l'utilisateur a un cookie de session pour retrouver ses recherches récentes.
          * Si le cookie existe, je vais récupérer l'UUID  et le nom de la ville de la recherche et je vais vérifier si la recherche existe dans la base de données.
@@ -155,6 +160,15 @@ final class HomeController extends AbstractController
         $city = mb_trim((string) $request->query->get('city'));
         $country = mb_trim((string) $request->query->get('country'));
 
+        /*
+         * Le contrôleur Stimulus de géolocalisation envoie aussi le code ISO
+         * 3166-1 du pays (reverse-geocoding). C'est lui qui sert à filtrer les
+         * annonces : Property::$codeIsoPays est insensible à la langue.
+         */
+        $countryIsoCode = mb_strtoupper(
+            mb_trim((string) $request->query->get('countryCode'))
+        );
+
         $latitudeParam = $request->query->get('latitude');
         $longitudeParam = $request->query->get('longitude');
 
@@ -172,15 +186,16 @@ final class HomeController extends AbstractController
         if ('' === $city) {
             $session->remove('city');
             $session->remove('country');
+            $session->remove('countryCode');
             $session->remove('latitude');
             $session->remove('longitude');
 
             $location = $ipLocationService->locate($request->getClientIp());
-            $country = $location['country'] ?? 'France';
+            $countryIsoCode = $location['countryCode'] ?? 'FR';
 
             return $this->render(
                 'public/home/_partials/_property_sections.html.twig',
-                $this->buildPropertySections($country, null, $request->getLocale())
+                $this->buildPropertySections($countryIsoCode, null, $request->getLocale())
             );
         }
 
@@ -190,12 +205,13 @@ final class HomeController extends AbstractController
 
         $session->set('city', $city);
         $session->set('country', $country);
+        $session->set('countryCode', $countryIsoCode);
         $session->set('latitude', $latitude);
         $session->set('longitude', $longitude);
 
         return $this->render(
             'public/home/_partials/_property_sections.html.twig',
-            $this->buildPropertySections($country, $city, $request->getLocale(), $latitude, $longitude)
+            $this->buildPropertySections($countryIsoCode, $city, $request->getLocale(), $latitude, $longitude)
         );
     }
 
@@ -206,19 +222,19 @@ final class HomeController extends AbstractController
      * @return array<string, mixed>
      */
     private function buildPropertySections(
-        ?string $country,
+        ?string $countryIsoCode,
         ?string $city,
         string $locale,
         ?float $latitude = null,
         ?float $longitude = null,
     ): array {
         return [
-            'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($country, $locale, 1),
-            'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 1, $latitude, $longitude),
-            'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($country, $locale, 2),
-            'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($country, $city, $locale, 2, $latitude, $longitude),
-            'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 2, $latitude, $longitude),
-            'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($country, $city, $locale, 1, $latitude, $longitude),
+            'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($countryIsoCode, $locale, 1),
+            'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($countryIsoCode, $city, $locale, 1, $latitude, $longitude),
+            'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($countryIsoCode, $locale, 2),
+            'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($countryIsoCode, $city, $locale, 2, $latitude, $longitude),
+            'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($countryIsoCode, $city, $locale, 2, $latitude, $longitude),
+            'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($countryIsoCode, $city, $locale, 1, $latitude, $longitude),
         ];
     }
 

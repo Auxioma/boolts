@@ -1921,6 +1921,16 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 continue;
             }
 
+            /*
+             * Le code ISO du pays n'est pas traduisible : on le pose une seule
+             * fois sur le bien, à partir de la réponse Mapbox (source fiable).
+             */
+            if (null !== ($address['codeIsoPays'] ?? null)) {
+                $mesBiens->setCodeIsoPays(
+                    $address['codeIsoPays']
+                );
+            }
+
             $translation = $mesBiens->translate(
                 $locale
             );

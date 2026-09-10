@@ -117,6 +117,9 @@ class MesBiensType extends AbstractType
                 ->add('mapboxId', HiddenType::class)
                 ->add('fullAddress', HiddenType::class)
                 ->add('featureType', HiddenType::class)
+                ->add('codeIsoPays', HiddenType::class, [
+                    'required' => false,
+                ])
                 ->add('region', HiddenType::class)
                 ->add('district', HiddenType::class)
                 ->add('poi', HiddenType::class)
