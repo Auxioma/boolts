@@ -22,7 +22,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -200,18 +199,13 @@ class MesBiensType extends AbstractType
             ;
         }
 
-        if (6 === $step) {
-            $builder
-                ->add('propertyImages', CollectionType::class, [
-                    'entry_type' => PropertyImageType::class,
-                    'allow_add' => true,
-                    'allow_delete' => true,
-                    'by_reference' => false,
-                    'prototype' => true,
-                    'required' => false,
-                ])
-            ;
-        }
+        /*
+         * Étape 6 (photos) : plus aucun champ de formulaire. Les images sont
+         * téléversées / réordonnées / supprimées en AJAX
+         * (AgenceImmobiliereMesBiensImagesController) et persistées au fil de
+         * l'eau. La contrainte Assert\Count(min: 1, groups: ['step_6']) sur
+         * Property::$propertyImages continue de bloquer le bouton « Suivant ».
+         */
 
         if (7 === $step) {
             $builder

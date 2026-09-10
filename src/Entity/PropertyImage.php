@@ -40,8 +40,8 @@ class PropertyImage
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $position = null;
+    #[ORM\Column]
+    private ?int $position = null;
 
     #[ORM\ManyToOne(inversedBy: 'propertyImages')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
@@ -95,12 +95,12 @@ class PropertyImage
         return $this->imageSize;
     }
 
-    public function getPosition(): ?string
+    public function getPosition(): ?int
     {
         return $this->position;
     }
 
-    public function setPosition(string $position): static
+    public function setPosition(int $position): static
     {
         $this->position = $position;
 

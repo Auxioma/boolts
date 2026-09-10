@@ -1789,6 +1789,12 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 'abonnementUrl' => $this->generateUrl(
                     'agence_immobiliere_options'
                 ),
+
+                /*
+                 * Étape 6 : photos déjà en base (triées par position via
+                 * #[ORM\OrderBy]). Le téléversement se fait ensuite en AJAX.
+                 */
+                'propertyImages' => $mesBiens->getPropertyImages(),
             ]
         );
     }
@@ -1975,25 +1981,26 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $mesBiens->mergeNewTranslations();
     }
 
+    /**
+     * Normalise les positions (1..n) des photos déjà persistées en base.
+     *
+     * Les photos sont désormais téléversées / réordonnées / supprimées en AJAX
+     * (AgenceImmobiliereMesBiensImagesController) ; cette méthode reste un
+     * simple filet de sécurité au passage de l'étape 6 (comble un éventuel trou
+     * de numérotation).
+     */
     private function syncPropertyImages(
         Property $mesBiens,
         EntityManagerInterface $entityManager,
     ): void {
-        foreach (
-            $mesBiens->getPropertyImages() as $index => $propertyImage
-        ) {
-            $propertyImage->setProperty(
-                $mesBiens
-            );
+        $position = 1;
 
-            $propertyImage->setPosition(
-                $index + 1
-            );
+        foreach ($mesBiens->getPropertyImages() as $propertyImage) {
+            $propertyImage->setProperty($mesBiens);
+            $propertyImage->setPosition($position);
+
+            ++$position;
         }
-
-        $entityManager->persist(
-            $mesBiens
-        );
     }
 
     private function syncDescriptionTranslationsFromForm(

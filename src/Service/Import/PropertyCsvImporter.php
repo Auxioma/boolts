@@ -512,7 +512,7 @@ final class PropertyCsvImporter
 
                 $image = new PropertyImage();
                 $image->setProperty($property);
-                $image->setPosition((string) $position);
+                $image->setPosition($position);
                 /*
                  * VichUploaderBundle n'« upload » que les File de type UploadedFile
                  * ou ReplacingFile (cf. UploadHandler::hasUploadedFile()). Un

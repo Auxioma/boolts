@@ -125,6 +125,7 @@ class Property implements TranslatableInterface
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
+    #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $propertyImages;
 
     #[Assert\NotBlank(groups: ['step_8'])]

@@ -1,4 +1,10 @@
 // assets/controllers/mes_biens/images_controller.js
+//
+// Étape 6 du tunnel « Mes biens » : les photos sont téléversées, réordonnées et
+// supprimées individuellement en AJAX (AgenceImmobiliereMesBiensImagesController)
+// et persistées au fil de l'eau. Plus aucun fichier ne transite par le
+// formulaire Symfony : le bouton « Suivant » ne fait que valider qu'au moins une
+// photo est en base.
 
 import { Controller } from '@hotwired/stimulus';
 
@@ -6,6 +12,10 @@ export default class extends Controller {
     static targets = ['browseCard', 'browseButton'];
 
     static values = {
+        uploadUrl: String,
+        reorderUrl: String,
+        deleteUrl: String,
+        csrfToken: String,
         maxImages: {
             type: Number,
             default: 50,
@@ -19,6 +29,10 @@ export default class extends Controller {
     connect() {
         this.draggedCard = null;
         this.dragGhost = null;
+
+        this.uploadQueue = [];
+        this.isProcessingQueue = false;
+        this.persistOrderTimeout = null;
 
         this.imageActionsHtml = `
             <div class="property-image-actions">
@@ -77,6 +91,10 @@ export default class extends Controller {
     disconnect() {
         document.removeEventListener('click', this.closeAllMenusHandler);
         this.removeDragGhost();
+
+        if (this.persistOrderTimeout) {
+            clearTimeout(this.persistOrderTimeout);
+        }
     }
 
     notifySubmitController() {
@@ -85,11 +103,15 @@ export default class extends Controller {
         }));
     }
 
+    // ------------------------------------------------------------------
+    // Sélection de fichiers
+    // ------------------------------------------------------------------
+
     browse(event) {
         event.preventDefault();
         event.stopPropagation();
 
-        this.openFileInputFromBrowseCard();
+        this.openFilePicker();
     }
 
     dragOverBrowse(event) {
@@ -107,10 +129,233 @@ export default class extends Controller {
             return;
         }
 
-        const targetCard = this.getEmptyCards()[0] || this.createEmptyCard();
-
-        this.handleDroppedFiles(event.dataTransfer.files, targetCard);
+        this.enqueueFiles(event.dataTransfer.files);
     }
+
+    /**
+     * Ouvre le sélecteur de fichiers du système en autorisant la sélection
+     * multiple. Chaque image choisie rejoint la file d'attente d'upload.
+     */
+    openFilePicker() {
+        const picker = document.createElement('input');
+
+        picker.type = 'file';
+        picker.accept = 'image/*';
+        picker.multiple = true;
+        picker.classList.add('d-none');
+
+        picker.addEventListener('change', () => {
+            if (picker.files && picker.files.length > 0) {
+                this.enqueueFiles(picker.files);
+            }
+
+            picker.remove();
+        });
+
+        this.element.appendChild(picker);
+        picker.click();
+    }
+
+    isImageFile(file) {
+        return file && file.type && file.type.startsWith('image/');
+    }
+
+    /**
+     * Crée immédiatement une carte « en cours d'upload » pour chaque fichier
+     * valide, dans la limite de maxImages, puis lance la file d'attente.
+     */
+    enqueueFiles(files) {
+        const validFiles = Array.from(files).filter((file) => this.isImageFile(file));
+
+        if (validFiles.length === 0) {
+            return;
+        }
+
+        const used = this.getFilledCards().length
+            + this.getUploadingCards().length
+            + this.getErrorCards().length;
+
+        const freeSlots = Math.max(this.maxImagesValue - used, 0);
+        const filesToProcess = validFiles.slice(0, freeSlots);
+
+        filesToProcess.forEach((file) => {
+            const card = this.createUploadingCard(file);
+
+            this.uploadQueue.push({ card, file });
+        });
+
+        this.normalizeGrid();
+        this.ensureMinimumCards();
+        this.ensureOneEmptyCardIfPossible();
+        this.notifySubmitController();
+
+        this.processQueue();
+    }
+
+    createUploadingCard(file) {
+        const card = document.createElement('div');
+        const previewUrl = URL.createObjectURL(file);
+
+        card.className = 'property-preview-card is-uploading';
+        card.dataset.previewUrl = previewUrl;
+        card.innerHTML = `
+            <img src="${previewUrl}" alt="Photo du bien">
+            <div class="property-image-uploading">
+                <span class="property-image-uploading-spinner"></span>
+            </div>
+            ${this.imageActionsHtml}
+        `;
+
+        this.element.insertBefore(card, this.browseCardTarget);
+
+        return card;
+    }
+
+    // ------------------------------------------------------------------
+    // File d'attente d'upload (séquentielle)
+    // ------------------------------------------------------------------
+
+    async processQueue() {
+        if (this.isProcessingQueue) {
+            return;
+        }
+
+        this.isProcessingQueue = true;
+
+        while (this.uploadQueue.length > 0) {
+            const { card, file } = this.uploadQueue.shift();
+
+            if (!card.isConnected) {
+                this.revokePreview(card);
+
+                continue;
+            }
+
+            await this.uploadOne(card, file);
+        }
+
+        this.isProcessingQueue = false;
+
+        this.schedulePersistOrder();
+        this.notifySubmitController();
+    }
+
+    async uploadOne(card, file) {
+        const formData = new FormData();
+
+        formData.append('image', file);
+        formData.append('csrfToken', this.csrfTokenValue);
+
+        try {
+            const response = await fetch(this.uploadUrlValue, {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin',
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+
+            const result = await response.json().catch(() => ({
+                success: false,
+                message: 'Réponse invalide du serveur.',
+            }));
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Le téléversement a échoué.');
+            }
+
+            this.markCardUploaded(card, result.image);
+        } catch (error) {
+            this.markCardError(card, file, error.message || 'Le téléversement a échoué.');
+        }
+    }
+
+    markCardUploaded(card, image) {
+        card.classList.remove('is-uploading', 'is-error');
+        card.classList.add('is-filled');
+        card.dataset.imageId = image.id;
+        card.setAttribute('draggable', 'true');
+
+        const uploadingOverlay = card.querySelector('.property-image-uploading');
+
+        if (uploadingOverlay) {
+            uploadingOverlay.remove();
+        }
+
+        const img = card.querySelector('img');
+
+        if (img) {
+            const fallback = card.dataset.previewUrl;
+
+            img.addEventListener('error', () => {
+                if (fallback && img.src !== fallback) {
+                    img.src = fallback;
+                }
+            }, { once: true });
+
+            img.src = image.thumbnailUrl;
+        }
+
+        this.revokePreview(card);
+        this.enableFilledCard(card);
+        this.normalizeGrid();
+        this.notifySubmitController();
+    }
+
+    markCardError(card, file, message) {
+        card.classList.remove('is-uploading', 'is-filled');
+        card.classList.add('is-error');
+        delete card.dataset.imageId;
+
+        card.innerHTML = `
+            <div class="property-image-error">
+                <span>${this.escapeHtml(message)}</span>
+                <button type="button" data-image-retry>Réessayer</button>
+            </div>
+        `;
+
+        const retryButton = card.querySelector('[data-image-retry]');
+
+        if (retryButton) {
+            retryButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                this.retryCard(card, file);
+            });
+        }
+    }
+
+    retryCard(card, file) {
+        const previewUrl = card.dataset.previewUrl || URL.createObjectURL(file);
+
+        card.dataset.previewUrl = previewUrl;
+        card.classList.remove('is-error');
+        card.classList.add('is-uploading');
+        card.innerHTML = `
+            <img src="${previewUrl}" alt="Photo du bien">
+            <div class="property-image-uploading">
+                <span class="property-image-uploading-spinner"></span>
+            </div>
+            ${this.imageActionsHtml}
+        `;
+
+        this.uploadQueue.push({ card, file });
+        this.processQueue();
+    }
+
+    revokePreview(card) {
+        if (card.dataset.previewUrl) {
+            URL.revokeObjectURL(card.dataset.previewUrl);
+            delete card.dataset.previewUrl;
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Sélecteurs de cartes
+    // ------------------------------------------------------------------
 
     getPreviewCards() {
         return Array.from(this.element.querySelectorAll('.property-preview-card')).filter((card) => {
@@ -119,16 +364,30 @@ export default class extends Controller {
     }
 
     getFilledCards() {
-        return this.getPreviewCards().filter((card) => {
-            return card.classList.contains('is-filled');
-        });
+        return this.getPreviewCards().filter((card) => card.classList.contains('is-filled'));
+    }
+
+    getUploadingCards() {
+        return this.getPreviewCards().filter((card) => card.classList.contains('is-uploading'));
+    }
+
+    getErrorCards() {
+        return this.getPreviewCards().filter((card) => card.classList.contains('is-error'));
     }
 
     getEmptyCards() {
+        return this.getPreviewCards().filter((card) => card.classList.contains('is-empty'));
+    }
+
+    getBusyCards() {
         return this.getPreviewCards().filter((card) => {
-            return card.classList.contains('is-empty');
+            return !card.classList.contains('is-empty');
         });
     }
+
+    // ------------------------------------------------------------------
+    // Grille / positions
+    // ------------------------------------------------------------------
 
     closeAllMenus() {
         this.element.querySelectorAll('.property-image-actions-menu').forEach((menu) => {
@@ -140,27 +399,9 @@ export default class extends Controller {
         });
     }
 
-    getNextIndex() {
-        return parseInt(this.element.dataset.index || '0', 10);
-    }
-
-    setNextIndex(index) {
-        this.element.dataset.index = String(index);
-    }
-
     updatePositions() {
         this.getPreviewCards().forEach((card, index) => {
-            const position = index + 1;
-
-            card.dataset.position = position;
-
-            const positionInput = card.querySelector('.js-image-position')
-                || card.querySelector('input[name$="[position]"]');
-
-            if (positionInput) {
-                positionInput.classList.add('js-image-position');
-                positionInput.value = position;
-            }
+            card.dataset.position = index + 1;
         });
 
         this.getFilledCards().forEach((card, index) => {
@@ -169,7 +410,7 @@ export default class extends Controller {
     }
 
     normalizeGrid() {
-        this.getFilledCards().forEach((card) => {
+        this.getBusyCards().forEach((card) => {
             this.element.insertBefore(card, this.browseCardTarget);
         });
 
@@ -223,180 +464,17 @@ export default class extends Controller {
         this.createEmptyCard();
     }
 
-    createPrototypeWrapper() {
-        const index = this.getNextIndex();
-        const prototype = this.element.dataset.prototype.replace(/__name__/g, index);
-
-        const wrapper = document.createElement('div');
-
-        wrapper.classList.add('d-none');
-        wrapper.innerHTML = prototype;
-
-        const fileInput = wrapper.querySelector('input[type="file"]');
-
-        if (!fileInput) {
-            return null;
-        }
-
-        fileInput.classList.add('d-none');
-        fileInput.setAttribute('accept', 'image/*');
-
-        const positionInput = wrapper.querySelector('.js-image-position')
-            || wrapper.querySelector('input[name$="[position]"]');
-
-        if (positionInput) {
-            positionInput.classList.add('js-image-position');
-        }
-
-        this.setNextIndex(index + 1);
-
-        return {
-            wrapper,
-            fileInput,
-            positionInput,
-        };
-    }
-
-    setInputFile(fileInput, file) {
-        const dataTransfer = new DataTransfer();
-
-        dataTransfer.items.add(file);
-        fileInput.files = dataTransfer.files;
-    }
-
-    isImageFile(file) {
-        return file && file.type && file.type.startsWith('image/');
-    }
-
-    fillCardWithFile(card, file, wrapper) {
-        if (!card || !file || !wrapper) {
-            return;
-        }
-
-        if (!this.isImageFile(file)) {
-            return;
-        }
-
-        const reader = new FileReader();
-
-        reader.onload = (event) => {
-            card.classList.remove('is-empty');
-            card.classList.add('is-filled');
-            card.setAttribute('draggable', 'true');
-
-            card.innerHTML = `
-                <img src="${event.target.result}" alt="Photo du bien">
-                ${this.imageActionsHtml}
-            `;
-
-            card.appendChild(wrapper);
-
-            const positionInput = card.querySelector('.js-image-position')
-                || card.querySelector('input[name$="[position]"]');
-
-            if (positionInput) {
-                positionInput.classList.add('js-image-position');
-                positionInput.value = card.dataset.position;
-            }
-
-            this.enableFilledCard(card);
-
-            this.normalizeGrid();
-            this.ensureMinimumCards();
-            this.ensureOneEmptyCardIfPossible();
-            this.notifySubmitController();
-        };
-
-        reader.readAsDataURL(file);
-    }
-
     openFileInputForCard(card) {
         if (!card || !card.classList.contains('is-empty')) {
             return;
         }
 
-        this.openFilePicker(card);
+        this.openFilePicker();
     }
 
-    openFileInputFromBrowseCard() {
-        const card = this.getEmptyCards()[0] || this.createEmptyCard();
-
-        this.openFilePicker(card);
-    }
-
-    /**
-     * Ouvre le sélecteur de fichiers du système en autorisant la sélection
-     * multiple. Chaque image choisie est ensuite placée dans sa propre carte,
-     * exactement comme lors d'un glisser-déposer.
-     */
-    openFilePicker(targetCard) {
-        const picker = document.createElement('input');
-
-        picker.type = 'file';
-        picker.accept = 'image/*';
-        picker.multiple = true;
-        picker.classList.add('d-none');
-
-        picker.addEventListener('change', () => {
-            if (picker.files && picker.files.length > 0) {
-                this.handleDroppedFiles(picker.files, targetCard);
-            }
-
-            picker.remove();
-        });
-
-        this.element.appendChild(picker);
-        picker.click();
-    }
-
-    handleDroppedFiles(files, targetCard) {
-        const validFiles = Array.from(files).filter((file) => {
-            return this.isImageFile(file);
-        });
-
-        if (validFiles.length === 0) {
-            return;
-        }
-
-        const freeSlots = Math.max(this.maxImagesValue - this.getFilledCards().length, 0);
-        const filesToProcess = validFiles.slice(0, freeSlots);
-
-        filesToProcess.forEach((file, index) => {
-            let card = null;
-
-            if (index === 0 && targetCard && targetCard.classList.contains('is-empty')) {
-                card = targetCard;
-            } else {
-                card = this.getEmptyCards()[0] || this.createEmptyCard();
-            }
-
-            if (!card) {
-                return;
-            }
-
-            /*
-             * L'aperçu est généré de façon asynchrone (FileReader) : on marque
-             * donc la carte comme remplie immédiatement pour que le fichier
-             * suivant de la sélection ne réutilise pas la même carte.
-             */
-            card.classList.remove('is-empty');
-            card.classList.add('is-filled');
-
-            const prototypeData = this.createPrototypeWrapper();
-
-            if (!prototypeData) {
-                return;
-            }
-
-            this.setInputFile(prototypeData.fileInput, file);
-            this.fillCardWithFile(card, file, prototypeData.wrapper);
-        });
-
-        this.normalizeGrid();
-        this.ensureMinimumCards();
-        this.ensureOneEmptyCardIfPossible();
-        this.notifySubmitController();
-    }
+    // ------------------------------------------------------------------
+    // Réordonnancement
+    // ------------------------------------------------------------------
 
     moveCardToCover(card) {
         const firstFilledCard = this.getFilledCards()[0];
@@ -407,6 +485,7 @@ export default class extends Controller {
 
         this.normalizeGrid();
         this.notifySubmitController();
+        this.schedulePersistOrder();
     }
 
     moveCardForward(card) {
@@ -421,6 +500,7 @@ export default class extends Controller {
         this.element.insertBefore(card, previousCard);
         this.normalizeGrid();
         this.notifySubmitController();
+        this.schedulePersistOrder();
     }
 
     moveCardBackward(card) {
@@ -435,16 +515,106 @@ export default class extends Controller {
         this.element.insertBefore(card, nextCard.nextSibling);
         this.normalizeGrid();
         this.notifySubmitController();
+        this.schedulePersistOrder();
     }
 
     deleteCard(card) {
-        card.remove();
+        const imageId = card.dataset.imageId;
 
-        this.ensureMinimumCards();
-        this.ensureOneEmptyCardIfPossible();
-        this.normalizeGrid();
-        this.notifySubmitController();
+        if (!imageId) {
+            this.revokePreview(card);
+            card.remove();
+
+            this.ensureMinimumCards();
+            this.ensureOneEmptyCardIfPossible();
+            this.normalizeGrid();
+            this.notifySubmitController();
+
+            return;
+        }
+
+        card.classList.add('is-uploading');
+
+        fetch(this.deleteUrlValue.replace('__ID__', encodeURIComponent(imageId)), {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({ csrfToken: this.csrfTokenValue }),
+        })
+            .then((response) => response.json().catch(() => ({ success: false })))
+            .then((result) => {
+                if (!result.success) {
+                    throw new Error(result.message || 'La suppression a échoué.');
+                }
+
+                this.revokePreview(card);
+                card.remove();
+
+                this.ensureMinimumCards();
+                this.ensureOneEmptyCardIfPossible();
+                this.normalizeGrid();
+                this.notifySubmitController();
+                this.schedulePersistOrder();
+            })
+            .catch((error) => {
+                card.classList.remove('is-uploading');
+                window.alert(error.message || 'La suppression a échoué.');
+            });
     }
+
+    schedulePersistOrder() {
+        if (this.persistOrderTimeout) {
+            clearTimeout(this.persistOrderTimeout);
+        }
+
+        this.persistOrderTimeout = setTimeout(() => {
+            this.persistOrderTimeout = null;
+            this.persistOrder();
+        }, 400);
+    }
+
+    persistOrder() {
+        const order = this.getFilledCards()
+            .map((card) => card.dataset.imageId)
+            .filter(Boolean);
+
+        if (order.length === 0) {
+            return;
+        }
+
+        fetch(this.reorderUrlValue, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+                csrfToken: this.csrfTokenValue,
+                order,
+            }),
+        })
+            .then((response) => response.json().catch(() => ({ success: false })))
+            .then((result) => {
+                if (!result.success) {
+                    // eslint-disable-next-line no-console
+                    console.warn('[mes-biens--images] réordonnancement non enregistré :', result.message);
+                }
+            })
+            .catch(() => {
+                // eslint-disable-next-line no-console
+                console.warn('[mes-biens--images] réordonnancement : erreur réseau.');
+            });
+    }
+
+    // ------------------------------------------------------------------
+    // Menu d'actions
+    // ------------------------------------------------------------------
 
     bindActions(card) {
         if (card.dataset.actionsEnabled === '1') {
@@ -505,6 +675,10 @@ export default class extends Controller {
             this.closeAllMenus();
         });
     }
+
+    // ------------------------------------------------------------------
+    // Drag & drop
+    // ------------------------------------------------------------------
 
     createDragGhost(card, event) {
         this.removeDragGhost();
@@ -577,6 +751,7 @@ export default class extends Controller {
             this.removeDragGhost();
             this.normalizeGrid();
             this.notifySubmitController();
+            this.schedulePersistOrder();
         });
 
         card.addEventListener('dragover', (event) => {
@@ -607,6 +782,7 @@ export default class extends Controller {
             event.preventDefault();
             this.normalizeGrid();
             this.notifySubmitController();
+            this.schedulePersistOrder();
         });
     }
 
@@ -667,7 +843,7 @@ export default class extends Controller {
                 return;
             }
 
-            this.handleDroppedFiles(event.dataTransfer.files, card);
+            this.enqueueFiles(event.dataTransfer.files);
         });
     }
 
@@ -679,5 +855,13 @@ export default class extends Controller {
         this.getEmptyCards().forEach((card) => {
             this.enableEmptyCard(card);
         });
+    }
+
+    escapeHtml(value) {
+        const div = document.createElement('div');
+
+        div.textContent = String(value);
+
+        return div.innerHTML;
     }
 }

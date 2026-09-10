@@ -20,6 +20,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
@@ -56,7 +57,7 @@ class PropertyImageCrudController extends AbstractCrudController
             Field::new('imageFile', 'Fichier image')
                 ->setFormType(VichImageType::class)
                 ->onlyOnForms(),
-            TextField::new('position', 'Position'),
+            IntegerField::new('position', 'Position'),
             TextField::new('imageName', 'Nom du fichier')->onlyOnDetail(),
             TextField::new('imageSize', 'Taille (octets)')->onlyOnDetail(),
             DateTimeField::new('createdAt', 'Créé le')->onlyOnDetail(),

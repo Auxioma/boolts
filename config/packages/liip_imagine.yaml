@@ -12,6 +12,16 @@ liip_imagine:
     filter_sets:
         cache: ~
 
+        # Miniature de l'étape 6 « Mes biens » : aperçu léger généré à la volée
+        # pour chaque photo téléversée en AJAX puis rechargée depuis la base.
+        property_upload_thumbnail:
+            quality: 80
+            format: webp
+            filters:
+                thumbnail:
+                    size: [320, 214]
+                    mode: outbound
+
         property_card_mobile_webp:
             quality: 82
             format: webp

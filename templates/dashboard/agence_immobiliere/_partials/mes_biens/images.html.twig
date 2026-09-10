@@ -3,6 +3,12 @@
  Role: Renders the dashboard/agence_immobiliere/_partials/mes_biens Twig view.
  Context: Provided by the rendering controller, parent template, or including template.
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+
+ Les photos sont téléversées / réordonnées / supprimées en AJAX
+ (mes-biens--images Stimulus controller -> AgenceImmobiliereMesBiensImagesController).
+ Elles sont persistées au fil de l'eau : `propertyImages` contient les photos
+ déjà en base (triées par position) et leurs miniatures sont générées par
+ LiipImagine (filtre `property_upload_thumbnail`).
 #}
 
 <div class="js-tab-content mes-biens-immobilier formulaire" id="cat6">
@@ -22,7 +28,8 @@
         </div>
     </div>
 
-    {% set existingImagesCount = form.propertyImages|length %}
+    {% set existingImages = propertyImages|default([]) %}
+    {% set existingImagesCount = existingImages|length %}
     {% set emptyCardsCount = existingImagesCount < 5 ? 5 - existingImagesCount : 0 %}
 
     <div
@@ -31,22 +38,24 @@
         data-controller="mes-biens--images"
         data-mes-biens--images-max-images-value="50"
         data-mes-biens--images-minimum-visible-cards-value="5"
+        data-mes-biens--images-upload-url-value="{{ path('agence_immobiliere_mes_biens_photo_upload') }}"
+        data-mes-biens--images-reorder-url-value="{{ path('agence_immobiliere_mes_biens_photo_reorder') }}"
+        data-mes-biens--images-delete-url-value="{{ path('agence_immobiliere_mes_biens_photo_delete', {id: '__ID__'}) }}"
+        data-mes-biens--images-csrf-token-value="{{ csrf_token('mes_biens_photos') }}"
         data-mes-biens-required-images="1"
-        data-prototype="{{ form_widget(form.propertyImages.vars.prototype)|e('html_attr') }}"
-        data-index="{{ form.propertyImages|length }}"
     >
         {# Images déjà enregistrées en BDD #}
-        {% for propertyImageForm in form.propertyImages %}
-            {% set image = propertyImageForm.vars.data %}
-
+        {% for image in existingImages %}
             <div
                 class="property-preview-card is-filled"
                 data-position="{{ loop.index }}"
+                data-image-id="{{ image.id }}"
                 draggable="true"
             >
-                {% if image %}
-                    <img src="{{ vich_uploader_asset(image, 'imageFile') }}" alt="Photo du bien">
-                {% endif %}
+                <img
+                    src="{{ ('properties/' ~ image.imageName)|imagine_filter('property_upload_thumbnail') }}"
+                    alt="Photo du bien"
+                >
 
                 <div class="property-image-actions">
                     <button
@@ -78,20 +87,6 @@
                         <i class="icon-trash mr-8"></i>  Supprimer
                         </button>
                     </div>
-                </div>
-
-                <div class="d-none">
-                    {{ form_widget(propertyImageForm.imageFile, {
-                        attr: {
-                            class: 'd-none',
-                        },
-                    }) }}
-
-                    {{ form_widget(propertyImageForm.position, {
-                        attr: {
-                            class: 'js-image-position',
-                        },
-                    }) }}
                 </div>
             </div>
         {% endfor %}
@@ -149,6 +144,4 @@
             </button>
         </div>
     </div>
-
-    {% do form.propertyImages.setRendered %}
 </div>
