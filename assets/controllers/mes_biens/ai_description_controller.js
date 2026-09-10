@@ -5,6 +5,7 @@ export default class extends Controller {
         'title',
         'description',
         'button',
+        'serviceModal',
     ];
 
     static values = {
@@ -65,9 +66,53 @@ export default class extends Controller {
             }));
         } catch (error) {
             console.error(error);
-            alert(error.message || 'Une erreur est survenue pendant la génération IA.');
+            this.openServiceModal();
         } finally {
             this.setLoading(false, oldButtonText);
+        }
+    }
+
+    openServiceModal() {
+        if (!this.hasServiceModalTarget) {
+            return;
+        }
+
+        this.serviceModalTarget.hidden = false;
+        document.body.classList.add('ai-service-modal-open');
+
+        this.closeServiceModalOnEscape = (event) => {
+            if (event.key === 'Escape') {
+                this.closeServiceModal();
+            }
+        };
+
+        document.addEventListener('keydown', this.closeServiceModalOnEscape);
+
+        const closeButton = this.serviceModalTarget.querySelector('[data-ai-service-modal-close]');
+
+        if (closeButton) {
+            closeButton.focus();
+        }
+    }
+
+    closeServiceModal() {
+        if (!this.hasServiceModalTarget) {
+            return;
+        }
+
+        this.serviceModalTarget.hidden = true;
+        document.body.classList.remove('ai-service-modal-open');
+
+        if (this.closeServiceModalOnEscape) {
+            document.removeEventListener('keydown', this.closeServiceModalOnEscape);
+            this.closeServiceModalOnEscape = null;
+        }
+    }
+
+    disconnect() {
+        if (this.closeServiceModalOnEscape) {
+            document.removeEventListener('keydown', this.closeServiceModalOnEscape);
+            this.closeServiceModalOnEscape = null;
         }
     }
 

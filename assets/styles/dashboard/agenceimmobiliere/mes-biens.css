@@ -886,3 +886,84 @@
     border-radius: 999px;
     cursor: pointer;
 }
+
+/* --- Modale « Service momentanément indisponible » (génération IA) --- */
+
+.ai-service-modal:not([hidden]) {
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.ai-service-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(11, 15, 20, 0.32);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.ai-service-modal__dialog {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 460px;
+    max-width: 100%;
+    padding: 32px 24px;
+    background: #FFF;
+    border-radius: 24px;
+    box-shadow: 0 4px 12.05px rgba(0, 0, 0, 0.16);
+    text-align: center;
+}
+
+.ai-service-modal__title {
+    margin: 0;
+    color: #0B0F14;
+    font-family: 'Eudoxus Sans', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 28px;
+}
+
+.ai-service-modal__text {
+    margin: 0;
+    color: #858789;
+    font-family: 'Eudoxus Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.ai-service-modal__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 10px 24px;
+    border: 0;
+    border-radius: 50px;
+    background: #5D00FF;
+    color: #FFF;
+    font-family: 'Eudoxus Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.ai-service-modal__button:hover,
+.ai-service-modal__button:focus-visible {
+    color: #FFF;
+    opacity: 0.92;
+}
+
+body.ai-service-modal-open {
+    overflow: hidden;
+}

@@ -15,9 +15,11 @@ namespace App\Controller\Dashboard\Api\Ai;
 use App\Entity\Property;
 use App\Entity\User;
 use App\Repository\PropertyRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -35,11 +37,20 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
     private const OPENAI_MAX_OUTPUT_TOKENS = 700;
 
     /**
+     * Message générique renvoyé au front dès qu'un incident empêche la
+     * génération IA (quota / facturation OpenAI, clé absente, time-out, réponse
+     * inexploitable…). On n'expose jamais le détail technique de l'API tierce :
+     * le front affiche une modale « Service momentanément indisponible ».
+     */
+    private const SERVICE_UNAVAILABLE_MESSAGE = 'Service momentanément indisponible.';
+
+    /**
      * Handles the __construct controller action.
      */
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -110,10 +121,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         $apiKey = $_ENV['OPENAI_API_KEY'] ?? null;
 
         if (!$apiKey) {
-            return $this->json([
-                'success' => false,
-                'message' => 'OPENAI_API_KEY manquante dans le fichier .env.local.',
-            ], 500);
+            return $this->serviceUnavailable('OPENAI_API_KEY manquante dans la configuration.');
         }
 
         $title = $this->cleanContextValue(
@@ -196,20 +204,18 @@ SYSTEM,
             $data = $response->toArray(false);
 
             if (isset($data['error'])) {
-                return $this->json([
-                    'success' => false,
-                    'message' => $data['error']['message'] ?? 'Erreur lors de la génération IA.',
-                ], 500);
+                return $this->serviceUnavailable(\sprintf(
+                    'Erreur API OpenAI : %s',
+                    \is_string($data['error']['message'] ?? null)
+                        ? $data['error']['message']
+                        : json_encode($data['error'])
+                ));
             }
 
             $description = $this->extractGeneratedText($data);
 
             if ('' === $description) {
-                return $this->json([
-                    'success' => false,
-                    'message' => 'Aucune description générée.',
-                    'debug' => $data,
-                ], 500);
+                return $this->serviceUnavailable('Réponse OpenAI sans texte exploitable.');
             }
 
             if (
@@ -218,22 +224,37 @@ SYSTEM,
                 || str_contains(mb_strtolower($description), 'aucune information')
                 || str_contains(mb_strtolower($description), 'merci de préciser')
             ) {
-                return $this->json([
-                    'success' => false,
-                    'message' => 'La description générée est invalide. Veuillez réessayer après avoir renseigné quelques champs du bien.',
-                ], 500);
+                return $this->serviceUnavailable('Description générée invalide (variables ou message d’excuse).');
             }
 
             return $this->json([
                 'success' => true,
                 'description' => $description,
             ]);
-        } catch (\Throwable) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Impossible de générer la description pour le moment.',
-            ], 500);
+        } catch (\Throwable $exception) {
+            return $this->serviceUnavailable($exception->getMessage(), $exception);
         }
+    }
+
+    /**
+     * Réponse standard d'incident : détail technique journalisé côté serveur,
+     * message générique + drapeau `serviceUnavailable` côté client (modale
+     * « Service momentanément indisponible »).
+     */
+    private function serviceUnavailable(
+        string $internalReason,
+        ?\Throwable $exception = null,
+    ): JsonResponse {
+        $this->logger->error(
+            '[mes-biens] Génération IA indisponible : '.$internalReason,
+            null !== $exception ? ['exception' => $exception] : []
+        );
+
+        return $this->json([
+            'success' => false,
+            'serviceUnavailable' => true,
+            'message' => self::SERVICE_UNAVAILABLE_MESSAGE,
+        ], Response::HTTP_SERVICE_UNAVAILABLE);
     }
 
     private function buildPrompt(
