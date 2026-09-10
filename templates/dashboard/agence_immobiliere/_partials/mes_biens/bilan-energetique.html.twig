@@ -223,6 +223,8 @@
 
 <script>
     (function () {
+        const LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+
         // Seuils officiels du DPE (arrêté du 31 mars 2021, méthode 3CL), source ademe.fr.
         // Bornes supérieures incluses ; au-delà du dernier seuil : G.
         const DPE_THRESHOLDS = [
@@ -255,6 +257,18 @@
             });
 
             return match ? match.letter : 'g';
+        }
+
+        // Valeur la plus basse de la plage correspondant a une lettre :
+        // 0 pour A, sinon borne superieure de la lettre precedente + 1.
+        function minValueForLetter(letter, thresholds) {
+            const index = LETTERS.indexOf(letter);
+
+            if (index <= 0) {
+                return 0;
+            }
+
+            return thresholds[index - 1].max + 1;
         }
 
         function selectLetter(scale, letter) {
@@ -296,6 +310,15 @@
                 if (letter) {
                     selectLetter(scale, letter);
                 }
+            });
+
+            // Le clic sur une lettre renseigne dynamiquement l'input avec la
+            // valeur la plus basse de la plage correspondante.
+            scale.querySelectorAll('.energy-item').forEach(function (item) {
+                item.addEventListener('click', function () {
+                    input.value = minValueForLetter(item.dataset.letter, thresholds);
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                });
             });
         }
 
