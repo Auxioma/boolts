@@ -138,6 +138,17 @@ final class EntityAccessorTest extends TestCase
     {
         $message = \sprintf('%s::$%s ne respecte pas le contrat setter/getter.', $entityClass, $propertyName);
 
+        /*
+         * Certains setters normalisent volontairement la valeur (code ISO pays
+         * mis en majuscules et rogné). Le contrat est alors « get(set(x)) vaut x
+         * normalisé », pas l'identité stricte.
+         */
+        if ('codeIsoPays' === $propertyName && \is_string($expected) && \is_string($actual)) {
+            self::assertSame(mb_strtoupper(mb_trim($expected)), $actual, $message);
+
+            return;
+        }
+
         if ('roles' === $propertyName && \is_array($expected) && \is_array($actual)) {
             foreach ($expected as $role) {
                 self::assertContains($role, $actual, $message);
