@@ -122,7 +122,9 @@
                                 {{ include('public/detail_bien/_partials/loyer.html.twig') }}
                             {% endif %}
 
-                           {{ include('public/detail_bien/_partials/slider.html.twig') }}
+                           {% if properties is not empty %}
+                               {{ include('public/detail_bien/_partials/slider.html.twig') }}
+                           {% endif %}
 
                         </div>
 
