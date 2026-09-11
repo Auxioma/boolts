@@ -8,15 +8,23 @@ import { Controller } from '@hotwired/stimulus';
  * button only once that minimum is reached.
  *
  * Usage (Twig):
- *   <form data-controller="password-strength" data-password-strength-min-value="12">
+ *   <form data-controller="password-strength"
+ *         data-password-strength-min-value="12"
+ *         data-action="submit->password-strength#validate">
  *       <input data-password-strength-target="input"
  *              data-action="input->password-strength#check">
  *       <div data-password-strength-target="meter"></div>
+ *       <input data-password-strength-target="confirmInput">
+ *       <div data-password-strength-target="confirmError"></div>
  *       <button data-password-strength-target="submit">…</button>
  *   </form>
+ *
+ * The confirmation field is NOT checked as the user types: the mismatch error
+ * only appears when the form is submitted (clicking "Suivant"), which blocks
+ * navigation to the next step until the two passwords match.
  */
 export default class extends Controller {
-    static targets = ['input', 'meter', 'submit'];
+    static targets = ['input', 'meter', 'confirmInput', 'confirmError', 'submit'];
 
     static values = {
         min: { type: Number, default: 12 },
@@ -25,6 +33,10 @@ export default class extends Controller {
         labelComplexity: {
             type: String,
             default: 'Ajoutez une majuscule, une minuscule et un chiffre',
+        },
+        labelMismatch: {
+            type: String,
+            default: 'Les mots de passe ne correspondent pas.',
         },
     };
 
@@ -108,6 +120,31 @@ export default class extends Controller {
         }
 
         this.toggleSubmit(isValid);
+    }
+
+    // Runs when the form is submitted (e.g. clicking "Suivant"). If the
+    // confirmation field doesn't match the password, blocks the submission
+    // and shows the mismatch error — nothing happens while the user types.
+    validate(event) {
+        if (!this.hasConfirmInputTarget) {
+            return;
+        }
+
+        const password = this.hasInputTarget ? this.inputTarget.value : '';
+        const confirmValue = this.confirmInputTarget.value;
+        const isMismatch = confirmValue !== password;
+
+        if (this.hasConfirmErrorTarget) {
+            this.confirmErrorTarget.textContent = isMismatch ? this.labelMismatchValue : '';
+            this.confirmErrorTarget.hidden = !isMismatch;
+        }
+
+        this.confirmInputTarget.classList.toggle('flash-input-error', isMismatch);
+
+        if (isMismatch) {
+            event.preventDefault();
+            this.confirmInputTarget.focus();
+        }
     }
 
     toggleSubmit(isValid) {

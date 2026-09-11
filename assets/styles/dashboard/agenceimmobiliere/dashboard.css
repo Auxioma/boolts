@@ -429,6 +429,16 @@
     line-height: 20px;
 }
 
+a.notification-text--link {
+    color: #5d00ff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+a.notification-text--link:hover {
+    text-decoration: none;
+}
+
 .notifications-more-button {
     width: 155px;
 }
@@ -570,6 +580,16 @@
 .notification-card--read .notification-card__text,
 .notification-card--read .notification-card__date {
     color: #858789;
+}
+
+a.notification-card__link {
+    color: #5d00ff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+a.notification-card__link:hover {
+    text-decoration: none;
 }
 
 /* Mes factures */

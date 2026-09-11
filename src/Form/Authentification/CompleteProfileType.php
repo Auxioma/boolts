@@ -127,6 +127,7 @@ class CompleteProfileType extends AbstractType
         'attr' => [
             'placeholder' => 'Veuillez confirmer votre mot de passe',
             'class' => 'form-control password-input mb-32',
+            'data-password-strength-target' => 'confirmInput',
         ],
     ],
 

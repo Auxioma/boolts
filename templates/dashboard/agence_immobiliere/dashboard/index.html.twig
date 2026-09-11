@@ -100,6 +100,7 @@
 
 {# termier et entrez les documents #}
 <section
+    id="documents"
     class="finish-setup"
     data-node-id="2465:10931"
     data-dashboard-account-completion-target="documentsStep"
@@ -888,12 +889,21 @@
                             <div class="notifications-list">
 
                                 {% for notification in notifications %}
+                                    {# Seule la notification de refus de documents renvoie vers la section de dépôt. #}
+                                    {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' %}
                                     <div class="notification-item{{ notification.read ? ' is-read' : '' }}">
                                         <span class="notification-dot"></span>
 
-                                        <p class="notification-text">
-                                            {{ notification.nom }}
-                                        </p>
+                                        {% if is_documents_rejected %}
+                                            <a class="notification-text notification-text--link"
+                                               href="{{ path('agence_immobiliere_dashboard', { documents: 1 }) }}#documents">
+                                                {{ notification.nom }}
+                                            </a>
+                                        {% else %}
+                                            <p class="notification-text">
+                                                {{ notification.nom }}
+                                            </p>
+                                        {% endif %}
                                     </div>
                                 {% else %}
                                     <div class="notification-item">

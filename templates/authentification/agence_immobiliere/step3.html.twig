@@ -53,10 +53,11 @@
                                             {{ form_start(form, {
                                                 attr: {
                                                     'data-controller': 'phone password-strength',
-                                                    'data-action': 'submit->phone#prepareSubmit',
+                                                    'data-action': 'submit->phone#prepareSubmit submit->password-strength#validate',
                                                     'data-password-strength-min-value': '12',
                                                     'data-password-strength-label-progress-value': _pwd_locale_en ? '{count} / {min} characters' : '{count} / {min} caractères',
                                                     'data-password-strength-label-valid-value': _pwd_locale_en ? 'Minimum length reached' : 'Longueur minimale atteinte',
+                                                    'data-password-strength-label-mismatch-value': _pwd_locale_en ? 'Passwords do not match.' : 'Les mots de passe ne correspondent pas.',
                                                 },
                                             }) }}
                                             <div class="">
@@ -91,6 +92,7 @@
                                                     {{ 'professionnel.register.agency.password_confirm.label'|trans }}
                                                 </label>
                                                 {{ form_widget(form.plainPassword.second) }}
+                                                <span data-password-strength-target="confirmError" class="flash-message-error mt-8 mb-16 d-block" hidden></span>
 
                                                 {% for label, messages in app.flashes %}
                                                     {% if label in ['danger', 'error', 'warning'] %}
