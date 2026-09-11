@@ -889,8 +889,8 @@
                             <div class="notifications-list">
 
                                 {% for notification in notifications %}
-                                    {# Seule la notification de refus de documents renvoie vers la section de dépôt. #}
-                                    {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' %}
+                                    {# Ces notifications renvoient vers la section de dépôt de documents. #}
+                                    {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' or notification.nom starts with 'Votre compte est en attente de validation' %}
                                     <div class="notification-item{{ notification.read ? ' is-read' : '' }}">
                                         <span class="notification-dot"></span>
 
