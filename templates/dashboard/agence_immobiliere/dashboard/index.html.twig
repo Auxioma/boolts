@@ -154,6 +154,7 @@
         {% set submittedDocumentStatus = submitted_document_statuses[requiredDocument.id]|default(null) %}
         {% set isSubmittedDocumentApproved = submittedDocumentStatus == 'approved' %}
         {% set isSubmittedDocumentRejected = submittedDocumentStatus == 'rejected' %}
+        {% set documentRejectionReason = submitted_document_rejection_reasons[requiredDocument.id]|default(null) %}
         <div class="finish-setup__document">
             <div class="finish-setup__document-content">
                 <h3 class="finish-setup__document-title">
@@ -244,7 +245,7 @@
                     Document validé
                 </p>
                 <p class="finish-setup__document-rejected"{% if not isSubmittedDocumentRejected %} hidden{% endif %}>
-                    Document refusé
+                    Document refusé{% if documentRejectionReason %} : {{ documentRejectionReason }}{% endif %}
                 </p>
             {{ form_end(documentForm) }}
             <div class="alert alert-danger finish-setup__document-flash" data-document-upload-error role="alert" hidden></div>
