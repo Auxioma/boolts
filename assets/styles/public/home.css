@@ -355,9 +355,6 @@ input {
 .home-bt-search-title {
     margin: 0 0 17px;
     color: var(--color-text);
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 34px;
 }
 
 .home-bt-main-tabs {
@@ -603,17 +600,11 @@ input {
 .home-bt-text-block h2 {
     margin: 0 0 10px;
     color: var(--color-text);
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 34px;
 }
 
 .home-bt-text-block p {
     margin: 0;
     color: var(--color-gray);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
 }
 
 .home-bt-content-image {
@@ -638,9 +629,6 @@ input {
 .home-bt-codes-title {
     margin: 0 0 64px;
     color: var(--color-text);
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 34px;
     text-align: center;
 }
 
@@ -663,18 +651,12 @@ input {
 .home-bt-feature h3 {
     margin: 0 0 12px;
     color: var(--color-text);
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
 }
 
 .home-bt-feature p {
     max-width: 132px;
     margin: 0 auto;
     color: var(--color-gray);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
 }
 
 .home-bt-app {
@@ -700,17 +682,11 @@ input {
 .home-bt-app-text h2 {
     margin: 0 0 10px;
     color: var(--color-white);
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 34px;
 }
 
 .home-bt-app-text p {
     margin: 0 0 24px;
     color: var(--color-white);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
 }
 
 .home-bt-app-btn {
@@ -1033,9 +1009,6 @@ input {
         /*margin-left: -2px;*/
     }
 
-    .home-bt-search-title {
-        font-size: 24px!important;
-    }
 
     .home-bt-tab-panel {
         padding-top: 115px;
@@ -1129,11 +1102,6 @@ input {
         height: 203px;
     }
 
-    .home-bt-text-block h2 {
-        font-size: 24px!important;
-    }
-
-
     .home-bt-codes {
         padding-top: 48px;
     }
@@ -1208,9 +1176,6 @@ input {
     gap: 12px;
     margin: 0;
     color: var(--color-text);
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 24px;
 }
 
 .home-bt-page .bt-section-title-text {
