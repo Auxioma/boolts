@@ -609,16 +609,19 @@ input {
 
 .home-bt-content-image {
     width: 100%;
-    height: 354.288px;
-    border-radius: 11.233px;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
     background: var(--content-img-1) center / cover no-repeat, var(--color-gray-light);
     position: relative;
     z-index: 9;
 }
 
 .home-bt-content-image.is-second {
-    height: 377.904px;
-    border-radius: 22.114px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
     background-image: var(--content-img-2);
 }
 
@@ -864,16 +867,12 @@ input {
     .home-bt-content-section.is-second::after {
         display: none!important;
     }
-    .home-bt-content-image {
-        height: 250px;
-        border-radius: 8px;
-    }
 
     .home-bt-content-image.is-second {
-        /*width: 329.941px;*/
-        height: 213.52px;
-       /* margin-left: 46px;*/
-        border-radius: 12.472px;
+         width: 100%;
+         height: auto;
+        aspect-ratio: 16 / 9;
+        border-radius: 16px;
     }
 
     .home-bt-feature p {
@@ -1093,13 +1092,16 @@ input {
     .home-bt-content-image,
     .home-bt-content-image.is-second {
         width: 100%;
-        height: 227.148px;
+        height: auto;
+        aspect-ratio: 16 / 9;
         margin: 0;
-        border-radius: 8px;
+        border-radius: 16px;
     }
 
     .home-bt-content-image.is-second {
-        height: 203px;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
     }
 
     .home-bt-codes {
@@ -1108,7 +1110,7 @@ input {
 
     .home-bt-codes-title {
         width: auto;
-        margin-bottom: 16px;
+        margin-bottom: 32px;
     }
 
     .home-bt-feature p {
