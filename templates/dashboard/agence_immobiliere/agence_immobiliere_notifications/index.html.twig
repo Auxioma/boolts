@@ -40,8 +40,8 @@
 
                                 <div class="notifications-feed" data-csrf-token="{{ csrf_token('agency_notification_read') }}">
                                     {% for notification in notifications %}
-                                        {# Seule la notification de refus de documents renvoie vers la section de dépôt du dashboard. #}
-                                        {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' %}
+                                        {# Ces notifications renvoient vers la section de dépôt de documents du dashboard. #}
+                                        {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' or notification.nom starts with 'Votre compte est en attente de validation' %}
                                         <article class="notification-card{{ notification.read ? ' notification-card--read' }}"
                                                  data-read="{{ notification.read ? 'true' : 'false' }}"
                                                  data-mark-read-url="{{ path('agence_immobiliere_notifications_mark_read', { id: notification.id }) }}">

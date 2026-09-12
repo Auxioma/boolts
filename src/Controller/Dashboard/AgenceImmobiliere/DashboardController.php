@@ -116,6 +116,7 @@ final class DashboardController extends AbstractController
         $documentForms = [];
         $submittedDocumentNames = [];
         $submittedDocumentStatuses = [];
+        $submittedDocumentRejectionReasons = [];
         $documentsSubmissionLimitReached = false;
         $requiredDocuments = $requiredDocumentRepository->findBy(
             ['enabled' => true],
@@ -135,6 +136,10 @@ final class DashboardController extends AbstractController
             if ($latestSubmission instanceof UserDocumentSubmission && null !== $requiredDocument->getId()) {
                 $submittedDocumentNames[$requiredDocument->getId()] = $latestSubmission->getOriginalFileName();
                 $submittedDocumentStatuses[$requiredDocument->getId()] = $latestSubmission->getStatus()->value;
+
+                if (DocumentSubmissionStatus::REJECTED === $latestSubmission->getStatus()) {
+                    $submittedDocumentRejectionReasons[$requiredDocument->getId()] = $latestSubmission->getRejectionReason();
+                }
             }
 
             $documentForms[$requiredDocument->getId()] = $this->createForm(AskDocumentsType::class, $user, [
@@ -169,6 +174,7 @@ final class DashboardController extends AbstractController
             'required_documents' => $requiredDocuments,
             'submitted_document_names' => $submittedDocumentNames,
             'submitted_document_statuses' => $submittedDocumentStatuses,
+            'submitted_document_rejection_reasons' => $submittedDocumentRejectionReasons,
             'documents_complete' => $documentsComplete,
             'documents_under_review' => $documentsUnderReview,
             'documents_submission_limit_reached' => $documentsSubmissionLimitReached,
