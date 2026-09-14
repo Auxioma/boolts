@@ -71,7 +71,7 @@
             {% set propertyPriceNumber = loyerHorsChargeNumber + chargesNumber %}
             {% set propertyPrice = propertyPriceNumber|number_format(0, ',', ' ') ~ ' ' ~ devise %}
             {% set propertyPeriod = '/mois' %}
-            {% set propertyBadge = chargesNumber > 0 ? 'Charges comprises' : 'Hors charges' %}
+            {% set propertyBadge = chargesNumber > 0 ? 'C. Comprises' : 'Hors charges' %}
         {% elseif prixVenteNumber is not null %}
             {% set propertyPriceNumber = prixVenteNumber %}
             {% set propertyPrice = prixVenteNumber|number_format(0, ',', ' ') ~ ' ' ~ devise %}

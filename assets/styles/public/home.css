@@ -149,12 +149,22 @@ input {
 
 .home-bt-hero {
     position: relative;
-    /*width: 1116px;*/
     max-width: 100%;
     height: 418px;
-    border-radius: 50px;
+    border-radius: var(--radius-16);
     background: linear-gradient(90deg, rgba(0, 0, 0, .30) 42.776%, rgba(0, 0, 0, 0) 100%), var(--hero-desktop) center / cover no-repeat;
-    padding: 38px 210px;
+    padding-top: 38px;
+    padding-bottom: 38px;
+    padding-left: clamp(
+            16px,
+            calc(16px + (194 * (100vw - 375px) / 1065)),
+            210px
+        );
+    padding-right: clamp(
+            16px,
+            calc(16px + (194 * (100vw - 375px) / 1065)),
+            210px
+        );
 }
 
 .home-bt-hero-content {
@@ -236,12 +246,9 @@ input {
 .home-bt-search-bar input {
     flex: 1;
     min-width: 0;
-    border: 0;
     outline: 0;
     color: var(--color-gray);
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
+    padding: 0 60px 0 24px;
 }
 
 .home-bt-search-bar button {
@@ -278,32 +285,16 @@ input {
     line-height: 24px;
 }
 
-.home-bt-button-primary,
-.home-bt-button-outline {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 44px;
-    padding: 10px 16px;
-    border-radius: 50px;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    text-decoration: none;
-    white-space: nowrap;
+@media (max-width:768px) {
+   .home-bt-resume-shell {
+    padding-left: clamp( 16px, calc(16px + (194 * (100vw - 375px) / 1065)), 210px );
+    padding-right: clamp( 16px, calc(16px + (194 * (100vw - 375px) / 1065)), 210px );
+    } 
+    .home-bt-resume {
+        padding: 16px;
+    }
 }
 
-.home-bt-button-primary {
-    border: 2px solid var(--color-primary);
-    background: var(--color-primary);
-    color: var(--color-white);
-}
-
-.home-bt-button-outline {
-    border: 2px solid var(--color-primary);
-    background: var(--color-white);
-    color: var(--color-primary);
-}
 
 .home-bt-resume-stack {
     position: relative;
@@ -342,7 +333,11 @@ input {
 }
 
 .home-bt-listings {
-    padding-top: 80px;
+    padding-top: clamp(
+        48px,
+        calc(48px + (32 * (100vw - 375px) / 1065)),
+        80px
+    );
 }
 
 .home-bt-search-header {
@@ -376,6 +371,9 @@ input {
     font-size: 16px;
     font-weight: 700;
     line-height: 20px;
+}
+.home-bt-main-tab:hover, .home-bt-main-tab:focus {
+     box-shadow: 0 4px 23.6px 0 rgba(93, 0, 255, 0.10);
 }
 
 .home-bt-main-tab.active {
@@ -791,377 +789,6 @@ input {
     color: var(--color-primary);
 }
 
-@media (max-width: 1199.98px) {
-    .home-bt-container {
-        max-width: none;
-        padding-right: 12px;
-        padding-left: 12px;
-    }
-
-    .home-bt-nav,
-    .home-bt-header-btn {
-        display: none !important;
-    }
-
-    .home-bt-top {
-        padding-top: 48px;
-    }
-
-    .home-bt-hero {
-        /*width: 776px;*/
-        height: 410px;
-        padding: 38px 67px;
-    }
-
-    .home-bt-resume {
-        /*width: 776px;*/
-        height: 167.797px;
-    }
-
-    .home-bt-listings {
-        padding-top: 64px;
-    }
-
-    .home-bt-search-header {
-        width: auto;
-    }
-
-    .home-bt-tab-panel {
-        padding-top: 99px;
-    }
-
-    .home-bt-slider-track {
-        width: 1226px;
-    }
-
-    .home-bt-card {
-        flex-basis: 291.5px;
-    }
-
-    .home-bt-slider-header {
-        height: 48px;
-    }
-
-    .home-bt-slider-title {
-        max-width: 250px;
-        white-space: normal;
-    }
-
-    .home-bt-content {
-        padding-top: 64px;
-    }
-
-    .home-bt-content-section {
-        min-height: 250px;
-        padding: 0;
-    }
-
-    .home-bt-content-section + .home-bt-content-section {
-        margin-top: 0;
-    }
-
-    .home-bt-text-block {
-        /*max-width: 376px;*/
-    }
-
-    .home-bt-content-section.is-second::after {
-        display: none!important;
-    }
-
-    .home-bt-content-image.is-second {
-         width: 100%;
-         height: auto;
-        aspect-ratio: 16 / 9;
-        border-radius: 16px;
-    }
-
-    .home-bt-feature p {
-        max-width: 246px;
-    }
-
-    .home-bt-app {
-        padding-top: 64px;
-    }
-
-    .home-bt-app-text {
-        right: 100px;
-        top: 89px;
-    }
-}
-
-@media (max-width: 767.98px) {
-    body {
-        padding-bottom: 83px;
-    }
-
-    .home-bt-container {
-        width: 100%;
-        max-width: none;
-        padding-right: 12px;
-        padding-left: 12px;
-    }
-
-    .home-bt-top {
-        padding-top: 0;
-    }
-
-    .home-bt-hero-shell {
-        padding: 0;
-    }
-
-    .home-bt-hero {
-        width: 100%;
-        height: 320px;
-        border-radius: 0;
-        background:
-            linear-gradient(90deg, rgba(0, 0, 0, .30) 42.776%, rgba(0, 0, 0, 0) 100%),
-            var(--hero-mobile) center / cover no-repeat;
-        padding: 16px 10px;
-        overflow: visible;
-    }
-
-    .home-bt-hero-content {
-        gap: 12px;
-    }
-
-    .home-bt-hero-title {
-        font-size: 38px;
-        line-height: 60px;
-    }
-    .home-bt-hero video {
-        clip-path: initial!important;
-    }
-
-    .home-bt-search-tabs .nav-link {
-        font-size: 14px!important;
-    }
-
-    .home-bt-search-hero {
-        gap: 12px!important;
-        padding: 16px!important;
-    }
-
-    .home-bt-search-bar {
-        height: 60px;
-        /*padding-left: 32px;*/
-    }
-
-    .home-bt-resume-shell {
-        padding: 0;
-    }
-
-    .home-bt-resume {
-        width: 100%;
-        height: 111.034px;
-        margin-top: 24px;
-        padding: 16px;
-        border-right: 0;
-        border-left: 0;
-        border-radius: 24px;
-    }
-
-    .home-bt-resume-title {
-        font-size: 14px;
-        line-height: 16px;
-    }
-
-    .home-bt-resume .home-bt-button-primary,
-    .home-bt-resume .home-bt-button-outline {
-        display: none;
-    }
-
-    .home-bt-resume-stack {
-        width: 153.868px;
-        height: 79.027px;
-        transform: scaleY(-1);
-    }
-
-    .home-bt-resume-stack span {
-        width: 125.338px;
-        height: 79.027px;
-        border-width: 2.569px;
-        border-radius: 12.07px;
-        transform: rotate(180deg);
-    }
-
-    .home-bt-resume-stack span:nth-child(1) {
-        left: 28.53px;
-        background-image: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), var(--resume-mobile-img-1);
-    }
-
-    .home-bt-resume-stack span:nth-child(2) {
-        left: 17.15px;
-        background-image: linear-gradient(rgba(0, 0, 0, .2), rgba(0, 0, 0, .2)), var(--resume-mobile-img-2);
-    }
-
-    .home-bt-resume-stack span:nth-child(3) {
-        left: 0;
-        background-image: var(--resume-mobile-img-1);
-    }
-
-    .home-bt-listings {
-        padding-top: 48px;
-    }
-
-    .home-bt-search-header {
-        width: auto;
-        /*margin-left: -2px;*/
-    }
-
-
-    .home-bt-tab-panel {
-        padding-top: 115px;
-    }
-
-    .home-bt-slider + .home-bt-slider {
-        margin-top: 24px;
-    }
-
-    .home-bt-slider-header {
-        width: 351px;
-        height: 48px;
-        margin-bottom: 20px;
-    }
-
-    .home-bt-slider-title {
-        max-width: 250px;
-    }
-
-    .home-bt-slider-nav {
-        display: none;
-    }
-
-    .home-bt-slider-viewport {
-        width: 100vw;
-        margin-left: -12px;
-    }
-
-    .home-bt-slider-track {
-        width: 1042px;
-        padding-left: 12px;
-    }
-
-    .home-bt-card {
-        flex-basis: 245.5px;
-        height: 407px;
-    }
-
-    .home-bt-card-body {
-        padding: 12px 12px 16px;
-    }
-
-    .home-bt-card-title,
-    .home-bt-card-price {
-        font-size: 14px;
-        line-height: 16px;
-    }
-
-    .home-bt-card-badge,
-    .home-bt-card-description,
-    .home-bt-card-details,
-    .home-bt-card-address {
-        font-size: 12px;
-        line-height: 16px;
-    }
-
-    .home-bt-card-badge {
-        padding: 2px 10px;
-    }
-
-    .home-bt-content {
-        padding-top: 48px;
-    }
-
-    .home-bt-content-section {
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 12px;
-        min-height: 397.148px;
-    }
-
-    .home-bt-content-section.is-second {
-        flex-direction: column;
-        min-height: 373px;
-        margin-top: 48px;
-    }
-
-    .home-bt-text-block {
-        max-width: 351px;
-    }
-
-    .home-bt-content-image,
-    .home-bt-content-image.is-second {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16 / 9;
-        margin: 0;
-        border-radius: 16px;
-    }
-
-    .home-bt-content-image.is-second {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16 / 9;
-    }
-
-    .home-bt-codes {
-        padding-top: 48px;
-    }
-
-    .home-bt-codes-title {
-        width: auto;
-        margin-bottom: 32px;
-    }
-
-    .home-bt-feature p {
-        max-width: 149.5px;
-    }
-
-    .home-bt-app {
-        padding-top: 48px;
-    }
-
-    .home-bt-app-card {
-        width: auto;
-        height: 542px;
-    }
-
-    .home-bt-app-text {
-        top: 16px;
-        right: auto;
-        left: 16px;
-        width: 319px;
-    }
-
-    .home-bt-app-text p {
-        min-height: 100px;
-    }
-
-    .home-bt-app-mockup {
-        left: -11px;
-        top: 342.411px;
-        width: 272px;
-        height: 243px;
-    }
-
-    .home-bt-footer {
-        min-height: 586.108px;
-        padding-bottom: 120px;
-    }
-
-    .home-bt-mobile-tabbar {
-        display: flex;
-    }
-}
-
-/* =========================================================
-   AJOUTS FIGMA — sliders (classes réellement utilisées
-   par le Twig : bt-related / bt-section-title / bt-icon-btn
-   / splide), section "À la Une", décors et responsive.
-   Placé en fin de fichier : ces règles gagnent la cascade.
-   ========================================================= */
-
-/* -------- En-tête de slider -------- */
 
 .home-bt-page .bt-related + .bt-related {
     margin-top: 32px;
@@ -1256,7 +883,19 @@ input {
 
 .home-bt-une {
     position: relative;
-    padding: 22px 0;
+    padding: 0;
+    padding-top: clamp(
+        24px,
+        calc(24px + (8 * (100vw - 375px) / 1065)),
+        32px
+    );;
+}
+
+.bt-section-title-accent i{
+    color: #858789;
+    font-size: 20px;
+    top: 2px;
+    position: relative;
 }
 
 /* Fond pleine largeur qui déborde du container (1440px sur la maquette) */
@@ -1296,7 +935,11 @@ input {
 }
 
 .home-bt-une .bt-related-head {
-    margin-bottom: 32px;
+    margin-bottom: clamp(
+        18px,
+        calc(18px + (6 * (100vw - 375px) / 1065)),
+        24px
+    );
 }
 
 /* 3 grandes cartes : 450px de haut, image extensible */
@@ -1387,58 +1030,7 @@ input {
    cartes 291.5px / 409px.
    ========================================================= */
 
-@media (max-width: 1199.98px) {
-    .home-bt-page .bt-related-slider .splide__slide {
-        width: 291.5px;
-    }
 
-    .home-bt-une {
-        padding: 0;
-    }
-
-    .home-bt-une::before {
-        display: none;
-    }
-
-    .home-bt-une .home-bt-flame {
-        display: none;
-    }
-
-    .home-bt-une .bt-section-chevron {
-        display: inline-flex;
-    }
-
-    .home-bt-une .bt-related-head {
-        margin-bottom: 18px;
-    }
-
-    .home-bt-une .bt-related-slider .splide__slide {
-        width: 291.5px;
-    }
-
-    .home-bt-une .home-bt-card {
-        height: 409px;
-    }
-
-    .home-bt-une .home-bt-card-img {
-        flex: 0 0 auto;
-        height: 221px;
-    }
-
-    /* Décors : seule la petite flèche de la 2e section subsiste */
-    .home-bt-content-section::after {
-        display: none;
-    }
-
-    .home-bt-content-section.is-second::after {
-        display: block;
-        top: auto;
-        bottom: -140px;
-        left: 62px;
-        width: 91px;
-        height: 272px;
-    }
-}
 
 /* =========================================================
    MOBILE (< 768px)
@@ -1446,58 +1038,7 @@ input {
    slider en pleine largeur d'écran.
    ========================================================= */
 
-@media (max-width: 767.98px) {
-    .home-bt-page .bt-related + .bt-related,
-    .home-bt-une + .bt-related {
-        margin-top: 24px;
-    }
 
-    .home-bt-page .bt-related-head {
-        margin-bottom: 20px;
-    }
-
-    .home-bt-page .bt-related-head .bt-icon-btn {
-        display: none;
-    }
-
-    .home-bt-page .bt-related-slider {
-        width: 100vw;
-        margin-left: -12px;
-        padding-left: 12px;
-    }
-
-    .home-bt-page .bt-related-slider .splide__slide,
-    .home-bt-une .bt-related-slider .splide__slide {
-        width: 245.5px;
-    }
-
-    .home-bt-page .home-bt-card,
-    .home-bt-une .home-bt-card {
-        height: 407px;
-    }
-
-    .home-bt-une .home-bt-card-img {
-        height: 221px;
-    }
-
-    /* Aucune flèche décorative sur mobile */
-    .home-bt-content-section::after,
-    .home-bt-content-section.is-second::after {
-        display: none;
-    }
-
-    /* Ellipse de la carte app repositionnée (maquette mobile) */
-    .home-bt-app-card::before {
-        left: 90px;
-        top: 311px;
-        width: 261px;
-        height: 256px;
-    }
-
-    .home-bt-app-card::after {
-        display: none;
-    }
-}
 
 /* =========================================================
    ESPACEMENTS DES PANNEAUX (valeurs exactes maquette) :
@@ -1505,20 +1046,14 @@ input {
    ========================================================= */
 
 .home-bt-tab-panel {
-    padding-top: 44px;
+    padding-top: clamp(
+        32px,
+        calc(32px + (8 * (100vw - 375px) / 1065)),
+        40px
+    );
 }
 
-@media (max-width: 1199.98px) {
-    .home-bt-tab-panel {
-        padding-top: 0;
-    }
-}
 
-@media (max-width: 767.98px) {
-    .home-bt-tab-panel {
-        padding-top: 16px;
-    }
-}
 /* =========================================================
    SEARCH HERO — valeurs exactes de la maquette Figma
    Carte blanche : radius 24, padding 24, gap 16
@@ -1530,7 +1065,11 @@ input {
     align-items: center;
     gap: 16px;
     width: 100%;
-    padding: 24px;
+    padding: clamp(
+        16px,
+        calc(16px + (8 * (100vw - 375px) / 1065)),
+        24px
+    );
     background: #FFFFFF;
     border-radius: 24px;
 }
@@ -1618,9 +1157,9 @@ input {
 .home-bt-search-tabs .nav-link::after {
     content: "";
     display: block;
-    width: 29.073px;
+    width: 30px;
     height: 3px;
-    border-radius: 50px;
+    border-radius: var(--radius-16);
     background: transparent;
 }
 
@@ -1650,48 +1189,34 @@ input {
 .home-bt-search-bar__field input {
     width: 100%;
     height: 60px;
-    padding: 0 60px 0 32px;
-
     color: #0B0F14;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-
-    background: #FFFFFF;
-    border: 2px solid #EBECEC;
-    border-radius: 70px;
     outline: none;
 }
 
 .home-bt-search-bar__field input::placeholder {
     color: #858789;
-    font-weight: 700;
+    font-weight: 600;
 }
 
-.home-bt-search-bar__field input:focus {
-    outline: none;
-    border-color: var(--color-primary);
-    box-shadow: none;
-}
 
 .home-bt-search-bar__field button[type="submit"] {
     position: absolute;
     top: 50%;
     right: 8px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     width: 44px;
     height: 44px;
-
     color: #FFFFFF;
     background: #5D00FF;
     border: 0;
     border-radius: 50px;
-
     transform: translateY(-50%);
+}
+.home-bt-search-bar__field:hover button[type="submit"],
+.home-bt-search-bar__field button[type="submit"]:focus {
+    background: #3F02AA;
 }
 
 .home-bt-search-bar__field button[type="submit"] svg {
@@ -1757,17 +1282,7 @@ input {
    conserve la carte à padding 24 et la barre à 60px
    ========================= */
 
-@media (max-width: 575px) {
-    .home-bt-search-hero {
-        padding: 24px;
-        border-radius: 24px;
-    }
 
-    .home-bt-search-bar__field input {
-        padding-left: 32px;
-        padding-right: 56px;
-    }
-}
 
         .home-bt-tab-panel {
             display: none;
@@ -1800,4 +1315,16 @@ input {
 .home-bt-hero-content {
     position: relative;
     z-index: 1;
+}
+
+@media (max-width: 767px) {
+    .home-bt-hero video {
+        clip-path: inset(0 0 0 0 round 0px);
+    }
+    .home-bt-top {
+        padding-top: 0;
+    }
+}
+.icon-heart {
+    color: #858789;
 }

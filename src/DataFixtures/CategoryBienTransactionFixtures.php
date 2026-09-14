@@ -30,16 +30,16 @@ class CategoryBienTransactionFixtures extends Fixture
     {
         $transactions = [
             [
-                'icone' => 'icon-pencil-line',
+                'icone' => 'icon-house',
                 'translations' => [
-                    'fr' => 'Vente',
-                    'en' => 'Sale',
+                    'fr' => 'Acheter',
+                    'en' => 'Buy',
                 ],
             ],
             [
                 'icone' => 'icon-key-round',
                 'translations' => [
-                    'fr' => 'Location',
+                    'fr' => 'Louer',
                     'en' => 'Rent',
                 ],
             ],

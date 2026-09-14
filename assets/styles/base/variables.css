@@ -1,30 +1,25 @@
 :root {
-    --color-primary: #5D00FF;
-    --color-primary-hover: #4A00CC;
-    --color-white: #FFFFFF;
-    --color-black: #000000;
-    --color-text: #0B0F14;
-    --color-gray: #858789;
-    --color-gray-light: #EBECEC;
-    --color-link-hover: #7c3aed;
-    --color-link-hover-bg: rgba(124, 58, 237, 0.06);
-    --colors-red-red-500: #DC3545;
-    --colors-red-red-300: #EA868F;
+    --radius-0: 0px;
+    --radius-1: 2px;
+    --radius-2: 4px;
+    --radius-3: 6px;
+    --radius-4: 8px;
+    --radius-5: 10px;
+    --radius-6: 12px;
+    --radius-7: 14px;
+    --radius-8: 16px;
+    --radius-9: 18px;
+    --radius-10: 20px;
+    --radius-11: 24px;
+    --radius-12: 28px;
+    --radius-13: 32px;
+    --radius-14: 36px;
+    --radius-15: 40px;
+    --radius-16: 48px;
+    --radius-17: 56px;
+    --radius-18: 64px;
+    --radius-19: 72px;
+    --radius-20: 80px;
+    --radius-full: 9999px;
 
-    --font-family-base: 'Eudoxus Sans', sans-serif;
-
-    --font-size-h2: 30px;
-    --line-height-h2: 34px;
-
-    --radius-sm: 8px;
-    --radius-md: 10px;
-    --radius-pill: 50px;
-    --radius-round: 999px;
-
-    --topbar-height: 72px;
-    --topbar-logo-height: 42px;
-    --avatar-size: 42px;
-
-    --transition-fast: 0.2s ease;
-    --16: 16px;
 }
