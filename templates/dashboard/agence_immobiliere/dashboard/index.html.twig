@@ -79,7 +79,7 @@
                                 </label>
 
                                 <div class="d-flex align-items-center account-country-form">
-                                    {{ form_widget(form.pays, { 
+                                    {{ form_widget(form.pays, {
                                         attr: {
                                             id: 'domiciliation-country',
                                             class: 'form-select account-country-input',
@@ -897,7 +897,7 @@
 
                                         {% if is_documents_rejected %}
                                             <a class="notification-text notification-text--link"
-                                               href="{{ path('agence_immobiliere_dashboard', { documents: 1 }) }}#documents">
+                                               href="{{ path('agence_immobiliere_dashboard', {documents: 1}) }}#documents">
                                                 {{ notification.nom }}
                                             </a>
                                         {% else %}

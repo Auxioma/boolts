@@ -57,7 +57,7 @@
 
             {% if not plan.isFree %}
                 <a
-                    href="{{ path('agence_immobiliere_achat', { id: plan.id, period: period }) }}"
+                    href="{{ path('agence_immobiliere_achat', {id: plan.id, period: period}) }}"
                     class="btn achat-btn-brand achat-subscribe-link w-100 {{ canSubscribe ? '' : 'd-none' }}"
                 >
                     Souscrire
@@ -69,7 +69,7 @@
 
 {% macro plan_features(plan) %}
     {% if plan.description|trim %}
-        {% for ligne in plan.description|split("\n") %}
+        {% for ligne in plan.description|split('\n') %}
             {% if ligne|trim is not empty %}
                 <p>{{ ligne|trim }}</p>
             {% endif %}
@@ -402,7 +402,6 @@
                             Choisissez votre abonnement
                         </h2>
 
-
         {# Le cadre « Abonnement » n'a de sens que pour un forfait payant.
            Sur une offre gratuite, on n'affiche que le choix des forfaits et des boosts. #}
         {% if subscription and not subscription.plan.isFree %}
@@ -433,7 +432,6 @@
 
                     </div>
 
-
                     {% if subscription.status in ['active', 'free'] %}
 
                         <span class="subscription-status">
@@ -456,13 +454,11 @@
 
                 </div>
 
-
                 {# ==================================================
                    DETAILS
                 ================================================== #}
 
                 <div class="subscription-details">
-
 
                     <div class="subscription-detail">
 
@@ -486,7 +482,6 @@
 
                     </div>
 
-
                     <div class="subscription-detail">
 
                         <span class="subscription-detail-label">
@@ -508,7 +503,6 @@
                         </span>
 
                     </div>
-
 
                     <div class="subscription-detail">
 
@@ -537,7 +531,6 @@
                         </span>
 
                     </div>
-
 
                     <div class="subscription-detail">
 
@@ -571,7 +564,6 @@
 
                 </div>
 
-
                 {# ==================================================
                    ACTIONS
                 ================================================== #}
@@ -584,7 +576,6 @@
                     >
                         Mettre à jour mon moyen de paiement
                     </a>
-
 
                     {% if not subscription.plan.isFree and not subscription.cancelAtPeriodEnd %}
 
@@ -606,7 +597,6 @@
                     {% endif %}
 
                 </div>
-
 
                 {% if subscription.cancelAtPeriodEnd|default(false) %}
 
@@ -660,7 +650,6 @@
                     </div>
 
                 {% endif %}
-
 
                 {% if abonnement_actuel and abonnement_actuel.hasPendingPlanChange %}
 
@@ -717,18 +706,6 @@
             </section>
 
         {% endif %}
-
-
-
-
-
-
-
-
-
-
-
-
 
                         <div
                             class="achat-billing-switch mx-auto"

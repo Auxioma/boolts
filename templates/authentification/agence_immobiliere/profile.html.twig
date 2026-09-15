@@ -25,7 +25,7 @@
 
                                         <div class="formulaire mt-32">
                                             {% set _pwd_locale_en = app.request.locale starts with 'en' %}
-                                            {{ form_start(form, {'attr': {
+                                            {{ form_start(form, {attr: {
                                                 'data-controller': 'password-strength',
                                                 'data-password-strength-min-value': '12',
                                                 'data-password-strength-label-progress-value': _pwd_locale_en ? '{count} / {min} characters' : '{count} / {min} caractères',

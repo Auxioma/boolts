@@ -100,7 +100,7 @@
 {% if not pdf_mode %}
     <div class="toolbar">
         <button type="button" onclick="window.print()">Imprimer</button>
-        <a class="primary" href="{{ path('agence_immobiliere_facture_download', { id: invoice.id }) }}">
+        <a class="primary" href="{{ path('agence_immobiliere_facture_download', {id: invoice.id}) }}">
             Télécharger le PDF
         </a>
     </div>

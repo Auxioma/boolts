@@ -44,14 +44,14 @@
                                         {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' or notification.nom starts with 'Votre compte est en attente de validation' %}
                                         <article class="notification-card{{ notification.read ? ' notification-card--read' }}"
                                                  data-read="{{ notification.read ? 'true' : 'false' }}"
-                                                 data-mark-read-url="{{ path('agence_immobiliere_notifications_mark_read', { id: notification.id }) }}">
+                                                 data-mark-read-url="{{ path('agence_immobiliere_notifications_mark_read', {id: notification.id}) }}">
                                             {% if not notification.read %}
                                                 <span class="notification-card__dot" aria-hidden="true"></span>
                                             {% endif %}
 
                                             {% if is_documents_rejected %}
                                                 <a class="notification-card__text notification-card__link"
-                                                   href="{{ path('agence_immobiliere_dashboard', { documents: 1 }) }}#documents">{{ notification.nom }}</a>
+                                                   href="{{ path('agence_immobiliere_dashboard', {documents: 1}) }}#documents">{{ notification.nom }}</a>
                                             {% else %}
                                                 <p class="notification-card__text">{{ notification.nom }}</p>
                                             {% endif %}

@@ -1,9 +1,9 @@
 {% block agency_boosts_widget %}
-    {% include 'admin/field/agency_boosts.html.twig' with {
+    {{ include('admin/field/agency_boosts.html.twig', {
         field: {
-            formattedValue: form.vars.data|default([])
+            formattedValue: form.vars.data|default([]),
         },
         agency_id: form.parent.vars.data.id,
-        boost_metrics: form.vars.boost_metrics|default({})
-    } only %}
+        boost_metrics: form.vars.boost_metrics|default({}),
+    }, false) }}
 {% endblock agency_boosts_widget %}

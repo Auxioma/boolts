@@ -11,17 +11,17 @@
 
 {% block body %}
     {% set conversations = conversations|default([
-        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.', active: true },
-        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
-        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
-        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
-        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
-        { name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.' },
+        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.', active: true},
+        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
+        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
+        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
+        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
+        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
     ]) %}
 
     {% set messages = messages|default([
-        { author: 'client', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03' },
-        { author: 'agency', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03' },
+        {author: 'client', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03'},
+        {author: 'agency', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03'},
     ]) %}
 
     <main id="dashboard" class="dashboard">

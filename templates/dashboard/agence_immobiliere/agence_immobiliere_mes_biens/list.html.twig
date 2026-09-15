@@ -5,11 +5,11 @@
 {% block body %}
 
 {% set statusLabels = {
-    'publiee': 'Publiée',
-    'depubliee': 'Pause',
-    'pending': 'En attente',
-    'refusee': 'Refusée',
-    'suspendue': 'Suspendue',
+    publiee: 'Publiée',
+    depubliee: 'Pause',
+    pending: 'En attente',
+    refusee: 'Refusée',
+    suspendue: 'Suspendue',
 } %}
 
 <main id="dashboard" class="dashboard">
@@ -141,18 +141,18 @@
                                 </button>
 
                                 {% set routeName = app.request.attributes.get('_route') %}
-                                {% set baseParams = app.request.query.all|merge({ page: 1 }) %}
+                                {% set baseParams = app.request.query.all|merge({page: 1}) %}
 
                                 {% set currentSort = sortValue|default('p.updatedAt') %}
                                 {% set currentDirection = directionValue|default('DESC')|lower %}
 
                                 {% set sortOptions = [
-                                    { sort: 'p.updatedAt',  direction: 'desc', label: 'Date de modification (récent → ancien)', short: 'Modif. récente → ancienne' },
-                                    { sort: 'p.updatedAt',  direction: 'asc',  label: 'Date de modification (ancien → récent)', short: 'Modif. ancienne → récente' },
-                                    { sort: 'p.views',      direction: 'desc', label: 'Vues (plus → moins)',                     short: 'Vues : plus → moins' },
-                                    { sort: 'p.views',      direction: 'asc',  label: 'Vues (moins → plus)',                     short: 'Vues : moins → plus' },
-                                    { sort: 'favorisCount', direction: 'desc', label: 'Favoris (plus → moins)',                  short: 'Favoris : plus → moins' },
-                                    { sort: 'favorisCount', direction: 'asc',  label: 'Favoris (moins → plus)',                  short: 'Favoris : moins → plus' },
+                                    {sort: 'p.updatedAt', direction: 'desc', label: 'Date de modification (récent → ancien)', short: 'Modif. récente → ancienne'},
+                                    {sort: 'p.updatedAt', direction: 'asc', label: 'Date de modification (ancien → récent)', short: 'Modif. ancienne → récente'},
+                                    {sort: 'p.views', direction: 'desc', label: 'Vues (plus → moins)', short: 'Vues : plus → moins'},
+                                    {sort: 'p.views', direction: 'asc', label: 'Vues (moins → plus)', short: 'Vues : moins → plus'},
+                                    {sort: 'favorisCount', direction: 'desc', label: 'Favoris (plus → moins)', short: 'Favoris : plus → moins'},
+                                    {sort: 'favorisCount', direction: 'asc', label: 'Favoris (moins → plus)', short: 'Favoris : moins → plus'},
                                 ] %}
 
                                 {% set currentLabel = 'Modif. récente → ancienne' %}
@@ -183,7 +183,7 @@
                                     >
                                         {% for option in sortOptions %}
                                             <a
-                                                href="{{ path(routeName, baseParams|merge({ sort: option.sort, direction: option.direction })) }}"
+                                                href="{{ path(routeName, baseParams|merge({sort: option.sort, direction: option.direction})) }}"
                                                 class="agence-filter-sort__item {{ option.sort == currentSort and option.direction == currentDirection ? 'agence-filter-sort__item--active' : '' }}"
                                                 role="menuitem"
                                             >
@@ -195,7 +195,7 @@
                                 </div>
 
                                 <a
-                                    href="{{ path('agence_immobiliere_mes_biens', { token: random(2147483647) }) }}"
+                                    href="{{ path('agence_immobiliere_mes_biens', {token: random(2147483647)}) }}"
                                     class="btn-deposer-annonce"
                                 >
                                     <i class="icon-plus"></i>
@@ -326,7 +326,7 @@
 
                                                             <a
                                                                 href="{{ path('agence_immobiliere_mes_biens_edit', {
-                                                                    id: draft.id
+                                                                    id: draft.id,
                                                                 }) }}"
                                                                 class="draft-title"
                                                             >
@@ -344,7 +344,7 @@
 
                                                             <a
                                                                 href="{{ path('agence_immobiliere_mes_biens_edit', {
-                                                                    id: draft.id
+                                                                    id: draft.id,
                                                                 }) }}"
                                                                 class="row-icon-btn"
                                                                 title="Modifier le brouillon"
@@ -357,7 +357,7 @@
                                                                 class="row-icon-btn row-icon-btn--wide"
                                                                 title="Supprimer le brouillon"
                                                                 formaction="{{ path('agence_immobiliere_mes_biens_delete', {
-                                                                    id: draft.id
+                                                                    id: draft.id,
                                                                 }) }}"
                                                                 formmethod="post"
                                                                 name="_property_token"
@@ -423,7 +423,7 @@
 
                                                         <a
                                                             href="{{ path('app_public_detail_bien', {
-                                                                slug: property.slug
+                                                                slug: property.slug,
                                                             }) }}"
                                                             class="property-listing-image"
                                                             aria-label="Voir le détail de {{ property.titreDuLogement ?: 'cette annonce' }}"
@@ -446,7 +446,7 @@
 
                                                             <a
                                                                 href="{{ path('app_public_detail_bien', {
-                                                                    slug: property.slug
+                                                                    slug: property.slug,
                                                                 }) }}"
                                                                 class="property-listing-title"
                                                             >
@@ -510,7 +510,7 @@
 
                                                             <a
                                                                 href="{{ path('agence_immobiliere_mes_biens_edit', {
-                                                                    id: property.id
+                                                                    id: property.id,
                                                                 }) }}"
                                                                 class="row-icon-btn"
                                                                 title="Modifier l’annonce"
@@ -537,7 +537,7 @@
                                                                             type="submit"
                                                                             class="property-menu-item"
                                                                             formaction="{{ path('agence_immobiliere_mes_biens_pause', {
-                                                                                id: property.id
+                                                                                id: property.id,
                                                                             }) }}"
                                                                             formmethod="post"
                                                                             name="_property_token"
@@ -551,7 +551,7 @@
                                                                             type="submit"
                                                                             class="property-menu-item"
                                                                             formaction="{{ path('agence_immobiliere_mes_biens_reactivate', {
-                                                                                id: property.id
+                                                                                id: property.id,
                                                                             }) }}"
                                                                             formmethod="post"
                                                                             name="_property_token"
@@ -566,7 +566,7 @@
                                                                         type="submit"
                                                                         class="property-menu-item property-menu-item--danger"
                                                                         formaction="{{ path('agence_immobiliere_mes_biens_delete', {
-                                                                            id: property.id
+                                                                            id: property.id,
                                                                         }) }}"
                                                                         formmethod="post"
                                                                         name="_property_token"
@@ -681,7 +681,7 @@
                                                                                 type="submit"
                                                                                 class="boost-confirm-submit"
                                                                                 formaction="{{ path('agence_immobiliere_mes_biens_boost', {
-                                                                                    id: property.id
+                                                                                    id: property.id,
                                                                                 }) }}"
                                                                                 formmethod="post"
                                                                                 name="_property_token"
@@ -754,13 +754,13 @@
 
 </main>
 
-{% include 'composant/_search/_search.html.twig' with {
+{{ include('composant/_search/_search.html.twig', {
     formModal: filterForm,
     totalResults: properties.getTotalItemCount,
     filterCountUrl: path('agence_immobiliere_mes_biens_filters_count'),
     locationCountryUrl: path('agence_immobiliere_mes_biens_filter_countries'),
     locationCityUrl: path('agence_immobiliere_mes_biens_filter_cities'),
-    locationDistrictUrl: path('agence_immobiliere_mes_biens_filter_districts')
-} %}
+    locationDistrictUrl: path('agence_immobiliere_mes_biens_filter_districts'),
+}) }}
 
 {% endblock %}

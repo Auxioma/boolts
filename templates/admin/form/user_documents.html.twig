@@ -6,10 +6,10 @@
     {% else %}
         <div class="vstack gap-3" data-admin-user-documents>
             {% for documentRequest in documentRequests %}
-                {% include 'admin/form/_user_document_card.html.twig' with {
+                {{ include('admin/form/_user_document_card.html.twig', {
                     documentRequest: documentRequest,
                     userId: form.parent.vars.data.id,
-                } only %}
+                }, false) }}
             {% endfor %}
         </div>
     {% endif %}
