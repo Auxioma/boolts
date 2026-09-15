@@ -104,7 +104,7 @@
                                 {# La section "À la Une" est masquée si elle est vide #}
                                 {% if not isFeatured or section.items|length > 0 %}
                                     <section
-                                        class="agence-properties {{ isFeatured ? ' home-bt-une' : '' }}"
+                                        class="agence-properties {{ isFeatured ? ' home-bt-une' : 'home-bt-section' }}"
                                         data-controller="splide"
                                     >
                                         <div class="bt-related-head d-flex align-items-end justify-content-between gap-3">

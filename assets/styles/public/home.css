@@ -880,6 +880,18 @@ input {
    Desktop : bandeau lavande pleine largeur (#F9F5FF),
    padding vertical 22px, 3 grandes cartes de 450px.
    ========================================================= */
+.home-bt-section {
+    padding-top: clamp(
+        24px,
+        calc(24px + (8 * (100vw - 375px) / 1065)),
+        32px
+    );
+        padding-bottom: clamp(
+        24px,
+        calc(24px + (8 * (100vw - 375px) / 1065)),
+        32px
+    );
+}
 
 .home-bt-une {
     position: relative;
@@ -888,7 +900,12 @@ input {
         24px,
         calc(24px + (8 * (100vw - 375px) / 1065)),
         32px
-    );;
+    );
+        padding-bottom: clamp(
+        24px,
+        calc(24px + (8 * (100vw - 375px) / 1065)),
+        32px
+    );
 }
 
 .bt-section-title-accent i{
