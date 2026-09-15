@@ -6,7 +6,7 @@
 #}
 
             <section class="home-bt-listings" data-controller="home--property-tabs">
-                <div class="container-xl home-bt-container">
+                <div class="container-md home-bt-container">
                     <div class="home-bt-search-header">
                         <h2 class="mb-16">
                             Explorez toutes les propriétés
@@ -94,7 +94,7 @@
 
                     {% for panel in panels %}
                         <div
-                            class="home-bt-tab-panel{{ panel.active ? ' active' : '' }}"
+                            class="home-bt-tab-panel  home-bt-resume-shell {{ panel.active ? ' active' : '' }}"
                             data-tab-panel="{{ panel.key }}"
                             data-home--property-tabs-target="panel"
                         >
@@ -126,7 +126,7 @@
                                             </h3>
 
                                             {% if section.items|length > 0 %}
-                                                <div class="d-flex align-items-center gap-2">
+                                                <div class="d-flex align-items-center gap-2 d-none d-md-block">
                                                     <button
                                                         class="bt-icon-btn bt-icon-btn--small bt-icon-btn--prev"
                                                         type="button"

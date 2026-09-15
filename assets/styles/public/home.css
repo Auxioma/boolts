@@ -34,8 +34,8 @@
 
     /* Nouveaux assets Figma (à télécharger en local : les URLs expirent sous 7 jours) */
     --icon-flame: url("https://www.figma.com/api/mcp/asset/49ddd3d9-d539-4136-a65b-45b5cf8670b5");
-    --arrow-doodle-1: url("https://www.figma.com/api/mcp/asset/e8e0eae8-33ff-4a9b-b27e-7575f23c0d32");
-    --arrow-doodle-2: url("https://www.figma.com/api/mcp/asset/2436bfb8-50fb-43d9-bd10-2f697592b89b");
+    --arrow-doodle-1:  url("../../images/home/droite.svg");
+    --arrow-doodle-2: url("../../images/home/gauche.svg");
     --app-ellipse: url("https://www.figma.com/api/mcp/asset/94fe8ebe-a98c-4068-8ea8-d2874c47b57c");
     --app-cursor: url("https://www.figma.com/api/mcp/asset/6fbde44f-3ec7-429f-ae86-eadf6d6e2681");
 
@@ -579,12 +579,19 @@ input {
 }
 
 .home-bt-content {
-    padding-top: 80px;
+    padding-top: clamp(
+        48px,
+        calc(48px + (32 * (100vw - 375px) / 1065)),
+        80px
+    );
 }
 
 .home-bt-content-section {
-    min-height: 514.288px;
-    padding: 80px 0;
+    padding-bottom: clamp(
+        32px,
+        calc(32px + (32 * (100vw - 375px) / 1065)),
+        64px
+    );
 }
 
 .home-bt-content-section + .home-bt-content-section {
@@ -835,7 +842,7 @@ input {
     padding: 0;
     border: 0;
     background: transparent;
-    color: var(--color-text);
+    color: #858789;
     font-size: 30px;
     line-height: 1;
 }
@@ -843,7 +850,7 @@ input {
 
 .home-bt-page .bt-icon-btn:disabled,
 .home-bt-page .bt-icon-btn.is-disabled {
-    color: var(--color-gray);
+    color: #EBECEC;
 }
 
 .home-bt-page .bt-icon-btn--prev:hover:not(:disabled) {
@@ -891,6 +898,13 @@ input {
         calc(24px + (8 * (100vw - 375px) / 1065)),
         32px
     );
+}
+
+@media (max-width: 768px) {
+    .splide,
+    .splide__track {
+        overflow: visible;
+    }
 }
 
 .home-bt-une {
@@ -988,25 +1002,39 @@ input {
     position: relative;
 }
 
-.home-bt-content-section::after {
-    content: "";
-    position: absolute;
-    top: 18px;
-    right: -58px;
-    width: 189px;
-    height: 509px;
-    background: var(--arrow-doodle-1) center / contain no-repeat;
-    pointer-events: none;
+@media (min-width: 992px) {
+    .home-bt-content-section::after {
+        content: "";
+        position: absolute;
+        top: -56px;
+        right: -58px;
+        width: 189px;
+        height: clamp(
+            370px,
+            calc(370px + (150 * (100vw - 992px) / 448)),
+            510px
+        );
+        background: var(--arrow-doodle-1) center / contain no-repeat;
+        pointer-events: none;
+    }
+
+    .home-bt-content-section.is-second::after {
+        top: -46px;
+        right: auto;
+        left: -64px;
+        width: 169px;
+        height: clamp(
+                370px,
+                calc(370px + (150 * (100vw - 992px) / 448)),
+                510px
+            );
+        background-image: var(--arrow-doodle-2);
+    }
 }
 
-.home-bt-content-section.is-second::after {
-    top: 11px;
-    right: auto;
-    left: -64px;
-    width: 169px;
-    height: 505px;
-    background-image: var(--arrow-doodle-2);
-}
+
+
+
 
 /* =========================================================
    DÉCORS — carte violette de l'application

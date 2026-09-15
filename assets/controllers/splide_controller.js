@@ -11,13 +11,11 @@ export default class extends Controller {
 
         this.splide = new Splide(this.sliderTarget, {
             type: 'slide',
-            fixedWidth: '315px',
+            fixedWidth: '270px',
             perMove: 1,
-            gap: '20px',
-
+            gap: '16px',
             arrows: false,
             pagination: false,
-
             drag: true,
             autoplay: false,
             speed: 800,
@@ -37,24 +35,26 @@ export default class extends Controller {
             omitEnd: true,
 
             breakpoints: {
-                1200: {
-                    fixedWidth: '330px',
+                1920: {
+                    fixedWidth: '317px',
                 },
-                992: {
-                    fixedWidth: '270px',
+                1440: {
+                    fixedWidth: '273px',
+                },
+                1200: {
+                    fixedWidth: '309px',
+                    gap: '16px',
+                },
+                991: {
+                    fixedWidth: '352px',
                 },
                 768: {
-                    fixedWidth: '292px',
-                    padding: {
-                        right: '55px',
-                    },
+                    fixedWidth: '285px',
+                    gap: '12px',
                 },
                 576: {
                     fixedWidth: '255px',
-                    gap: '16px',
-                    padding: {
-                        right: '45px',
-                    },
+                    gap: '12px',
                 },
             },
         });
