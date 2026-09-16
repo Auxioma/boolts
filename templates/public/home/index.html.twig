@@ -82,49 +82,289 @@
                 </div>
             </div>
 
-            <section class="home-bt-content">
-                <div class="container-md home-bt-container home-bt-resume-shell">
-                    <div class="home-bt-content-section row align-items-center">
-                        <!-- Texte : deuxième sur mobile, premier dès MD -->
-                        <div class="col-12 col-md-6 order-2 order-md-1">
-                            <div class="home-bt-text-block">
-                                <h2>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                </h2>
+<style>
+    /*
+     * Seulement le CSS spécifique au bloc application.
+     * On conserve les styles existants de :
+     * .home-bt-container
+     * .home-bt-content-section
+     * .home-bt-text-block
+     */
 
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                </p>
-                            </div>
-                        </div>
+    .home-bt-app {
+        position: relative;
+        min-height: 408px;
+        padding: 0;
+        overflow: hidden;
+        border-radius: 24px;
+        background: #5d00ff;
+    }
 
-                        <!-- Image : première sur mobile, deuxième dès MD -->
-                        <div class="col-12 col-md-6  m-0 order-1 order-md-2">
-                            <div class="home-bt-content-image"></div>
-                        </div>
-                    </div>
+    .home-bt-app > .row {
+        min-height: 408px;
+        margin: 0;
+    }
 
-                    <div class="home-bt-content-section is-second row align-items-center gy-4">
-                        <div class="col-12 col-md-6">
-                            <div class="home-bt-content-image is-second"></div>
-                        </div>
+    /* ==============================
+       PARTIE GAUCHE / MOCKUP
+       ============================== */
 
-                        <div class="col-12 col-md-6 m-0">
-                            <div class="home-bt-text-block ms-md-auto">
-                                <h2>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                </h2>
+    .home-bt-app-visual {
+        position: relative;
+        min-height: 408px;
+        overflow: hidden;
+    }
 
-                                <p>
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                </p>
-                            </div>
-                        </div>
+    .home-bt-app-circle {
+        position: absolute;
+
+        top: -100px;
+        left: 134px;
+
+        width: 403px;
+        height: 395px;
+
+        border: 7px solid #fff;
+        border-radius: 50%;
+    }
+
+    .home-bt-app-circle::before,
+    .home-bt-app-circle::after {
+        content: "";
+
+        position: absolute;
+
+        border: 3px solid #fff;
+        border-radius: 50%;
+    }
+
+    .home-bt-app-circle::before {
+        inset: 14px;
+    }
+
+    .home-bt-app-circle::after {
+        inset: 28px;
+    }
+
+    .home-bt-app-image {
+        position: absolute;
+
+        top: 22px;
+        left: -135px;
+
+        width: 595px;
+        height: 531px;
+
+        object-fit: contain;
+    }
+
+    /* ==============================
+       TEXTE
+       ============================== */
+
+    .home-bt-app .home-bt-text-block {
+        max-width: 398px;
+        color: #fff;
+    }
+
+    .home-bt-app .home-bt-text-block h2,
+    .home-bt-app .home-bt-text-block p {
+        color: #fff;
+    }
+
+    .home-bt-app-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        width: fit-content;
+
+        margin-top: 24px;
+        padding: 14px 19px;
+
+        border-radius: 40px;
+
+        color: #5d00ff;
+        background: #fff;
+
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 20px;
+
+        text-decoration: none;
+    }
+
+    .home-bt-app-button:hover {
+        color: #5d00ff;
+        background: #f8f8f8;
+    }
+
+
+    /* ==================================================
+       TABLETTE
+       ================================================== */
+
+    @media (min-width: 768px) and (max-width: 1199.98px) {
+
+        .home-bt-app-visual {
+            min-height: 408px;
+        }
+
+        .home-bt-app-circle {
+            top: 44px;
+            left: 107px;
+
+            width: 227px;
+            height: 221px;
+
+            border-width: 5px;
+        }
+
+        .home-bt-app-circle::before {
+            inset: 10px;
+        }
+
+        .home-bt-app-circle::after {
+            inset: 20px;
+        }
+
+        .home-bt-app-image {
+            top: 116px;
+            left: -44px;
+
+            width: 334px;
+            height: 298px;
+        }
+
+        .home-bt-app .home-bt-text-block {
+            max-width: 366px;
+        }
+    }
+
+
+    /* ==================================================
+       MOBILE
+       ================================================== */
+
+    @media (max-width: 767.98px) {
+
+        .home-bt-app {
+            min-height: 542px;
+        }
+
+        .home-bt-app > .row {
+            min-height: 542px;
+        }
+
+        .home-bt-app-content {
+            padding: 24px 24px 0;
+        }
+
+        .home-bt-app .home-bt-text-block {
+            width: 100%;
+            max-width: none;
+        }
+
+        .home-bt-app-visual {
+            min-height: 242px;
+        }
+
+        .home-bt-app-circle {
+            top: 10px;
+            left: 67px;
+
+            width: 261px;
+            height: 256px;
+        }
+
+        .home-bt-app-image {
+            top: 42px;
+            left: -23px;
+
+            width: 272px;
+            height: 243px;
+        }
+    }
+    .home-mobile-reverse {
+        padding-bottom: inherit!important;
+    }
+</style>
+
+
+<section class="home-bt-content">
+
+    <div class="container-md home-bt-container home-bt-resume-shell">
+
+        <div class="home-bt-app">
+
+            <div class="home-bt-content-section row align-items-center home-mobile-reverse">
+
+                <!--
+                    Image :
+                    deuxième sur mobile
+                    première dès MD
+                -->
+                <div
+                    class="col-12 col-md-6 col-lg-7
+                           order-2 order-md-1
+                           p-0"
+                >
+                    <div class="home-bt-app-visual">
+
+                        <img
+                            src="{{ asset('images/home/cookies/06.png') }}"
+                            alt=""
+                            aria-hidden="true"
+                            class="home-bt-app-image"
+                        >
+
                     </div>
                 </div>
-            </section>
+
+
+                <!--
+                    Texte :
+                    premier sur mobile
+                    deuxième dès MD
+                -->
+                <div
+                    class="col-12 col-md-6 col-lg-5
+                           order-1 order-md-2
+                           home-bt-app-content"
+                >
+
+                    <div class="home-bt-text-block">
+
+                        <h2>
+                            Il y a vraiment plein de choses à voir
+                            sur notre application !
+                        </h2>
+
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                            sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                            nisi ut aliquip ex ea commodo consequat.
+                        </p>
+
+                        <a
+                            href="#"
+                            class="home-bt-app-button"
+                        >
+                            Télécharger l’application
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
             <section class="home-bt-codes">
                 <div class="container-md home-bt-container">
