@@ -602,6 +602,13 @@ input {
     max-width: 417.5px;
 }
 
+@media (max-width: 767px) {
+    .home-bt-text-block {
+        margin-top: 12px;
+        max-width: fit-content;
+    }
+}
+
 .home-bt-text-block h2 {
     margin: 0 0 10px;
     color: var(--color-text);
@@ -631,11 +638,15 @@ input {
 }
 
 .home-bt-codes {
-    padding-top: 80px;
+    padding-top: clamp( 48px, calc(48px + (32 * (100vw - 375px) / 1065)), 80px );
 }
 
 .home-bt-codes-title {
-    margin: 0 0 64px;
+    margin: 0 0 clamp(
+        32px,
+        calc(32px + (32 * (100vw - 375px) / 1065)),
+        64px
+    );
     color: var(--color-text);
     text-align: center;
 }
@@ -668,12 +679,16 @@ input {
 }
 
 .home-bt-app {
-    padding: 80px 0;
+    padding: clamp(
+        48px,
+        calc(48px + (32 * (100vw - 375px) / 1065)),
+        80px
+    ) 0; 
 }
 
 .home-bt-app-card {
     position: relative;
-    height: 408px;
+    height: 450px;
     overflow: hidden;
     border-radius: 24px;
     background: var(--color-primary);
@@ -713,12 +728,13 @@ input {
 }
 
 .home-bt-app-mockup {
-    position: absolute;
-    left: -135px;
-    top: 22.562px;
-    width: 594.733px;
-    height: 531.076px;
-    background: var(--mockup-img) left top / 133.98% 100% no-repeat;
+position: absolute;
+  left: -143px;
+  bottom: 0;
+  width: 760px;
+  height: 551px;
+  background: var(--mockup-img);
+  background-repeat: no-repeat;
 }
 
 .home-bt-footer {
@@ -772,6 +788,13 @@ input {
     background: var(--color-white);
     justify-content: center;
     gap: 44px;
+}
+
+@media screen and (max-width: 767px) {
+    .home-bt-mobile-tabbar {
+        display: flex;
+        padding-bottom: env(safe-area-inset-bottom);
+    }
 }
 
 .home-bt-mobile-tabbar a {
@@ -1041,16 +1064,6 @@ input {
    Ellipse en trait + petit curseur
    ========================================================= */
 
-.home-bt-app-card::before {
-    content: "";
-    position: absolute;
-    left: 134px;
-    top: -100px;
-    width: 403px;
-    height: 395px;
-    background: var(--app-ellipse) center / contain no-repeat;
-    pointer-events: none;
-}
 
 /*.home-bt-app-card::after {
     content: "";

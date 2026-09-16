@@ -1,28 +1,168 @@
-{#
- Template: templates/composant/_footer/navbar_footer.html.twig
- Role: Renders the composant/_footer Twig view.
- Context: Provided by the rendering controller, parent template, or including template.
- Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
-#}
+<nav class="boolts-mobile-tabbar" aria-label="Navigation mobile">
+    <div class="boolts-mobile-tabbar__inner">
 
-<nav class="home-bt-mobile-tabbar">
-    <a href="#" class="active">
-        <i class="bi bi-search"></i>
-        Explorer
+        <a href="{{ path('app_home') }}"
+           class="boolts-mobile-tabbar__item boolts-mobile-tabbar__item--active"
+           aria-current="page">
+
+            <img
+                src="{{ asset('images/footer/loupe.svg') }}"
+                alt=""
+                aria-hidden="true"
+                class="boolts-mobile-tabbar__icon"
+            >
+
+            <span>Explorer</span>
+        </a>
+
+{% if not app.user or (is_granted('ROLE_USER') and not is_granted('ROLE_AGENCE')) %}
+
+    <a href="#" class="boolts-mobile-tabbar__item">
+        <img
+            src="{{ asset('images/footer/favoris.svg') }}"
+            alt=""
+            aria-hidden="true"
+            class="boolts-mobile-tabbar__icon"
+        >
+
+        <span>Favoris</span>
     </a>
 
-    <a href="#">
-        <i class="bi bi-heart"></i>
-        Favoris
-    </a>
+{% endif %}
 
-    <a href="#">
-        <i class="bi bi-chat-dots"></i>
-        Messagerie
-    </a>
 
-    <a href="#">
-        <i class="bi bi-person"></i>
-        Compte
-    </a>
+
+        
+
+{# Messagerie : uniquement pour un utilisateur connecté #}
+{% if app.user %}
+
+    {% set messagerieRoute = null %}
+
+    {# Agence immobilière #}
+    {% if is_granted('ROLE_AGENCE') %}
+        {% set messagerieRoute = 'agence_immobiliere_messagerie' %}
+
+    {# Utilisateur / visiteur #}
+    {% elseif is_granted('ROLE_USER') %}
+        {% set messagerieRoute = 'app_visiteur_messagerie' %}
+    {% endif %}
+
+    {% if messagerieRoute %}
+        <a
+            href="{{ path(messagerieRoute) }}"
+            class="boolts-mobile-tabbar__item"
+        >
+            <img
+                src="{{ asset('images/footer/messagerie.svg') }}"
+                alt=""
+                aria-hidden="true"
+                class="boolts-mobile-tabbar__icon"
+            >
+
+            <span>Messagerie</span>
+        </a>
+    {% endif %}
+
+{% endif %}
+
+        <a href="{{ path('app_login') }}" class="boolts-mobile-tabbar__item">
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M7 20.662V19C7 18.4696 7.21071 17.9609 7.58579 17.5858C7.96086 17.2107 8.46957 17 9 17H15C15.5304 17 16.0391 17.2107 16.4142 17.5858C16.7893 17.9609 17 18.4696 17 19V20.662M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" stroke="#3D3F43" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg> 
+
+            <span>Connexion</span>
+        </a>
+
+    </div>
 </nav>
+
+<style>
+    .boolts-mobile-tabbar {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        z-index: 1100;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        height: 64px;
+        max-width: calc(100vw - 32px);
+
+        background: #ffffff;
+        border: 1px solid #ebecec;
+        border-radius: 70px;
+
+        box-shadow: 0 4px 2px rgba(0, 0, 0, 0.08);
+
+        transform: translateX(-50%);
+
+        font-family: "Eudoxus Sans", Arial, sans-serif;
+    }
+
+    .boolts-mobile-tabbar__inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        height: 43px;
+
+        gap: clamp(18px, 9vw, 34px);
+        padding: 0 clamp(20px, 8.5vw, 32px);
+    }
+
+    .boolts-mobile-tabbar__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+
+        flex: 0 0 auto;
+
+        height: 43px;
+
+        color: #3d3f43;
+
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 16px;
+
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .boolts-mobile-tabbar__item:hover,
+    .boolts-mobile-tabbar__item:focus {
+        color: #3d3f43;
+        text-decoration: none;
+    }
+
+    .boolts-mobile-tabbar__item--active,
+    .boolts-mobile-tabbar__item--active:hover,
+    .boolts-mobile-tabbar__item--active:focus {
+        color: #5d00ff;
+    }
+
+    .boolts-mobile-tabbar__icon {
+        display: block;
+
+        width: 24px;
+        height: 24px;
+
+        object-fit: contain;
+    }
+
+    /*
+     * Visible uniquement en dessous de 767px.
+     *
+     * 766.98px évite le chevauchement exact à 767px.
+     */
+    @media (max-width: 766.98px) {
+        .boolts-mobile-tabbar {
+            display: flex;
+        }
+    }
+</style>
