@@ -19,59 +19,6 @@
 
             <div class="topbar-mobile-actions d-flex align-items-center ms-auto d-xl-none">
 
-                {% if not app.user %}
-                    <a
-                        href="{{ path('app_login') }}"
-                        class="topbar-avatar-link"
-                        aria-label="Se connecter"
-                    >
-                        <i data-lucide="circle-user" class="icon-user"></i>
-                    </a>
-                {% else %}
-
-                    {% if is_granted('ROLE_ADMIN') %}
-                        {% set dashboardPath = path('admin') %}
-                    {% elseif is_granted('ROLE_AGENCE') %}
-                        {% set dashboardPath = path('agence_immobiliere_dashboard') %}
-                    {% else %}
-                        {% set dashboardPath = path('app_visiteur_dashboard') %}
-                    {% endif %}
-
-                    {% set avatar = app.user.imageName
-                        ? vich_uploader_asset(app.user, 'imageFile')
-                        : null
-                    %}
-
-                    {% set firstLetter = app.user.prenom
-                        ? app.user.prenom|first|upper
-                        : null
-                    %}
-
-                    <a
-                        href="{{ dashboardPath }}"
-                        class="topbar-avatar-link"
-                        aria-label="Accéder à mon compte"
-                    >
-                        {% if avatar %}
-                            <img
-                                src="{{ avatar }}"
-                                alt="Profil utilisateur"
-                                class="topbar-avatar"
-                            >
-                        {% elseif firstLetter %}
-                            <span class="topbar-avatar avatar-letter">
-                                {{ firstLetter }}
-                            </span>
-                        {% else %}
-                            <img
-                                src="{{ asset('images/authentification/auxioma.png') }}"
-                                alt="Profil utilisateur"
-                                class="topbar-avatar"
-                            >
-                        {% endif %}
-                    </a>
-                {% endif %}
-
                 <button
                     id="mobile-menu-button"
                     class="navbar-toggler topbar-toggler"
