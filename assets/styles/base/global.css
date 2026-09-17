@@ -165,3 +165,19 @@ input:focus {
   top: 2px;
   position: relative;
 }
+
+.p-accent {
+
+font-size: clamp(
+        14px,
+        calc(14px + (2 * (100vw - 375px) / 1065)),
+        16px
+    );
+font-style: normal;
+font-weight: 600;
+line-height:  clamp(
+        16px,
+        calc(16px + (4 * (100vw - 375px) / 1065)),
+        20px
+    );
+}

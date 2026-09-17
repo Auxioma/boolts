@@ -1,6 +1,5 @@
 .dashboard {
     width: 100%;
-    min-width: 1440px;
     min-height: 100vh;
     background: #ffffff;
     font-family: "Eudoxus Sans", Arial, sans-serif;
@@ -9,8 +8,11 @@
 
 
 .dashboard-main {
-    min-height: 2679px;
-    padding: 48px;
+    padding-top: clamp(
+        24px,
+        calc(24px + (24 * (100vw - 375px) / 1065)),
+        48px
+    );
     background: #ffffff;
     overflow: hidden;
 }
@@ -21,7 +23,11 @@
 }
 
 .dashboard-heading {
-    margin-bottom: 32px;
+    margin-bottom: clamp(
+        24px,
+        calc(24px + (18 * (100vw - 375px) / 1065)),
+        32px
+    );
 }
 
 .dashboard-title {
@@ -52,6 +58,16 @@
     text-decoration: none;
 }
 
+.dashboard-boost-button {
+     border-color: transparent !important;
+}
+
+.dashboard-boost-button:hover,
+.dashboard-boost-button:focus {
+    background: transparent !important;
+    color: #5d00ff!important;
+}
+
 .dashboard-boost-button:hover,
 .notifications-more-button:hover,
 .property-boost-button:hover {
@@ -62,11 +78,18 @@
 
 .dashboard-card {
     width: 100%;
-    margin-bottom: 24px;
-    padding: 24px;
+    margin-bottom:  clamp(
+        16px,
+        calc(16px + (8 * (100vw - 375px) / 1065)),
+        24px
+    );
+    padding: 24px; 
     background: #ffffff;
     border: 2px solid #ebecec;
     border-radius: 20px;
+}
+.dashboard-card-primary {
+    border-color: #5d00ff;
 }
 
 .dashboard-section-title {
@@ -78,18 +101,13 @@
 }
 
 .dashboard-section-description {
-    margin: 0;
     color: #858789;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
 }
 
 /* Finalisation du compte */
 
 .account-completion-card {
     display: flex;
-    align-items: center;
     justify-content: space-between;
 }
 

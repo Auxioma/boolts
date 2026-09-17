@@ -14,27 +14,33 @@
 
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
-            <div class="row g-0">
+            <div class="row">
 
                 {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
                 {# Contenu principal #}
-                <div class="col-10 dashboard-main">
-                    <div class="dashboard-content">
+                <div class="col-10 col-md-10 col-12 dashboard-main">
+                    <div class="col-12 col-md-10 mx-auto">
 
                         {# En-tête de la page #}
-                        <div class="d-flex align-items-center justify-content-between dashboard-heading">
-                            <h1 class="dashboard-title">
-                                Welcome,
-                                {{ app.user.prenom|default('John') }}
-                                {{ app.user.nom|default('Doe') }}
-                                !
-                            </h1>
+<div class="d-flex align-items-center justify-content-between dashboard-heading">
 
-                            {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
-                            {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
-                        </div>
+    <h2 class="mb-0">
+        Welcome,
+        {{ app.user.prenom|default('John') }}
+        {{ app.user.nom|default('Doe') }}
+        !
+    </h2>
+
+    <div class="d-flex align-items-center">
+                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
+
+        {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
+
+    </div>
+
+</div>
 
                         {% set dashboardFlashTypes = {
                             success: 'success',
@@ -54,17 +60,17 @@
                         {# Finalisation du compte #}
                         <div data-controller="dashboard-account-completion documents--upload">
                         <section
-                            class="dashboard-card account-completion-card"
+                            class="dashboard-card dashboard-card-primary account-completion-card"
                             data-dashboard-account-completion-target="countryStep"
                             {% if documents_step_active %}hidden{% endif %}
                         >
                             <div class="account-completion-header">
                                 <div>
-                                    <h2 class="dashboard-section-title">
+                                    <h3 class="mb-0">
                                         Terminez la création de votre compte pro !
-                                    </h2>
+                                    </h3>
 
-                                    <p class="dashboard-section-description">
+                                    <p class="dashboard-section-description mt-12">
                                         Veuillez déposer les derniers documents afin de valider la création de votre compte.
                                     </p>
                                 </div>
@@ -73,28 +79,28 @@
                             <div class="account-country-block">
                                 <label
                                     for="domiciliation-country"
-                                    class="account-country-label"
+                                    class="p-accent mb-12"
                                 >
                                     Confirmez votre pays de domiciliation*
                                 </label>
 
-                                <div class="d-flex align-items-center account-country-form">
-                                    {{ form_widget(form.pays, {
-                                        attr: {
-                                            id: 'domiciliation-country',
-                                            class: 'form-select account-country-input',
-                                            'data-dashboard-account-completion-target': 'country',
-                                        },
-                                    }) }}
+<div class="d-flex flex-column account-country-form">
+    {{ form_widget(form.pays, {
+        attr: {
+            id: 'domiciliation-country',
+            class: 'form-select account-country-input',
+            'data-dashboard-account-completion-target': 'country',
+        },
+    }) }}
 
-                                    <button
-                                        type="button"
-                                        class="btn account-country-button"
-                                        data-action="dashboard-account-completion#continue"
-                                    >
-                                        Continuer
-                                    </button>
-                                </div>
+    <button
+        type="button"
+        class="btn-full-white w-25 align-self-end"
+        data-action="dashboard-account-completion#continue"
+    >
+        Continuer
+    </button>
+</div>
                             </div>
                         </section>
 

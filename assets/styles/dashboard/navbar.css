@@ -26,8 +26,19 @@
 }
 
 .aside-dashboard-navbar {
+    position: sticky;
+    top: var(--dashboard-sticky-top, var(--topbar-height, 72px));
+    align-self: flex-start;
+    height: fit-content;
+    max-height: var(--dashboard-sidebar-max-height, calc(100vh - var(--topbar-height, 72px) - 16px));
+    overflow-y: auto;
+    z-index: 1020;
     border-right: 1px solid #EBECEC;
     background: #F8F8F8;
+}
+
+.aside-dashboard-navbar > .h-100 {
+    height: auto !important;
 }
 .aside-dashboard-navbar p {
     color: #858789;

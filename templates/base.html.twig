@@ -31,8 +31,78 @@
         <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
         <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
         {% endif %}
+
+
+
+<style>
+/* =========================================================
+   DEBUG BOOTSTRAP
+   CONTAINER-FLUID 100% ÉCRAN
+   12 COLONNES + GOUTTIÈRES
+========================================================= */
+
+:root {
+    /* Bootstrap 5 : gutter standard 1.5rem = 24px */
+    --debug-gutter: 24px;
+
+    /*
+     * Largeur d'une colonne :
+     * écran - 11 gouttières
+     * divisé par 12 colonnes
+     */
+    --debug-column-width: calc(
+        (100vw - (11 * var(--debug-gutter))) / 12
+    );
+}
+
+
+/* Overlay */
+.debug-grid::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 999999;
+
+    pointer-events: none;
+
+    /*
+     * ROUGE  = colonne
+     * JAUNE  = gouttière
+     */
+    background-image: repeating-linear-gradient(
+        to right,
+
+        /* COLONNE */
+        rgba(255, 0, 0, 0.10) 0,
+        rgba(255, 0, 0, 0.10) var(--debug-column-width),
+
+        /* GOUTTIÈRE */
+        rgba(255, 200, 0, 0.30) var(--debug-column-width),
+        rgba(255, 200, 0, 0.30)
+            calc(
+                var(--debug-column-width)
+                + var(--debug-gutter)
+            )
+    );
+}
+</style>
+
+
+
+
+
+
+
+
+        
     </head>
-    <body>
+    <body data-controller="dashboard-layout" class="debug-grid">
 
         {{ include('composant/__header/_navbar.html.twig') }}
         {% block body %}{% endblock %}

@@ -15,7 +15,7 @@
     </button>
 {% else %}
     <a href="#" class="btn dashboard-boost-button">
-        <i class="icon-zap"></i>
-        annonce restante : {{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}
+        <i class="icon-building-2"></i>
+        Annonces restantes : {{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}
     </a>
 {% endif %}

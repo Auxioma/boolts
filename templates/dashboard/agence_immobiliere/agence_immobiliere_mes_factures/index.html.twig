@@ -12,13 +12,13 @@
 {% block body %}
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
-            <div class="row g-0">
+            <div class="row">
 
                 {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
                 {# Contenu principal #}
-                <div class="col-10 dashboard-main">
+                <div class="col-md-10 col-12 dashboard-main">
                     <div class="dashboard-content">
                         <section class="invoices-page">
                             <h1 class="invoices-page__title">Mes factures</h1>
