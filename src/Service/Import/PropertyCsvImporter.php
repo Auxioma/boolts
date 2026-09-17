@@ -76,6 +76,7 @@ final class PropertyCsvImporter
         'mapbox_id' => 'setMapboxId',
         'session_id_mapbox' => 'setSessionIdMapbox',
         'feature_type' => 'setFeatureType',
+        'code_iso_pays' => 'setCodeIsoPays',
         'chambres' => 'setChambres',
         'salle_de_bains' => 'setSalleDeBains',
         'dpe' => 'setDpe',
@@ -94,6 +95,18 @@ final class PropertyCsvImporter
         'montant_loyer_hors_charge' => 'setMontantLoyerHorsCharge',
         'montant_depot_de_garantie' => 'setMontantDepotDeGarantie',
         'montant_des_charges' => 'setMontantDesCharges',
+    ];
+
+    /**
+     * Champs date de Property et de ses traits : ils sont facultatifs et
+     * restent générés automatiquement lorsqu'ils ne sont pas fournis.
+     *
+     * @var array<string, string>
+     */
+    private const array DATE_FIELDS = [
+        'date_indexation_energie' => 'setDateIndexationEnergie',
+        'created_at' => 'setCreatedAt',
+        'updated_at' => 'setUpdatedAt',
     ];
 
     /**
@@ -168,10 +181,10 @@ final class PropertyCsvImporter
     {
         $columns = [
             'agence_email',
-            'agence_nom',
             'type_bien',
             'type_transaction',
             'statut',
+            'slug',
         ];
 
         $columns = array_merge($columns, array_keys(self::DECIMAL_FIELDS));
@@ -179,7 +192,7 @@ final class PropertyCsvImporter
         $columns = array_merge($columns, array_keys(self::SCALAR_FIELDS));
         $columns[] = 'dpe_lettre';
         $columns[] = 'ges_lettre';
-        $columns[] = 'date_indexation_energie';
+        $columns = array_merge($columns, array_keys(self::DATE_FIELDS));
         $columns[] = 'show_adresse';
         $columns[] = 'caracteristiques';
         $columns[] = 'images';
@@ -191,6 +204,75 @@ final class PropertyCsvImporter
         }
 
         return $columns;
+    }
+
+    /**
+     * Ligne illustrative incluse dans le modèle téléchargé. Elle est marquée
+     * comme commentaire afin que le modèle puisse être réutilisé après
+     * remplacement de cette ligne par les données réelles.
+     *
+     * @return list<string>
+     */
+    public function templateExampleRow(): array
+    {
+        $values = [
+            'agence_email' => '# agence@exemple.fr (remplacer)',
+            'type_bien' => 'Appartement',
+            'type_transaction' => 'Vente',
+            'statut' => 'brouillon',
+            'slug' => 'exemple-appartement-paris',
+            'surface_total' => '72,50',
+            'prix' => '350000,00',
+            'montant_loyer_hors_charge' => '',
+            'montant_depot_de_garantie' => '',
+            'montant_des_charges' => '180,00',
+            'annee_construction' => '2018',
+            'reference_interne' => 'REF-EXEMPLE-001',
+            'code_postal' => '75001',
+            'latitude' => '48.8606000',
+            'longitude' => '2.3376000',
+            'mapbox_id' => 'place.exemple',
+            'session_id_mapbox' => 'session-exemple',
+            'feature_type' => 'address',
+            'code_iso_pays' => 'FR',
+            'chambres' => '3',
+            'salle_de_bains' => '1',
+            'dpe' => '145',
+            'dpe_min' => '120',
+            'dpe_max' => '170',
+            'dpe_lettre' => 'C',
+            'ges' => '28',
+            'ges_lettre' => 'C',
+            'date_indexation_energie' => '2026-01-15',
+            'created_at' => '2026-01-15 10:30:00',
+            'updated_at' => '2026-01-15 10:30:00',
+            'show_adresse' => 'oui',
+            'caracteristiques' => 'Balcon|Ascenseur',
+            'images' => 'https://exemple.fr/images/bien-1.jpg|https://exemple.fr/images/bien-2.jpg',
+        ];
+
+        foreach (array_keys(self::TRANSLATABLE_FIELDS) as $base) {
+            foreach ($this->locales as $locale) {
+                $values[$base.'_'.$locale] = match ($base) {
+                    'titre' => 'Appartement lumineux proche du centre',
+                    'description' => 'Description détaillée du bien à remplacer.',
+                    'adresse' => '10 rue de l’exemple',
+                    'ville' => 'Paris',
+                    'pays' => 'France',
+                    'adresse_complete' => '10 rue de l’exemple, 75001 Paris, France',
+                    'region' => 'Île-de-France',
+                    'district' => 'Paris',
+                    'localite' => 'Paris 1er',
+                    'quartier' => 'Saint-Germain-l’Auxerrois',
+                    'point_interet' => 'Musée du Louvre',
+                };
+            }
+        }
+
+        return array_map(
+            static fn (string $column): string => $values[$column] ?? '# Exemple à supprimer avant import',
+            $this->templateColumns(),
+        );
     }
 
     public function import(string $csvPath): PropertyImportReport
@@ -271,7 +353,9 @@ final class PropertyCsvImporter
         $property->setTypeBien($typeBien);
         $property->setTypeTransaction($typeTransaction);
         $property->setStatut($this->resolveStatut($row['statut'] ?? null));
-        $property->setSlug($this->slugGenerator->generate(16));
+
+        $slug = $this->clean($row['slug'] ?? null);
+        $property->setSlug($slug ?? $this->slugGenerator->generate(16));
 
         foreach (self::SCALAR_FIELDS as $column => $setter) {
             $value = $this->clean($row[$column] ?? null);
@@ -309,10 +393,12 @@ final class PropertyCsvImporter
             $property->setGesLettre(mb_strtoupper($gesLettre));
         }
 
-        $indexationDate = $this->parseDate($row['date_indexation_energie'] ?? null);
+        foreach (self::DATE_FIELDS as $column => $setter) {
+            $date = $this->parseDate($row[$column] ?? null);
 
-        if (null !== $indexationDate) {
-            $property->setDateIndexationEnergie($indexationDate);
+            if (null !== $date) {
+                $property->{$setter}($date);
+            }
         }
 
         $showAdresse = $this->parseBool($row['show_adresse'] ?? null);
@@ -340,29 +426,20 @@ final class PropertyCsvImporter
      */
     private function resolveAgency(array $row): User
     {
-        $email = $this->clean($row['agence_email'] ?? null);
-        $name = $this->clean($row['agence_nom'] ?? null);
+        $email = $this->clean($row['user_email'] ?? $row['agence_email'] ?? null);
 
-        if (null === $email && null === $name) {
-            throw new SkipRowException('aucune agence renseignée (agence_email ou agence_nom requis).');
+        if (null === $email) {
+            throw new SkipRowException('aucun utilisateur renseigné (agence_email requis).');
         }
 
-        $agency = null;
-
-        if (null !== $email) {
-            $agency = $this->userRepository->findOneBy(['email' => mb_strtolower($email)]);
-        }
-
-        if (null === $agency && null !== $name) {
-            $agency = $this->userRepository->findOneBy(['entreprise' => $name]);
-        }
+        $agency = $this->userRepository->findOneBy(['email' => mb_strtolower($email)]);
 
         if (null === $agency) {
-            throw new SkipRowException(\sprintf('agence introuvable (« %s »).', $email ?? $name));
+            throw new SkipRowException(\sprintf('utilisateur introuvable par e-mail (« %s »).', $email));
         }
 
         if (!\in_array('ROLE_AGENCE', $agency->getRoles(), true)) {
-            throw new SkipRowException(\sprintf('l’utilisateur « %s » n’est pas une agence.', $email ?? $name));
+            throw new SkipRowException(\sprintf('l’utilisateur « %s » n’est pas une agence.', $email));
         }
 
         return $agency;
@@ -766,6 +843,10 @@ final class PropertyCsvImporter
                     $record,
                 );
 
+                continue;
+            }
+
+            if (str_starts_with(mb_ltrim((string) ($record[0] ?? '')), '#')) {
                 continue;
             }
 

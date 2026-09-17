@@ -491,8 +491,9 @@ class PropertyCrudController extends AbstractCrudController
     private function streamCsvTemplate(PropertyCsvImporter $importer): StreamedResponse
     {
         $columns = $importer->templateColumns();
+        $exampleRow = $importer->templateExampleRow();
 
-        $response = new StreamedResponse(static function () use ($columns): void {
+        $response = new StreamedResponse(static function () use ($columns, $exampleRow): void {
             $output = fopen('php://output', 'w');
 
             if (false === $output) {
@@ -502,6 +503,7 @@ class PropertyCrudController extends AbstractCrudController
             // BOM UTF-8 pour Excel + délimiteur « ; » cohérent avec l'export.
             fwrite($output, "\xEF\xBB\xBF");
             fputcsv($output, $columns, ';');
+            fputcsv($output, $exampleRow, ';');
 
             fclose($output);
         });
