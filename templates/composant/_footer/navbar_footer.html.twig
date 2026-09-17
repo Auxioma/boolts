@@ -1,4 +1,4 @@
-<nav class="boolts-mobile-tabbar" aria-label="Navigation mobile">
+<nav class="boolts-mobile-tabbar" aria-label="{{ 'navbar.mobile.navigation.aria_label'|trans }}">
     <div class="boolts-mobile-tabbar__inner">
 
         <a href="{{ path('app_home') }}"
@@ -12,7 +12,7 @@
                 class="boolts-mobile-tabbar__icon"
             >
 
-            <span>Explorer</span>
+            <span>{{ 'navbar.mobile.explore'|trans }}</span>
         </a>
 
 {% if not app.user or (is_granted('ROLE_USER') and not is_granted('ROLE_AGENCE')) %}
@@ -25,7 +25,7 @@
             class="boolts-mobile-tabbar__icon"
         >
 
-        <span>Favoris</span>
+        <span>{{ 'navbar.mobile.favorites'|trans }}</span>
     </a>
 
 {% endif %}
@@ -56,7 +56,7 @@
                 class="boolts-mobile-tabbar__icon"
             >
 
-            <span>Messagerie</span>
+            <span>{{ 'navbar.mobile.messaging'|trans }}</span>
         </a>
     {% endif %}
 
@@ -68,7 +68,7 @@
                 <path d="M7 20.662V19C7 18.4696 7.21071 17.9609 7.58579 17.5858C7.96086 17.2107 8.46957 17 9 17H15C15.5304 17 16.0391 17.2107 16.4142 17.5858C16.7893 17.9609 17 18.4696 17 19V20.662M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" stroke="#3D3F43" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
 
-            <span>Connexion</span>
+            <span>{{ 'navbar.mobile.login'|trans }}</span>
         </a>
 
     </div>
