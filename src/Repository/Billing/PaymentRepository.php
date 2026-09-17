@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -15,9 +13,9 @@ declare(strict_types=1);
 namespace App\Repository\Billing;
 
 use App\Entity\Billing\AgencySubscription;
-use App\Entity\Billing\Payment;
 use App\Entity\Billing\Enum\PaymentStatus;
 use App\Entity\Billing\Enum\PaymentType;
+use App\Entity\Billing\Payment;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;

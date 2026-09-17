@@ -63,8 +63,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher,
         FreeAgencySubscriptionActivator $freeAgencySubscriptionActivator,
         AgencyRegistrationProgress $agencyRegistrationProgress,
-    ): Response
-    {
+    ): Response {
         $registrationUser = $this->getRegistrationUser(
             $request,
             $userRepository,
@@ -114,8 +113,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $em,
         AgencyRegistrationProgress $agencyRegistrationProgress,
-    ): Response
-    {
+    ): Response {
         $registrationUser = $this->getRegistrationUser(
             $request,
             $userRepository,
@@ -176,8 +174,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $em,
         AgencyRegistrationProgress $agencyRegistrationProgress,
-    ): Response
-    {
+    ): Response {
         $registrationUser = $this->getRegistrationUser(
             $request,
             $userRepository,
@@ -226,8 +223,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
         Security $security,
         AgencyRegistrationProgress $agencyRegistrationProgress,
         RegistrationLocaleResolver $registrationLocaleResolver,
-    ): Response
-    {
+    ): Response {
         $registrationUser = $this->getRegistrationUser(
             $request,
             $userRepository,
@@ -345,7 +341,7 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
                     'adresseComplementContact' => $translation->setAdresseComplementContact($value),
                     'villeContact' => $translation->setVilleContact($value),
                     'paysContact' => $translation->setPaysContact($value),
-                    default => throw new \LogicException(sprintf('Champ de traduction User non supporté : %s.', $field)),
+                    default => throw new \LogicException(\sprintf('Champ de traduction User non supporté : %s.', $field)),
                 };
             }
         }

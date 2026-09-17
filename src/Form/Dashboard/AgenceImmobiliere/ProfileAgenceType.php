@@ -14,8 +14,8 @@ namespace App\Form\Dashboard\AgenceImmobiliere;
 
 use App\Entity\Devise;
 use App\Entity\FuseauHoraire;
-use App\Entity\Langues;
 use App\Entity\LangueParler;
+use App\Entity\Langues;
 use App\Entity\User;
 use App\Repository\DeviseRepository;
 use App\Repository\FuseauHoraireRepository;

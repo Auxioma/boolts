@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Service\Subscription;
 
@@ -29,11 +37,10 @@ final readonly class SubscriptionEmailDispatcher
 
     /**
      * @param array<string, mixed> $context
-     *
-     * @param bool $immediate Envoi synchrone (dans la requête courante) au lieu de
-     *                        passer par la file asynchrone ; à utiliser pour les
-     *                        e-mails que l'utilisateur attend juste après son action,
-     *                        comme la confirmation de résiliation.
+     * @param bool                 $immediate envoi synchrone (dans la requête courante) au lieu de
+     *                                        passer par la file asynchrone ; à utiliser pour les
+     *                                        e-mails que l'utilisateur attend juste après son action,
+     *                                        comme la confirmation de résiliation
      */
     public function dispatchOnce(
         AgencySubscription $subscription,

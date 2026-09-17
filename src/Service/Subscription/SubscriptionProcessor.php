@@ -1,11 +1,19 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace App\Service\Subscription;
 
-use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Entity\Billing\AgencySubscription;
+use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Service\Stripe\StripeSubscriptionService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -65,8 +73,7 @@ final readonly class SubscriptionProcessor
     private function processActiveSubscriptions(
         \DateTimeImmutable $now,
         SubscriptionProcessingReport $report,
-    ): void
-    {
+    ): void {
         $subscriptions = $this->subscriptionRepository->findActiveSubscriptionsToProcess($now, $this->batchSize);
         $report->startPhase('ACTIVE_RENEWAL', \count($subscriptions));
 
@@ -85,8 +92,7 @@ final readonly class SubscriptionProcessor
     private function processPaymentFailures(
         \DateTimeImmutable $now,
         SubscriptionProcessingReport $report,
-    ): void
-    {
+    ): void {
         $subscriptions = $this->subscriptionRepository->findFailedSubscriptionsToRetry($now, $this->batchSize);
         $report->startPhase('PAYMENT_RETRY', \count($subscriptions));
 
@@ -105,8 +111,7 @@ final readonly class SubscriptionProcessor
     private function processDefinitivePaymentFailures(
         \DateTimeImmutable $now,
         SubscriptionProcessingReport $report,
-    ): void
-    {
+    ): void {
         $subscriptions = $this->subscriptionRepository->findFailedSubscriptionsToFinalize($now, $this->batchSize);
         $report->startPhase('PAYMENT_FAILURE_FINALIZATION', \count($subscriptions));
 
@@ -125,8 +130,7 @@ final readonly class SubscriptionProcessor
     private function processCanceledSubscriptions(
         \DateTimeImmutable $now,
         SubscriptionProcessingReport $report,
-    ): void
-    {
+    ): void {
         $subscriptions = $this->subscriptionRepository->findCanceledSubscriptionsToFinalize($now, $this->batchSize);
         $report->startPhase('CANCELLATION_FINALIZATION', \count($subscriptions));
 
@@ -145,8 +149,7 @@ final readonly class SubscriptionProcessor
     private function processSubscriptionsToSynchronize(
         \DateTimeImmutable $now,
         SubscriptionProcessingReport $report,
-    ): void
-    {
+    ): void {
         $staleBefore = $now->modify('-6 hours');
         $subscriptions = $this->subscriptionRepository->findSubscriptionsToSynchronize($staleBefore, $this->batchSize);
         $report->startPhase('STRIPE_SYNCHRONIZATION', \count($subscriptions));

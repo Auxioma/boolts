@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -206,7 +204,7 @@ final readonly class InvoiceIssuer
             'agency_id' => $agency->getId(),
             'legal_name' => $billingProfile?->getLegalName() ?? $agency->getEntreprise(),
             'commercial_name' => $billingProfile?->getCommercialName(),
-            'contact_name' => trim(\sprintf('%s %s', (string) $agency->getPrenom(), (string) $agency->getNom())),
+            'contact_name' => mb_trim(\sprintf('%s %s', (string) $agency->getPrenom(), (string) $agency->getNom())),
             'email' => $billingProfile?->getBillingEmail() ?? $agency->getEmail(),
             'address_line1' => $billingProfile?->getAddressLine1(),
             'address_line2' => $billingProfile?->getAddressLine2(),

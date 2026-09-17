@@ -41,7 +41,7 @@ final class InvoiceRepository extends ServiceEntityRepository
             ->orderBy('invoice.issuedAt', 'DESC')
             ->addOrderBy('invoice.createdAt', 'DESC');
 
-        $search = null !== $search ? trim($search) : '';
+        $search = null !== $search ? mb_trim($search) : '';
 
         if ('' !== $search) {
             $qb->andWhere('invoice.number LIKE :search')

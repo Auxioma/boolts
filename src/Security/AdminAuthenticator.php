@@ -63,9 +63,7 @@ class AdminAuthenticator extends AbstractLoginFormAuthenticator
                      * Message volontairement neutre : on ne révèle pas si le
                      * compte existe ni s'il possède le rôle administrateur.
                      */
-                    throw new CustomUserMessageAuthenticationException(
-                        'Identifiants invalides ou accès non autorisé.'
-                    );
+                    throw new CustomUserMessageAuthenticationException('Identifiants invalides ou accès non autorisé.');
                 }
 
                 return $user;

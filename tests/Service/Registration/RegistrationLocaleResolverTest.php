@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -30,7 +28,6 @@ use App\Service\Registration\RegistrationLocaleResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 final class RegistrationLocaleResolverTest extends TestCase
@@ -152,9 +149,9 @@ final class RegistrationLocaleResolverTest extends TestCase
     }
 
     /**
-     * @param array<string, LangueParler> $langueParler
-     * @param array<string, Langues>      $langues
-     * @param array<string, Pays>         $pays
+     * @param array<string, LangueParler>  $langueParler
+     * @param array<string, Langues>       $langues
+     * @param array<string, Pays>          $pays
      * @param array<string, FuseauHoraire> $fuseau
      */
     private function resolver(
@@ -184,7 +181,7 @@ final class RegistrationLocaleResolverTest extends TestCase
     /**
      * @template T of object
      *
-     * @param class-string<T>     $class
+     * @param class-string<T>      $class
      * @param array<string, mixed> $byField
      *
      * @return T

@@ -80,8 +80,8 @@ final class Version20260910150000 extends AbstractMigration
          * "0 €" pour les locations, et COALESCE renvoie ce "0" aux filtres de
          * fourchette de prix. Un prix / loyer de 0 n'a de toute façon aucun sens.
          */
-        $this->addSql("UPDATE property SET prix = NULL WHERE prix = 0");
-        $this->addSql("UPDATE property SET montant_loyer_hors_charge = NULL WHERE montant_loyer_hors_charge = 0");
+        $this->addSql('UPDATE property SET prix = NULL WHERE prix = 0');
+        $this->addSql('UPDATE property SET montant_loyer_hors_charge = NULL WHERE montant_loyer_hors_charge = 0');
 
         // Année : premier groupe de 4 chiffres, sinon NULL.
         $this->addSql("UPDATE property SET annee_construction = REGEXP_SUBSTR(annee_construction, '[0-9]{4}') WHERE annee_construction IS NOT NULL");

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -55,8 +53,8 @@ final readonly class RegistrationLocaleResolver
 
     /**
      * @param array{language?: mixed, locale?: mixed, timeZone?: mixed} $browserHints
-     *        Indices explicites (endpoint beacon). À défaut, ceux du cookie
-     *        boolts_locale_hints de la requête courante sont utilisés.
+     *                                                                                Indices explicites (endpoint beacon). À défaut, ceux du cookie
+     *                                                                                boolts_locale_hints de la requête courante sont utilisés.
      */
     public function apply(User $user, array $browserHints = []): void
     {
@@ -180,22 +178,22 @@ final readonly class RegistrationLocaleResolver
 
     private function languageFrom(mixed $value): ?string
     {
-        if (!\is_string($value) || '' === trim($value)) {
+        if (!\is_string($value) || '' === mb_trim($value)) {
             return null;
         }
 
-        $language = mb_strtolower(trim(explode('-', str_replace('_', '-', $value))[0]));
+        $language = mb_strtolower(mb_trim(explode('-', str_replace('_', '-', $value))[0]));
 
         return preg_match('/^[a-z]{2,3}$/', $language) ? $language : null;
     }
 
     private function countryFromLocale(mixed $value): ?string
     {
-        if (!\is_string($value) || '' === trim($value)) {
+        if (!\is_string($value) || '' === mb_trim($value)) {
             return null;
         }
 
-        $parts = explode('-', str_replace('_', '-', trim($value)));
+        $parts = explode('-', str_replace('_', '-', mb_trim($value)));
 
         // Le pays n'est fiable que si la locale porte une région (« fr-FR »).
         if (\count($parts) < 2) {
@@ -207,22 +205,22 @@ final readonly class RegistrationLocaleResolver
 
     private function countryCode(mixed $value): ?string
     {
-        if (!\is_string($value) || '' === trim($value)) {
+        if (!\is_string($value) || '' === mb_trim($value)) {
             return null;
         }
 
-        $country = mb_strtoupper(trim($value));
+        $country = mb_strtoupper(mb_trim($value));
 
         return preg_match('/^[A-Z]{2}$/', $country) ? $country : null;
     }
 
     private function timeZoneFrom(mixed $value): ?string
     {
-        if (!\is_string($value) || '' === trim($value)) {
+        if (!\is_string($value) || '' === mb_trim($value)) {
             return null;
         }
 
-        $value = trim($value);
+        $value = mb_trim($value);
 
         return \in_array($value, \DateTimeZone::listIdentifiers(), true) ? $value : null;
     }

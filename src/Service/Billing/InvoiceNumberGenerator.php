@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -47,9 +45,7 @@ final readonly class InvoiceNumberGenerator
         );
 
         if (1 !== $updated) {
-            throw new \RuntimeException(
-                'Séquence de numérotation des factures introuvable (exécutez les migrations).'
-            );
+            throw new \RuntimeException('Séquence de numérotation des factures introuvable (exécutez les migrations).');
         }
 
         $value = (int) $this->connection->fetchOne('SELECT LAST_INSERT_ID()');

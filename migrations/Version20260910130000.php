@@ -1,6 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Copyright(c)2026 Boolts (https://boolts.com)
+ *
+ * Ce fichier fait partie d’un projet développé par Auxioma Web Agency pour l’entreprise Pastelit Co.
+ * Tous droits réservés.
+ *
+ * Ce code source est la propriété exclusive de Auxioma Web Agency et Pastelit Co.
+ * Toute reproduction, modification, distribution ou utilisation sans autorisation préalable est interdite.
+ */
 
 namespace DoctrineMigrations;
 
@@ -101,7 +109,7 @@ final class Version20260910130000 extends AbstractMigration
 
     private function normalize(string $value): string
     {
-        $value = mb_strtolower(trim($value));
+        $value = mb_strtolower(mb_trim($value));
 
         return preg_replace('/\s+/u', ' ', $value) ?? $value;
     }

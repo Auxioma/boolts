@@ -13,7 +13,6 @@
 namespace App\DataFixtures\Authentification\AgenceImmobiliere;
 
 use App\DataFixtures\FixtureEntityHelper;
-
 use App\Entity\Translation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;

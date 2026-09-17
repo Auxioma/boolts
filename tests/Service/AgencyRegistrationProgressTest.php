@@ -12,8 +12,8 @@
 
 namespace App\Tests\Service;
 
-use App\Entity\Pays;
 use App\Entity\HoraireOuverture;
+use App\Entity\Pays;
 use App\Entity\User;
 use App\Service\Authentification\AgencyRegistrationProgress;
 use PHPUnit\Framework\TestCase;
