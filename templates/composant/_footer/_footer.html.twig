@@ -9,37 +9,181 @@
     <div class="container">
         <div class="boolts-footer__box">
             <!-- Desktop + Tablet -->
-            <div class="boolts-footer__desktop d-none d-md-block">
+            <div class="boolts-footer__desktop d-none d-md-block" data-controller="home--property-tabs">
+                <div class="boolts-footer__explore">
+                    <h3 class="boolts-footer__heading">Titre ici</h3>
+
+                    <div class="boolts-footer__tabs">
+                        <button
+                            type="button"
+                            class="boolts-footer__tab"
+                            data-tab-button="localite"
+                            data-home--property-tabs-target="button"
+                            data-action="click->home--property-tabs#select"
+                            data-home--property-tabs-tab-param="localite"
+                        >
+                            Par localité
+                        </button>
+
+                        <button
+                            type="button"
+                            class="boolts-footer__tab active"
+                            data-tab-button="type"
+                            data-home--property-tabs-target="button"
+                            data-action="click->home--property-tabs#select"
+                            data-home--property-tabs-tab-param="type"
+                        >
+                            Par type de bien
+                        </button>
+
+                        <button
+                            type="button"
+                            class="boolts-footer__tab"
+                            data-tab-button="caracteristiques"
+                            data-home--property-tabs-target="button"
+                            data-action="click->home--property-tabs#select"
+                            data-home--property-tabs-tab-param="caracteristiques"
+                        >
+                            Par caractéristiques
+                        </button>
+                    </div>
+
+                    <div class="boolts-footer__tab-panel" data-tab-panel="localite" data-home--property-tabs-target="panel">
+                        <div class="boolts-footer__grid">
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Paris</a></li>
+                                <li><a href="#">Marseille</a></li>
+                                <li><a href="#">Lyon</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Toulouse</a></li>
+                                <li><a href="#">Nice</a></li>
+                                <li><a href="#">Nantes</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Strasbourg</a></li>
+                                <li><a href="#">Montpellier</a></li>
+                                <li><a href="#">Bordeaux</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Lille</a></li>
+                                <li><a href="#">Rennes</a></li>
+                                <li><a href="#">Reims</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Toulon</a></li>
+                                <li><a href="#">Grenoble</a></li>
+                                <li><a href="#">Dijon</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Angers</a></li>
+                                <li><a href="#">Nîmes</a></li>
+                                <li><a href="#">Le Havre</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="boolts-footer__tab-panel active" data-tab-panel="type" data-home--property-tabs-target="panel">
+                        <div class="boolts-footer__grid">
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Appartements à louer</a></li>
+                                <li><a href="#">Appartements à vendre</a></li>
+                                <li><a href="#">Bureaux à vendre</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Fermes à louer</a></li>
+                                <li><a href="#">Fermes à vendre</a></li>
+                                <li><a href="#">Lofts à vendre</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Maisons à louer</a></li>
+                                <li><a href="#">Maisons à vendre</a></li>
+                                <li><a href="#">Parkings à vendre</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Terrains à louer</a></li>
+                                <li><a href="#">Terrains à vendre</a></li>
+                                <li><a href="#">Studios à vendre</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Duplex à vendre</a></li>
+                                <li><a href="#">Villas à vendre</a></li>
+                                <li><a href="#">Locaux commerciaux à louer</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Immeubles à vendre</a></li>
+                                <li><a href="#">Chalets à vendre</a></li>
+                                <li><a href="#">Garages à louer</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="boolts-footer__tab-panel" data-tab-panel="caracteristiques" data-home--property-tabs-target="panel">
+                        <div class="boolts-footer__grid">
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Avec piscine</a></li>
+                                <li><a href="#">Avec jardin</a></li>
+                                <li><a href="#">Avec garage</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Avec ascenseur</a></li>
+                                <li><a href="#">Avec balcon</a></li>
+                                <li><a href="#">Avec terrasse</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Meublé</a></li>
+                                <li><a href="#">Avec parking</a></li>
+                                <li><a href="#">Avec cave</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Neuf</a></li>
+                                <li><a href="#">Avec vue mer</a></li>
+                                <li><a href="#">Avec climatisation</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Avec cheminée</a></li>
+                                <li><a href="#">Rénové</a></li>
+                                <li><a href="#">Avec dressing</a></li>
+                            </ul>
+                            <ul class="boolts-footer__links">
+                                <li><a href="#">Proche transports</a></li>
+                                <li><a href="#">Avec alarme</a></li>
+                                <li><a href="#">Avec vue dégagée</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row g-4 boolts-footer__top">
                     <div class="col-md-3">
                         <div class="boolts-footer__column">
-                            <h4 class="boolts-footer__title">Lorem ipsum</h4>
+                            <h4 class="boolts-footer__title">Entreprise</h4>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Lorem ipsum</a></li>
-                                <li><a href="#">Lorem ipsum</a></li>
-                                <li><a href="#">Lorem ipsum</a></li>
+                                <li><a href="#">Qui sommes-nous ?</a></li>
+                                <li><a href="#">Recrutement</a></li>
+                                <li><a href="#">Espace presse</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="boolts-footer__column">
-                            <h4 class="boolts-footer__title">Lorem ipsum</h4>
+                            <h4 class="boolts-footer__title">Assistance</h4>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Lorem ipsum</a></li>
-                                <li><a href="#">Lorem ipsum</a></li>
-                                <li><a href="#">Lorem ipsum</a></li>
+                                <li><a href="#">Besoin d’aide ?</a></li>
+                                <li><a href="#">Assistance sécurité</a></li>
+                                <li><a href="#">Options d’annulation</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="boolts-footer__column">
-                            <h4 class="boolts-footer__title">Lorem ipsum</h4>
+                            <h4 class="boolts-footer__title">Découvrir</h4>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Lorem ipsum</a></li>
-                                <li><a href="#">Lorem ipsum</a></li>
-                                <li><a href="#">Lorem ipsum</a></li>
+                                <li><a href="#">Toutes les villes</a></li>
+                                <li><a href="#">Tous les départements</a></li>
+                                <li><a href="#">Toutes les régions</a></li>
                             </ul>
                         </div>
                     </div>
@@ -50,17 +194,21 @@
                             <p class="boolts-footer__subtitle">Découvrez l’application</p>
 
                             <div class="boolts-footer__stores">
-                                <a href="#" class="boolts-footer__store-link" aria-label="Télécharger sur l'App Store">
-                                    <img
-                                        src="https://www.figma.com/api/mcp/asset/95c80ac3-6228-436f-b774-57c7d54b6323"
-                                        alt="App Store"
-                                        class="boolts-footer__store-badge"
-                                    >
+                                <a href="#" class="boolts-footer__store-link boolts-footer__store-link--apple" aria-label="Télécharger sur l'App Store">
+                                    <span class="boolts-footer__appstore-logo">
+                                        <img src="{{ asset('images/footer/app-store-apple-logo.svg') }}" alt="" aria-hidden="true">
+                                    </span>
+                                    <span class="boolts-footer__appstore-line1">
+                                        <img src="{{ asset('images/footer/app-store-text-line1.svg') }}" alt="" aria-hidden="true">
+                                    </span>
+                                    <span class="boolts-footer__appstore-line2">
+                                        <img src="{{ asset('images/footer/app-store-text-line2.svg') }}" alt="" aria-hidden="true">
+                                    </span>
                                 </a>
 
                                 <a href="#" class="boolts-footer__store-link" aria-label="Télécharger sur Google Play">
                                     <img
-                                        src="https://www.figma.com/api/mcp/asset/da7056b5-4945-459a-938b-98b1e10f0ee7"
+                                        src="{{ asset('images/footer/google-play-badge.svg') }}"
                                         alt="Google Play"
                                         class="boolts-footer__store-badge"
                                     >
@@ -84,7 +232,7 @@
                                 aria-expanded="true"
                                 aria-controls="footerCollapseOne"
                             >
-                                Lorem ipsum
+                                Par localité
                             </button>
                         </h2>
                         <div
@@ -95,9 +243,24 @@
                         >
                             <div class="accordion-body boolts-footer__accordion-body">
                                 <ul class="boolts-footer__links">
-                                    <li><a href="#">Lorem ipsum</a></li>
-                                    <li><a href="#">Lorem ipsum</a></li>
-                                    <li><a href="#">Lorem ipsum</a></li>
+                                    <li><a href="#">Paris</a></li>
+                                    <li><a href="#">Marseille</a></li>
+                                    <li><a href="#">Lyon</a></li>
+                                    <li><a href="#">Toulouse</a></li>
+                                    <li><a href="#">Nice</a></li>
+                                    <li><a href="#">Nantes</a></li>
+                                    <li><a href="#">Strasbourg</a></li>
+                                    <li><a href="#">Montpellier</a></li>
+                                    <li><a href="#">Bordeaux</a></li>
+                                    <li><a href="#">Lille</a></li>
+                                    <li><a href="#">Rennes</a></li>
+                                    <li><a href="#">Reims</a></li>
+                                    <li><a href="#">Toulon</a></li>
+                                    <li><a href="#">Grenoble</a></li>
+                                    <li><a href="#">Dijon</a></li>
+                                    <li><a href="#">Angers</a></li>
+                                    <li><a href="#">Nîmes</a></li>
+                                    <li><a href="#">Le Havre</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -113,7 +276,7 @@
                                 aria-expanded="false"
                                 aria-controls="footerCollapseTwo"
                             >
-                                Lorem ipsum
+                                Par type de bien
                             </button>
                         </h2>
                         <div
@@ -124,9 +287,24 @@
                         >
                             <div class="accordion-body boolts-footer__accordion-body">
                                 <ul class="boolts-footer__links">
-                                    <li><a href="#">Lorem ipsum</a></li>
-                                    <li><a href="#">Lorem ipsum</a></li>
-                                    <li><a href="#">Lorem ipsum</a></li>
+                                    <li><a href="#">Appartements à louer</a></li>
+                                    <li><a href="#">Appartements à vendre</a></li>
+                                    <li><a href="#">Bureaux à vendre</a></li>
+                                    <li><a href="#">Fermes à louer</a></li>
+                                    <li><a href="#">Fermes à vendre</a></li>
+                                    <li><a href="#">Lofts à vendre</a></li>
+                                    <li><a href="#">Maisons à louer</a></li>
+                                    <li><a href="#">Maisons à vendre</a></li>
+                                    <li><a href="#">Parkings à vendre</a></li>
+                                    <li><a href="#">Terrains à louer</a></li>
+                                    <li><a href="#">Terrains à vendre</a></li>
+                                    <li><a href="#">Studios à vendre</a></li>
+                                    <li><a href="#">Duplex à vendre</a></li>
+                                    <li><a href="#">Villas à vendre</a></li>
+                                    <li><a href="#">Locaux commerciaux à louer</a></li>
+                                    <li><a href="#">Immeubles à vendre</a></li>
+                                    <li><a href="#">Chalets à vendre</a></li>
+                                    <li><a href="#">Garages à louer</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -142,7 +320,7 @@
                                 aria-expanded="false"
                                 aria-controls="footerCollapseThree"
                             >
-                                Lorem ipsum
+                                Par caractéristiques
                             </button>
                         </h2>
                         <div
@@ -153,9 +331,111 @@
                         >
                             <div class="accordion-body boolts-footer__accordion-body">
                                 <ul class="boolts-footer__links">
-                                    <li><a href="#">Lorem ipsum</a></li>
-                                    <li><a href="#">Lorem ipsum</a></li>
-                                    <li><a href="#">Lorem ipsum</a></li>
+                                    <li><a href="#">Avec piscine</a></li>
+                                    <li><a href="#">Avec jardin</a></li>
+                                    <li><a href="#">Avec garage</a></li>
+                                    <li><a href="#">Avec ascenseur</a></li>
+                                    <li><a href="#">Avec balcon</a></li>
+                                    <li><a href="#">Avec terrasse</a></li>
+                                    <li><a href="#">Meublé</a></li>
+                                    <li><a href="#">Avec parking</a></li>
+                                    <li><a href="#">Avec cave</a></li>
+                                    <li><a href="#">Neuf</a></li>
+                                    <li><a href="#">Avec vue mer</a></li>
+                                    <li><a href="#">Avec climatisation</a></li>
+                                    <li><a href="#">Avec cheminée</a></li>
+                                    <li><a href="#">Rénové</a></li>
+                                    <li><a href="#">Avec dressing</a></li>
+                                    <li><a href="#">Proche transports</a></li>
+                                    <li><a href="#">Avec alarme</a></li>
+                                    <li><a href="#">Avec vue dégagée</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item boolts-footer__accordion-item">
+                        <h2 class="accordion-header" id="footerHeadingFour">
+                            <button
+                                class="accordion-button collapsed boolts-footer__accordion-button"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#footerCollapseFour"
+                                aria-expanded="false"
+                                aria-controls="footerCollapseFour"
+                            >
+                                Entreprise
+                            </button>
+                        </h2>
+                        <div
+                            id="footerCollapseFour"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="footerHeadingFour"
+                            data-bs-parent="#booltsFooterAccordion"
+                        >
+                            <div class="accordion-body boolts-footer__accordion-body">
+                                <ul class="boolts-footer__links">
+                                    <li><a href="#">Qui sommes-nous ?</a></li>
+                                    <li><a href="#">Recrutement</a></li>
+                                    <li><a href="#">Espace presse</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item boolts-footer__accordion-item">
+                        <h2 class="accordion-header" id="footerHeadingFive">
+                            <button
+                                class="accordion-button collapsed boolts-footer__accordion-button"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#footerCollapseFive"
+                                aria-expanded="false"
+                                aria-controls="footerCollapseFive"
+                            >
+                                Assistance
+                            </button>
+                        </h2>
+                        <div
+                            id="footerCollapseFive"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="footerHeadingFive"
+                            data-bs-parent="#booltsFooterAccordion"
+                        >
+                            <div class="accordion-body boolts-footer__accordion-body">
+                                <ul class="boolts-footer__links">
+                                    <li><a href="#">Besoin d’aide ?</a></li>
+                                    <li><a href="#">Assistance sécurité</a></li>
+                                    <li><a href="#">Options d’annulation</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item boolts-footer__accordion-item">
+                        <h2 class="accordion-header" id="footerHeadingSix">
+                            <button
+                                class="accordion-button collapsed boolts-footer__accordion-button"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#footerCollapseSix"
+                                aria-expanded="false"
+                                aria-controls="footerCollapseSix"
+                            >
+                                Découvrir
+                            </button>
+                        </h2>
+                        <div
+                            id="footerCollapseSix"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="footerHeadingSix"
+                            data-bs-parent="#booltsFooterAccordion"
+                        >
+                            <div class="accordion-body boolts-footer__accordion-body">
+                                <ul class="boolts-footer__links">
+                                    <li><a href="#">Toutes les villes</a></li>
+                                    <li><a href="#">Tous les départements</a></li>
+                                    <li><a href="#">Toutes les régions</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -167,17 +447,21 @@
                     <p class="boolts-footer__subtitle">Découvrez l’application</p>
 
                     <div class="boolts-footer__stores">
-                        <a href="#" class="boolts-footer__store-link" aria-label="Télécharger sur l'App Store">
-                            <img
-                                src="https://www.figma.com/api/mcp/asset/95c80ac3-6228-436f-b774-57c7d54b6323"
-                                alt="App Store"
-                                class="boolts-footer__store-badge"
-                            >
+                        <a href="#" class="boolts-footer__store-link boolts-footer__store-link--apple" aria-label="Télécharger sur l'App Store">
+                            <span class="boolts-footer__appstore-logo">
+                                <img src="{{ asset('images/footer/app-store-apple-logo.svg') }}" alt="" aria-hidden="true">
+                            </span>
+                            <span class="boolts-footer__appstore-line1">
+                                <img src="{{ asset('images/footer/app-store-text-line1.svg') }}" alt="" aria-hidden="true">
+                            </span>
+                            <span class="boolts-footer__appstore-line2">
+                                <img src="{{ asset('images/footer/app-store-text-line2.svg') }}" alt="" aria-hidden="true">
+                            </span>
                         </a>
 
                         <a href="#" class="boolts-footer__store-link" aria-label="Télécharger sur Google Play">
                             <img
-                                src="https://www.figma.com/api/mcp/asset/da7056b5-4945-459a-938b-98b1e10f0ee7"
+                                src="{{ asset('images/footer/google-play-badge.svg') }}"
                                 alt="Google Play"
                                 class="boolts-footer__store-badge"
                             >
@@ -242,6 +526,72 @@
 
     .boolts-footer__box {
         background: #f8f8f8;
+    }
+
+    .boolts-footer__explore {
+        margin-bottom: 32px;
+    }
+
+    .boolts-footer__heading {
+        margin: 0 0 24px;
+        color: #0b0f14;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 24px;
+        font-family: "Eudoxus Sans", sans-serif;
+    }
+
+    .boolts-footer__tabs {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        border-bottom: 2px solid #ebecec;
+        margin-bottom: 24px;
+    }
+
+    .boolts-footer__tab {
+        appearance: none;
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        padding: 0 0 12px;
+        margin-bottom: -2px;
+        color: #858789;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 20px;
+        font-family: "Eudoxus Sans", sans-serif;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .boolts-footer__tab:hover {
+        color: #0b0f14;
+    }
+
+    .boolts-footer__tab.active {
+        color: #0b0f14;
+        border-bottom-color: #858789;
+    }
+
+    .boolts-footer__tab-panel {
+        display: none;
+    }
+
+    .boolts-footer__tab-panel.active {
+        display: block;
+    }
+
+    .boolts-footer__grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+    }
+
+    .boolts-footer__grid .boolts-footer__links {
+        flex: 1 1 140px;
+        min-width: 140px;
     }
 
     .boolts-footer__top {
@@ -318,6 +668,47 @@
         width: 135px;
         height: 40px;
         object-fit: contain;
+    }
+
+    .boolts-footer__store-link--apple {
+        position: relative;
+        width: 135px;
+        height: 40px;
+        border: 1px solid #858789;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .boolts-footer__store-link--apple span {
+        position: absolute;
+        display: block;
+    }
+
+    .boolts-footer__store-link--apple img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .boolts-footer__appstore-logo {
+        top: 15.54%;
+        left: 9.48%;
+        right: 75.15%;
+        bottom: 20.68%;
+    }
+
+    .boolts-footer__appstore-line1 {
+        top: 45%;
+        left: 31.41%;
+        right: 9.51%;
+        bottom: 11.46%;
+    }
+
+    .boolts-footer__appstore-line2 {
+        top: 16.39%;
+        left: 32.35%;
+        right: 10.22%;
+        bottom: 66.15%;
     }
 
     .boolts-footer__divider {
@@ -463,6 +854,14 @@
         .boolts-footer__meta {
             flex-wrap: wrap;
             gap: 18px;
+        }
+
+        .boolts-footer__grid {
+            gap: 16px;
+        }
+
+        .boolts-footer__grid .boolts-footer__links {
+            flex: 1 1 30%;
         }
     }
 
