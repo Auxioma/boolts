@@ -48,7 +48,7 @@
 
 .topbar-menu .nav-link:hover {
     color: #5D00FF;
-    background: var(--color-link-hover-bg);
+    background: #DFCBFF;
 }
 
 .topbar-btn,

@@ -1320,6 +1320,8 @@ position: absolute;
     margin: 0;
     list-style: none;
     border-radius: 16px;
+    height: 250px;
+  overflow-y: auto;
 }
 
 .home-bt-search-bar__results.is-active {
