@@ -51,13 +51,20 @@
                                         {{ lastSearchSession }}
                                     </h3>
 
-                                    <div class="d-flex align-items-center gap-3">
+                                    <div class="d-flex align-items-center gap-3 w-md-100">
                                         <a href="{{ path('app_public_search_resume') }}" class="btn-full-blue">
                                             Reprendre la recherche
                                         </a>
 
                                         <a href="{{ path('app_public_search_forget') }}" class="btn-full-white">
-                                            Annuler
+                                                <span class="d-md-none">
+        <i data-lucide="x" class="icon-x icone-absolute"></i>
+    </span>
+
+    {# À partir de md #}
+    <span class="d-none d-md-inline-flex align-items-center justify-content-center">
+        Annuler
+    </span>
                                         </a>
                                     </div>
                                 </div>
@@ -248,7 +255,7 @@
     .home-bt-app-image {
         position: absolute;
 
-        top: 22px;
+        top: -60px;
         left: -135px;
 
         width: 595px;
@@ -302,6 +309,25 @@
     /* ==================================================
        TABLETTE
        ================================================== */
+       @media (min-width: 768px) and (max-width: 991px) {
+        
+            .home-bt-app-image {
+top: -57px;
+    left: -158px;
+    width: 523px;
+    height: 522px;
+            }
+        }
+@media (min-width: 991px) and (max-width: 1199.98px) {
+            .home-bt-app-image {
+        top: -57px;
+            left: -44px;
+            width: 505px;
+            height: 485px;
+        }
+}
+
+
 
     @media (min-width: 768px) and (max-width: 1199.98px) {
 
@@ -327,13 +353,6 @@
             inset: 20px;
         }
 
-        .home-bt-app-image {
-            top: 116px;
-            left: -44px;
-
-            width: 334px;
-            height: 298px;
-        }
 
         .home-bt-app .home-bt-text-block {
             max-width: 366px;
@@ -377,11 +396,10 @@
         }
 
         .home-bt-app-image {
-            top: 42px;
-            left: -23px;
-
-            width: 272px;
-            height: 243px;
+top: -21px;
+    left: -23px;
+    width: 416px;
+    height: 360px;
         }
     }
     .home-mobile-reverse {
