@@ -147,6 +147,11 @@ input {
     padding-top: 64px;
 }
 
+.home-bt-hero-shell {
+    position: relative;
+    z-index: 10;
+}
+
 .home-bt-hero {
     position: relative;
     max-width: 100%;

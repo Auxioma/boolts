@@ -3,7 +3,10 @@
 *::after {
     box-sizing: border-box;
 }
-
+::selection {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
 html {
     scroll-behavior: smooth;
 }
