@@ -297,8 +297,11 @@ php bin/console doctrine:migrations:migrate
 Charger les fixtures :
 
 ```bash
-php bin/console doctrine:fixtures:load
+php bin/console doctrine:fixtures:load --append
 ```
+
+> **Important :** utilisez toujours `--append` sur une base contenant déjà des données.
+> Sans cette option, Doctrine purge les tables avant de charger les fixtures.
 
 Recréer complètement la base en développement :
 
@@ -392,7 +395,7 @@ php bin/console about
 php bin/console doctrine:schema:validate
 php bin/console doctrine:migrations:diff
 php bin/console doctrine:migrations:migrate
-php bin/console doctrine:fixtures:load
+php bin/console doctrine:fixtures:load --append
 ```
 
 ### Traductions

@@ -13,6 +13,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Caracteristique;
+use App\Entity\CaracteristiqueTranslation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -98,7 +99,16 @@ class CaracteristiqueFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (self::CARACTERISTIQUES as $data) {
-            $caracteristique = new Caracteristique();
+            $referenceName = $data['translations']['fr'];
+            $translation = $manager->getRepository(CaracteristiqueTranslation::class)->findOneBy([
+                'locale' => 'fr',
+                'nom' => $referenceName,
+            ]);
+            $caracteristique = $translation?->getTranslatable();
+            if (!$caracteristique instanceof Caracteristique) {
+                $caracteristique = new Caracteristique();
+                $manager->persist($caracteristique);
+            }
             $caracteristique->setIcone($data['icone']);
 
             foreach ($data['translations'] as $locale => $nom) {
@@ -106,8 +116,6 @@ class CaracteristiqueFixtures extends Fixture
             }
 
             $caracteristique->mergeNewTranslations();
-
-            $manager->persist($caracteristique);
 
             $this->addReference(
                 self::CARACTERISTIQUE_REFERENCE_PREFIX.$data['reference'],

@@ -12,6 +12,8 @@
 
 namespace App\DataFixtures\Authentification\Visiteurs;
 
+use App\DataFixtures\FixtureEntityHelper;
+
 use App\Entity\Translation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -37,7 +39,10 @@ final class ResetPasswordCheckEmailTranslationFixtures extends Fixture
         foreach ($translations as $locale => $items) {
             foreach ($items as $key => $value) {
                 // 🔒 Optionnel mais PRO : éviter les doublons si tu relances les fixtures
-                $translation = new Translation();
+                $translation = FixtureEntityHelper::findOrCreate($manager, Translation::class, [
+                    'translationKey' => $key,
+                    'locale' => $locale,
+                ]);
                 $translation->setTranslationKey($key);
                 $translation->setLocale($locale);
                 $translation->setTranslation($value);

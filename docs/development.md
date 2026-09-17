@@ -36,10 +36,13 @@ Les migrations se trouvent dans `migrations/`. Les fixtures sont regroupées sou
 
 ```powershell
 php bin/console doctrine:migrations:migrate
-php bin/console doctrine:fixtures:load
+php bin/console doctrine:fixtures:load --append
 ```
 
-La commande de fixtures peut purger la base ciblée : vérifier `DATABASE_URL` avant de l'exécuter. Pour une vérification sans toucher à une base locale existante, pointer temporairement `DATABASE_URL` vers une base SQLite isolée.
+La commande doit être exécutée avec `--append` sur une base existante : sans cette option,
+Doctrine purge la base ciblée avant de charger les fixtures. Vérifier `DATABASE_URL` avant
+de l'exécuter. Pour une vérification sans toucher à une base locale existante, pointer
+temporairement `DATABASE_URL` vers une base SQLite isolée.
 
 ## Fichiers et médias
 
