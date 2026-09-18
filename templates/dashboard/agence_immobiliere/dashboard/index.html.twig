@@ -268,25 +268,27 @@
         {% endfor %}
     </div>
 
-    <button
-        class="btn-full-blue btn-disabled" 
-        type="button"
-        data-documents-continue
-        data-documents-complete="{{ documents_complete ? 'true' : 'false' }}"
-        disabled
-    >
-        Envoyer les documents
-    </button>
+    <div class="d-flex align-items-center justify-content-between w-100">
+        <div class="document-limit-message" data-document-limit-message{% if not documents_submission_limit_reached %} hidden{% endif %}>
+            <p class="p-accent mb-04" style="color:#DC3545">
+                Vous avez atteint la limite de dépôt de document
+            </p>
 
-    <div class="document-limit-message" data-document-limit-message{% if not documents_submission_limit_reached %} hidden{% endif %}>
-        <p class="p-accent">
-            Vous avez atteint la limite de dépôt de document
-        </p>
+            <p style="color:#858789">
+                Pour toute question, contactez le support via l’onglet “aide”.
+            </p>
+        </div>
 
-        <p>
-            Contactez le support pour plus d’informations en cliquant
-            Pour toute question, contactez le support via l’onglet “aide”.
-        </p>
+        <button
+            class="btn-full-blue btn-disabled ms-auto"
+            type="button"
+            data-documents-continue
+            data-documents-complete="{{ documents_complete ? 'true' : 'false' }}"
+            data-submission-limit-reached="{{ documents_submission_limit_reached ? 'true' : 'false' }}"
+            disabled
+        >
+            Envoyer les documents
+        </button>
     </div>
 
 <div
@@ -733,11 +735,11 @@
                             data-dashboard-statistics-url-value="{{ path('agence_immobiliere_dashboard_statistics') }}"
                         >
                             <div class="d-flex align-items-center justify-content-between statistics-header">
-                                <h3 class="dashboard-section-title mb-0">
+                                <h3>
                                     Statistiques
                                 </h3>
 
-                                <div class="d-flex align-items-center statistics-periods">
+                                <div class="d-flex align-items-center statistics-periods d-none d-lg-block">
                                     <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-statistics#selectPeriod">
                                         7 jours
                                     </button>

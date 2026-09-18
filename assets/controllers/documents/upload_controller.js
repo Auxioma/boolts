@@ -13,6 +13,8 @@ export default class extends Controller {
             return;
         }
 
+        this.submissionLimitReached = this.continueButton.dataset.submissionLimitReached === 'true';
+
         this.bindConfirmationLink();
         this.bindForms();
         this.bindContinueButton();
@@ -192,8 +194,12 @@ export default class extends Controller {
                 this.continueButton.remove();
             }
         } catch (error) {
-            if (error.submissionLimitReached && this.documentLimitMessage) {
-                this.documentLimitMessage.hidden = false;
+            if (error.submissionLimitReached) {
+                this.submissionLimitReached = true;
+
+                if (this.documentLimitMessage) {
+                    this.documentLimitMessage.hidden = false;
+                }
             }
         } finally {
             this.continueButton.textContent = 'Continuer';
@@ -270,7 +276,7 @@ export default class extends Controller {
             .filter((form) => form.dataset.requiredDocument === 'true')
             .every((form) => this.isSatisfied(form));
 
-        this.continueButton.disabled = !allRequiredDocumentsSelected;
+        this.continueButton.disabled = !allRequiredDocumentsSelected || this.submissionLimitReached;
     }
 
     isSatisfied(form) {
