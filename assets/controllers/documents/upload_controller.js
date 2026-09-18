@@ -299,11 +299,17 @@ export default class extends Controller {
     setSubmittedFileDisplay(removeFile, fileName, sent = false) {
         const submittedFileName = removeFile.querySelector('[data-submitted-file-name]');
         const sentStatus = removeFile.querySelector('[data-sent-status]');
+        const removeFileIcon = removeFile.querySelector('[data-remove-file-icon]');
+        const displayName = fileName || 'Supprimer';
 
         if (submittedFileName) {
-            submittedFileName.textContent = fileName || 'Supprimer';
+            submittedFileName.textContent = displayName;
         } else {
-            removeFile.textContent = fileName || 'Supprimer';
+            removeFile.textContent = displayName;
+        }
+
+        if (removeFileIcon) {
+            removeFileIcon.hidden = displayName !== 'Supprimer';
         }
 
         if (sentStatus) {

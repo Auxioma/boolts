@@ -113,6 +113,12 @@ input:focus {
     box-shadow: none;
 }
 
+.btn-disabled[disabled] {
+    background: #ebecec !important;
+    color: #9d9fa1;
+    border: none;
+}
+
 .btn-full-blue {
     display: inline-flex;
   align-items: center;
