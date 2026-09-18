@@ -68,7 +68,7 @@ BARRE RECHERCHE / FILTRES / TRI / DÉPÔT
     align-items: center;
     gap: 8px;
     height: 60px;
-    padding: 8px 8px 8px 32px;
+    padding: 8px 8px 8px 24px;
     border: 2px solid #EBECEC;
     border-radius: 70px;
     background: #FFFFFF;
@@ -136,13 +136,10 @@ BARRE RECHERCHE / FILTRES / TRI / DÉPÔT
     outline: none;
     background: transparent;
     color: #0B0F14;
-    font-size: 16px;
-    font-weight: 700;
 }
 
 .agence-mes-biens-list .property-search input::placeholder {
     color: #858789;
-    font-weight: 700;
 }
 
 .agence-mes-biens-list .property-search-submit {
@@ -174,8 +171,6 @@ BARRE RECHERCHE / FILTRES / TRI / DÉPÔT
     border-radius: 50px;
     background: #FFFFFF;
     color: #858789;
-    font-size: 16px;
-    font-weight: 700;
     white-space: nowrap;
     text-decoration: none;
     transition: border-color .2s ease, color .2s ease;
@@ -196,8 +191,6 @@ BARRE RECHERCHE / FILTRES / TRI / DÉPÔT
     border-radius: 50px;
     background: #5D00FF;
     color: #FFFFFF;
-    font-size: 16px;
-    font-weight: 700;
     white-space: nowrap;
     text-decoration: none;
     transition: background .2s ease, border-color .2s ease;

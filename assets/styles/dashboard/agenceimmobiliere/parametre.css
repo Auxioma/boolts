@@ -10,24 +10,14 @@
 }
 .contenue-des-page-des-parametres h3 {
     color: #0B0F14;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 20px;
 }
+
 .contenue-des-page-des-parametres p {
-    color: #858789;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 20px;
+    color: #858789 !important;
 }
+
 .contenue-des-page-des-parametres .btn-buttom-agence {
     color: #0B0F14;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 20px;
 }
 
 
@@ -211,10 +201,6 @@
 
 .profile-public-description {
     color: #858789!important;
-    font-size: 14px!important;
-    font-style: normal!important;
-    font-weight: 500!important;
-    line-height: 20px!important;
 }
 
 .fiche-public p {
@@ -251,11 +237,7 @@
     max-width: 300px;
 }
 .complete-profile p {
-    color: #000;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 20px;
+    color: #858789;
 }
 
 .complete-profile .active {
@@ -347,11 +329,8 @@
 
 .mode-de-paiement-profile {
     color: #0B0F14;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 24px;
 }
+
 .formulaire-profile-public i {
     font-size: 16px;
     position:relative;

@@ -52,9 +52,6 @@
     background: #ffffff;
     border: 2px solid #5d00ff;
     border-radius: 50px;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
     text-decoration: none;
 }
 
@@ -95,9 +92,6 @@
 .dashboard-section-title {
     margin: 0 0 8px;
     color: #0b0f14;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 24px;
 }
 
 .dashboard-section-description {
@@ -117,6 +111,17 @@
 
 .account-country-block {
     width: 46%;
+}
+
+@media (max-width: 767px) {
+    .account-completion-card {
+        display: block;
+    }
+
+    .account-completion-header,
+    .account-country-block {
+        width: 100%;
+    }
 }
 
 .account-country-label {
@@ -441,10 +446,7 @@
 
 .notification-text {
     margin: 0;
-    color: #0b0f14;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
+    color: #858789;
 }
 
 a.notification-text--link {
@@ -472,9 +474,6 @@ a.notification-text--link:hover {
 .notifications-page__title {
     margin: 0;
     color: #0b0f14;
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 34px;
 }
 
 .notifications-page__body {
@@ -568,10 +567,7 @@ a.notification-text--link:hover {
 .notification-card__text {
     flex: 1 1 auto;
     margin: 0;
-    color: #0b0f14;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
+    color: #858789;
 }
 
 .notification-card__date {
@@ -1077,9 +1073,6 @@ a.notification-card__link:hover {
     background: #ffffff;
     border: 2px solid #ebecec;
     border-radius: 50px;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
 }
 
 .properties-filter-button {

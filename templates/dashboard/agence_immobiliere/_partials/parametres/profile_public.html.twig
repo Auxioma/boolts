@@ -8,7 +8,7 @@
 <div class="js-tab-content px-48 pb-92 contenue-des-page-des-parametres" id="cat1">
     <div class="row">
         <div class="col-10 mx-auto">
-            <h2 class="mb-0">Fiche agence</h2>
+            <h3 class="mb-0">Fiche agence</h3>
 
             {% set hasOpeningHours = false %}
             {% for horaire in app.user.horaireOuvertures %}
@@ -199,7 +199,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-12 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="mb-0">Adresse de l’agence*</h3>
+                                <h3 class="p-accent mb-0">Adresse de l’agence</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="adresse-contact-value">
                                     {% if app.user and app.user.adresseContact %}
@@ -302,7 +302,7 @@
 
                                 <div class="d-flex justify-content-between align-items-start w-100">
                                     <div>
-                                        <h3 class="mb-0">Numéro de téléphone</h3>
+                                        <h3 class="p-accent mb-0">Numéro de téléphone</h3>
 
                                         <p class="mt-12 mb-0 js-field-value" id="numero-contact-value">
                                             {{ app.user.numeroContact ?? 'Définissez un numéro de contact' }}
@@ -372,7 +372,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="mb-0">Adresse e-mail</h3>
+                                <h3 class="p-accent mb-0">Adresse e-mail</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="email-contact-value">
                                     {{ app.user.emailContact ?? 'Définissez une adresse e-mail de contact' }}
@@ -397,7 +397,7 @@
                     <div class="js-editable-field formulaire mt-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="mb-0">Langues parlées par l’agence*</h3>
+                                <h3 class="p-accent mb-0">Langues parlées par l’agence</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="langues-parlees-value">
                                     {% if app.user.langueParlers is not empty %}
@@ -561,7 +561,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20">
                             <div class="w-100">
-                                <h3 class="mb-12">Horaires</h3>
+                                <h3 class="p-accent mb-12">Horaires</h3>
 
                                 {% set openingDays = [
                                     {key: 'lundi', label: 'Lundi'},

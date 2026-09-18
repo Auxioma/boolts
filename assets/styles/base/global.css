@@ -104,7 +104,7 @@ input {
     );
     background: #FFFFFF;
     border-radius: var(--radius-full);
-    font-weight: 600;
+    font-weight: 500;
 }
 
 input:focus {
