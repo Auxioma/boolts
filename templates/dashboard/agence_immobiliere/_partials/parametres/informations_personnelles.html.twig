@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-10 mx-auto">
 
-            <h2 class="mb-0">Informations personnelles</h2>
+            <h3 class="mb-0">Informations personnelles</h3>
 
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
@@ -30,7 +30,7 @@
                     <div class="js-editable-field formulaire">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="mb-0">Prénom*</h3>
+                                <h3 class="p-accent mb-0">Prénom</h3>
                                 <p class="mt-12 mb-0 js-field-value" id="prenom-value">
                                     {{ app.user.prenom ?? '***' }}
                                 </p>
@@ -45,7 +45,7 @@
                             </div>
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
+                                class="p-accent btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button"
                                 data-action="click->field-save#handle"
                                 data-field-save-field-param="prenom"
                                 data-field-save-input-param="#{{ form.prenom.vars.id }}"
@@ -60,7 +60,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="mb-0">Nom*</h3>
+                                <h3 class="p-accent mb-0">Nom</h3>
                                 <p class="mt-12 mb-0 js-field-value" id="nom-value">
                                     {{ app.user.nom ?? '***' }}
                                 </p>
@@ -86,11 +86,11 @@
                         </div>
                     </div>
 
-                    {# E-mail* #}
+                    {# E-mail #}
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="mb-0">E-mail*</h3>
+                                <h3 class="p-accent mb-0">E-mail</h3>
                                 <p class="mt-12 mb-0 js-field-value" id="email-value">
                                     {{ app.user.email ?? '***' }}
                                 </p>
@@ -123,7 +123,7 @@
                     >
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="mb-0">Numéro de téléphone*</h3>
+                                <h3 class="p-accent mb-0">Numéro de téléphone</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="telephone-value">
                                     {{ app.user.telephone ?? '06 22 64 04 78' }}
@@ -156,7 +156,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="w-100">
-                                <h3 class="mb-0">Adresse*</h3>
+                                <h3 class="p-accent mb-0">Adresse</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="adresse-value">
                                     {% if app.user and app.user.adresse %}

@@ -31,7 +31,7 @@
                                =================================================== #}
                             <div class="mes-biens-header mb-24">
 
-                                <h1>Mes biens</h1>
+                                <h2>Mes biens</h2>
 
                                 <div class="mes-biens-badges">
 
@@ -132,11 +132,11 @@
 
                                 <button
                                     type="button"
-                                    class="btn-dashboard-filter"
+                                    class="p-accent btn-dashboard-filter"
                                     data-bs-toggle="modal"
                                     data-bs-target="#booltsFiltersModal"
                                 >
-                                    <i class="icon-filter"></i>
+                                    <i class="icon-sliders-horizontal"></i>
                                     Filtres
                                 </button>
 
@@ -166,7 +166,7 @@
 
                                     <button
                                         type="button"
-                                        class="btn-dashboard-filter"
+                                        class="p-accent btn-dashboard-filter"
                                         data-action="click->agence-sort#toggle"
                                         data-agence-sort-target="button"
                                         aria-expanded="false"
@@ -196,7 +196,7 @@
 
                                 <a
                                     href="{{ path('agence_immobiliere_mes_biens', {token: random(2147483647)}) }}"
-                                    class="btn-deposer-annonce"
+                                    class="p-accent btn-deposer-annonce"
                                 >
                                     <i class="icon-plus"></i>
                                     Déposer une annonce

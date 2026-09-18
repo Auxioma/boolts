@@ -95,7 +95,7 @@
 
     <button
         type="button"
-        class="btn-full-white w-25 align-self-end"
+        class="p-accent btn-full-white w-25 align-self-end"
         data-action="dashboard-account-completion#continue"
     >
         Continuer
@@ -163,7 +163,7 @@
         {% set documentRejectionReason = submitted_document_rejection_reasons[requiredDocument.id]|default(null) %}
         <div class="finish-setup__document">
             <div class="finish-setup__document-content">
-                <h3 class="finish-setup__document-title">
+                <h3 class="p-accent">
                     {{ requiredDocument.name }}
                 </h3>
 
@@ -515,7 +515,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    gap: 15px;
+    gap: 4px;
 
     min-width: 0;
 }
@@ -523,36 +523,29 @@
 .finish-setup__document-title {
     width: 100%;
     margin: 0;
-
     color: var(--finish-black);
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    letter-spacing: 0;
 }
 
 .finish-setup__document-description {
     width: 100%;
     margin: 0;
-
     color: var(--finish-grey);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    letter-spacing: 0;
 }
 
 .finish-setup__formats {
     flex: 0 0 auto;
     margin: 0;
-
     color: var(--finish-grey);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    letter-spacing: 0;
-    white-space: nowrap;
+    width: 24%;
+    overflow-wrap: anywhere;
 }
+
+@media (max-width: 767px) {
+    .finish-setup__formats {
+        width: 100%;
+    }
+}
+
 
 .finish-setup__upload {
     position: relative;
@@ -704,10 +697,6 @@
         gap: 16px;
     }
 
-    .finish-setup__formats {
-        white-space: normal;
-    }
-
     .finish-setup__upload,
     .finish-setup__submit {
         width: 100%;
@@ -722,9 +711,9 @@
                             data-dashboard-statistics-url-value="{{ path('agence_immobiliere_dashboard_statistics') }}"
                         >
                             <div class="d-flex align-items-center justify-content-between statistics-header">
-                                <h2 class="dashboard-section-title mb-0">
+                                <h3 class="dashboard-section-title mb-0">
                                     Statistiques
-                                </h2>
+                                </h3>
 
                                 <div class="d-flex align-items-center statistics-periods">
                                     <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-statistics#selectPeriod">
@@ -889,9 +878,9 @@
 
                         {# Notifications #}
                         <section class="dashboard-card notifications-card">
-                            <h2 class="dashboard-section-title">
+                            <h3 class="dashboard-section-title">
                                 Notifications
-                            </h2>
+                            </h3>
 
                             <div class="notifications-list">
 
@@ -922,7 +911,7 @@
 
                             </div>
 
-                            <a href="{{ path('agence_immobiliere_notifications') }}" class="btn notifications-more-button">
+                            <a href="{{ path('agence_immobiliere_notifications') }}" class="p-accent btn notifications-more-button">
                                 Voir plus
                             </a>
                         </section>
@@ -935,9 +924,9 @@
                             data-action="click@window->dashboard-property-performance#closeSortMenuOnOutsideClick keydown.esc@window->dashboard-property-performance#closeSortMenu dashboard-period-changed@window->dashboard-property-performance#syncPeriod"
                         >
                             <div class="properties-performance-header">
-                                <h2 class="dashboard-section-title">
+                                <h3 class="dashboard-section-title">
                                     Performances des annonces
-                                </h2>
+                                </h3>
 
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center statistics-periods">
@@ -977,17 +966,17 @@
                                     <div class="d-flex align-items-center properties-actions">
                                         <button
                                             type="button"
-                                            class="btn properties-action-button properties-filter-button"
+                                            class="p-accent btn properties-action-button properties-filter-button"
                                         >
                                             <span class="properties-filter-count">2</span>
                                             <i class="icon-sliders-horizontal"></i>
                                             Filtres
                                         </button>
 
-                                        <div class="properties-sort">
+                                        <div class="p-accent properties-sort">
                                             <button
                                                 type="button"
-                                                class="btn properties-action-button"
+                                                class="p-accent btn properties-action-button"
                                                 data-action="dashboard-property-performance#toggleSortMenu"
                                                 data-dashboard-property-performance-target="sortButton"
                                                 aria-haspopup="listbox"
@@ -1081,7 +1070,7 @@
 
                                         <a
                                             href="{{ path('agence_immobiliere_dashboard_properties_export') }}"
-                                            class="btn properties-action-button"
+                                            class="p-accent btn properties-action-button"
                                         >
                                             <i class="icon-download"></i>
                                             Exporter

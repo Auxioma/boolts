@@ -51,10 +51,32 @@
     border-radius: 10px;
     background: #EBECEC;
 }
+
+.mt-8.px-10.py-10.deconnection {
+    display: flex;
+}
+
+.mt-8.px-10.py-10.deconnection > a.menu-dashboard-title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
 .color-active:has(.menu-dashboard-title.active) {
     border-radius: 10px;
     background: #EBECEC;
 }
+
+.px-10.py-10.color-active {
+    position: relative;
+}
+
+.px-10.py-10.color-active > a.menu-dashboard-title {
+    inset: 0;
+    display: flex;
+    align-items: center;
+}
+
 .color-active:hover,
 .color-active:hover span
 {
