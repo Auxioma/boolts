@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Copyright(c)2026 Boolts (https://boolts.com)
  *
@@ -1201,7 +1199,7 @@ class PropertyRepository extends ServiceEntityRepository
                 $updatedAtA = $a->getUpdatedAt() ?? \DateTimeImmutable::createFromFormat('U', '0');
                 $updatedAtB = $b->getUpdatedAt() ?? \DateTimeImmutable::createFromFormat('U', '0');
 
-                if ($updatedAtA != $updatedAtB) {
+                if ($updatedAtA !== $updatedAtB) {
                     return $updatedAtB <=> $updatedAtA;
                 }
 

@@ -13,6 +13,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\CategoryBien;
+use App\Entity\CategoryBienTranslation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -95,7 +96,18 @@ class CategoryBienFixtures extends Fixture
         ];
 
         foreach ($categories as $categoryData) {
-            $category = new CategoryBien();
+            $referenceSlug = mb_strtolower(
+                $this->slugger->slug($categoryData['translations']['fr'])->toString()
+            );
+            $translation = $manager->getRepository(CategoryBienTranslation::class)->findOneBy([
+                'locale' => 'fr',
+                'slug' => $referenceSlug,
+            ]);
+            $category = $translation?->getTranslatable();
+            if (!$category instanceof CategoryBien) {
+                $category = new CategoryBien();
+                $manager->persist($category);
+            }
             $category->setIcone($categoryData['icone']);
 
             foreach ($categoryData['translations'] as $locale => $name) {
@@ -108,12 +120,6 @@ class CategoryBienFixtures extends Fixture
             }
 
             $category->mergeNewTranslations();
-
-            $manager->persist($category);
-
-            $referenceSlug = mb_strtolower(
-                $this->slugger->slug($categoryData['translations']['fr'])->toString()
-            );
 
             $this->addReference(
                 self::CATEGORY_BIEN_REFERENCE_PREFIX.$referenceSlug,

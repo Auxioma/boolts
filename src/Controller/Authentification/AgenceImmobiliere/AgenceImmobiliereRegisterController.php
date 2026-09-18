@@ -46,8 +46,7 @@ final class AgenceImmobiliereRegisterController extends AbstractController
         EntityManagerInterface $em,
         EmailVerificationService $emailVerificationService,
         AgencyRegistrationProgress $agencyRegistrationProgress,
-    ): Response
-    {
+    ): Response {
         /* si utilisateur deja en session, je redirige vers l'admin visiteur */
         if ($this->getUser()) {
             return $this->redirectToRoute('app_home');

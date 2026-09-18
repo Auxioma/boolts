@@ -39,7 +39,10 @@ final class BoosterPackPriceFixtures extends Fixture implements DependentFixture
                 BoosterPack::class,
             );
 
-            $price = new BoosterPackPrice();
+            $price = FixtureEntityHelper::findOrCreate($manager, BoosterPackPrice::class, [
+                'boosterPack' => $pack,
+                'currency' => $currency,
+            ]);
             $price
                 ->setBoosterPack($pack)
                 ->setCurrency($currency)

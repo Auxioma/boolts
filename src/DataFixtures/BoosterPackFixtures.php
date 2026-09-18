@@ -23,7 +23,9 @@ final class BoosterPackFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (BillingFixtureData::BOOSTER_PACKS as $data) {
-            $pack = new BoosterPack();
+            $pack = FixtureEntityHelper::findOrCreate($manager, BoosterPack::class, [
+                'code' => $data['code'],
+            ]);
             $pack
                 ->setCode($data['code'])
                 ->setName($data['name'])

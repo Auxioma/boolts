@@ -12,12 +12,16 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Devise;
+use App\Entity\FuseauHoraire;
+use App\Entity\Langues;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserFixtures extends Fixture
+class UserFixtures extends Fixture implements DependentFixtureInterface
 {
     public const USER_ADMIN_REFERENCE = 'user_admin';
     public const USER_AGENCE_REFERENCE_PREFIX = 'user_agence_';
@@ -30,11 +34,30 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
+        $defaultLanguage = $this->getReference(
+            LanguesFixtures::LANGUES_REFERENCE_PREFIX.'fr',
+            Langues::class,
+        );
+        $defaultCurrency = $manager->getRepository(Devise::class)->findOneBy([
+            'nom' => 'euro (EUR)',
+        ]);
+
+        if (!$defaultCurrency instanceof Devise) {
+            throw new \RuntimeException('La devise EUR doit être chargée avant les utilisateurs.');
+        }
+        $defaultTimeZone = $this->getReference(
+            FuseauHoraireFixtures::FUSEAU_HORAIRE_REFERENCE_PREFIX.'Europe/Paris',
+            FuseauHoraire::class,
+        );
+
         $admin = $this->createUser(
             $manager,
             'auxioma.g@gmail.com',
             'Ogdo7251+Ogdo+',
             ['ROLE_ADMIN'],
+            $defaultLanguage,
+            $defaultCurrency,
+            $defaultTimeZone,
         );
         $this->addReference(self::USER_ADMIN_REFERENCE, $admin);
 
@@ -44,6 +67,9 @@ class UserFixtures extends Fixture
                 \sprintf('agence%02d@auxioma.eu', $i),
                 'Boolts+0000',
                 ['ROLE_AGENCE'],
+                $defaultLanguage,
+                $defaultCurrency,
+                $defaultTimeZone,
             );
             $this->addReference(self::USER_AGENCE_REFERENCE_PREFIX.$i, $agency);
         }
@@ -59,16 +85,33 @@ class UserFixtures extends Fixture
         string $email,
         string $password,
         array $roles,
+        Langues $defaultLanguage,
+        Devise $defaultCurrency,
+        FuseauHoraire $defaultTimeZone,
     ): User {
-        $user = new User();
+        $user = FixtureEntityHelper::findOrCreate($manager, User::class, [
+            'email' => $email,
+        ]);
         $user
             ->setEmail($email)
             ->setRoles($roles)
-            ->setIsVerified(true);
+            ->setIsVerified(true)
+            ->setLangues($defaultLanguage)
+            ->setDevise($defaultCurrency)
+            ->setFuseauHoraire($defaultTimeZone);
         $user->setPassword($this->passwordHasher->hashPassword($user, $password));
 
         $manager->persist($user);
 
         return $user;
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            LanguesFixtures::class,
+            PaysFixtures::class,
+            FuseauHoraireFixtures::class,
+        ];
     }
 }

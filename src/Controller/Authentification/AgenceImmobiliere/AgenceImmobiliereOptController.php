@@ -46,8 +46,7 @@ final class AgenceImmobiliereOptController extends AbstractController
         EntityManagerInterface $em,
         EmailVerificationService $emailVerificationService,
         AgencyRegistrationProgress $agencyRegistrationProgress,
-    ): Response
-    {
+    ): Response {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_professionnelle_register');
         }

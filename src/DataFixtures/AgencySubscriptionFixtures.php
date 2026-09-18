@@ -37,7 +37,10 @@ final class AgencySubscriptionFixtures extends Fixture implements DependentFixtu
         for ($i = 1; $i <= UserFixtures::AGENCY_COUNT; ++$i) {
             $agency = $this->getReference(UserFixtures::USER_AGENCE_REFERENCE_PREFIX.$i, User::class);
 
-            $subscription = (new AgencySubscription())
+            $subscription = FixtureEntityHelper::findOrCreate($manager, AgencySubscription::class, [
+                'agency' => $agency,
+            ]);
+            $subscription
                 ->setAgency($agency)
                 ->setPlan($plan)
                 ->setPlanPrice($planPrice)

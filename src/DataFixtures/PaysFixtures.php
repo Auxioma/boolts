@@ -116,7 +116,9 @@ class PaysFixtures extends Fixture
         $devises = [];
 
         foreach (array_unique(array_values(self::COUNTRY_CURRENCY)) as $currencyCode) {
-            $devise = new Devise();
+            $devise = FixtureEntityHelper::findOrCreate($manager, Devise::class, [
+                'nom' => Currencies::getName($currencyCode, 'fr').' ('.$currencyCode.')',
+            ]);
 
             $devise
                 ->setNom(Currencies::getName($currencyCode, 'fr').' ('.$currencyCode.')')
@@ -130,7 +132,9 @@ class PaysFixtures extends Fixture
         $countries = Countries::getNames('fr');
 
         foreach (self::COUNTRY_CURRENCY as $countryCode => $currencyCode) {
-            $pays = new Pays();
+            $pays = FixtureEntityHelper::findOrCreate($manager, Pays::class, [
+                'iso' => $countryCode,
+            ]);
 
             $pays
                 ->setNom($countries[$countryCode] ?? $countryCode)

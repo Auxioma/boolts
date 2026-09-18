@@ -98,7 +98,9 @@ final class RequiredDocumentFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (self::DOCUMENTS as $data) {
-            $document = new RequiredDocument();
+            $document = FixtureEntityHelper::findOrCreate($manager, RequiredDocument::class, [
+                'name' => $data['name'],
+            ]);
             $document
                 ->setName($data['name'])
                 ->setDescription($data['description'])

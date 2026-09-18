@@ -38,7 +38,9 @@ class LanguesFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (self::LANGUAGES as $iso => $name) {
-            $langue = new Langues();
+            $langue = FixtureEntityHelper::findOrCreate($manager, Langues::class, [
+                'iso' => $iso,
+            ]);
 
             $langue
                 ->setIso($iso)

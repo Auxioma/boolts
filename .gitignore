@@ -34,3 +34,7 @@ phpstan.neon
 
 /public/properties
 /public/uploads
+!/public/properties/
+/public/properties/*
+!/public/properties/fixtures/
+!/public/properties/fixtures/*.jpg

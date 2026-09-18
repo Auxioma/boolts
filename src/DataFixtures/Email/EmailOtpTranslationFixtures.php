@@ -12,6 +12,7 @@
 
 namespace App\DataFixtures\Email;
 
+use App\DataFixtures\FixtureEntityHelper;
 use App\Entity\Translation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -55,7 +56,10 @@ final class EmailOtpTranslationFixtures extends Fixture
 
         foreach ($translations as $locale => $items) {
             foreach ($items as $key => $value) {
-                $translation = new Translation();
+                $translation = FixtureEntityHelper::findOrCreate($manager, Translation::class, [
+                    'translationKey' => $key,
+                    'locale' => $locale,
+                ]);
                 $translation->setTranslationKey($key);
                 $translation->setLocale($locale);
                 $translation->setTranslation($value);

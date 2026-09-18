@@ -26,7 +26,9 @@ final class SubscriptionPlanFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (BillingFixtureData::SUBSCRIPTION_PLANS as $data) {
-            $plan = new SubscriptionPlan();
+            $plan = FixtureEntityHelper::findOrCreate($manager, SubscriptionPlan::class, [
+                'code' => $data['code'],
+            ]);
             $plan
                 ->setCode($data['code'])
                 ->setName($data['name'])

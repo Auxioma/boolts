@@ -82,8 +82,12 @@
                     <ul>
                         <li>Le CSV ne contient <strong>aucun ID</strong>. Chaque ligne crée un nouveau bien.</li>
                         <li>
-                            <strong>Agence</strong> : colonne <code>agence_email</code> (ou <code>agence_nom</code>).
-                            L’utilisateur doit exister et avoir le rôle agence.
+                            Le modèle téléchargé contient une ligne <strong>exemple</strong> marquée par <code>#</code> :
+                            elle est ignorée automatiquement, mais doit être remplacée par vos données réelles.
+                        </li>
+                        <li>
+                            <strong>Utilisateur</strong> : colonne <code>agence_email</code> uniquement.
+                            L’utilisateur doit exister avec cette adresse e-mail et avoir le rôle agence.
                         </li>
                         <li>
                             <strong>Type de bien / transaction / caractéristiques / statut</strong> : renseignés
@@ -101,6 +105,11 @@
                             <strong>Multilingue</strong> : colonnes traduisibles suffixées par la langue
                             (<code>titre_fr</code>, <code>titre_en</code>…). Si une langue manque pour un champ,
                             la valeur de la langue renseignée est utilisée par défaut.
+                        </li>
+                        <li>
+                            <strong>Relations</strong> : les types et caractéristiques sont rapprochés par libellé,
+                            slug ou identifiant ; <code>images</code> contient les URL des images, séparées par <code>|</code>.
+                            Les collections d’historique <code>favoris</code> et <code>propertyViews</code> ne sont pas importées.
                         </li>
                         <li>
                             <strong>Caractéristiques</strong> et <strong>images</strong> : plusieurs valeurs

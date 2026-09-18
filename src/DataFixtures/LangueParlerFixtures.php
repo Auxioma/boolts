@@ -38,7 +38,9 @@ class LangueParlerFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (self::LANGUAGES as $code => $name) {
-            $langueParler = new LangueParler();
+            $langueParler = FixtureEntityHelper::findOrCreate($manager, LangueParler::class, [
+                'code' => $code,
+            ]);
 
             $langueParler
                 ->setCode($code)

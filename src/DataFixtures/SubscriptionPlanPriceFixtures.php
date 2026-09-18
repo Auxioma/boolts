@@ -43,7 +43,11 @@ final class SubscriptionPlanPriceFixtures extends Fixture implements DependentFi
                 SubscriptionPlan::class,
             );
 
-            $price = new SubscriptionPlanPrice();
+            $price = FixtureEntityHelper::findOrCreate($manager, SubscriptionPlanPrice::class, [
+                'plan' => $plan,
+                'currency' => $currency,
+                'billingPeriod' => SubscriptionBillingPeriod::from($data['billingPeriod']),
+            ]);
             $price
                 ->setPlan($plan)
                 ->setCurrency($currency)

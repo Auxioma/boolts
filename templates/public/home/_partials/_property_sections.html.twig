@@ -9,7 +9,7 @@
                 <div class="container-md home-bt-container">
                     <div class="home-bt-search-header">
                         <h2 class="mb-16">
-                            Explorez toutes les propriétés
+                            {{ 'home.listings.title'|trans }}
                         </h2>
 
                         <div class="home-bt-main-tabs">
@@ -21,7 +21,7 @@
                                 data-action="click->home--property-tabs#select"
                                 data-home--property-tabs-tab-param="location"
                             >
-                                En location
+                                {{ 'home.listings.rent'|trans }}
                             </button>
 
                             <button
@@ -32,7 +32,7 @@
                                 data-action="click->home--property-tabs#select"
                                 data-home--property-tabs-tab-param="vente"
                             >
-                                En vente
+                                {{ 'home.listings.sale'|trans }}
                             </button>
                         </div>
                     </div>
@@ -49,20 +49,20 @@
                             active: true,
                             sections: [
                             {
-                                title: 'Biens à la',
-                                highlight: 'Une',
+                                title: 'home.listings.featured.title',
+                                highlight: 'home.listings.featured.highlight',
                                 featured: true,
                                 emptyText: '',
                                 items: aLaUneLocation|default([]),
                             },
                             {
-                                title: 'Logements populaires à louer',
-                                emptyText: 'Aucun logement populaire en location pour le moment.',
+                                title: 'home.listings.rent.popular.title',
+                                emptyText: 'home.listings.rent.popular.empty',
                                 items: logementPopulaireLocation|default([]),
                             },
                             {
-                                title: 'Logements récemment ajoutés à louer',
-                                emptyText: 'Aucun logement récemment ajouté en location pour le moment.',
+                                title: 'home.listings.rent.recent.title',
+                                emptyText: 'home.listings.rent.recent.empty',
                                 items: logementAjouterRecementLocation|default([]),
                             },
                         ],
@@ -72,20 +72,20 @@
                             active: false,
                             sections: [
                             {
-                                title: 'Biens à la',
-                                highlight: 'Une',
+                                title: 'home.listings.featured.title',
+                                highlight: 'home.listings.featured.highlight',
                                 featured: true,
                                 emptyText: '',
                                 items: aLaUneVente|default([]),
                             },
                             {
-                                title: 'Biens populaires à acheter',
-                                emptyText: 'Aucun bien populaire à acheter pour le moment.',
+                                title: 'home.listings.sale.popular.title',
+                                emptyText: 'home.listings.sale.popular.empty',
                                 items: logementPopulaireVente|default([]),
                             },
                             {
-                                title: 'Biens récemment ajoutés à acheter',
-                                emptyText: 'Aucun bien récemment ajouté à acheter pour le moment.',
+                                title: 'home.listings.sale.recent.title',
+                                emptyText: 'home.listings.sale.recent.empty',
                                 items: logementAjouterRecementVente|default([]),
                             },
                         ],
@@ -114,10 +114,10 @@
                                                 {% endif %}
 
                                                 <span class="bt-section-title-text">
-                                                    {{ section.title|raw }}
+                                                    {{ section.title|trans }}
                                                         {% if section.highlight is defined %}
                                                             <span class="bt-section-title-accent">
-                                                            {{ section.highlight }}<i class="ml-4 icon-chevron-right" aria-hidden="true"></i>
+                                                            {{ section.highlight|trans }}<i class="ml-4 icon-chevron-right" aria-hidden="true"></i>
                                                         </span>
                                                     {% endif %}
                                                 </span>
@@ -129,7 +129,7 @@
                                                     <button
                                                         class="bt-icon-btn bt-icon-btn--small bt-icon-btn--prev"
                                                         type="button"
-                                                        aria-label="Précédent"
+                                                        aria-label="{{ 'home.listings.previous'|trans }}"
                                                         data-splide-target="previous"
                                                         data-action="click->splide#previous"
                                                     >
@@ -139,7 +139,7 @@
                                                     <button
                                                         class="bt-icon-btn bt-icon-btn--small"
                                                         type="button"
-                                                        aria-label="Suivant"
+                                                        aria-label="{{ 'home.listings.next'|trans }}"
                                                         data-splide-target="next"
                                                         data-action="click->splide#next"
                                                     >
@@ -153,7 +153,7 @@
                                             <div
                                                 class="splide bt-related-slider"
                                                 data-splide-target="slider"
-                                                aria-label="{{ section.title }}"
+                                                aria-label="{{ section.title|trans }}"
                                             >
                                                 <div class="splide__track">
                                                     <ul class="splide__list">
@@ -192,8 +192,8 @@
                                                                 {% set propertyTitle = typeBienName %}
                                                             {% else %}
                                                                 {% set propertyTitle = transactionLabel is not empty
-                                                                    ? 'Bien à ' ~ transactionLabel
-                                                                    : 'Bien immobilier'
+                                                                    ? ('home.property.fallback.rent'|trans) ~ ' ' ~ transactionLabel
+                                                                    : 'home.property.fallback.default'|trans
                                                                 %}
                                                             {% endif %}
 
@@ -231,20 +231,20 @@
                                                                 : ''
                                                             %}
 
-                                                            {% set propertyPeriod = isLocation ? '/mois' : '' %}
-                                                            {% set propertyBadge = isLocation and montantCharges > 0 ? 'C. Comprises' : '' %}
+                                                            {% set propertyPeriod = isLocation ? 'home.property.period'|trans : '' %}
+                                                            {% set propertyBadge = isLocation and montantCharges > 0 ? 'home.property.charges_included'|trans : '' %}
 
                                                             {% set details = [] %}
 
                                                             {% if bienImmobilier.chambres is not empty %}
                                                                 {% set details = details|merge([
-                                                                    bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                                                                    bienImmobilier.chambres ~ ' ' ~ ('home.property.room'|trans) ~ (bienImmobilier.chambres > 1 ? 's' : ''),
                                                                 ]) %}
                                                             {% endif %}
 
                                                             {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
                                                                 {% set details = details|merge([
-                                                                    bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                                                                    bienImmobilier.salleDeBains ~ ' ' ~ ('home.property.bathroom'|trans),
                                                                 ]) %}
                                                             {% endif %}
 
@@ -300,7 +300,7 @@
                                             </div>
                                         {% else %}
                                             <p class="text-muted mb-0">
-                                                {{ section.emptyText }}
+                                                {{ section.emptyText|trans }}
                                             </p>
                                         {% endif %}
                                     </section>

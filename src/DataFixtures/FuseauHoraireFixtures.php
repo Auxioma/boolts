@@ -59,7 +59,9 @@ class FuseauHoraireFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         foreach (self::TIMEZONES as $timezone => $utc) {
-            $fuseauHoraire = new FuseauHoraire();
+            $fuseauHoraire = FixtureEntityHelper::findOrCreate($manager, FuseauHoraire::class, [
+                'nom' => $timezone,
+            ]);
 
             $fuseauHoraire
                 ->setNom($timezone)
