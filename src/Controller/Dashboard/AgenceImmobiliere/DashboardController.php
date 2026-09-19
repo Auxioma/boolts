@@ -980,7 +980,7 @@ final class DashboardController extends AbstractController
                 'duration' => 700,
                 'easing' => 'easeOutQuart',
             ],
-            'plugins' => ['legend' => ['display' => true]],
+            'plugins' => ['legend' => ['display' => false]],
             'scales' => ['y' => ['beginAtZero' => true]],
         ]);
 

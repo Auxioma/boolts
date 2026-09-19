@@ -286,8 +286,7 @@
 
 .statistics-chart-content {
     position: relative;
-    width: calc(100% - 72px);
-    height: 270px;
+    width: 100%;
 }
 
 .statistics-series-toggle {
