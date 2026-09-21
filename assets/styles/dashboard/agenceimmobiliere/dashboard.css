@@ -61,16 +61,17 @@
 
 .dashboard-boost-button:hover,
 .dashboard-boost-button:focus {
-    background: transparent !important;
-    color: #5d00ff!important;
+    box-shadow: 0 4px 23.6px 0 rgba(93, 0, 255, 0.10);
+    border: 2px solid #5d00ff;
+    color: #5d00ff;
 }
 
 .dashboard-boost-button:hover,
 .notifications-more-button:hover,
 .property-boost-button:hover {
-    color: #ffffff;
-    background: #5d00ff;
-    border-color: #5d00ff;
+    box-shadow: 0 4px 23.6px 0 rgba(93, 0, 255, 0.10);
+    border: 2px solid #5d00ff;
+    color: #5d00ff;
 }
 
 .dashboard-card {
@@ -1131,6 +1132,14 @@ a.notification-card__link:hover {
     border-radius: 50px;
 }
 
+.properties-action-button:hover,
+.properties-action-button:focus,
+.properties-action-button:hover,
+.properties-action-button:focus {
+    color: #5d00ff;
+    border-color: #5d00ff;
+}
+
 .properties-filter-button {
     color: #ffffff;
     background: #5d00ff;
@@ -1349,6 +1358,60 @@ a.notification-card__link:hover {
     height: 44px;
 }
 
+@media (max-width: 991.98px) {
+    .property-item {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .property-main {
+        flex: 0 0 100%;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .property-image-wrapper {
+        align-self: flex-start;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 153 / 98;
+        margin-right: 0;
+    }
+
+    .property-image-wrapper img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .property-information {
+        flex: 1;
+        width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .property-price-line {
+        flex-wrap: wrap;
+    }
+
+    .property-statistics {
+        flex: 1;
+        gap: 16px;
+        margin: 0;
+        align-self: center;
+        padding-top: 0;
+    }
+
+    .property-boost-button {
+        position: static;
+        flex-shrink: 0;
+    }
+}
+
 .property-performance-boost-listing {
     margin: 0 0 16px;
     color: #0b0f14;
@@ -1447,4 +1510,434 @@ a.notification-card__link:hover {
 
 .pagination-number.active:hover {
     color: #ffffff;
+}
+/* =========================================================
+   MODAL - PÉRIODE PERSONNALISÉE
+   Figma : node 4570:21607
+   ========================================================= */
+
+.property-period-modal {
+    --period-color-text: #0B0F14;
+    --period-color-muted: #858789;
+    --period-color-border: #EBECEC;
+    --period-color-brand: #5D00FF;
+    --period-color-white: #FFFFFF;
+}
+
+
+/* =========================================================
+   DIALOG
+   ========================================================= */
+
+.property-period-modal__dialog {
+    width: calc(100% - 32px);
+    max-width: 640px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+/* =========================================================
+   MODAL CONTENT
+   ========================================================= */
+
+.property-period-modal__content {
+    display: flex;
+    flex-direction: column;
+
+    gap: 24px;
+
+    width: 100%;
+
+    padding: 24px;
+
+    background: var(--period-color-white);
+
+    border: 0;
+    border-radius: 32px;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.property-period-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-height: 34px;
+
+    padding: 0;
+
+    border: 0;
+}
+
+
+.property-period-modal__title {
+    margin: 0;
+    padding: 0;
+
+    color: var(--period-color-text);
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 34px;
+    letter-spacing: 0;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.property-period-modal__close {
+    display: flex;
+    flex: 0 0 24px;
+    align-items: center;
+    justify-content: center;
+
+    width: 24px;
+    height: 24px;
+
+    margin: 0;
+    padding: 0;
+
+    background: transparent;
+    border: 0;
+
+    cursor: pointer;
+
+    transition: opacity 0.2s ease;
+}
+
+
+.property-period-modal__close img {
+    display: block;
+
+    width: 24px;
+    height: 24px;
+}
+
+
+.property-period-modal__close:hover {
+    opacity: 0.65;
+}
+
+
+.property-period-modal__close:focus-visible {
+    outline: 2px solid var(--period-color-brand);
+    outline-offset: 3px;
+
+    border-radius: 4px;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+.property-period-modal__body {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    padding: 14px 0;
+
+    background: var(--period-color-white);
+
+    border-bottom: 1px solid var(--period-color-border);
+}
+
+
+/* =========================================================
+   FIELDS
+   ========================================================= */
+
+.property-period-modal__fields {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    gap: 24px;
+}
+
+
+.property-period-modal__field {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+
+    min-width: 0;
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.property-period-modal__label {
+    display: block;
+
+    width: 100%;
+
+    margin: 0;
+
+    color: var(--period-color-text);
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+}
+
+
+/* =========================================================
+   DATE INPUT
+   ========================================================= */
+
+.property-period-modal__date {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    height: 44px;
+
+    padding: 0 14px;
+
+    background: #FFFFFF;
+
+    border: 2px solid var(--period-color-border);
+    border-radius: 8px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/*
+ * Input date réel.
+ *
+ * Il est transparent pour pouvoir reproduire exactement
+ * le rendu Figma tout en gardant le picker natif.
+ */
+.property-period-modal__native-date {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 3;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    opacity: 0;
+
+    cursor: pointer;
+
+    border: 0;
+}
+
+
+/* Chrome / Edge / Safari */
+.property-period-modal__native-date::-webkit-calendar-picker-indicator {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   DATE VALUE
+   ========================================================= */
+
+.property-period-modal__date-value {
+    display: block;
+    flex: 1 1 auto;
+
+    min-width: 0;
+
+    padding-right: 10px;
+
+    overflow: hidden;
+
+    color: var(--period-color-muted);
+    letter-spacing: 0;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CALENDAR ICON
+   ========================================================= */
+
+.property-period-modal__calendar {
+    position: relative;
+
+    z-index: 2;
+
+    display: block;
+    flex: 0 0 24px;
+
+    width: 24px;
+    height: 24px;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   DATE FOCUS
+   ========================================================= */
+
+.property-period-modal__date:focus-within {
+    border-color: var(--period-color-brand);
+
+    box-shadow: 0 0 0 1px var(--period-color-brand);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.property-period-modal__footer {
+    display: block;
+
+    width: 100%;
+
+    padding: 0;
+
+    border: 0;
+}
+
+
+/* =========================================================
+   APPLY BUTTON
+   ========================================================= */
+
+.property-period-modal__apply {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 44px;
+
+    padding: 10px 16px;
+
+    color: #FFFFFF;
+    background: var(--period-color-brand);
+
+    border: 0;
+    border-radius: 50px;
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 20px;
+    letter-spacing: 0;
+
+    cursor: pointer;
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.1s ease;
+}
+
+
+.property-period-modal__apply:hover {
+    color: #FFFFFF;
+
+    opacity: 0.9;
+}
+
+
+.property-period-modal__apply:active {
+    transform: scale(0.995);
+}
+
+
+.property-period-modal__apply:focus-visible {
+    outline: 2px solid var(--period-color-brand);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .property-period-modal__dialog {
+        width: calc(100% - 32px);
+
+        margin-right: 16px;
+        margin-left: 16px;
+    }
+
+
+    .property-period-modal__content {
+        gap: 24px;
+
+        padding: 24px;
+
+        border-radius: 24px;
+    }
+
+
+    .property-period-modal__title {
+        font-size: 24px;
+        line-height: 28px;
+
+        white-space: normal;
+    }
+
+
+    .property-period-modal__fields {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 24px;
+    }
+
+
+    .property-period-modal__field {
+        width: 100%;
+    }
+}
+
+.property-period-modal__close .icon-x:before {
+    position: inherit!important;
 }

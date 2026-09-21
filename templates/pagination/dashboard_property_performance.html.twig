@@ -8,7 +8,7 @@
                 class="pagination-arrow"
                 aria-label="Page précédente"
                 data-turbo-frame="dashboard-property-performance"
-            >‹</a>
+            ><i class="icon-chevron-left"></i></a>
         {% endif %}
 
         {% for page in pagesInRange %}
@@ -29,7 +29,9 @@
                 class="pagination-arrow"
                 aria-label="Page suivante"
                 data-turbo-frame="dashboard-property-performance"
-            >›</a>
+            >
+            <i class="icon-chevron-right"></i>
+            </a>
         {% endif %}
     </nav>
 {% endif %}
