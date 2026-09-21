@@ -962,30 +962,341 @@ final class DashboardController extends AbstractController
         return ['custom', $start, $end];
     }
 
-    private function buildChart(ChartBuilderInterface $chartBuilder, array $statistics): Chart
-    {
-        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
-        $chart->setData([
-            'labels' => $statistics['series']['labels'],
-            'datasets' => [
-                ['label' => 'Vues du profil', 'data' => $statistics['series']['profileViews'], 'borderColor' => '#d27a00', 'backgroundColor' => 'rgba(210, 122, 0, .12)', 'tension' => 0],
-                ['label' => 'Annonces publiées', 'data' => $statistics['series']['published'], 'borderColor' => '#1c8c62', 'backgroundColor' => 'rgba(28, 140, 98, .12)', 'tension' => 0],
-                ['label' => 'Vues des annonces', 'data' => $statistics['series']['views'], 'borderColor' => '#7746d5', 'backgroundColor' => 'rgba(119, 70, 213, .12)', 'tension' => 0],
-                ['label' => 'Mises en favoris', 'data' => $statistics['series']['favorites'], 'borderColor' => '#42ae79', 'backgroundColor' => 'rgba(66, 174, 121, .12)', 'tension' => 0],
-            ],
-        ]);
-        $chart->setOptions([
-            'maintainAspectRatio' => false,
-            'animation' => [
-                'duration' => 700,
-                'easing' => 'easeOutQuart',
-            ],
-            'plugins' => ['legend' => ['display' => false]],
-            'scales' => ['y' => ['beginAtZero' => true]],
-        ]);
+private function buildChart(
+    ChartBuilderInterface $chartBuilder,
+    array $statistics
+): Chart {
+    $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
 
-        return $chart;
-    }
+    $chart->setData([
+        'labels' => $statistics['series']['labels'],
+
+        'datasets' => [
+            // =====================================================
+            // VUES DU PROFIL
+            // =====================================================
+            [
+                'label' => 'Vues du profil',
+                'data' => $statistics['series']['profileViews'],
+
+                'borderColor' => '#2563eb',
+                'borderWidth' => 2,
+                'backgroundColor' => 'transparent',
+
+                'pointStyle' => 'circle',
+
+                'pointRadius' => 6,
+                'pointHoverRadius' => 6,
+                'pointHitRadius' => 10,
+
+                'pointBackgroundColor' => '#ffffff',
+                'pointBorderColor' => '#2563eb',
+                'pointBorderWidth' => 2,
+
+                'tension' => 0,
+                'fill' => false,
+            ],
+
+            // =====================================================
+            // ANNONCES PUBLIÉES
+            // =====================================================
+            [
+                'label' => 'Annonces publiées',
+                'data' => $statistics['series']['published'],
+
+                'borderColor' => '#db6513',
+                'borderWidth' => 2,
+                'backgroundColor' => 'transparent',
+
+                'pointStyle' => 'circle',
+
+                'pointRadius' => 6,
+                'pointHoverRadius' => 6,
+                'pointHitRadius' => 10,
+
+                'pointBackgroundColor' => '#ffffff',
+                'pointBorderColor' => '#db6513',
+                'pointBorderWidth' => 2,
+
+                'tension' => 0,
+                'fill' => false,
+            ],
+
+            // =====================================================
+            // VUES DES ANNONCES
+            // =====================================================
+            [
+                'label' => 'Vues des annonces',
+                'data' => $statistics['series']['views'],
+
+                'borderColor' => '#5d00ff',
+                'borderWidth' => 2,
+                'backgroundColor' => 'transparent',
+
+                'pointStyle' => 'circle',
+
+                'pointRadius' => 6,
+                'pointHoverRadius' => 6,
+                'pointHitRadius' => 10,
+
+                'pointBackgroundColor' => '#ffffff',
+                'pointBorderColor' => '#5d00ff',
+                'pointBorderWidth' => 2,
+
+                'tension' => 0,
+                'fill' => false,
+            ],
+
+            // =====================================================
+            // MISES EN FAVORIS
+            // =====================================================
+            [
+                'label' => 'Mises en favoris',
+                'data' => $statistics['series']['favorites'],
+
+                'borderColor' => '#00bcb4',
+                'borderWidth' => 2,
+                'backgroundColor' => 'transparent',
+
+                'pointStyle' => 'circle',
+
+                'pointRadius' => 6,
+                'pointHoverRadius' => 6,
+                'pointHitRadius' => 10,
+
+                'pointBackgroundColor' => '#ffffff',
+                'pointBorderColor' => '#00bcb4',
+                'pointBorderWidth' => 2,
+
+                'tension' => 0,
+                'fill' => false,
+            ],
+        ],
+    ]);
+
+    $chart->setOptions([
+        // =========================================================
+        // GÉNÉRAL
+        // =========================================================
+        'responsive' => true,
+        'maintainAspectRatio' => false,
+
+        // =========================================================
+        // ANIMATION
+        // =========================================================
+        'animation' => [
+            'duration' => 700,
+            'easing' => 'easeOutQuart',
+        ],
+
+        // =========================================================
+        // HOVER
+        // =========================================================
+        //
+        // Important :
+        // nearest + xy permet de sélectionner uniquement
+        // la ligne / le point le plus proche de la souris.
+        //
+        'interaction' => [
+            'mode' => 'nearest',
+            'axis' => 'xy',
+            'intersect' => false,
+        ],
+
+        // =========================================================
+        // PLUGINS
+        // =========================================================
+        'plugins' => [
+            'legend' => [
+                'display' => false,
+            ],
+
+            // =====================================================
+            // TOOLTIP
+            // =====================================================
+            'tooltip' => [
+                'enabled' => true,
+
+                /*
+                 * Seulement la courbe la plus proche.
+                 *
+                 * Bleu      => vues du profil
+                 * Orange    => annonces publiées
+                 * Violet    => vues annonces
+                 * Turquoise => favoris
+                 */
+                'mode' => 'nearest',
+                'axis' => 'xy',
+                'intersect' => false,
+
+                /*
+                 * Position automatique autour du point.
+                 */
+                'position' => 'nearest',
+
+                /*
+                 * Centre le tooltip horizontalement
+                 * sur le point.
+                 */
+                'xAlign' => 'center',
+
+                /*
+                 * Tooltip placé sous le point.
+                 *
+                 *          ●
+                 *          ▼
+                 *       ┌───────┐
+                 *       │       │
+                 *       └───────┘
+                 */
+                'yAlign' => 'top',
+
+                // =============================================
+                // STYLE DU TOOLTIP
+                // =============================================
+
+                'backgroundColor' => '#ffffff',
+
+                /*
+                 * Border
+                 */
+                'borderColor' => '#EBECEC',
+                'borderWidth' => 1,
+
+                /*
+                 * Arrondi
+                 */
+                'cornerRadius' => 8,
+
+                /*
+                 * Pointe
+                 */
+                'caretSize' => 6,
+                'caretPadding' => 0,
+
+                /*
+                 * Padding intérieur
+                 */
+                'padding' => [
+                    'top' => 10,
+                    'right' => 14,
+                    'bottom' => 10,
+                    'left' => 14,
+                ],
+
+                // =============================================
+                // DATE
+                // =============================================
+
+                'titleColor' => '#111827',
+
+                'titleFont' => [
+                    'size' => 12,
+                    'weight' => '600',
+                ],
+
+                'titleSpacing' => 4,
+                'titleMarginBottom' => 6,
+
+                // =============================================
+                // VALEUR
+                // =============================================
+
+                'bodyColor' => '#6B7280',
+
+                'bodyFont' => [
+                    'size' => 12,
+                    'weight' => '400',
+                ],
+
+                'bodySpacing' => 5,
+
+                /*
+                 * Pas de carré coloré.
+                 */
+                'displayColors' => false,
+            ],
+        ],
+
+        // =========================================================
+        // ÉLÉMENTS
+        // =========================================================
+        'elements' => [
+            'line' => [
+                'borderWidth' => 2,
+                'tension' => 0,
+            ],
+
+            'point' => [
+                'radius' => 6,
+                'hoverRadius' => 6,
+                'borderWidth' => 2,
+                'hitRadius' => 10,
+            ],
+        ],
+
+        // =========================================================
+        // AXES
+        // =========================================================
+        'scales' => [
+            // =====================================================
+            // X
+            // =====================================================
+            'x' => [
+                'grid' => [
+                    'display' => true,
+                    'drawBorder' => true,
+                ],
+
+                'ticks' => [
+                    /*
+                     * Garde toutes les valeurs dans la courbe,
+                     * mais n'affiche qu'un intervalle de dates.
+                     */
+                    'autoSkip' => true,
+
+                    /*
+                     * Maximum 8 dates visibles.
+                     */
+                    'maxTicksLimit' => 8,
+
+                    'maxRotation' => 0,
+                    'minRotation' => 0,
+
+                    'padding' => 8,
+                ],
+            ],
+
+            // =====================================================
+            // Y
+            // =====================================================
+            'y' => [
+                'beginAtZero' => true,
+
+                'grid' => [
+                    'display' => true,
+                    'drawBorder' => true,
+                ],
+
+                'ticks' => [
+                    /*
+                     * Maximum environ 6 intervalles.
+                     */
+                    'maxTicksLimit' => 6,
+
+                    /*
+                     * Pas de décimales.
+                     */
+                    'precision' => 0,
+
+                    'padding' => 8,
+                ],
+            ],
+        ],
+    ]);
+
+    return $chart;
+}
 
     private function firstDate(array ...$dateLists): ?\DateTimeImmutable
     {

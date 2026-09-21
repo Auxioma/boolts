@@ -220,16 +220,69 @@
     border-radius: 24px;
 }
 
+.stat-card-blue {
+    background:#e9eefd; 
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.stat-card-blue > .stat-card-label {
+    color: #2563eb;
+}
+
+.stat-card-blue .stat-card-value {
+    color: #2563eb;
+}
+.stat-card-blue.is-inactive > .stat-card-label,
+.stat-card-orange.is-inactive .stat-card-label,
+.stat-card-purple.is-inactive .stat-card-label,
+.stat-card-green.is-inactive > .stat-card-label > i {
+    color: #858789!important;
+}
+
+.stat-card-orange {
+    background: rgba(219, 101, 19, 0.10);
+    border-color: #DB6513;
+    color: #DB6513;
+}
+.stat-card-orange  > .stat-card-label {
+    color: #DB6513;
+}
+
+.stat-card-orange .stat-card-value {
+    color: #DB6513;
+}
+
 .stat-card-purple {
-    background: rgba(93, 0, 255, 0.1);
-    border-color: #5d00ff;
-    color: #5d00ff;
+    background: rgba(93, 0, 255, 0.10);
+    border-color: #5D00FF;
+    color: #5D00FF;
+}
+
+.stat-card-purple > .stat-card-label {
+    color: #5D00FF;
+}
+
+.stat-card-purple .stat-card-value {
+    color: #5D00FF;
 }
 
 .stat-card-green {
-    background: rgba(0, 188, 180, 0.1);
-    border-color: #00bcb4;
-    color: #00bcb4;
+    background: rgba(0, 188, 180, 0.10);
+    border-color: #00BCB4;
+    color: #00BCB4;
+}
+
+.stat-card-green > .stat-card-label {
+    color: #00BCB4;
+}
+
+.stat-card-green > .stat-card-label > i {
+    color: #00BCB4;
+}
+
+.stat-card-green .stat-card-value {
+    color: #00BCB4;
 }
 
 .stat-card-label {
@@ -240,16 +293,6 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
-}
-
-.stat-card-purple .stat-card-label,
-.stat-card-purple .stat-card-value {
-    color: #5d00ff;
-}
-
-.stat-card-green .stat-card-label,
-.stat-card-green .stat-card-value {
-    color: #00bcb4;
 }
 
 .stat-card-icon {
@@ -295,7 +338,17 @@
 }
 
 .statistics-series-toggle.is-inactive {
-    opacity: 0.45;
+    border-color: #ebecec;
+    background: #ffffff;
+
+}
+
+.statistics-series-toggle.is-inactive span {
+    color: #858789;
+}
+
+.statistics-series-toggle.is-inactive.stat-card-icon {
+    color: #858789!important;
 }
 
 .statistics-chart-canvas {
@@ -383,6 +436,7 @@
     padding: 8px 12px;
     background: #ffffff;
     border-radius: 8px;
+    filter: drop-shadow(0 3px 20px rgba(0, 0, 0, 0.20));
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
