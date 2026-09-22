@@ -1,6 +1,5 @@
-.login {
+.login {}
 
-}
 .login h1 {
     color: var(--color-black);
     font-size: var(--font-size-h2);
@@ -42,6 +41,7 @@
     font-weight: 500 !important;
     line-height: 20px !important;
 }
+
 .password-toggle {
     position: relative;
 }
@@ -83,13 +83,14 @@
 }
 
 body.auth-page {
-            background: url("../../images/authentification/real-estate.webp") no-repeat center center fixed;
-            background-size: cover;
-            min-height: 100vh;
-        }
+    background: url("../../images/authentification/real-estate.webp") no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+}
+
 body.main {
-            min-height: 100vh;
-        }
+    min-height: 100vh;
+}
 
 body:not(.auth-page) {
     background: #fff !important;
