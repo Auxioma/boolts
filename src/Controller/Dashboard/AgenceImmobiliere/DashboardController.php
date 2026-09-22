@@ -17,11 +17,13 @@ use App\Entity\Document\UserDocumentRequest;
 use App\Entity\Document\UserDocumentSubmission;
 use App\Entity\Enum\DocumentRequestStatus;
 use App\Entity\Enum\DocumentSubmissionStatus;
+use App\Entity\Filter\ModalFilter;
 use App\Entity\Pays;
 use App\Entity\Property;
 use App\Entity\PropertyImage;
 use App\Entity\User;
 use App\Form\Documents\AskDocumentsType;
+use App\Form\Filter\ModalFilterType;
 use App\Repository\AgencyNotificationRepository;
 use App\Repository\AgencyProfileDailyVisitRepository;
 use App\Repository\Document\RequiredDocumentRepository;
@@ -91,6 +93,17 @@ final class DashboardController extends AbstractController
             'performance_sort' => $performanceSort,
             'performance_direction' => mb_strtolower($performanceDirection),
         ];
+
+        $performanceFilters = $request->query->all('modal_filter');
+        if ([] !== $performanceFilters) {
+            $performanceQueryParameters['modal_filter'] = $performanceFilters;
+        }
+
+        $performanceFilterForm = $this->createForm(ModalFilterType::class, new ModalFilter(), [
+            'action' => $this->generateUrl('agence_immobiliere_dashboard_performances'),
+            'method' => 'GET',
+        ]);
+        $performanceFilterForm->handleRequest($request);
 
         if ('custom' === $statistics['period']) {
             $performanceQueryParameters['start'] = $statistics['start']->format('Y-m-d');
@@ -169,6 +182,7 @@ final class DashboardController extends AbstractController
             'performance_query_parameters' => $performanceQueryParameters,
             'performance_sort' => $performanceSort,
             'performance_direction' => $performanceDirection,
+            'performance_filter_form' => $performanceFilterForm->createView(),
             'form' => $form->createView(),
             'document_forms' => $documentForms,
             'required_documents' => $requiredDocuments,
@@ -231,6 +245,35 @@ final class DashboardController extends AbstractController
             'boosted_property_ids' => $propertyRepository->findBoostedPropertyIds($propertyIds),
             'boostPreview' => $boostPreview,
         ]);
+    }
+
+    #[Route('/performances/count', name: 'dashboard_performances_count', methods: ['GET'])]
+    public function performanceFiltersCount(Request $request, PropertyRepository $propertyRepository): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        try {
+            [, $start, $end] = $this->resolvePeriod($request);
+        } catch (\InvalidArgumentException $exception) {
+            return $this->json(['error' => $exception->getMessage()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $count = $propertyRepository->findForDashboardPerformanceQuery(
+            user: $user,
+            start: $start,
+            end: $end,
+            filters: $request->query->all('modal_filter'),
+            locale: $request->getLocale(),
+        )
+            ->select('COUNT(DISTINCT p.id)')
+            ->resetDQLPart('orderBy')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $this->json(['count' => (int) $count]);
     }
 
     #[Route('/properties/export', name: 'dashboard_properties_export', methods: ['GET'])]
@@ -897,7 +940,10 @@ final class DashboardController extends AbstractController
         string $direction,
     ): PaginationInterface {
         return $paginator->paginate(
-            $propertyRepository->findForDashboardPerformanceQuery($user, $start, $end, $sort, $direction),
+            $propertyRepository->findForDashboardPerformanceQuery(
+                $user, $start, $end, $sort, $direction,
+                $request->query->all('modal_filter'), $request->getLocale(),
+            ),
             $request->query->getInt('performance_page', 1),
             self::PERFORMANCE_PROPERTIES_PER_PAGE,
             [

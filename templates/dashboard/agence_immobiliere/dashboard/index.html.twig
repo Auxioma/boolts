@@ -993,8 +993,12 @@
                                         <button
                                             type="button"
                                             class="p-accent btn properties-action-button properties-filter-button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#booltsFiltersModal"
+                                            aria-controls="booltsFiltersModal"
+                                            aria-haspopup="dialog"
                                         >
-                                            <span class="properties-filter-count">2</span>
+                                            <span class="properties-filter-count" data-dashboard-property-performance-target="filterCount" hidden></span>
                                             <i class="icon-sliders-horizontal"></i>
                                             Filtres
                                         </button>
@@ -1114,6 +1118,25 @@
                             >
                                 <p class="mb-0">Chargement des annonces...</p>
                             </turbo-frame>
+
+                            <div data-dashboard-property-performance-target="filters" data-action="submit->dashboard-property-performance#applyFilters shown.bs.modal->dashboard-property-performance#refreshFilterPreview">
+                                {{ include('composant/_search/_search.html.twig', {
+                                    formModal: performance_filter_form,
+                                    filterModalClass: 'dashboard-property-filter-modal',
+                                    filterFormAttributes: {'data-turbo-frame': 'dashboard-property-performance'},
+                                    filterExtraParameters: {
+                                        period: statistics.period,
+                                        start: statistics.start ? statistics.start|date('Y-m-d') : '',
+                                        end: statistics.end|date('Y-m-d'),
+                                        performance_sort: performance_sort,
+                                        performance_direction: performance_direction|lower,
+                                    },
+                                    filterCountUrl: path('agence_immobiliere_dashboard_performances_count'),
+                                    locationCountryUrl: path('agence_immobiliere_mes_biens_filter_countries'),
+                                    locationCityUrl: path('agence_immobiliere_mes_biens_filter_cities'),
+                                    locationDistrictUrl: path('agence_immobiliere_mes_biens_filter_districts'),
+                                }) }}
+                            </div>
 
 <div
     id="property-performance-custom-period-modal"

@@ -1941,3 +1941,121 @@ a.notification-card__link:hover {
 .property-period-modal__close .icon-x:before {
     position: inherit!important;
 }
+
+/* Variante dashboard de la modale de filtres partagée (Figma « Filtrer »). */
+.dashboard-property-filter-modal .boolts-filter-dialog {
+    width: calc(100% - 32px);
+    max-width: 640px;
+    height: calc(100dvh - 48px);
+    min-height: 0;
+    margin: 24px auto;
+    align-items: center;
+}
+
+.dashboard-property-filter-modal .boolts-filter-content {
+    height: auto;
+    max-height: 100%;
+    border-radius: 32px;
+    overflow: hidden;
+}
+
+.dashboard-property-filter-modal .boolts-filter-header {
+    padding: 24px 24px 0;
+}
+
+.dashboard-property-filter-modal .boolts-filter-reset-wrapper {
+    padding: 24px;
+}
+
+.dashboard-property-filter-modal .boolts-filter-body {
+    height: auto !important;
+    padding: 0 24px;
+}
+
+.dashboard-property-filter-modal .boolts-filter-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.dashboard-property-filter-modal .boolts-choice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 14px;
+    background: var(--bt-filter-border);
+    color: #9d9fa1;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.dashboard-property-filter-modal .btn-check:checked + .boolts-choice {
+    background: var(--bt-filter-white);
+    color: var(--bt-filter-brand);
+}
+
+.dashboard-property-filter-modal .boolts-choice-remove {
+    display: none;
+    margin-left: 10px;
+}
+
+.dashboard-property-filter-modal .btn-check:checked + .boolts-choice .boolts-choice-remove {
+    display: inline;
+}
+
+.dashboard-property-filter-modal .boolts-energy-list {
+    gap: 18px;
+}
+
+.dashboard-property-filter-modal .boolts-energy-check {
+    flex-shrink: 0;
+    margin: 0 12px 0 0;
+}
+
+.dashboard-property-filter-modal .boolts-energy-label {
+    flex: 1;
+    min-width: 0;
+}
+
+.dashboard-property-filter-modal .boolts-energy-bar {
+    height: 32px;
+    max-width: calc(100% - 34px);
+}
+
+.dashboard-property-filter-modal .boolts-energy-bar::after {
+    border-top-width: 16px;
+    border-bottom-width: 16px;
+}
+
+.dashboard-property-filter-modal .boolts-filter-footer {
+    padding: 24px;
+    border: 0;
+    box-shadow: none;
+}
+
+.dashboard-property-filter-modal .boolts-filter-submit {
+    margin: 0;
+}
+
+.dashboard-property-filter-modal .btn-check:focus-visible + .boolts-choice,
+.dashboard-property-filter-modal button:focus-visible {
+    outline: 2px solid var(--bt-filter-brand);
+    outline-offset: 3px;
+}
+
+.properties-filter-count[hidden] {
+    display: none;
+}
+
+@media (max-width: 575.98px) {
+    .dashboard-property-filter-modal .boolts-filter-dialog {
+        height: calc(100dvh - 24px);
+        margin: 12px auto;
+    }
+
+    .dashboard-property-filter-modal .boolts-choice-list {
+        gap: 12px;
+    }
+}

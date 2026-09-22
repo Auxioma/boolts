@@ -162,6 +162,8 @@ class PropertyRepository extends ServiceEntityRepository
         \DateTimeImmutable $end,
         string $sort = 'created',
         string $direction = 'DESC',
+        array $filters = [],
+        ?string $locale = null,
     ): QueryBuilder {
         $direction = mb_strtoupper($direction);
 
@@ -169,7 +171,16 @@ class PropertyRepository extends ServiceEntityRepository
             $direction = 'DESC';
         }
 
-        $queryBuilder = $this->createQueryBuilder('p')
+        $queryBuilder = [] === $filters
+            ? $this->createQueryBuilder('p')
+            : $this->findPropertysByUserWithFiltersQuery(
+                user: $user,
+                filters: $filters,
+                sort: 'p.createdAt',
+                locale: $locale,
+            );
+
+        $queryBuilder
             ->leftJoin('p.propertyImages', 'pi')
             ->addSelect('pi')
             ->innerJoin('p.user', 'u')

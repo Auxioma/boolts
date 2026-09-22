@@ -15,7 +15,7 @@
     Modal Bootstrap des filtres.
     Ce formulaire utilise formModal en méthode GET pour envoyer les filtres dans l'URL.
 #}
-<div class="modal fade boolts-filter-modal" id="booltsFiltersModal" tabindex="-1" aria-labelledby="booltsFiltersModalLabel" aria-hidden="true">
+<div class="modal fade boolts-filter-modal {{ filterModalClass|default('') }}" id="booltsFiltersModal" tabindex="-1" aria-labelledby="booltsFiltersModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable boolts-filter-dialog">
 
         {# Début du formulaire Symfony formModal #}
@@ -31,8 +31,12 @@
                     reset->boolts-filter-count#refreshAfterReset
                     boolts-location:changed@window->boolts-filter-count#refresh
                 ',
-            },
+            }|merge(filterFormAttributes|default({})),
         }) }}
+
+        {% for name, value in filterExtraParameters|default({}) %}
+            <input type="hidden" name="{{ name }}" value="{{ value }}" data-performance-filter-parameter>
+        {% endfor %}
 
         {# Header de la modal #}
         <div class="modal-header boolts-filter-header px-24 pt-44">
