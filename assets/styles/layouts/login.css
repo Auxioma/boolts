@@ -81,3 +81,21 @@
     mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center / contain;
     -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center / contain;
 }
+
+body.auth-page {
+            background: url("../../images/authentification/real-estate.webp") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+body.main {
+            min-height: 100vh;
+        }
+
+body:not(.auth-page) {
+    background: #fff !important;
+    background-image: none !important;
+    background-attachment: initial !important;
+    background-position: initial !important;
+    background-repeat: initial !important;
+    background-size: initial !important;
+}

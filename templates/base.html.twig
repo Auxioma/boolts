@@ -91,7 +91,7 @@
 </style>
 
     </head>
-    <body data-controller="dashboard-layout" class="debug-grid">
+    <body data-controller="dashboard-layout" class="debug-grid {% block body_class %}{% endblock %}">
 
         {{ include('composant/__header/_navbar.html.twig') }}
         {% block body %}{% endblock %}
