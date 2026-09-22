@@ -1,26 +1,24 @@
-.divider {
-    display: flex;
+.divider {display: flex;
+    
     align-items: center;
+    
     text-align: center;
-    color: #999999;
-}
-
-.divider::before,
-.divider::after {
-    content: '';
+    
+    color: #999;}
+.divider::before, .divider::after {content: "";
+    
     flex: 1;
-    border-bottom: 1px solid var(--color-gray);
-}
-
-.divider span {
-    padding: 0 12px;
+    
+    border-bottom: 1px solid var(--color-gray);}
+.divider span {padding: 0 12px;
+    
     color: var(--color-gray);
+    
     font-size: 16px;
+    
     font-weight: 700;
-    line-height: 20px;
-}
-
-.border-color-right-gris {
-    border-right: 1px solid #EBECEC;
-    background: #FFF;
-}
+    
+    line-height: 20px;}
+.border-color-right-gris {border-right: 1px solid #ebecec;
+    
+    background: #fff;}

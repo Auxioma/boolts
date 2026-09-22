@@ -1,93 +1,72 @@
-.menu-dashboard-title span {
-    color: #858789;
+.menu-dashboard-title span {color: #858789;
+    
     font-size: 14px;
+    
     font-style: normal;
+    
     font-weight: 700;
-    line-height: 16px;
-}
-.menu-dashboard-title span i:before {
-    font-size: 16px;
-    position:relative;
-    top: 3px
-}
-.menu-dashboard-title.active span {
-    color: #5D00FF;
-}
-.menu-dashboard-title--disabled {
-    cursor: not-allowed;
-    pointer-events: none;
-}
-.menu-dashboard-title--disabled span,
-.menu-dashboard-title--disabled span i:before {
-    color: #B8B8B8;
-}
-.color-active:has(.menu-dashboard-title--disabled) {
-    cursor: not-allowed;
-}
-
-.aside-dashboard-navbar {
-    position: sticky;
-    top: var(--dashboard-sticky-top, var(--topbar-height, 72px));
-    align-self: flex-start;
-    height: fit-content;
-    max-height: var(--dashboard-sidebar-max-height, calc(100vh - var(--topbar-height, 72px) - 16px));
-    overflow-y: auto;
-    z-index: 1020;
-    border-right: 1px solid #EBECEC;
-    background: #F8F8F8;
-}
-
-.aside-dashboard-navbar > .h-100 {
-    height: auto !important;
-}
-.aside-dashboard-navbar p {
-    color: #858789;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 20px;
-}
-.deconnection {
-    border-radius: 10px;
-    background: #EBECEC;
-}
-
-.mt-8.px-10.py-10.deconnection {
-    display: flex;
-}
-
-.mt-8.px-10.py-10.deconnection > a.menu-dashboard-title {
-    width: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.color-active:has(.menu-dashboard-title.active) {
-    border-radius: 10px;
-    background: #EBECEC;
-}
-
-.px-10.py-10.color-active {
+    
+    line-height: 16px;}
+.menu-dashboard-title span i:before {font-size: 16px;
+    
     position: relative;
-}
-
-.px-10.py-10.color-active > a.menu-dashboard-title {
-    inset: 0;
+    
+    top: 3px;}
+.menu-dashboard-title.active span {color: #5d00ff;}
+.menu-dashboard-title--disabled {cursor: not-allowed;
+    
+    pointer-events: none;}
+.menu-dashboard-title--disabled span, .menu-dashboard-title--disabled span i:before {color: #b8b8b8;}
+.color-active:has(.menu-dashboard-title--disabled) {cursor: not-allowed;}
+.aside-dashboard-navbar {position: sticky;
+    
+    top: var(--dashboard-sticky-top,var(--topbar-height,72px));
+    
+    align-self: flex-start;
+    
+    height: fit-content;
+    
+    max-height: var(--dashboard-sidebar-max-height,calc(100vh - var(--topbar-height,72px) - 16px));
+    
+    overflow-y: auto;
+    
+    z-index: 1020;
+    
+    border-right: 1px solid #ebecec;
+    
+    background: #f8f8f8;}
+.aside-dashboard-navbar > .h-100 {height: auto !important;}
+.aside-dashboard-navbar p {color: #858789;
+    
+    font-size: 14px;
+    
+    font-style: normal;
+    
+    font-weight: 500;
+    
+    line-height: 20px;}
+.deconnection {border-radius: 10px;
+    
+    background: #ebecec;}
+.mt-8.px-10.py-10.deconnection {display: flex;}
+.mt-8.px-10.py-10.deconnection > a.menu-dashboard-title {width: 100%;
+    
     display: flex;
-    align-items: center;
-}
-
-.color-active:hover,
-.color-active:hover span
-{
-    border-radius: 10px;
-    background: #EBECEC;
-    color: #5D00FF;
-}
-.color-active:has(.menu-dashboard-title--disabled):hover {
-    background: transparent;
-}
-.color-active:has(.menu-dashboard-title--disabled):hover span,
-.color-active:has(.menu-dashboard-title--disabled):hover span i:before {
-    color: #B8B8B8;
-}
+    
+    align-items: center;}
+.color-active:has(.menu-dashboard-title.active) {border-radius: 10px;
+    
+    background: #ebecec;}
+.px-10.py-10.color-active {position: relative;}
+.px-10.py-10.color-active > a.menu-dashboard-title {inset: 0;
+    
+    display: flex;
+    
+    align-items: center;}
+.color-active:hover, .color-active:hover span {border-radius: 10px;
+    
+    background: #ebecec;
+    
+    color: #5d00ff;}
+.color-active:has(.menu-dashboard-title--disabled):hover {background: transparent;}
+.color-active:has(.menu-dashboard-title--disabled):hover span, .color-active:has(.menu-dashboard-title--disabled):hover span i:before {color: #b8b8b8;}

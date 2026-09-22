@@ -1,7 +1,4 @@
-@import "intlTelInput.css";
-
-:root {
-  /* Image related variables. */
-  --iti-path-flags-1x: url('./largeFlags.webp');
-  --iti-path-flags-2x: url('./largeFlags@2x.webp');
-}
+@import url("intlTelInput.css");
+:root {--iti-path-flags-1x: url("./largeFlags.webp");
+    
+    --iti-path-flags-2x: url("./largeFlags@2x.webp");}
