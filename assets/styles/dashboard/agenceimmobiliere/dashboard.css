@@ -1757,8 +1757,8 @@ a.notification-card__link:hover {text-decoration: none;}
     border-radius: 32px;
     
     overflow: hidden;}
-.dashboard-property-filter-modal .boolts-filter-header {padding: 24px 24px 0;}
-.dashboard-property-filter-modal .boolts-filter-reset-wrapper {padding: 24px;}
+
+
 .dashboard-property-filter-modal .boolts-filter-body {height: auto !important;
     
     padding: 0 24px;}
@@ -1776,10 +1776,7 @@ a.notification-card__link:hover {text-decoration: none;}
     min-height: 44px;
     
     padding: 8px 14px;
-    
-    background: var(--bt-filter-border);
-    
-    color: #9d9fa1;
+    color: #858789;
     
     font-size: 16px;
     
