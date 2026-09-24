@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Tableau de bord immobilier{% endblock %}
+{% block title %}{{ 'agency_dashboard.title'|trans }}{% endblock %}
 
 {% block body %}
     {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
@@ -27,7 +27,7 @@
                         <div class="d-flex align-items-center justify-content-between dashboard-heading">
 
                             <h2 class="mb-0">
-                                Welcome,
+                                {{ 'agency_dashboard.welcome'|trans }}
                                 {{ app.user.prenom|default('John') }}
                                 {{ app.user.nom|default('Doe') }}
                                 !
@@ -67,11 +67,11 @@
                                     <div class="account-completion-header">
                                         <div>
                                             <h3 class="mb-0">
-                                                Terminez la création de votre compte pro !
+                                                {{ 'agency_dashboard.account_completion.title'|trans }}
                                             </h3>
 
                                             <p class="dashboard-section-description mt-12">
-                                                Veuillez déposer les derniers documents afin de valider la création de votre compte.
+                                                {{ 'agency_dashboard.account_completion.description'|trans }}
                                             </p>
                                         </div>
                                     </div>
@@ -81,7 +81,7 @@
                                             for="domiciliation-country"
                                             class="p-accent mb-12"
                                         >
-                                            Confirmez votre pays de domiciliation*
+                                            {{ 'agency_dashboard.account_completion.country'|trans }}
                                         </label>
 
                                         <div class="d-flex flex-column account-country-form">
@@ -98,7 +98,7 @@
                                                 class="p-accent btn-full-white w-25 align-self-end"
                                                 data-action="dashboard-account-completion#continue"
                                             >
-                                                Continuer
+                                                {{ 'agency_dashboard.continue'|trans }}
                                             </button>
                                         </div>
                                     </div>
@@ -115,11 +115,11 @@
                                     <header class="finish-setup__header">
                                         <div class="finish-setup__heading">
                                             <h2 class="finish-setup__title">
-                                                Terminez la création de votre compte pro !
+                                                {{ 'agency_dashboard.account_completion.title'|trans }}
                                             </h2>
 
                                             <p class="finish-setup__subtitle">
-                                                Veuillez déposer les derniers documents afin de valider la création de votre compte.
+                                                {{ 'agency_dashboard.account_completion.description'|trans }}
                                             </p>
                                         </div>
 
@@ -175,10 +175,10 @@
                                                 <p
                                                     class="finish-setup__formats p-accent"
                                                     data-document-formats
-                                                    data-default-formats="(Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)"
+                                                    data-default-formats="{{ 'agency_dashboard.document.formats'|trans({'%maxFileSizeMb%': requiredDocument.maxFileSizeMb }) }}"
                                                     {% if submittedFileName and not isSubmittedDocumentRejected %}hidden{% endif %}
                                                 >
-                                                    (Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)
+                                                    {{ 'agency_dashboard.document.formats'|trans({'%maxFileSizeMb%': requiredDocument.maxFileSizeMb }) }}
                                                 </p>
 
                                                 {% set documentForm = document_forms[requiredDocument.id] %}
@@ -231,7 +231,7 @@
                                                         />
                                                     </svg>
 
-                                                    <span data-upload-status>{{ submittedFileName and not isSubmittedDocumentRejected ? 'Envoyé' : 'Téléverser' }}</span>
+                                                    <span data-upload-status>{{ (submittedFileName and not isSubmittedDocumentRejected ? 'agency_dashboard.document.sent' : 'agency_dashboard.document.upload')|trans }}</span>
                                                 </label>
                                                 <p
                                                     class="finish-setup__remove-file{{ submittedFileName ? ' finish-setup__remove-file--uploaded' : '' }}"
@@ -245,7 +245,7 @@
                                                     ></i>
 
                                                     <span class="mr-16" data-submitted-file-name>
-                                                        {{ submittedFileName ?: 'Supprimer' }}
+                                                        {{ submittedFileName ?: ('agency_dashboard.document.remove'|trans) }}
                                                     </span>
 
                                                     <span
@@ -253,14 +253,14 @@
                                                         data-sent-status
                                                         {% if not submittedFileName or isSubmittedDocumentApproved or isSubmittedDocumentRejected %}hidden{% endif %}
                                                     >
-                                                        Envoyé
+                                                        {{ 'agency_dashboard.document.sent'|trans }}
                                                     </span>
                                                 </p>
                                                 <p class="finish-setup__document-approved"{% if not isSubmittedDocumentApproved %} hidden{% endif %}>
-                                                    Document validé
+                                                    {{ 'agency_dashboard.document.approved'|trans }}
                                                 </p>
                                                 <p class="finish-setup__document-rejected"{% if not isSubmittedDocumentRejected %} hidden{% endif %}>
-                                                    Document refusé{% if documentRejectionReason %} : {{ documentRejectionReason }}{% endif %}
+                                                    {{ 'agency_dashboard.document.rejected'|trans }}{% if documentRejectionReason %} : {{ documentRejectionReason }}{% endif %}
                                                 </p>
                                                 {{ form_end(documentForm) }}
                                                 <div class="alert alert-danger finish-setup__document-flash" data-document-upload-error role="alert" hidden></div>
@@ -271,11 +271,11 @@
                                     <div class="d-flex align-items-center justify-content-between w-100">
                                         <div class="document-limit-message" data-document-limit-message{% if not documents_submission_limit_reached %} hidden{% endif %}>
                                             <p class="p-accent mb-04" style="color:#DC3545">
-                                                Vous avez atteint la limite de dépôt de document
+                                                {{ 'agency_dashboard.document.limit'|trans }}
                                             </p>
 
                                             <p style="color:#858789">
-                                                Pour toute question, contactez le support via l’onglet “aide”.
+                                                {{ 'agency_dashboard.support'|trans }}
                                             </p>
                                         </div>
 
@@ -287,7 +287,7 @@
                                             data-submission-limit-reached="{{ documents_submission_limit_reached ? 'true' : 'false' }}"
                                             disabled
                                         >
-                                            Envoyer les documents
+                                            {{ 'agency_dashboard.document.submit'|trans }}
                                         </button>
                                     </div>
 
@@ -299,28 +299,28 @@
                                         {# Bloc gauche #}
                                         <div class="d-flex flex-column align-items-start">
                                             <p class="p-accent mb-04" style="color:#0b0f14">
-                                                Nous traitons votre dossier.
+                                                {{ 'agency_dashboard.document.processing'|trans }}
                                             </p>
 
                                             <p class="p-accent mb-04" style="color:#5d00ff">
-                                                Changez les documents déposés en cliquant
+                                                {{ 'agency_dashboard.document.change'|trans }}
                                                 <a
                                                     href="#"
                                                     class="document-confirmation__link"
                                                     data-document-confirmation-link
                                                 >
-                                                    ici
+                                                    {{ 'agency_dashboard.document.here'|trans }}
                                                 </a>.
                                             </p>
 
                                             <p class="mb-0" style="color:#858789">
-                                                Pour toute question, contactez le support via l’onglet “aide”.
+                                                {{ 'agency_dashboard.support'|trans }}
                                             </p>
                                         </div>
 
                                         {# Bloc droit #}
                                         <p class="p-accent mb-0 ms-4 flex-shrink-0" style="color:#1e8854">
-                                            Les documents ont bien été envoyés !
+                                            {{ 'agency_dashboard.document.success'|trans }}
                                         </p>
                                     </div>
 
@@ -734,24 +734,24 @@
                         >
                             <div class="d-flex align-items-center justify-content-between statistics-header">
                                 <h3>
-                                    Statistiques
+                                    {{ 'agency_dashboard.statistics'|trans }}
                                 </h3>
 
                                 <div class="d-flex align-items-center statistics-periods d-none d-lg-block">
                                     <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-statistics#selectPeriod">
-                                        7 jours
+                                        {{ 'agency_dashboard.period.7_days'|trans }}
                                     </button>
 
                                     <button type="button" class="statistics-period-button {{ statistics.period == '30d' ? 'active' }}" data-period="30d" data-action="dashboard-statistics#selectPeriod">
-                                        30 jours
+                                        {{ 'agency_dashboard.period.30_days'|trans }}
                                     </button>
 
                                     <button type="button" class="statistics-period-button {{ statistics.period == '12m' ? 'active' }}" data-period="12m" data-action="dashboard-statistics#selectPeriod">
-                                        12 mois
+                                        {{ 'agency_dashboard.period.12_months'|trans }}
                                     </button>
 
                                     <button type="button" class="statistics-period-button {{ statistics.period == 'max' ? 'active' }}" data-period="max" data-action="dashboard-statistics#selectPeriod">
-                                        Maximum
+                                        {{ 'agency_dashboard.period.maximum'|trans }}
                                     </button>
 
                                     <button
@@ -762,7 +762,7 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#statistics-custom-period-modal"
                                     >
-                                        Personnalisé
+                                        {{ 'agency_dashboard.period.custom'|trans }}
                                     </button>
                                 </div>
                             </div>
@@ -784,7 +784,7 @@
                                         <div class="stat-card-label">
                                             <i class="icon-user-round stat-card-icon"></i>
 
-                                            <span>Vues du profil</span>
+                                            <span>{{ 'agency_dashboard.statistics.profile_views'|trans }}</span>
                                         </div>
 
                                         <span class="stat-card-value" data-dashboard-statistics-target="profileViews">{{ statistics.totals.profileViews }}</span>
@@ -803,7 +803,7 @@
                                         <div class="stat-card-label">
                                             <i class="icon-building-2 stat-card-icon"></i>
 
-                                            <span>Annonces publiées</span>
+                                            <span>{{ 'agency_dashboard.statistics.published_listings'|trans }}</span>
                                         </div>
 
                                         <span class="stat-card-value" data-dashboard-statistics-target="published">{{ statistics.totals.published }}</span>
@@ -822,7 +822,7 @@
                                         <div class="stat-card-label">
                                             <i class="icon-eye stat-card-icon"></i>
 
-                                            <span>Vues des annonces</span>
+                                            <span>{{ 'agency_dashboard.statistics.listing_views'|trans }}</span>
                                         </div>
 
                                         <span class="stat-card-value" data-dashboard-statistics-target="views">{{ statistics.totals.views }}</span>
@@ -841,7 +841,7 @@
                                         <div class="stat-card-label">
                                             <i class="icon-heart stat-card-icon"></i>
 
-                                            <span>Mis en favoris</span>
+                                            <span>{{ 'agency_dashboard.statistics.favorites'|trans }}</span>
                                         </div>
 
                                         <span class="stat-card-value" data-dashboard-statistics-target="favorites">{{ statistics.totals.favorites }}</span>
@@ -877,20 +877,20 @@
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h2 id="statistics-custom-period-modal-title" class="modal-title fs-5">Période personnalisée</h2>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'agency_dashboard.close'|trans }}"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="mb-3">
-                                                <label for="statistics-start" class="form-label">Date de début</label>
+                                                <label for="statistics-start" class="form-label">{{ 'agency_dashboard.date.start'|trans }}</label>
                                                 <input id="statistics-start" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.start|date('Y-m-d') }}" data-dashboard-statistics-target="start">
                                             </div>
                                             <div>
-                                                <label for="statistics-end" class="form-label">Date de fin</label>
+                                                <label for="statistics-end" class="form-label">{{ 'agency_dashboard.date.end'|trans }}</label>
                                                 <input id="statistics-end" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.end|date('Y-m-d') }}" data-dashboard-statistics-target="end">
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'agency_dashboard.cancel'|trans }}</button>
                                             <button type="button" class="btn btn-primary" data-action="dashboard-statistics#loadCustomPeriod">Appliquer</button>
                                         </div>
                                     </div>
@@ -901,7 +901,7 @@
                         {# Notifications #}
                         <section class="dashboard-card notifications-card">
                             <h3 class="dashboard-section-title">
-                                Notifications
+                                {{ 'agency_dashboard.notifications'|trans }}
                             </h3>
 
                             <div class="notifications-list">
@@ -928,7 +928,7 @@
                                 {% else %}
                                     <div class="notification-item">
                                         <p class="notification-text">
-                                            Aucune notification pour le moment.
+                                            {{ 'agency_dashboard.notifications.empty'|trans }}
                                         </p>
                                     </div>
                                 {% endfor %}
@@ -936,7 +936,7 @@
                             </div>
 
                             <a href="{{ path('agence_immobiliere_notifications') }}" class="p-accent w-auto btn btn-full-white">
-                                Voir plus
+                                {{ 'agency_dashboard.see_more'|trans }}
                             </a>
                         </section>
 
@@ -950,12 +950,12 @@
                             <div class="properties-performance-header">
                                 <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
                                     <h3 class="dashboard-section-title mb-0">
-                                        Performances des annonces
+                                        {{ 'agency_dashboard.performance.title'|trans }}
                                     </h3>
 
                                     <div class="align-items-center statistics-periods d-none d-lg-flex ms-auto">
                                         <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-property-performance#selectPeriod">
-                                            7 jours
+                                            {{ 'agency_dashboard.period.7_days'|trans }}
                                         </button>
 
                                         <button
@@ -964,15 +964,15 @@
                                             data-period="30d"
                                             data-action="dashboard-property-performance#selectPeriod"
                                         >
-                                            30 jours
+                                            {{ 'agency_dashboard.period.30_days'|trans }}
                                         </button>
 
                                         <button type="button" class="statistics-period-button {{ statistics.period == '12m' ? 'active' }}" data-period="12m" data-action="dashboard-property-performance#selectPeriod">
-                                            12 mois
+                                            {{ 'agency_dashboard.period.12_months'|trans }}
                                         </button>
 
                                         <button type="button" class="statistics-period-button {{ statistics.period == 'max' ? 'active' }}" data-period="max" data-action="dashboard-property-performance#selectPeriod">
-                                            Maximum
+                                            {{ 'agency_dashboard.period.maximum'|trans }}
                                         </button>
 
                                         <button
@@ -983,7 +983,7 @@
                                             data-bs-toggle="modal"
                                             data-bs-target="#property-performance-custom-period-modal"
                                         >
-                                            Personnalisé
+                                            {{ 'agency_dashboard.period.custom'|trans }}
                                         </button>
                                     </div>
                                 </div>
@@ -1000,7 +1000,7 @@
                                         >
                                             <span class="properties-filter-count" data-dashboard-property-performance-target="filterCount" hidden></span>
                                             <i class="icon-sliders-horizontal"></i>
-                                            Filtres
+                                            {{ 'agency_dashboard.filters'|trans }}
                                         </button>
 
                                         <div class="p-accent properties-sort">
@@ -1014,7 +1014,7 @@
                                                 aria-controls="dashboard-sort-menu"
                                             >
                                                 <i class="icon-arrow-up-down"></i>
-                                                Trier
+                                                {{ 'agency_dashboard.sort'|trans }}
                                             </button>
 
                                             <div
@@ -1022,7 +1022,7 @@
                                                 class="sort-menu d-none"
                                                 data-dashboard-property-performance-target="sortMenu"
                                                 role="listbox"
-                                                aria-label="Trier les résultats"
+                                                aria-label="{{ 'agency_dashboard.sort.aria_label'|trans }}"
                                             >
                                                 <button
                                                     class="sort-menu__item {{ performance_sort == 'created' and performance_direction == 'DESC' ? 'sort-menu__item--active' }}"
@@ -1033,7 +1033,7 @@
                                                     data-direction="desc"
                                                     data-action="dashboard-property-performance#selectSort"
                                                 >
-                                                    Date d'ajout (récent → ancien)
+                                                    {{ 'agency_dashboard.sort.created_desc'|trans }}
                                                 </button>
 
                                                 <button
@@ -1045,7 +1045,7 @@
                                                     data-direction="asc"
                                                     data-action="dashboard-property-performance#selectSort"
                                                 >
-                                                    Date d'ajout (ancien → récent)
+                                                    {{ 'agency_dashboard.sort.created_asc'|trans }}
                                                 </button>
 
                                                 <button
@@ -1057,7 +1057,7 @@
                                                     data-direction="desc"
                                                     data-action="dashboard-property-performance#selectSort"
                                                 >
-                                                    Vues (plus → moins)
+                                                    {{ 'agency_dashboard.sort.views_desc'|trans }}
                                                 </button>
 
                                                 <button
@@ -1069,7 +1069,7 @@
                                                     data-direction="asc"
                                                     data-action="dashboard-property-performance#selectSort"
                                                 >
-                                                    Vues (moins → plus)
+                                                    {{ 'agency_dashboard.sort.views_asc'|trans }}
                                                 </button>
 
                                                 <button
@@ -1081,7 +1081,7 @@
                                                     data-direction="desc"
                                                     data-action="dashboard-property-performance#selectSort"
                                                 >
-                                                    Favoris (plus → moins)
+                                                    {{ 'agency_dashboard.sort.favorites_desc'|trans }}
                                                 </button>
 
                                                 <button
@@ -1093,7 +1093,7 @@
                                                     data-direction="asc"
                                                     data-action="dashboard-property-performance#selectSort"
                                                 >
-                                                    Favoris (moins → plus)
+                                                    {{ 'agency_dashboard.sort.favorites_asc'|trans }}
                                                 </button>
                                             </div>
                                         </div>
@@ -1103,7 +1103,7 @@
                                             class="p-accent btn properties-action-button"
                                         >
                                             <i class="icon-download"></i>
-                                            Exporter
+                                            {{ 'agency_dashboard.export'|trans }}
                                         </a>
                                     </div>
 
@@ -1116,7 +1116,7 @@
                                 loading="eager"
                                 data-dashboard-property-performance-target="frame"
                             >
-                                <p class="mb-0">Chargement des annonces...</p>
+                                <p class="mb-0">{{ 'agency_dashboard.loading_listings'|trans }}</p>
                             </turbo-frame>
 
                             <div data-dashboard-property-performance-target="filters" data-action="submit->dashboard-property-performance#applyFilters shown.bs.modal->dashboard-property-performance#refreshFilterPreview">
@@ -1163,7 +1163,7 @@
                     type="button"
                     class="property-period-modal__close"
                     data-bs-dismiss="modal"
-                    aria-label="Fermer"
+                    aria-label="{{ 'agency_dashboard.close'|trans }}"
                 >
                     <i class="icon-x"></i>
                 </button>
@@ -1181,7 +1181,7 @@
                             for="property-performance-start"
                             class="p-accent"
                         >
-                            Date de début
+                            {{ 'agency_dashboard.date.start'|trans }}
                         </label>
 
                         <div class="property-period-modal__date">
@@ -1203,7 +1203,7 @@
                                 value="{{ statistics.start|date('Y-m-d') }}"
                                 data-dashboard-property-performance-target="start"
                                 data-action="change->dashboard-property-performance#updateCustomDateLabel"
-                                aria-label="Date de début"
+                                aria-label="{{ 'agency_dashboard.date.start'|trans }}"
                             >
 
                         </div>
@@ -1216,7 +1216,7 @@
                             for="property-performance-end"
                             class="p-accent"
                         >
-                            Date de fin
+                            {{ 'agency_dashboard.date.end'|trans }}
                         </label>
 
                         <div class="property-period-modal__date">
@@ -1238,7 +1238,7 @@
                                 value="{{ statistics.end|date('Y-m-d') }}"
                                 data-dashboard-property-performance-target="end"
                                 data-action="change->dashboard-property-performance#updateCustomDateLabel"
-                                aria-label="Date de fin"
+                                aria-label="{{ 'agency_dashboard.date.end'|trans }}"
                             >
 
                         </div>
@@ -1256,7 +1256,7 @@
                     class="btn-full-blue w-100"
                     data-action="dashboard-property-performance#loadCustomPeriod"
                 >
-                    Appliquer cette période
+                    {{ 'agency_dashboard.apply'|trans }}
                 </button>
 
             </div>
