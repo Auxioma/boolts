@@ -52,7 +52,10 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-#[Route('/pro/dashboard', name: 'agence_immobiliere_')]
+#[Route(path: [
+            'en' => '/pro/dashboard',
+            'fr' => '/fr/pro/dashboard',
+        ], name: 'agence_immobiliere_')] 
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / DashboardController.
  *
