@@ -627,7 +627,7 @@ export default class extends Controller {
             const close = document.createElement('span');
             close.className = 'boolts-selected-chip-close';
             close.setAttribute('aria-hidden', 'true');
-            close.innerHTML = '&times;';
+            close.innerHTML = '<i class="icon-x"></i>';
 
             button.appendChild(text);
             button.appendChild(close);
@@ -987,6 +987,13 @@ export default class extends Controller {
             .boolts-selected-chip-close {
                 font-size: 16px;
                 line-height: 1;
+            }
+
+            .boolts-selected-chip-close .icon-x::before {
+                font-size: 24px;
+                position: relative;
+                top: 4px;
+                font-weight: 500;
             }
 
             .boolts-search-control input:disabled {
