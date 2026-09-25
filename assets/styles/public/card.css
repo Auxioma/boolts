@@ -283,6 +283,15 @@
     background: var(--search-card-white);
     
     overflow: hidden;}
+
+.search-card-map-results .search-card-item {
+    height: auto;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    overflow: visible;
+}
 .search-card-link {display: block;
     
     height: 100%;

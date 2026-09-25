@@ -199,8 +199,24 @@
                 data-map-property="{{ mapProperty|json_encode(constant('JSON_UNESCAPED_UNICODE'))|e('html_attr') }}"
             >
 
-                <a href="{{ detailUrl }}" class="search-card-link">
+                <twig:Property:Card
+                    title="{{ propertyTitle }}"
+                    price="{{ propertyPrice }}"
+                    period="{{ propertyPeriod }}"
+                    badge="{{ propertyBadge }}"
+                    description="{{ descriptionText|u.truncate(80, '...') }}"
+                    details="{{ detailsText }}"
+                    address="{{ addressText }}"
+                    image="{{ uploadedImage }}"
+                    url="{{ detailUrl }}"
+                    favoriteUrl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
+                    favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                    :isFavorite="isFavorite"
+                />
 
+                {# The shared card is the visual source of truth. The wrapper above
+                   keeps the map payload consumed by the Stimulus controller. #}
+                {#
                     <div class="search-card-media">
                         {% if uploadedImage %}
                             <img
@@ -273,6 +289,7 @@
                         </svg>
                     </button>
                 {% endif %}
+                #}
 
             </article>
         </div>
