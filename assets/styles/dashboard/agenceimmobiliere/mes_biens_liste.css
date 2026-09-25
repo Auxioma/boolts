@@ -985,10 +985,6 @@
 
 .agence-mes-biens-list .boost-confirm-header {
     align-items: center;
-
-    padding: 24px 24px 16px;
-
-    border-bottom: 1px solid #ebecec;
 }
 
 .agence-mes-biens-list .boost-confirm-title {
@@ -1178,6 +1174,177 @@
     color: #fff;
 }
 
+.agence-mes-biens-list .boost-confirm-dialog {
+    max-width: calc(100% - 24px);
+}
+
+.agence-mes-biens-list .boost-confirm-content {
+    border: 0;
+    border-radius: 32px;
+    box-shadow: 0 24px 80px rgba(11, 15, 20, .18);
+}
+
+.agence-mes-biens-list .boost-confirm-header {
+    gap: 16px;
+}
+
+.agence-mes-biens-list .boost-confirm-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.agence-mes-biens-list .boost-confirm-hero-icon {
+    width: 64px;
+    height: 64px;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22px;
+    background: rgba(93, 0, 255, .1);
+    color: #5d00ff;
+    font-size: 28px;
+}
+
+.agence-mes-biens-list .boost-confirm-eyebrow {
+    color: #858789;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.agence-mes-biens-list .boost-confirm-title {
+    font-size: 22px;
+    line-height: 28px;
+}
+
+.agence-mes-biens-list .boost-confirm-close {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 20px;
+}
+
+.agence-mes-biens-list .boost-confirm-close:hover {
+    background: #f5f5f5;
+}
+
+.agence-mes-biens-list .boost-confirm-body {
+    padding: 0 32px 8px;
+}
+
+.agence-mes-biens-list .boost-confirm-listing {
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    border-radius: 18px;
+    background: #f8f7ff;
+}
+
+.agence-mes-biens-list .boost-confirm-listing-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #858789;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.agence-mes-biens-list .boost-confirm-listing p {
+    overflow: hidden;
+    color: #0b0f14;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 22px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.agence-mes-biens-list .boost-confirm-details {
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.agence-mes-biens-list .boost-confirm-details li {
+    justify-content: flex-start;
+    padding: 15px 16px;
+}
+
+.agence-mes-biens-list .boost-confirm-detail-icon {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #f4f0ff;
+    color: #5d00ff;
+    font-size: 15px;
+}
+
+.agence-mes-biens-list .boost-confirm-empty {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border: 0;
+    border-radius: 18px;
+    background: #fff4e5;
+    color: #8a4b08;
+}
+
+.agence-mes-biens-list .boost-confirm-warning {
+    line-height: 19px;
+}
+
+.agence-mes-biens-list .boost-confirm-footer {
+    gap: 12px;
+    padding: 24px 32px 32px;
+}
+
+.agence-mes-biens-list .boost-confirm-cancel,
+.agence-mes-biens-list .boost-confirm-submit {
+    min-height: 52px;
+    justify-content: center;
+    border-width: 1px;
+}
+
+.agence-mes-biens-list .boost-confirm-cancel {
+    flex: 0 0 35%;
+}
+
+.agence-mes-biens-list .boost-confirm-submit {
+    flex: 0;
+}
+
+@media (max-width: 575.98px) {
+    .agence-mes-biens-list .boost-confirm-header {
+    }
+
+    .agence-mes-biens-list .boost-confirm-body {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+
+    .agence-mes-biens-list .boost-confirm-footer {
+        flex-direction: column-reverse;
+        padding: 20px;
+    }
+
+    .agence-mes-biens-list .boost-confirm-cancel,
+    .agence-mes-biens-list .boost-confirm-submit {
+        width: 100%;
+        flex-basis: auto;
+    }
+}
+
 @media (max-width: 1199.98px) {
     .agence-mes-biens-list .mes-biens-drafts-grid {
         grid-template-columns: minmax(0, 1fr);
@@ -1228,5 +1395,433 @@
     .agence-mes-biens-list .property-listing-body,
     .agence-mes-biens-list .property-listing-actions {
         grid-column: auto;
+    }
+}
+
+/* =========================================================
+   MODAL BOOST
+   Figma : 5400:14185
+   ========================================================= */
+
+.boost-confirm-modal {
+    --boost-brand: #5D00FF;
+    --boost-text: #0B0F14;
+    --boost-text-secondary: #858789;
+    --boost-border: #EBECEC;
+    --boost-white: #FFFFFF;
+}
+
+
+/* =========================================================
+   DIALOG
+   ========================================================= */
+
+.boost-confirm-dialog {
+    width: 539px;
+    max-width: calc(100% - 32px);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* =========================================================
+   CONTENT
+   Figma :
+   539px
+   padding 24px
+   gap 16px
+   radius 32px
+   ========================================================= */
+
+.boost-confirm-content {
+    width: 100%;
+    padding: 24px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+
+    background: var(--boost-white);
+
+    border: 0;
+    border-radius: 32px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 4px 24.1px rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   HEADER
+   Figma : 491 × 24
+   ========================================================= */
+
+.boost-confirm-header {
+    position: relative;
+
+    width: 100%;
+    height: 24px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    padding: 0;
+    margin: 0;
+
+    border: 0;
+}
+
+
+/* =========================================================
+   TITLE
+   Eudoxus Sans Bold
+   20px / 24px
+   ========================================================= */
+
+.boost-confirm-title {
+    margin: 0;
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+    letter-spacing: 0;
+
+    color: #000000;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CLOSE
+   24 × 24
+   ========================================================= */
+
+.boost-confirm-close {
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 24px;
+    height: 24px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    background: transparent;
+
+    color: var(--boost-text);
+
+    cursor: pointer;
+}
+
+.boost-confirm-close i {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+}
+
+
+/* =========================================================
+   ILLUSTRATION
+   Figma : 122 × 122
+   ========================================================= */
+
+.boost-confirm-illustration {
+    width: 122px;
+    height: 122px;
+
+    flex: 0 0 122px;
+}
+
+.boost-confirm-illustration img {
+    display: block;
+
+    width: 122px;
+    height: 122px;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   INFO BOX
+   Figma :
+   491 × 100
+   border 2px
+   padding 16px
+   internal gap 24px
+   radius 8px
+   ========================================================= */
+
+.boost-confirm-infos {
+    width: 100%;
+
+    padding: 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    border: 2px solid var(--boost-border);
+    border-radius: 8px;
+}
+
+
+/* =========================================================
+   ROW
+   ========================================================= */
+
+.boost-confirm-info-row {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 24px;
+}
+
+
+/* =========================================================
+   LABEL
+   Eudoxus Medium
+   14 / 20
+   #858789
+   ========================================================= */
+
+.boost-confirm-info-label {
+    flex-shrink: 0;
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+
+    color: var(--boost-text-secondary);
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   VALUE
+   Eudoxus Bold
+   16 / 20
+   ========================================================= */
+
+.boost-confirm-info-value {
+    flex: 1;
+
+    min-width: 0;
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+
+    color: var(--boost-text);
+
+    text-align: right;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   Figma :
+   463 × 40
+   ========================================================= */
+
+.boost-confirm-description {
+    width: 463px;
+    max-width: 100%;
+
+    margin: 0;
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+
+    color: var(--boost-text-secondary);
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   ACTIONS
+   Figma :
+   491 × 44
+   ========================================================= */
+
+.boost-confirm-actions {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* =========================================================
+   BUTTON CANCEL
+   Figma :
+   92 × 44
+   radius 50px
+   border 2px
+   ========================================================= */
+
+.boost-confirm-cancel {
+    height: 44px;
+
+    padding: 10px 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid var(--boost-brand);
+    border-radius: 50px;
+
+    background: var(--boost-white);
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+
+    color: var(--boost-brand);
+
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   BUTTON BOOST
+   Figma :
+   203 × 44
+   ========================================================= */
+
+.boost-confirm-submit {
+    min-width: 203px;
+    height: 44px;
+
+    padding: 10px 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 50px;
+
+    background: var(--boost-brand);
+
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+
+    color: var(--boost-white);
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   HOVER / FOCUS
+   Aucun style spécifique différent n'est fourni
+   dans le frame Figma.
+   On ne change donc pas les couleurs.
+   ========================================================= */
+
+.boost-confirm-cancel:hover,
+.boost-confirm-cancel:focus,
+.boost-confirm-cancel:active {
+    color: var(--boost-brand);
+    background: var(--boost-white);
+    border-color: var(--boost-brand);
+}
+
+.boost-confirm-submit:hover,
+.boost-confirm-submit:focus,
+.boost-confirm-submit:active {
+    color: var(--boost-white);
+    background: var(--boost-brand);
+}
+
+
+/* =========================================================
+   ETAT SANS BOOST
+   Pas de design correspondant dans le node Figma.
+   ========================================================= */
+
+.boost-confirm-no-boost {
+    width: 100%;
+}
+
+
+/* =========================================================
+   MOBILE
+   Adaptation uniquement pour éviter le débordement.
+   Le design desktop Figma reste inchangé.
+   ========================================================= */
+
+@media (max-width: 575.98px) {
+
+    .boost-confirm-dialog {
+        max-width: calc(100% - 24px);
+    }
+
+    .boost-confirm-content {
+        padding: 24px;
+    }
+
+    .boost-confirm-title {
+        white-space: normal;
+        padding-right: 32px;
+    }
+
+    .boost-confirm-info-row {
+        gap: 16px;
+    }
+
+    .boost-confirm-description {
+        width: 100%;
+    }
+
+    .boost-confirm-actions {
+        gap: 16px;
+    }
+
+}
+
+
+@media (max-width: 575px) {
+    .agence-mes-biens-list .boost-confirm-cancel {
+        flex: initial
     }
 }
