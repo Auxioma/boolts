@@ -27,15 +27,15 @@
 >
     <div class="container-md search-card-container">
 
-        <h1
-            class="search-card-title"
+        <h3
+            class="my-32"
             id="search-card-total-results"
             data-search-card-map-target="title totalResults"
         >
             {{ resultsCount }}
             logement{{ resultsCount > 1 ? 's' : '' }}
             trouvé{{ resultsCount > 1 ? 's' : '' }}
-        </h1>
+        </h3>
 
         <div
             class="row g-4 align-items-start search-card-map-layout"
@@ -59,12 +59,12 @@
             </section>
 
             <aside
-                class="col-12 col-lg-6 search-card-map-column"
+                class="col-12 col-lg-6 position-relative search-card-map-column"
                 aria-label="Carte des logements"
                 data-search-card-map-target="mapColumn"
             >
                 <div
-                    class="search-card-map-panel"
+                    class="search-card-map-panel sticky-lg-top"
                     data-search-card-map-target="mapPanel"
                 >
                     <div

@@ -1,6 +1,6 @@
 .search-card-page {--search-card-page-max: 1240px;
     
-    --search-card-toolbar-height: 85px;
+    --search-card-toolbar-height: 88px;
     
     --search-card-primary: #5d00ff;
     
@@ -24,7 +24,7 @@
     
     font-family: var(--font-family-base,"Eudoxus Sans",sans-serif);
     
-    overflow-x: hidden;}
+    overflow-x: clip;}
 .search-card-icon {width: 24px;
     
     height: 24px;
@@ -34,10 +34,9 @@
     flex: 0 0 24px;}
 .search-card-desktop-only {display: flex;}
 .search-card-mobile-only {display: none;}
-.search-card-toolbar {position: sticky;
+.search-card-toolbar {position: fixed;
     
-    top: 0;
-    
+    width: 100%;
     z-index: 60;
     
     background: var(--search-card-white);
@@ -243,8 +242,9 @@
     background: #fff;
     
     color: #858789;
-    
-.search-card-main {padding-top: 44px;}
+}
+
+.search-card-main {padding-top: calc(var(--search-card-toolbar-height) + 0px);}
 .search-card-container {}
 .search-card-title {margin: 0 0 44px;
     
@@ -745,7 +745,8 @@
     .search-card-toolbar-inner {gap: 24px;}
     .search-card-layout {grid-template-columns: minmax(0,1fr) minmax(0,1fr);}
     .search-card-map-panel {height: 560px;}}
-@media (max-width: 991.98px) {.search-card-toolbar {height: 76px;}
+@media (max-width: 991.98px) {.search-card-page {--search-card-toolbar-height: 76px;}
+    .search-card-toolbar {height: 76px;}
     .search-card-toolbar-inner, .search-card-container {width: calc(100% - 32px);}
     .search-card-toolbar-inner {gap: 14px;}
     .search-card-field {height: 52px;
@@ -759,7 +760,7 @@
         
         padding: 0;}
     .search-card-filter-text {display: none;}
-    .search-card-main {padding-top: 32px;}
+    .search-card-main {padding-top: calc(var(--search-card-toolbar-height) + 32px);}
     .search-card-title {margin-bottom: 24px;}
     .search-card-layout {grid-template-columns: 1fr;
         
@@ -783,7 +784,8 @@
         line-height: 16px;}}
 @media (max-width: 767.98px) {.search-card-desktop-only {display: none;}
     .search-card-mobile-only {display: flex;}
-    .search-card-page {padding-bottom: 83px;}
+    .search-card-page {--search-card-toolbar-height: 64px;
+    padding-bottom: 83px;}
     .search-card-toolbar {height: 64px;}
     .search-card-toolbar-inner {width: 100%;
         
@@ -802,7 +804,7 @@
         
         line-height: 16px;}
     .search-card-actions {gap: 10px;}
-    .search-card-main {padding-top: 28px;}
+    .search-card-main {padding-top: calc(var(--search-card-toolbar-height) + 28px);}
     .search-card-map-panel {height: 420px;
         
         border-radius: 24px;}

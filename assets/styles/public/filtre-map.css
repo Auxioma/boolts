@@ -1,16 +1,21 @@
-.search-card-map-panel {position: sticky;
-    
+.search-card-map-panel {
+    position: sticky;
+
     top: calc(var(--search-card-toolbar-height,85px) + 20px);
-    
+
     width: 100%;
-    
+
     height: 622px;
-    
+
+    z-index: 10;
+
     border-radius: 30px;
     
     overflow: hidden;
     
     background: #e9eef1;}
+.search-card-map-panel--fixed {position: fixed;}
+.search-card-map-column {align-self: stretch;}
 .search-card-mapbox {width: 100%;
     
     height: 100%;}
@@ -210,7 +215,7 @@
 @media (max-width: 991.98px) {.search-card-map-panel {position: relative;
         
         top: auto;
-        
+
         height: 520px;}}
 @media (max-width: 767.98px) {.search-card-map-panel {height: 420px;
         
