@@ -6,6 +6,7 @@
     font-weight: 700;
     
     line-height: var(--line-height-h2);}
+    
 .bg-login {background-image: url("../../images/authentification/mon-compte.webp");
     
     background-repeat: no-repeat;
