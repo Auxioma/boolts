@@ -1,48 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
-@import './base/variables.css';
-@import './base/fonts.css';
-@import './base/global.css';
-
-@import './utilities/spacing.css';
-@import './utilities/text.css';
-
-@import './components/buttons.css';
-@import './components/forms.css';
-@import './components/divider.css';
-@import './components/messages.css';
-
-@import './layouts/topbar.css';
-@import './layouts/login.css';
-@import "./layouts/homepage.css";
-
-/**
-  * responsive design
- */
-@import "./components/responsive/buttons.css";
-@import "./components/responsive/divider.css";
-@import "./components/responsive/forms.css";
-@import "./components/responsive/messages.css";
-@import "./components/responsive/input.css";
-
-@import "./utilities/responsive/spacing.css";
-@import "./utilities/responsive/text.css";
-
-@import "./layouts/responsive/login/911.css";
-@import "./layouts/responsive/topbar.css";
-
-/* Dashboard agence */
-@import './dashboard/navbar.css';
-@import "./dashboard/agenceimmobiliere/parametre.css";
-@import "./dashboard/agenceimmobiliere/mes-biens.css";
-@import "./dashboard/agenceimmobiliere/mes_biens_liste.css";
-@import "./dashboard/agenceimmobiliere/achats.css";
-@import "./dashboard/agenceimmobiliere/dashboard.css";
-
-/* font */
-@import './public/detail_agence.css';
-@import './public/home.css';
-@import './public/search.css';
-@import './public/detail.css';
-@import './public/card.css';
-@import './public/filtre-map.css';
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("./base/variables.css");
+@import url("./base/fonts.css");
+@import url("./base/global.css");
+@import url("./utilities/spacing.css");
+@import url("./utilities/text.css");
+@import url("./components/buttons.css");
+@import url("./components/forms.css");
+@import url("./components/divider.css");
+@import url("./components/messages.css");
+@import url("./layouts/topbar.css");
+@import url("./layouts/login.css");
+@import url("./layouts/homepage.css");
+@import url("./components/responsive/buttons.css");
+@import url("./components/responsive/divider.css");
+@import url("./components/responsive/forms.css");
+@import url("./components/responsive/messages.css");
+@import url("./components/responsive/input.css");
+@import url("./utilities/responsive/spacing.css");
+@import url("./utilities/responsive/text.css");
+@import url("./layouts/responsive/login/911.css");
+@import url("./layouts/responsive/topbar.css");
+@import url("./dashboard/navbar.css");
+@import url("./dashboard/agenceimmobiliere/parametre.css");
+@import url("./dashboard/agenceimmobiliere/mes-biens.css");
+@import url("./dashboard/agenceimmobiliere/mes_biens_liste.css");
+@import url("./dashboard/agenceimmobiliere/achats.css");
+@import url("./dashboard/agenceimmobiliere/dashboard.css");
+@import url("./public/detail_agence.css");
+@import url("./public/home.css");
+@import url("./public/search.css");
+@import url("./public/detail.css");
+@import url("./public/card.css");
+@import url("./public/filtre-map.css");

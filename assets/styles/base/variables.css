@@ -1,25 +1,43 @@
-:root {
-    --radius-0: 0px;
+:root {--radius-0: 0px;
+    
     --radius-1: 2px;
+    
     --radius-2: 4px;
+    
     --radius-3: 6px;
+    
     --radius-4: 8px;
+    
     --radius-5: 10px;
+    
     --radius-6: 12px;
+    
     --radius-7: 14px;
+    
     --radius-8: 16px;
+    
     --radius-9: 18px;
+    
     --radius-10: 20px;
+    
     --radius-11: 24px;
+    
     --radius-12: 28px;
+    
     --radius-13: 32px;
+    
     --radius-14: 36px;
+    
     --radius-15: 40px;
+    
     --radius-16: 48px;
+    
     --radius-17: 56px;
+    
     --radius-18: 64px;
+    
     --radius-19: 72px;
+    
     --radius-20: 80px;
-    --radius-full: 9999px;
-
-}
+    
+    --radius-full: 9999px;}

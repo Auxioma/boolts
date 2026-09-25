@@ -2,8 +2,66 @@ import { Controller } from '@hotwired/stimulus';
 import { Modal } from 'bootstrap';
 
 export default class extends Controller {
-    static targets = ['frame', 'modal', 'start', 'end', 'sortButton', 'sortMenu'];
+    static targets = ['frame', 'modal', 'start', 'end', 'sortButton', 'sortMenu', 'filters', 'filterCount'];
     static values = { url: String };
+
+    connect() {
+        this.updateFilterCount(new URL(this.urlValue, window.location.origin).searchParams);
+    }
+
+    applyFilters(event) {
+        event.preventDefault();
+        const url = new URL(this.urlValue, window.location.origin);
+
+        [...url.searchParams.keys()].forEach((key) => {
+            if (key.startsWith('modal_filter[')) {
+                url.searchParams.delete(key);
+            }
+        });
+        new FormData(event.target).forEach((value, key) => {
+            if (key.startsWith('modal_filter[')) {
+                url.searchParams.append(key, value);
+            }
+        });
+
+        this.urlValue = url.toString();
+        this.load({ performance_page: 1 });
+        this.updateFilterCount(url.searchParams);
+        Modal.getOrCreateInstance(this.filtersTarget.querySelector('.modal')).hide();
+    }
+
+    updateFilterCount(parameters) {
+        if (!this.hasFilterCountTarget) {
+            return;
+        }
+
+        const groups = new Set();
+        parameters.forEach((value, key) => {
+            const match = key.match(/^modal_filter\[([^\]]+)\]/);
+            if (!match || match[1].endsWith('Search') || !value || value === '[]') {
+                return;
+            }
+            groups.add(match[1].replace(/^(min|max)/, ''));
+        });
+        this.filterCountTarget.textContent = groups.size;
+        this.filterCountTarget.hidden = groups.size === 0;
+    }
+
+    syncFilterParameters() {
+        if (!this.hasFiltersTarget) {
+            return;
+        }
+        const url = new URL(this.urlValue, window.location.origin);
+        this.filtersTarget.querySelectorAll('[data-performance-filter-parameter]').forEach((input) => {
+            input.value = url.searchParams.get(input.name) || '';
+            input.defaultValue = input.value;
+        });
+    }
+
+    refreshFilterPreview() {
+        this.syncFilterParameters();
+        this.filtersTarget.querySelector('form').dispatchEvent(new Event('change', { bubbles: true }));
+    }
 
     selectPeriod(event) {
         const period = event.currentTarget.dataset.period;
@@ -64,6 +122,7 @@ export default class extends Controller {
         url.searchParams.delete('direction');
 
         this.urlValue = url.toString();
+        this.syncFilterParameters();
         this.frameTarget.setAttribute('src', url.toString());
         const period = url.searchParams.get('period') || '30d';
 

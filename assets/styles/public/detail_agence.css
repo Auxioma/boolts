@@ -1,752 +1,744 @@
-.agence-page {
-    background: var(--color-white);
+.agence-page {background: var(--color-white);
+    
     color: var(--color-text);
-    font-family: var(--font-family-base);
-}
-
-.agence-header,
-.agence-mobile-header {
-    height: 72px;
+    
+    font-family: var(--font-family-base);}
+.agence-header, .agence-mobile-header {height: 72px;
+    
     background: var(--color-white);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, .07);
+    
+    box-shadow: 0 4px 10px rgba(0,0,0,.07);
+    
     padding: 14px 40px;
+    
     position: relative;
-    z-index: 10;
-}
-
-.agence-mobile-header {
-    position: fixed;
+    
+    z-index: 10;}
+.agence-mobile-header {position: fixed;
+    
     inset: 0 0 auto 0;
-    padding-inline: 16px;
-}
-
-.agence-logo img {
-    width: 112px;
+    
+    padding-inline: 16px;}
+.agence-logo img {width: 112px;
+    
     height: auto;
-    display: block;
-}
-
-.agence-nav a {
-    display: inline-flex;
+    
+    display: block;}
+.agence-nav a {display: inline-flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     min-height: 44px;
+    
     padding: 10px 16px;
+    
     border-radius: var(--radius-pill);
+    
     color: var(--color-text);
+    
     font-size: 16px;
+    
     font-weight: 700;
+    
     line-height: 20px;
-    text-decoration: none;
-}
-
-.agence-nav a.active {
-    background: #DFCBFF;
-    color: var(--color-primary);
-}
-
-.agence-icon-btn {
-    border: 0;
+    
+    text-decoration: none;}
+.agence-nav a.active {background: #dfcbff;
+    
+    color: var(--color-primary);}
+.agence-icon-btn {border: 0;
+    
     background: transparent;
+    
     color: var(--color-text);
+    
     font-size: 24px;
+    
     line-height: 1;
-    padding: 0;
-}
-
-.agence-preview-bar {
-    height: 64px;
+    
+    padding: 0;}
+.agence-preview-bar {height: 64px;
+    
     gap: 30px;
+    
     background: var(--color-primary);
+    
     color: var(--color-white);
+    
     font-size: 14px;
-    font-weight: 500;
-}
-
-.agence-preview-btn {
-    display: inline-flex;
+    
+    font-weight: 500;}
+.agence-preview-btn {display: inline-flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     height: 44px;
+    
     padding: 10px 16px;
+    
     border: 2px solid var(--color-white);
+    
     border-radius: var(--radius-pill);
+    
     color: var(--color-white);
+    
     font-size: 16px;
+    
     font-weight: 700;
-    text-decoration: none;
-}
-
-.agence-main {
-    padding: 64px 0 48px;
-}
-
-.agence-profile {
-    gap: 24px;
-    margin-bottom: 32px;
-}
-
-.agence-profile-avatar {
-    width: 140px;
+    
+    text-decoration: none;}
+.agence-main {padding: 64px 0 48px;}
+.agence-profile {gap: 24px;
+    
+    margin-bottom: 32px;}
+.agence-profile-avatar {width: 140px;
+    
     height: 140px;
+    
     border-radius: 50%;
+    
     object-fit: cover;
-    flex: 0 0 auto;
-}
-
-.agence-profile h1 {
-    margin: 0;
+    
+    flex: 0 0 auto;}
+.agence-profile h1 {margin: 0;
+    
     color: var(--color-text);
+    
     font-size: 30px;
+    
     font-weight: 700;
-    line-height: 34px;
-}
-
-.agence-profile-description,
-.agence-profile-infos p {
-    margin: 0;
+    
+    line-height: 34px;}
+.agence-profile-description, .agence-profile-infos p {margin: 0;
+    
     font-size: 14px;
+    
     font-weight: 500;
-    line-height: 20px;
-}
-
-.agence-profile-description {
-    color: var(--color-text);
-    margin-top: 16px;
-}
-
-.agence-profile-infos {
-    display: flex;
+    
+    line-height: 20px;}
+.agence-profile-description {color: var(--color-text);
+    
+    margin-top: 16px;}
+.agence-profile-infos {display: flex;
+    
     flex-direction: column;
+    
     gap: 4px;
+    
     margin-top: 14px;
-    color: var(--color-gray);
-}
-
-.agence-search-section {
-    display: flex;
+    
+    color: var(--color-gray);}
+.agence-search-section {display: flex;
+    
     flex-direction: column;
+    
     gap: 8px;
-    margin-bottom: 32px;
-}
-
-.agence-search {
-    display: flex;
+    
+    margin-bottom: 32px;}
+.agence-search {display: flex;
+    
     align-items: center;
+    
     width: 100%;
+    
     padding: 8px 8px 8px 32px;
+    
     border: 2px solid var(--color-gray-light);
-    border-radius: 70px;
-}
-
-.agence-search input {
-    flex: 1;
+    
+    border-radius: 70px;}
+.agence-search input {flex: 1;
+    
     min-width: 0;
+    
     border: 0;
+    
     outline: 0;
+    
     color: var(--color-text);
+    
     font-size: 16px;
+    
     font-weight: 700;
-    line-height: 20px;
-}
-
-.agence-search input::placeholder {
-    color: var(--color-gray);
-}
-
-.agence-search button {
-    display: inline-flex;
+    
+    line-height: 20px;}
+.agence-search input::placeholder {color: var(--color-gray);}
+.agence-search button {display: inline-flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     width: 44px;
+    
     height: 44px;
+    
     border: 0;
+    
     border-radius: 50%;
+    
     background: var(--color-primary);
+    
     color: var(--color-white);
-    font-size: 24px;
-}
-
-.agence-filter-btn {
-    display: inline-flex;
+    
+    font-size: 24px;}
+.agence-filter-btn {display: inline-flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     gap: 10px;
+    
     min-height: 44px;
+    
     padding: 10px 16px;
+    
     border: 2px solid var(--color-gray-light);
+    
     border-radius: var(--radius-pill);
+    
     background: var(--color-white);
+    
     color: var(--color-gray);
+    
     font-size: 16px;
+    
     font-weight: 700;
-    line-height: 20px;
-}
-
-.agence-properties h2 {
-    margin-bottom: 24px;
+    
+    line-height: 20px;}
+.agence-properties h2 {margin-bottom: 24px;
+    
     color: var(--color-text);
+    
     font-size: 20px;
+    
     font-weight: 700;
-    line-height: 24px;
-}
-
-.agence-empty-state {
-    padding: 24px;
+    
+    line-height: 24px;}
+.agence-empty-state {padding: 24px;
+    
     border: 2px solid var(--color-gray-light);
+    
     border-radius: 24px;
+    
     color: var(--color-gray);
+    
     font-size: 14px;
+    
     font-weight: 500;
-    line-height: 20px;
-}
-
-/* Cards Symfony UX Property */
-.agence-properties .property-card {
-    overflow: hidden;
+    
+    line-height: 20px;}
+.agence-properties .property-card {overflow: hidden;
+    
     height: 100%;
+    
     border: 2px solid var(--color-gray-light);
+    
     border-radius: 24px;
-    background: var(--color-white);
-}
-
-.agence-properties .property-card__media {
-    border-bottom: 2px solid var(--color-gray-light);
-    overflow: hidden;
-}
-
-.agence-properties .property-card__image {
-    width: 100%;
+    
+    background: var(--color-white);}
+.agence-properties .property-card__media {border-bottom: 2px solid var(--color-gray-light);
+    
+    overflow: hidden;}
+.agence-properties .property-card__image {width: 100%;
+    
     height: 100%;
+    
     object-fit: cover;
+    
     aspect-ratio: 4/3;
-    object-position: center;
-}
-
-.agence-properties .property-card__header {
-    display: flex;
+    
+    object-position: center;}
+.agence-properties .property-card__header {display: flex;
+    
     align-items: center;
+    
     justify-content: space-between;
-    /* padding: 16px 16px 0; */
-    padding: clamp(
-        12px,
-        calc(12px + (4 * (100vw - 375px) / 1065)),
-        16px
-    )
-    clamp(
-        12px,
-        calc(12px + (4 * (100vw - 375px) / 1065)),
-        16px
-    )
-    0;
-
-}
-
-.agence-properties .property-card__title {
-    margin: 0;
+    
+    padding: clamp(12px,calc(12px + ( 4 * ( 100vw - 375px ) / 1065 )),16px) clamp(12px,calc(12px + ( 4 * ( 100vw - 375px ) / 1065 )),16px) 0;}
+.agence-properties .property-card__title {margin: 0;
+    
     overflow: hidden;
+    
     color: var(--color-text);
-    font-size: clamp(
-        14px,
-        calc(14px + (2 * (100vw - 375px) / 1065)),
-        16px
-    );
+    
+    font-size: clamp(14px,calc(14px + ( 2 * ( 100vw - 375px ) / 1065 )),16px);
+    
     font-weight: 600;
-    line-height: clamp(
-        14px,
-        calc(14px + (2 * (100vw - 375px) / 1065)),
-        16px
-    );
+    
+    line-height: clamp(14px,calc(14px + ( 2 * ( 100vw - 375px ) / 1065 )),16px);
+    
     text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.agence-properties .property-card__favorite {
-    flex: 0 0 auto;
+    
+    white-space: nowrap;}
+.agence-properties .property-card__favorite {flex: 0 0 auto;
+    
     border: 0;
+    
     background: transparent;
+    
     color: var(--color-text);
+    
     font-size: 24px;
+    
     line-height: 1;
-    padding: 0;
-}
-
-.agence-properties .property-card__content {
-    padding: 12px 16px 0;
-}
-
-.agence-properties .property-card__price-row {
-    display: flex;
+    
+    padding: 0;}
+.agence-properties .property-card__content {padding: 12px 16px 0;}
+.agence-properties .property-card__price-row {display: flex;
+    
     align-items: center;
+    
     gap: 4px;
-    margin: 0;
-}
-
-.agence-properties .property-card__price {
-    margin: 0;
+    
+    margin: 0;}
+.agence-properties .property-card__price {margin: 0;
+    
     color: var(--color-text);
-    font-size: clamp( 14px, calc(14px + (2 * (100vw - 375px) / 1065)), 16px );
+    
+    font-size: clamp(14px,calc(14px + ( 2 * ( 100vw - 375px ) / 1065 )),16px);
+    
     font-weight: 600;
-    line-height: clamp( 14px, calc(14px + (2 * (100vw - 375px) / 1065)), 16px );
-}
-
-.agence-properties .property-card__price span {
-    color: #858789;
+    
+    line-height: clamp(14px,calc(14px + ( 2 * ( 100vw - 375px ) / 1065 )),16px);}
+.agence-properties .property-card__price span {color: #858789;
+    
     font-size: 12px;
+    
     font-weight: 500;
-    line-height: 20px;
-}
-
-.agence-properties .property-card__badge {
-    margin-left: auto;
+    
+    line-height: 20px;}
+.agence-properties .property-card__badge {margin-left: auto;
+    
     padding: 4px 10px;
+    
     border: 1px solid var(--color-gray-light);
+    
     border-radius: 55px;
+    
     color: #858789;
-    font-size: clamp( 12px, calc(12px + (2 * (100vw - 375px) / 1065)), 14px );
+    
+    font-size: clamp(12px,calc(12px + ( 2 * ( 100vw - 375px ) / 1065 )),14px);
+    
     font-weight: 500;
+    
     line-height: 20px;
-    white-space: nowrap;
-}
-
-.agence-properties .property-card__description,
-.agence-properties .property-card__details,
-.agence-properties .property-card__footer {
-    overflow: hidden;
+    
+    white-space: nowrap;}
+.agence-properties .property-card__description, .agence-properties .property-card__details, .agence-properties .property-card__footer {overflow: hidden;
+    
     color: var(--color-gray);
+    
     font-size: 14px;
+    
     font-weight: 500;
+    
     line-height: 20px;
+    
     text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.agence-properties .property-card__description {
-    margin: 12px 0 0;
-}
-
-.agence-properties .property-card__details {
-    margin: 12px 0 0;
-    color: var(--color-text);
-}
-
-.agence-properties .property-card__footer {
-    margin: 12px 0 0;
-    padding: 0 16px 18px;
-}
-
-.agence-pagination {
-    display: flex;
+    
+    white-space: nowrap;}
+.agence-properties .property-card__description {margin: 12px 0 0;}
+.agence-properties .property-card__details {margin: 12px 0 0;
+    
+    color: var(--color-text);}
+.agence-properties .property-card__footer {margin: 12px 0 0;
+    
+    padding: 0 16px 18px;}
+.agence-pagination {display: flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     gap: 10px;
-    margin-top: 32px;
-}
-
-.agence-pagination a,
-.agence-pagination span {
-    display: inline-flex;
+    
+    margin-top: 32px;}
+.agence-pagination a, .agence-pagination span {display: inline-flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     min-width: 38px;
+    
     height: 40px;
+    
     padding: 10px;
+    
     border-radius: 40px;
+    
     color: var(--color-gray);
+    
     font-size: 16px;
+    
     font-weight: 700;
+    
     line-height: 20px;
-    text-decoration: none;
-}
-
-.agence-pagination a.active {
-    background: var(--color-primary);
-    color: var(--color-white);
-}
-
-.agence-pagination a.disabled {
-    pointer-events: none;
-    opacity: .45;
-}
-
-.agence-contact-card {
-    display: flex;
+    
+    text-decoration: none;}
+.agence-pagination a.active {background: var(--color-primary);
+    
+    color: var(--color-white);}
+.agence-pagination a.disabled {pointer-events: none;
+    
+    opacity: .45;}
+.agence-contact-card {display: flex;
+    
     flex-direction: column;
+    
     gap: 32px;
+    
     padding: 24px;
+    
     border: 2px solid var(--color-gray-light);
+    
     border-radius: 24px;
-    background: var(--color-white);
-}
-
-.agence-contact-head img {
-    width: 60px;
+    
+    background: var(--color-white);}
+.agence-contact-head img {width: 60px;
+    
     height: 60px;
+    
     border-radius: 50%;
-    object-fit: cover;
-}
-
-.agence-contact-head h3 {
-    margin: 0 0 8px;
+    
+    object-fit: cover;}
+.agence-contact-head h3 {margin: 0 0 8px;
+    
     color: var(--color-text);
+    
     font-size: 16px;
+    
     font-weight: 700;
-    line-height: 20px;
-}
-
-.agence-contact-head p {
-    margin: 0;
+    
+    line-height: 20px;}
+.agence-contact-head p {margin: 0;
+    
     color: var(--color-gray);
+    
     font-size: 14px;
+    
     font-weight: 500;
-    line-height: 20px;
-}
-
-.agence-contact-number {
-    margin-top: 12px;
-}
-
-.agence-contact-email {
-    display: inline-flex;
+    
+    line-height: 20px;}
+.agence-contact-number {margin-top: 12px;}
+.agence-contact-email {display: inline-flex;
+    
     margin-top: 4px;
+    
     color: var(--color-primary);
+    
     font-size: 14px;
+    
     font-weight: 500;
+    
     line-height: 20px;
-    text-decoration: none;
-}
-
-.agence-availability {
-    display: flex;
+    
+    text-decoration: none;}
+.agence-availability {display: flex;
+    
     align-items: center;
+    
     gap: 10px;
+    
     padding: 14px;
+    
     border: 2px solid var(--color-gray-light);
-    border-radius: var(--radius-sm);
-}
-
-.agence-availability span,
-.agence-availability__day {
-    color: #858789;
+    
+    border-radius: var(--radius-sm);}
+.agence-availability span, .agence-availability__day {color: #858789;
+    
     font-size: 14px;
+    
     font-style: normal;
+    
     font-weight: 700;
-    line-height: 20px;
-}
-
-.agence-availability strong {
-    color: #858789;
+    
+    line-height: 20px;}
+.agence-availability strong {color: #858789;
+    
     text-align: right;
+    
     font-size: 14px;
+    
     font-style: normal;
+    
     font-weight: 500;
+    
     line-height: 20px;
-    width: 44px;
-}
-.agence-availability b {
-    color: #0B0F14;
-}
-.agence-availability {
-    display: flex;
+    
+    width: 44px;}
+.agence-availability b {color: #0b0f14;}
+.agence-availability {display: flex;
+    
     align-items: flex-start;
+    
     width: 100%;
-    gap: 12px;
-}
-
-.agence-availability__day {
-    font-weight: 600;
-    min-width: 70px;
-}
-
-.agence-availability__hours {
-    display: flex;
+    
+    gap: 12px;}
+.agence-availability__day {font-weight: 600;
+    
+    min-width: 70px;}
+.agence-availability__hours {display: flex;
+    
     flex-direction: column;
+    
     align-items: flex-end;
+    
     margin-left: auto;
-    line-height: 1.35;
-}
-
-.agence-availability__hours strong {
-    display: block;
+    
+    line-height: 1.35;}
+.agence-availability__hours strong {display: block;
+    
     font-weight: 700;
-    white-space: nowrap;
-}
-.agence-contact-actions,
-.agence-contact-form {
-    display: flex;
+    
+    white-space: nowrap;}
+.agence-contact-actions, .agence-contact-form {display: flex;
+    
     flex-direction: column;
-    gap: 16px;
-}
-
-.agence-btn {
-    display: inline-flex;
+    
+    gap: 16px;}
+.agence-btn {display: inline-flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     gap: 6px;
+    
     min-height: 44px;
+    
     padding: 10px 16px;
+    
     border-radius: var(--radius-pill);
+    
     font-size: 16px;
+    
     font-weight: 700;
+    
     line-height: 20px;
-    text-decoration: none;
-}
-
-.agence-btn-primary {
-    border: 2px solid var(--color-primary);
+    
+    text-decoration: none;}
+.agence-btn-primary {border: 2px solid var(--color-primary);
+    
     background: var(--color-primary);
-    color: var(--color-white);
-}
-
-.agence-btn-outline {
-    border: 2px solid var(--color-primary);
+    
+    color: var(--color-white);}
+.agence-btn-outline {border: 2px solid var(--color-primary);
+    
     background: var(--color-white);
-    color: var(--color-primary);
-}
-
-.agence-btn-whatsapp {
-    border: 2px solid #23CD62;
-    background: #23CD62;
-    color: var(--color-white);
-}
-
-.agence-field {
-    display: flex;
+    
+    color: var(--color-primary);}
+.agence-btn-whatsapp {border: 2px solid #23cd62;
+    
+    background: #23cd62;
+    
+    color: var(--color-white);}
+.agence-field {display: flex;
+    
     flex-direction: column;
-    gap: 8px;
-}
-
-.agence-field label {
-    color: var(--color-text);
+    
+    gap: 8px;}
+.agence-field label {color: var(--color-text);
+    
     font-size: 16px;
+    
     font-weight: 700;
-    line-height: 20px;
-}
-
-.agence-field input,
-.agence-field textarea {
-    width: 100%;
+    
+    line-height: 20px;}
+.agence-field input, .agence-field textarea {width: 100%;
+    
     border: 2px solid var(--color-gray-light);
+    
     border-radius: var(--radius-sm);
+    
     padding: 12px 14px;
+    
     color: var(--color-text);
+    
     font-size: 14px;
+    
     font-weight: 500;
+    
     line-height: 20px;
-    outline: none;
-}
-
-.agence-field input {
-    height: 44px;
-}
-
-.agence-field textarea {
-    min-height: 86px;
-    resize: none;
-}
-
-.agence-field input::placeholder,
-.agence-field textarea::placeholder {
-    color: var(--color-gray);
-}
-
-.agence-field input:focus,
-.agence-field textarea:focus {
-    border-color: var(--color-primary);
-}
-
-.agence-footer {
-    padding: 32px 0;
-    background: #F8F8F8;
-}
-
-.agence-footer-column {
-    display: flex;
+    
+    outline: none;}
+.agence-field input {height: 44px;}
+.agence-field textarea {min-height: 86px;
+    
+    resize: none;}
+.agence-field input::placeholder, .agence-field textarea::placeholder {color: var(--color-gray);}
+.agence-field input:focus, .agence-field textarea:focus {border-color: var(--color-primary);}
+.agence-footer {padding: 32px 0;
+    
+    background: #f8f8f8;}
+.agence-footer-column {display: flex;
+    
     flex-direction: column;
-    gap: 16px;
-}
-
-.agence-footer-column h3,
-.agence-footer-column p,
-.agence-footer-column a {
-    margin: 0;
+    
+    gap: 16px;}
+.agence-footer-column h3, .agence-footer-column p, .agence-footer-column a {margin: 0;
+    
     font-size: 14px;
+    
     line-height: 20px;
-    text-decoration: none;
-}
-
-.agence-footer-column h3 {
-    color: var(--color-text);
-    font-weight: 700;
-}
-
-.agence-footer-column p,
-.agence-footer-column a {
-    color: var(--color-gray);
-    font-weight: 500;
-}
-
-.agence-store-badge {
-    display: inline-flex;
+    
+    text-decoration: none;}
+.agence-footer-column h3 {color: var(--color-text);
+    
+    font-weight: 700;}
+.agence-footer-column p, .agence-footer-column a {color: var(--color-gray);
+    
+    font-weight: 500;}
+.agence-store-badge {display: inline-flex;
+    
     align-items: center;
+    
     justify-content: center;
+    
     width: 135px;
+    
     height: 40px;
+    
     border: 1px solid var(--color-gray);
+    
     border-radius: var(--radius-md);
+    
     color: var(--color-gray);
+    
     font-size: 12px;
-    font-weight: 700;
-}
-
-.agence-footer hr {
-    margin: 34px 0;
+    
+    font-weight: 700;}
+.agence-footer hr {margin: 34px 0;
+    
     border-color: var(--color-gray-light);
-    opacity: 1;
-}
-
-.agence-footer-bottom p,
-.agence-footer-bottom span,
-.agence-footer-bottom a {
-    margin: 0;
+    
+    opacity: 1;}
+.agence-footer-bottom p, .agence-footer-bottom span, .agence-footer-bottom a {margin: 0;
+    
     color: var(--color-gray);
+    
     font-size: 12px;
+    
     font-weight: 500;
+    
     line-height: 20px;
-    text-decoration: none;
-}
-
-.agence-mobile-topbar {
-    height: 44px;
+    
+    text-decoration: none;}
+.agence-mobile-topbar {height: 44px;
+    
     border-bottom: 1px solid var(--color-gray-light);
-    padding-inline: 12px;
-}
-
-.agence-mobile-tabbar {
-    position: fixed;
+    
+    padding-inline: 12px;}
+.agence-mobile-tabbar {position: fixed;
+    
     inset: auto 0 0 0;
+    
     z-index: 20;
+    
     min-height: 83px;
+    
     padding: 6px 16px 34px;
+    
     border-top: 1px solid var(--color-gray-light);
+    
     background: var(--color-white);
+    
     justify-content: center;
-    gap: 44px;
-}
-
-.agence-mobile-tabbar a {
-    display: flex;
+    
+    gap: 44px;}
+.agence-mobile-tabbar a {display: flex;
+    
     flex-direction: column;
+    
     align-items: center;
+    
     justify-content: space-between;
+    
     height: 49px;
-    color: #3D3F43;
+    
+    color: #3d3f43;
+    
     font-size: 10px;
+    
     font-weight: 700;
+    
     line-height: 16px;
-    text-decoration: none;
-}
-
-.agence-mobile-tabbar a i {
-    font-size: 24px;
-}
-
-.agence-mobile-tabbar a.active {
-    color: var(--color-primary);
-}
-
-@media (max-width: 1199.98px) {
-    .agence-header {
-        padding-inline: 16px;
-    }
-
-    .agence-main {
-        padding-top: 64px;
-    }
-}
-
-@media (max-width: 991.98px) {
-    .agence-main {
-        padding: 64px 0;
-    }
-
-    .agence-profile {
-        margin-bottom: 33px;
-    }
-
-    .agence-profile-content {
-        max-width: 449px;
-    }
-
-    .agence-contact-card {
-        margin-top: 26px;
-    }
-}
-
-
-
-.agence-contact-form--hidden {
-    display: none !important;
-}
-
-.agence-contact-form--visible {
-    display: flex !important;
-}
-.agence-filter-sort {
-    position: relative;
-    display: inline-flex;
-}
-
-.agence-filter-sort__dropdown {
-    position: absolute;
+    
+    text-decoration: none;}
+.agence-mobile-tabbar a i {font-size: 24px;}
+.agence-mobile-tabbar a.active {color: var(--color-primary);}
+@media (max-width: 1199.98px) {.agence-header {padding-inline: 16px;}
+    .agence-main {padding-top: 64px;}}
+@media (max-width: 991.98px) {.agence-main {padding: 64px 0;}
+    .agence-profile {margin-bottom: 33px;}
+    .agence-profile-content {max-width: 449px;}
+    .agence-contact-card {margin-top: 26px;}}
+.agence-contact-form--hidden {display: none !important;}
+.agence-contact-form--visible {display: flex !important;}
+.agence-filter-sort {position: relative;
+    
+    display: inline-flex;}
+.agence-filter-sort__dropdown {position: absolute;
+    
     top: calc(100% + 8px);
+    
     right: 0;
+    
     z-index: 100;
-
+    
     width: 229px;
-
+    
     display: flex;
+    
     flex-direction: column;
-
-    background: #ffffff;
+    
+    background: #fff;
+    
     border: 1px solid #ebecec;
+    
     border-radius: 8px;
-    box-shadow: 0 4px 24.1px rgba(0, 0, 0, 0.05);
+    
+    box-shadow: 0 4px 24.1px rgba(0,0,0,.05);
+    
     overflow: hidden;
-
-    font-family: "Eudoxus Sans", sans-serif;
-}
-
-.agence-filter-sort__item {
-    width: 100%;
+    
+    font-family: "Eudoxus Sans",sans-serif;}
+.agence-filter-sort__item {width: 100%;
+    
     min-height: 36px;
+    
     padding: 8px 16px;
-
+    
     display: flex;
+    
     align-items: center;
-
+    
     color: #0b0f14;
-    background: #ffffff;
-
-    font-family: "Eudoxus Sans", sans-serif;
+    
+    background: #fff;
+    
+    font-family: "Eudoxus Sans",sans-serif;
+    
     font-size: 14px;
+    
     font-weight: 500;
+    
     line-height: 20px;
+    
     text-decoration: none;
-    white-space: nowrap;
-}
-
-.agence-filter-sort__item:hover {
-    background: #f8f8f8;
-    color: #0b0f14;
-}
-
-.agence-filter-sort__item--active {
-    background: #5d00ff;
-    color: #ffffff;
-}
-
-.agence-filter-sort__item--active:hover {
-    background: #5d00ff;
-    color: #ffffff;
-}
+    
+    white-space: nowrap;}
+.agence-filter-sort__item:hover {background: #f8f8f8;
+    
+    color: #0b0f14;}
+.agence-filter-sort__item--active {background: #5d00ff;
+    
+    color: #fff;}
+.agence-filter-sort__item--active:hover {background: #5d00ff;
+    
+    color: #fff;}

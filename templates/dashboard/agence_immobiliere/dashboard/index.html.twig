@@ -24,23 +24,23 @@
                     <div class="col-12 col-md-10 mx-auto">
 
                         {# En-tête de la page #}
-<div class="d-flex align-items-center justify-content-between dashboard-heading">
+                        <div class="d-flex align-items-center justify-content-between dashboard-heading">
 
-    <h2 class="mb-0">
-        Welcome,
-        {{ app.user.prenom|default('John') }}
-        {{ app.user.nom|default('Doe') }}
-        !
-    </h2>
+                            <h2 class="mb-0">
+                                Welcome,
+                                {{ app.user.prenom|default('John') }}
+                                {{ app.user.nom|default('Doe') }}
+                                !
+                            </h2>
 
-    <div class="d-flex align-items-center">
-                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
+                            <div class="d-flex align-items-center">
+                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
 
-        {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
+                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
 
-    </div>
+                            </div>
 
-</div>
+                        </div>
 
                         {% set dashboardFlashTypes = {
                             success: 'success',
@@ -57,35 +57,35 @@
                         {% endfor %}
 
                         {% if not documents_complete %}
-                        {# Finalisation du compte #}
-                        <div data-controller="dashboard-account-completion documents--upload">
-                        <section
-                            class="dashboard-card dashboard-card-primary account-completion-card"
-                            data-dashboard-account-completion-target="countryStep"
-                            {% if documents_step_active %}hidden{% endif %}
-                        >
-                            <div class="account-completion-header">
-                                <div>
-                                    <h3 class="mb-0">
-                                        Terminez la création de votre compte pro !
-                                    </h3>
-
-                                    <p class="dashboard-section-description mt-12">
-                                        Veuillez déposer les derniers documents afin de valider la création de votre compte.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="account-country-block">
-                                <label
-                                    for="domiciliation-country"
-                                    class="p-accent mb-12"
+                            {# Finalisation du compte #}
+                            <div data-controller="dashboard-account-completion documents--upload">
+                                <section
+                                    class="dashboard-card dashboard-card-primary account-completion-card"
+                                    data-dashboard-account-completion-target="countryStep"
+                                    {% if documents_step_active %}hidden{% endif %}
                                 >
-                                    Confirmez votre pays de domiciliation*
-                                </label>
+                                    <div class="account-completion-header">
+                                        <div>
+                                            <h3 class="mb-0">
+                                                Terminez la création de votre compte pro !
+                                            </h3>
 
-<div class="d-flex flex-column account-country-form">
-    {{ form_widget(form.pays, {
+                                            <p class="dashboard-section-description mt-12">
+                                                Veuillez déposer les derniers documents afin de valider la création de votre compte.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="account-country-block">
+                                        <label
+                                            for="domiciliation-country"
+                                            class="p-accent mb-12"
+                                        >
+                                            Confirmez votre pays de domiciliation*
+                                        </label>
+
+                                        <div class="d-flex flex-column account-country-form">
+                                            {{ form_widget(form.pays, {
         attr: {
             id: 'domiciliation-country',
             class: 'form-select account-country-input',
@@ -93,96 +93,96 @@
         },
     }) }}
 
-    <button
-        type="button"
-        class="p-accent btn-full-white w-25 align-self-end"
-        data-action="dashboard-account-completion#continue"
-    >
-        Continuer
-    </button>
-</div>
-                            </div>
-                        </section>
+                                            <button
+                                                type="button"
+                                                class="p-accent btn-full-white w-25 align-self-end"
+                                                data-action="dashboard-account-completion#continue"
+                                            >
+                                                Continuer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </section>
 
-{# termier et entrez les documents #}
-<section
-    id="documents"
-    class="finish-setup"
-    data-node-id="2465:10931"
-    data-dashboard-account-completion-target="documentsStep"
-    {% if not documents_step_active %}hidden{% endif %}
->
-    <header class="finish-setup__header">
-        <div class="finish-setup__heading">
-            <h2 class="finish-setup__title">
-                Terminez la création de votre compte pro !
-            </h2>
+                                {# termier et entrez les documents #}
+                                <section
+                                    id="documents"
+                                    class="finish-setup"
+                                    data-node-id="2465:10931"
+                                    data-dashboard-account-completion-target="documentsStep"
+                                    {% if not documents_step_active %}hidden{% endif %}
+                                >
+                                    <header class="finish-setup__header">
+                                        <div class="finish-setup__heading">
+                                            <h2 class="finish-setup__title">
+                                                Terminez la création de votre compte pro !
+                                            </h2>
 
-            <p class="finish-setup__subtitle">
-                Veuillez déposer les derniers documents afin de valider la création de votre compte.
-            </p>
-        </div>
+                                            <p class="finish-setup__subtitle">
+                                                Veuillez déposer les derniers documents afin de valider la création de votre compte.
+                                            </p>
+                                        </div>
 
-        <div class="finish-setup__country">
-            <span class="finish-setup__country-value">
-                <span data-dashboard-account-completion-target="selectedCountry">
-                    {{ app.user.pays ? app.user.pays.nom : '' }}
-                </span>
-            </span>
+                                        <div class="finish-setup__country">
+                                            <span class="finish-setup__country-value">
+                                                <span data-dashboard-account-completion-target="selectedCountry">
+                                                    {{ app.user.pays ? app.user.pays.nom : '' }}
+                                                </span>
+                                            </span>
 
-            <svg
-                class="finish-setup__country-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-            >
-                <path
-                    d="M7 9.5L12 14.5L17 9.5"
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                />
-            </svg>
-        </div>
-    </header>
+                                            <svg
+                                                class="finish-setup__country-icon"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                aria-hidden="true"
+                                            >
+                                                <path
+                                                    d="M7 9.5L12 14.5L17 9.5"
+                                                    stroke="currentColor"
+                                                    stroke-width="1.8"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </header>
 
-    <div class="finish-setup__documents">
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success w-100" role="status">{{ message }}</div>
-        {% endfor %}
-        {% for message in app.flashes('error') %}
-            <div class="alert alert-danger w-100" role="alert">{{ message }}</div>
-        {% endfor %}
+                                    <div class="finish-setup__documents">
+                                        {% for message in app.flashes('success') %}
+                                            <div class="alert alert-success w-100" role="status">{{ message }}</div>
+                                        {% endfor %}
+                                        {% for message in app.flashes('error') %}
+                                            <div class="alert alert-danger w-100" role="alert">{{ message }}</div>
+                                        {% endfor %}
 
-        {% for requiredDocument in required_documents %}
-        {% set submittedFileName = submitted_document_names[requiredDocument.id]|default(null) %}
-        {% set submittedDocumentStatus = submitted_document_statuses[requiredDocument.id]|default(null) %}
-        {% set isSubmittedDocumentApproved = submittedDocumentStatus == 'approved' %}
-        {% set isSubmittedDocumentRejected = submittedDocumentStatus == 'rejected' %}
-        {% set documentRejectionReason = submitted_document_rejection_reasons[requiredDocument.id]|default(null) %}
-        <div class="finish-setup__document">
-            <div class="finish-setup__document-content">
-                <h3 class="p-accent">
-                    {{ requiredDocument.name }}
-                </h3>
+                                        {% for requiredDocument in required_documents %}
+                                            {% set submittedFileName = submitted_document_names[requiredDocument.id]|default(null) %}
+                                            {% set submittedDocumentStatus = submitted_document_statuses[requiredDocument.id]|default(null) %}
+                                            {% set isSubmittedDocumentApproved = submittedDocumentStatus == 'approved' %}
+                                            {% set isSubmittedDocumentRejected = submittedDocumentStatus == 'rejected' %}
+                                            {% set documentRejectionReason = submitted_document_rejection_reasons[requiredDocument.id]|default(null) %}
+                                            <div class="finish-setup__document">
+                                                <div class="finish-setup__document-content">
+                                                    <h3 class="p-accent">
+                                                        {{ requiredDocument.name }}
+                                                    </h3>
 
-                <p class="finish-setup__document-description">
-                    {{ requiredDocument.description }}
-                </p>
-            </div>
+                                                    <p class="finish-setup__document-description">
+                                                        {{ requiredDocument.description }}
+                                                    </p>
+                                                </div>
 
-            <p
-                class="finish-setup__formats"
-                data-document-formats
-                data-default-formats="(Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)"
-                {% if submittedFileName and not isSubmittedDocumentRejected %}hidden{% endif %}
-            >
-                (Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)
-            </p>
+                                                <p
+                                                    class="finish-setup__formats p-accent"
+                                                    data-document-formats
+                                                    data-default-formats="(Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)"
+                                                    {% if submittedFileName and not isSubmittedDocumentRejected %}hidden{% endif %}
+                                                >
+                                                    (Formats acceptés : images et PDF, maximum {{ requiredDocument.maxFileSizeMb }} Mo)
+                                                </p>
 
-            {% set documentForm = document_forms[requiredDocument.id] %}
-            {{ form_start(documentForm, {
+                                                {% set documentForm = document_forms[requiredDocument.id] %}
+                                                {{ form_start(documentForm, {
                 action: path('agence_immobiliere_dashboard_document_upload'),
                 attr: {
                     class: 'finish-setup__upload-form',
@@ -193,516 +193,538 @@
                     'data-submitted-file-name': submittedFileName ?: '',
                 },
             }) }}
-                {{ form_widget(documentForm.requiredDocument, {attr: {hidden: 'hidden'}}) }}
-                <label class="finish-setup__upload"{% if submittedFileName and not isSubmittedDocumentRejected %} hidden{% endif %}>
-                {{ form_widget(documentForm.document, {
+                                                {{ form_widget(documentForm.requiredDocument, {attr: {hidden: 'hidden'}}) }}
+                                                <label class="finish-setup__upload"{% if submittedFileName and not isSubmittedDocumentRejected %} hidden{% endif %}>
+                                                    {{ form_widget(documentForm.document, {
                     attr: {
                         class: 'finish-setup__file-input',
                         'data-document-upload': '',
                     },
                 }) }}
 
-                <svg
-                    class="finish-setup__upload-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    aria-hidden="true"
-                >
-                    <path
-                        d="M12 16V3"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                    />
+                                                    <svg
+                                                        class="finish-setup__upload-icon"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path
+                                                            d="M12 16V3"
+                                                            stroke="currentColor"
+                                                            stroke-width="1.8"
+                                                            stroke-linecap="round"
+                                                        />
 
-                    <path
-                        d="M7.5 7.5L12 3L16.5 7.5"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    />
+                                                        <path
+                                                            d="M7.5 7.5L12 3L16.5 7.5"
+                                                            stroke="currentColor"
+                                                            stroke-width="1.8"
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                        />
 
-                    <path
-                        d="M5 14.5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V14.5"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                    />
-                </svg>
+                                                        <path
+                                                            d="M5 14.5V19C5 20.1046 5.89543 21 7 21H17C18.1046 21 19 20.1046 19 19V14.5"
+                                                            stroke="currentColor"
+                                                            stroke-width="1.8"
+                                                            stroke-linecap="round"
+                                                        />
+                                                    </svg>
 
-                <span data-upload-status>{{ submittedFileName and not isSubmittedDocumentRejected ? 'Envoyé' : 'Téléverser' }}</span>
-                </label>
-                <p
-                    class="finish-setup__remove-file{{ submittedFileName ? ' finish-setup__remove-file--uploaded' : '' }}"
-                    data-remove-file
-                    {% if not submittedFileName %}hidden{% endif %}
-                >
-                    <span data-submitted-file-name>{{ submittedFileName ?: 'Supprimer' }}</span>
-                    <span
-                        class="finish-setup__sent-status"
-                        data-sent-status
-                        {% if not submittedFileName or isSubmittedDocumentApproved or isSubmittedDocumentRejected %}hidden{% endif %}
-                    >
-                        Envoyé
-                    </span>
-                </p>
-                <p class="finish-setup__document-approved"{% if not isSubmittedDocumentApproved %} hidden{% endif %}>
-                    Document validé
-                </p>
-                <p class="finish-setup__document-rejected"{% if not isSubmittedDocumentRejected %} hidden{% endif %}>
-                    Document refusé{% if documentRejectionReason %} : {{ documentRejectionReason }}{% endif %}
-                </p>
-            {{ form_end(documentForm) }}
-            <div class="alert alert-danger finish-setup__document-flash" data-document-upload-error role="alert" hidden></div>
-        </div>
-        {% endfor %}
-    </div>
+                                                    <span data-upload-status>{{ submittedFileName and not isSubmittedDocumentRejected ? 'Envoyé' : 'Téléverser' }}</span>
+                                                </label>
+                                                <p
+                                                    class="finish-setup__remove-file{{ submittedFileName ? ' finish-setup__remove-file--uploaded' : '' }}"
+                                                    data-remove-file
+                                                    {% if not submittedFileName %}hidden{% endif %}
+                                                >
+                                                    <i
+                                                        class="icon-trash mr-4"
+                                                        data-remove-file-icon
+                                                        {% if submittedFileName %}hidden{% endif %}
+                                                    ></i>
 
-    <button
-        class="finish-setup__submit"
-        type="button"
-        data-documents-continue
-        data-documents-complete="{{ documents_complete ? 'true' : 'false' }}"
-        {% if documents_under_review %}hidden{% endif %}
-        disabled
-    >
-        Continuer
-    </button>
+                                                    <span class="mr-16" data-submitted-file-name>
+                                                        {{ submittedFileName ?: 'Supprimer' }}
+                                                    </span>
 
-    <div class="document-limit-message" data-document-limit-message{% if not documents_submission_limit_reached %} hidden{% endif %}>
-        <h2 class="document-limit-title">
-            Vous avez atteint la limite de dépôt de document
-        </h2>
+                                                    <span
+                                                        class="finish-setup__sent-status mr-16"
+                                                        data-sent-status
+                                                        {% if not submittedFileName or isSubmittedDocumentApproved or isSubmittedDocumentRejected %}hidden{% endif %}
+                                                    >
+                                                        Envoyé
+                                                    </span>
+                                                </p>
+                                                <p class="finish-setup__document-approved"{% if not isSubmittedDocumentApproved %} hidden{% endif %}>
+                                                    Document validé
+                                                </p>
+                                                <p class="finish-setup__document-rejected"{% if not isSubmittedDocumentRejected %} hidden{% endif %}>
+                                                    Document refusé{% if documentRejectionReason %} : {{ documentRejectionReason }}{% endif %}
+                                                </p>
+                                                {{ form_end(documentForm) }}
+                                                <div class="alert alert-danger finish-setup__document-flash" data-document-upload-error role="alert" hidden></div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
 
-        <p class="document-limit-description">
-            Contactez le support pour plus d’informations en cliquant
-            <a href="#" class="document-limit-link">ici.</a>
-        </p>
-    </div>
+                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                        <div class="document-limit-message" data-document-limit-message{% if not documents_submission_limit_reached %} hidden{% endif %}>
+                                            <p class="p-accent mb-04" style="color:#DC3545">
+                                                Vous avez atteint la limite de dépôt de document
+                                            </p>
 
-    <div class="document-confirmation" data-document-confirmation{% if not documents_under_review %} hidden{% endif %}>
-        <p class="document-confirmation__success">
-            Les documents ont bien été envoyés !
-        </p>
+                                            <p style="color:#858789">
+                                                Pour toute question, contactez le support via l’onglet “aide”.
+                                            </p>
+                                        </div>
 
-        <p class="document-confirmation__status">
-            Nous traitons votre dossier.
-        </p>
+                                        <button
+                                            class="btn-full-blue btn-disabled ms-auto"
+                                            type="button"
+                                            data-documents-continue
+                                            data-documents-complete="{{ documents_complete ? 'true' : 'false' }}"
+                                            data-submission-limit-reached="{{ documents_submission_limit_reached ? 'true' : 'false' }}"
+                                            disabled
+                                        >
+                                            Envoyer les documents
+                                        </button>
+                                    </div>
 
-        <p class="document-confirmation__text">
-            Changez les documents déposés en cliquant
-            <a href="#" class="document-confirmation__link" data-document-confirmation-link>ici</a>.
-        </p>
+                                    <div
+                                        class="document-confirmation d-flex align-items-center justify-content-between w-100"
+                                        data-document-confirmation
+                                        hidden
+                                    >
+                                        {# Bloc gauche #}
+                                        <div class="d-flex flex-column align-items-start">
+                                            <p class="p-accent mb-04" style="color:#0b0f14">
+                                                Nous traitons votre dossier.
+                                            </p>
 
-        <p class="document-confirmation__help">
-            Pour toute question, contactez le support via l’onglet “aide”.
-        </p>
-    </div>
+                                            <p class="p-accent mb-04" style="color:#5d00ff">
+                                                Changez les documents déposés en cliquant
+                                                <a
+                                                    href="#"
+                                                    class="document-confirmation__link"
+                                                    data-document-confirmation-link
+                                                >
+                                                    ici
+                                                </a>.
+                                            </p>
 
-</section>
-</div>
+                                            <p class="mb-0" style="color:#858789">
+                                                Pour toute question, contactez le support via l’onglet “aide”.
+                                            </p>
+                                        </div>
+
+                                        {# Bloc droit #}
+                                        <p class="p-accent mb-0 ms-4 flex-shrink-0" style="color:#1e8854">
+                                            Les documents ont bien été envoyés !
+                                        </p>
+                                    </div>
+
+                                </section>
+                            </div>
                         {% endif %}
-<style>
-.finish-setup,
-.finish-setup * {
-    box-sizing: border-box;
-}
-
-.finish-setup {
-    --finish-brand: #5d00ff;
-    --finish-black: #0b0f14;
-    --finish-grey: #858789;
-    --finish-light-grey: #ebecec;
-    --finish-white: #ffffff;
-
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-
-    width: 100%;
-    padding: 24px;
-
-    background: var(--finish-white);
-    border: 2px solid var(--finish-brand);
-    border-radius: 24px;
-
-    font-family: "Eudoxus Sans", Arial, sans-serif;
-}
-
-.document-confirmation {
-    width: 100%;
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 1.25;
-}
-
-.document-confirmation p {
-    margin: 0;
-}
-
-.document-confirmation__success {
-    margin-bottom: 7px !important;
-    color: #198754;
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.document-confirmation__status {
-    margin-bottom: 2px !important;
-    color: #858789;
-    font-size: 15px;
-    font-weight: 700;
-}
-
-.document-confirmation__text {
-    margin-bottom: 10px !important;
-    color: #858789;
-    font-size: 15px;
-    font-weight: 400;
-}
-
-.document-confirmation__link {
-    color: #5d00ff;
-    font-weight: 700;
-    text-decoration: underline;
-}
-
-.document-confirmation__link:hover {
-    color: #4900c9;
-}
-
-.document-confirmation__help {
-    color: #858789;
-    font-size: 15px;
-    font-weight: 400;
-}
-
-.document-limit-message {
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.document-limit-title {
-    margin: 0 0 14px;
-    color: #ea334b;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1.2;
-}
-
-.document-limit-description {
-    margin: 0;
-    color: #858789;
-    font-size: 28px;
-    font-weight: 700;
-    line-height: 1.3;
-}
-
-.document-limit-link {
-    color: #5d00ff;
-    font-weight: 700;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-}
-
-.document-limit-link:hover {
-    color: #4700c7;
-}
-
-.finish-setup[hidden] {
-    display: none;
-}
-
-.finish-setup__header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-
-    width: 100%;
-}
-
-.finish-setup__heading {
-    display: flex;
-    flex: 1 1 0;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-
-    min-width: 0;
-}
-
-.finish-setup__title {
-    width: 100%;
-    margin: 0;
-
-    color: #000000;
-    font-size: 20px;
-    font-weight: 700;
-    line-height: 24px;
-    letter-spacing: 0;
-}
-
-.finish-setup__subtitle {
-    width: 100%;
-    margin: 0;
-
-    color: var(--finish-grey);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    letter-spacing: 0;
-}
-
-.finish-setup__country {
-    display: flex;
-    flex: 0 0 140px;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    width: 140px;
-    height: 44px;
-    padding: 12px 14px;
-
-    background: var(--finish-white);
-    border: 2px solid var(--finish-light-grey);
-    border-radius: 8px;
-}
-
-.finish-setup__country-value {
-    flex: 1 1 0;
-    min-width: 0;
-
-    color: var(--finish-black);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-}
-
-.finish-setup__country-icon {
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
-
-    color: var(--finish-grey);
-}
-
-.finish-setup__documents {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-    width: 100%;
-}
-
-.finish-setup__document {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-
-    width: 100%;
-    padding: 12px 0;
-
-    border-bottom: 2px solid var(--finish-light-grey);
-}
-
-.finish-setup__document-content {
-    display: flex;
-    flex: 1 1 0;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 4px;
-
-    min-width: 0;
-}
-
-.finish-setup__document-title {
-    width: 100%;
-    margin: 0;
-    color: var(--finish-black);
-}
-
-.finish-setup__document-description {
-    width: 100%;
-    margin: 0;
-    color: var(--finish-grey);
-}
-
-.finish-setup__formats {
-    flex: 0 0 auto;
-    margin: 0;
-    color: var(--finish-grey);
-    width: 24%;
-    overflow-wrap: anywhere;
-}
-
-@media (max-width: 767px) {
-    .finish-setup__formats {
-        width: 100%;
-    }
-}
-
-
-.finish-setup__upload {
-    position: relative;
-
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    height: 44px;
-    padding: 10px 16px;
-
-    color: var(--finish-brand);
-    background: var(--finish-white);
-    border: 2px solid var(--finish-brand);
-    border-radius: 50px;
-
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    letter-spacing: 0;
-
-    cursor: pointer;
-}
-
-.finish-setup__remove-file {
-    flex: 0 0 auto;
-    margin: 0;
-
-    color: #dc3545;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    cursor: pointer;
-}
-
-.finish-setup__remove-file[hidden] {
-    display: none;
-}
-
-.finish-setup__remove-file--uploaded {
-    color: var(--finish-grey);
-    cursor: default;
-}
-
-.finish-setup__sent-status {
-    margin-left: 8px;
-    color: #198754;
-}
-
-.finish-setup__sent-status[hidden] {
-    display: none;
-}
-
-.finish-setup__document-approved {
-    flex: 0 0 auto;
-    margin: 0;
-
-    color: #198754;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-}
-
-.finish-setup__document-approved[hidden] {
-    display: none;
-}
-
-.finish-setup__document-rejected {
-    flex: 0 0 auto;
-    margin: 0;
-
-    color: #dc3545;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-}
-
-.finish-setup__document-rejected[hidden] {
-    display: none;
-}
-
-.finish-setup__file-input {
-    position: absolute;
-
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-
-    overflow: hidden;
-
-    clip: rect(0, 0, 0, 0);
-    clip-path: inset(50%);
-
-    white-space: nowrap;
-    border: 0;
-}
-
-.finish-setup__upload-icon {
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
-}
-
-.finish-setup__submit {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 44px;
-    padding: 10px 16px;
-
-    color: var(--finish-grey);
-    background: var(--finish-light-grey);
-    border: 0;
-    border-radius: 50px;
-
-    font-family: inherit;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 20px;
-    letter-spacing: 0;
-    white-space: nowrap;
-
-    cursor: not-allowed;
-}
-
-@media (max-width: 800px) {
-    .finish-setup {
-        align-items: stretch;
-        padding: 20px;
-    }
-
-    .finish-setup__header {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .finish-setup__country {
-        width: 100%;
-        flex-basis: auto;
-    }
-
-    .finish-setup__document {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .finish-setup__upload,
-    .finish-setup__submit {
-        width: 100%;
-    }
-}
-</style>
+                        <style>
+                            .finish-setup,
+                            .finish-setup * {
+                                box-sizing: border-box;
+                            }
+
+                            .finish-setup {
+                                --finish-brand: #5d00ff;
+                                --finish-black: #0b0f14;
+                                --finish-grey: #858789;
+                                --finish-light-grey: #ebecec;
+                                --finish-white: #ffffff;
+
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-end;
+                                gap: 12px;
+
+                                width: 100%;
+                                padding: 24px;
+
+                                background: var(--finish-white);
+                                border: 2px solid var(--finish-brand);
+                                border-radius: 24px;
+
+                                font-family: "Eudoxus Sans", Arial, sans-serif;
+                            }
+
+                            .document-confirmation {
+                                width: 100%;
+                                font-family: Arial, Helvetica, sans-serif;
+                                line-height: 1.25;
+                            }
+
+                            .document-confirmation[hidden] {
+                                display: none !important;
+                            }
+
+                            .document-confirmation__success {
+                                margin-bottom: 7px !important;
+                                color: #198754;
+                                font-size: 16px;
+                                font-weight: 700;
+                            }
+
+                            .document-confirmation__status {
+                                color: #858789;
+                                font-size: 15px;
+                                font-weight: 700;
+                            }
+
+                            .document-confirmation__text {
+                                color: #858789;
+                                font-size: 15px;
+                                font-weight: 400;
+                            }
+
+                            .document-confirmation__link {
+                                color: #4900c9;
+                                font-weight: 700;
+                                text-decoration: underline;
+                            }
+
+                            .document-confirmation__link:hover {
+                                color: #4900c9;
+                            }
+
+                            .document-confirmation__help {
+                                color: #858789;
+                                font-size: 15px;
+                                font-weight: 400;
+                            }
+
+                            .document-limit-message {
+                                font-family: Arial, Helvetica, sans-serif;
+                            }
+
+                            .document-limit-title {
+                                margin: 0 0 14px;
+                                color: #ea334b;
+                                font-size: 32px;
+                                font-weight: 700;
+                                line-height: 1.2;
+                            }
+
+                            .document-limit-description {
+                                margin: 0;
+                                color: #858789;
+                                font-size: 28px;
+                                font-weight: 700;
+                                line-height: 1.3;
+                            }
+
+                            .document-limit-link {
+                                color: #5d00ff;
+                                font-weight: 700;
+                                text-decoration: underline;
+                                text-decoration-thickness: 2px;
+                                text-underline-offset: 3px;
+                            }
+
+                            .document-limit-link:hover {
+                                color: #4700c7;
+                            }
+
+                            .finish-setup[hidden] {
+                                display: none;
+                            }
+
+                            .finish-setup__header {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 12px;
+
+                                width: 100%;
+                            }
+
+                            .finish-setup__heading {
+                                display: flex;
+                                flex: 1 1 0;
+                                flex-direction: column;
+                                align-items: flex-start;
+                                gap: 12px;
+
+                                min-width: 0;
+                            }
+
+                            .finish-setup__title {
+                                width: 100%;
+                                margin: 0;
+
+                                color: #000000;
+                                font-size: 20px;
+                                font-weight: 700;
+                                line-height: 24px;
+                                letter-spacing: 0;
+                            }
+
+                            .finish-setup__subtitle {
+                                width: 100%;
+                                margin: 0;
+
+                                color: var(--finish-grey);
+                                font-size: 14px;
+                                font-weight: 500;
+                                line-height: 20px;
+                                letter-spacing: 0;
+                            }
+
+                            .finish-setup__country {
+                                display: flex;
+                                flex: 0 0 140px;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 10px;
+
+                                width: 140px;
+                                height: 44px;
+                                padding: 12px 14px;
+
+                                background: var(--finish-white);
+                                border: 2px solid var(--finish-light-grey);
+                                border-radius: 8px;
+                            }
+
+                            .finish-setup__country-value {
+                                flex: 1 1 0;
+                                min-width: 0;
+
+                                color: var(--finish-black);
+                                font-size: 14px;
+                                font-weight: 500;
+                                line-height: 20px;
+                            }
+
+                            .finish-setup__country-icon {
+                                width: 24px;
+                                height: 24px;
+                                flex: 0 0 24px;
+
+                                color: var(--finish-grey);
+                            }
+
+                            .finish-setup__documents {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: flex-start;
+
+                                width: 100%;
+                            }
+
+                            .finish-setup__document {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 24px;
+
+                                width: 100%;
+                                padding: 12px 0;
+
+                                border-bottom: 2px solid var(--finish-light-grey);
+                            }
+
+                            .finish-setup__document-content {
+                                display: flex;
+                                flex: 1 1 0;
+                                flex-direction: column;
+                                align-items: flex-start;
+                                justify-content: center;
+                                gap: 4px;
+
+                                min-width: 0;
+                            }
+
+                            .finish-setup__document-title {
+                                width: 100%;
+                                margin: 0;
+                                color: var(--finish-black);
+                            }
+
+                            .finish-setup__document-description {
+                                width: 75%;
+                                margin: 0;
+                                color: var(--finish-grey);
+                            }
+
+                            .finish-setup__formats {
+                                flex: 0 0 auto;
+                                margin: 0;
+                                color: var(--finish-grey);
+                                width: 25%;
+                                overflow-wrap: anywhere;
+                                text-align: right;
+                            }
+
+                            @media (max-width: 767px) {
+                                .finish-setup__formats {
+                                    width: 100%;
+                                }
+                            }
+
+                            .finish-setup__upload {
+                                position: relative;
+
+                                display: inline-flex;
+                                flex: 0 0 auto;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 10px;
+
+                                height: 44px;
+                                padding: 10px 16px;
+
+                                color: var(--finish-brand);
+                                background: var(--finish-white);
+                                border: 2px solid var(--finish-brand);
+                                border-radius: 50px;
+
+                                font-size: 16px;
+                                font-weight: 700;
+                                line-height: 20px;
+                                letter-spacing: 0;
+
+                                cursor: pointer;
+                            }
+
+                            .finish-setup__remove-file {
+                                flex: 0 0 auto;
+                                margin: 0;
+
+                                color: #dc3545;
+                                font-size: 16px;
+                                font-weight: 700;
+                                line-height: 20px;
+                                cursor: pointer;
+                            }
+
+                            .finish-setup__remove-file[hidden] {
+                                display: none;
+                            }
+
+                            .finish-setup__remove-file--uploaded {
+                                color: var(--finish-grey);
+                                cursor: default;
+                            }
+
+                            .finish-setup__sent-status {
+                                margin-left: 8px;
+                                color: #198754;
+                            }
+
+                            .finish-setup__sent-status[hidden] {
+                                display: none;
+                            }
+
+                            .finish-setup__document-approved {
+                                flex: 0 0 auto;
+                                margin: 0;
+
+                                color: #198754;
+                                font-size: 16px;
+                                font-weight: 700;
+                                line-height: 20px;
+                            }
+
+                            .finish-setup__document-approved[hidden] {
+                                display: none;
+                            }
+
+                            .finish-setup__document-rejected {
+                                flex: 0 0 auto;
+                                margin: 0;
+
+                                color: #dc3545;
+                                font-size: 16px;
+                                font-weight: 700;
+                                line-height: 20px;
+                            }
+
+                            .finish-setup__document-rejected[hidden] {
+                                display: none;
+                            }
+
+                            .finish-setup__file-input {
+                                position: absolute;
+
+                                width: 1px;
+                                height: 1px;
+                                padding: 0;
+                                margin: -1px;
+
+                                overflow: hidden;
+
+                                clip: rect(0, 0, 0, 0);
+                                clip-path: inset(50%);
+
+                                white-space: nowrap;
+                                border: 0;
+                            }
+
+                            .finish-setup__upload-icon {
+                                width: 24px;
+                                height: 24px;
+                                flex: 0 0 24px;
+                            }
+
+                            .finish-setup__submit {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+
+                                height: 44px;
+                                padding: 10px 16px;
+
+                                color: var(--finish-grey);
+                                background: var(--finish-light-grey);
+                                border: 0;
+                                border-radius: 50px;
+
+                                font-family: inherit;
+                                font-size: 16px;
+                                font-weight: 700;
+                                line-height: 20px;
+                                letter-spacing: 0;
+                                white-space: nowrap;
+
+                                cursor: not-allowed;
+                            }
+
+                            @media (max-width: 800px) {
+                                .finish-setup {
+                                    align-items: stretch;
+                                    padding: 20px;
+                                }
+
+                                .finish-setup__header {
+                                    align-items: stretch;
+                                    flex-direction: column;
+                                }
+
+                                .finish-setup__country {
+                                    width: 100%;
+                                    flex-basis: auto;
+                                }
+
+                                .finish-setup__document {
+                                    align-items: flex-start;
+                                    flex-direction: column;
+                                    gap: 16px;
+                                }
+
+                                .finish-setup__upload,
+                                .finish-setup__submit {
+                                    width: 100%;
+                                }
+                            }
+                        </style>
 
                         {# Statistiques rapides #}
                         <section
@@ -711,11 +733,11 @@
                             data-dashboard-statistics-url-value="{{ path('agence_immobiliere_dashboard_statistics') }}"
                         >
                             <div class="d-flex align-items-center justify-content-between statistics-header">
-                                <h3 class="dashboard-section-title mb-0">
+                                <h3>
                                     Statistiques
                                 </h3>
 
-                                <div class="d-flex align-items-center statistics-periods">
+                                <div class="d-flex align-items-center statistics-periods d-none d-lg-block">
                                     <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-statistics#selectPeriod">
                                         7 jours
                                     </button>
@@ -750,9 +772,9 @@
                                 {% if not documents_validated %}style="filter: blur(8px) !important; pointer-events: none; user-select: none;"{% endif %}
                             >
 
-                                <div class="col-3">
+                                <div class="col-6 col-lg-3 pr-8">
                                     <div
-                                        class="stat-card statistics-series-toggle"
+                                        class="stat-card stat-card-blue statistics-series-toggle"
                                         role="button"
                                         tabindex="0"
                                         aria-pressed="true"
@@ -760,7 +782,7 @@
                                         data-action="click->dashboard-statistics#toggleSeries"
                                     >
                                         <div class="stat-card-label">
-                                            <i class="icon-building-2 stat-card-icon"></i>
+                                            <i class="icon-user-round stat-card-icon"></i>
 
                                             <span>Vues du profil</span>
                                         </div>
@@ -769,9 +791,9 @@
                                     </div>
                                 </div>
 
-                                <div class="col-3">
+                                <div class="col-6 col-lg-3 px-8">
                                     <div
-                                        class="stat-card statistics-series-toggle"
+                                        class="stat-card stat-card-orange statistics-series-toggle"
                                         role="button"
                                         tabindex="0"
                                         aria-pressed="true"
@@ -788,7 +810,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-3">
+                                <div class="col-6 col-lg-3 px-8 responsive-size">
                                     <div
                                         class="stat-card stat-card-purple statistics-series-toggle"
                                         role="button"
@@ -807,7 +829,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-3">
+                                <div class="col-6 col-lg-3 pl-8 responsive-size">
                                     <div
                                         class="stat-card stat-card-green statistics-series-toggle"
                                         role="button"
@@ -891,8 +913,10 @@
                                         <span class="notification-dot"></span>
 
                                         {% if is_documents_rejected %}
-                                            <a class="notification-text notification-text--link"
-                                               href="{{ path('agence_immobiliere_dashboard', {documents: 1}) }}#documents">
+                                            <a
+                                                class="notification-text notification-text--link"
+                                                href="{{ path('agence_immobiliere_dashboard', {documents: 1}) }}#documents"
+                                            >
                                                 {{ notification.nom }}
                                             </a>
                                         {% else %}
@@ -911,7 +935,7 @@
 
                             </div>
 
-                            <a href="{{ path('agence_immobiliere_notifications') }}" class="p-accent btn notifications-more-button">
+                            <a href="{{ path('agence_immobiliere_notifications') }}" class="p-accent w-auto btn btn-full-white">
                                 Voir plus
                             </a>
                         </section>
@@ -924,12 +948,12 @@
                             data-action="click@window->dashboard-property-performance#closeSortMenuOnOutsideClick keydown.esc@window->dashboard-property-performance#closeSortMenu dashboard-period-changed@window->dashboard-property-performance#syncPeriod"
                         >
                             <div class="properties-performance-header">
-                                <h3 class="dashboard-section-title">
-                                    Performances des annonces
-                                </h3>
+                                <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                                    <h3 class="dashboard-section-title mb-0">
+                                        Performances des annonces
+                                    </h3>
 
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center statistics-periods">
+                                    <div class="align-items-center statistics-periods d-none d-lg-flex ms-auto">
                                         <button type="button" class="statistics-period-button {{ statistics.period == '7d' ? 'active' }}" data-period="7d" data-action="dashboard-property-performance#selectPeriod">
                                             7 jours
                                         </button>
@@ -962,13 +986,19 @@
                                             Personnalisé
                                         </button>
                                     </div>
+                                </div>
 
+                                <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center properties-actions">
                                         <button
                                             type="button"
-                                            class="p-accent btn properties-action-button properties-filter-button"
+                                            class="p-accent btn properties-action-button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#booltsFiltersModal"
+                                            aria-controls="booltsFiltersModal"
+                                            aria-haspopup="dialog"
                                         >
-                                            <span class="properties-filter-count">2</span>
+                                            <span class="properties-filter-count" data-dashboard-property-performance-target="filterCount" hidden></span>
                                             <i class="icon-sliders-horizontal"></i>
                                             Filtres
                                         </button>
@@ -1076,6 +1106,7 @@
                                             Exporter
                                         </a>
                                     </div>
+
                                 </div>
                             </div>
 
@@ -1088,37 +1119,151 @@
                                 <p class="mb-0">Chargement des annonces...</p>
                             </turbo-frame>
 
-                            <div
-                                id="property-performance-custom-period-modal"
-                                class="modal fade"
-                                tabindex="-1"
-                                aria-labelledby="property-performance-custom-period-modal-title"
-                                aria-hidden="true"
-                                data-dashboard-property-performance-target="modal"
-                            >
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h2 id="property-performance-custom-period-modal-title" class="modal-title fs-5">Période personnalisée</h2>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label for="property-performance-start" class="form-label">Date de début</label>
-                                                <input id="property-performance-start" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.start|date('Y-m-d') }}" data-dashboard-property-performance-target="start">
-                                            </div>
-                                            <div>
-                                                <label for="property-performance-end" class="form-label">Date de fin</label>
-                                                <input id="property-performance-end" type="date" class="form-control" max="{{ 'now'|date('Y-m-d') }}" value="{{ statistics.end|date('Y-m-d') }}" data-dashboard-property-performance-target="end">
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                            <button type="button" class="btn btn-primary" data-action="dashboard-property-performance#loadCustomPeriod">Appliquer</button>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div data-dashboard-property-performance-target="filters" data-action="submit->dashboard-property-performance#applyFilters shown.bs.modal->dashboard-property-performance#refreshFilterPreview">
+                                {{ include('composant/_search/_search.html.twig', {
+                                    formModal: performance_filter_form,
+                                    filterModalClass: 'dashboard-property-filter-modal',
+                                    filterFormAttributes: {'data-turbo-frame': 'dashboard-property-performance'},
+                                    filterExtraParameters: {
+                                        period: statistics.period,
+                                        start: statistics.start ? statistics.start|date('Y-m-d') : '',
+                                        end: statistics.end|date('Y-m-d'),
+                                        performance_sort: performance_sort,
+                                        performance_direction: performance_direction|lower,
+                                    },
+                                    filterCountUrl: path('agence_immobiliere_dashboard_performances_count'),
+                                    locationCountryUrl: path('agence_immobiliere_mes_biens_filter_countries'),
+                                    locationCityUrl: path('agence_immobiliere_mes_biens_filter_cities'),
+                                    locationDistrictUrl: path('agence_immobiliere_mes_biens_filter_districts'),
+                                }) }}
                             </div>
+
+<div
+    id="property-performance-custom-period-modal"
+    class="modal fade property-period-modal"
+    tabindex="-1"
+    aria-labelledby="property-performance-custom-period-modal-title"
+    aria-hidden="true"
+    data-dashboard-property-performance-target="modal"
+    data-action="shown.bs.modal->dashboard-property-performance#syncCustomDateLabels"
+>
+    <div class="modal-dialog modal-dialog-centered property-period-modal__dialog">
+        <div class="modal-content property-period-modal__content">
+
+            {# HEADER #}
+            <div class="modal-header property-period-modal__header">
+                <h2
+                    id="property-performance-custom-period-modal-title"
+                    class="modal-title property-period-modal__title"
+                >
+                    Période personnalisée
+                </h2>
+
+                <button
+                    type="button"
+                    class="property-period-modal__close"
+                    data-bs-dismiss="modal"
+                    aria-label="Fermer"
+                >
+                    <i class="icon-x"></i>
+                </button>
+            </div>
+
+            {# BODY #}
+            <div class="modal-body property-period-modal__body">
+
+                <div class="property-period-modal__fields">
+
+                    {# DATE DE DÉBUT #}
+                    <div class="property-period-modal__field">
+
+                        <label
+                            for="property-performance-start"
+                            class="p-accent"
+                        >
+                            Date de début
+                        </label>
+
+                        <div class="property-period-modal__date">
+
+                            <p
+                                class="property-period-modal__date-value mb-0"
+                                data-period-date-label
+                            >
+                                {{ statistics.start|date('d/m/Y') }}
+                            </p>
+
+                            <i class="icon-calendar"></i>
+
+                            <input
+                                id="property-performance-start"
+                                type="date"
+                                class="property-period-modal__native-date"
+                                max="{{ 'now'|date('Y-m-d') }}"
+                                value="{{ statistics.start|date('Y-m-d') }}"
+                                data-dashboard-property-performance-target="start"
+                                data-action="change->dashboard-property-performance#updateCustomDateLabel"
+                                aria-label="Date de début"
+                            >
+
+                        </div>
+                    </div>
+
+                    {# DATE DE FIN #}
+                    <div class="property-period-modal__field">
+
+                        <label
+                            for="property-performance-end"
+                            class="p-accent"
+                        >
+                            Date de fin
+                        </label>
+
+                        <div class="property-period-modal__date">
+
+                            <p
+                                class="property-period-modal__date-value mb-0"
+                                data-period-date-label
+                            >
+                                {{ statistics.end|date('d/m/Y') }}
+                            </p>
+
+                            <i class="icon-calendar"></i>
+
+                            <input
+                                id="property-performance-end"
+                                type="date"
+                                class="property-period-modal__native-date"
+                                max="{{ 'now'|date('Y-m-d') }}"
+                                value="{{ statistics.end|date('Y-m-d') }}"
+                                data-dashboard-property-performance-target="end"
+                                data-action="change->dashboard-property-performance#updateCustomDateLabel"
+                                aria-label="Date de fin"
+                            >
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            {# FOOTER #}
+            <div class="modal-footer property-period-modal__footer">
+
+                <button
+                    type="button"
+                    class="btn-full-blue w-100"
+                    data-action="dashboard-property-performance#loadCustomPeriod"
+                >
+                    Appliquer cette période
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
                         </section>
 
                     </div>

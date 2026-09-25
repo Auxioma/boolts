@@ -1,83 +1,106 @@
-.login {
-
-}
-.login h1 {
-    color: var(--color-black);
+.login {}
+.login h1 {color: var(--color-black);
+    
     font-size: var(--font-size-h2);
+    
     font-weight: 700;
-    line-height: var(--line-height-h2);
-}
-
-.bg-login {
-    background-image: url("../../images/authentification/mon-compte.webp");
+    
+    line-height: var(--line-height-h2);}
+.bg-login {background-image: url("../../images/authentification/mon-compte.webp");
+    
     background-repeat: no-repeat;
+    
     position: absolute;
+    
     inset: 0;
+    
     width: 100%;
+    
     height: 100%;
+    
     background-size: cover;
+    
     background-position: center center;
-    background-size: cover;
-}
-
-.adaptation-image-login {
-    /*height: calc(100dvh - 72px);*/
-    flex: 1;
+    
+    background-size: cover;}
+.adaptation-image-login {flex: 1;
+    
     min-height: 100%;
+    
     position: relative;
-    overflow: hidden;
-}
-
-.otp-container-recu-par-mail {
-    display: flex;
-}
-
-.otp-input-recu-par-mail {
-    width: 48px !important;
+    
+    overflow: hidden;}
+.otp-container-recu-par-mail {display: flex;}
+.otp-input-recu-par-mail {width: 48px !important;
+    
     height: 64px !important;
+    
     text-align: center !important;
+    
     color: #858789 !important;
+    
     font-size: 14px !important;
+    
     font-style: normal !important;
+    
     font-weight: 500 !important;
-    line-height: 20px !important;
-}
-.password-toggle {
-    position: relative;
-}
-
-.password-input {
-    padding-right: 48px;
-}
-
-.password-toggle-button {
-    position: absolute;
+    
+    line-height: 20px !important;}
+.password-toggle {position: relative;}
+.password-input {padding-right: 48px;}
+.password-toggle-button {position: absolute;
+    
     top: 50%;
+    
     right: 16px;
+    
     transform: translateY(-50%);
+    
     width: 24px;
+    
     height: 24px;
+    
     border: 0;
+    
     background: transparent;
+    
     padding: 0;
+    
     font-size: 0;
+    
     cursor: pointer;
-    z-index: 5;
-}
-
-.password-toggle-button::before {
-    content: "";
+    
+    z-index: 5;}
+.password-toggle-button::before {content: "";
+    
     display: block;
+    
     width: 20px;
+    
     height: 20px;
+    
     background-color: #6c757d;
-
-    mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center / contain;
-    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center / contain;
-}
-
-/* Quand le mot de passe est visible */
-.password-toggle:has(input[type="text"]) .password-toggle-button::before {
-    mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center / contain;
-    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center / contain;
-}
+    
+    mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center/contain;
+    
+    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center/contain;}
+.password-toggle:has(input[type="text"]) .password-toggle-button::before {mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center/contain;
+    
+    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center/contain;}
+body.auth-page {background: url("../../images/authentification/real-estate.webp") no-repeat center center fixed;
+    
+    background-size: cover;
+    
+    min-height: 100vh;}
+body.main {min-height: 100vh;}
+body:not(.auth-page) {background: #fff !important;
+    
+    background-image: none !important;
+    
+    background-attachment: initial !important;
+    
+    background-position: initial !important;
+    
+    background-repeat: initial !important;
+    
+    background-size: initial !important;}
