@@ -222,77 +222,86 @@
                                        =========================================== #}
                                     {% if properties|length %}
 
-                                    <div class="property-toolbar mb-24">
+<div class="property-toolbar mb-24 d-flex flex-column flex-xl-row align-items-start align-items-xl-center">
 
-                                        <label class="property-select-all">
+    <label class="property-select-all order-2 order-xl-1 mt-3 mt-xl-0">
 
-                                            <input
-                                                type="checkbox"
-                                                data-mes-biens--property-bulk-actions-target="selectAll"
-                                                data-action="change->mes-biens--property-bulk-actions#toggleAll"
-                                            >
+        <input
+            type="checkbox"
+            data-mes-biens--property-bulk-actions-target="selectAll"
+            data-action="change->mes-biens--property-bulk-actions#toggleAll"
+        >
 
-                                            <span>Tout sélectionner</span>
+        <span>Tout sélectionner</span>
 
-                                            <span
-                                                class="property-selection-count"
-                                                data-mes-biens--property-bulk-actions-target="counter"
-                                            ></span>
+        <span
+            class="property-selection-count"
+            data-mes-biens--property-bulk-actions-target="counter"
+        ></span>
 
-                                        </label>
+    </label>
 
-                                        <div class="property-bulk-actions">
+    <div class="property-bulk-actions order-1 order-xl-2">
 
-                                            {# TODO: action groupée "Booster" — endpoint back-end à implémenter #}
-                                            <button
-                                                type="button"
-                                                class="bulk-action bulk-action--boost"
-                                                disabled
-                                                data-mes-biens--property-bulk-actions-target="action"
-                                            >
-                                                <i class="icon-rocket"></i>
-                                                Booster
-                                            </button>
+        {# TODO: action groupée "Booster" — endpoint back-end à implémenter #}
+        <button
+            type="button"
+            class="bulk-action bulk-action--boost"
+            disabled
+            data-mes-biens--property-bulk-actions-target="action"
+        >
+            <i class="icon-rocket"></i>
+            Booster
+        </button>
 
-                                            <button
-                                                type="button"
-                                                class="bulk-action bulk-action--pause"
-                                                disabled
-                                                data-mes-biens--property-bulk-actions-target="action"
-                                                data-action="click->mes-biens--property-bulk-actions#setAction"
-                                                data-action-value="pause"
-                                            >
-                                                <i class="icon-pause"></i>
-                                                Pause
-                                            </button>
+        <button
+            type="button"
+            class="bulk-action bulk-action--pause"
+            disabled
+            aria-label="Pause"
+            data-mes-biens--property-bulk-actions-target="action"
+            data-action="click->mes-biens--property-bulk-actions#setAction"
+            data-action-value="pause"
+        >
+            <i class="icon-pause"></i>
+            <span class="bulk-action__label d-none d-lg-inline">
+                Pause
+            </span>
+        </button>
 
-                                            <button
-                                                type="button"
-                                                class="bulk-action bulk-action--reactivate"
-                                                disabled
-                                                data-mes-biens--property-bulk-actions-target="action"
-                                                data-action="click->mes-biens--property-bulk-actions#setAction"
-                                                data-action-value="reactivate"
-                                            >
-                                                <i class="icon-play"></i>
-                                                Réactiver
-                                            </button>
+        <button
+            type="button"
+            class="bulk-action bulk-action--reactivate"
+            disabled
+            aria-label="Réactiver"
+            data-mes-biens--property-bulk-actions-target="action"
+            data-action="click->mes-biens--property-bulk-actions#setAction"
+            data-action-value="reactivate"
+        >
+            <i class="icon-play"></i>
+            <span class="bulk-action__label d-none d-lg-inline">
+                Réactiver
+            </span>
+        </button>
 
-                                            <button
-                                                type="button"
-                                                class="bulk-action bulk-action--danger bulk-action--delete"
-                                                disabled
-                                                data-mes-biens--property-bulk-actions-target="action"
-                                                data-action="click->mes-biens--property-bulk-actions#setAction"
-                                                data-action-value="delete"
-                                            >
-                                                <i class="icon-trash"></i>
-                                                Supprimer
-                                            </button>
+        <button
+            type="button"
+            class="bulk-action bulk-action--danger bulk-action--delete"
+            disabled
+            aria-label="Supprimer"
+            data-mes-biens--property-bulk-actions-target="action"
+            data-action="click->mes-biens--property-bulk-actions#setAction"
+            data-action-value="delete"
+        >
+            <i class="icon-trash"></i>
+            <span class="bulk-action__label d-none d-lg-inline">
+                Supprimer
+            </span>
+        </button>
 
-                                        </div>
+    </div>
 
-                                    </div>
+</div>
 
                                     {% endif %}
 

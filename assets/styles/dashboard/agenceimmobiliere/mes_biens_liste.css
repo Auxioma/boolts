@@ -327,10 +327,18 @@
     color: #5d00ff;}
 
 @media (max-width: 991px) {
+    .agence-mes-biens-list .bulk-action--pause .bulk-action__label,
+    .agence-mes-biens-list .bulk-action--reactivate .bulk-action__label,
+    .agence-mes-biens-list .bulk-action--delete .bulk-action__label {
+        display: none;
+    }
+
     .agence-mes-biens-list .bulk-action--pause,
     .agence-mes-biens-list .bulk-action--reactivate,
     .agence-mes-biens-list .bulk-action--delete {
-        display: none;
+        justify-content: center;
+        width: 44px;
+        padding: 0;
     }
 }
 
