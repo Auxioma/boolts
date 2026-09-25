@@ -28,12 +28,12 @@
                             </span>
                             <span class="property-status property-status-published">{{ property.statut.value|capitalize }}</span>
                             {% if property.id in boosted_property_ids %}
-                                <div class="property-status property-status-boosted">Boost</div>
+                                <div class="property-status property-status-boosted">{{ 'agency_dashboard.boost'|trans }}</div>
                             {% endif %}
                         </div>
                         <p class="property-location">
                             <strong>{{ property.ville }}, {{ property.pays }}</strong>
-                            <span>- Créée le {{ property.createdAt|date('d/m/Y') }}</span>
+                            <span>- {{ 'agency_dashboard.performance.created_at'|trans }} {{ property.createdAt|date('d/m/Y') }}</span>
                         </p>
                         <span class="property-reference">{{ property.referenceInterne }}</span>
                     </div>
@@ -58,7 +58,7 @@
                         data-bs-target="#propertyPerformanceBoostModal{{ property.id }}"
                     >
                         <i class="icon-zap"></i>
-                        Booster
+                        {{ 'agency_dashboard.boost'|trans }}
                     </button>
                 {% endif %}
 
@@ -79,54 +79,52 @@
                                     id="propertyPerformanceBoostModalTitle{{ property.id }}"
                                     class="modal-title fs-5"
                                 >
-                                    Booster cette annonce
+                                    {{ 'agency_dashboard.boost.listing_title'|trans }}
                                 </h2>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'agency_dashboard.close'|trans }}"></button>
                             </div>
 
                             <div class="modal-body">
                                 <p class="property-performance-boost-listing">
-                                    {{ property.titreDuLogement ?: property.referenceInterne ?: 'Annonce sans titre' }}
+                                    {{ property.titreDuLogement ?: property.referenceInterne ?: ('agency_dashboard.performance.untitled'|trans) }}
                                 </p>
 
                                 {% if boostPreview.available < 1 %}
                                     <p class="property-performance-boost-empty">
-                                        Vous n’avez plus de boost disponible.
-                                        Achetez un pack boost pour mettre cette annonce en avant.
+                                        {{ 'agency_dashboard.boost.empty'|trans }}
                                     </p>
                                 {% else %}
                                     <ul class="property-performance-boost-details">
                                         <li>
-                                            <span>Boosts restants</span>
+                                            <span>{{ 'agency_dashboard.boost.remaining'|trans }}</span>
                                             <strong>{{ boostPreview.available }}</strong>
                                         </li>
                                         <li>
-                                            <span>Durée de mise en avant</span>
+                                            <span>{{ 'agency_dashboard.boost.duration'|trans }}</span>
                                             <strong>
                                                 {{ boostPreview.durationDays }}
-                                                jour{{ boostPreview.durationDays > 1 ? 's' : '' }}
+                                                {{ (boostPreview.durationDays > 1 ? 'agency_dashboard.boost.days' : 'agency_dashboard.boost.day')|trans }}
                                             </strong>
                                         </li>
                                         <li>
-                                            <span>Boost décompté sur</span>
+                                            <span>{{ 'agency_dashboard.boost.charged_on'|trans }}</span>
                                             <strong>
-                                                {{ boostPreview.source == 'subscription'
-                                                    ? 'votre forfait'
-                                                    : 'vos boosts achetés' }}
+                                                {{ (boostPreview.source == 'subscription'
+                                                    ? 'agency_dashboard.boost.subscription'
+                                                    : 'agency_dashboard.boost.purchased')|trans }}
                                             </strong>
                                         </li>
                                     </ul>
 
                                     <p class="property-performance-boost-warning">
-                                        Cette action est définitive : le boost sera activé
-                                        immédiatement et décompté de votre solde.
+                                        {{ 'agency_dashboard.boost.warning'|trans }}
                                     </p>
                                 {% endif %}
                             </div>
 
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                    Annuler
+                                    {{ 'agency_dashboard.cancel'|trans }}
                                 </button>
 
                                 {% if boostPreview.available >= 1 %}
@@ -147,7 +145,7 @@
                                         >
 
                                         <button type="submit" class="btn btn-primary">
-                                            Confirmer le boost
+                                            {{ 'agency_dashboard.boost.confirm'|trans }}
                                         </button>
                                     </form>
                                 {% else %}
@@ -156,7 +154,7 @@
                                         href="{{ path('agence_immobiliere_options') }}#boosts"
                                         data-turbo-frame="_top"
                                     >
-                                        Voir les packs boost
+                                        {{ 'agency_dashboard.boost.packs'|trans }}
                                     </a>
                                 {% endif %}
                             </div>
@@ -165,7 +163,7 @@
                 </div>
             {% endif %}
         {% else %}
-            <p class="mb-0">Aucune annonce à afficher.</p>
+            <p class="mb-0">{{ 'agency_dashboard.performance.empty'|trans }}</p>
         {% endfor %}
     </div>
 
