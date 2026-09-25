@@ -45,6 +45,78 @@
                             {# ===================================================
                                BARRE DE RECHERCHE / FILTRES / TRI / DÉPÔT
                                =================================================== #}
+                               <div class="property-tools mb-24 d-flex justify-content-end align-items-center gap-2">
+
+                                <button
+                                    type="button"
+                                    class="p-accent btn-dashboard-filter"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#booltsFiltersModal"
+                                >
+                                    <i class="icon-sliders-horizontal"></i>
+                                    <span class="d-none d-lg-inline">Filtres</span>
+                                </button>
+
+                                {% set routeName = app.request.attributes.get('_route') %}
+                                {% set baseParams = app.request.query.all|merge({page: 1}) %}
+
+                                {% set currentSort = sortValue|default('p.updatedAt') %}
+                                {% set currentDirection = directionValue|default('DESC')|lower %}
+
+                                {% set sortOptions = [
+                                    {sort: 'p.updatedAt', direction: 'desc', label: 'Récente → ancienne', short: 'Récente → ancienne'},
+                                    {sort: 'p.updatedAt', direction: 'asc', label: 'Ancienne → récente', short: 'Ancienne → récente'},
+                                ] %}
+
+                                {% set currentLabel = 'Récente → ancienne' %}
+                                {% for option in sortOptions %}
+                                    {% if option.sort == currentSort and option.direction == currentDirection %}
+                                        {% set currentLabel = option.short %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                <div class="agence-filter-sort" data-controller="agence-sort">
+
+                                    <button
+                                        type="button"
+                                        class="p-accent btn-dashboard-filter"
+                                        data-action="click->agence-sort#toggle"
+                                        data-agence-sort-target="button"
+                                        aria-expanded="false"
+                                    >
+                                        <i class="icon-arrow-down-up"></i>
+                                        <span class="d-none d-lg-inline">Tri : {{ currentLabel }} </span> 
+                                    </button>
+
+                                    <div
+                                        class="agence-filter-sort__dropdown d-none"
+                                        data-agence-sort-target="menu"
+                                        role="menu"
+                                        aria-label="Trier les annonces"
+                                    >
+                                        {% for option in sortOptions %}
+                                            <a
+                                                href="{{ path(routeName, baseParams|merge({sort: option.sort, direction: option.direction})) }}"
+                                                class="agence-filter-sort__item {{ option.sort == currentSort and option.direction == currentDirection ? 'agence-filter-sort__item--active' : '' }}"
+                                                role="menuitem"
+                                            >
+                                                {{ option.label }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
+
+                                <a
+                                    href="{{ path('agence_immobiliere_mes_biens', {token: random(2147483647)}) }}"
+                                    class="p-accent btn-deposer-annonce"
+                                >
+                                    <i class="icon-plus"></i>
+                                    Déposer une annonce
+                                </a>
+                                </div>
+
+
                             <div class="property-tools mb-24">
 
                                 <form
@@ -123,78 +195,6 @@
 
                                 </form>
 
-                                <button
-                                    type="button"
-                                    class="p-accent btn-dashboard-filter"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#booltsFiltersModal"
-                                >
-                                    <i class="icon-sliders-horizontal"></i>
-                                    Filtres
-                                </button>
-
-                                {% set routeName = app.request.attributes.get('_route') %}
-                                {% set baseParams = app.request.query.all|merge({page: 1}) %}
-
-                                {% set currentSort = sortValue|default('p.updatedAt') %}
-                                {% set currentDirection = directionValue|default('DESC')|lower %}
-
-                                {% set sortOptions = [
-                                    {sort: 'p.updatedAt', direction: 'desc', label: 'Date de modification (récent → ancien)', short: 'Modif. récente → ancienne'},
-                                    {sort: 'p.updatedAt', direction: 'asc', label: 'Date de modification (ancien → récent)', short: 'Modif. ancienne → récente'},
-                                    {sort: 'p.views', direction: 'desc', label: 'Vues (plus → moins)', short: 'Vues : plus → moins'},
-                                    {sort: 'p.views', direction: 'asc', label: 'Vues (moins → plus)', short: 'Vues : moins → plus'},
-                                    {sort: 'favorisCount', direction: 'desc', label: 'Favoris (plus → moins)', short: 'Favoris : plus → moins'},
-                                    {sort: 'favorisCount', direction: 'asc', label: 'Favoris (moins → plus)', short: 'Favoris : moins → plus'},
-                                ] %}
-
-                                {% set currentLabel = 'Modif. récente → ancienne' %}
-                                {% for option in sortOptions %}
-                                    {% if option.sort == currentSort and option.direction == currentDirection %}
-                                        {% set currentLabel = option.short %}
-                                    {% endif %}
-                                {% endfor %}
-
-                                <div class="agence-filter-sort" data-controller="agence-sort">
-
-                                    <button
-                                        type="button"
-                                        class="p-accent btn-dashboard-filter"
-                                        data-action="click->agence-sort#toggle"
-                                        data-agence-sort-target="button"
-                                        aria-expanded="false"
-                                    >
-                                        <i class="icon-arrow-down-up"></i>
-                                        Tri : {{ currentLabel }}
-                                    </button>
-
-                                    <div
-                                        class="agence-filter-sort__dropdown d-none"
-                                        data-agence-sort-target="menu"
-                                        role="menu"
-                                        aria-label="Trier les annonces"
-                                    >
-                                        {% for option in sortOptions %}
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({sort: option.sort, direction: option.direction})) }}"
-                                                class="agence-filter-sort__item {{ option.sort == currentSort and option.direction == currentDirection ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                {{ option.label }}
-                                            </a>
-                                        {% endfor %}
-                                    </div>
-
-                                </div>
-
-                                <a
-                                    href="{{ path('agence_immobiliere_mes_biens', {token: random(2147483647)}) }}"
-                                    class="p-accent btn-deposer-annonce"
-                                >
-                                    <i class="icon-plus"></i>
-                                    Déposer une annonce
-                                </a>
-
                             </div>
 
                             {% if drafts is not empty or properties|length %}
@@ -256,7 +256,7 @@
 
                                             <button
                                                 type="button"
-                                                class="bulk-action"
+                                                class="bulk-action bulk-action--pause"
                                                 disabled
                                                 data-mes-biens--property-bulk-actions-target="action"
                                                 data-action="click->mes-biens--property-bulk-actions#setAction"
@@ -268,7 +268,7 @@
 
                                             <button
                                                 type="button"
-                                                class="bulk-action"
+                                                class="bulk-action bulk-action--reactivate"
                                                 disabled
                                                 data-mes-biens--property-bulk-actions-target="action"
                                                 data-action="click->mes-biens--property-bulk-actions#setAction"
@@ -280,7 +280,7 @@
 
                                             <button
                                                 type="button"
-                                                class="bulk-action bulk-action--danger"
+                                                class="bulk-action bulk-action--danger bulk-action--delete"
                                                 disabled
                                                 data-mes-biens--property-bulk-actions-target="action"
                                                 data-action="click->mes-biens--property-bulk-actions#setAction"

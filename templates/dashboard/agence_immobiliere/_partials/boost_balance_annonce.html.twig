@@ -16,6 +16,7 @@
 {% else %}
     <a href="#" class="p-accent btn dashboard-boost-button">
         <i class="icon-building-2"></i>
-        Annonces restantes : {{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}
+        <span class="dashboard-annonce-label d-none d-md-inline">Annonces restantes :</span>
+        <span>{{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}</span>
     </a>
 {% endif %}

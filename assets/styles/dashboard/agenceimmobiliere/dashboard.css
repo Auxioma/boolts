@@ -80,6 +80,13 @@
     color: #5d00ff;
 }
 
+@media (max-width: 767px) {
+    .dashboard-annonce-label,
+    .dashboard-boost-label {
+        display: none !important;
+    }
+}
+
 .dashboard-boost-button:hover,
 .notifications-more-button:hover,
 .property-boost-button:hover {
