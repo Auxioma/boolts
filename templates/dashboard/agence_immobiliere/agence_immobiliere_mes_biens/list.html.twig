@@ -19,10 +19,10 @@
 
             {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-            <div class="col-10 p-48 bg-white">
+            <div class="col-10 col-md-10 col-12 dashboard-main bg-white">
 
                 <div class="row">
-                    <div class="col-10 mx-auto">
+                    <div class="col-12 col-md-10 mx-auto">
 
                         <div class="agence-mes-biens-list">
 
@@ -33,21 +33,14 @@
 
                                 <h2>Mes biens</h2>
 
-                                <div class="mes-biens-badges">
+                            <div class="d-flex align-items-center">
+                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
 
-                                    <span class="mes-biens-badge">
-                                        <i class="icon-building-2" aria-hidden="true"></i>
-                                        Annonces restantes : {{ annoncesRestantes is null ? '∞' : annoncesRestantes }}
-                                    </span>
-
-                                    <span class="mes-biens-badge">
-                                        <i class="icon-zap" aria-hidden="true"></i>
-                                        Boost : {{ boostsRestants }}
-                                    </span>
-
-                                </div>
+                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
 
                             </div>
+
+                            </div> 
 
                             {# ===================================================
                                BARRE DE RECHERCHE / FILTRES / TRI / DÉPÔT
