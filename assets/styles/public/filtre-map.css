@@ -14,7 +14,7 @@
     overflow: hidden;
     
     background: #e9eef1;}
-.search-card-map-panel--fixed {position: fixed;}
+.search-card-map-results .search-card-map-panel {top: var(--search-card-map-sticky-top,calc(var(--search-card-toolbar-height,85px) + 20px));}
 .search-card-map-column {align-self: stretch;}
 .search-card-mapbox {width: 100%;
     
@@ -212,7 +212,7 @@
     pointer-events: none;
     
     transition: opacity .18s ease;}
-@media (max-width: 991.98px) {.search-card-map-panel {position: relative;
+@media (max-width: 991.98px) {.search-card-map-panel, .search-card-map-results .search-card-map-panel {position: relative;
         
         top: auto;
 

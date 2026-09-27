@@ -56,34 +56,13 @@ export default class extends Controller {
         this.boundsRequestController = null;
         this.boundsRequestTimeout = null;
         this.mapResizeTimeout = null;
-        this.stickyRafId = null;
-        this.stickyStartY = null;
 
         this.initialMapFitDone = false;
         this.mapExpanded = false;
 
-        this.onStickyScroll = this.requestStickyUpdate.bind(this);
-        this.onStickyResize = this.requestStickyUpdate.bind(this);
-
-        window.addEventListener('scroll', this.onStickyScroll, {
-            passive: true,
-        });
+        this.onStickyResize = this.updateStickyTop.bind(this);
         window.addEventListener('resize', this.onStickyResize);
-
-        this.stickyResizeObserver = new ResizeObserver(() => {
-            this.requestStickyUpdate();
-        });
-
-        if (this.hasMapColumnTarget) {
-            this.stickyResizeObserver.observe(this.mapColumnTarget);
-        }
-
-        if (this.hasMapPanelTarget) {
-            this.stickyResizeObserver.observe(this.mapPanelTarget);
-        }
-
-        this.stickyResizeObserver.observe(this.element);
-        this.requestStickyUpdate();
+        this.updateStickyTop();
 
         this.loadCssOnce(MAPBOX_CSS_URLS[0]);
 
@@ -103,24 +82,14 @@ export default class extends Controller {
     disconnect() {
         window.clearTimeout(this.boundsRequestTimeout);
         window.clearTimeout(this.mapResizeTimeout);
-
-        window.removeEventListener('scroll', this.onStickyScroll);
         window.removeEventListener('resize', this.onStickyResize);
-
-        if (this.stickyResizeObserver) {
-            this.stickyResizeObserver.disconnect();
-        }
-
-        if (this.stickyRafId) {
-            window.cancelAnimationFrame(this.stickyRafId);
-        }
+        this.mapPanelTarget.style.removeProperty('--search-card-map-sticky-top');
 
         if (this.boundsRequestController) {
             this.boundsRequestController.abort();
             this.boundsRequestController = null;
         }
 
-        this.resetSticky();
         this.clearMarkers();
 
         if (this.map) {
@@ -226,7 +195,6 @@ export default class extends Controller {
 
         this.updateExpandButton(true);
         this.hidePreview();
-        this.requestStickyUpdate();
         this.resizeMapAfterLayoutChange();
     }
 
@@ -282,124 +250,14 @@ export default class extends Controller {
 
         this.updateExpandButton(false);
         this.hidePreview();
-        this.requestStickyUpdate();
         this.resizeMapAfterLayoutChange();
     }
 
-    requestStickyUpdate() {
-        if (this.stickyRafId) {
-            return;
-        }
-
-        this.stickyRafId = window.requestAnimationFrame(() => {
-            this.stickyRafId = null;
-            this.updateStickyPosition();
-        });
-    }
-
-    updateStickyPosition() {
-        if (
-            !this.hasMapPanelTarget ||
-            !this.hasMapColumnTarget
-        ) {
-            return;
-        }
-
-        const isDesktop = window.innerWidth >= 992;
-        const shouldStick = isDesktop && !this.mapExpanded;
-
-        if (!shouldStick) {
-            this.resetSticky();
-
-            return;
-        }
-
-        const panelRect = this.mapPanelTarget.getBoundingClientRect();
-        const top = this.getStickyTop();
-        const panelDocumentTop = panelRect.top + window.scrollY;
-
-        if (this.stickyStartY === null) {
-            this.stickyStartY = panelDocumentTop;
-        }
-
-        if (
-            this.mapPanelTarget.classList.contains(
-                'search-card-map-panel--fixed'
-            ) &&
-            window.scrollY + top < this.stickyStartY
-        ) {
-            this.resetSticky();
-
-            return;
-        }
-
-        if (
-            this.mapPanelTarget.classList.contains(
-                'search-card-map-panel--fixed'
-            ) ||
-            panelRect.top <= top
-        ) {
-            const width = panelRect.width;
-            const left = panelRect.left;
-
-            this.mapPanelTarget.classList.remove('sticky-lg-top');
-            this.mapPanelTarget.classList.add(
-                'search-card-map-panel--fixed'
-            );
-            this.mapPanelTarget.style.top = `${top}px`;
-            this.mapPanelTarget.style.left = `${left}px`;
-            this.mapPanelTarget.style.width = `${width}px`;
-
-            return;
-        }
-
-        this.mapPanelTarget.classList.remove('position-absolute');
-        this.mapPanelTarget.classList.remove(
-            'search-card-map-panel--fixed'
-        );
-        this.mapPanelTarget.classList.add('sticky-lg-top');
-        this.mapPanelTarget.style.top = '';
-    }
-
-    getStickyTop() {
-        const computedStyle = window.getComputedStyle(
-            this.mapPanelTarget
-        );
-        const toolbarHeight = Number.parseFloat(
-            computedStyle.getPropertyValue(
-                '--search-card-toolbar-height'
-            )
-        );
-
-        if (Number.isFinite(toolbarHeight)) {
-            return toolbarHeight + 20;
-        }
-
-        const toolbar = document.querySelector('.search-card-toolbar');
-        const measuredToolbarHeight = toolbar
-            ? toolbar.getBoundingClientRect().height
-            : 0;
-
-        return measuredToolbarHeight + 20;
-    }
-
-    resetSticky() {
-        if (
-            !this.hasMapPanelTarget ||
-            !this.hasMapColumnTarget
-        ) {
-            return;
-        }
-
-        this.mapPanelTarget.classList.remove('position-absolute');
-        this.mapPanelTarget.classList.remove(
-            'search-card-map-panel--fixed'
-        );
-        this.mapPanelTarget.classList.add('sticky-lg-top');
-        this.mapPanelTarget.style.removeProperty('top');
-        this.mapPanelTarget.style.removeProperty('left');
-        this.mapPanelTarget.style.removeProperty('width');
-        this.stickyStartY = null;
+    updateStickyTop() {
+        const column = this.mapColumnTarget;
+        const paddingTop = Number.parseFloat(window.getComputedStyle(column).paddingTop) || 0;
+        const initialTop = column.getBoundingClientRect().top + window.scrollY + paddingTop;
+        this.mapPanelTarget.style.setProperty('--search-card-map-sticky-top', `${initialTop}px`);
     }
 
     updateExpandButton(isExpanded) {
