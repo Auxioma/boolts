@@ -746,6 +746,11 @@
     .search-card-layout {grid-template-columns: minmax(0,1fr) minmax(0,1fr);}
     .search-card-map-panel {height: 560px;}}
 @media (max-width: 991.98px) {.search-card-page {--search-card-toolbar-height: 76px;}
+    .search-card-page .search-card-back {display: flex;
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);}
     body.search-card-map-view .boolts-mobile-tabbar {display: none;}
     .search-card-page .search-card-switch, .bt-research-page .search-card-switch {position: fixed;
         left: 50%;
@@ -797,13 +802,6 @@
     .search-card-toolbar-inner {width: 100%;
         
         padding: 10px 16px 10px 44px;}
-    .search-card-back {position: absolute;
-        
-        left: 8px;
-        
-        top: 50%;
-        
-        transform: translateY(-50%);}
     .search-card-field {height: 44px;
         
         padding: 8px 8px 8px 18px;}
