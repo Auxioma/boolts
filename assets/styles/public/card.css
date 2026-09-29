@@ -741,13 +741,20 @@
     
     text-decoration: none;}
 .search-card-mobile-tabbar-link.search-card-is-active {color: var(--search-card-primary);}
-@media (max-width: 1199.98px) {.search-card-toolbar-inner, .search-card-container {width: calc(100% - 60px);}
+@media (max-width: 1199.98px) {.search-card-toolbar-inner {width: calc(100% - 60px);}
     .search-card-toolbar-inner {gap: 24px;}
     .search-card-layout {grid-template-columns: minmax(0,1fr) minmax(0,1fr);}
     .search-card-map-panel {height: 560px;}}
 @media (max-width: 991.98px) {.search-card-page {--search-card-toolbar-height: 76px;}
+    body.search-card-map-view .boolts-mobile-tabbar {display: none;}
+    .search-card-page .search-card-switch, .bt-research-page .search-card-switch {position: fixed;
+        left: 50%;
+        bottom: 18px;
+        z-index: 70;
+        transform: translateX(-50%);
+        box-shadow: 0 4px 2px rgba(0,0,0,.08);}
     .search-card-toolbar {height: 76px;}
-    .search-card-toolbar-inner, .search-card-container {width: calc(100% - 32px);}
+    .search-card-toolbar-inner {width: calc(100% - 32px);}
     .search-card-toolbar-inner {gap: 14px;}
     .search-card-field {height: 52px;
         
@@ -760,7 +767,7 @@
         
         padding: 0;}
     .search-card-filter-text {display: none;}
-    .search-card-main {padding-top: calc(var(--search-card-toolbar-height) + 32px);}
+    .search-card-main {padding-top: calc(var(--search-card-toolbar-height) + 25px);}
     .search-card-title {margin-bottom: 24px;}
     .search-card-layout {grid-template-columns: 1fr;
         
@@ -830,8 +837,7 @@
         
         min-height: 440px;}
     .search-card-pagination {padding: 40px 0 60px;}}
-@media (max-width: 575.98px) {.search-card-container {width: calc(100% - 32px);}
-    .search-card-title {font-size: 18px;
+@media (max-width: 575.98px) {.search-card-title {font-size: 18px;
         
         line-height: 24px;}
     .search-card-map-panel {height: 360px;}
@@ -841,6 +847,7 @@
         
         min-height: 430px;}
     .search-card-pagination a:nth-of-type(4), .search-card-pagination a:nth-of-type(5), .search-card-pagination span {display: none;}}
+@media (max-width: 766.98px) {.bt-research-page .search-card-switch {bottom: 98px;}}
 .mapboxgl-ctrl-top-right {top: 76px !important;}
 .mapboxgl-ctrl-top-right .mapboxgl-ctrl {height: 90px;
     
