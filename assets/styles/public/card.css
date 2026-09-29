@@ -152,25 +152,15 @@
 
 .search-card-submit {
     width: 44px;
-
     height: 44px;
-
     flex: 0 0 44px;
-
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     border: 0;
-
     border-radius: 50%;
-
     background: var(--search-card-primary);
-
     color: var(--search-card-white);
-
     padding: 0;
 }
 
@@ -1069,14 +1059,17 @@
     }
 }
 
+@media (max-width: 991px) {
+        .search-card-mobile-only {
+        display: flex;
+    }
+}
 @media (max-width: 767.98px) {
     .search-card-desktop-only {
         display: none;
     }
 
-    .search-card-mobile-only {
-        display: flex;
-    }
+
 
     .search-card-page {
         --search-card-toolbar-height: 64px;
@@ -1176,11 +1169,7 @@
     }
 }
 
-@media (max-width: 766.98px) {
-    .bt-research-page .search-card-switch {
-        bottom: 98px;
-    }
-}
+
 
 .mapboxgl-ctrl-top-right {
     top: 76px !important;
@@ -1198,4 +1187,8 @@
 
 .mapboxgl-ctrl-group button+button {
     border-top: initial !important;
+}
+
+.search-card-mobile-only .icon-chevron-left::before {
+    font-size: 24px;
 }

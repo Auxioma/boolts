@@ -6,7 +6,7 @@
 #}
 
 <section class="bt-results-section">
-    <div class="container">
+    <div class="container-md">
 
         <h1 class="bt-results-title">
             {{ totalResults }} logement{{ totalResults > 1 ? 's' : '' }} trouvé{{ totalResults > 1 ? 's' : '' }}
@@ -100,7 +100,7 @@
                     : '#'
                 %}
 
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-sm-6 col-md-4">
 
                     <twig:Property:Card
                         title="{{ propertyTitle }}"

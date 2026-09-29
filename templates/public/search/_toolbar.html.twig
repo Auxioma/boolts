@@ -9,29 +9,148 @@
 {% set mapbox_public_token = mapbox_public_token|default('') %}
 {% set totalResults = search is defined and search is not null ? search.getTotalItemCount : 0 %}
 
-<section class="{{ currentView == 'map' ? 'search-card-toolbar' : 'bt-research-sticky-bar' }} py-14" aria-label="Recherche et filtres">
+{#
+    ================================================================
+    CSS MANQUANT UNIQUEMENT POUR LA VUE LISTE
+
+    Tout le design search-card-* existe déjà dans :
+    assets/styles/public/card.css
+
+    Ici on corrige uniquement :
+    - les variables CSS absentes de .bt-research-page
+    - position fixed -> sticky pour la liste
+    - position sous la navbar
+    ================================================================
+#}
+
+<style>
+    .bt-research-page .search-card-toolbar {
+        --search-card-toolbar-height: 88px;
+        --search-card-primary: #5d00ff;
+        --search-card-primary-soft: #dfcbff;
+        --search-card-text: #0b0f14;
+        --search-card-muted: #858789;
+        --search-card-border: #ebecec;
+        --search-card-light: #f8f8f8;
+        --search-card-white: #fff;
+
+        position: sticky;
+
+        /*
+             * La topbar du projet est déjà sticky à top: 0.
+             * On place donc la toolbar recherche juste dessous.
+             */
+        top: var(--topbar-height, 72px);
+
+        /*
+             * Navbar = 1030 dans layouts/topbar.css.
+             * La toolbar reste volontairement en dessous.
+             */
+        z-index: 1020;
+    }
+
+    /*
+         * La colonne recherche doit pouvoir se réduire correctement.
+         */
+    .bt-research-page .search-card-search-column {
+        min-width: 0;
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    /*
+         * Le formulaire prend toute la largeur de sa colonne.
+         */
+    .bt-research-page .search-card-form {
+        width: 100%;
+    }
+
+    /*
+         * Les propositions Mapbox passent devant le contenu.
+         */
+    .bt-research-page .search-card-results {
+        z-index: 1050;
+    }
+
+    /*
+         * Tablette.
+         */
+    @media (max-width: 991.98px) {
+        .bt-research-page .search-card-toolbar {
+            --search-card-toolbar-height: 76px;
+
+            top: var(--topbar-height, 72px);
+        }
+
+        .bt-research-page .search-card-search-column {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+    }
+
+    /*
+         * Mobile.
+         */
+    @media (max-width: 767.98px) {
+        .bt-research-page .search-card-toolbar {
+            --search-card-toolbar-height: 64px;
+
+            top: var(--topbar-height, 72px);
+        }
+    }
+</style>
+
+
+<section
+    class="search-card-toolbar py-14"
+    aria-label="Recherche et filtres"
+>
     <div class="container-lg">
+
         <div class="row">
 
-            {% if currentView == 'map' %}
-                <a href="{{ path('app_home') }}" class="search-card-back search-card-mobile-only" aria-label="Retour">
-                    <i class="icon-chevron-left" aria-hidden="true"></i>
-                </a>
-            {% else %}
-                <a href="{{ path('app_home') }}" class="bt-research-back-btn d-lg-none" aria-label="Retour">
-                    <i class="icon-chevron-left" aria-hidden="true"></i>
-                </a>
-            {% endif %}
+            {#
+                ======================================================
+                BOUTON RETOUR
+                Même design que la partie MAP
+                ======================================================
+            #}
 
-            <div class="col-auto col-lg-8{{ currentView == 'map' ? ' search-card-search-column' : ' search-card-search-column ' }}">
+            <a
+                href="{{ path('app_home') }}"
+                class="search-card-back search-card-mobile-only"
+                aria-label="Retour"
+            >
+                <i
+                    class="icon-chevron-left"
+                    aria-hidden="true"
+                ></i>
+            </a>
+
+
+            {#
+                ======================================================
+                RECHERCHE
+                ======================================================
+            #}
+
+            <div class="col-auto search-card-search-column">
+
                 {{ form_start(form, {
                     attr: {
-                        class: currentView == 'map' ? 'search-card-form' : 'home-bt-search-bar',
+                        class: 'search-card-form',
                         'data-controller': 'home-bt-mapbox-search',
                         'data-home-bt-mapbox-search-token-value': mapbox_public_token|default(''),
                         'data-home-bt-mapbox-search-language-value': app.request.locale|default('fr'),
                     },
                 }) }}
+
+
+                {#
+                    ==================================================
+                    TYPE DE TRANSACTION
+                    ==================================================
+                #}
 
                 {{ form_widget(form.transactionType, {
                     attr: {
@@ -40,11 +159,18 @@
                     },
                 }) }}
 
-                <div class="{{ currentView == 'map' ? 'search-card-field' : 'home-bt-search-bar__field' }}">
+
+                {#
+                    ==================================================
+                    CHAMP RECHERCHE
+                    ==================================================
+                #}
+
+                <div class="search-card-field">
 
                     {{ form_widget(form.filter, {
                         attr: {
-                            class: currentView == 'map' ? 'search-card-input' : '',
+                            class: 'search-card-input',
                             autocomplete: 'off',
                             placeholder: 'search.location.placeholder'|trans,
                             'data-home-bt-mapbox-search-target': 'input',
@@ -52,18 +178,61 @@
                         },
                     }) }}
 
-                    <button type="submit" class="{{ currentView == 'map' ? 'search-card-submit' : '' }}" aria-label="{{ 'search.submit'|trans }}">
-                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" class="{{ currentView == 'map' ? 'search-card-icon' : '' }}">
-                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
-                            <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+
+                    {#
+                        ==============================================
+                        BOUTON RECHERCHE
+                        ==============================================
+                    #}
+
+                    <button
+                        type="submit"
+                        class="search-card-submit"
+                        aria-label="{{ 'search.submit'|trans }}"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                            class="search-card-icon"
+                        >
+                            <circle
+                                cx="11"
+                                cy="11"
+                                r="7"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            ></circle>
+
+                            <path
+                                d="M20 20l-3.5-3.5"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                            ></path>
                         </svg>
                     </button>
 
+
+                    {#
+                        ==============================================
+                        RESULTATS MAPBOX
+                        ==============================================
+                    #}
+
                     <ul
-                        class="{{ currentView == 'map' ? 'search-card-results' : 'home-bt-search-bar__results' }}"
+                        class="search-card-results"
                         data-home-bt-mapbox-search-target="results"
                     ></ul>
+
                 </div>
+
+
+                {#
+                    ==================================================
+                    VALEURS CACHEES MAPBOX
+                    ==================================================
+                #}
 
                 {{ form_widget(form.selectedValue, {
                     attr: {
@@ -131,29 +300,78 @@
                     },
                 }) }}
 
+
+                {#
+                    ==================================================
+                    LOCALE
+                    ==================================================
+                #}
+
                 {% if form.selectedLocale is defined %}
+
                     {{ form_widget(form.selectedLocale, {
                         value: app.request.locale|default('fr'),
                         attr: {
                             'data-home-bt-mapbox-search-target': 'selectedLocale',
                         },
                     }) }}
+
                 {% endif %}
 
+
+                {#
+                    ==================================================
+                    LOCATION JSON
+                    ==================================================
+                #}
+
                 {% if form.selectedLocationJson is defined %}
+
                     {{ form_widget(form.selectedLocationJson, {
                         attr: {
                             'data-home-bt-mapbox-search-target': 'selectedLocationJson',
                         },
                     }) }}
+
                 {% endif %}
 
-                {{ form_end(form, {render_rest: false}) }}
+
+                {{ form_end(form, {
+                    render_rest: false
+                }) }}
+
             </div>
 
-            <div class="col-auto col-lg-4 d-flex justify-content-center">
-                <div class="search-card-actions d-flex align-items-center justify-content-center gap-2">
-                    <div class="search-card-switch search-card-desktop-only d-flex gap-1" aria-label="Choisir l'affichage">
+
+            {#
+                ======================================================
+                LISTE / CARTE / FILTRES
+                ======================================================
+            #}
+
+            <div class="col-auto  d-flex justify-content-center">
+
+                <div
+                    class="search-card-actions d-flex align-items-center justify-content-center gap-2"
+                >
+
+                    {#
+                        ==============================================
+                        SWITCH LISTE / CARTE
+                        ==============================================
+                    #}
+
+                    <div
+                        class="search-card-switch search-card-desktop-only d-flex gap-1"
+                        aria-label="Choisir l'affichage"
+                    >
+
+                        {#
+                            ==========================================
+                            LISTE
+                            ==========================================
+                        #}
+
                         <a
                             href="{{ path('app_public_search_results', {
                                 searchToken: searchToken,
@@ -162,9 +380,22 @@
                             }) }}"
                             class="search-card-switch-item {{ currentView == 'list' ? 'search-card-is-active' : '' }}"
                         >
-                            <i class="icon-list" aria-hidden="true"></i>
-                            <span class="p-accent">Liste</span>
+                            <i
+                                class="icon-list"
+                                aria-hidden="true"
+                            ></i>
+
+                            <span class="p-accent">
+                                Liste
+                            </span>
                         </a>
+
+
+                        {#
+                            ==========================================
+                            CARTE
+                            ==========================================
+                        #}
 
                         <a
                             href="{{ path('app_public_search_results', {
@@ -174,11 +405,24 @@
                             }) }}"
                             class="search-card-switch-item {{ currentView == 'map' ? 'search-card-is-active' : '' }}"
                         >
-                            <i class="icon-map" aria-hidden="true"></i>
-                            <span class="p-accent">Carte</span>
+                            <i
+                                class="icon-map"
+                                aria-hidden="true"
+                            ></i>
+
+                            <span class="p-accent">
+                                Carte
+                            </span>
                         </a>
 
                     </div>
+
+
+                    {#
+                        ==============================================
+                        FILTRES
+                        ==============================================
+                    #}
 
                     <button
                         type="button"
@@ -186,11 +430,21 @@
                         data-bs-toggle="modal"
                         data-bs-target="#booltsFiltersModal"
                     >
-                        <i class="icon-sliders-horizontal" aria-hidden="true"></i>
-                        <span class="p-accent d-none d-lg-inline">Filtres</span>
+                        <i
+                            class="icon-sliders-horizontal"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span class="p-accent d-none d-lg-inline">
+                            Filtres
+                        </span>
                     </button>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
 </section>
