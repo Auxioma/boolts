@@ -5,7 +5,7 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<header class="topbar position-relative" data-dashboard-layout-target="header">
+<header class="topbar position-relative" data-dashboard-layout-target="header" data-controller="navbar">
     <div class="container-fluid g-0">
         <nav class="navbar navbar-expand-xl topbar-nav">
 
@@ -26,6 +26,7 @@
                     aria-controls="mobile-menu"
                     aria-expanded="false"
                     aria-label="{{ 'navbar.mobile.aria_label'|trans }}"
+                    data-navbar-target="button"
                 >
                     <span class="icon-menu" aria-hidden="true"></span>
                 </button>
@@ -120,36 +121,36 @@
 
         </nav>
     </div>
+
+    {# Menu mobile Mmenu #}
+    <nav id="mobile-menu" aria-hidden="true" data-navbar-target="menu">
+        <ul>
+            <li>
+                <a href="#">{{ 'navbar.buy'|trans }}</a>
+            </li>
+
+            <li>
+                <a href="#">{{ 'navbar.rent'|trans }}</a>
+            </li>
+
+            <li>
+                <a href="#">{{ 'navbar.sell'|trans }}</a>
+            </li>
+
+            <li>
+                <a href="#">{{ 'navbar.find_professional'|trans }}</a>
+            </li>
+
+            <li>
+                <a href="#">{{ 'navbar.exclusives'|trans }}</a>
+            </li>
+
+            <li>
+                <a href="{{ path('agence_immobiliere_mes_biens') }}">
+                    <i class="icon-plus" aria-hidden="true"></i>
+                    {{ 'navbar.submit_listing'|trans }}
+                </a>
+            </li>
+        </ul>
+    </nav>
 </header>
-
-{# Menu mobile Mmenu
-<nav id="mobile-menu" aria-hidden="true">
-    <ul>
-        <li>
-            <a href="#">Acheter</a>
-        </li>
-
-        <li>
-            <a href="#">Louer</a>
-        </li>
-
-        <li>
-            <a href="#">Vendre</a>
-        </li>
-
-        <li>
-            <a href="#">Trouver un pro</a>
-        </li>
-
-        <li>
-            <a href="#">Exclusivités</a>
-        </li>
-
-        <li>
-            <a href="#">
-                <i class="icon-plus" aria-hidden="true"></i>
-                Déposer une annonce
-            </a>
-        </li>
-    </ul>
-</nav> #}
