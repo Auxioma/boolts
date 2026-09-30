@@ -5,7 +5,7 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<header class="topbar position-relative" data-dashboard-layout-target="header" data-controller="navbar">
+<header class="topbar position-relative" data-dashboard-layout-target="header">
     <div class="container-fluid g-0">
         <nav class="navbar navbar-expand-xl topbar-nav">
 
@@ -23,10 +23,7 @@
                     id="mobile-menu-button"
                     class="navbar-toggler topbar-toggler"
                     type="button"
-                    aria-controls="mobile-menu"
-                    aria-expanded="false"
                     aria-label="{{ 'navbar.mobile.aria_label'|trans }}"
-                    data-navbar-target="button"
                 >
                     <span class="icon-menu" aria-hidden="true"></span>
                 </button>
@@ -121,36 +118,4 @@
 
         </nav>
     </div>
-
-    {# Menu mobile Mmenu #}
-    <nav id="mobile-menu" aria-hidden="true" data-navbar-target="menu">
-        <ul>
-            <li>
-                <a href="#">{{ 'navbar.buy'|trans }}</a>
-            </li>
-
-            <li>
-                <a href="#">{{ 'navbar.rent'|trans }}</a>
-            </li>
-
-            <li>
-                <a href="#">{{ 'navbar.sell'|trans }}</a>
-            </li>
-
-            <li>
-                <a href="#">{{ 'navbar.find_professional'|trans }}</a>
-            </li>
-
-            <li>
-                <a href="#">{{ 'navbar.exclusives'|trans }}</a>
-            </li>
-
-            <li>
-                <a href="{{ path('agence_immobiliere_mes_biens') }}">
-                    <i class="icon-plus" aria-hidden="true"></i>
-                    {{ 'navbar.submit_listing'|trans }}
-                </a>
-            </li>
-        </ul>
-    </nav>
 </header>

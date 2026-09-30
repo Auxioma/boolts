@@ -4,8 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './fonts/lucide.css';
 
-import 'mmenu-js/dist/mmenu.css';
-
 import '@splidejs/splide/dist/css/splide.min.css';
 
 

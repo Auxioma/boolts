@@ -35,13 +35,6 @@ return [
         'version' => '5.3.8',
         'type' => 'css',
     ],
-    'mmenu-js' => [
-        'version' => '9.3.0',
-    ],
-    'mmenu-js/dist/mmenu.css' => [
-        'version' => '9.3.0',
-        'type' => 'css',
-    ],
     'intl-tel-input' => [
         'version' => '28.0.4',
     ],
