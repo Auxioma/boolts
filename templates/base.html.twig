@@ -35,58 +35,72 @@
 <style>
 /* =========================================================
    DEBUG BOOTSTRAP
-   CONTAINER-FLUID 100% ÉCRAN
-   12 COLONNES + GOUTTIÈRES
+   .CONTAINER (max-width par breakpoint)
+   PADDING CONTAINER + 12 COLONNES + GOUTTIÈRES
 ========================================================= */
 
 :root {
     /* Bootstrap 5 : gutter standard 1.5rem = 24px */
     --debug-gutter: 24px;
 
-    /*
-     * Largeur d'une colonne :
-     * écran - 11 gouttières
-     * divisé par 12 colonnes
-     */
-    --debug-column-width: calc(
-        (100vw - (11 * var(--debug-gutter))) / 12
-    );
+    /* Largeur max du .container (100% sous 576px) */
+    --debug-container: 100%;
 }
 
-/* Overlay */
+@media (min-width: 576px)  { :root { --debug-container: 540px; } }
+@media (min-width: 768px)  { :root { --debug-container: 720px; } }
+@media (min-width: 992px)  { :root { --debug-container: 960px; } }
+@media (min-width: 1200px) { :root { --debug-container: 1140px; } }
+@media (min-width: 1400px) { :root { --debug-container: 1320px; } }
+
+/* Variante container-fluid : ajouter la classe debug-grid--fluid */
+.debug-grid--fluid { --debug-container: 100%; }
+
+/* Overlay = un .container centré */
 .debug-grid::before {
     content: "";
 
     position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
 
-    inset: 0;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: var(--debug-container);
 
-    width: 100vw;
-    height: 100vh;
+    /* Padding du container : gutter / 2 de chaque côté */
+    padding: 0 calc(var(--debug-gutter) / 2);
 
     z-index: 999999;
 
     pointer-events: none;
 
     /*
-     * ROUGE  = colonne
-     * JAUNE  = gouttière
+     * BLEU   = padding du container
+     * ROUGE  = contenu de la colonne
+     * JAUNE  = gouttière entre colonnes (2 × padding .col)
      */
-    background-image: repeating-linear-gradient(
-        to right,
+    background-image:
+        repeating-linear-gradient(
+            to right,
 
-        /* COLONNE */
-        rgba(255, 0, 0, 0.10) 0,
-        rgba(255, 0, 0, 0.10) var(--debug-column-width),
+            /* COLONNE */
+            rgba(255, 0, 0, 0.10) 0,
+            rgba(255, 0, 0, 0.10)
+                calc((100% - 11 * var(--debug-gutter)) / 12),
 
-        /* GOUTTIÈRE */
-        rgba(255, 200, 0, 0.30) var(--debug-column-width),
-        rgba(255, 200, 0, 0.30)
-            calc(
-                var(--debug-column-width)
-                + var(--debug-gutter)
-            )
-    );
+            /* GOUTTIÈRE */
+            rgba(255, 200, 0, 0.30)
+                calc((100% - 11 * var(--debug-gutter)) / 12),
+            rgba(255, 200, 0, 0.30)
+                calc((100% - 11 * var(--debug-gutter)) / 12 + var(--debug-gutter))
+        ),
+        linear-gradient(rgba(0, 120, 255, 0.25), rgba(0, 120, 255, 0.25));
+
+    background-origin: content-box, border-box;
+    background-clip: content-box, border-box;
 }
 </style>
 
