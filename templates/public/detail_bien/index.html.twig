@@ -87,22 +87,22 @@
                 <div class="container bt-annonce__container">
 
                     {% if property.titreDuLogement|trim is not empty %}
-                        <h1 class="bt-annonce__title">
+                        <h2 class="mb-24">
                             {{ property.titreDuLogement }}
-                        </h1>
+                        </h2>
                     {% endif %}
 
-                    {% if totalPictures > 5 %} +5 {{ totalPictures }}
+                    {% if totalPictures > 5 %} +5 
                         {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
-                    {% elseif totalPictures == 5 %}5 / {{ totalPictures }}
+                    {% elseif totalPictures == 5 %}
                         {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
-                    {% elseif totalPictures == 4 %} 4 / {{ totalPictures }}
+                    {% elseif totalPictures == 4 %} 
                         {{ include('public/detail_bien/_partials/image/quatre_image.html.twig') }}
-                    {% elseif totalPictures == 3 %}3/ {{ totalPictures }}
+                    {% elseif totalPictures == 3 %}
                         {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
-                    {% elseif totalPictures == 2 %}2/ {{ totalPictures }}
+                    {% elseif totalPictures == 2 %}
                         {{ include('public/detail_bien/_partials/image/deux_image.html.twig') }}
-                    {% elseif totalPictures == 1 %}1/ {{ totalPictures }}
+                    {% elseif totalPictures == 1 %}
                         {{ include('public/detail_bien/_partials/image/une_image.html.twig') }}
                     {% endif %}
 
