@@ -1,15 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes biens immobiliers{% endblock %}
+{% block title %}{{ 'agency_listings.page_title'|trans }}{% endblock %}
 
 {% block body %}
 
 {% set statusLabels = {
-    publiee: 'Publiée',
-    depubliee: 'Pause',
-    pending: 'En attente',
-    refusee: 'Refusée',
-    suspendue: 'Suspendue',
+    publiee: 'agency_listings.status.publiee',
+    depubliee: 'agency_listings.status.depubliee',
+    pending: 'agency_listings.status.pending',
+    refusee: 'agency_listings.status.refusee',
+    suspendue: 'agency_listings.status.suspendue',
 } %}
 
 <main id="dashboard" class="dashboard">
@@ -31,7 +31,7 @@
                                =================================================== #}
                             <div class="mes-biens-header mb-24">
 
-                                <h2>Mes biens</h2>
+                                <h2>{{ 'agency_listings.title'|trans }}</h2>
 
                             <div class="d-flex align-items-center">
                                 {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
@@ -54,7 +54,7 @@
                                     data-bs-target="#booltsFiltersModal"
                                 >
                                     <i class="icon-sliders-horizontal"></i>
-                                    <span class="d-none d-lg-inline">Filtres</span>
+                                    <span class="d-none d-lg-inline">{{ 'agency_listings.filters'|trans }}</span>
                                 </button>
 
                                 {% set routeName = app.request.attributes.get('_route') %}
@@ -64,11 +64,11 @@
                                 {% set currentDirection = directionValue|default('DESC')|lower %}
 
                                 {% set sortOptions = [
-                                    {sort: 'p.updatedAt', direction: 'desc', label: 'Récente → ancienne', short: 'Récente → ancienne'},
-                                    {sort: 'p.updatedAt', direction: 'asc', label: 'Ancienne → récente', short: 'Ancienne → récente'},
+                                    {sort: 'p.updatedAt', direction: 'desc', label: 'agency_listings.sort.updated_desc', short: 'agency_listings.sort.updated_desc'},
+                                    {sort: 'p.updatedAt', direction: 'asc', label: 'agency_listings.sort.updated_asc', short: 'agency_listings.sort.updated_asc'},
                                 ] %}
 
-                                {% set currentLabel = 'Récente → ancienne' %}
+                                {% set currentLabel = 'agency_listings.sort.updated_desc' %}
                                 {% for option in sortOptions %}
                                     {% if option.sort == currentSort and option.direction == currentDirection %}
                                         {% set currentLabel = option.short %}
@@ -85,14 +85,14 @@
                                         aria-expanded="false"
                                     >
                                         <i class="icon-arrow-down-up"></i>
-                                        <span class="d-none d-lg-inline">Tri : {{ currentLabel }} </span> 
+                                        <span class="d-none d-lg-inline">{{ 'agency_listings.sort'|trans }} {{ currentLabel|trans }} </span> 
                                     </button>
 
                                     <div
                                         class="agence-filter-sort__dropdown d-none"
                                         data-agence-sort-target="menu"
                                         role="menu"
-                                        aria-label="Trier les annonces"
+                                        aria-label="{{ 'agency_listings.sort.aria_label'|trans }}"
                                     >
                                         {% for option in sortOptions %}
                                             <a
@@ -100,7 +100,7 @@
                                                 class="agence-filter-sort__item {{ option.sort == currentSort and option.direction == currentDirection ? 'agence-filter-sort__item--active' : '' }}"
                                                 role="menuitem"
                                             >
-                                                {{ option.label }}
+                                                {{ option.label|trans }}
                                             </a>
                                         {% endfor %}
                                     </div>
@@ -112,7 +112,7 @@
                                     class="p-accent btn-deposer-annonce"
                                 >
                                     <i class="icon-plus"></i>
-                                    Déposer une annonce
+                                    {{ 'agency_listings.add_listing'|trans }}
                                 </a>
                                 </div>
 
@@ -132,7 +132,7 @@
                                         type="search"
                                         name="search"
                                         value="{{ app.request.query.get('search') }}"
-                                        placeholder="Rechercher un bien, une référence, une ville ou un pays"
+                                        placeholder="{{ 'agency_listings.search.placeholder'|trans }}"
                                         autocomplete="off"
                                         data-mes-biens--search-suggestions-target="input"
                                         data-action="input->mes-biens--search-suggestions#onInput keydown->mes-biens--search-suggestions#onKeydown"
@@ -181,7 +181,7 @@
                                     <button
                                         type="submit"
                                         class="property-search-submit"
-                                        aria-label="Rechercher"
+                                        aria-label="{{ 'agency_listings.search.submit'|trans }}"
                                     >
                                         <i class="icon-search" aria-hidden="true"></i>
                                     </button>
@@ -232,7 +232,7 @@
             data-action="change->mes-biens--property-bulk-actions#toggleAll"
         >
 
-        <span>Tout sélectionner</span>
+        <span>{{ 'agency_listings.bulk.select_all'|trans }}</span>
 
         <span
             class="property-selection-count"
@@ -251,21 +251,21 @@
             data-mes-biens--property-bulk-actions-target="action"
         >
             <i class="icon-rocket"></i>
-            Booster
+            {{ 'agency_listings.boost'|trans }}
         </button>
 
         <button
             type="button"
             class="bulk-action bulk-action--pause"
             disabled
-            aria-label="Pause"
+            aria-label="{{ 'agency_listings.bulk.pause'|trans }}"
             data-mes-biens--property-bulk-actions-target="action"
             data-action="click->mes-biens--property-bulk-actions#setAction"
             data-action-value="pause"
         >
             <i class="icon-pause"></i>
             <span class="bulk-action__label d-none d-lg-inline">
-                Pause
+                {{ 'agency_listings.bulk.pause'|trans }}
             </span>
         </button>
 
@@ -273,14 +273,14 @@
             type="button"
             class="bulk-action bulk-action--reactivate"
             disabled
-            aria-label="Réactiver"
+            aria-label="{{ 'agency_listings.reactivate'|trans }}"
             data-mes-biens--property-bulk-actions-target="action"
             data-action="click->mes-biens--property-bulk-actions#setAction"
             data-action-value="reactivate"
         >
             <i class="icon-play"></i>
             <span class="bulk-action__label d-none d-lg-inline">
-                Réactiver
+                {{ 'agency_listings.reactivate'|trans }}
             </span>
         </button>
 
@@ -288,14 +288,14 @@
             type="button"
             class="bulk-action bulk-action--danger bulk-action--delete"
             disabled
-            aria-label="Supprimer"
+            aria-label="{{ 'agency_listings.delete'|trans }}"
             data-mes-biens--property-bulk-actions-target="action"
             data-action="click->mes-biens--property-bulk-actions#setAction"
             data-action-value="delete"
         >
             <i class="icon-trash"></i>
             <span class="bulk-action__label d-none d-lg-inline">
-                Supprimer
+                {{ 'agency_listings.delete'|trans }}
             </span>
         </button>
 
@@ -332,12 +332,14 @@
                                                                 }) }}"
                                                                 class="draft-title"
                                                             >
-                                                                {{ draft.titreDuLogement ?: 'Brouillon #' ~ loop.index }}
+                                                                {{ draft.titreDuLogement ?: 'agency_listings.draft.untitled'|trans({'%number%': loop.index}) }}
                                                             </a>
 
                                                             <p class="draft-meta">
-                                                                Modifié le
-                                                                {{ (draft.updatedAt ?? draft.createdAt)|date('d/m/Y à H:i') }}
+                                                                {{ 'agency_listings.draft.updated_at'|trans({
+                                                                    '%date%': (draft.updatedAt ?? draft.createdAt)|date('d/m/Y'),
+                                                                    '%time%': (draft.updatedAt ?? draft.createdAt)|date('H:i'),
+                                                                }) }}
                                                             </p>
 
                                                         </div>
@@ -349,7 +351,7 @@
                                                                     id: draft.id,
                                                                 }) }}"
                                                                 class="row-icon-btn"
-                                                                title="Modifier le brouillon"
+                                                                title="{{ 'agency_listings.draft.edit'|trans }}"
                                                             >
                                                                 <i class="icon-pencil"></i>
                                                             </a>
@@ -357,14 +359,14 @@
                                                             <button
                                                                 type="submit"
                                                                 class="row-icon-btn row-icon-btn--wide"
-                                                                title="Supprimer le brouillon"
+                                                                title="{{ 'agency_listings.draft.delete'|trans }}"
                                                                 formaction="{{ path('agence_immobiliere_mes_biens_delete', {
                                                                     id: draft.id,
                                                                 }) }}"
                                                                 formmethod="post"
                                                                 name="_property_token"
                                                                 value="{{ csrf_token('property_delete_' ~ draft.id) }}"
-                                                                onclick="return confirm('Supprimer ce brouillon ?');"
+                                                                onclick="return confirm('{{ 'agency_listings.draft.delete_confirm'|trans|e('js') }}');"
                                                             >
                                                                 <i class="icon-trash"></i>
                                                             </button>
@@ -417,7 +419,7 @@
                                                                 data-action="change->mes-biens--property-bulk-actions#refresh"
                                                                 {% if isPending %}
                                                                     disabled
-                                                                    title="Annonce en attente de validation : sélection impossible"
+                                                                    title="{{ 'agency_listings.pending_selection_disabled'|trans }}"
                                                                 {% endif %}
                                                             >
 
@@ -428,13 +430,13 @@
                                                                 slug: property.slug,
                                                             }) }}"
                                                             class="property-listing-image"
-                                                            aria-label="Voir le détail de {{ property.titreDuLogement ?: 'cette annonce' }}"
+                                                            aria-label="{{ 'agency_listings.listing.view_detail'|trans({'%title%': property.titreDuLogement ?: 'agency_listings.listing.this_listing'|trans}) }}"
                                                         >
 
                                                             {% if uploadedImage %}
                                                                 <img
                                                                     src="{{ uploadedImage }}"
-                                                                    alt="{{ property.titreDuLogement ?: 'Annonce immobilière' }}"
+                                                                    alt="{{ property.titreDuLogement ?: 'agency_listings.listing.image_alt'|trans }}"
                                                                 >
                                                             {% else %}
                                                                 <span class="property-listing-image-empty">
@@ -452,7 +454,7 @@
                                                                 }) }}"
                                                                 class="property-listing-title"
                                                             >
-                                                                {{ property.titreDuLogement ?: 'Annonce sans titre' }}
+                                                                {{ property.titreDuLogement ?: 'agency_listings.listing.untitled'|trans }}
                                                             </a>
 
                                                             <div class="property-listing-price-row">
@@ -465,12 +467,12 @@
                                                                 {% endif %}
 
                                                                 <span class="status-badge status-badge--{{ property.statut.value }}">
-                                                                    {{ statusLabels[property.statut.value] ?? property.statut.label }}
+                                                                    {{ statusLabels[property.statut.value] is defined ? statusLabels[property.statut.value]|trans : property.statut.label }}
                                                                 </span>
 
                                                                 {% if isBoosted %}
                                                                     <span class="status-badge status-badge--boosted">
-                                                                        Boostée
+                                                                        {{ 'agency_listings.status.boosted'|trans }}
                                                                     </span>
                                                                 {% endif %}
 
@@ -478,14 +480,14 @@
 
                                                             <p class="property-listing-location">
                                                                 <strong>
-                                                                    {{ property.ville ?: 'Localisation non renseignée' }}{% if property.pays %}, {{ property.pays }}{% endif %}
+                                                                    {{ property.ville ?: 'agency_listings.listing.no_location'|trans }}{% if property.pays %}, {{ property.pays }}{% endif %}
                                                                 </strong>
                                                                 <span>
                                                                     &nbsp;-&nbsp;
                                                                     {%- if property.updatedAt -%}
-                                                                        Modifiée le {{ property.updatedAt|date('d/m/Y') }}
+                                                                        {{ 'agency_listings.listing.updated_at'|trans({'%date%': property.updatedAt|date('d/m/Y')}) }}
                                                                     {%- else -%}
-                                                                        Créée le {{ property.createdAt|date('d/m/Y') }}
+                                                                        {{ 'agency_listings.listing.created_at'|trans({'%date%': property.createdAt|date('d/m/Y')}) }}
                                                                     {%- endif -%}
                                                                 </span>
                                                             </p>
@@ -506,7 +508,7 @@
                                                                     data-bs-target="#boostModal{{ property.id }}"
                                                                 >
                                                                     <i class="icon-rocket"></i>
-                                                                    Booster
+                                                                    {{ 'agency_listings.boost'|trans }}
                                                                 </button>
                                                             {% endif %}
 
@@ -515,7 +517,7 @@
                                                                     id: property.id,
                                                                 }) }}"
                                                                 class="row-icon-btn"
-                                                                title="Modifier l’annonce"
+                                                                title="{{ 'agency_listings.listing.edit'|trans }}"
                                                             >
                                                                 <i class="icon-pencil"></i>
                                                             </a>
@@ -527,7 +529,7 @@
                                                                     class="row-icon-btn"
                                                                     data-bs-toggle="dropdown"
                                                                     aria-expanded="false"
-                                                                    aria-label="Plus d’actions"
+                                                                    aria-label="{{ 'agency_listings.listing.more_actions'|trans }}"
                                                                 >
                                                                     <i class="icon-more-vertical"></i>
                                                                 </button>
@@ -546,7 +548,7 @@
                                                                             value="{{ csrf_token('property_pause_' ~ property.id) }}"
                                                                         >
                                                                             <i class="icon-pause"></i>
-                                                                            Mettre en pause
+                                                                            {{ 'agency_listings.listing.pause'|trans }}
                                                                         </button>
                                                                     {% elseif property.statut.value == 'depubliee' %}
                                                                         <button
@@ -560,7 +562,7 @@
                                                                             value="{{ csrf_token('property_reactivate_' ~ property.id) }}"
                                                                         >
                                                                             <i class="icon-play"></i>
-                                                                            Réactiver
+                                                                            {{ 'agency_listings.reactivate'|trans }}
                                                                         </button>
                                                                     {% endif %}
 
@@ -573,10 +575,10 @@
                                                                         formmethod="post"
                                                                         name="_property_token"
                                                                         value="{{ csrf_token('property_delete_' ~ property.id) }}"
-                                                                        onclick="return confirm('Supprimer cette annonce ?');"
+                                                                        onclick="return confirm('{{ 'agency_listings.listing.delete_confirm'|trans|e('js') }}');"
                                                                     >
                                                                         <i class="icon-trash"></i>
-                                                                        Supprimer
+                                                                        {{ 'agency_listings.delete'|trans }}
                                                                     </button>
 
                                                                 </div>
@@ -613,14 +615,14 @@
                             class="boost-confirm-title"
                             id="boostModalLabel{{ property.id }}"
                         >
-                            Vous allez dépenser 1 boost
+                            {{ 'agency_listings.boost_modal.title'|trans }}
                         </h2>
 
                         <button
                             type="button"
                             class="boost-confirm-close"
                             data-bs-dismiss="modal"
-                            aria-label="Fermer"
+                            aria-label="{{ 'agency_listings.boost_modal.close'|trans }}"
                         >
                             <i class="icon-x" aria-hidden="true"></i>
                         </button>
@@ -645,7 +647,7 @@
                         <div class="boost-confirm-info-row">
 
                             <span class="boost-confirm-info-label">
-                                Boost restant :
+                                {{ 'agency_listings.boost_modal.remaining'|trans }}
                             </span>
 
                             <strong class="boost-confirm-info-value">
@@ -657,12 +659,12 @@
                         <div class="boost-confirm-info-row">
 
                             <span class="boost-confirm-info-label">
-                                Durée de mise en avant :
+                                {{ 'agency_listings.boost_modal.duration'|trans }}
                             </span>
 
                             <strong class="boost-confirm-info-value">
                                 {{ boostPreview.durationDays }}
-                                jour{{ boostPreview.durationDays > 1 ? 's' : '' }}
+                                {{ (boostPreview.durationDays > 1 ? 'agency_listings.boost_modal.days' : 'agency_listings.boost_modal.day')|trans }}
                             </strong>
 
                         </div>
@@ -673,12 +675,12 @@
                     {# TEXTE FIGMA #}
                     <p class="boost-confirm-description">
 
-                        Votre annonce sera boostée pendant
-                        {{ boostPreview.durationDays }}
-                        jour{{ boostPreview.durationDays > 1 ? 's' : '' }}
-                        à partir de l’activation.
+                        {{ 'agency_listings.boost_modal.description'|trans({
+                            '%days%': boostPreview.durationDays,
+                            '%dayLabel%': (boostPreview.durationDays > 1 ? 'agency_listings.boost_modal.days' : 'agency_listings.boost_modal.day')|trans,
+                        }) }}
 
-                        Le boost continuera même si votre annonce est en pause.
+                        {{ 'agency_listings.boost_modal.paused_notice'|trans }}
 
                     </p>
 
@@ -691,7 +693,7 @@
                             class="boost-confirm-cancel"
                             data-bs-dismiss="modal"
                         >
-                            Annuler
+                            {{ 'agency_listings.boost_modal.cancel'|trans }}
                         </button>
 
                         <button
@@ -704,7 +706,7 @@
                             name="_property_token"
                             value="{{ csrf_token('property_boost_' ~ property.id) }}"
                         >
-                            Booster mon annonce
+                            {{ 'agency_listings.boost_modal.submit'|trans }}
                         </button>
 
                     </div>
@@ -723,15 +725,14 @@
                     <div class="boost-confirm-no-boost">
 
                         <p>
-                            Vous n’avez plus de boost disponible.
-                            Achetez un pack boost pour mettre cette annonce en avant.
+                            {{ 'agency_listings.boost_modal.empty'|trans }}
                         </p>
 
                         <a
                             href="{{ path('agence_immobiliere_options') }}"
                             class="boost-confirm-submit"
                         >
-                            Voir les packs boost
+                            {{ 'agency_listings.boost_modal.packs'|trans }}
                         </a>
 
                     </div>
@@ -771,11 +772,11 @@
                                     <i class="icon-building-2"></i>
 
                                     <h2>
-                                        Vous n’avez pas encore de bien
+                                        {{ 'agency_listings.empty.title'|trans }}
                                     </h2>
 
                                     <p>
-                                        Déposez votre première annonce pour la retrouver ici.
+                                        {{ 'agency_listings.empty.description'|trans }}
                                     </p>
 
                                 </div>

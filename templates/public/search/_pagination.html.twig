@@ -30,7 +30,7 @@ On récupère modal_filter :
         <nav
             id="search-card-pagination"
             class="search-card-pagination"
-            aria-label="Pagination des logements sur la carte"
+            aria-label="{{ 'search.pagination.map_aria_label'|trans }}"
         >
 
             {% if paginationData.pageCount is defined and paginationData.pageCount > 1 %}
@@ -58,12 +58,12 @@ On récupère modal_filter :
 
                         <li class="page-item">
                             <a class="page-link" href="{{ path('app_public_search_results', previousParams) }}" rel="prev">
-                                Précédent
+                                {{ 'search.pagination.previous'|trans }}
                             </a>
                         </li>
                     {% else %}
                         <li class="page-item disabled" aria-disabled="true">
-                            <span class="page-link">Précédent</span>
+                            <span class="page-link">{{ 'search.pagination.previous'|trans }}</span>
                         </li>
                     {% endif %}
 
@@ -112,12 +112,12 @@ On récupère modal_filter :
 
                         <li class="page-item">
                             <a class="page-link" href="{{ path('app_public_search_results', nextParams) }}" rel="next">
-                                Suivant
+                                {{ 'search.pagination.next'|trans }}
                             </a>
                         </li>
                     {% else %}
                         <li class="page-item disabled" aria-disabled="true">
-                            <span class="page-link">Suivant</span>
+                            <span class="page-link">{{ 'search.pagination.next'|trans }}</span>
                         </li>
                     {% endif %}
 
@@ -132,7 +132,7 @@ On récupère modal_filter :
         <nav
             id="bt-research-pagination"
             class="bt-research-pagination"
-            aria-label="Pagination"
+            aria-label="{{ 'search.pagination.aria_label'|trans }}"
         >
             {{ knp_pagination_render(search, null, {
                 modal_filter: modalFilter,

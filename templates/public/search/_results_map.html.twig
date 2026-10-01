@@ -24,6 +24,24 @@
     data-controller="search-card-map"
     data-search-card-map-token-value="{{ mapboxPublicTokenCard|default(mapboxPublicToken|default(''))|e('html_attr') }}"
     data-search-card-map-bounds-url-value="{{ mapBoundsUrl|e('html_attr') }}"
+    data-search-card-map-labels-value="{{ {
+        resultsOne: 'search.results.count.one'|trans,
+        resultsOther: 'search.results.count.other'|trans,
+        bedroomsOne: 'search.card.bedrooms.one'|trans,
+        bedroomsOther: 'search.card.bedrooms.other'|trans,
+        bathroomsOne: 'search.card.bathrooms.one'|trans,
+        bathroomsOther: 'search.card.bathrooms.other'|trans,
+        reference: 'search.map.reference'|trans,
+        type: 'search.map.type'|trans,
+        markerView: 'search.map.marker.view'|trans,
+        markerViewTitle: 'search.map.marker.view_title'|trans,
+        markerViewDefault: 'search.map.marker.view_default'|trans,
+        errorLoad: 'search.map.error.load'|trans,
+        errorToken: 'search.map.error.token'|trans,
+        errorInit: 'search.map.error.init'|trans,
+        errorHttp: 'search.map.error.http'|trans,
+        errorFetch: 'search.map.error.fetch'|trans,
+    }|json_encode(constant('JSON_UNESCAPED_UNICODE'))|e('html_attr') }}"
 >
     <div class="container-lg search-card-container">
 
@@ -32,9 +50,7 @@
             id="search-card-total-results"
             data-search-card-map-target="title totalResults"
         >
-            {{ resultsCount }}
-            logement{{ resultsCount > 1 ? 's' : '' }}
-            trouvé{{ resultsCount > 1 ? 's' : '' }}
+            {{ (resultsCount > 1 ? 'search.results.count.other' : 'search.results.count.one')|trans({'%count%': resultsCount}) }}
         </h3>
 
         <div
@@ -43,7 +59,7 @@
         >
             <section
                 class="col-12 col-lg-6 search-card-list-column"
-                aria-label="Liste des logements"
+                aria-label="{{ 'search.map.list_aria_label'|trans }}"
                 data-search-card-map-target="listColumn"
             >
                 <div
@@ -60,7 +76,7 @@
 
             <aside
                 class="col-12 col-lg-6 position-relative search-card-map-column"
-                aria-label="Carte des logements"
+                aria-label="{{ 'search.map.map_aria_label'|trans }}"
                 data-search-card-map-target="mapColumn"
             >
                 <div
@@ -84,7 +100,7 @@
                         type="button"
                         class="search-card-map-fit"
                         id="search-card-map-fit"
-                        aria-label="Agrandir la carte"
+                        aria-label="{{ 'search.map.expand'|trans }}"
                         aria-expanded="false"
                         data-action="click->search-card-map#openMapModal"
                         data-search-card-map-target="expandButton"
@@ -112,7 +128,7 @@
                         <button
                             type="button"
                             class="search-card-map-preview-close"
-                            aria-label="Fermer l’aperçu"
+                            aria-label="{{ 'search.map.close_preview'|trans }}"
                             data-action="click->search-card-map#hidePreview"
                         >
                             <i

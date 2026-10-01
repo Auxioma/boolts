@@ -9,7 +9,7 @@
     <div class="container-md">
 
         <h1 class="bt-results-title">
-            {{ totalResults }} logement{{ totalResults > 1 ? 's' : '' }} trouvé{{ totalResults > 1 ? 's' : '' }}
+            {{ (totalResults > 1 ? 'search.results.count.other' : 'search.results.count.one')|trans({'%count%': totalResults}) }}
         </h1>
 
         <div class="row bt-results-grid agence-properties">
@@ -37,8 +37,8 @@
                 %}
 
                 {% set propertyTitle = bienImmobilier.typeBien and bienImmobilier.typeTransaction
-                    ? bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name
-                    : 'Logement disponible'
+                    ? 'search.card.title'|trans({'%type%': bienImmobilier.typeBien.name, '%transaction%': bienImmobilier.typeTransaction.name})
+                    : 'search.card.available_title'|trans
                 %}
 
                 {% set propertyPrice = bienImmobilier.prix is not empty
@@ -46,8 +46,8 @@
                     : ''
                 %}
 
-                {% set propertyPeriod = isLocation ? '/mois' : '' %}
-                {% set propertyBadge = isLocation ? 'C. Comprises' : transactionName|capitalize %}
+                {% set propertyPeriod = isLocation ? 'search.card.per_month'|trans : '' %}
+                {% set propertyBadge = isLocation ? 'search.card.charges_included'|trans : transactionName|capitalize %}
 
                 {% set details = [] %}
 
@@ -61,13 +61,13 @@
 
                 {% if bienImmobilier.chambres is not empty %}
                     {% set details = details|merge([
-                        bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                        (bienImmobilier.chambres > 1 ? 'search.card.bedrooms.other' : 'search.card.bedrooms.one')|trans({'%count%': bienImmobilier.chambres}),
                     ]) %}
                 {% endif %}
 
                 {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
                     {% set details = details|merge([
-                        bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                        (bienImmobilier.salleDeBains > 1 ? 'search.card.bathrooms.other' : 'search.card.bathrooms.one')|trans({'%count%': bienImmobilier.salleDeBains}),
                     ]) %}
                 {% endif %}
 
@@ -123,7 +123,7 @@
 
                 <div class="col-12">
                     <div class="agence-empty-state">
-                        Aucun bien n’est disponible pour le moment.
+                        {{ 'search.list.empty'|trans }}
                     </div>
                 </div>
 

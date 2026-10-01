@@ -103,7 +103,7 @@
 
 <section
     class="search-card-toolbar py-14"
-    aria-label="Recherche et filtres"
+    aria-label="{{ 'search.toolbar.aria_label'|trans }}"
 >
     <div class="container-lg">
 
@@ -119,7 +119,7 @@
             <a
                 href="{{ path('app_home') }}"
                 class="search-card-back search-card-mobile-only"
-                aria-label="Retour"
+                aria-label="{{ 'search.toolbar.back'|trans }}"
             >
                 <i
                     class="icon-chevron-left"
@@ -363,7 +363,7 @@
 
                     <div
                         class="search-card-switch search-card-desktop-only d-flex gap-1"
-                        aria-label="Choisir l'affichage"
+                        aria-label="{{ 'search.toolbar.view_switch'|trans }}"
                     >
 
                         {#
@@ -386,7 +386,7 @@
                             ></i>
 
                             <span class="p-accent">
-                                Liste
+                                {{ 'search.toolbar.list'|trans }}
                             </span>
                         </a>
 
@@ -411,7 +411,7 @@
                             ></i>
 
                             <span class="p-accent">
-                                Carte
+                                {{ 'search.toolbar.map'|trans }}
                             </span>
                         </a>
 
@@ -436,7 +436,7 @@
                         ></i>
 
                         <span class="p-accent d-none d-lg-inline">
-                            Filtres
+                            {{ 'search.toolbar.filters'|trans }}
                         </span>
                     </button>
 

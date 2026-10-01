@@ -55,8 +55,8 @@
         %}
 
         {% set propertyTitle = typeBienName is not empty and transactionName is not empty
-            ? typeBienName ~ ' à ' ~ transactionName
-            : (typeBienName is not empty ? typeBienName : 'Logement')
+            ? 'search.card.title'|trans({'%type%': typeBienName, '%transaction%': transactionName})
+            : (typeBienName is not empty ? typeBienName : 'search.card.default_title'|trans)
         %}
 
         {% set prixVente = bienImmobilier.prix|default(null) %}
@@ -70,16 +70,16 @@
         {% if isLocation and loyerHorsChargeNumber is not null %}
             {% set propertyPriceNumber = loyerHorsChargeNumber + chargesNumber %}
             {% set propertyPrice = propertyPriceNumber|number_format(0, ',', ' ') ~ ' ' ~ devise %}
-            {% set propertyPeriod = '/mois' %}
-            {% set propertyBadge = chargesNumber > 0 ? 'C. Comprises' : 'Hors charges' %}
+            {% set propertyPeriod = 'search.card.per_month'|trans %}
+            {% set propertyBadge = chargesNumber > 0 ? 'search.card.charges_included'|trans : 'search.card.charges_excluded'|trans %}
         {% elseif prixVenteNumber is not null %}
             {% set propertyPriceNumber = prixVenteNumber %}
             {% set propertyPrice = prixVenteNumber|number_format(0, ',', ' ') ~ ' ' ~ devise %}
             {% set propertyPeriod = '' %}
-            {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'Vente' %}
+            {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'search.card.sale'|trans %}
         {% else %}
             {% set propertyPriceNumber = null %}
-            {% set propertyPrice = 'Prix sur demande' %}
+            {% set propertyPrice = 'search.card.price_on_request'|trans %}
             {% set propertyPeriod = '' %}
             {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : '' %}
         {% endif %}
@@ -92,13 +92,13 @@
 
         {% if bienImmobilier.chambres is defined and bienImmobilier.chambres is not empty %}
             {% set details = details|merge([
-                bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                (bienImmobilier.chambres > 1 ? 'search.card.bedrooms.other' : 'search.card.bedrooms.one')|trans({'%count%': bienImmobilier.chambres}),
             ]) %}
         {% endif %}
 
         {% if bienImmobilier.salleDeBains is defined and bienImmobilier.salleDeBains is not empty %}
             {% set details = details|merge([
-                bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                (bienImmobilier.salleDeBains > 1 ? 'search.card.bathrooms.other' : 'search.card.bathrooms.one')|trans({'%count%': bienImmobilier.salleDeBains}),
             ]) %}
         {% endif %}
 
@@ -137,7 +137,7 @@
         {% set addressText = fullAddress is not empty ? fullAddress : addressParts|join(', ') %}
 
         {% if addressText is empty %}
-            {% set addressText = 'Adresse non renseignée' %}
+            {% set addressText = 'search.card.no_address'|trans %}
         {% endif %}
 
         {% set slug = bienImmobilier.slug|default('') %}
@@ -156,7 +156,7 @@
         {% set latitudeNumber = latitudeClean is not empty ? latitudeClean + 0 : null %}
         {% set longitudeNumber = longitudeClean is not empty ? longitudeClean + 0 : null %}
 
-        {% set descriptionText = bienImmobilier.descriptionLogement|default('Appartement très spacieux et lumineux.')|striptags|u.truncate(120, '...') %}
+        {% set descriptionText = bienImmobilier.descriptionLogement|default('search.card.default_description'|trans)|striptags|u.truncate(120, '...') %}
         {% set isFavorite = bienImmobilier.id in favoritePropertyIds|default([]) %}
 
         {% set mapProperty = {
@@ -277,7 +277,7 @@
                     <button
                         type="button"
                         class="search-card-favorite {{ isFavorite ? 'search-card-is-favorite' : '' }}"
-                        aria-label="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                        aria-label="{{ isFavorite ? 'search.card.favorite.remove'|trans : 'search.card.favorite.add'|trans }}"
                         aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
                         data-controller="favorite"
                         data-action="click->favorite#toggle"
@@ -300,7 +300,7 @@
 
     <div class="col-12">
         <div class="search-card-empty">
-            Aucun logement trouvé dans cette zone de la carte.
+            {{ 'search.map.empty'|trans }}
         </div>
     </div>
 

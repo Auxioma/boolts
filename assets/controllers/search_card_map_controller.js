@@ -44,7 +44,18 @@ export default class extends Controller {
     static values = {
         token: String,
         boundsUrl: String,
+        labels: Object,
     };
+
+    label(key, params = {}, fallback = '') {
+        let text = (this.hasLabelsValue && this.labelsValue[key]) || fallback;
+
+        Object.entries(params).forEach(([name, value]) => {
+            text = text.split(`%${name}%`).join(String(value));
+        });
+
+        return text;
+    }
 
     connect() {
         this.map = null;
@@ -74,7 +85,7 @@ export default class extends Controller {
                 console.error('[Mapbox]', error);
 
                 this.showMapError(
-                    'Mapbox GL JS ne charge pas. Vérifie les CDN ou la Content-Security-Policy.'
+                    this.label('errorLoad', {}, 'Mapbox GL JS ne charge pas. Vérifie les CDN ou la Content-Security-Policy.')
                 );
             });
     }
@@ -340,7 +351,7 @@ export default class extends Controller {
 
         if (!token || !token.startsWith('pk.')) {
             this.showMapError(
-                'Token Mapbox manquant ou invalide. Il doit commencer par pk.'
+                this.label('errorToken', {}, 'Token Mapbox manquant ou invalide. Il doit commencer par pk.')
             );
 
             return;
@@ -348,7 +359,7 @@ export default class extends Controller {
 
         if (!window.mapboxgl) {
             this.showMapError(
-                'Mapbox GL JS ne charge pas. Vérifie le CDN ou la Content-Security-Policy.'
+                this.label('errorLoad', {}, 'Mapbox GL JS ne charge pas. Vérifie le CDN ou la Content-Security-Policy.')
             );
 
             return;
@@ -380,7 +391,7 @@ export default class extends Controller {
             );
 
             this.showMapError(
-                `Erreur pendant l’initialisation de Mapbox : ${error.message}`
+                this.label('errorInit', { message: error.message }, `Erreur pendant l’initialisation de Mapbox : ${error.message}`)
             );
 
             return;
@@ -691,7 +702,11 @@ export default class extends Controller {
         const count =
             Number.parseInt(total, 10) || 0;
 
-        return `${count} logement${count > 1 ? 's' : ''} trouvé${count > 1 ? 's' : ''}`;
+        return this.label(
+            count > 1 ? 'resultsOther' : 'resultsOne',
+            { count },
+            `${count} logement${count > 1 ? 's' : ''} trouvé${count > 1 ? 's' : ''}`
+        );
     }
 
     /* ================================================================ */
@@ -788,7 +803,7 @@ export default class extends Controller {
         if (this.hasPreviewReferenceTarget) {
             const reference =
                 property.referenceInterne
-                    ? `Référence : ${property.referenceInterne}`
+                    ? this.label('reference', { reference: property.referenceInterne }, `Référence : ${property.referenceInterne}`)
                     : '';
 
             this.previewReferenceTarget.textContent =
@@ -809,7 +824,7 @@ export default class extends Controller {
 
             if (property.featureType) {
                 parts.push(
-                    `Type : ${property.featureType}`
+                    this.label('type', { type: property.featureType }, `Type : ${property.featureType}`)
                 );
             }
 
@@ -843,7 +858,7 @@ export default class extends Controller {
                     Number(property.chambres);
 
                 parts.push(
-                    `${property.chambres} chambre${bedrooms > 1 ? 's' : ''}`
+                    this.label(bedrooms > 1 ? 'bedroomsOther' : 'bedroomsOne', { count: property.chambres }, `${property.chambres} chambre${bedrooms > 1 ? 's' : ''}`)
                 );
             }
 
@@ -852,7 +867,7 @@ export default class extends Controller {
                     Number(property.salleDeBains);
 
                 parts.push(
-                    `${property.salleDeBains} salle${bathrooms > 1 ? 's' : ''} de bains`
+                    this.label(bathrooms > 1 ? 'bathroomsOther' : 'bathroomsOne', { count: property.salleDeBains }, `${property.salleDeBains} salle${bathrooms > 1 ? 's' : ''} de bains`)
                 );
             }
 
@@ -941,13 +956,13 @@ export default class extends Controller {
                 'search-card-mapbox-marker';
 
             markerElement.textContent =
-                property.price || 'Voir';
+                property.price || this.label('markerView', {}, 'Voir');
 
             markerElement.setAttribute(
                 'aria-label',
                 property.title
-                    ? `Voir ${property.title}`
-                    : 'Voir le logement'
+                    ? this.label('markerViewTitle', { title: property.title }, `Voir ${property.title}`)
+                    : this.label('markerViewDefault', {}, 'Voir le logement')
             );
 
             markerElement.addEventListener(
@@ -1169,7 +1184,7 @@ export default class extends Controller {
 
             if (!response.ok) {
                 throw new Error(
-                    `Erreur HTTP ${response.status}.`
+                    this.label('errorHttp', { status: response.status }, `Erreur HTTP ${response.status}.`)
                 );
             }
 
@@ -1179,7 +1194,7 @@ export default class extends Controller {
             if (!payload.success) {
                 throw new Error(
                     payload.message ||
-                    'Erreur pendant le chargement.'
+                    this.label('errorFetch', {}, 'Erreur pendant le chargement.')
                 );
             }
 
