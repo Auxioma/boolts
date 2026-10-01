@@ -1643,7 +1643,7 @@ body.bt-modal-open {
     }
 }
 
-@media (max-width:991px) {
+@media (max-width:767px) {
         .bt-annonce__container {
         max-width: 100%;
         padding-right: 100px;
@@ -1704,7 +1704,7 @@ body.bt-modal-open {
     object-position: 50%;
 }
 
-@media (max-width: 991px) {
+@media (max-width: 767px) {
     .deux-image-gallery,
     .plus-cinq-images,
     .cinq-image,
