@@ -11,7 +11,7 @@
     z-index: 1030;
     
     background-color: #fff;}
-.topbar-nav {height: var(--topbar-height);
+.topbar-nav {height: 72px;
     
     padding: 14px 0;}
 .topbar-brand {display: flex;
