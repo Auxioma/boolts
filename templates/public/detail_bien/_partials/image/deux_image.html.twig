@@ -8,21 +8,23 @@
 {% set pictures = property.propertyImages|default([]) %}
 
 {% if pictures|length == 2 %}
-    <div class="deux-image-gallery">
-        {% for picture in pictures %}
-            <button
-                class="deux-image-item{% if loop.first %} deux-image-item--first{% endif %}{% if loop.last %} deux-image-item--last{% endif %}"
-                type="button"
-                data-open-slider="{{ loop.index0 }}"
-                aria-label="Ouvrir la photo {{ loop.index }}"
-            >
-                <img
-                    src="{{ vich_uploader_asset(picture, 'imageFile') }}"
-                    class="deux-image-img"
-                    alt="Photo {{ loop.index }}"
-                    loading="lazy"
+    <div class="deux-image">
+        <div class="deux-image-gallery">
+            {% for picture in pictures %}
+                <button
+                    class="deux-image-item{% if loop.first %} deux-image-item--first{% endif %}{% if loop.last %} deux-image-item--last{% endif %}"
+                    type="button"
+                    data-open-slider="{{ loop.index0 }}"
+                    aria-label="Ouvrir la photo {{ loop.index }}"
                 >
-            </button>
-        {% endfor %}
+                    <img
+                        src="{{ vich_uploader_asset(picture, 'imageFile') }}"
+                        class="deux-image-img"
+                        alt="Photo {{ loop.index }}"
+                        loading="lazy"
+                    >
+                </button>
+            {% endfor %}
+        </div>
     </div>
 {% endif %}

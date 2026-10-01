@@ -6,45 +6,47 @@
 #}
 
 {% if totalPictures > 0 and firstPicture %}
-    <div class="bt-gallery bt-gallery--count-3">
-        <div
-            class="bt-gallery__main"
-            role="button"
-            tabindex="0"
-            data-open-slider="0"
-            aria-label="Ouvrir la photo principale"
-        >
-            <img
-                src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
-                alt="Photo principale de l'appartement"
-                loading="lazy"
+    <div class="trois-image">
+        <div class="bt-gallery bt-gallery--count-3">
+            <div
+                class="bt-gallery__main"
+                role="button"
+                tabindex="0"
+                data-open-slider="0"
+                aria-label="Ouvrir la photo principale"
             >
-        </div>
-
-        {% set sidePictures = pictures|slice(1, 2) %}
-
-        {% if sidePictures is not empty %}
-            <div class="bt-gallery__side">
-                {% for picture in sidePictures %}
-                    {% set imageIndex = loop.index %}
-
-                    <div
-                        class="bt-gallery__thumb
-                            {% if loop.first %} bt-gallery__thumb--top-right{% endif %}
-                            {% if loop.last %} bt-gallery__thumb--bottom-right{% endif %}"
-                        role="button"
-                        tabindex="0"
-                        data-open-slider="{{ imageIndex }}"
-                        aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
-                    >
-                        <img
-                            src="{{ vich_uploader_asset(picture, 'imageFile') }}"
-                            alt="Photo {{ imageIndex + 1 }}"
-                            loading="lazy"
-                        >
-                    </div>
-                {% endfor %}
+                <img
+                    src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+                    alt="Photo principale de l'appartement"
+                    loading="lazy"
+                >
             </div>
-        {% endif %}
+
+            {% set sidePictures = pictures|slice(1, 2) %}
+
+            {% if sidePictures is not empty %}
+                <div class="bt-gallery__side">
+                    {% for picture in sidePictures %}
+                        {% set imageIndex = loop.index %}
+
+                        <div
+                            class="bt-gallery__thumb
+                                {% if loop.first %} bt-gallery__thumb--top-right{% endif %}
+                                {% if loop.last %} bt-gallery__thumb--bottom-right{% endif %}"
+                            role="button"
+                            tabindex="0"
+                            data-open-slider="{{ imageIndex }}"
+                            aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
+                        >
+                            <img
+                                src="{{ vich_uploader_asset(picture, 'imageFile') }}"
+                                alt="Photo {{ imageIndex + 1 }}"
+                                loading="lazy"
+                            >
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endif %}

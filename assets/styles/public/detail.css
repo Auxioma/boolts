@@ -348,17 +348,30 @@ body.bt-modal-open {
     border-bottom-right-radius: var(--bt-radius-gallery);
 }
 
-/* 3 photos (Figma) : bloc 480px, 2 vignettes 16/9 de 232px, gap 16px */
+/* 3 photos — Figma node 6321-28260 : Gallery 1296 × 480 pleine largeur, gap 16px, 2 vignettes 16:9 à droite, radius 24px */
+/* .trois-image est l'enfant du .row : sa largeur de contenu (1296px au container le plus large) sert de référence au ratio */
+.trois-image {
+    container-type: inline-size;
+}
+
 .bt-gallery--count-3 {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    --trois-image-height: min(480px, calc(100cqw * 480 / 1296));
+    --trois-image-thumb-height: calc((var(--trois-image-height) - 16px) / 2);
+
+    display: flex;
+    align-items: center;
     gap: 16px;
-    height: 480px;
+    width: 100%;
+    height: var(--trois-image-height);
 }
 
 .bt-gallery--count-3 .bt-gallery__main {
     position: relative;
+    flex: 1 0 0;
+    min-width: 0;
+    height: 100%;
     overflow: hidden;
+    border-radius: 24px 0 0 24px;
     cursor: pointer;
 }
 
@@ -373,14 +386,25 @@ body.bt-modal-open {
 
 .bt-gallery--count-3 .bt-gallery__side {
     display: flex;
+    flex: 0 0 auto;
     flex-direction: column;
     gap: 16px;
 }
 
 .bt-gallery--count-3 .bt-gallery__thumb {
-    height: 232px;
-    aspect-ratio: 16/9;
+    width: calc(var(--trois-image-thumb-height) * 16 / 9);
+    height: auto;
+    aspect-ratio: 16 / 9;
+    background: #D9D9D9;
     cursor: pointer;
+}
+
+.bt-gallery--count-3 .bt-gallery__thumb--top-right {
+    border-top-right-radius: 24px;
+}
+
+.bt-gallery--count-3 .bt-gallery__thumb--bottom-right {
+    border-bottom-right-radius: 24px;
 }
 
 .bt-gallery--count-3 .bt-gallery__thumb img {
@@ -1638,19 +1662,24 @@ body.bt-modal-open {
     aspect-ratio: 4/3;
 }
 
-/* 2 photos — Figma node 6321-28286 : Gallery 1296 × 480, gap 16px, 2 × 640 × 480 (4/3) */
+/* 2 photos — Figma node 6321-28286 : Gallery 1296 × 480 pleine largeur, ratio verrouillé, gap 16px, 2 × 640 × 480, radius 24px */
+/* .deux-image est l'enfant du .row : sa largeur de contenu (1296px au container le plus large) sert de référence au ratio */
+.deux-image {
+    container-type: inline-size;
+}
+
 .deux-image-gallery {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin: 48px 0;
+    width: 100%;
+    height: min(480px, calc(100cqw * 480 / 1296));
 }
 
 .deux-image-item {
     display: block;
     flex: 1 0 0;
     align-self: stretch;
-    aspect-ratio: 4/3;
     min-width: 0;
     padding: 0;
     border: 0;
@@ -1660,11 +1689,11 @@ body.bt-modal-open {
 }
 
 .deux-image-item--first {
-    border-radius: var(--bt-radius-gallery) 0 0 var(--bt-radius-gallery);
+    border-radius: 24px 0 0 24px;
 }
 
 .deux-image-item--last {
-    border-radius: 0 var(--bt-radius-gallery) var(--bt-radius-gallery) 0;
+    border-radius: 0 24px 24px 0;
 }
 
 .deux-image-img {
@@ -1676,7 +1705,11 @@ body.bt-modal-open {
 }
 
 @media (max-width: 991px) {
-    .deux-image-gallery {
+    .deux-image-gallery,
+    .plus-cinq-images,
+    .cinq-image,
+    .trois-image,
+    .une-image {
         display: none;
     }
 }
