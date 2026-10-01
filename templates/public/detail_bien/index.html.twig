@@ -48,167 +48,174 @@
                     </div>
                 </section>
             {% endif %}
-<style>
-    /* Background flouté */
-    .bt-hero-responsive::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        background-image: var(--bt-hero-bg);
-        background-repeat: no-repeat;
-        background-position: center center;
-        background-size: cover;
-        filter: blur(18px);
-        transform: scale(1.08);
-    }
+            <style>
+                /* Background flouté */
+                .bt-hero-responsive::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    z-index: 0;
+                    background-image: var(--bt-hero-bg);
+                    background-repeat: no-repeat;
+                    background-position: center center;
+                    background-size: cover;
+                    filter: blur(18px);
+                    transform: scale(1.08);
+                }
 
-    /* Image nette au centre */
-    .bt-hero-responsive__image {
-        position: relative;
-        z-index: 1;
-        display: block;
-        width: auto;
-        height: 100%;
-        margin: 0 auto;
-        object-fit: cover;
-        object-position: center center;
-    }
+                /* Image nette au centre */
+                .bt-hero-responsive__image {
+                    position: relative;
+                    z-index: 1;
+                    display: block;
+                    width: auto;
+                    height: 100%;
+                    margin: 0 auto;
+                    object-fit: cover;
+                    object-position: center center;
+                }
 
-    /* Actions au-dessus */
-    .bt-hero-responsive__actions {
-        position: absolute;
-        right: 24px;
-        bottom: 24px;
-        z-index: 2;
-    }
-</style>
+                /* Actions au-dessus */
+                .bt-hero-responsive__actions {
+                    position: absolute;
+                    right: 24px;
+                    bottom: 24px;
+                    z-index: 2;
+                }
+            </style>
             <section class="bt-annonce">
-                <div class="container bt-annonce__container">
+                <div class="container-md">
+                    <div class="row">
+                        {% if property.titreDuLogement|trim is not empty %}
+                            <h2 class="mb-24">
+                                {{ property.titreDuLogement }} {{ totalPictures }}
+                            </h2>
+                        {% endif %}
 
-                    {% if property.titreDuLogement|trim is not empty %}
-                        <h2 class="mb-24">
-                            {{ property.titreDuLogement }}
-                        </h2>
-                    {% endif %}
+                        {% if totalPictures > 5 %} 
+                            {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
+                        {% elseif totalPictures == 5 %}
+                            {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
+                        {% elseif totalPictures == 4 %} 
+                            {{ include('public/detail_bien/_partials/image/quatre_image.html.twig') }}
+                        {% elseif totalPictures == 3 %}
+                            {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
+                        {% elseif totalPictures == 2 %}
+                            {{ include('public/detail_bien/_partials/image/deux_image.html.twig') }}
+                        {% elseif totalPictures == 1 %}
+                            {{ include('public/detail_bien/_partials/image/une_image.html.twig') }}
+                        {% endif %}
 
-                    {% if totalPictures > 5 %} +5 
-                        {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
-                    {% elseif totalPictures == 5 %}
-                        {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
-                    {% elseif totalPictures == 4 %} 
-                        {{ include('public/detail_bien/_partials/image/quatre_image.html.twig') }}
-                    {% elseif totalPictures == 3 %}
-                        {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
-                    {% elseif totalPictures == 2 %}
-                        {{ include('public/detail_bien/_partials/image/deux_image.html.twig') }}
-                    {% elseif totalPictures == 1 %}
-                        {{ include('public/detail_bien/_partials/image/une_image.html.twig') }}
-                    {% endif %}
+                        <div class="row g-4 align-items-start">
+                            <div class="col-lg-8">
+                                {{ include('public/detail_bien/_partials/information_basic.html.twig') }}
+                                {{ include('public/detail_bien/_partials/description.html.twig') }}
 
-                    <div class="row g-4 align-items-start">
-                        <div class="col-lg-8">
-                            {{ include('public/detail_bien/_partials/information_basic.html.twig') }}
-                            {{ include('public/detail_bien/_partials/description.html.twig') }}
+                                {{ include('public/detail_bien/_partials/caracteristique.html.twig') }}
+                                {{ include('public/detail_bien/_partials/dpe.html.twig') }}
 
-                            {{ include('public/detail_bien/_partials/caracteristique.html.twig') }}
-                            {{ include('public/detail_bien/_partials/dpe.html.twig') }}
+                                {% set hasLoyer = property.montantLoyerHorsCharge is not null %}
+                                {% set hasCharges = property.montantDesCharges is not null %}
+                                {% set hasDepot = property.montantDepotDeGarantie is not null %}
 
-                            {% set hasLoyer = property.montantLoyerHorsCharge is not null %}
-                            {% set hasCharges = property.montantDesCharges is not null %}
-                            {% set hasDepot = property.montantDepotDeGarantie is not null %}
+                                {% if hasLoyer or hasCharges or hasDepot %}
+                                    {{ include('public/detail_bien/_partials/loyer.html.twig') }}
+                                {% endif %}
 
-                            {% if hasLoyer or hasCharges or hasDepot %}
-                                {{ include('public/detail_bien/_partials/loyer.html.twig') }}
-                            {% endif %}
+                                {% if properties is not empty %}
+                                    {{ include('public/detail_bien/_partials/slider.html.twig') }}
+                                {% endif %}
 
-                           {% if properties is not empty %}
-                               {{ include('public/detail_bien/_partials/slider.html.twig') }}
-                           {% endif %}
+                            </div>
 
-                        </div>
+                            <div class="col-lg-4 bt-contact-sticky-wrapper">
+                                <aside class="bt-contact-sticky">
+                                    <div class="bt-contact-card" data-controller="agence-contact-form">
 
-                        <div class="col-lg-4 bt-contact-sticky-wrapper">
-                            <aside class="bt-contact-sticky">
-                                <div class="bt-contact-card" data-controller="agence-contact-form">
-
-                                    <div class="d-flex align-items-start gap-4 mb-4">
-                                        <div class="bt-contact-card__avatar">
-                                            {{ include('public/detail_bien/_partials/composant/image_entreprise.html.twig') }}
-                                        </div>
-                                        <div class="min-w-0">
-                                            <p class="bt-contact-card__name">
-                                                {{ property.user.entreprise }}
-                                                <a href="{{ path('app_public_detail_agence', {
+                                        <div class="d-flex align-items-start gap-4 mb-4">
+                                            <div class="bt-contact-card__avatar">
+                                                {{ include('public/detail_bien/_partials/composant/image_entreprise.html.twig') }}
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="bt-contact-card__name">
+                                                    {{ property.user.entreprise }}
+                                                    <a
+                                                        href="{{ path('app_public_detail_agence', {
                                                     slug: property.user.slug}) }}"
-                                                    class="bt-contact-card__link"
-                                                >
-                                                <i class="icon-chevron-right ms-1"></i>
-                                                </a>
-                                            </p>
-                                            <p class="bt-contact-card__address">
-                                                Agence immobilière -
-                                                {{ property.user.adresseContact }}
-                                                {{ property.user.codePostalContact }}
-                                                {{ property.user.villeContact }}
-                                                {{ property.user.paysContact }}
-                                            </p>
-                                            <div class="d-flex flex-column align-items-start gap-1 mt-3">
-                                                <button type="button" class="bt-btn bt-btn--outline-primary"
+                                                        class="bt-contact-card__link"
+                                                    >
+                                                        <i class="icon-chevron-right ms-1"></i>
+                                                    </a>
+                                                </p>
+                                                <p class="bt-contact-card__address">
+                                                    Agence immobilière -
+                                                    {{ property.user.adresseContact }}
+                                                    {{ property.user.codePostalContact }}
+                                                    {{ property.user.villeContact }}
+                                                    {{ property.user.paysContact }}
+                                                </p>
+                                                <div class="d-flex flex-column align-items-start gap-1 mt-3">
+                                                    <button
+                                                        type="button"
+                                                        class="bt-btn bt-btn--outline-primary"
                                                         type="button"
                                                         class="agence-btn agence-btn-outline agence-contact-number"
                                                         data-action="click->agence-contact-form#showPhoneNumber"
-                                                        data-agence-contact-form-target="phoneButton">
-                                                    Afficher le numéro
-                                                </button>
-                                                <a
-                                                    href="tel:{{ property.user.numeroContact }}"
-                                                    class="agence-contact-phone d-none"
-                                                    data-agence-contact-form-target="phoneNumber"
-                                                >
-                                                    {{ property.user.numeroContact }}
-                                                </a>
-                                                <a href="mailto:agence@agence.agence" class="bt-contact-card__email">
-                                                    agence@agence.agence
-                                                </a>
+                                                        data-agence-contact-form-target="phoneButton"
+                                                    >
+                                                        Afficher le numéro
+                                                    </button>
+                                                    <a
+                                                        href="tel:{{ property.user.numeroContact }}"
+                                                        class="agence-contact-phone d-none"
+                                                        data-agence-contact-form-target="phoneNumber"
+                                                    >
+                                                        {{ property.user.numeroContact }}
+                                                    </a>
+                                                    <a href="mailto:agence@agence.agence" class="bt-contact-card__email">
+                                                        agence@agence.agence
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {{ include('public/detail_bien/_partials/horaire.html.twig') }}
+                                        {{ include('public/detail_bien/_partials/horaire.html.twig') }}
 
-                                    {{ include('public/detail_bien/_partials/composant/loyer.html.twig') }}
+                                        {{ include('public/detail_bien/_partials/composant/loyer.html.twig') }}
 
-                                    <div class="d-grid gap-3">
-                                        {% if property.user.whatsApp is not empty %}
-                                            <a href="https://wa.me/{{ property.user.whatsApp }}" class="agence-btn agence-btn-whatsapp">
-                                                Contacter via Whatsapp
-                                            </a>
-                                        {% endif %}
+                                        <div class="d-grid gap-3">
+                                            {% if property.user.whatsApp is not empty %}
+                                                <a href="https://wa.me/{{ property.user.whatsApp }}" class="agence-btn agence-btn-whatsapp">
+                                                    Contacter via Whatsapp
+                                                </a>
+                                            {% endif %}
 
-                                        {% if property.user.numeroContact is not empty %}
-                                            <a href="tel:{{ property.user.numeroContact }}" class="agence-btn agence-btn-primary">
-                                                <i class="icon-phone"></i>
-                                                Appeler l’agence
-                                            </a>
-                                        {% endif %}
+                                            {% if property.user.numeroContact is not empty %}
+                                                <a href="tel:{{ property.user.numeroContact }}" class="agence-btn agence-btn-primary">
+                                                    <i class="icon-phone"></i>
+                                                    Appeler l’agence
+                                                </a>
+                                            {% endif %}
 
-                                        <button type="button" class="bt-btn bt-btn--outline-primary w-100"
+                                            <button
+                                                type="button"
+                                                class="bt-btn bt-btn--outline-primary w-100"
                                                 type="button"
                                                 class="agence-btn agence-btn-outline"
                                                 data-action="click->agence-contact-form#open"
                                                 data-agence-contact-form-target="button"
                                                 aria-controls="agency_contact_form"
-                                                aria-expanded="false">
-                                            <i class="bi bi-envelope"></i>
-                                            Contacter par email
-                                        </button>
+                                                aria-expanded="false"
+                                            >
+                                                <i class="bi bi-envelope"></i>
+                                                Contacter par email
+                                            </button>
+                                        </div>
+                                        {{ include('public/detail_bien/_partials/composant/formulaire.html.twig') }}
                                     </div>
-                                    {{ include('public/detail_bien/_partials/composant/formulaire.html.twig') }}
-                                </div>
-                            </aside>
-                        </div>
-                    </div>
+                                </aside>
+                            </div>
+                        </div></div>
                 </div>
             </section>
         </main>
@@ -324,7 +331,10 @@
             visibility: hidden;
             pointer-events: none;
             transform: translateY(10px);
-            transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+            transition:
+                opacity 0.2s ease,
+                transform 0.2s ease,
+                visibility 0.2s ease;
         }
 
         .bt-media-modal.is-open {
@@ -370,7 +380,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform .25s ease;
+            transition: transform 0.25s ease;
         }
 
         .bt-media-grid__item:hover img {
@@ -439,7 +449,9 @@
             color: #151515;
             font-size: 18px;
             cursor: pointer;
-            transition: background .2s ease, transform .2s ease;
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
         }
 
         .bt-slider-stage__arrow:hover {
@@ -505,21 +517,49 @@
             color: #8a8a8a;
         }
 
-        .bt-energy-perf-dpe-a { background: #009c3b; }
-        .bt-energy-perf-dpe-b { background: #48b600; }
-        .bt-energy-perf-dpe-c { background: #d6db00; }
-        .bt-energy-perf-dpe-d { background: #ffef00; }
-        .bt-energy-perf-dpe-e { background: #f7a600; }
-        .bt-energy-perf-dpe-f { background: #f76b00; }
-        .bt-energy-perf-dpe-g { background: #ed2500; }
+        .bt-energy-perf-dpe-a {
+            background: #009c3b;
+        }
+        .bt-energy-perf-dpe-b {
+            background: #48b600;
+        }
+        .bt-energy-perf-dpe-c {
+            background: #d6db00;
+        }
+        .bt-energy-perf-dpe-d {
+            background: #ffef00;
+        }
+        .bt-energy-perf-dpe-e {
+            background: #f7a600;
+        }
+        .bt-energy-perf-dpe-f {
+            background: #f76b00;
+        }
+        .bt-energy-perf-dpe-g {
+            background: #ed2500;
+        }
 
-        .bt-energy-perf-ges-a { background: #5fd2e8; }
-        .bt-energy-perf-ges-b { background: #60bfdb; }
-        .bt-energy-perf-ges-c { background: #65a9cf; }
-        .bt-energy-perf-ges-d { background: #4d789e; }
-        .bt-energy-perf-ges-e { background: #3f577e; }
-        .bt-energy-perf-ges-f { background: #303b61; }
-        .bt-energy-perf-ges-g { background: #25113f; }
+        .bt-energy-perf-ges-a {
+            background: #5fd2e8;
+        }
+        .bt-energy-perf-ges-b {
+            background: #60bfdb;
+        }
+        .bt-energy-perf-ges-c {
+            background: #65a9cf;
+        }
+        .bt-energy-perf-ges-d {
+            background: #4d789e;
+        }
+        .bt-energy-perf-ges-e {
+            background: #3f577e;
+        }
+        .bt-energy-perf-ges-f {
+            background: #303b61;
+        }
+        .bt-energy-perf-ges-g {
+            background: #25113f;
+        }
 
         .bt-cost-detail-card {
             width: 100%;
@@ -631,7 +671,6 @@
                 overflow: visible;
             }
         }
-
     </style>
 
     {# ========================= #}

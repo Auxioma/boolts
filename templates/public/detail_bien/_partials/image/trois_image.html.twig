@@ -1,36 +1,60 @@
-
 {#
- Template: templates/public/detail_bien/_partials/image/trois_image.html.twig
+ Template: templates/public/detail_bien/_partials/image/cinq_image.html.twig
  Role: Renders the public/detail_bien/_partials/image Twig view.
  Context: Provided by the rendering controller, parent template, or including template.
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-{% set pictures = property.propertyImages|default([])|slice(0, 3) %}
-
-{% if pictures|length == 3 %}
-    <div class="bt-gallery bt-gallery--count-3 row row-cols-3 g-3">
-
-        {% for picture in pictures %}
-            <div class="col">
-                <button
-                    class="bt-gallery__item d-block w-100 border-0 p-0 bg-transparent overflow-hidden ratio ratio-4x3
-                        {% if loop.first %} rounded-start-4{% endif %}
-                        {% if loop.last %} rounded-end-4{% endif %}
-                    "
-                    type="button"
-                    data-open-slider="{{ loop.index0 }}"
-                    aria-label="Ouvrir la photo {{ loop.index }}"
+{% if totalPictures > 0 and firstPicture %}
+    <div class="col-12">
+        <div class="row">
+            <div class="col-8 pe-2">
+                <div
+                    class="bt-gallery__main"
+                    role="button"
+                    tabindex="0"
+                    data-open-slider="0"
+                    aria-label="Ouvrir la photo principale"
+                    style="--bt-hero-bg: url('{{ vich_uploader_asset(firstPicture, 'imageFile') }}');"
                 >
                     <img
-                        src="{{ vich_uploader_asset(picture, 'imageFile') }}"
-                        class="js-bt-img w-100"
-                        alt="Photo {{ loop.index }}"
+                        src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+                        class="js-bt-img"
+                        alt="Photo principale de l'appartement"
                         loading="lazy"
                     >
-                </button>
-            </div>
-        {% endfor %}
+                </div></div>
 
-    </div>
+            {% set sidePictures = pictures|slice(1, 2) %}
+
+            {% if sidePictures is not empty %}
+                <div class="col-4 ps-2">
+                    <div class="row">
+
+                        {% for picture in sidePictures %}
+                            {% set imageIndex = loop.index %}
+
+                            <div
+                                class="bt-gallery__thumb col-12
+                            {% if loop.first %} bt-gallery__thumb--top-right pb-3{% endif %}
+                            {% if loop.last %} bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay{% endif %}"
+                                role="button"
+                                tabindex="0"
+                                data-open-slider="{{ imageIndex }}"
+                                aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
+                            >
+                                <img
+                                    src="{{ vich_uploader_asset(picture, 'imageFile') }}"
+                                    class="js-bt-img-tv"
+                                    alt="Photo {{ imageIndex + 1 }}"
+                                    loading="lazy"
+                                >
+
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            {% endif %}
+        </div></div>
 {% endif %}

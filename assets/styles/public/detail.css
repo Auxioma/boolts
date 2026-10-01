@@ -279,28 +279,15 @@ body.bt-modal-open {
 }
 
 .bt-gallery__main {
-    position: relative;
-
-    width: 549px;
-
-    height: 100%;
-
-    overflow: hidden;
-
     border-radius: var(--bt-radius-gallery) 0 0 var(--bt-radius-gallery);
-
     background: #d9d9d9;
 }
 
 .bt-gallery__main img {
     position: relative;
-
     z-index: 2;
-
     width: 100%;
-
-    height: 100%;
-
+    max-height: 480px;
     object-fit: cover;
 }
 
@@ -312,6 +299,22 @@ body.bt-modal-open {
     min-width: 0;
 }
 
+.bt-gallery__side--stack {
+    gap: 18px;
+}
+
+.bt-gallery__side--stack .bt-gallery__thumb {
+    flex: 1 1 0;
+
+    max-width: none;
+
+    width: 100%;
+
+    height: auto;
+
+    min-height: 0;
+}
+
 .bt-gallery__row {
     height: calc((100% - 18px) / 2);
 
@@ -320,28 +323,19 @@ body.bt-modal-open {
 
 .bt-gallery__thumb {
     position: relative;
-
-    flex: 1 1 0;
-
     min-width: 0;
-
     height: 100%;
-
     overflow: hidden;
-
-    background: #d9d9d9;
 }
 
 .bt-gallery__thumb:first-child {
-    flex-basis: 265.5px;
 
-    max-width: 265.5px;
 }
 
 .bt-gallery__thumb img {
     width: 100%;
 
-    height: 100%;
+    max-height: 232px;
 
     object-fit: cover;
 }
@@ -354,16 +348,8 @@ body.bt-modal-open {
     border-bottom-right-radius: var(--bt-radius-gallery);
 }
 
-.bt-gallery__thumb--overlay::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    border-bottom-right-radius: var(--bt-radius-gallery);
-
-    background: linear-gradient(to top, rgba(0, 0, 0, .7), rgba(0, 0, 0, 0) 60%);
+.js-bt-img-tv {
+    aspect-ratio: 16/9;
 }
 
 .bt-gallery__open {
