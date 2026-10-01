@@ -1788,7 +1788,6 @@ body.bt-modal-open {
 /* .plus-cinq-images est l'enfant du .row : sa largeur de contenu (1296px au container le plus large) sert de référence au ratio */
 .plus-cinq-images {
     container-type: inline-size;
-    margin: 48px 0;
 }
 
 .plus-cinq-images-gallery {
