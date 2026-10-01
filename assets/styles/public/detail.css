@@ -1680,3 +1680,202 @@ body.bt-modal-open {
         display: none;
     }
 }
+
+/* 1 photo — Figma node 6321-28275 : Gallery 1296 × 480 pleine largeur, radius 24px, ratio verrouillé */
+/* .une-image est l'enfant du .row (padding gutter Bootstrap) : la galerie interne fait la largeur du contenu du container */
+
+.une-image-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-height: 480px;
+    aspect-ratio: 1296 / 480;
+    overflow: hidden;
+    border-radius: 24px;
+}
+
+.une-image-item {
+    display: block;
+    flex: 1 0 0;
+    width: 100%;
+    min-height: 1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 24px;
+}
+
+.une-image-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 5 photos — Figma node 6321-28294 : Gallery 1296 × 480, gap 16px, 2 × 2 vignettes 4:3 à droite, radius 24px */
+/* .cinq-image est l'enfant du .row : sa largeur de contenu (1296px au container le plus large) sert de référence au ratio */
+.cinq-image {
+    container-type: inline-size;
+}
+
+.cinq-image-gallery {
+    --cinq-image-height: min(480px, calc(100cqw * 480 / 1296));
+    --cinq-image-thumb-height: calc((var(--cinq-image-height) - 16px) / 2);
+
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    height: var(--cinq-image-height);
+}
+
+.cinq-image-main {
+    display: block;
+    flex: 1 0 0;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    border-radius: 24px 0 0 24px;
+    background: #D9D9D9;
+    cursor: pointer;
+}
+
+.cinq-image-side {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 16px;
+}
+
+.cinq-image-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.cinq-image-thumb {
+    display: block;
+    width: calc(var(--cinq-image-thumb-height) * 4 / 3);
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: #D9D9D9;
+    cursor: pointer;
+}
+
+.cinq-image-thumb--top-right {
+    border-top-right-radius: 24px;
+}
+
+.cinq-image-thumb--bottom-right {
+    border-bottom-right-radius: 24px;
+}
+
+.cinq-image-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 5+ photos — Figma node 6321-28314 : Gallery 1296 × 480, gap 16px, 2 × 2 vignettes 4:3 à droite, radius 24px */
+/* .plus-cinq-images est l'enfant du .row : sa largeur de contenu (1296px au container le plus large) sert de référence au ratio */
+.plus-cinq-images {
+    container-type: inline-size;
+    margin: 48px 0;
+}
+
+.plus-cinq-images-gallery {
+    --plus-cinq-images-height: min(480px, calc(100cqw * 480 / 1296));
+    --plus-cinq-images-thumb-height: calc((var(--plus-cinq-images-height) - 16px) / 2);
+
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+    height: var(--plus-cinq-images-height);
+}
+
+.plus-cinq-images-main {
+    flex: 1 0 0;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 24px 0 0 24px;
+    background: #D9D9D9;
+    cursor: pointer;
+}
+
+.plus-cinq-images-side {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 16px;
+}
+
+.plus-cinq-images-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.plus-cinq-images-thumb {
+    position: relative;
+    width: calc(var(--plus-cinq-images-thumb-height) * 4 / 3);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #D9D9D9;
+    cursor: pointer;
+}
+
+.plus-cinq-images-thumb--top-right {
+    border-top-right-radius: 24px;
+}
+
+.plus-cinq-images-thumb--bottom-right {
+    border-bottom-right-radius: 24px;
+}
+
+.plus-cinq-images-thumb--overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 60%);
+    pointer-events: none;
+}
+
+.plus-cinq-images-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.plus-cinq-images-open {
+    position: absolute;
+    right: 16.2px;
+    bottom: 17.62px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 51.559px;
+    padding: 10px 16px;
+    border: 2px solid #FFFFFF;
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2.5px);
+    color: #FFFFFF;
+    font-family: "Eudoxus Sans", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+}

@@ -6,61 +6,49 @@
 #}
 
 {% if totalPictures > 0 and firstPicture %}
-    <div class="bt-gallery d-flex gap-3">
-        <div
-            class="bt-gallery__main"
-            role="button"
-            tabindex="0"
-            data-open-slider="0"
-            aria-label="Ouvrir la photo principale"
-            style="--bt-hero-bg: url('{{ vich_uploader_asset(firstPicture, 'imageFile') }}');"
-        >
-            <img
-                src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
-                class="js-bt-img"
-                alt="Photo principale de l'appartement"
-                loading="lazy"
+    <div class="cinq-image">
+        <div class="cinq-image-gallery">
+            <button
+                class="cinq-image-main"
+                type="button"
+                data-open-slider="0"
+                aria-label="Ouvrir la photo principale"
             >
-        </div>
+                <img
+                    src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+                    class="cinq-image-img"
+                    alt="Photo principale de l'appartement"
+                    loading="lazy"
+                >
+            </button>
 
-        {% set sidePictures = pictures|slice(1, 4) %}
+            {% set sidePictures = pictures|slice(1, 4) %}
 
-        {% if sidePictures is not empty %}
-            <div class="bt-gallery__side d-flex flex-column gap-3">
-
-                {% for picture in sidePictures %}
-                    {% set imageIndex = loop.index %}
-
-                    {% if loop.index0 is even %}
-                        <div class="bt-gallery__row d-flex">
-                    {% endif %}
-
-                    <div
-                        class="bt-gallery__thumb
-                            {% if imageIndex == 2 %} bt-gallery__thumb--top-right{% endif %}
-                            {% if imageIndex == 4 %} bt-gallery__thumb--bottom-right bt-gallery__thumb--overlay{% endif %}
-                            {% if loop.last and imageIndex < 4 %} bt-gallery__thumb--overlay{% endif %}
-                                            "
-                        role="button"
-                        tabindex="0"
-                        data-open-slider="{{ imageIndex }}"
-                        aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
-                    >
-                        <img
-                            src="{{ vich_uploader_asset(picture, 'imageFile') }}"
-                            class="js-bt-img"
-                            alt="Photo {{ imageIndex + 1 }}"
-                            loading="lazy"
-                        >
-
-                    </div>
-
-                    {% if loop.index0 is odd or loop.last %}
+            {% if sidePictures is not empty %}
+                <div class="cinq-image-side">
+                    {% for row in sidePictures|batch(2) %}
+                        {% set rowIndex = loop.index0 %}
+                        <div class="cinq-image-row">
+                            {% for picture in row %}
+                                {% set imageIndex = rowIndex * 2 + loop.index %}
+                                <button
+                                    class="cinq-image-thumb{% if imageIndex == 2 %} cinq-image-thumb--top-right{% endif %}{% if imageIndex == 4 %} cinq-image-thumb--bottom-right{% endif %}"
+                                    type="button"
+                                    data-open-slider="{{ imageIndex }}"
+                                    aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
+                                >
+                                    <img
+                                        src="{{ vich_uploader_asset(picture, 'imageFile') }}"
+                                        class="cinq-image-img"
+                                        alt="Photo {{ imageIndex + 1 }}"
+                                        loading="lazy"
+                                    >
+                                </button>
+                            {% endfor %}
                         </div>
-                    {% endif %}
-                {% endfor %}
-
-            </div>
-        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
     </div>
 {% endif %}
