@@ -475,8 +475,27 @@
             height: 100%;
         }
 
+        /* MediaViewer : le cadre épouse l'image, dont la taille est calculée en JS (btFitSliderImage)
+           à partir de ses dimensions natives : ratio d'origine conservé, ni recadrage ni déformation */
         #btSliderModal .bt-slider-stage__image {
-            height: 100%;
+            display: flex;
+            flex: 0 0 auto;
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            aspect-ratio: auto;
+            background: transparent;
+        }
+
+        #btSliderModal .bt-slider-stage__image img {
+            display: block;
+            /* Repli avant le calcul JS : tient dans la zone sans déformation */
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: calc(100vh - 96px);
+            object-fit: contain;
         }
 
         /* Même hauteur que le bouton retour (top 48px, 44px de haut), aligné sur le bord droit du .container */
@@ -693,11 +712,6 @@
         }
 
         @media (max-width: 768px) {
-            .bt-slider-stage__image {
-                width: 100%;
-                height: 65vh;
-            }
-
             .bt-media-modal__body {
                 padding-inline: 12px;
             }
@@ -964,6 +978,48 @@
             btUpdateSlider();
             btCloseModal(btGridModal);
             btOpenModal(btSliderModal);
+            requestAnimationFrame(btFitSliderImage);
+        }
+
+        // Taille affichée = hauteur disponible (zone du slider), largeur déduite du ratio natif.
+        // Si la largeur dépasse l'espace entre les flèches, on réduit les deux en gardant le ratio.
+        // Ex. : 1200 × 800 avec 720 px de haut disponibles → 1080 × 720.
+        function btFitSliderImage() {
+            const stage = btSliderModal ? btSliderModal.querySelector(".bt-slider-stage") : null;
+
+            if (!stage || !btSliderImage || !btSliderImage.naturalWidth || !btSliderImage.naturalHeight) {
+                return;
+            }
+
+            const availableHeight = stage.clientHeight;
+            let availableWidth = stage.clientWidth;
+
+            if (!availableHeight || !availableWidth) {
+                return;
+            }
+
+            const prevArrow = btSliderModal.querySelector("[data-prev-slide]");
+            const nextArrow = btSliderModal.querySelector("[data-next-slide]");
+            const prevRect = prevArrow ? prevArrow.getBoundingClientRect() : null;
+            const nextRect = nextArrow ? nextArrow.getBoundingClientRect() : null;
+
+            if (prevRect && nextRect && prevRect.width && nextRect.width) {
+                availableWidth = Math.min(availableWidth, nextRect.left - prevRect.right - 32);
+            }
+
+            const ratio = btSliderImage.naturalWidth / btSliderImage.naturalHeight;
+            let height = availableHeight;
+            let width = height * ratio;
+
+            if (width > availableWidth) {
+                width = availableWidth;
+                height = width / ratio;
+            }
+
+            btSliderImage.style.width = Math.round(width) + "px";
+            btSliderImage.style.height = Math.round(height) + "px";
+            btSliderImage.style.maxWidth = "none";
+            btSliderImage.style.maxHeight = "none";
         }
 
         function btUpdateSlider() {
@@ -973,8 +1029,13 @@
 
             const photo = btPhotos[btCurrentIndex];
 
+            btSliderImage.removeAttribute("style");
             btSliderImage.src = photo.src;
             btSliderImage.alt = photo.alt;
+
+            if (btSliderImage.complete) {
+                btFitSliderImage();
+            }
             btSliderCounter.textContent = (btCurrentIndex + 1) + "/" + btPhotos.length;
         }
 
@@ -1088,6 +1149,12 @@
                 }
             }, { passive: true });
         }
+
+        if (btSliderImage) {
+            btSliderImage.addEventListener("load", btFitSliderImage);
+        }
+
+        window.addEventListener("resize", btFitSliderImage);
 
         btRenderMediaGrid();
         btUpdateSlider();
