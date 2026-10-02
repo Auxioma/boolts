@@ -12,8 +12,8 @@
                 class="plus-cinq-images-main"
                 role="button"
                 tabindex="0"
-                data-open-slider="0"
-                aria-label="Ouvrir la photo principale"
+                data-open-gallery
+                aria-label="Ouvrir la galerie photos"
             >
                 <img
                     src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
@@ -38,8 +38,8 @@
                                     class="plus-cinq-images-thumb{% if imageIndex == 2 %} plus-cinq-images-thumb--top-right{% endif %}{% if imageIndex == 4 %} plus-cinq-images-thumb--bottom-right{% endif %}{% if isLastThumb %} plus-cinq-images-thumb--overlay{% endif %}"
                                     role="button"
                                     tabindex="0"
-                                    data-open-slider="{{ imageIndex }}"
-                                    aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
+                                    data-open-gallery
+                                    aria-label="Ouvrir la galerie photos"
                                 >
                                     <img
                                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"

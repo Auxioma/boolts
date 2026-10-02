@@ -11,8 +11,8 @@
             <button
                 class="cinq-image-main"
                 type="button"
-                data-open-slider="0"
-                aria-label="Ouvrir la photo principale"
+                data-open-gallery
+                aria-label="Ouvrir la galerie photos"
             >
                 <img
                     src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
@@ -34,8 +34,8 @@
                                 <button
                                     class="cinq-image-thumb{% if imageIndex == 2 %} cinq-image-thumb--top-right{% endif %}{% if imageIndex == 4 %} cinq-image-thumb--bottom-right{% endif %}"
                                     type="button"
-                                    data-open-slider="{{ imageIndex }}"
-                                    aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
+                                    data-open-gallery
+                                    aria-label="Ouvrir la galerie photos"
                                 >
                                     <img
                                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"

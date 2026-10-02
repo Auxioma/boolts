@@ -91,9 +91,8 @@
                             {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
                         {% elseif totalPictures == 5 %}
                             {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
-                        {% elseif totalPictures == 4 %} 
-                            {{ include('public/detail_bien/_partials/image/quatre_image.html.twig') }}
-                        {% elseif totalPictures == 3 %}
+                        
+                        {% elseif totalPictures == 3 or totalPictures == 4 %}
                             {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
                         {% elseif totalPictures == 2 %}
                             {{ include('public/detail_bien/_partials/image/deux_image.html.twig') }}

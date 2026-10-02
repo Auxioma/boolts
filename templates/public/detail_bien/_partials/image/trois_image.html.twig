@@ -12,8 +12,8 @@
                 class="bt-gallery__main"
                 role="button"
                 tabindex="0"
-                data-open-slider="0"
-                aria-label="Ouvrir la photo principale"
+                data-open-gallery
+                aria-label="Ouvrir la galerie photos"
             >
                 <img
                     src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
@@ -35,8 +35,8 @@
                                 {% if loop.last %} bt-gallery__thumb--bottom-right{% endif %}"
                             role="button"
                             tabindex="0"
-                            data-open-slider="{{ imageIndex }}"
-                            aria-label="Ouvrir la photo {{ imageIndex + 1 }}"
+                            data-open-gallery
+                            aria-label="Ouvrir la galerie photos"
                         >
                             <img
                                 src="{{ vich_uploader_asset(picture, 'imageFile') }}"
