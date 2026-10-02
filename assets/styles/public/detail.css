@@ -954,28 +954,17 @@ body.bt-modal-open {
 }
 
 .bt-modal-round {
-    width: 66px;
-
-    height: 66px;
-
+    width: 44px;
+    height: 44px;
     display: inline-flex;
-
     align-items: center;
-
     justify-content: center;
-
     color: #fff;
-
     border: 2px solid #fff;
-
     border-radius: 50%;
-
     background: rgba(11, 15, 20, .1);
-
     backdrop-filter: blur(2.5px);
-
     font-size: 24px;
-
     line-height: 1;
 }
 

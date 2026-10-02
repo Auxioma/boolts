@@ -234,7 +234,7 @@
                     data-close-grid
                     aria-label="Retour"
                 >
-                    <i class="bi bi-arrow-left"></i>
+                    <i class="icon-arrow-left"></i>
                 </button>
 
                 <div class="detail-bien-modal-mensouri-grid" id="btMediaGrid"></div>
@@ -253,7 +253,7 @@
                     data-close-slider
                     aria-label="Fermer"
                 >
-                    <i class="bi bi-x-lg"></i>
+                    <i class="icon-x"></i>
                 </button>
 
                 <div class="bt-slider-stage">
@@ -261,14 +261,14 @@
                         1/{{ totalPictures }}
                     </div>
 
-                    <div class="d-flex align-items-center justify-content-center gap-4">
+                    <div class="detail-bien-modal-mensouri-slider-row d-flex align-items-center justify-content-center gap-4">
                         <button
-                            class="bt-slider-stage__arrow d-flex align-items-center justify-content-center"
+                            class="bt-modal-round bt-slider-stage__arrow"
                             type="button"
                             data-prev-slide
                             aria-label="Image précédente"
                         >
-                            <i class="bi bi-arrow-left"></i>
+                            <i class="icon-arrow-left"></i>
                         </button>
 
                         <div class="bt-slider-stage__image">
@@ -276,12 +276,12 @@
                         </div>
 
                         <button
-                            class="bt-slider-stage__arrow d-flex align-items-center justify-content-center"
+                            class="bt-modal-round bt-slider-stage__arrow"
                             type="button"
                             data-next-slide
                             aria-label="Image suivante"
                         >
-                            <i class="bi bi-arrow-right"></i>
+                            <i class="icon-arrow-right"></i>
                         </button>
                     </div>
                 </div>
@@ -314,7 +314,8 @@
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
-            transform: translateY(0);
+            /* "none" (et non translateY(0)) : un transform casserait le position: fixed du bouton retour */
+            transform: none;
         }
 
         body.bt-modal-open {
@@ -323,13 +324,26 @@
 
         .bt-media-modal__body {
             min-height: calc(100vh - 90px);
-            padding: 40px 16px 80px;
+            padding: 48px 0;
         }
 
-        .bt-media-modal__back {
-            position: sticky;
-            top: 24px;
-            left: 24px;
+        /* Bouton fixe, aligné sur le bord gauche du .container Bootstrap (max 1320px, gouttière 12px) */
+        /* Annule le .icon-x:before global (position absolute; top 7px) pour garder l'icône centrée */
+        .bt-media-modal__back .icon-x::before {
+            position: static;
+            top: auto;
+        }
+
+        .bt-media-modal__back i {
+            display: inline-flex;
+            line-height: 1;
+        }
+
+        #btMediaGridModal .bt-modal-round.bt-media-modal__back,
+        #btSliderModal .bt-modal-round.bt-media-modal__back {
+            position: fixed;
+            top: 48px;
+            left: max(12px, calc((100% - 1320px) / 2 + 12px));
             z-index: 20;
         }
 
@@ -442,11 +456,45 @@
             padding: 32px 16px;
         }
 
-        .bt-slider-stage__counter {
+        /* Slider : la rangée flèches + image commence à la hauteur des boutons (48px) et s'arrête à 48px du bas */
+        #btSliderModal .bt-media-modal__body {
+            box-sizing: border-box;
+            min-height: 100vh;
+            margin-top: 0;
+            padding: 48px 12px;
+        }
+
+        #btSliderModal .bt-slider-stage {
+            height: calc(100vh - 96px);
+            min-height: 0;
+            padding: 0;
+        }
+
+        .detail-bien-modal-mensouri-slider-row {
+            width: 100%;
+            height: 100%;
+        }
+
+        #btSliderModal .bt-slider-stage__image {
+            height: 100%;
+        }
+
+        /* Même hauteur que le bouton retour (top 48px, 44px de haut), aligné sur le bord droit du .container */
+        #btSliderModal .bt-slider-stage__counter {
+            position: fixed;
+            top: 48px;
+            right: max(12px, calc((100% - 1320px) / 2 + 12px));
+            z-index: 20;
+            display: inline-flex;
+            align-items: center;
+            box-sizing: border-box;
+            height: 44px;
+            min-height: 44px;
+            margin: 0;
+            padding: 0 16px;
             font-size: 15px;
             font-weight: 700;
-            color: #151515;
-            margin-bottom: 24px;
+            color: #fff;
         }
 
         .bt-slider-stage__image {
@@ -464,24 +512,45 @@
             display: block;
         }
 
-        .bt-slider-stage__arrow {
-            width: 46px;
-            height: 46px;
-            min-width: 46px;
-            border-radius: 50%;
-            border: 1px solid #e5e5e5;
-            background: #ffffff;
-            color: #151515;
-            font-size: 18px;
+        /* Flèches du slider : même style que le bouton fermer (.bt-modal-round), icône centrée */
+        .bt-slider-stage__arrow.bt-modal-round {
+            width: 44px;
+            height: 44px;
+            flex: 0 0 44px;
             cursor: pointer;
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease;
+            transition: transform 0.2s ease;
         }
 
-        .bt-slider-stage__arrow:hover {
-            background: #f5f5f5;
+        .bt-slider-stage__arrow.bt-modal-round:hover {
             transform: scale(1.05);
+        }
+
+        /* Flèches fixes : même axe vertical que le bouton fermer (gauche) et le compteur (droite),
+           centrées en hauteur sur l'image (zone 48px → 100vh - 48px, donc centre à 50%) */
+        #btSliderModal [data-prev-slide].bt-slider-stage__arrow,
+        #btSliderModal [data-next-slide].bt-slider-stage__arrow {
+            position: fixed;
+            top: 50%;
+            z-index: 20;
+            transform: translateY(-50%);
+        }
+
+        #btSliderModal [data-prev-slide].bt-slider-stage__arrow {
+            left: max(12px, calc((100% - 1320px) / 2 + 12px));
+        }
+
+        #btSliderModal [data-next-slide].bt-slider-stage__arrow {
+            right: max(12px, calc((100% - 1320px) / 2 + 12px));
+        }
+
+        #btSliderModal [data-prev-slide].bt-slider-stage__arrow:hover,
+        #btSliderModal [data-next-slide].bt-slider-stage__arrow:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .bt-slider-stage__arrow i {
+            display: inline-flex;
+            line-height: 1;
         }
 
         .bt-gallery__open {
@@ -627,12 +696,6 @@
             .bt-slider-stage__image {
                 width: 100%;
                 height: 65vh;
-            }
-
-            .bt-slider-stage__arrow {
-                width: 40px;
-                height: 40px;
-                min-width: 40px;
             }
 
             .bt-media-modal__body {
