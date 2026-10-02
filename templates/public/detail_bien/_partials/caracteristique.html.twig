@@ -7,12 +7,12 @@
 
 {% if property.caracteristique is not empty %}
     <section class="bt-info-section bt-info-section--border-bottom">
-        <h2 class="bt-section-title">Ce que le bien propose</h2>
+        <h3 class="mb-0">Ce que le bien propose</h3>
 
-        <div class="row gy-4 mt-0">
+        <div class="row mt-16">
             {% for item in property.caracteristique %}
                 <div class="col-4">
-                    <div class="bt-feature d-flex align-items-center gap-2">
+                    <div class="bt-feature d-flex align-items-center gap-2{% if loop.revindex <= 3 %} pb-0{% endif %}">
                         {% if item.icone %}
                             <i class="{{ item.icone }}"></i>
                         {% endif %}
