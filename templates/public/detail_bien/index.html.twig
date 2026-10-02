@@ -14,6 +14,28 @@
     {% set pictures = property.propertyImages|slice(0, 5) %}
     {% set firstPicture = pictures|first %}
 
+    {% set btPhotos = [] %}
+
+    {% for picture in property.propertyImages %}
+        {% set imageSrc = vich_uploader_asset(picture, 'imageFile') %}
+
+        {% if imageSrc %}
+            {% set btPhotos = btPhotos|merge([
+                {
+                    src: imageSrc,
+                    alt: 'Photo ' ~ loop.index ~ ' de l’annonce',
+                },
+            ]) %}
+        {% endif %}
+    {% endfor %}
+
+    {# Grille photos + MediaViewer : assets/controllers/detailbien/media_viewer_controller.js #}
+    <div
+        data-controller="detailbien--media-viewer"
+        data-detailbien--media-viewer-photos-value="{{ btPhotos|json_encode }}"
+        data-action="click->detailbien--media-viewer#handleClick keydown@window->detailbien--media-viewer#handleKeydown resize@window->detailbien--media-viewer#fitSliderImage"
+    >
+
     <div class="bt-page">
 
         <div class="bt-mobile-topbar align-items-center justify-content-center">
@@ -225,19 +247,20 @@
     {# ========================= #}
 
     {% if totalPictures > 0 %}
-        <section class="bt-media-modal" id="btMediaGridModal" aria-hidden="true">
+        <section class="bt-media-modal" id="btMediaGridModal" aria-hidden="true" data-detailbien--media-viewer-target="gridModal">
 
             <div class="bt-media-modal__body position-relative">
                 <button
                     class="bt-modal-round bt-media-modal__back"
                     type="button"
                     data-close-grid
+                    data-action="detailbien--media-viewer#closeGrid"
                     aria-label="Retour"
                 >
                     <i class="icon-arrow-left"></i>
                 </button>
 
-                <div class="detail-bien-modal-mensouri-grid" id="btMediaGrid"></div>
+                <div class="detail-bien-modal-mensouri-grid" id="btMediaGrid" data-detailbien--media-viewer-target="grid"></div>
             </div>
         </section>
 
@@ -245,19 +268,26 @@
         {# MODALE 2 : SLIDER IMAGE #}
         {# ========================= #}
 
-        <section class="bt-media-modal" id="btSliderModal" aria-hidden="true">
+        <section
+            class="bt-media-modal"
+            id="btSliderModal"
+            aria-hidden="true"
+            data-detailbien--media-viewer-target="sliderModal"
+            data-action="touchstart->detailbien--media-viewer#touchStart:passive touchend->detailbien--media-viewer#touchEnd:passive"
+        >
             <div class="bt-media-modal__body position-relative">
                 <button
                     class="bt-modal-round bt-media-modal__back"
                     type="button"
                     data-close-slider
+                    data-action="detailbien--media-viewer#closeSlider"
                     aria-label="Fermer"
                 >
                     <i class="icon-x"></i>
                 </button>
 
-                <div class="bt-slider-stage">
-                    <div class="bt-slider-stage__counter" id="btSliderCounter">
+                <div class="bt-slider-stage" data-detailbien--media-viewer-target="stage">
+                    <div class="bt-slider-stage__counter" id="btSliderCounter" data-detailbien--media-viewer-target="counter">
                         1/{{ totalPictures }}
                     </div>
 
@@ -266,19 +296,28 @@
                             class="bt-modal-round bt-slider-stage__arrow"
                             type="button"
                             data-prev-slide
+                            data-detailbien--media-viewer-target="prevButton"
+                            data-action="detailbien--media-viewer#prev"
                             aria-label="Image précédente"
                         >
                             <i class="icon-arrow-left"></i>
                         </button>
 
                         <div class="bt-slider-stage__image">
-                            <img id="btSliderImage" alt="Photo de l'annonce">
+                            <img
+                                id="btSliderImage"
+                                alt="Photo de l'annonce"
+                                data-detailbien--media-viewer-target="sliderImage"
+                                data-action="load->detailbien--media-viewer#fitSliderImage"
+                            >
                         </div>
 
                         <button
                             class="bt-modal-round bt-slider-stage__arrow"
                             type="button"
                             data-next-slide
+                            data-detailbien--media-viewer-target="nextButton"
+                            data-action="detailbien--media-viewer#next"
                             aria-label="Image suivante"
                         >
                             <i class="icon-arrow-right"></i>
@@ -475,7 +514,7 @@
             height: 100%;
         }
 
-        /* MediaViewer : le cadre épouse l'image, dont la taille est calculée en JS (btFitSliderImage)
+        /* MediaViewer : le cadre épouse l'image, dont la taille est calculée par le contrôleur Stimulus detailbien--media-viewer
            à partir de ses dimensions natives : ratio d'origine conservé, ni recadrage ni déformation */
         #btSliderModal .bt-slider-stage__image {
             display: flex;
@@ -774,389 +813,5 @@
             }
         }
     </style>
-
-    {# ========================= #}
-    {# JAVASCRIPT GALERIE #}
-    {# ========================= #}
-
-    {% set btPhotos = [] %}
-
-    {% for picture in property.propertyImages %}
-        {% set imageSrc = vich_uploader_asset(picture, 'imageFile') %}
-
-        {% if imageSrc %}
-            {% set btPhotos = btPhotos|merge([
-                {
-                    src: imageSrc,
-                    alt: 'Photo ' ~ loop.index ~ ' de l’annonce',
-                },
-            ]) %}
-        {% endif %}
-    {% endfor %}
-
-    <script>
-        const btPhotos = {{ btPhotos|json_encode|raw }};
-
-        const btBody = document.body;
-        const btGridModal = document.getElementById("btMediaGridModal");
-        const btSliderModal = document.getElementById("btSliderModal");
-        const btMediaGrid = document.getElementById("btMediaGrid");
-        const btSliderImage = document.getElementById("btSliderImage");
-        const btSliderCounter = document.getElementById("btSliderCounter");
-
-        let btCurrentIndex = 0;
-        let btTouchStartX = 0;
-
-        function btHasPhotos() {
-            return Array.isArray(btPhotos) && btPhotos.length > 0;
-        }
-
-        function btLoadOrientation(photo) {
-            return new Promise(function (resolve) {
-                const image = new Image();
-
-                image.onload = function () {
-                    resolve(image.naturalWidth >= image.naturalHeight ? "landscape" : "portrait");
-                };
-                image.onerror = function () {
-                    resolve("landscape");
-                };
-                image.src = photo.src;
-            });
-        }
-
-        function btCreateGridItem(index, orientation, modifier) {
-            const photo = btPhotos[index];
-            const modifierClass = modifier ? ` detail-bien-modal-mensouri-item--${modifier}` : "";
-
-            return `
-                <button
-                    type="button"
-                    class="detail-bien-modal-mensouri-item detail-bien-modal-mensouri-item--${orientation}${modifierClass}"
-                    data-open-slider="${index}"
-                    aria-label="Ouvrir ${photo.alt}"
-                >
-                    <img src="${photo.src}" alt="${photo.alt}" loading="lazy">
-                </button>
-            `;
-        }
-
-        function btCreateGridRow(type, items) {
-            return `<div class="detail-bien-modal-mensouri-row detail-bien-modal-mensouri-row--${type}">${items.join("")}</div>`;
-        }
-
-        // Paysages : alternance pleine largeur / paire côte à côte (1, 2, 1, 2…) ;
-        // une image restante seule passe en pleine largeur.
-        // 2 → 1 + 1, 3 → 1 + 2, 4 → 1 + 2 + 1, 6 → 1 + 2 + 1 + 2.
-        function btRenderLandscapeSequence(indexes) {
-            const rows = [];
-            let cursor = 0;
-
-            while (cursor < indexes.length) {
-                rows.push(btCreateGridRow("one", [btCreateGridItem(indexes[cursor++], "landscape")]));
-
-                if (cursor < indexes.length) {
-                    const pair = indexes.slice(cursor, cursor + 2);
-                    cursor += pair.length;
-
-                    rows.push(btCreateGridRow(pair.length === 2 ? "two" : "one", pair.map(function (index) {
-                        return btCreateGridItem(index, "landscape");
-                    })));
-                }
-            }
-
-            return rows;
-        }
-
-        // Portraits : groupes de trois (un grand à gauche, deux empilés à droite), reste de 1 ou 2 sur une rangée.
-        function btRenderPortraitSequence(indexes) {
-            const rows = [];
-            let cursor = 0;
-
-            for (; cursor + 3 <= indexes.length; cursor += 3) {
-                rows.push(btCreateGridRow("trio", [
-                    btCreateGridItem(indexes[cursor], "portrait", "big"),
-                    btCreateGridItem(indexes[cursor + 1], "portrait", "stacked"),
-                    btCreateGridItem(indexes[cursor + 2], "portrait", "stacked"),
-                ]));
-            }
-
-            const rest = indexes.slice(cursor);
-
-            if (rest.length > 0) {
-                rows.push(btCreateGridRow(
-                    rest.length === 2 ? "two" : "one",
-                    rest.map(function (index) {
-                        return btCreateGridItem(index, "portrait");
-                    })
-                ));
-            }
-
-            return rows;
-        }
-
-        async function btRenderMediaGrid() {
-            if (!btHasPhotos() || !btMediaGrid) {
-                return;
-            }
-
-            const orientations = await Promise.all(btPhotos.map(btLoadOrientation));
-            const sequences = [];
-
-            orientations.forEach(function (orientation, index) {
-                const current = sequences[sequences.length - 1];
-
-                if (current && current.orientation === orientation) {
-                    current.indexes.push(index);
-                } else {
-                    sequences.push({ orientation: orientation, indexes: [index] });
-                }
-            });
-
-            const rows = sequences.flatMap(function (sequence) {
-                return sequence.orientation === "landscape"
-                    ? btRenderLandscapeSequence(sequence.indexes)
-                    : btRenderPortraitSequence(sequence.indexes);
-            });
-
-            btMediaGrid.innerHTML = rows.join("");
-        }
-
-        function btOpenModal(modal) {
-            if (!modal) {
-                return;
-            }
-
-            modal.classList.add("is-open");
-            modal.setAttribute("aria-hidden", "false");
-            btBody.classList.add("bt-modal-open");
-        }
-
-        function btCloseModal(modal) {
-            if (!modal) {
-                return;
-            }
-
-            modal.classList.remove("is-open");
-            modal.setAttribute("aria-hidden", "true");
-
-            const isGridOpen = btGridModal && btGridModal.classList.contains("is-open");
-            const isSliderOpen = btSliderModal && btSliderModal.classList.contains("is-open");
-
-            if (!isGridOpen && !isSliderOpen) {
-                btBody.classList.remove("bt-modal-open");
-            }
-        }
-
-        function btOpenGrid() {
-            if (!btHasPhotos()) {
-                return;
-            }
-
-            btOpenModal(btGridModal);
-
-            if (btGridModal) {
-                btGridModal.scrollTop = 0;
-            }
-        }
-
-        function btOpenSlider(index) {
-            if (!btHasPhotos()) {
-                return;
-            }
-
-            btCurrentIndex = Number(index) || 0;
-
-            if (btCurrentIndex < 0) {
-                btCurrentIndex = 0;
-            }
-
-            if (btCurrentIndex >= btPhotos.length) {
-                btCurrentIndex = btPhotos.length - 1;
-            }
-
-            btUpdateSlider();
-            btCloseModal(btGridModal);
-            btOpenModal(btSliderModal);
-            requestAnimationFrame(btFitSliderImage);
-        }
-
-        // Taille affichée = hauteur disponible (zone du slider), largeur déduite du ratio natif.
-        // Si la largeur dépasse l'espace entre les flèches, on réduit les deux en gardant le ratio.
-        // Ex. : 1200 × 800 avec 720 px de haut disponibles → 1080 × 720.
-        function btFitSliderImage() {
-            const stage = btSliderModal ? btSliderModal.querySelector(".bt-slider-stage") : null;
-
-            if (!stage || !btSliderImage || !btSliderImage.naturalWidth || !btSliderImage.naturalHeight) {
-                return;
-            }
-
-            const availableHeight = stage.clientHeight;
-            let availableWidth = stage.clientWidth;
-
-            if (!availableHeight || !availableWidth) {
-                return;
-            }
-
-            const prevArrow = btSliderModal.querySelector("[data-prev-slide]");
-            const nextArrow = btSliderModal.querySelector("[data-next-slide]");
-            const prevRect = prevArrow ? prevArrow.getBoundingClientRect() : null;
-            const nextRect = nextArrow ? nextArrow.getBoundingClientRect() : null;
-
-            if (prevRect && nextRect && prevRect.width && nextRect.width) {
-                availableWidth = Math.min(availableWidth, nextRect.left - prevRect.right - 32);
-            }
-
-            const ratio = btSliderImage.naturalWidth / btSliderImage.naturalHeight;
-            let height = availableHeight;
-            let width = height * ratio;
-
-            if (width > availableWidth) {
-                width = availableWidth;
-                height = width / ratio;
-            }
-
-            btSliderImage.style.width = Math.round(width) + "px";
-            btSliderImage.style.height = Math.round(height) + "px";
-            btSliderImage.style.maxWidth = "none";
-            btSliderImage.style.maxHeight = "none";
-        }
-
-        function btUpdateSlider() {
-            if (!btHasPhotos() || !btSliderImage || !btSliderCounter) {
-                return;
-            }
-
-            const photo = btPhotos[btCurrentIndex];
-
-            btSliderImage.removeAttribute("style");
-            btSliderImage.src = photo.src;
-            btSliderImage.alt = photo.alt;
-
-            if (btSliderImage.complete) {
-                btFitSliderImage();
-            }
-            btSliderCounter.textContent = (btCurrentIndex + 1) + "/" + btPhotos.length;
-        }
-
-        function btNextSlide() {
-            if (!btHasPhotos()) {
-                return;
-            }
-
-            btCurrentIndex = (btCurrentIndex + 1) % btPhotos.length;
-            btUpdateSlider();
-        }
-
-        function btPrevSlide() {
-            if (!btHasPhotos()) {
-                return;
-            }
-
-            btCurrentIndex = (btCurrentIndex - 1 + btPhotos.length) % btPhotos.length;
-            btUpdateSlider();
-        }
-
-        document.addEventListener("click", function (event) {
-            const openGalleryBtn = event.target.closest("[data-open-gallery]");
-            const openSliderBtn = event.target.closest("[data-open-slider]");
-
-            if (openGalleryBtn) {
-                event.preventDefault();
-                event.stopPropagation();
-                btOpenGrid();
-                return;
-            }
-
-            if (openSliderBtn) {
-                event.preventDefault();
-                btOpenSlider(openSliderBtn.dataset.openSlider);
-                return;
-            }
-
-            if (event.target.closest("[data-close-grid]")) {
-                event.preventDefault();
-                btCloseModal(btGridModal);
-                return;
-            }
-
-            if (event.target.closest("[data-close-slider]")) {
-                event.preventDefault();
-                btCloseModal(btSliderModal);
-                return;
-            }
-
-            if (event.target.closest("[data-next-slide]")) {
-                event.preventDefault();
-                btNextSlide();
-                return;
-            }
-
-            if (event.target.closest("[data-prev-slide]")) {
-                event.preventDefault();
-                btPrevSlide();
-            }
-        });
-
-        document.addEventListener("keydown", function (event) {
-            const activeElement = document.activeElement;
-
-            if (
-                activeElement &&
-                activeElement.matches("[data-open-gallery], [data-open-slider]") &&
-                (event.key === "Enter" || event.key === " ")
-            ) {
-                event.preventDefault();
-
-                if (activeElement.hasAttribute("data-open-gallery")) {
-                    btOpenGrid();
-                    return;
-                }
-
-                if (activeElement.hasAttribute("data-open-slider")) {
-                    btOpenSlider(activeElement.dataset.openSlider);
-                    return;
-                }
-            }
-
-            if (event.key === "Escape") {
-                btCloseModal(btGridModal);
-                btCloseModal(btSliderModal);
-            }
-
-            if (btSliderModal && btSliderModal.classList.contains("is-open")) {
-                if (event.key === "ArrowRight") {
-                    btNextSlide();
-                }
-
-                if (event.key === "ArrowLeft") {
-                    btPrevSlide();
-                }
-            }
-        });
-
-        if (btSliderModal) {
-            btSliderModal.addEventListener("touchstart", function (event) {
-                btTouchStartX = event.changedTouches[0].clientX;
-            }, { passive: true });
-
-            btSliderModal.addEventListener("touchend", function (event) {
-                const touchEndX = event.changedTouches[0].clientX;
-                const diff = touchEndX - btTouchStartX;
-
-                if (Math.abs(diff) > 50) {
-                    diff < 0 ? btNextSlide() : btPrevSlide();
-                }
-            }, { passive: true });
-        }
-
-        if (btSliderImage) {
-            btSliderImage.addEventListener("load", btFitSliderImage);
-        }
-
-        window.addEventListener("resize", btFitSliderImage);
-
-        btRenderMediaGrid();
-        btUpdateSlider();
-    </script>
+    </div>
 {% endblock %}
