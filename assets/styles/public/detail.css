@@ -523,9 +523,7 @@ body.bt-modal-open {
     border-top: 2px solid var(--bt-border);
 }
 
-.bt-info-section--border-bottom {
-    border-bottom: 2px solid var(--bt-border);
-}
+
 
 .bt-info-section__text {
     color: #858789;

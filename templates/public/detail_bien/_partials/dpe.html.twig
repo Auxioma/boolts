@@ -7,19 +7,24 @@
 
 {% if property.dpeLettre or property.gesLettre %}
     <section class="bt-info-section bt-info-section--border-bottom">
-        <h2 class="bt-section-title">Performance énergétique</h2>
+        <h3 class="mb-0">Performance énergétique</h3>
 
         <div class="row gy-4 mt-0">
-            <div class="col-12">
-                <div class="bt-feature d-flex align-items-center gap-2 bt-energy-perf-wrapper">
+            <div class="col-12 mt-16">
+                <div class="bt-feature d-flex align-items-center gap-2 bt-energy-perf-wrapper pb-0">
                     <div class="container-fluid px-0">
-                        <div class="row g-5">
+                        <div class="row">
 
                             {% if property.dpeLettre %}
                             <div class="col-12 col-lg-6">
-                                <h3 class="bt-energy-perf-title">
+                                <p class="p-accent bt-energy-perf-title">
                                     Diagnostic de performance énergétique (DPE)
-                                </h3>
+                                </p>
+                                {% if property.dpe is not empty %}
+                                    <p class="bt-energy-perf-diagnostic-title">
+                                        {{ property.dpe }} kWhEP/m²/an
+                                    </p>
+                                {% endif %}
 
                                 {% set dpeLettre = property.dpeLettre|default('')|trim|lower %}
                                 {% set dpeLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] %}
@@ -40,22 +45,27 @@
                                 {% endif %}
                                 {% if property.anneeConstruction %}
                                     <div>
-                                        <div class="bt-energy-perf-label">
+                                        <div class="p-accent bt-energy-perf-label">
                                             Année de construction
                                         </div>
 
-                                        <div class="bt-energy-perf-value">
+                                        <p class="bt-energy-perf-value mb-0">
                                             {{ property.anneeConstruction }}
-                                        </div>
+                                        </p>
                                     </div>
                                 {% endif %}
                             </div>
 
                             {% if property.gesLettre %}
                                 <div class="col-12 col-lg-6">
-                                    <h3 class="bt-energy-perf-title">
+                                    <p class="p-accent bt-energy-perf-title">
                                         Indice d’émission de gaz à effet de serre (GES)
-                                    </h3>
+                                    </p>
+                                    {% if property.ges is not empty %}
+                                        <p class="bt-energy-perf-diagnostic-title">
+                                            {{ property.ges }} kgCO2/m²/an
+                                        </p>
+                                    {% endif %}
 
                                     {% set gesLettre = property.gesLettre|default('')|trim|lower %}
                                     {% set energyLetters = ['a', 'b', 'c', 'd', 'e', 'f', 'g'] %}
@@ -76,13 +86,13 @@
 
                                     {% if property.dateIndexationEnergie %}
                                         <div>
-                                            <div class="bt-energy-perf-label">
+                                            <div class="p-accent bt-energy-perf-label">
                                                 Date du diagnostic
                                             </div>
 
-                                            <div class="bt-energy-perf-value">
+                                            <p class="bt-energy-perf-value mb-0">
                                                 {{ property.dateIndexationEnergie|date('d M Y') }}
-                                            </div>
+                                            </p>
                                         </div>
                                     {% endif %}
                                 </div>

@@ -1050,5 +1050,5 @@
 }
 
 .marge-top {
-    margin-top: clamp(16px, calc(24px + (2 * (100vw - 375px) / 1065)), 16px);
+    margin-top: clamp(16px, calc(16px + 8 * ((100vw - 375px) / 1065)), 24px);
 }

@@ -5,45 +5,45 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<section class="bt-cost-detail-card">
-    <h2 class="bt-cost-detail-title">Détails des coûts</h2>
+<section class="bt-info-section">
+    <h3 class="mb-0">Détails des coûts</h3>
 
-    <div class="d-flex flex-column gap-3">
+    <div class="d-flex flex-column gap-3 bt-cost-detail-card">
 
         {% if hasLoyer %}
             <div class="d-flex justify-content-between align-items-start gap-3">
-                <div class="bt-cost-detail-label">
+                <p class="bt-cost-detail-label mb-0 p-accent">
                     Loyer C. Comprises
-                </div>
+                </p>
 
-                <div class="bt-cost-detail-price">
+                <p class="bt-cost-detail-price mb-0  p-accent">
                     {% set total = property.montantLoyerHorsCharge + (property.montantDesCharges ?? 0) %}
                     {{ total|number_format(0, ',', ' ') }} {{ property.user.devise.signe }}
-                </div>
+                </p>
             </div>
         {% endif %}
 
         {% if hasCharges %}
             <div class="d-flex justify-content-between align-items-start gap-3">
-                <div class="bt-cost-detail-muted">
+                <p class="bt-cost-detail-muted mb-0">
                     dont charges
-                </div>
+                </p>
 
-                <div class="bt-cost-detail-muted">
+                <p class="bt-cost-detail-muted mb-0">
                     {{ property.montantDesCharges|number_format(0, ',', ' ') }} {{ property.user.devise.signe }}
-                </div>
+                </p>
             </div>
         {% endif %}
 
         {% if hasDepot %}
             <div class="d-flex justify-content-between align-items-start gap-3">
-                <div class="bt-cost-detail-label">
+                <p class="bt-cost-detail-label mb-0 p-accent">
                     Dépôt de garantie à la charge du locataire
-                </div>
+                </p>
 
-                <div class="bt-cost-detail-price">
+                <p class="bt-cost-detail-price mb-0 p-accent">
                     {{ property.montantDepotDeGarantie|number_format(0, ',', ' ') }} {{ property.user.devise.signe }}
-                </div>
+                </p>
             </div>
         {% endif %}
 

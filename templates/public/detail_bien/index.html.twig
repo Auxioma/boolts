@@ -36,70 +36,70 @@
         data-action="click->detailbien--media-viewer#handleClick keydown@window->detailbien--media-viewer#handleKeydown resize@window->detailbien--media-viewer#fitSliderImage"
     >
 
-    <div class="bt-page">
+        <div class="bt-page">
 
-        <div class="bt-mobile-topbar align-items-center justify-content-center">
-            <a class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="Retour">
-                <i class="icon-chevron-left"></i>
-            </a>
+            <div class="bt-mobile-topbar align-items-center justify-content-center">
+                <a class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="Retour">
+                    <i class="icon-chevron-left"></i>
+                </a>
 
-            <a class="bt-icon-btn bt-icon-btn--small position-absolute end-0 me-2" type="button" aria-label="Favori">
-                <i class="icon-heart"></i>
-            </a>
-        </div>
+                <a class="bt-icon-btn bt-icon-btn--small position-absolute end-0 me-2" type="button" aria-label="Favori">
+                    <i class="icon-heart"></i>
+                </a>
+            </div>
 
-        <main>
+            <main>
 
-            {% if totalPictures > 0 and firstPicture %}
-                <section
-                    class="bt-hero-responsive position-relative overflow-hidden"
-                    data-open-slider="0"
-                >
-                    <img
-                        src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
-                        class="bt-hero-responsive__image js-bt-img"
-                        alt="Photo principale de l'annonce"
-                        loading="lazy"
+                {% if totalPictures > 0 and firstPicture %}
+                    <section
+                        class="bt-hero-responsive position-relative overflow-hidden"
+                        data-open-slider="0"
                     >
+                        <img
+                            src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
+                            class="bt-hero-responsive__image js-bt-img"
+                            alt="Photo principale de l'annonce"
+                            loading="lazy"
+                        >
 
-                    <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
-                        <button class="bt-btn bt-btn--glass" type="button" data-open-slider="0">
-                            1/{{ totalPictures }}
-                        </button>
-                    </div>
-                </section>
-            {% endif %}
-            <style>
-                /* Actions au-dessus */
-                .bt-hero-responsive__actions {
-                    position: absolute;
-                    right: 24px;
-                    bottom: 24px;
-                    z-index: 2;
-                }
-            </style>
-            <section class="bt-annonce">
-                <div class="container-md">
-                    <div class="row">
-                        {% if property.titreDuLogement|trim is not empty %}
-                            <h2 class="mb-24">
-                                {{ property.titreDuLogement }} {{ totalPictures }}
-                            </h2>
-                        {% endif %}
+                        <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
+                            <button class="bt-btn bt-btn--glass" type="button" data-open-slider="0">
+                                1/{{ totalPictures }}
+                            </button>
+                        </div>
+                    </section>
+                {% endif %}
+                <style>
+                    /* Actions au-dessus */
+                    .bt-hero-responsive__actions {
+                        position: absolute;
+                        right: 24px;
+                        bottom: 24px;
+                        z-index: 2;
+                    }
+                </style>
+                <section class="bt-annonce">
+                    <div class="container-md">
+                        <div class="row">
+                            {% if property.titreDuLogement|trim is not empty %}
+                                <h2 class="mb-24">
+                                    {{ property.titreDuLogement }} {{ totalPictures }}
+                                </h2>
+                            {% endif %}
 
-                        {% if totalPictures > 5 %} 
-                            {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
-                        {% elseif totalPictures == 5 %}
-                            {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
+                            {% if totalPictures > 5 %} 
+                                {{ include('public/detail_bien/_partials/image/plus_cinq_image.html.twig') }}
+                            {% elseif totalPictures == 5 %}
+                                {{ include('public/detail_bien/_partials/image/cinq_image.html.twig') }}
                         
-                        {% elseif totalPictures == 3 or totalPictures == 4 %}
-                            {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
-                        {% elseif totalPictures == 2 %}
-                            {{ include('public/detail_bien/_partials/image/deux_image.html.twig') }}
-                        {% elseif totalPictures == 1 %}
-                            {{ include('public/detail_bien/_partials/image/une_image.html.twig') }}
-                        {% endif %}
-                    </div>
+                            {% elseif totalPictures == 3 or totalPictures == 4 %}
+                                {{ include('public/detail_bien/_partials/image/trois_image.html.twig') }}
+                            {% elseif totalPictures == 2 %}
+                                {{ include('public/detail_bien/_partials/image/deux_image.html.twig') }}
+                            {% elseif totalPictures == 1 %}
+                                {{ include('public/detail_bien/_partials/image/une_image.html.twig') }}
+                            {% endif %}
+                        </div>
 
                         <div class="row marge-top">
                             <div class="col-lg-8">
@@ -211,8 +211,8 @@
                                 </aside>
                             </div>
                         </div></div>
-                </div>
-            </section>
+        </div>
+        </section>
         </main>
 
         <nav class="bt-mobile-tabbar" aria-label="Navigation mobile">
@@ -515,7 +515,7 @@
         }
 
         /* MediaViewer : le cadre épouse l'image, dont la taille est calculée par le contrôleur Stimulus detailbien--media-viewer
-           à partir de ses dimensions natives : ratio d'origine conservé, ni recadrage ni déformation */
+                   à partir de ses dimensions natives : ratio d'origine conservé, ni recadrage ni déformation */
         #btSliderModal .bt-slider-stage__image {
             display: flex;
             flex: 0 0 auto;
@@ -584,7 +584,7 @@
         }
 
         /* Flèches fixes : même axe vertical que le bouton fermer (gauche) et le compteur (droite),
-           centrées en hauteur sur l'image (zone 48px → 100vh - 48px, donc centre à 50%) */
+                   centrées en hauteur sur l'image (zone 48px → 100vh - 48px, donc centre à 50%) */
         #btSliderModal [data-prev-slide].bt-slider-stage__arrow,
         #btSliderModal [data-next-slide].bt-slider-stage__arrow {
             position: fixed;
@@ -622,10 +622,7 @@
         }
 
         .bt-energy-perf-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #151515;
-            margin-bottom: 12px;
+            color: #0d0f14;
         }
 
         .bt-energy-perf-scale {
@@ -658,15 +655,12 @@
         }
 
         .bt-energy-perf-label {
-            font-size: 15px;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 6px;
+            color: #0b0f14;
+            padding-bottom: 8px;
         }
 
         .bt-energy-perf-value {
-            font-size: 15px;
-            color: #8a8a8a;
+            color: #858789;
         }
 
         .bt-energy-perf-dpe-a {
@@ -717,7 +711,10 @@
             width: 100%;
             background: #f5f5f5;
             border-radius: 20px;
-            padding: 28px 24px;
+            padding: clamp(8px,
+                    calc(8px + 8 * ((100vw - 375px) / 1065)),
+                    16px);
+            margin-top: 16px;
         }
 
         .bt-cost-detail-title {
@@ -728,10 +725,7 @@
         }
 
         .bt-cost-detail-label {
-            font-size: 16px;
-            font-weight: 700;
             color: #151515;
-            line-height: 1.35;
         }
 
         .bt-cost-detail-price {
@@ -743,11 +737,7 @@
         }
 
         .bt-cost-detail-muted {
-            font-size: 15px;
-            font-weight: 500;
-            color: #8b8b8b;
-            line-height: 1.35;
-            white-space: nowrap;
+            color: #858789;
         }
 
         @media (max-width: 768px) {
@@ -783,12 +773,10 @@
 
             .bt-cost-detail-label,
             .bt-cost-detail-price {
-                font-size: 15px;
+
             }
 
-            .bt-cost-detail-muted {
-                font-size: 14px;
-            }
+
         }
 
         @media (min-width: 992px) {
