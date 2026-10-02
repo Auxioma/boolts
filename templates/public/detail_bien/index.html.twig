@@ -237,7 +237,7 @@
                     <i class="bi bi-arrow-left"></i>
                 </button>
 
-                <div class="bt-media-grid d-flex flex-column gap-3 gap-md-4" id="btMediaGrid"></div>
+                <div class="detail-bien-modal-mensouri-grid" id="btMediaGrid"></div>
             </div>
         </section>
 
@@ -333,22 +333,47 @@
             z-index: 20;
         }
 
-        .bt-media-grid {
+        .detail-bien-modal-mensouri-grid {
+            --detail-bien-modal-mensouri-gap: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--detail-bien-modal-mensouri-gap);
             max-width: 768px;
             margin: 0 auto;
         }
 
-        .bt-media-grid__item {
+        .detail-bien-modal-mensouri-row {
+            display: grid;
+            gap: var(--detail-bien-modal-mensouri-gap);
+        }
+
+        .detail-bien-modal-mensouri-row--one {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-bien-modal-mensouri-row--two {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* Grande colonne 2fr + colonne empilée 1fr : hauteurs égales pour des portraits 3:4 */
+        .detail-bien-modal-mensouri-row--trio {
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+
+        .detail-bien-modal-mensouri-item {
+            display: block;
             width: 100%;
+            min-height: 0;
             border: 0;
             padding: 0;
-            background: transparent;
+            background: #f5f5f5;
             cursor: pointer;
             overflow: hidden;
             border-radius: 18px;
         }
 
-        .bt-media-grid__item img {
+        .detail-bien-modal-mensouri-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -356,29 +381,56 @@
             transition: transform 0.25s ease;
         }
 
-        .bt-media-grid__item:hover img {
+        .detail-bien-modal-mensouri-item:hover img {
             transform: scale(1.03);
         }
 
-        .bt-media-grid__wide {
+        .detail-bien-modal-mensouri-item--landscape {
             aspect-ratio: 4 / 3;
         }
 
-        .bt-media-grid__half {
-            aspect-ratio: 4 / 3;
-        }
-
-        .bt-media-grid__portrait-row {
-            width: 100%;
-        }
-
-        .bt-media-grid__portrait-big {
-            width: 66%;
+        .detail-bien-modal-mensouri-item--portrait {
             aspect-ratio: 3 / 4;
         }
 
-        .bt-media-grid__portrait-small {
-            width: 34%;
+        .detail-bien-modal-mensouri-item--big {
+            grid-row: 1 / span 2;
+        }
+
+        /* Les portraits empilés prennent la hauteur imposée par le grand portrait */
+        .detail-bien-modal-mensouri-item--stacked {
+            position: relative;
+            aspect-ratio: auto;
+            height: 100%;
+        }
+
+        .detail-bien-modal-mensouri-item--stacked img {
+            position: absolute;
+            inset: 0;
+        }
+
+        @media (min-width: 768px) {
+            .detail-bien-modal-mensouri-grid {
+                --detail-bien-modal-mensouri-gap: 24px;
+            }
+        }
+
+        /* Mobile : toutes les images en pleine largeur, dans l'ordre d'upload */
+        @media (max-width: 767.98px) {
+            .detail-bien-modal-mensouri-row--two,
+            .detail-bien-modal-mensouri-row--trio {
+                grid-template-columns: 1fr;
+                grid-template-rows: none;
+            }
+
+            .detail-bien-modal-mensouri-item--big {
+                grid-row: auto;
+            }
+
+            .detail-bien-modal-mensouri-item--stacked {
+                aspect-ratio: 3 / 4;
+                height: auto;
+            }
         }
 
         .bt-slider-stage {
@@ -682,13 +734,28 @@
             return Array.isArray(btPhotos) && btPhotos.length > 0;
         }
 
-        function btCreateGridItem(index, className) {
+        function btLoadOrientation(photo) {
+            return new Promise(function (resolve) {
+                const image = new Image();
+
+                image.onload = function () {
+                    resolve(image.naturalWidth >= image.naturalHeight ? "landscape" : "portrait");
+                };
+                image.onerror = function () {
+                    resolve("landscape");
+                };
+                image.src = photo.src;
+            });
+        }
+
+        function btCreateGridItem(index, orientation, modifier) {
             const photo = btPhotos[index];
+            const modifierClass = modifier ? ` detail-bien-modal-mensouri-item--${modifier}` : "";
 
             return `
                 <button
                     type="button"
-                    class="bt-media-grid__item ${className}"
+                    class="detail-bien-modal-mensouri-item detail-bien-modal-mensouri-item--${orientation}${modifierClass}"
                     data-open-slider="${index}"
                     aria-label="Ouvrir ${photo.alt}"
                 >
@@ -697,58 +764,85 @@
             `;
         }
 
-        function btRenderMediaGrid() {
+        function btCreateGridRow(type, items) {
+            return `<div class="detail-bien-modal-mensouri-row detail-bien-modal-mensouri-row--${type}">${items.join("")}</div>`;
+        }
+
+        // Paysages : alternance pleine largeur / paire côte à côte (1, 2, 1, 2…) ;
+        // une image restante seule passe en pleine largeur.
+        // 2 → 1 + 1, 3 → 1 + 2, 4 → 1 + 2 + 1, 6 → 1 + 2 + 1 + 2.
+        function btRenderLandscapeSequence(indexes) {
+            const rows = [];
+            let cursor = 0;
+
+            while (cursor < indexes.length) {
+                rows.push(btCreateGridRow("one", [btCreateGridItem(indexes[cursor++], "landscape")]));
+
+                if (cursor < indexes.length) {
+                    const pair = indexes.slice(cursor, cursor + 2);
+                    cursor += pair.length;
+
+                    rows.push(btCreateGridRow(pair.length === 2 ? "two" : "one", pair.map(function (index) {
+                        return btCreateGridItem(index, "landscape");
+                    })));
+                }
+            }
+
+            return rows;
+        }
+
+        // Portraits : groupes de trois (un grand à gauche, deux empilés à droite), reste de 1 ou 2 sur une rangée.
+        function btRenderPortraitSequence(indexes) {
+            const rows = [];
+            let cursor = 0;
+
+            for (; cursor + 3 <= indexes.length; cursor += 3) {
+                rows.push(btCreateGridRow("trio", [
+                    btCreateGridItem(indexes[cursor], "portrait", "big"),
+                    btCreateGridItem(indexes[cursor + 1], "portrait", "stacked"),
+                    btCreateGridItem(indexes[cursor + 2], "portrait", "stacked"),
+                ]));
+            }
+
+            const rest = indexes.slice(cursor);
+
+            if (rest.length > 0) {
+                rows.push(btCreateGridRow(
+                    rest.length === 2 ? "two" : "one",
+                    rest.map(function (index) {
+                        return btCreateGridItem(index, "portrait");
+                    })
+                ));
+            }
+
+            return rows;
+        }
+
+        async function btRenderMediaGrid() {
             if (!btHasPhotos() || !btMediaGrid) {
                 return;
             }
 
-            const parts = [];
-            let index = 0;
+            const orientations = await Promise.all(btPhotos.map(btLoadOrientation));
+            const sequences = [];
 
-            while (index < btPhotos.length) {
-                parts.push(btCreateGridItem(index++, "bt-media-grid__wide"));
+            orientations.forEach(function (orientation, index) {
+                const current = sequences[sequences.length - 1];
 
-                if (index < btPhotos.length) {
-                    const firstHalf = btCreateGridItem(index++, "bt-media-grid__half flex-fill");
-                    const secondHalf = index < btPhotos.length
-                        ? btCreateGridItem(index++, "bt-media-grid__half flex-fill")
-                        : "";
-
-                    parts.push(`
-                        <div class="d-flex gap-3 gap-md-4">
-                            ${firstHalf}
-                            ${secondHalf}
-                        </div>
-                    `);
+                if (current && current.orientation === orientation) {
+                    current.indexes.push(index);
+                } else {
+                    sequences.push({ orientation: orientation, indexes: [index] });
                 }
+            });
 
-                if (index < btPhotos.length) {
-                    parts.push(btCreateGridItem(index++, "bt-media-grid__wide"));
-                }
+            const rows = sequences.flatMap(function (sequence) {
+                return sequence.orientation === "landscape"
+                    ? btRenderLandscapeSequence(sequence.indexes)
+                    : btRenderPortraitSequence(sequence.indexes);
+            });
 
-                if (index < btPhotos.length) {
-                    const bigPortrait = btCreateGridItem(index++, "bt-media-grid__portrait-big");
-                    const smallPortraitOne = index < btPhotos.length
-                        ? btCreateGridItem(index++, "flex-fill")
-                        : "";
-                    const smallPortraitTwo = index < btPhotos.length
-                        ? btCreateGridItem(index++, "flex-fill")
-                        : "";
-
-                    parts.push(`
-                        <div class="bt-media-grid__portrait-row d-flex gap-3 gap-md-4">
-                            ${bigPortrait}
-
-                            <div class="bt-media-grid__portrait-small d-flex flex-column gap-3 gap-md-4">
-                                ${smallPortraitOne}
-                                ${smallPortraitTwo}
-                            </div>
-                        </div>
-                    `);
-                }
-            }
-
-            btMediaGrid.innerHTML = parts.join("");
+            btMediaGrid.innerHTML = rows.join("");
         }
 
         function btOpenModal(modal) {
