@@ -9,7 +9,7 @@
 {% set avatar = user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
 {% set firstLetter = property.user.prenom ? property.user.prenom|first|upper : null %}
 {% if avatar %}
-<img src="{{ avatar }}" alt="{{ user.entreprise }}">
+<img src="{{ avatar }}" alt="{{ user.entreprise }}" width="60" height="60">
 {% else %}
 <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" class="w-100" alt="{{ property.user.entreprise }}">
 {% endif %}

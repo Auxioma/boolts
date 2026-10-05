@@ -602,20 +602,17 @@
 
     border: 2px solid var(--color-gray-light);
 
-    border-radius: var(--radius-sm);
+    border-radius: 8px;
 }
 
-.agence-availability span,
+.agence-availability p,
 .agence-availability__day {
     color: #858789;
+}
 
-    font-size: 14px;
-
-    font-style: normal;
-
-    font-weight: 700;
-
-    line-height: 20px;
+.agence-availability .icon-chevron-down::before {
+    font-size: 24px;
+    color: #858789;
 }
 
 .agence-availability strong {
@@ -648,11 +645,6 @@
     gap: 12px;
 }
 
-.agence-availability__day {
-    font-weight: 600;
-
-    min-width: 70px;
-}
 
 .agence-availability__hours {
     display: flex;

@@ -541,7 +541,7 @@ body.bt-modal-open {
     ;
 }
 
-.bt-features > .col-4:nth-last-child(-n + 3) .bt-feature {
+.bt-features>.col-4:nth-last-child(-n + 3) .bt-feature {
     padding-bottom: 0;
 }
 
@@ -558,13 +558,21 @@ body.bt-modal-open {
 }
 
 .bt-contact-card {
-    padding: 24px;
+    padding: clamp(16px, calc(16px + (8 * (100vw - 375px) / 1065)), 24px);
 
     border: 2px solid var(--bt-border);
 
     border-radius: var(--bt-radius);
 
     background: #fff;
+}
+
+.bt-contact-card__link .icon-chevron-right::before {
+    content: "\e06f";
+    font-size: 24px;
+    position: absolute;
+    color: #858789;
+    top: 28px;
 }
 
 .bt-contact-card__avatar {
@@ -609,6 +617,7 @@ body.bt-modal-open {
     color: var(--bt-primary);
 
     font-size: 14px;
+    margin-top: 8px;
 
     font-weight: 500;
 

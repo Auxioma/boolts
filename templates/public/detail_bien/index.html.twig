@@ -127,21 +127,21 @@
                                 <aside class="bt-contact-sticky">
                                     <div class="bt-contact-card" data-controller="agence-contact-form">
 
-                                        <div class="d-flex align-items-start gap-4 mb-4">
+                                        <div class="d-flex align-items-start gap-4 mb-3">
                                             <div class="bt-contact-card__avatar">
                                                 {{ include('public/detail_bien/_partials/composant/image_entreprise.html.twig') }}
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="bt-contact-card__name">
-                                                    {{ property.user.entreprise }}
-                                                    <a
+                                                                                 <a
                                                         href="{{ path('app_public_detail_agence', {
                                                     slug: property.user.slug}) }}"
                                                         class="bt-contact-card__link"
-                                                    >
+                                                    >     <p class="p-accent mb-0">
+                                                    {{ property.user.entreprise }}
+              
                                                         <i class="icon-chevron-right ms-1"></i>
-                                                    </a>
-                                                </p>
+                                                   
+                                                </p> </a>
                                                 <p class="bt-contact-card__address">
                                                     Agence immobilière -
                                                     {{ property.user.adresseContact }}
@@ -152,7 +152,7 @@
                                                 <div class="d-flex flex-column align-items-start gap-1 mt-3">
                                                     <button
                                                         type="button"
-                                                        class="bt-btn bt-btn--outline-primary"
+                                                        class="btn-full-white"
                                                         type="button"
                                                         class="agence-btn agence-btn-outline agence-contact-number"
                                                         data-action="click->agence-contact-form#showPhoneNumber"
@@ -162,7 +162,7 @@
                                                     </button>
                                                     <a
                                                         href="tel:{{ property.user.numeroContact }}"
-                                                        class="agence-contact-phone d-none"
+                                                        class="bt-contact-card__email d-none"
                                                         data-agence-contact-form-target="phoneNumber"
                                                     >
                                                         {{ property.user.numeroContact }}
