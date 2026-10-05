@@ -13,11 +13,11 @@
                 role="button"
                 tabindex="0"
                 data-open-gallery
-                aria-label="Ouvrir la galerie photos"
+                aria-label="{{ 'detail_bien.gallery.open'|trans }}"
             >
                 <img
                     src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
-                    alt="Photo principale de l'appartement"
+                    alt="{{ 'detail_bien.photo.main_alt'|trans }}"
                     loading="lazy"
                 >
             </div>
@@ -36,11 +36,11 @@
                             role="button"
                             tabindex="0"
                             data-open-gallery
-                            aria-label="Ouvrir la galerie photos"
+                            aria-label="{{ 'detail_bien.gallery.open'|trans }}"
                         >
                             <img
                                 src="{{ vich_uploader_asset(picture, 'imageFile') }}"
-                                alt="Photo {{ imageIndex + 1 }}"
+                                alt="{{ 'detail_bien.photo.number_alt'|trans({'%index%': imageIndex + 1}) }}"
                                 loading="lazy"
                             >
                         </div>

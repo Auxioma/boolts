@@ -8,14 +8,14 @@
 <section class="agence-properties bt-related" data-controller="splide">
     <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
         <h2 class="bt-section-title">
-            Autres biens similaires à {{ property.ville }}
+            {{ 'detail_bien.similar.title'|trans({'%city%': property.ville}) }}
         </h2>
 
         <div class="d-flex align-items-center gap-2 text-secondary">
             <button
                 class="bt-icon-btn bt-icon-btn--small"
                 type="button"
-                aria-label="Précédent"
+                aria-label="{{ 'detail_bien.similar.previous'|trans }}"
                 data-splide-target="previous"
                 data-action="click->splide#previous"
             >
@@ -25,7 +25,7 @@
             <button
                 class="bt-icon-btn bt-icon-btn--small"
                 type="button"
-                aria-label="Suivant"
+                aria-label="{{ 'detail_bien.similar.next'|trans }}"
                 data-splide-target="next"
                 data-action="click->splide#next"
             >
@@ -37,7 +37,7 @@
     <div
         class="splide bt-related-slider"
         data-splide-target="slider"
-        aria-label="Biens similaires"
+        aria-label="{{ 'detail_bien.similar.aria_label'|trans }}"
     >
         <div class="splide__track">
             <ul class="splide__list">
@@ -61,10 +61,10 @@
 
                                         {% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
 
-                                        {% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
+                                        {% set propertyTitle = 'detail_bien.similar.card.title'|trans({'%type%': bienImmobilier.typeBien.name, '%transaction%': bienImmobilier.typeTransaction.name}) %}
                                         {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe : ' ' %}
-                                        {% set propertyPeriod = isLocation ? '/mois' : '' %}
-                                        {% set propertyBadge = isLocation ? 'C. Comprises' : transactionName|capitalize %}
+                                        {% set propertyPeriod = isLocation ? 'detail_bien.similar.card.per_month'|trans : '' %}
+                                        {% set propertyBadge = isLocation ? 'detail_bien.similar.card.charges_included'|trans : transactionName|capitalize %}
 
                                         {% set details = [] %}
 
@@ -78,13 +78,13 @@
 
                                         {% if bienImmobilier.chambres is not empty %}
                                             {% set details = details|merge([
-                                            bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                                            (bienImmobilier.chambres > 1 ? 'detail_bien.similar.card.bedrooms.other' : 'detail_bien.similar.card.bedrooms.one')|trans({'%count%': bienImmobilier.chambres}),
                                         ]) %}
                                         {% endif %}
 
                                         {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
                                             {% set details = details|merge([
-                                            bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                                            (bienImmobilier.salleDeBains > 1 ? 'detail_bien.similar.card.bathrooms.other' : 'detail_bien.similar.card.bathrooms.one')|trans({'%count%': bienImmobilier.salleDeBains}),
                                         ]) %}
                                         {% endif %}
 

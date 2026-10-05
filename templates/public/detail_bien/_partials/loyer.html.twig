@@ -6,14 +6,14 @@
 #}
 
 <section class="bt-info-section">
-    <h3 class="mb-0">Détails des coûts</h3>
+    <h3 class="mb-0">{{ 'detail_bien.costs.title'|trans }}</h3>
 
     <div class="d-flex flex-column gap-3 bt-cost-detail-card">
 
         {% if hasLoyer %}
             <div class="d-flex justify-content-between align-items-start gap-3">
                 <p class="bt-cost-detail-label mb-0 p-accent">
-                    Loyer C. Comprises
+                    {{ 'detail_bien.costs.rent_charges_included'|trans }}
                 </p>
 
                 <p class="bt-cost-detail-price mb-0  p-accent">
@@ -26,7 +26,7 @@
         {% if hasCharges %}
             <div class="d-flex justify-content-between align-items-start gap-3">
                 <p class="bt-cost-detail-muted mb-0">
-                    dont charges
+                    {{ 'detail_bien.costs.including_charges'|trans }}
                 </p>
 
                 <p class="bt-cost-detail-muted mb-0">
@@ -38,7 +38,7 @@
         {% if hasDepot %}
             <div class="d-flex justify-content-between align-items-start gap-3">
                 <p class="bt-cost-detail-label mb-0 p-accent">
-                    Dépôt de garantie à la charge du locataire
+                    {{ 'detail_bien.costs.deposit'|trans }}
                 </p>
 
                 <p class="bt-cost-detail-price mb-0 p-accent">

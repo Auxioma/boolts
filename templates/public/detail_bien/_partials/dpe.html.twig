@@ -7,7 +7,7 @@
 
 {% if property.dpeLettre or property.gesLettre %}
     <section class="bt-info-section bt-info-section--border-bottom">
-        <h3 class="mb-0">Performance énergétique</h3>
+        <h3 class="mb-0">{{ 'detail_bien.energy.title'|trans }}</h3>
 
         <div class="row gy-4 mt-0">
             <div class="col-12 mt-16">
@@ -18,11 +18,11 @@
                             {% if property.dpeLettre %}
                             <div class="col-12 col-lg-6">
                                 <p class="p-accent bt-energy-perf-title">
-                                    Diagnostic de performance énergétique (DPE)
+                                    {{ 'detail_bien.energy.dpe_title'|trans }}
                                 </p>
                                 {% if property.dpe is not empty %}
                                     <p class="bt-energy-perf-diagnostic-title">
-                                        {{ property.dpe }} kWhEP/m²/an
+                                        {{ 'detail_bien.energy.dpe_value'|trans({'%value%': property.dpe}) }}
                                     </p>
                                 {% endif %}
 
@@ -46,7 +46,7 @@
                                 {% if property.anneeConstruction %}
                                     <div>
                                         <div class="p-accent bt-energy-perf-label">
-                                            Année de construction
+                                            {{ 'detail_bien.energy.construction_year'|trans }}
                                         </div>
 
                                         <p class="bt-energy-perf-value mb-0">
@@ -59,11 +59,11 @@
                             {% if property.gesLettre %}
                                 <div class="col-12 mt-4 mt-lg-0 col-lg-6">
                                     <p class="p-accent bt-energy-perf-title">
-                                        Indice d’émission de gaz à effet de serre (GES)
+                                        {{ 'detail_bien.energy.ges_title'|trans }}
                                     </p>
                                     {% if property.ges is not empty %}
                                         <p class="bt-energy-perf-diagnostic-title">
-                                            {{ property.ges }} kgCO2/m²/an
+                                            {{ 'detail_bien.energy.ges_value'|trans({'%value%': property.ges}) }}
                                         </p>
                                     {% endif %}
 
@@ -87,7 +87,7 @@
                                     {% if property.dateIndexationEnergie %}
                                         <div>
                                             <div class="p-accent bt-energy-perf-label">
-                                                Date du diagnostic
+                                                {{ 'detail_bien.energy.diagnostic_date'|trans }}
                                             </div>
 
                                             <p class="bt-energy-perf-value mb-0">

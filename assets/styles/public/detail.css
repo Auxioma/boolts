@@ -1237,15 +1237,10 @@ body.bt-modal-open {
 
     .bt-header {
         position: fixed;
-
         right: 0;
-
         left: 0;
-
         top: 0;
-
         min-height: 72px;
-
         padding: 14px 16px;
     }
 
@@ -1264,21 +1259,13 @@ body.bt-modal-open {
 
     .bt-mobile-topbar {
         position: fixed;
-
         top: 72px;
-
         right: 0;
-
         left: 0;
-
         z-index: 45;
-
         display: flex;
-
         height: 44px;
-
         background: #fff;
-
         border-bottom: 1px solid var(--bt-border);
     }
 

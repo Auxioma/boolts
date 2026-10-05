@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Détail du bien{% endblock %}
+{% block title %}{{ 'detail_bien.meta.title'|trans }}{% endblock %}
 
 {% block body %}
     {% set totalPictures = property.propertyImages|length %}
@@ -23,7 +23,7 @@
             {% set btPhotos = btPhotos|merge([
                 {
                     src: imageSrc,
-                    alt: 'Photo ' ~ loop.index ~ ' de l’annonce',
+                    alt: 'detail_bien.photo.alt'|trans({'%index%': loop.index}),
                 },
             ]) %}
         {% endif %}
@@ -39,11 +39,11 @@
         <div class="bt-page">
 
             <div class="bt-mobile-topbar align-items-center justify-content-center">
-                <a class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="Retour">
+                <a class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="{{ 'detail_bien.topbar.back'|trans }}">
                     <i class="icon-chevron-left"></i>
                 </a>
 
-                <a class="bt-icon-btn bt-icon-btn--small position-absolute end-0 me-2" type="button" aria-label="Favori">
+                <a class="bt-icon-btn bt-icon-btn--small position-absolute end-0 me-2" type="button" aria-label="{{ 'detail_bien.topbar.favorite'|trans }}">
                     <i class="icon-heart"></i>
                 </a>
             </div>
@@ -58,7 +58,7 @@
                         <img
                             src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
                             class="bt-hero-responsive__image js-bt-img"
-                            alt="Photo principale de l'annonce"
+                            alt="{{ 'detail_bien.photo.main_alt'|trans }}"
                             loading="lazy"
                         >
 
@@ -143,7 +143,7 @@
                                                    
                                                 </p> </a>
                                                 <p class="bt-contact-card__address">
-                                                    Agence immobilière -
+                                                    {{ 'detail_bien.contact.agency_type'|trans }} -
                                                     {{ property.user.adresseContact }}
                                                     {{ property.user.codePostalContact }}
                                                     {{ property.user.villeContact }}
@@ -158,7 +158,7 @@
                                                         data-action="click->agence-contact-form#showPhoneNumber"
                                                         data-agence-contact-form-target="phoneButton"
                                                     >
-                                                        Afficher le numéro
+                                                        {{ 'detail_bien.contact.show_number'|trans }}
                                                     </button>
                                                     <a
                                                         href="tel:{{ property.user.numeroContact }}"
@@ -181,14 +181,14 @@
                                         <div class="d-grid gap-2">
                                             {% if property.user.whatsApp is not empty %}
                                                 <a href="https://wa.me/{{ property.user.whatsApp }}" class="agence-btn agence-btn-whatsapp p-accent">
-                                                    Contacter via Whatsapp
+                                                    {{ 'detail_bien.contact.whatsapp'|trans }}
                                                 </a>
                                             {% endif %}
 
                                             {% if property.user.numeroContact is not empty %}
                                                 <a href="tel:{{ property.user.numeroContact }}" class="agence-btn agence-btn-primary p-accent">
                                                     <i class="icon-phone"></i>
-                                                    Appeler l’agence
+                                                    {{ 'detail_bien.contact.call'|trans }}
                                                 </a>
                                             {% endif %}
 
@@ -203,7 +203,7 @@
                                                 aria-expanded="false"
                                             >
                                                 <i class="bi bi-envelope"></i>
-                                                Contacter par email
+                                                {{ 'detail_bien.contact.email'|trans }}
                                             </button>
                                         </div>
                                         {{ include('public/detail_bien/_partials/composant/formulaire.html.twig') }}
@@ -215,26 +215,26 @@
         </section>
         </main>
 
-        <nav class="bt-mobile-tabbar" aria-label="Navigation mobile">
+        <nav class="bt-mobile-tabbar" aria-label="{{ 'detail_bien.tabbar.aria_label'|trans }}">
             <div class="bt-mobile-tabbar__nav d-flex align-items-center justify-content-center">
                 <a href="#" class="bt-mobile-tabbar__item is-active d-flex flex-column align-items-center justify-content-between">
                     <i class="bi bi-search fs-5"></i>
-                    Explorer
+                    {{ 'detail_bien.tabbar.explore'|trans }}
                 </a>
 
                 <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
                     <i class="bi bi-heart fs-5"></i>
-                    Favoris
+                    {{ 'detail_bien.tabbar.favorites'|trans }}
                 </a>
 
                 <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
                     <i class="bi bi-chat-square fs-5"></i>
-                    Messagerie
+                    {{ 'detail_bien.tabbar.messages'|trans }}
                 </a>
 
                 <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
                     <i class="bi bi-person-circle fs-5"></i>
-                    Compte
+                    {{ 'detail_bien.tabbar.account'|trans }}
                 </a>
             </div>
 
@@ -255,7 +255,7 @@
                     type="button"
                     data-close-grid
                     data-action="detailbien--media-viewer#closeGrid"
-                    aria-label="Retour"
+                    aria-label="{{ 'detail_bien.gallery.back'|trans }}"
                 >
                     <i class="icon-arrow-left"></i>
                 </button>
@@ -281,7 +281,7 @@
                     type="button"
                     data-close-slider
                     data-action="detailbien--media-viewer#closeSlider"
-                    aria-label="Fermer"
+                    aria-label="{{ 'detail_bien.gallery.close'|trans }}"
                 >
                     <i class="icon-x"></i>
                 </button>
@@ -298,7 +298,7 @@
                             data-prev-slide
                             data-detailbien--media-viewer-target="prevButton"
                             data-action="detailbien--media-viewer#prev"
-                            aria-label="Image précédente"
+                            aria-label="{{ 'detail_bien.gallery.previous'|trans }}"
                         >
                             <i class="icon-arrow-left"></i>
                         </button>
@@ -306,7 +306,7 @@
                         <div class="bt-slider-stage__image">
                             <img
                                 id="btSliderImage"
-                                alt="Photo de l'annonce"
+                                alt="{{ 'detail_bien.photo.listing_alt'|trans }}"
                                 data-detailbien--media-viewer-target="sliderImage"
                                 data-action="load->detailbien--media-viewer#fitSliderImage"
                             >
@@ -318,7 +318,7 @@
                             data-next-slide
                             data-detailbien--media-viewer-target="nextButton"
                             data-action="detailbien--media-viewer#next"
-                            aria-label="Image suivante"
+                            aria-label="{{ 'detail_bien.gallery.next'|trans }}"
                         >
                             <i class="icon-arrow-right"></i>
                         </button>

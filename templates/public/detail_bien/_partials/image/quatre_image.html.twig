@@ -19,12 +19,12 @@
                     "
                     type="button"
                     data-open-slider="{{ loop.index0 }}"
-                    aria-label="Ouvrir la photo {{ loop.index }}"
+                    aria-label="{{ 'detail_bien.gallery.open_photo'|trans({'%index%': loop.index}) }}"
                 >
                     <img
                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"
                         class="js-bt-img w-100 h-100 object-fit-cover"
-                        alt="Photo {{ loop.index }}"
+                        alt="{{ 'detail_bien.photo.number_alt'|trans({'%index%': loop.index}) }}"
                         loading="lazy"
                     >
                 </button>

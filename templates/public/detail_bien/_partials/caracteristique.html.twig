@@ -7,7 +7,7 @@
 
 {% if property.caracteristique is not empty %}
     <section class="bt-info-section bt-info-section--border-bottom">
-        <h3 class="mb-0">Ce que le bien propose</h3>
+        <h3 class="mb-0">{{ 'detail_bien.features.title'|trans }}</h3>
 
         <div class="row mt-16">
             {% for item in property.caracteristique %}

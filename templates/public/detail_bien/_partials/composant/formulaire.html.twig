@@ -13,43 +13,43 @@
     },
 }) }}
 <div class="agence-field">
-    <label for="contact_lastname">Votre nom*</label>
+    <label for="contact_lastname">{{ 'detail_bien.form.lastname.label'|trans }}</label>
     {{ form_widget(form.nom, {
         attr: {
             id: 'contact_lastname',
-            placeholder: 'Veuillez saisir votre nom',
+            placeholder: 'detail_bien.form.lastname.placeholder'|trans,
             'data-agence-contact-form-target': 'firstField',
         },
     }) }}
 </div>
 
 <div class="agence-field">
-    <label for="contact_firstname">Votre prénom*</label>
+    <label for="contact_firstname">{{ 'detail_bien.form.firstname.label'|trans }}</label>
     {{ form_widget(form.prenom, {
         id: 'contact_firstname',
         attr: {
-            placeholder: 'Veuillez saisir votre prénom',
+            placeholder: 'detail_bien.form.firstname.placeholder'|trans,
             class: 'contact_firstname',
         },
     }) }}
 </div>
 
 <div class="agence-field">
-    <label for="contact_email">Votre e-mail*</label>
+    <label for="contact_email">{{ 'detail_bien.form.email.label'|trans }}</label>
     {{ form_widget(form.email, {
         id: 'contact_email',
         attr: {
-            placeholder: 'Veuillez saisir votre e-mail',
+            placeholder: 'detail_bien.form.email.placeholder'|trans,
         },
     }) }}
 </div>
 
 <div class="agence-field">
-    <label for="contact_message">Votre message*</label>
+    <label for="contact_message">{{ 'detail_bien.form.message.label'|trans }}</label>
     {{ form_widget(form.message, {
         id: 'contact_message',
         attr: {
-            placeholder: 'Veuillez saisir votre message',
+            placeholder: 'detail_bien.form.message.placeholder'|trans,
             rows: 6,
         },
     }) }}
@@ -57,6 +57,6 @@
 
 <button type="submit" class="agence-btn agence-btn-primary w-100">
     <i class="icon-mail"></i>
-    Envoyer le mail
+    {{ 'detail_bien.form.submit'|trans }}
 </button>
 {{ form_end(form) }}

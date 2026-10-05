@@ -7,13 +7,13 @@
 
 <section class="bt-property-head">
     <h3 class="mb-0">
-        {{ property.typeBien.name }} à {{ property.typeTransaction.name }}, {{ property.district }},  {{ property.pays }}
+        {{ 'detail_bien.head.title'|trans({'%type%': property.typeBien.name, '%transaction%': property.typeTransaction.name, '%district%': property.district, '%country%': property.pays}) }}
     </h3>
     <p class="bt-property-head__subtitle mb-0 p-accent">
-        {{ property.chambres }} chambres - {{ property.salleDeBains }} salle de bain
+        {{ (property.chambres > 1 ? 'detail_bien.head.bedrooms.other' : 'detail_bien.head.bedrooms.one')|trans({'%count%': property.chambres}) }} - {{ (property.salleDeBains > 1 ? 'detail_bien.head.bathrooms.other' : 'detail_bien.head.bathrooms.one')|trans({'%count%': property.salleDeBains}) }}
         {%- if property.surfaceTotal is not empty %} - {{ (property.surfaceTotal + 0)|number_format(property.surfaceTotal + 0 == (property.surfaceTotal + 0)|round ? 0 : 2, ',', ' ') }} m²{% endif %}
     </p>
     <p class="bt-property-head__subtitle__date">
-        Annonce publiée le  {{ property.updatedAt|date('d M Y') }}
+        {{ 'detail_bien.head.published_at'|trans({'%date%': property.updatedAt|date('d M Y')}) }}
     </p>
 </section>

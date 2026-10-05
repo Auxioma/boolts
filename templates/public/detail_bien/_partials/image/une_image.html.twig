@@ -15,12 +15,12 @@
                 class="une-image-item"
                 type="button"
                 data-open-slider="0"
-                aria-label="Ouvrir la photo 1"
+                aria-label="{{ 'detail_bien.gallery.open_photo'|trans({'%index%': 1}) }}"
             >
                 <img
                     src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
                     class="une-image-img"
-                    alt="Photo 1"
+                    alt="{{ 'detail_bien.photo.number_alt'|trans({'%index%': 1}) }}"
                     loading="lazy"
                 >
             </button>

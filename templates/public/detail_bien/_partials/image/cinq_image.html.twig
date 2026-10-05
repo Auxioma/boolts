@@ -12,12 +12,12 @@
                 class="cinq-image-main"
                 type="button"
                 data-open-gallery
-                aria-label="Ouvrir la galerie photos"
+                aria-label="{{ 'detail_bien.gallery.open'|trans }}"
             >
                 <img
                     src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
                     class="cinq-image-img"
-                    alt="Photo principale de l'appartement"
+                    alt="{{ 'detail_bien.photo.main_alt'|trans }}"
                     loading="lazy"
                 >
             </button>
@@ -35,12 +35,12 @@
                                     class="cinq-image-thumb{% if imageIndex == 2 %} cinq-image-thumb--top-right{% endif %}{% if imageIndex == 4 %} cinq-image-thumb--bottom-right{% endif %}"
                                     type="button"
                                     data-open-gallery
-                                    aria-label="Ouvrir la galerie photos"
+                                    aria-label="{{ 'detail_bien.gallery.open'|trans }}"
                                 >
                                     <img
                                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"
                                         class="cinq-image-img"
-                                        alt="Photo {{ imageIndex + 1 }}"
+                                        alt="{{ 'detail_bien.photo.number_alt'|trans({'%index%': imageIndex + 1}) }}"
                                         loading="lazy"
                                     >
                                 </button>

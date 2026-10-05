@@ -15,12 +15,12 @@
                     class="deux-image-item{% if loop.first %} deux-image-item--first{% endif %}{% if loop.last %} deux-image-item--last{% endif %}"
                     type="button"
                     data-open-slider="{{ loop.index0 }}"
-                    aria-label="Ouvrir la photo {{ loop.index }}"
+                    aria-label="{{ 'detail_bien.gallery.open_photo'|trans({'%index%': loop.index}) }}"
                 >
                     <img
                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"
                         class="deux-image-img"
-                        alt="Photo {{ loop.index }}"
+                        alt="{{ 'detail_bien.photo.number_alt'|trans({'%index%': loop.index}) }}"
                         loading="lazy"
                     >
                 </button>

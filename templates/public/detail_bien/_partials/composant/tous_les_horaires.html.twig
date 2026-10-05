@@ -66,7 +66,7 @@
                         {% endif %}
 
                     {% else %}
-                        <p class="mb-0">Fermé</p>
+                        <p class="mb-0">{{ 'detail_bien.hours.closed'|trans }}</p>
                     {% endif %}
                 </div>
 
@@ -74,7 +74,7 @@
                     <button
                         type="button"
                         class="p-0 border-0 bg-transparent my-auto"
-                        aria-label="Fermer les horaires"
+                        aria-label="{{ 'detail_bien.hours.close'|trans }}"
                         data-horaire-close="{{ horairesPanelId }}"
                     >
                         <i class="icon-chevron-down agence-availability__icon is-open"></i>

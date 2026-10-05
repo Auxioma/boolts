@@ -13,12 +13,12 @@
                 role="button"
                 tabindex="0"
                 data-open-gallery
-                aria-label="Ouvrir la galerie photos"
+                aria-label="{{ 'detail_bien.gallery.open'|trans }}"
             >
                 <img
                     src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
                     class="plus-cinq-images-img"
-                    alt="Photo principale de l'appartement"
+                    alt="{{ 'detail_bien.photo.main_alt'|trans }}"
                     loading="lazy"
                 >
             </div>
@@ -39,17 +39,17 @@
                                     role="button"
                                     tabindex="0"
                                     data-open-gallery
-                                    aria-label="Ouvrir la galerie photos"
+                                    aria-label="{{ 'detail_bien.gallery.open'|trans }}"
                                 >
                                     <img
                                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"
                                         class="plus-cinq-images-img"
-                                        alt="Photo {{ imageIndex + 1 }}"
+                                        alt="{{ 'detail_bien.photo.number_alt'|trans({'%index%': imageIndex + 1}) }}"
                                         loading="lazy"
                                     >
                                     {% if isLastThumb %}
                                         <button class="plus-cinq-images-open" type="button" data-open-gallery>
-                                            Voir les {{ totalPictures }} photos
+                                            {{ 'detail_bien.gallery.see_all'|trans({'%count%': totalPictures}) }}
                                         </button>
                                     {% endif %}
                                 </div>

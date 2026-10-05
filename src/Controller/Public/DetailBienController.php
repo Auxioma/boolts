@@ -24,6 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * HTTP controller for module Public / DetailBienController.
@@ -34,6 +35,7 @@ final class DetailBienController extends AbstractController
         private readonly ContactMailer $contactMailer,
         private readonly EntityManagerInterface $entityManager,
         private readonly PropertyViewTracker $propertyViewTracker,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -102,7 +104,7 @@ final class DetailBienController extends AbstractController
 
             $this->addFlash(
                 'success',
-                'Votre message a été envoyé avec succès !'
+                $this->translator->trans('detail_bien.form.success')
             );
         }
 
