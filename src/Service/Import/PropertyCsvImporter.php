@@ -207,79 +207,92 @@ final class PropertyCsvImporter
     }
 
     /**
-     * Ligne illustrative incluse dans le modèle téléchargé. Elle est marquée
-     * comme commentaire afin que le modèle puisse être réutilisé après
-     * remplacement de cette ligne par les données réelles.
+     * Lignes d'exemple du modèle téléchargé : une dizaine de biens réels,
+     * directement importables. Ils sont rattachés à la première agence
+     * existante (à remplacer par l'agence voulue) et créés en brouillon.
      *
-     * @return list<string>
+     * @return list<list<string>>
      */
-    public function templateExampleRow(): array
+    public function templateExampleRows(): array
     {
-        $values = [
-            'agence_email' => '# agence@exemple.fr (remplacer)',
-            'type_bien' => 'Appartement',
-            'type_transaction' => 'Vente',
-            'statut' => 'brouillon',
-            'slug' => 'exemple-appartement-paris',
-            'surface_total' => '72,50',
-            'prix' => '350000,00',
-            'montant_loyer_hors_charge' => '',
-            'montant_depot_de_garantie' => '',
-            'montant_des_charges' => '180,00',
-            'annee_construction' => '2018',
-            'reference_interne' => 'REF-EXEMPLE-001',
-            'code_postal' => '75001',
-            'latitude' => '48.8606000',
-            'longitude' => '2.3376000',
-            'mapbox_id' => 'place.exemple',
-            'session_id_mapbox' => 'session-exemple',
-            'feature_type' => 'address',
-            'code_iso_pays' => 'FR',
-            'chambres' => '3',
-            'salle_de_bains' => '1',
-            'dpe' => '145',
-            'dpe_min' => '120',
-            'dpe_max' => '170',
-            'dpe_lettre' => 'C',
-            'ges' => '28',
-            'ges_lettre' => 'C',
-            'date_indexation_energie' => '2026-01-15',
-            'created_at' => '2026-01-15 10:30:00',
-            'updated_at' => '2026-01-15 10:30:00',
-            'show_adresse' => 'oui',
-            'caracteristiques' => 'Balcon|Ascenseur',
-            'images' => 'https://exemple.fr/images/bien-1.jpg|https://exemple.fr/images/bien-2.jpg',
-        ];
-
-        foreach (array_keys(self::TRANSLATABLE_FIELDS) as $base) {
-            foreach ($this->locales as $locale) {
-                $values[$base.'_'.$locale] = match ($base) {
-                    'titre' => 'Appartement lumineux proche du centre',
-                    'description' => 'Description détaillée du bien à remplacer.',
-                    'adresse' => '10 rue de l’exemple',
-                    'ville' => 'Paris',
-                    'pays' => 'France',
-                    'adresse_complete' => '10 rue de l’exemple, 75001 Paris, France',
-                    'region' => 'Île-de-France',
-                    'district' => 'Paris',
-                    'localite' => 'Paris 1er',
-                    'quartier' => 'Saint-Germain-l’Auxerrois',
-                    'point_interet' => 'Musée du Louvre',
-                };
-            }
-        }
+        $columns = $this->templateColumns();
 
         return array_map(
-            static fn (string $column): string => $values[$column] ?? '# Exemple à supprimer avant import',
-            $this->templateColumns(),
+            static fn (array $values): array => array_map(
+                static fn (string $column): string => $values[$column] ?? '',
+                $columns,
+            ),
+            PropertyCsvTemplateExamples::rows($this->findExampleAgencyEmail()),
         );
     }
 
-    public function import(string $csvPath): PropertyImportReport
+    private function findExampleAgencyEmail(): string
+    {
+        $email = $this->userRepository->createQueryBuilder('u')
+            ->select('u.email')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%"ROLE_AGENCE"%')
+            ->orderBy('u.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()['email'] ?? null;
+
+        return \is_string($email) ? $email : 'agence@exemple.fr';
+    }
+
+    /**
+     * Aperçu d'un fichier CSV pour l'étape de mappage : en-têtes bruts (tels
+     * qu'écrits dans le fichier) et premières lignes de données.
+     *
+     * @return array{headers: list<string>, rows: list<list<string>>}
+     */
+    public function preview(string $csvPath, int $limit = 3): array
+    {
+        $handle = is_file($csvPath) && is_readable($csvPath) ? fopen($csvPath, 'r') : false;
+
+        if (false === $handle) {
+            return ['headers' => [], 'rows' => []];
+        }
+
+        $delimiter = $this->detectDelimiter($csvPath);
+        $headers = null;
+        $rows = [];
+
+        while (\count($rows) < $limit && false !== ($record = fgetcsv($handle, 0, $delimiter, '"', ''))) {
+            if ([null] === $record) {
+                continue;
+            }
+
+            $record = array_map(static fn ($cell): string => mb_trim((string) $cell), $record);
+
+            if (null === $headers) {
+                $record[0] = preg_replace('/^\xEF\xBB\xBF/', '', $record[0]) ?? $record[0];
+                $headers = $record;
+
+                continue;
+            }
+
+            if (str_starts_with($record[0], '#') || '' === implode('', $record)) {
+                continue;
+            }
+
+            $rows[] = $record;
+        }
+
+        fclose($handle);
+
+        return ['headers' => $headers ?? [], 'rows' => $rows];
+    }
+
+    /**
+     * @param array<int, string>|null $columnMapping Index de colonne du fichier => colonne attendue
+     *                                               (colonnes absentes ignorées). Null : en-têtes du fichier tels quels.
+     */
+    public function import(string $csvPath, ?array $columnMapping = null): PropertyImportReport
     {
         $report = new PropertyImportReport();
 
-        $rows = $this->readCsv($csvPath, $report);
+        $rows = $this->readCsv($csvPath, $report, $columnMapping);
 
         if ([] === $rows) {
             return $report;
@@ -807,9 +820,11 @@ final class PropertyCsvImporter
     }
 
     /**
+     * @param array<int, string>|null $columnMapping
+     *
      * @return array<int, array<string, string|null>> ligne du fichier (>= 2) => données associatives
      */
-    private function readCsv(string $csvPath, PropertyImportReport $report): array
+    private function readCsv(string $csvPath, PropertyImportReport $report, ?array $columnMapping = null): array
     {
         if (!is_file($csvPath) || !is_readable($csvPath)) {
             $report->addError('-', 'fichier CSV illisible.');
@@ -838,10 +853,9 @@ final class PropertyCsvImporter
             }
 
             if (null === $headers) {
-                $headers = array_map(
-                    fn (?string $column): string => $this->normalizeHeader((string) $column),
-                    $record,
-                );
+                $headers = null === $columnMapping
+                    ? array_map(fn (?string $column): string => $this->normalizeHeader((string) $column), $record)
+                    : array_map(static fn (int $index): string => $columnMapping[$index] ?? '', array_keys($record));
 
                 continue;
             }

@@ -1,6 +1,7 @@
 {#
  Template: templates/admin/property/import.html.twig
  Role: Page d'import CSV des biens immobiliers (back-office EasyAdmin).
+       Étape 1 : téléversement ; étape 2 : mappage colonnes du fichier => champs attendus (FR/EN) ; puis rapport.
  Context: Rendue par App\Controller\Admin\PropertyCrudController::importCsv().
 #}
 {% extends '@EasyAdmin/layout.html.twig' %}
@@ -9,7 +10,7 @@
 
 {% block main %}
     <div class="row">
-        <div class="col-12 col-xl-8">
+        <div class="col-12 {{ mapping is not null ? 'col-xxl-10' : 'col-xl-8' }}">
 
             <div class="mb-3">
                 <a href="{{ back_to_index_url }}" class="btn btn-link ps-0">
@@ -52,29 +53,152 @@
                 </div>
             {% endif %}
 
-            <div class="card mb-4">
-                <div class="card-header">Fichier à importer</div>
-                <div class="card-body">
-                    <form method="post" action="{{ import_url }}" enctype="multipart/form-data">
-                        <input type="hidden" name="_token" value="{{ csrf_token('property_csv_import') }}">
+            {% if mapping is not null %}
+                <div class="card mb-4">
+                    <div class="card-header d-flex flex-wrap justify-content-between gap-2">
+                        <span>Étape 2 — Associer les colonnes <span class="text-body-secondary">/ Map columns</span></span>
+                        <span class="text-body-secondary small font-monospace">{{ mapping.file_name }}</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="small text-body-secondary">
+                            Pour chaque colonne de votre fichier, choisissez le champ Boolts correspondant
+                            (ou « Ignorer »). Les associations ont été proposées automatiquement à partir des
+                            en-têtes, en français ou en anglais : vérifiez-les avant de lancer l’import.
+                            Les champs marqués <strong>*</strong> sont obligatoires.
+                            <br>
+                            <em>For each column of your file, pick the matching Boolts field (or “Ignore”).
+                            Suggestions are based on French or English headers — please review them.</em>
+                        </p>
 
-                        <div class="mb-3">
-                            <label for="csv_file" class="form-label">Fichier CSV</label>
-                            <input type="file" id="csv_file" name="csv_file" accept=".csv,text/csv" class="form-control" required>
-                            <div class="form-text">
-                                Séparateur <code>;</code> ou <code>,</code> — encodage UTF-8 — première ligne = en-têtes.
+                        {% if mapping.errors is not empty %}
+                            <div class="alert alert-danger small">
+                                <ul class="mb-0">
+                                    {% for error in mapping.errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
+                        {% endif %}
+
+                        <div id="csv-mapping-duplicates" class="alert alert-warning small d-none">
+                            Un même champ est associé à plusieurs colonnes. <em>The same field is mapped to several columns.</em>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fa fa-file-import"></i> Lancer l’import
-                        </button>
-                        <a href="{{ template_url }}" class="btn btn-outline-secondary">
-                            <i class="fa fa-download"></i> Télécharger le modèle CSV
-                        </a>
-                    </form>
+                        <form method="post" action="{{ import_url }}" id="csv-mapping-form">
+                            <input type="hidden" name="_token" value="{{ csrf_token('property_csv_import') }}">
+                            <input type="hidden" name="step" value="import">
+                            <input type="hidden" name="token" value="{{ mapping.token }}">
+                            <input type="hidden" name="file_name" value="{{ mapping.file_name }}">
+
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 25%">Colonne du fichier <span class="fw-normal text-body-secondary">/ File column</span></th>
+                                            <th>Aperçu <span class="fw-normal text-body-secondary">/ Preview</span></th>
+                                            <th style="width: 35%">Champ Boolts <span class="fw-normal text-body-secondary">/ Boolts field</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for column in mapping.columns %}
+                                            <tr>
+                                                <td class="font-monospace small">
+                                                    {{ column.header is not empty ? column.header : '(colonne ' ~ (column.index + 1) ~ ' sans en-tête)' }}
+                                                </td>
+                                                <td class="small text-body-secondary">
+                                                    {% for sample in column.samples %}
+                                                        <div class="text-truncate" style="max-width: 28rem" title="{{ sample }}">{{ sample }}</div>
+                                                    {% else %}
+                                                        <em>—</em>
+                                                    {% endfor %}
+                                                </td>
+                                                <td>
+                                                    <select name="mapping[{{ column.index }}]"
+                                                            class="form-select form-select-sm csv-mapping-select {{ column.field is null ? 'text-body-secondary' }}">
+                                                        <option value="">— Ignorer cette colonne / Ignore —</option>
+                                                        {% for group in field_groups %}
+                                                            <optgroup label="{{ group.label_fr }} / {{ group.label_en }}">
+                                                                {% for field in group.fields %}
+                                                                    <option value="{{ field.key }}" {{ column.field == field.key ? 'selected' }}>
+                                                                        {{ field.label_fr }} · {{ field.label_en }}{{ field.required ? ' *' }}
+                                                                    </option>
+                                                                {% endfor %}
+                                                            </optgroup>
+                                                        {% endfor %}
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-file-import"></i> Lancer l’import <span class="opacity-75">/ Import</span>
+                            </button>
+                            <a href="{{ import_url }}" class="btn btn-outline-secondary">
+                                Changer de fichier <span class="opacity-75">/ Change file</span>
+                            </a>
+                        </form>
+                    </div>
                 </div>
-            </div>
+
+                <script>
+                    (() => {
+                        const selects = document.querySelectorAll('.csv-mapping-select');
+                        const warning = document.getElementById('csv-mapping-duplicates');
+
+                        const refresh = () => {
+                            const counts = {};
+                            selects.forEach((select) => {
+                                if (select.value) {
+                                    counts[select.value] = (counts[select.value] || 0) + 1;
+                                }
+                            });
+
+                            let hasDuplicate = false;
+                            selects.forEach((select) => {
+                                const duplicate = select.value !== '' && counts[select.value] > 1;
+                                hasDuplicate ||= duplicate;
+                                select.classList.toggle('is-invalid', duplicate);
+                                select.classList.toggle('text-body-secondary', select.value === '');
+                            });
+
+                            warning.classList.toggle('d-none', !hasDuplicate);
+                        };
+
+                        selects.forEach((select) => select.addEventListener('change', refresh));
+                        refresh();
+                    })();
+                </script>
+            {% else %}
+                <div class="card mb-4">
+                    <div class="card-header">Étape 1 — Fichier à importer <span class="text-body-secondary">/ File to import</span></div>
+                    <div class="card-body">
+                        <form method="post" action="{{ import_url }}" enctype="multipart/form-data">
+                            <input type="hidden" name="_token" value="{{ csrf_token('property_csv_import') }}">
+                            <input type="hidden" name="step" value="upload">
+
+                            <div class="mb-3">
+                                <label for="csv_file" class="form-label">Fichier CSV</label>
+                                <input type="file" id="csv_file" name="csv_file" accept=".csv,text/csv" class="form-control" required>
+                                <div class="form-text">
+                                    Séparateur <code>;</code> ou <code>,</code> — encodage UTF-8 — première ligne = en-têtes.
+                                    Les en-têtes peuvent être libres (français ou anglais) : vous les associerez aux champs
+                                    attendus à l’étape suivante.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-arrow-right"></i> Continuer vers le mappage
+                            </button>
+                            <a href="{{ template_url }}" class="btn btn-outline-secondary">
+                                <i class="fa fa-download"></i> Télécharger le modèle CSV
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            {% endif %}
 
             <div class="card">
                 <div class="card-header">Règles d’import</div>
@@ -82,11 +206,19 @@
                     <ul>
                         <li>Le CSV ne contient <strong>aucun ID</strong>. Chaque ligne crée un nouveau bien.</li>
                         <li>
-                            Le modèle téléchargé contient une ligne <strong>exemple</strong> marquée par <code>#</code> :
-                            elle est ignorée automatiquement, mais doit être remplacée par vos données réelles.
+                            <strong>Mappage</strong> : après téléversement, chaque colonne du fichier est associée à un
+                            champ attendu. Les en-têtes reconnus (ex. <code>Price</code>, <code>Prix de vente</code>,
+                            <code>Bedrooms</code>, <code>Titre (anglais)</code>, <code>title_en</code>) sont pré-associés ;
+                            les colonnes non associées sont ignorées.
                         </li>
                         <li>
-                            <strong>Utilisateur</strong> : colonne <code>agence_email</code> uniquement.
+                            Le modèle téléchargé contient <strong>10 biens d’exemple</strong> réels, directement
+                            importables (créés en <code>brouillon</code>, rattachés à la première agence existante) :
+                            remplacez-les par vos données ou importez-les tels quels pour tester.
+                            Toute ligne commençant par <code>#</code> est ignorée.
+                        </li>
+                        <li>
+                            <strong>Utilisateur</strong> : champ <code>agence_email</code> uniquement.
                             L’utilisateur doit exister avec cette adresse e-mail et avoir le rôle agence.
                         </li>
                         <li>
@@ -97,30 +229,52 @@
                             ignorée avec un avertissement.
                         </li>
                         <li>
-                            <strong>Statut</strong> : valeur de la colonne <code>statut</code>
+                            <strong>Statut</strong> : valeur du champ <code>statut</code>
                             (ex. <code>brouillon</code>, <code>publiee</code>, <code>pending</code>…) ;
                             <code>brouillon</code> par défaut si la colonne est vide.
                         </li>
                         <li>
-                            <strong>Multilingue</strong> : colonnes traduisibles suffixées par la langue
+                            <strong>Multilingue</strong> : champs traduisibles par langue
                             (<code>titre_fr</code>, <code>titre_en</code>…). Si une langue manque pour un champ,
                             la valeur de la langue renseignée est utilisée par défaut.
                         </li>
                         <li>
-                            <strong>Relations</strong> : les types et caractéristiques sont rapprochés par libellé,
-                            slug ou identifiant ; <code>images</code> contient les URL des images, séparées par <code>|</code>.
-                            Les collections d’historique <code>favoris</code> et <code>propertyViews</code> ne sont pas importées.
-                        </li>
-                        <li>
                             <strong>Caractéristiques</strong> et <strong>images</strong> : plusieurs valeurs
                             séparées par <code>|</code>. Les images sont téléchargées depuis leur URL
-                            (jusqu’à 20 par bien).
+                            (jusqu’à 20 par bien). Les collections d’historique <code>favoris</code> et
+                            <code>propertyViews</code> ne sont pas importées.
                         </li>
                         <li>Montants : point ou virgule décimale acceptés. Dates : <code>AAAA-MM-JJ</code> ou <code>JJ/MM/AAAA</code>.</li>
                     </ul>
 
-                    <p class="mb-1 fw-bold">Colonnes attendues</p>
-                    <p class="font-monospace text-body-secondary">{{ columns|join(' · ') }}</p>
+                    <details>
+                        <summary class="fw-bold mb-2">Champs attendus / Expected fields</summary>
+                        <div class="table-responsive">
+                            <table class="table table-sm small mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Colonne du modèle</th>
+                                        <th>Français</th>
+                                        <th>English</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for group in field_groups %}
+                                        <tr class="table-light">
+                                            <th colspan="3">{{ group.label_fr }} / {{ group.label_en }}</th>
+                                        </tr>
+                                        {% for field in group.fields %}
+                                            <tr>
+                                                <td class="font-monospace">{{ field.key }}{{ field.required ? ' *' }}</td>
+                                                <td>{{ field.label_fr }}</td>
+                                                <td>{{ field.label_en }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
                 </div>
             </div>
 

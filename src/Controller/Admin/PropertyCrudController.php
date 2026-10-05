@@ -22,6 +22,7 @@ use App\Entity\PropertyImage;
 use App\Entity\User;
 use App\Field\PropertyImagesField;
 use App\Repository\CategoryBienTransactionRepository;
+use App\Service\Import\PropertyCsvColumnMapper;
 use App\Service\Import\PropertyCsvImporter;
 use App\Service\Import\PropertyImportReport;
 use App\Service\Property\AgencyPropertySubmissionMailer;
@@ -55,6 +56,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\NumericFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -394,16 +396,21 @@ class PropertyCrudController extends AbstractCrudController
     }
 
     /**
-     * Page d'import CSV de biens immobiliers.
+     * Page d'import CSV de biens immobiliers, en trois temps :
      *
      * GET  : affiche le formulaire (et le lien de téléchargement du modèle) ;
      * GET  + ?download=template : télécharge le modèle CSV vide ;
-     * POST : traite le fichier téléversé et affiche le rapport d'import.
+     * POST step=upload : enregistre le fichier et affiche l'écran de mappage
+     *      (colonnes du fichier => champs attendus, rapprochement FR/EN proposé) ;
+     * POST step=import : applique le mappage validé et affiche le rapport.
      */
     #[AdminRoute('/import-csv', name: 'import_csv', options: ['methods' => ['GET', 'POST']])]
     public function importCsv(
         Request $request,
         PropertyCsvImporter $importer,
+        PropertyCsvColumnMapper $mapper,
+        #[Autowire('%kernel.project_dir%/var/import-csv')]
+        string $uploadDir,
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
@@ -427,29 +434,40 @@ class PropertyCrudController extends AbstractCrudController
             ->set('download', 'template')
             ->generateUrl();
 
-        $report = null;
-
-        if ($request->isMethod('POST')) {
-            $report = $this->handleImportUpload($request, $importer);
-        }
-
-        return $this->render('admin/property/import.html.twig', [
-            'report' => $report,
-            'columns' => $importer->templateColumns(),
+        $parameters = [
+            'report' => null,
+            'mapping' => null,
+            'field_groups' => $mapper->groupedFields(),
             'import_url' => $importUrl,
             'template_url' => $templateUrl,
             'back_to_index_url' => $backToIndexUrl,
-        ]);
-    }
+        ];
 
-    private function handleImportUpload(Request $request, PropertyCsvImporter $importer): ?PropertyImportReport
-    {
-        if (!$this->isCsrfTokenValid('property_csv_import', $request->request->getString('_token'))) {
-            $this->addFlash('danger', 'Jeton CSRF invalide, veuillez réessayer.');
-
-            return null;
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('property_csv_import', $request->request->getString('_token'))) {
+                $this->addFlash('danger', 'Jeton CSRF invalide, veuillez réessayer.');
+            } elseif ('import' === $request->request->getString('step')) {
+                [$parameters['report'], $parameters['mapping']] = $this->handleMappedImport($request, $importer, $mapper, $uploadDir);
+            } else {
+                $parameters['mapping'] = $this->handleImportUpload($request, $importer, $mapper, $uploadDir);
+            }
         }
 
+        return $this->render('admin/property/import.html.twig', $parameters);
+    }
+
+    /**
+     * Étape 1 : contrôle et enregistrement temporaire du fichier, puis
+     * préparation de l'écran de mappage.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function handleImportUpload(
+        Request $request,
+        PropertyCsvImporter $importer,
+        PropertyCsvColumnMapper $mapper,
+        string $uploadDir,
+    ): ?array {
         $file = $request->files->get('csv_file');
 
         if (!$file instanceof UploadedFile || !$file->isValid()) {
@@ -469,12 +487,80 @@ class PropertyCrudController extends AbstractCrudController
             return null;
         }
 
+        $this->purgeStaleUploads($uploadDir);
+
+        $token = bin2hex(random_bytes(16));
+        $path = $uploadDir.'/'.$token.'.csv';
+
         try {
-            $report = $importer->import($file->getPathname());
+            $file->move($uploadDir, $token.'.csv');
+        } catch (FileException $exception) {
+            $this->addFlash('danger', 'Impossible d’enregistrer le fichier : '.$exception->getMessage());
+
+            return null;
+        }
+
+        $preview = $importer->preview($path);
+
+        if ([] === $preview['headers']) {
+            $this->addFlash('danger', 'Fichier CSV vide (aucun en-tête).');
+            @unlink($path);
+
+            return null;
+        }
+
+        return $this->buildMappingView(
+            $token,
+            $file->getClientOriginalName(),
+            $preview,
+            $mapper->suggest($preview['headers']),
+            [],
+        );
+    }
+
+    /**
+     * Étape 2 : validation du mappage puis import. En cas de mappage
+     * invalide, l'écran de mappage est réaffiché avec les choix saisis.
+     *
+     * @return array{0: ?PropertyImportReport, 1: array<string, mixed>|null}
+     */
+    private function handleMappedImport(
+        Request $request,
+        PropertyCsvImporter $importer,
+        PropertyCsvColumnMapper $mapper,
+        string $uploadDir,
+    ): array {
+        $token = $request->request->getString('token');
+        $path = $uploadDir.'/'.$token.'.csv';
+
+        if (1 !== preg_match('/^[a-f0-9]{32}$/', $token) || !is_file($path)) {
+            $this->addFlash('danger', 'Le fichier téléversé a expiré, veuillez le téléverser à nouveau.');
+
+            return [null, null];
+        }
+
+        $fileName = $request->request->getString('file_name');
+        $preview = $importer->preview($path);
+        $result = $mapper->validate($request->request->all('mapping'), \count($preview['headers']));
+
+        if ([] !== $result['errors']) {
+            $choices = [];
+
+            foreach (array_keys($preview['headers']) as $position) {
+                $choices[$position] = $result['mapping'][$position] ?? null;
+            }
+
+            return [null, $this->buildMappingView($token, $fileName, $preview, $choices, $result['errors'])];
+        }
+
+        try {
+            $report = $importer->import($path, $result['mapping']);
         } catch (\Throwable $exception) {
             $this->addFlash('danger', 'Import impossible : '.$exception->getMessage());
 
-            return null;
+            return [null, null];
+        } finally {
+            @unlink($path);
         }
 
         if ($report->getCreated() > 0) {
@@ -485,15 +571,57 @@ class PropertyCrudController extends AbstractCrudController
             $this->addFlash('warning', $report->summaryLine());
         }
 
-        return $report;
+        return [$report, null];
+    }
+
+    /**
+     * @param array{headers: list<string>, rows: list<list<string>>} $preview
+     * @param array<int, ?string>                                    $choices
+     * @param list<string>                                           $errors
+     *
+     * @return array<string, mixed>
+     */
+    private function buildMappingView(string $token, string $fileName, array $preview, array $choices, array $errors): array
+    {
+        $columns = [];
+
+        foreach ($preview['headers'] as $position => $header) {
+            $samples = array_map(static fn (array $row): string => $row[$position] ?? '', $preview['rows']);
+
+            $columns[] = [
+                'index' => $position,
+                'header' => $header,
+                'samples' => array_values(array_filter($samples, static fn (string $value): bool => '' !== $value)),
+                'field' => $choices[$position] ?? null,
+            ];
+        }
+
+        return [
+            'token' => $token,
+            'file_name' => $fileName,
+            'columns' => $columns,
+            'errors' => $errors,
+        ];
+    }
+
+    /**
+     * Supprime les fichiers téléversés abandonnés (mappage jamais validé).
+     */
+    private function purgeStaleUploads(string $uploadDir): void
+    {
+        foreach (glob($uploadDir.'/*.csv') ?: [] as $stale) {
+            if (filemtime($stale) < time() - 86400) {
+                @unlink($stale);
+            }
+        }
     }
 
     private function streamCsvTemplate(PropertyCsvImporter $importer): StreamedResponse
     {
         $columns = $importer->templateColumns();
-        $exampleRow = $importer->templateExampleRow();
+        $exampleRows = $importer->templateExampleRows();
 
-        $response = new StreamedResponse(static function () use ($columns, $exampleRow): void {
+        $response = new StreamedResponse(static function () use ($columns, $exampleRows): void {
             $output = fopen('php://output', 'w');
 
             if (false === $output) {
@@ -502,8 +630,10 @@ class PropertyCrudController extends AbstractCrudController
 
             // BOM UTF-8 pour Excel + délimiteur « ; » cohérent avec l'export.
             fwrite($output, "\xEF\xBB\xBF");
-            fputcsv($output, $columns, ';');
-            fputcsv($output, $exampleRow, ';');
+            fputcsv($output, $columns, ';', '"', '');
+            foreach ($exampleRows as $exampleRow) {
+                fputcsv($output, $exampleRow, ';', '"', '');
+            }
 
             fclose($output);
         });
