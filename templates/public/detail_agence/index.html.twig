@@ -275,12 +275,12 @@
 
                                 <div class="agence-contact-actions">
                                     {% if user.whatsApp is not empty %}
-                                        <a href="https://wa.me/{{ user.whatsApp }}" class="agence-btn agence-btn-whatsapp">
+                                        <a href="https://wa.me/{{ user.whatsApp }}" class="agence-btn agence-btn-whatsapp p-accent">
                                             Contacter via Whatsapp
                                         </a>
                                     {% endif %}
                                     {% if user.numeroContact is not empty %}
-                                        <a href="tel:{{ user.numeroContact }}" class="agence-btn agence-btn-primary">
+                                        <a href="tel:{{ user.numeroContact }}" class="agence-btn agence-btn-primary  p-accent">
                                             <i class="icon-phone"></i>
                                             Appeler l’agence
                                         </a>
@@ -288,7 +288,7 @@
 
                                     <button
                                         type="button"
-                                        class="agence-btn agence-btn-outline"
+                                        class="agence-btn agence-btn-outline  p-accent"
                                         data-action="click->agence-contact-form#open"
                                         data-agence-contact-form-target="button"
                                         aria-controls="agency_contact_form"

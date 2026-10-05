@@ -605,8 +605,13 @@
     border-radius: 8px;
 }
 
-.agence-availability p,
-.agence-availability__day {
+.agence-color {
+    color: #0b0f14!important;
+}
+
+
+.agence-availability p
+ {
     color: #858789;
 }
 
@@ -645,6 +650,22 @@
     gap: 12px;
 }
 
+
+.agence-availability__icon.is-open {
+    display: inline-block;
+
+    transform: rotate(180deg);
+}
+
+.agence-availability__row {
+    display: flex;
+
+    align-items: flex-start;
+
+    width: 100%;
+
+    gap: 12px;
+}
 
 .agence-availability__hours {
     display: flex;
@@ -688,13 +709,7 @@
 
     padding: 10px 16px;
 
-    border-radius: var(--radius-pill);
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    line-height: 20px;
+    border-radius: var(--radius-full);
 
     text-decoration: none;
 }

@@ -1218,10 +1218,18 @@ body.bt-modal-open {
     }
 }
 
+
+@media (max-width: 991px) {
+        .bt-contact-card__link .icon-chevron-right::before {
+        top: initial;
+    }
+}
+
 @media (max-width: 767px) {
     body {
         padding-bottom: 83px;
     }
+
 
     body.bt-modal-open {
         padding-bottom: 0;
@@ -1275,9 +1283,13 @@ body.bt-modal-open {
     }
 
     .bt-annonce {
-        padding-top: 116px;
+        padding-top: 16px;
 
         padding-bottom: 32px;
+    }
+
+    .mb-24-0 {
+        margin-bottom: 0;
     }
 
     .bt-annonce__container {
@@ -1610,7 +1622,7 @@ body.bt-modal-open {
 
     .bt-hero-responsive {
         display: block;
-        /*height: 525px;*/
+        height: 525px;
     }
 }
 

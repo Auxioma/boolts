@@ -43,47 +43,45 @@
     data-horaire-panel
 >
 
-    <div class="d-flex justify-content-between align-items-center w-100">
-        <span>
-
-        </span>
-
-        <button
-            type="button"
-            class="p-0 border-0 bg-transparent"
-            aria-label="Fermer les horaires"
-            data-horaire-close="{{ horairesPanelId }}"
-        >
-            <i class="icon-chevron-down agence-availability__icon is-open"></i>
-        </button>
-    </div>
-
-    <div class="d-flex flex-column gap-1 mt-2 w-100">
+    <div class="d-flex flex-column gap-1 w-100">
         {% for horaire in horairesOrdonnes %}
-            <div class="d-flex w-100 mb-12">
-                <div class="agence-availability__day my-auto ml-10">
-                    <b>{{ horaire.jour }}</b>
-                </div>
+            <div class="agence-availability__row{{ loop.last ? '' : ' ' }}">
+                <p class="agence-availability__day my-auto agence-color">
+                    {{ horaire.jour }}
+                </p>
 
-                <div class="agence-availability__hours ms-3">
+                <div class="agence-availability__hours my-auto">
                     {% if horaire.open %}
 
                         {% if horaire.ouvertureMatin and horaire.fermetureMatin %}
-                            <strong>
+                            <p class="w-auto mb-0">
                                 {{ horaire.ouvertureMatin|date('H:i') }}–{{ horaire.fermetureMatin|date('H:i') }}
-                            </strong>
+                            </p>
                         {% endif %}
 
                         {% if horaire.ouvertureApresMidi and horaire.fermetureApresMidi %}
-                            <strong>
+                            <p class="w-auto mb-0">
                                 {{ horaire.ouvertureApresMidi|date('H:i') }}–{{ horaire.fermetureApresMidi|date('H:i') }}
-                            </strong>
+                            </p>
                         {% endif %}
 
                     {% else %}
-                        <strong>Fermé</strong>
+                        <p class="mb-0">Fermé</p>
                     {% endif %}
                 </div>
+
+                {% if loop.first %}
+                    <button
+                        type="button"
+                        class="p-0 border-0 bg-transparent my-auto"
+                        aria-label="Fermer les horaires"
+                        data-horaire-close="{{ horairesPanelId }}"
+                    >
+                        <i class="icon-chevron-down agence-availability__icon is-open"></i>
+                    </button>
+                {% else %}
+                    <i class="icon-chevron-down agence-availability__icon my-auto invisible" aria-hidden="true"></i>
+                {% endif %}
             </div>
         {% endfor %}
     </div>
