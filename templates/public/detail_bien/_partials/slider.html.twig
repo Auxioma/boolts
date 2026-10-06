@@ -5,15 +5,15 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<section class="agence-properties bt-related" data-controller="splide">
+<section class="agence-properties rond-slider-detail bt-info-section" data-controller="splide">
     <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
         <h3 class="bt-section-title mb-0">
             {{ 'detail_bien.similar.title'|trans({'%city%': property.ville}) }}
         </h3>
 
-        <div class="d-flex align-items-center gap-2">
+        <div class="rond-slider-detail-nav d-flex align-items-center gap-2">
             <button
-                class="bt-icon-btn bt-icon-btn--small bt-icon-btn--prev"
+                class="rond-slider-detail-btn rond-slider-detail-btn--prev"
                 type="button"
                 aria-label="{{ 'detail_bien.similar.previous'|trans }}"
                 data-splide-target="previous"
@@ -23,7 +23,7 @@
             </button>
 
             <button
-                class="bt-icon-btn bt-icon-btn--small"
+                class="rond-slider-detail-btn rond-slider-detail-btn--next"
                 type="button"
                 aria-label="{{ 'detail_bien.similar.next'|trans }}"
                 data-splide-target="next"

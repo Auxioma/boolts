@@ -9,6 +9,9 @@
 
 {% block title %}{{ 'detail_bien.meta.title'|trans }}{% endblock %}
 
+{# Pas de barre de navigation mobile globale sur la fiche annonce #}
+{% block mobile_tabbar %}{% endblock %}
+
 {% block body %}
     {% set totalPictures = property.propertyImages|length %}
     {% set pictures = property.propertyImages|slice(0, 5) %}
@@ -39,7 +42,7 @@
         <div class="bt-page">
 
             <div class="bt-mobile-topbar align-items-center justify-content-center">
-                <a class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="{{ 'detail_bien.topbar.back'|trans }}">
+                <a href="javascript:history.go(-1)" class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="{{ 'detail_bien.topbar.back'|trans }}">
                     <i class="icon-chevron-left"></i>
                 </a>
 
@@ -83,7 +86,7 @@
                         <div class="row">
                             {% if property.titreDuLogement|trim is not empty %}
                                 <h2 class="mb-24 mb-24-0">
-                                    {{ property.titreDuLogement }} {{ totalPictures }}
+                                    {{ property.titreDuLogement }} 
                                 </h2>
                             {% endif %}
 
@@ -132,16 +135,16 @@
                                                 {{ include('public/detail_bien/_partials/composant/image_entreprise.html.twig') }}
                                             </div>
                                             <div class="min-w-0">
-                                                                                 <a
-                                                        href="{{ path('app_public_detail_agence', {
+                                                <a
+                                                    href="{{ path('app_public_detail_agence', {
                                                     slug: property.user.slug}) }}"
-                                                        class="bt-contact-card__link"
-                                                    >     <p class="p-accent mb-0">
-                                                    {{ property.user.entreprise }}
+                                                    class="bt-contact-card__link"
+                                                >     <p class="p-accent mb-0">
+                                                        {{ property.user.entreprise }}
               
                                                         <i class="icon-chevron-right ms-1"></i>
                                                    
-                                                </p> </a>
+                                                    </p> </a>
                                                 <p class="bt-contact-card__address">
                                                     {{ 'detail_bien.contact.agency_type'|trans }} -
                                                     {{ property.user.adresseContact }}
@@ -215,618 +218,589 @@
         </section>
         </main>
 
-        <nav class="bt-mobile-tabbar" aria-label="{{ 'detail_bien.tabbar.aria_label'|trans }}">
-            <div class="bt-mobile-tabbar__nav d-flex align-items-center justify-content-center">
-                <a href="#" class="bt-mobile-tabbar__item is-active d-flex flex-column align-items-center justify-content-between">
-                    <i class="bi bi-search fs-5"></i>
-                    {{ 'detail_bien.tabbar.explore'|trans }}
-                </a>
 
-                <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
-                    <i class="bi bi-heart fs-5"></i>
-                    {{ 'detail_bien.tabbar.favorites'|trans }}
-                </a>
-
-                <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
-                    <i class="bi bi-chat-square fs-5"></i>
-                    {{ 'detail_bien.tabbar.messages'|trans }}
-                </a>
-
-                <a href="#" class="bt-mobile-tabbar__item d-flex flex-column align-items-center justify-content-between">
-                    <i class="bi bi-person-circle fs-5"></i>
-                    {{ 'detail_bien.tabbar.account'|trans }}
-                </a>
-            </div>
-
-            <div class="bt-mobile-tabbar__safe"></div>
-        </nav>
-
-    {# ========================= #}
-    {# MODALE 1 : GRILLE PHOTOS #}
-    {# ========================= #}
-
-    {% if totalPictures > 0 %}
-        <section class="bt-media-modal" id="btMediaGridModal" aria-hidden="true" data-detailbien--media-viewer-target="gridModal">
-
-            <div class="bt-media-modal__body position-relative">
-                <button
-                    class="bt-modal-round bt-media-modal__back"
-                    type="button"
-                    data-close-grid
-                    data-action="detailbien--media-viewer#closeGrid"
-                    aria-label="{{ 'detail_bien.gallery.back'|trans }}"
-                >
-                    <i class="icon-arrow-left"></i>
-                </button>
-
-                <div class="detail-bien-modal-mensouri-grid" id="btMediaGrid" data-detailbien--media-viewer-target="grid"></div>
-            </div>
-        </section>
 
         {# ========================= #}
-        {# MODALE 2 : SLIDER IMAGE #}
+        {# MODALE 1 : GRILLE PHOTOS #}
         {# ========================= #}
 
-        <section
-            class="bt-media-modal"
-            id="btSliderModal"
-            aria-hidden="true"
-            data-detailbien--media-viewer-target="sliderModal"
-            data-action="touchstart->detailbien--media-viewer#touchStart:passive touchend->detailbien--media-viewer#touchEnd:passive"
-        >
-            <div class="bt-media-modal__body position-relative">
-                <button
-                    class="bt-modal-round bt-media-modal__back"
-                    type="button"
-                    data-close-slider
-                    data-action="detailbien--media-viewer#closeSlider"
-                    aria-label="{{ 'detail_bien.gallery.close'|trans }}"
-                >
-                    <i class="icon-x"></i>
-                </button>
+        {% if totalPictures > 0 %}
+            <section class="bt-media-modal" id="btMediaGridModal" aria-hidden="true" data-detailbien--media-viewer-target="gridModal">
 
-                <div class="bt-slider-stage" data-detailbien--media-viewer-target="stage">
-                    <div class="bt-slider-stage__counter" id="btSliderCounter" data-detailbien--media-viewer-target="counter">
-                        1/{{ totalPictures }}
-                    </div>
+                <div class="bt-media-modal__body position-relative">
+                    <button
+                        class="bt-modal-round bt-media-modal__back"
+                        type="button"
+                        data-close-grid
+                        data-action="detailbien--media-viewer#closeGrid"
+                        aria-label="{{ 'detail_bien.gallery.back'|trans }}"
+                    >
+                        <i class="icon-arrow-left"></i>
+                    </button>
 
-                    <div class="detail-bien-modal-mensouri-slider-row d-flex align-items-center justify-content-center gap-4">
-                        <button
-                            class="bt-modal-round bt-slider-stage__arrow"
-                            type="button"
-                            data-prev-slide
-                            data-detailbien--media-viewer-target="prevButton"
-                            data-action="detailbien--media-viewer#prev"
-                            aria-label="{{ 'detail_bien.gallery.previous'|trans }}"
-                        >
-                            <i class="icon-arrow-left"></i>
-                        </button>
+                    <div class="detail-bien-modal-mensouri-grid" id="btMediaGrid" data-detailbien--media-viewer-target="grid"></div>
+                </div>
+            </section>
 
-                        <div class="bt-slider-stage__image">
-                            <img
-                                id="btSliderImage"
-                                alt="{{ 'detail_bien.photo.listing_alt'|trans }}"
-                                data-detailbien--media-viewer-target="sliderImage"
-                                data-action="load->detailbien--media-viewer#fitSliderImage"
-                            >
+            {# ========================= #}
+            {# MODALE 2 : SLIDER IMAGE #}
+            {# ========================= #}
+
+            <section
+                class="bt-media-modal"
+                id="btSliderModal"
+                aria-hidden="true"
+                data-detailbien--media-viewer-target="sliderModal"
+                data-action="touchstart->detailbien--media-viewer#touchStart:passive touchend->detailbien--media-viewer#touchEnd:passive"
+            >
+                <div class="bt-media-modal__body position-relative">
+                    <button
+                        class="bt-modal-round bt-media-modal__back"
+                        type="button"
+                        data-close-slider
+                        data-action="detailbien--media-viewer#closeSlider"
+                        aria-label="{{ 'detail_bien.gallery.close'|trans }}"
+                    >
+                        <i class="icon-x"></i>
+                    </button>
+
+                    <div class="bt-slider-stage" data-detailbien--media-viewer-target="stage">
+                        <div class="bt-slider-stage__counter" id="btSliderCounter" data-detailbien--media-viewer-target="counter">
+                            1/{{ totalPictures }}
                         </div>
 
-                        <button
-                            class="bt-modal-round bt-slider-stage__arrow"
-                            type="button"
-                            data-next-slide
-                            data-detailbien--media-viewer-target="nextButton"
-                            data-action="detailbien--media-viewer#next"
-                            aria-label="{{ 'detail_bien.gallery.next'|trans }}"
-                        >
-                            <i class="icon-arrow-right"></i>
-                        </button>
+                        <div class="detail-bien-modal-mensouri-slider-row d-flex align-items-center justify-content-center gap-4">
+                            <button
+                                class="bt-modal-round bt-slider-stage__arrow"
+                                type="button"
+                                data-prev-slide
+                                data-detailbien--media-viewer-target="prevButton"
+                                data-action="detailbien--media-viewer#prev"
+                                aria-label="{{ 'detail_bien.gallery.previous'|trans }}"
+                            >
+                                <i class="icon-arrow-left"></i>
+                            </button>
+
+                            <div class="bt-slider-stage__image">
+                                <img
+                                    id="btSliderImage"
+                                    alt="{{ 'detail_bien.photo.listing_alt'|trans }}"
+                                    data-detailbien--media-viewer-target="sliderImage"
+                                    data-action="load->detailbien--media-viewer#fitSliderImage"
+                                >
+                            </div>
+
+                            <button
+                                class="bt-modal-round bt-slider-stage__arrow"
+                                type="button"
+                                data-next-slide
+                                data-detailbien--media-viewer-target="nextButton"
+                                data-action="detailbien--media-viewer#next"
+                                aria-label="{{ 'detail_bien.gallery.next'|trans }}"
+                            >
+                                <i class="icon-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    {% endif %}
+            </section>
+        {% endif %}
 
-    {# ========================= #}
-    {# CSS #}
-    {# ========================= #}
+        {# ========================= #}
+        {# CSS #}
+        {# ========================= #}
 
-    <style>
-        .bt-media-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #ffffff;
-            overflow-y: auto;
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transform: translateY(10px);
-            transition:
-                opacity 0.2s ease,
-                transform 0.2s ease,
-                visibility 0.2s ease;
-        }
-
-        .bt-media-modal.is-open {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-            /* "none" (et non translateY(0)) : un transform casserait le position: fixed du bouton retour */
-            transform: none;
-        }
-
-        body.bt-modal-open {
-            overflow: hidden;
-        }
-
-        .bt-media-modal__body {
-            min-height: calc(100vh - 90px);
-            padding: 48px 0;
-        }
-
-        /* Bouton fixe, aligné sur le bord gauche du .container Bootstrap (max 1320px, gouttière 12px) */
-        /* Annule le .icon-x:before global (position absolute; top 7px) pour garder l'icône centrée */
-        .bt-media-modal__back .icon-x::before {
-            position: static;
-            top: auto;
-        }
-
-        .bt-media-modal__back i {
-            display: inline-flex;
-            line-height: 1;
-        }
-
-        #btMediaGridModal .bt-modal-round.bt-media-modal__back,
-        #btSliderModal .bt-modal-round.bt-media-modal__back {
-            position: fixed;
-            top: 48px;
-            left: max(12px, calc((100% - 1320px) / 2 + 12px));
-            z-index: 20;
-        }
-
-        .detail-bien-modal-mensouri-grid {
-            --detail-bien-modal-mensouri-gap: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: var(--detail-bien-modal-mensouri-gap);
-            max-width: 768px;
-            margin: 0 auto;
-        }
-
-        .detail-bien-modal-mensouri-row {
-            display: grid;
-            gap: var(--detail-bien-modal-mensouri-gap);
-        }
-
-        .detail-bien-modal-mensouri-row--one {
-            grid-template-columns: 1fr;
-        }
-
-        .detail-bien-modal-mensouri-row--two {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        /* Grande colonne 2fr + colonne empilée 1fr : hauteurs égales pour des portraits 3:4 */
-        .detail-bien-modal-mensouri-row--trio {
-            grid-template-columns: 2fr 1fr;
-            grid-template-rows: 1fr 1fr;
-        }
-
-        .detail-bien-modal-mensouri-item {
-            display: block;
-            width: 100%;
-            min-height: 0;
-            border: 0;
-            padding: 0;
-            background: #f5f5f5;
-            cursor: pointer;
-            overflow: hidden;
-            border-radius: 18px;
-        }
-
-        .detail-bien-modal-mensouri-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.25s ease;
-        }
-
-        .detail-bien-modal-mensouri-item:hover img {
-            transform: scale(1.03);
-        }
-
-        .detail-bien-modal-mensouri-item--landscape {
-            aspect-ratio: 4 / 3;
-        }
-
-        .detail-bien-modal-mensouri-item--portrait {
-            aspect-ratio: 3 / 4;
-        }
-
-        .detail-bien-modal-mensouri-item--big {
-            grid-row: 1 / span 2;
-        }
-
-        /* Les portraits empilés prennent la hauteur imposée par le grand portrait */
-        .detail-bien-modal-mensouri-item--stacked {
-            position: relative;
-            aspect-ratio: auto;
-            height: 100%;
-        }
-
-        .detail-bien-modal-mensouri-item--stacked img {
-            position: absolute;
-            inset: 0;
-        }
-
-        @media (min-width: 768px) {
-            .detail-bien-modal-mensouri-grid {
-                --detail-bien-modal-mensouri-gap: 24px;
+        <style>
+            .bt-media-modal {
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                background: #ffffff;
+                overflow-y: auto;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transform: translateY(10px);
+                transition:
+                    opacity 0.2s ease,
+                    transform 0.2s ease,
+                    visibility 0.2s ease;
             }
-        }
 
-        /* Mobile : toutes les images en pleine largeur, dans l'ordre d'upload */
-        @media (max-width: 767.98px) {
-            .detail-bien-modal-mensouri-row--two,
-            .detail-bien-modal-mensouri-row--trio {
+            .bt-media-modal.is-open {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+                /* "none" (et non translateY(0)) : un transform casserait le position: fixed du bouton retour */
+                transform: none;
+            }
+
+            body.bt-modal-open {
+                overflow: hidden;
+            }
+
+            .bt-media-modal__body {
+                min-height: calc(100vh - 90px);
+                padding: 48px 0;
+            }
+
+            /* Bouton fixe, aligné sur le bord gauche du .container Bootstrap (max 1320px, gouttière 12px) */
+            /* Annule le .icon-x:before global (position absolute; top 7px) pour garder l'icône centrée */
+            .bt-media-modal__back .icon-x::before {
+                position: static;
+                top: auto;
+            }
+
+            .bt-media-modal__back i {
+                display: inline-flex;
+                line-height: 1;
+            }
+
+            #btMediaGridModal .bt-modal-round.bt-media-modal__back,
+            #btSliderModal .bt-modal-round.bt-media-modal__back {
+                position: fixed;
+                top: 48px;
+                left: max(12px, calc((100% - 1320px) / 2 + 12px));
+                z-index: 20;
+            }
+
+            .detail-bien-modal-mensouri-grid {
+                --detail-bien-modal-mensouri-gap: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: var(--detail-bien-modal-mensouri-gap);
+                max-width: 768px;
+                margin: 0 auto;
+            }
+
+            .detail-bien-modal-mensouri-row {
+                display: grid;
+                gap: var(--detail-bien-modal-mensouri-gap);
+            }
+
+            .detail-bien-modal-mensouri-row--one {
                 grid-template-columns: 1fr;
-                grid-template-rows: none;
+            }
+
+            .detail-bien-modal-mensouri-row--two {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            /* Grande colonne 2fr + colonne empilée 1fr : hauteurs égales pour des portraits 3:4 */
+            .detail-bien-modal-mensouri-row--trio {
+                grid-template-columns: 2fr 1fr;
+                grid-template-rows: 1fr 1fr;
+            }
+
+            .detail-bien-modal-mensouri-item {
+                display: block;
+                width: 100%;
+                min-height: 0;
+                border: 0;
+                padding: 0;
+                background: #f5f5f5;
+                cursor: pointer;
+                overflow: hidden;
+                border-radius: 18px;
+            }
+
+            .detail-bien-modal-mensouri-item img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+                transition: transform 0.25s ease;
+            }
+
+            .detail-bien-modal-mensouri-item:hover img {
+                transform: scale(1.03);
+            }
+
+            .detail-bien-modal-mensouri-item--landscape {
+                aspect-ratio: 4 / 3;
+            }
+
+            .detail-bien-modal-mensouri-item--portrait {
+                aspect-ratio: 3 / 4;
             }
 
             .detail-bien-modal-mensouri-item--big {
-                grid-row: auto;
+                grid-row: 1 / span 2;
             }
 
+            /* Les portraits empilés prennent la hauteur imposée par le grand portrait */
             .detail-bien-modal-mensouri-item--stacked {
-                aspect-ratio: 3 / 4;
+                position: relative;
+                aspect-ratio: auto;
+                height: 100%;
+            }
+
+            .detail-bien-modal-mensouri-item--stacked img {
+                position: absolute;
+                inset: 0;
+            }
+
+            @media (min-width: 768px) {
+                .detail-bien-modal-mensouri-grid {
+                    --detail-bien-modal-mensouri-gap: 24px;
+                }
+            }
+
+            /* Mobile : toutes les images en pleine largeur, dans l'ordre d'upload */
+            @media (max-width: 767.98px) {
+                .detail-bien-modal-mensouri-row--two,
+                .detail-bien-modal-mensouri-row--trio {
+                    grid-template-columns: 1fr;
+                    grid-template-rows: none;
+                }
+
+                .detail-bien-modal-mensouri-item--big {
+                    grid-row: auto;
+                }
+
+                .detail-bien-modal-mensouri-item--stacked {
+                    aspect-ratio: 3 / 4;
+                    height: auto;
+                }
+            }
+
+            .bt-slider-stage {
+                min-height: calc(100vh - 140px);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 32px 16px;
+            }
+
+            /* Slider : la rangée flèches + image commence à la hauteur des boutons (48px) et s'arrête à 48px du bas */
+            #btSliderModal .bt-media-modal__body {
+                box-sizing: border-box;
+                min-height: 100vh;
+                margin-top: 0;
+                padding: 48px 12px;
+            }
+
+            /* Animation « push » mobile : l'image entrante part hors écran, sans barre de défilement horizontale */
+            /* Le swipe horizontal est réservé au slider (pas de geste « page précédente » du navigateur) */
+            #btSliderModal {
+                overflow-x: hidden;
+                overscroll-behavior: contain;
+                touch-action: pan-y;
+            }
+
+            /* Copie figée de l'image sortante, posée par le contrôleur à la position exacte de l'image */
+            #btSliderModal .bt-slider-stage__ghost {
+                position: fixed;
+                z-index: 5;
+                display: block;
+                max-width: none;
+                max-height: none;
+                margin: 0;
+                object-fit: contain;
+                pointer-events: none;
+            }
+
+            #btSliderModal .bt-slider-stage {
+                height: calc(100vh - 96px);
+                min-height: 0;
+                padding: 0;
+            }
+
+            .detail-bien-modal-mensouri-slider-row {
+                width: 100%;
+                height: 100%;
+            }
+
+            /* MediaViewer : le cadre épouse l'image, dont la taille est calculée par le contrôleur Stimulus detailbien--media-viewer
+                               à partir de ses dimensions natives : ratio d'origine conservé, ni recadrage ni déformation */
+            #btSliderModal .bt-slider-stage__image {
+                display: flex;
+                flex: 0 0 auto;
+                width: auto;
                 height: auto;
+                max-width: 100%;
+                max-height: 100%;
+                aspect-ratio: auto;
+                background: transparent;
             }
-        }
 
-        .bt-slider-stage {
-            min-height: calc(100vh - 140px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 32px 16px;
-        }
-
-        /* Slider : la rangée flèches + image commence à la hauteur des boutons (48px) et s'arrête à 48px du bas */
-        #btSliderModal .bt-media-modal__body {
-            box-sizing: border-box;
-            min-height: 100vh;
-            margin-top: 0;
-            padding: 48px 12px;
-        }
-
-        /* Animation « push » mobile : l'image entrante part hors écran, sans barre de défilement horizontale */
-        /* Le swipe horizontal est réservé au slider (pas de geste « page précédente » du navigateur) */
-        #btSliderModal {
-            overflow-x: hidden;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
-        }
-
-        /* Copie figée de l'image sortante, posée par le contrôleur à la position exacte de l'image */
-        #btSliderModal .bt-slider-stage__ghost {
-            position: fixed;
-            z-index: 5;
-            display: block;
-            max-width: none;
-            max-height: none;
-            margin: 0;
-            object-fit: contain;
-            pointer-events: none;
-        }
-
-        #btSliderModal .bt-slider-stage {
-            height: calc(100vh - 96px);
-            min-height: 0;
-            padding: 0;
-        }
-
-        .detail-bien-modal-mensouri-slider-row {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* MediaViewer : le cadre épouse l'image, dont la taille est calculée par le contrôleur Stimulus detailbien--media-viewer
-                   à partir de ses dimensions natives : ratio d'origine conservé, ni recadrage ni déformation */
-        #btSliderModal .bt-slider-stage__image {
-            display: flex;
-            flex: 0 0 auto;
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            max-height: 100%;
-            aspect-ratio: auto;
-            background: transparent;
-        }
-
-        #btSliderModal .bt-slider-stage__image img {
-            display: block;
-            /* Repli avant le calcul JS : tient dans la zone sans déformation */
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            max-height: calc(100vh - 96px);
-            object-fit: contain;
-        }
-
-        /* Même hauteur que le bouton retour (top 48px, 44px de haut), aligné sur le bord droit du .container */
-        #btSliderModal .bt-slider-stage__counter {
-            position: fixed;
-            top: 48px;
-            right: max(12px, calc((100% - 1320px) / 2 + 12px));
-            z-index: 20;
-            display: inline-flex;
-            align-items: center;
-            box-sizing: border-box;
-            height: 44px;
-            min-height: 44px;
-            margin: 0;
-            padding: 0 16px;
-            font-size: 15px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .bt-slider-stage__image {
-            width: min(900px, 75vw);
-            height: min(620px, 70vh);
-            border-radius: 22px;
-            overflow: hidden;
-            background: #f5f5f5;
-        }
-
-        .bt-slider-stage__image img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-
-        /* Flèches du slider : même style que le bouton fermer (.bt-modal-round), icône centrée */
-        .bt-slider-stage__arrow.bt-modal-round {
-            width: 44px;
-            height: 44px;
-            flex: 0 0 44px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .bt-slider-stage__arrow.bt-modal-round:hover {
-            transform: scale(1.05);
-        }
-
-        /* Flèches fixes : même axe vertical que le bouton fermer (gauche) et le compteur (droite),
-                   centrées en hauteur sur l'image (zone 48px → 100vh - 48px, donc centre à 50%) */
-        #btSliderModal [data-prev-slide].bt-slider-stage__arrow,
-        #btSliderModal [data-next-slide].bt-slider-stage__arrow {
-            position: fixed;
-            top: 50%;
-            z-index: 20;
-            transform: translateY(-50%);
-        }
-
-        #btSliderModal [data-prev-slide].bt-slider-stage__arrow {
-            left: max(12px, calc((100% - 1320px) / 2 + 12px));
-        }
-
-        #btSliderModal [data-next-slide].bt-slider-stage__arrow {
-            right: max(12px, calc((100% - 1320px) / 2 + 12px));
-        }
-
-        #btSliderModal [data-prev-slide].bt-slider-stage__arrow:hover,
-        #btSliderModal [data-next-slide].bt-slider-stage__arrow:hover {
-            transform: translateY(-50%) scale(1.05);
-        }
-
-        .bt-slider-stage__arrow i {
-            display: inline-flex;
-            line-height: 1;
-        }
-
-        .bt-gallery__open {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .bt-energy-perf-wrapper {
-            max-width: 900px;
-            width: 100%;
-        }
-
-        .bt-energy-perf-title {
-            color: #0d0f14;
-            white-space: normal;
-            overflow-wrap: break-word;
-        }
-
-        .bt-energy-perf-scale {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            min-height: 34px;
-        }
-
-        .bt-energy-perf-step {
-            width: 38px;
-            height: 7px;
-            border-radius: 2px;
-            display: block;
-            flex: 0 0 auto;
-        }
-
-        @media (min-width:991px) and (max-width: 1200px) {
-            .bt-energy-perf-step {
-                width: 28px;
+            #btSliderModal .bt-slider-stage__image img {
+                display: block;
+                /* Repli avant le calcul JS : tient dans la zone sans déformation */
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: calc(100vh - 96px);
+                object-fit: contain;
             }
-        }
 
-        .bt-energy-perf-badge {
-            width: 38px;
-            height: 30px;
-            border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 700;
-            color: #111;
-            line-height: 1;
-            flex: 0 0 auto;
-        }
-
-        .bt-energy-perf-label {
-            color: #0b0f14;
-            padding-bottom: 8px;
-        }
-
-        .bt-energy-perf-value {
-            color: #858789;
-        }
-
-        .bt-energy-perf-dpe-a {
-            background: #009c3b;
-        }
-        .bt-energy-perf-dpe-b {
-            background: #48b600;
-        }
-        .bt-energy-perf-dpe-c {
-            background: #d6db00;
-        }
-        .bt-energy-perf-dpe-d {
-            background: #ffef00;
-        }
-        .bt-energy-perf-dpe-e {
-            background: #f7a600;
-        }
-        .bt-energy-perf-dpe-f {
-            background: #f76b00;
-        }
-        .bt-energy-perf-dpe-g {
-            background: #ed2500;
-        }
-
-        .bt-energy-perf-ges-a {
-            background: #5fd2e8;
-        }
-        .bt-energy-perf-ges-b {
-            background: #60bfdb;
-        }
-        .bt-energy-perf-ges-c {
-            background: #65a9cf;
-        }
-        .bt-energy-perf-ges-d {
-            background: #4d789e;
-        }
-        .bt-energy-perf-ges-e {
-            background: #3f577e;
-        }
-        .bt-energy-perf-ges-f {
-            background: #303b61;
-        }
-        .bt-energy-perf-ges-g {
-            background: #25113f;
-        }
-
-        .bt-cost-detail-card {
-            width: 100%;
-            background: #f5f5f5;
-            border-radius: 20px;
-            padding: clamp(8px,
-                    calc(8px + 8 * ((100vw - 375px) / 1065)),
-                    16px);
-            margin-top: 16px;
-        }
-
-        .bt-cost-detail-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #151515;
-            margin-bottom: 22px;
-        }
-
-        .bt-cost-detail-label {
-            color: #151515;
-        }
-
-        .bt-cost-detail-price {
-            font-size: 16px;
-            font-weight: 800;
-            color: #151515;
-            line-height: 1.35;
-            white-space: nowrap;
-        }
-
-        .bt-cost-detail-muted {
-            color: #858789;
-        }
-
-        @media (max-width: 768px) {
-            .bt-media-modal__body {
-                padding-inline: 12px;
+            /* Même hauteur que le bouton retour (top 48px, 44px de haut), aligné sur le bord droit du .container */
+            #btSliderModal .bt-slider-stage__counter {
+                position: fixed;
+                top: 48px;
+                right: max(12px, calc((100% - 1320px) / 2 + 12px));
+                z-index: 20;
+                display: inline-flex;
+                align-items: center;
+                box-sizing: border-box;
+                height: 44px;
+                min-height: 44px;
+                margin: 0;
+                padding: 0 16px;
+                font-size: 15px;
+                font-weight: 700;
+                color: #fff;
             }
-        }
 
-        @media (max-width: 576px) {
+            .bt-slider-stage__image {
+                width: min(900px, 75vw);
+                height: min(620px, 70vh);
+                border-radius: 22px;
+                overflow: hidden;
+                background: #f5f5f5;
+            }
+
+            .bt-slider-stage__image img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                display: block;
+            }
+
+            /* Flèches du slider : même style que le bouton fermer (.bt-modal-round), icône centrée */
+            .bt-slider-stage__arrow.bt-modal-round {
+                width: 44px;
+                height: 44px;
+                flex: 0 0 44px;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+            }
+
+            .bt-slider-stage__arrow.bt-modal-round:hover {
+                transform: scale(1.05);
+            }
+
+            /* Flèches fixes : même axe vertical que le bouton fermer (gauche) et le compteur (droite),
+                               centrées en hauteur sur l'image (zone 48px → 100vh - 48px, donc centre à 50%) */
+            #btSliderModal [data-prev-slide].bt-slider-stage__arrow,
+            #btSliderModal [data-next-slide].bt-slider-stage__arrow {
+                position: fixed;
+                top: 50%;
+                z-index: 20;
+                transform: translateY(-50%);
+            }
+
+            #btSliderModal [data-prev-slide].bt-slider-stage__arrow {
+                left: max(12px, calc((100% - 1320px) / 2 + 12px));
+            }
+
+            #btSliderModal [data-next-slide].bt-slider-stage__arrow {
+                right: max(12px, calc((100% - 1320px) / 2 + 12px));
+            }
+
+            #btSliderModal [data-prev-slide].bt-slider-stage__arrow:hover,
+            #btSliderModal [data-next-slide].bt-slider-stage__arrow:hover {
+                transform: translateY(-50%) scale(1.05);
+            }
+
+            .bt-slider-stage__arrow i {
+                display: inline-flex;
+                line-height: 1;
+            }
+
+            .bt-gallery__open {
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .bt-energy-perf-wrapper {
+                max-width: 900px;
+                width: 100%;
+            }
+
+            .bt-energy-perf-title {
+                color: #0d0f14;
+                white-space: normal;
+                overflow-wrap: break-word;
+            }
+
             .bt-energy-perf-scale {
-                gap: 4px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                min-height: 34px;
             }
 
-            .bt-energy-perf-step,
-            .bt-energy-perf-badge {
-                width: 32px;
+            .bt-energy-perf-step {
+                width: 38px;
+                height: 7px;
+                border-radius: 2px;
+                display: block;
+                flex: 0 0 auto;
+            }
+
+            @media (min-width: 991px) and (max-width: 1200px) {
+                .bt-energy-perf-step {
+                    width: 28px;
+                }
             }
 
             .bt-energy-perf-badge {
-                height: 28px;
-                font-size: 13px;
+                width: 38px;
+                height: 30px;
+                border-radius: 6px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 14px;
+                font-weight: 700;
+                color: #111;
+                line-height: 1;
+                flex: 0 0 auto;
+            }
+
+            .bt-energy-perf-label {
+                color: #0b0f14;
+                padding-bottom: 8px;
+            }
+
+            .bt-energy-perf-value {
+                color: #858789;
+            }
+
+            .bt-energy-perf-dpe-a {
+                background: #009c3b;
+            }
+            .bt-energy-perf-dpe-b {
+                background: #48b600;
+            }
+            .bt-energy-perf-dpe-c {
+                background: #d6db00;
+            }
+            .bt-energy-perf-dpe-d {
+                background: #ffef00;
+            }
+            .bt-energy-perf-dpe-e {
+                background: #f7a600;
+            }
+            .bt-energy-perf-dpe-f {
+                background: #f76b00;
+            }
+            .bt-energy-perf-dpe-g {
+                background: #ed2500;
+            }
+
+            .bt-energy-perf-ges-a {
+                background: #5fd2e8;
+            }
+            .bt-energy-perf-ges-b {
+                background: #60bfdb;
+            }
+            .bt-energy-perf-ges-c {
+                background: #65a9cf;
+            }
+            .bt-energy-perf-ges-d {
+                background: #4d789e;
+            }
+            .bt-energy-perf-ges-e {
+                background: #3f577e;
+            }
+            .bt-energy-perf-ges-f {
+                background: #303b61;
+            }
+            .bt-energy-perf-ges-g {
+                background: #25113f;
             }
 
             .bt-cost-detail-card {
-                border-radius: 18px;
-                padding: 24px 18px;
+                width: 100%;
+                background: #f5f5f5;
+                border-radius: 20px;
+                padding: clamp(8px, calc(8px + 8 * ((100vw - 375px) / 1065)), 16px);
+                margin-top: 16px;
             }
 
             .bt-cost-detail-title {
-                font-size: 19px;
-                margin-bottom: 20px;
+                font-size: 20px;
+                font-weight: 800;
+                color: #151515;
+                margin-bottom: 22px;
             }
 
-            .bt-cost-detail-label,
+            .bt-cost-detail-label {
+                color: #151515;
+            }
+
             .bt-cost-detail-price {
-
+                font-size: 16px;
+                font-weight: 800;
+                color: #151515;
+                line-height: 1.35;
+                white-space: nowrap;
             }
 
-
-        }
-
-        @media (min-width: 992px) {
-            .bt-contact-sticky-wrapper {
-                align-self: stretch;
+            .bt-cost-detail-muted {
+                color: #858789;
             }
 
-            .bt-contact-sticky {
-                position: sticky;
-                top: 90px;
-                max-height: calc(100vh - 110px);
-                overflow-y: auto;
+            @media (max-width: 768px) {
+                .bt-media-modal__body {
+                    padding-inline: 12px;
+                }
             }
-        }
 
-        @media (max-width: 991.98px) {
-            .bt-contact-sticky {
-                position: static;
-                top: auto;
-                max-height: none;
-                overflow: visible;
+            @media (max-width: 576px) {
+                .bt-energy-perf-scale {
+                    gap: 4px;
+                }
+
+                .bt-energy-perf-step,
+                .bt-energy-perf-badge {
+                    width: 32px;
+                }
+
+                .bt-energy-perf-badge {
+                    height: 28px;
+                    font-size: 13px;
+                }
+
+                .bt-cost-detail-card {
+                    border-radius: 18px;
+                    padding: 24px 18px;
+                }
+
+                .bt-cost-detail-title {
+                    font-size: 19px;
+                    margin-bottom: 20px;
+                }
+
+                .bt-cost-detail-label,
+                .bt-cost-detail-price {
+                }
             }
-        }
-    </style>
+
+            @media (min-width: 992px) {
+                .bt-contact-sticky-wrapper {
+                    align-self: stretch;
+                }
+
+                .bt-contact-sticky {
+                    position: sticky;
+                    top: 90px;
+                    max-height: calc(100vh - 110px);
+                    overflow-y: auto;
+                }
+            }
+
+            @media (max-width: 991.98px) {
+                .bt-contact-sticky {
+                    position: static;
+                    top: auto;
+                    max-height: none;
+                    overflow: visible;
+                }
+            }
+        </style>
     </div>
 {% endblock %}

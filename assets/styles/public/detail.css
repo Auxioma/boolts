@@ -168,12 +168,6 @@ body.bt-modal-open {
 
     border-radius: 50px;
 
-    font-size: 14px;
-
-    font-weight: 800;
-
-    line-height: 20px;
-
     text-decoration: none;
 
     transition: var(--bt-transition);
@@ -497,6 +491,18 @@ body.bt-modal-open {
 
 
 
+/* Cœur à droite du titre : line-height 1 → boîte de 24px, la ligne titre + cœur ne grandit pas */
+.bt-property-head__favorite {
+    font-size: 24px;
+    line-height: 1;
+}
+
+@media (max-width: 767.98px) {
+    .bt-property-head__favorite {
+        display: none;
+    }
+}
+
 .bt-property-head__subtitle,
 .bt-property-head__subtitle__date {
     margin-top: clamp(8px,
@@ -696,11 +702,15 @@ body.bt-modal-open {
     white-space: nowrap;
 }
 
-.bt-related {
-    padding-top: 32px;
-}
 
-.bt-related .bt-icon-btn {
+
+.rond-slider-detail-btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
     width: 30px;
 
     height: 30px;
@@ -714,15 +724,23 @@ body.bt-modal-open {
     color: #858789;
 
     font-size: 30px;
+
+    line-height: 1;
 }
 
-.bt-related .bt-icon-btn:disabled,
-.bt-related .bt-icon-btn.is-disabled {
+.rond-slider-detail-btn:disabled {
     color: #ebecec;
 }
 
-.bt-related .bt-icon-btn--prev:hover:not(:disabled) {
+.rond-slider-detail-btn--prev:hover:not(:disabled) {
     color: var(--bt-dark);
+}
+
+/* !important : l'élément porte aussi .d-flex (Bootstrap, en !important) */
+@media (max-width: 767.98px) {
+    .rond-slider-detail-nav {
+        display: none !important;
+    }
 }
 
 .bt-related__viewport {
@@ -1396,11 +1414,11 @@ body.bt-modal-open {
     }
 
     .bt-contact-card__avatar {
-        width: 50px;
+        width: 60px;
 
-        height: 50px;
+        height: 60px;
 
-        flex-basis: 50px;
+        flex-basis: 60px;
     }
 
     .bt-contact-card__name {

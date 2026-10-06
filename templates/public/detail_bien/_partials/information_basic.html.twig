@@ -6,9 +6,12 @@
 #}
 
 <section class="bt-property-head">
-    <h3 class="mb-0">
-        {{ 'detail_bien.head.title'|trans({'%type%': property.typeBien.name, '%transaction%': property.typeTransaction.name, '%district%': property.district, '%country%': property.pays}) }}
-    </h3>
+    <div class="d-flex align-items-start justify-content-between gap-3">
+        <h3 class="mb-0">
+            {{ 'detail_bien.head.title'|trans({'%type%': property.typeBien.name, '%transaction%': property.typeTransaction.name, '%district%': property.district, '%country%': property.pays}) }}
+        </h3>
+        <i class="icon-heart bt-property-head__favorite flex-shrink-0"></i>
+    </div>
     <p class="bt-property-head__subtitle mb-0 p-accent">
         {{ (property.chambres > 1 ? 'detail_bien.head.bedrooms.other' : 'detail_bien.head.bedrooms.one')|trans({'%count%': property.chambres}) }} - {{ (property.salleDeBains > 1 ? 'detail_bien.head.bathrooms.other' : 'detail_bien.head.bathrooms.one')|trans({'%count%': property.salleDeBains}) }}
         {%- if property.surfaceTotal is not empty %} - {{ (property.surfaceTotal + 0)|number_format(property.surfaceTotal + 0 == (property.surfaceTotal + 0)|round ? 0 : 2, ',', ' ') }} m²{% endif %}
