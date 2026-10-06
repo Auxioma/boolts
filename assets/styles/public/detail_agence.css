@@ -120,19 +120,19 @@
 }
 
 .agence-main {
-    padding: 64px 0 48px;
+    padding: 48px 0 48px;
 }
 
 .agence-profile {
     gap: 24px;
 
-    margin-bottom: 32px;
+    margin-bottom: clamp(24px, calc(24px + (8 * (100vw - 375px) / 1065)), 32px); 
 }
 
 .agence-profile-avatar {
-    width: 140px;
+    width: clamp(120px, calc(120px + (20 * (100vw - 375px) / 1065)), 140px);
 
-    height: 140px;
+    height: clamp(120px, calc(120px + (20 * (100vw - 375px) / 1065)), 140px);
 
     border-radius: 50%;
 
@@ -153,8 +153,8 @@
     line-height: 34px;
 }
 
-.agence-profile-description,
-.agence-profile-infos p {
+.agence-profile-description
+ {
     margin: 0;
 
     font-size: 14px;
@@ -167,29 +167,21 @@
 .agence-profile-description {
     color: var(--color-text);
 
-    margin-top: 16px;
+    margin-top: clamp(8px, calc(8px + (8 * (100vw - 375px) / 1065)), 16px);
 }
 
 .agence-profile-infos {
-    display: flex;
 
-    flex-direction: column;
 
-    gap: 4px;
-
-    margin-top: 14px;
+    margin-top: clamp(8px, calc(8px + (8 * (100vw - 375px) / 1065)), 16px);
 
     color: var(--color-gray);
 }
 
 .agence-search-section {
-    display: flex;
 
-    flex-direction: column;
 
-    gap: 8px;
-
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
 .agence-search {
@@ -945,15 +937,10 @@
         padding-inline: 16px;
     }
 
-    .agence-main {
-        padding-top: 64px;
-    }
 }
 
 @media (max-width: 991.98px) {
-    .agence-main {
-        padding: 64px 0;
-    }
+
 
     .agence-profile {
         margin-bottom: 33px;
@@ -1058,4 +1045,19 @@
 
 .marge-top {
     margin-top: clamp(16px, calc(16px + 8 * ((100vw - 375px) / 1065)), 24px);
+}
+
+.country-flag-agency li{
+    padding: 4px 16px;
+  border: 2px solid #ebecec;
+  border-radius: var(--radius-full);
+}
+@media (max-width: 767.98px) {
+    .agence-profile {
+        flex-direction: column;
+    }
+
+    .agence-profile-content {
+        max-width: none;
+    }
 }

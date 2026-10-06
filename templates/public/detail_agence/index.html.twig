@@ -20,7 +20,8 @@
     {% set propertyImageFallback = 'https://placehold.co/600x400/000000/FFFFFF/png' %}
 
     <div
-        class="agence-page">
+        class="agence-page"
+    >
         {# Barre retour mobile #}
         <div class="agence-mobile-topbar d-flex d-md-none align-items-center">
             <button type="button" class="agence-icon-btn">
@@ -38,41 +39,44 @@
 
         <main class="agence-main">
             <div class="container-fluid px-3 px-md-5 px-xl-0">
-                <div class="container-xl px-0">
+                <div class="container-md">
 
-                    <div class="row g-4 align-items-start">
+                    <div class="row align-items-start">
 
                         <div
-                            class="col-12 col-lg-8">
+                            class="col-12 col-lg-7 mt-0"
+                        >
 
                             {# Profil agence #}
-                            <section class="agence-profile d-flex align-items-center">
+                            <section class="agence-profile d-flex ">
                                 {% if avatar %}
                                     <img src="{{ avatar }}" alt="{{ user.entreprise }}" class="agence-profile-avatar">
                                 {% else %}
                                     <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ user.entreprise }}" class="agence-profile-avatar">
                                 {% endif %}
                                 <div class="agence-profile-content">
-                                    <h1>{{ user.entreprise }}</h1>
+                                    <h2 class="mb-0">{{ user.entreprise }}</h2>
 
-                                    <p class="agence-profile-description d-none d-lg-block">
+                                    <p class="agence-profile-infos">
                                         {{ user.description|default('')|striptags|u.truncate(240, '...') }}
                                     </p>
 
                                     <div class="agence-profile-infos">
-                                        <p>Agence immobilière -
+                                         <p class="mb-0" style="color:#5d00ff">{{ user.emailContact }}</p>  
+                                         <p class="mt-2 mb-0" style="color:#0b0f14">Agence immobilière -
                                             {{ user.adresseContact }}
                                             {{ user.codePostalContact }}
-                                            {{ user.villeContact }}</p>
-                                        <p class="d-md-none d-lg-none">+1 202 XXX XXXX</p>
-                                        <p>{{ user.emailContact }}</p>
+                                            {{ user.villeContact }}
+                                            {{ user.paysContact is not empty ? ', ' ~ user.paysContact : '' }}    
+                                        </p>
+                                     
                                     </div>
 
                                     {# Liste des langue parlé #}
-                                    <div>
-                                        <ul>
+                                    <div class="agence-profile-infos country-flag-agency">
+                                        <ul class="d-flex flex-wrap gap-2 list-unstyled mb-0">
                                             {% for langueParler in user.langueParlers %}
-                                                <li>{{ langueParler.name }}</li>
+                                                <li>{{ langueParler.labelWithFlag }}</li>
                                             {% endfor %}
                                         </ul>
                                     </div>
@@ -90,7 +94,15 @@
                                     </button>
                                 </form>
                                 #}
+
+                                <div class="d-flex mb-3 gap-2">
+
+                                     <h3 class="mb-0">Biens de l’agence récemment ajoutés</h3>
+                                </div>
                                 <div class="d-flex flex-wrap gap-2">
+
+                                   
+
                                     <button type="button" class="agence-filter-btn">
                                         <i class="icon-sliders-horizontal"></i>
                                         Filtres
@@ -102,7 +114,7 @@
 
                             {# Liste des biens immobiliers #}
                             <section class="agence-properties">
-                                <h2>Biens de l’agence récemment ajoutés</h2>
+                                
 
                                 <div class="row g-3 g-lg-4">
 
@@ -215,7 +227,7 @@
                         </div>
 
                         {# Contact desktop #}
-                        <aside class="col-12 col-lg-4">
+                        <aside class="col-12 col-lg-5 mt-0">
                             <div class="agence-contact-card" data-controller="agence-contact-form">
                                 <div class="agence-contact-head d-flex gap-4">
                                     {% if avatar %}
@@ -305,53 +317,53 @@
                                         'data-agence-contact-form-target': 'form',
                                     },
                                 }) }}
-                                    <div class="agence-field">
-                                        <label for="contact_lastname">Votre nom*</label>
-                                        {{ form_widget(form.nom, {
+                                <div class="agence-field">
+                                    <label for="contact_lastname">Votre nom*</label>
+                                    {{ form_widget(form.nom, {
                                             attr: {
                                                 id: 'contact_lastname',
                                                 placeholder: 'Veuillez saisir votre nom',
                                                 'data-agence-contact-form-target': 'firstField',
                                             },
                                         }) }}
-                                    </div>
+                                </div>
 
-                                    <div class="agence-field">
-                                        <label for="contact_firstname">Votre prénom*</label>
-                                        {{ form_widget(form.prenom, {
+                                <div class="agence-field">
+                                    <label for="contact_firstname">Votre prénom*</label>
+                                    {{ form_widget(form.prenom, {
                                             id: 'contact_firstname',
                                             attr: {
                                                 placeholder: 'Veuillez saisir votre prénom',
                                                 class: 'contact_firstname',
                                             },
                                         }) }}
-                                    </div>
+                                </div>
 
-                                    <div class="agence-field">
-                                        <label for="contact_email">Votre e-mail*</label>
-                                        {{ form_widget(form.email, {
+                                <div class="agence-field">
+                                    <label for="contact_email">Votre e-mail*</label>
+                                    {{ form_widget(form.email, {
                                             id: 'contact_email',
                                             attr: {
                                                 placeholder: 'Veuillez saisir votre e-mail',
                                             },
                                         }) }}
-                                    </div>
+                                </div>
 
-                                    <div class="agence-field">
-                                        <label for="contact_message">Votre message*</label>
-                                        {{ form_widget(form.message, {
+                                <div class="agence-field">
+                                    <label for="contact_message">Votre message*</label>
+                                    {{ form_widget(form.message, {
                                             id: 'contact_message',
                                             attr: {
                                                 placeholder: 'Veuillez saisir votre message',
                                                 rows: 6,
                                             },
                                         }) }}
-                                    </div>
+                                </div>
 
-                                    <button type="submit" class="agence-btn agence-btn-primary w-100">
-                                        <i class="icon-mail"></i>
-                                        Envoyer le mail
-                                    </button>
+                                <button type="submit" class="agence-btn agence-btn-primary w-100">
+                                    <i class="icon-mail"></i>
+                                    Envoyer le mail
+                                </button>
                                 {{ form_end(form) }}
                             </div>
                         </aside>
@@ -364,27 +376,27 @@
 
         {# Tab bar mobile #}
         {% if app.user and is_granted('ROLE_AGENCE') %}
-        <nav class="agence-mobile-tabbar d-flex d-md-none">
-            <a href="#" class="active">
-                <i class="icon-search"></i>
-                Explorer
-            </a>
+            <nav class="agence-mobile-tabbar d-flex d-md-none">
+                <a href="#" class="active">
+                    <i class="icon-search"></i>
+                    Explorer
+                </a>
 
-            <a href="#">
-                <i class="icon-heart"></i>
-                Favoris
-            </a>
+                <a href="#">
+                    <i class="icon-heart"></i>
+                    Favoris
+                </a>
 
-            <a href="#">
-                <i class="icon-message-circle"></i>
-                Messagerie
-            </a>
+                <a href="#">
+                    <i class="icon-message-circle"></i>
+                    Messagerie
+                </a>
 
-            <a href="#">
-                <i class="icon-user-round"></i>
-                Compte
-            </a>
-        </nav>
+                <a href="#">
+                    <i class="icon-user-round"></i>
+                    Compte
+                </a>
+            </nav>
         {% endif %}
 
     </div>

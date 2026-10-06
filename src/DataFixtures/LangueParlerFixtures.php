@@ -12,6 +12,7 @@
 
 namespace App\DataFixtures;
 
+use App\Data\LanguageCatalog;
 use App\Entity\LangueParler;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -20,24 +21,9 @@ class LangueParlerFixtures extends Fixture
 {
     public const LANGUE_PARLER_REFERENCE_PREFIX = 'langue_parler_';
 
-    private const LANGUAGES = [
-        'fr' => 'Français',
-        'en' => 'Anglais',
-        'es' => 'Espagnol',
-        'de' => 'Allemand',
-        'it' => 'Italien',
-        'pt' => 'Portugais',
-        'nl' => 'Néerlandais',
-        'pl' => 'Polonais',
-        'ru' => 'Russe',
-        'be' => 'Biélorusse',
-        'ar' => 'Arabe',
-        'zh' => 'Chinois',
-    ];
-
     public function load(ObjectManager $manager): void
     {
-        foreach (self::LANGUAGES as $code => $name) {
+        foreach (LanguageCatalog::LANGUAGES as $code => ['name' => $name]) {
             $langueParler = FixtureEntityHelper::findOrCreate($manager, LangueParler::class, [
                 'code' => $code,
             ]);

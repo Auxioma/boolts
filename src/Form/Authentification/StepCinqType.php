@@ -13,6 +13,7 @@
 namespace App\Form\Authentification;
 
 use App\Entity\LangueParler;
+use App\Repository\LangueParlerRepository;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -64,7 +65,8 @@ class StepCinqType extends AbstractType
             ])
             ->add('langueParlers', EntityType::class, [
                 'class' => LangueParler::class,
-                'choice_label' => 'name',
+                'choice_label' => 'labelWithFlag',
+                'query_builder' => static fn (LangueParlerRepository $repository) => $repository->createQueryBuilder('l')->orderBy('l.name', 'ASC'),
                 'required' => false,
                 'multiple' => true,
                 'expanded' => false,

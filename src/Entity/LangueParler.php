@@ -12,6 +12,7 @@
 
 namespace App\Entity;
 
+use App\Data\LanguageCatalog;
 use App\Repository\LangueParlerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -69,6 +70,16 @@ class LangueParler
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getFlag(): ?string
+    {
+        return null === $this->code ? null : LanguageCatalog::flagFor($this->code);
+    }
+
+    public function getLabelWithFlag(): string
+    {
+        return trim(($this->getFlag() ?? '').' '.$this->name);
     }
 
     /**
