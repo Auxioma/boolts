@@ -53,7 +53,7 @@
                 {% if totalPictures > 0 and firstPicture %}
                     <section
                         class="bt-hero-responsive position-relative overflow-hidden"
-                        data-open-slider="0"
+                        data-open-gallery
                     >
                         <img
                             src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
@@ -63,7 +63,7 @@
                         >
 
                         <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
-                            <button class="bt-btn bt-btn--glass" type="button" data-open-slider="0">
+                            <button class="bt-btn bt-btn--glass" type="button" data-open-gallery>
                                 1/{{ totalPictures }}
                             </button>
                         </div>
@@ -240,7 +240,6 @@
 
             <div class="bt-mobile-tabbar__safe"></div>
         </nav>
-    </div>
 
     {# ========================= #}
     {# MODALE 1 : GRILLE PHOTOS #}
@@ -501,6 +500,26 @@
             min-height: 100vh;
             margin-top: 0;
             padding: 48px 12px;
+        }
+
+        /* Animation « push » mobile : l'image entrante part hors écran, sans barre de défilement horizontale */
+        /* Le swipe horizontal est réservé au slider (pas de geste « page précédente » du navigateur) */
+        #btSliderModal {
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
+        }
+
+        /* Copie figée de l'image sortante, posée par le contrôleur à la position exacte de l'image */
+        #btSliderModal .bt-slider-stage__ghost {
+            position: fixed;
+            z-index: 5;
+            display: block;
+            max-width: none;
+            max-height: none;
+            margin: 0;
+            object-fit: contain;
+            pointer-events: none;
         }
 
         #btSliderModal .bt-slider-stage {

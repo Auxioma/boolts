@@ -18,8 +18,8 @@
                         {% if loop.last %} rounded-end-4{% endif %}
                     "
                     type="button"
-                    data-open-slider="{{ loop.index0 }}"
-                    aria-label="{{ 'detail_bien.gallery.open_photo'|trans({'%index%': loop.index}) }}"
+                    data-open-gallery
+                    aria-label="{{ 'detail_bien.gallery.open'|trans }}"
                 >
                     <img
                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"

@@ -6,20 +6,20 @@
 #}
 
 <section class="agence-properties bt-related" data-controller="splide">
-    <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
-        <h2 class="bt-section-title">
+    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+        <h3 class="bt-section-title mb-0">
             {{ 'detail_bien.similar.title'|trans({'%city%': property.ville}) }}
-        </h2>
+        </h3>
 
-        <div class="d-flex align-items-center gap-2 text-secondary">
+        <div class="d-flex align-items-center gap-2">
             <button
-                class="bt-icon-btn bt-icon-btn--small"
+                class="bt-icon-btn bt-icon-btn--small bt-icon-btn--prev"
                 type="button"
                 aria-label="{{ 'detail_bien.similar.previous'|trans }}"
                 data-splide-target="previous"
                 data-action="click->splide#previous"
             >
-                <i class="bi bi-arrow-left-circle"></i>
+                <i class="icon-circle-arrow-left"></i>
             </button>
 
             <button
@@ -29,7 +29,7 @@
                 data-splide-target="next"
                 data-action="click->splide#next"
             >
-                <i class="bi bi-arrow-right-circle"></i>
+                <i class="icon-circle-arrow-right"></i>
             </button>
         </div>
     </div>

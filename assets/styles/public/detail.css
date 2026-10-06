@@ -700,6 +700,31 @@ body.bt-modal-open {
     padding-top: 32px;
 }
 
+.bt-related .bt-icon-btn {
+    width: 30px;
+
+    height: 30px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #858789;
+
+    font-size: 30px;
+}
+
+.bt-related .bt-icon-btn:disabled,
+.bt-related .bt-icon-btn.is-disabled {
+    color: #ebecec;
+}
+
+.bt-related .bt-icon-btn--prev:hover:not(:disabled) {
+    color: var(--bt-dark);
+}
+
 .bt-related__viewport {
     position: relative;
 
@@ -1291,10 +1316,6 @@ body.bt-modal-open {
         bottom: 16px;
     }
 
-    .bt-hero-responsive__actions .bt-btn[data-open-gallery] {
-        display: none !important;
-    }
-
     .bt-annonce__title {
         margin-top: 16px;
 
@@ -1501,8 +1522,6 @@ body.bt-modal-open {
 
     .bt-media-modal__body {
         min-height: calc(100vh - 72px);
-
-        margin-top: 72px;
     }
 
     .bt-modal-round {

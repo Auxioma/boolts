@@ -36,6 +36,7 @@ export default class extends Controller {
     }
 
     disconnect() {
+        this.finishPush();
         document.body.classList.remove('bt-modal-open');
     }
 
@@ -141,6 +142,9 @@ export default class extends Controller {
     closeSlider(event) {
         event?.preventDefault();
 
+        this.pushToken = (this.pushToken ?? 0) + 1;
+        this.finishPush();
+
         if (this.hasSliderModalTarget) {
             this.closeModal(this.sliderModalTarget);
         }
@@ -177,8 +181,7 @@ export default class extends Controller {
             return;
         }
 
-        this.currentIndex = (this.currentIndex + 1) % this.photosValue.length;
-        this.updateSlider();
+        this.goTo((this.currentIndex + 1) % this.photosValue.length, 1);
     }
 
     prev(event) {
@@ -190,8 +193,118 @@ export default class extends Controller {
 
         const total = this.photosValue.length;
 
-        this.currentIndex = (this.currentIndex - 1 + total) % total;
+        this.goTo((this.currentIndex - 1 + total) % total, -1);
+    }
+
+    /**
+     * Change d'image. Sous 768 px, animation « push » : une copie figée de l'image courante
+     * sort du côté opposé pendant que la nouvelle entre (direction 1 = suivante, -1 = précédente).
+     */
+    goTo(index, direction) {
+        const ghost = this.shouldAnimatePush() ? this.createPushGhost() : null;
+
+        this.currentIndex = index;
         this.updateSlider();
+
+        if (ghost) {
+            this.playPush(ghost, direction);
+        }
+    }
+
+    shouldAnimatePush() {
+        return this.photosValue.length > 1
+            && this.hasSliderImageTarget
+            && this.hasSliderModalTarget
+            && this.isOpen(this.sliderModalTarget)
+            && window.matchMedia('(max-width: 767.98px)').matches
+            && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    }
+
+    createPushGhost() {
+        this.finishPush();
+
+        const image = this.sliderImageTarget;
+        const rect = image.getBoundingClientRect();
+
+        if (!rect.width || !rect.height) {
+            return null;
+        }
+
+        const ghost = image.cloneNode(false);
+
+        ['id', 'data-action', 'data-detailbien--media-viewer-target'].forEach((name) => ghost.removeAttribute(name));
+        ghost.alt = '';
+        ghost.setAttribute('aria-hidden', 'true');
+        ghost.className = 'bt-slider-stage__ghost';
+        Object.assign(ghost.style, {
+            left: `${rect.left}px`,
+            top: `${rect.top}px`,
+            width: `${rect.width}px`,
+            height: `${rect.height}px`,
+        });
+
+        this.sliderModalTarget.appendChild(ghost);
+
+        return ghost;
+    }
+
+    async playPush(ghost, direction) {
+        const image = this.sliderImageTarget;
+        const incoming = image.closest('.bt-slider-stage__image') ?? image;
+        const token = this.pushToken = (this.pushToken ?? 0) + 1;
+
+        this.pushGhost = ghost;
+        this.pushIncoming = incoming;
+
+        // L'ancienne image (copie) reste affichée tant que la nouvelle n'est pas décodée.
+        incoming.style.visibility = 'hidden';
+
+        try {
+            await image.decode();
+        } catch {
+            // Image illisible : on anime quand même.
+        }
+
+        if (token !== this.pushToken) {
+            return;
+        }
+
+        this.fitSliderImage();
+        incoming.style.visibility = '';
+
+        const offset = window.innerWidth;
+        const options = { duration: 320, easing: 'cubic-bezier(.22, .61, .36, 1)' };
+
+        this.pushAnimations = [
+            ghost.animate(
+                [{ transform: 'translateX(0)' }, { transform: `translateX(${-direction * offset}px)` }],
+                { ...options, fill: 'forwards' },
+            ),
+            incoming.animate(
+                [{ transform: `translateX(${direction * offset}px)` }, { transform: 'translateX(0)' }],
+                options,
+            ),
+        ];
+
+        Promise.all(this.pushAnimations.map((animation) => animation.finished))
+            .then(() => {
+                if (token === this.pushToken) {
+                    this.finishPush();
+                }
+            })
+            .catch(() => {});
+    }
+
+    finishPush() {
+        this.pushAnimations?.forEach((animation) => animation.cancel());
+        this.pushAnimations = null;
+        this.pushGhost?.remove();
+        this.pushGhost = null;
+
+        if (this.pushIncoming) {
+            this.pushIncoming.style.visibility = '';
+            this.pushIncoming = null;
+        }
     }
 
     updateSlider() {

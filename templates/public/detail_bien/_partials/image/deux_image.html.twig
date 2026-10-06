@@ -14,8 +14,8 @@
                 <button
                     class="deux-image-item{% if loop.first %} deux-image-item--first{% endif %}{% if loop.last %} deux-image-item--last{% endif %}"
                     type="button"
-                    data-open-slider="{{ loop.index0 }}"
-                    aria-label="{{ 'detail_bien.gallery.open_photo'|trans({'%index%': loop.index}) }}"
+                    data-open-gallery
+                    aria-label="{{ 'detail_bien.gallery.open'|trans }}"
                 >
                     <img
                         src="{{ vich_uploader_asset(picture, 'imageFile') }}"
