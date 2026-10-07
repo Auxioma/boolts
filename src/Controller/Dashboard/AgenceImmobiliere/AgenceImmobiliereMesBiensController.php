@@ -28,6 +28,7 @@ use App\Service\Booster\PropertyBoostService;
 use App\Service\MapboxAddressTranslator;
 use App\Service\NumericSlugGenerator;
 use App\Service\Property\AgencyPropertySubmissionMailer;
+use App\Service\Property\CountryCodeResolver;
 use App\Service\Property\PropertyNotificationLabeler;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -36,7 +37,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Intl\Countries;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -249,6 +249,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     public function filterCountries(
         PropertyRepository $propertyRepository,
         Request $request,
+        CountryCodeResolver $countryCodeResolver,
     ): Response {
         $user = $this->getUser();
 
@@ -270,7 +271,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $request->getLocale()
             ) as $name
         ) {
-            $code = $this->resolveCountryCode($name) ?? mb_strtoupper($name);
+            $code = $countryCodeResolver->resolve($name) ?? mb_strtoupper($name);
 
             $results[] = [
                 'label' => $name,
@@ -416,44 +417,6 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         );
 
         return $this->json(['results' => $results]);
-    }
-
-    /**
-     * Résout le code ISO 3166-1 alpha-2 d'un pays à partir de son nom
-     * (français ou anglais). Retourne null si aucun code ne correspond.
-     */
-    private function resolveCountryCode(string $name): ?string
-    {
-        static $map = null;
-
-        if (null === $map) {
-            $map = [];
-
-            foreach (['fr', 'en'] as $locale) {
-                try {
-                    foreach (Countries::getNames($locale) as $code => $countryName) {
-                        $map[$this->normalizeCountryKey($countryName)] = $code;
-                    }
-                } catch (\Throwable) {
-                    continue;
-                }
-            }
-        }
-
-        return $map[$this->normalizeCountryKey($name)] ?? null;
-    }
-
-    private function normalizeCountryKey(string $value): string
-    {
-        $value = mb_strtolower(mb_trim($value));
-
-        if (class_exists(\Normalizer::class)) {
-            $value = \Normalizer::normalize($value, \Normalizer::FORM_D) ?: $value;
-        }
-
-        $value = preg_replace('/[\x{0300}-\x{036f}]/u', '', $value) ?? $value;
-
-        return preg_replace('/\s+/u', ' ', $value) ?? $value;
     }
 
     #[Route(

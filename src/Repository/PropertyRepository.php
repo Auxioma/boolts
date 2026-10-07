@@ -306,6 +306,9 @@ class PropertyRepository extends ServiceEntityRepository
      */
     private const string PRICE_RANGE_EXPRESSION = 'COALESCE(NULLIF(p.prix, 0), NULLIF(p.montantLoyerHorsCharge, 0))';
 
+    /**
+     * @param list<StatutAnnonceImmobiliere> $statuts statuts visibles (défaut : liste « Mes biens »)
+     */
     public function findPropertysByUserWithFiltersQuery(
         User $user,
         ?string $search = null,
@@ -313,6 +316,7 @@ class PropertyRepository extends ServiceEntityRepository
         string $sort = 'p.updatedAt',
         string $direction = 'DESC',
         ?string $locale = null,
+        array $statuts = self::MES_BIENS_LISTED_STATUTS,
     ): QueryBuilder {
         if (
             isset($filters['modal_filter'])
@@ -338,10 +342,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->andWhere('p.user = :user')
             ->setParameter('user', $user)
             ->andWhere('p.statut IN (:statuts)')
-            ->setParameter(
-                'statuts',
-                self::MES_BIENS_LISTED_STATUTS
-            );
+            ->setParameter('statuts', $statuts);
 
         if (
             null !== $locale
@@ -2112,14 +2113,16 @@ class PropertyRepository extends ServiceEntityRepository
      * Alimente l'auto-complétion du filtre « Localisation » de la page
      * « Mes biens ».
      *
+     * @param list<StatutAnnonceImmobiliere> $statuts statuts visibles (défaut : liste « Mes biens »)
      * @return list<string>
      */
     public function findAgencyFilterCountries(
         User $user,
         ?string $query = null,
         ?string $locale = null,
+        array $statuts = self::MES_BIENS_LISTED_STATUTS,
     ): array {
-        $qb = $this->agencyLocationBaseQuery($user, $locale)
+        $qb = $this->agencyLocationBaseQuery($user, $locale, $statuts)
             ->select('DISTINCT pt.pays AS value')
             ->andWhere('pt.pays IS NOT NULL')
             ->andWhere("TRIM(pt.pays) <> ''")
@@ -2135,6 +2138,7 @@ class PropertyRepository extends ServiceEntityRepository
      * Villes distinctes saisies par l'agence, éventuellement restreintes
      * à un pays.
      *
+     * @param list<StatutAnnonceImmobiliere> $statuts statuts visibles (défaut : liste « Mes biens »)
      * @return list<string>
      */
     public function findAgencyFilterCities(
@@ -2142,8 +2146,9 @@ class PropertyRepository extends ServiceEntityRepository
         ?string $query = null,
         ?string $countryName = null,
         ?string $locale = null,
+        array $statuts = self::MES_BIENS_LISTED_STATUTS,
     ): array {
-        $qb = $this->agencyLocationBaseQuery($user, $locale)
+        $qb = $this->agencyLocationBaseQuery($user, $locale, $statuts)
             ->select('DISTINCT pt.ville AS value')
             ->andWhere('pt.ville IS NOT NULL')
             ->andWhere("TRIM(pt.ville) <> ''")
@@ -2168,6 +2173,7 @@ class PropertyRepository extends ServiceEntityRepository
      * Quartiers distincts saisis par l'agence (champ neighborhood ou
      * district de la traduction), éventuellement restreints à une ville.
      *
+     * @param list<StatutAnnonceImmobiliere> $statuts statuts visibles (défaut : liste « Mes biens »)
      * @return list<string>
      */
     public function findAgencyFilterDistricts(
@@ -2175,8 +2181,9 @@ class PropertyRepository extends ServiceEntityRepository
         ?string $query = null,
         ?string $cityName = null,
         ?string $locale = null,
+        array $statuts = self::MES_BIENS_LISTED_STATUTS,
     ): array {
-        $qb = $this->agencyLocationBaseQuery($user, $locale)
+        $qb = $this->agencyLocationBaseQuery($user, $locale, $statuts)
             ->select('pt.neighborhood AS neighborhood', 'pt.district AS district')
             ->setMaxResults(300);
 
@@ -2216,14 +2223,21 @@ class PropertyRepository extends ServiceEntityRepository
         return array_values(\array_slice($values, 0, 20));
     }
 
-    private function agencyLocationBaseQuery(User $user, ?string $locale): QueryBuilder
+    /**
+     * @param list<StatutAnnonceImmobiliere> $statuts statuts visibles (défaut : liste « Mes biens »)
+     */
+    private function agencyLocationBaseQuery(
+        User $user,
+        ?string $locale,
+        array $statuts = self::MES_BIENS_LISTED_STATUTS,
+    ): QueryBuilder
     {
         $qb = $this->createQueryBuilder('p')
             ->innerJoin('p.translations', 'pt')
             ->andWhere('p.user = :user')
             ->setParameter('user', $user)
             ->andWhere('p.statut IN (:statuts)')
-            ->setParameter('statuts', self::MES_BIENS_LISTED_STATUTS);
+            ->setParameter('statuts', $statuts);
 
         if (null !== $locale && '' !== mb_trim($locale)) {
             $qb

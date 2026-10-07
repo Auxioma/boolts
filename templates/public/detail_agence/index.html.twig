@@ -103,7 +103,13 @@
 
                                    
 
-                                    <button type="button" class="agence-filter-btn">
+                                    <button
+                                        type="button"
+                                        class="agence-filter-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#booltsFiltersModal"
+                                        aria-controls="booltsFiltersModal"
+                                    >
                                         <i class="icon-sliders-horizontal"></i>
                                         Filtres
                                     </button>
@@ -310,6 +316,20 @@
                 </div>
             </div>
         </main>
+
+        {# Modale de filtres (même composant que la recherche et « Mes biens »), limitée aux biens publiés de l'agence #}
+        {{ include('composant/_search/_search.html.twig', {
+            formModal: filterForm,
+            totalResults: properties.getTotalItemCount,
+            filterCountUrl: path('app_public_detail_agence_filters_count', {slug: user.slug}),
+            locationCountryUrl: path('app_public_detail_agence_filter_countries', {slug: user.slug}),
+            locationCityUrl: path('app_public_detail_agence_filter_cities', {slug: user.slug}),
+            locationDistrictUrl: path('app_public_detail_agence_filter_districts', {slug: user.slug}),
+            filterExtraParameters: app.request.query.has('sort') ? {
+                sort: app.request.query.get('sort'),
+                direction: app.request.query.get('direction', 'desc'),
+            } : {},
+        }) }}
 
         {# Tab bar mobile #}
         {% if app.user and is_granted('ROLE_AGENCE') %}

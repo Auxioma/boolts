@@ -13,14 +13,18 @@
 namespace App\Controller\Public;
 
 use App\Entity\AgencyProfileDailyVisit;
+use App\Entity\Enum\StatutAnnonceImmobiliere;
+use App\Entity\Filter\ModalFilter;
 use App\Entity\FormContact\Contact;
 use App\Entity\User;
+use App\Form\Filter\ModalFilterType;
 use App\Form\FormContact\ContactType;
 use App\Repository\AgencyProfileDailyVisitRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\UserRepository;
 use App\Service\ContactForm\ContactMailer;
+use App\Service\Property\CountryCodeResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +39,12 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class DetailAgenceController extends AbstractController
 {
+    /**
+     * Seules les annonces publiées sont visibles sur la page publique
+     * de l'agence (liste, filtres, compteur et auto-complétion).
+     */
+    private const array PUBLIC_STATUTS = [StatutAnnonceImmobiliere::PUBLIEE];
+
     /**
      * Handles the __construct controller action.
      */
@@ -85,11 +95,24 @@ final class DetailAgenceController extends AbstractController
             $direction = 'desc';
         }
 
+        $filterForm = $this->createForm(ModalFilterType::class, new ModalFilter(), [
+            'action' => $this->generateUrl('app_public_detail_agence', ['slug' => $slug]),
+            'method' => 'GET',
+        ]);
+        $filterForm->handleRequest($request);
+
+        $filters = $request->query->has('modal_filter')
+            ? $request->query->all('modal_filter')
+            : [];
+
         $properties = $paginator->paginate(
-            $propertyRepository->findPropertysByUserQuery(
+            $propertyRepository->findPropertysByUserWithFiltersQuery(
                 user: $user,
+                filters: $filters,
                 sort: $sort,
-                direction: mb_strtoupper($direction)
+                direction: mb_strtoupper($direction),
+                locale: $request->getLocale(),
+                statuts: self::PUBLIC_STATUTS,
             ),
             $request->query->getInt('page', 1),
             8,
@@ -139,7 +162,167 @@ final class DetailAgenceController extends AbstractController
             'properties' => $properties,
             'form' => $form->createView(),
             'favoritePropertyIds' => $favoritePropertyIds,
+            'filterForm' => $filterForm->createView(),
+            'modal_filter' => $filters,
         ]);
+    }
+
+    /**
+     * Compteur « Voir les X logements » de la modale de filtres.
+     */
+    #[Route('/agency/{slug}/filtres/count', name: 'app_public_detail_agence_filters_count', methods: ['GET'])]
+    public function filtersCount(
+        string $slug,
+        UserRepository $userRepository,
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $agency = $this->findAgency($slug, $userRepository);
+
+        $filters = $request->query->has('modal_filter')
+            ? $request->query->all('modal_filter')
+            : [];
+
+        $count = \count(
+            $propertyRepository
+                ->findPropertysByUserWithFiltersQuery(
+                    user: $agency,
+                    filters: $filters,
+                    locale: $request->getLocale(),
+                    statuts: self::PUBLIC_STATUTS,
+                )
+                ->getQuery()
+                ->getResult()
+        );
+
+        return $this->json([
+            'count' => $count,
+            'total' => $count,
+            'totalResults' => $count,
+        ]);
+    }
+
+    /**
+     * Auto-complétion « Pays » : uniquement les pays des annonces publiées de l'agence.
+     */
+    #[Route('/agency/{slug}/filtres/pays', name: 'app_public_detail_agence_filter_countries', methods: ['GET'])]
+    public function filterCountries(
+        string $slug,
+        UserRepository $userRepository,
+        PropertyRepository $propertyRepository,
+        CountryCodeResolver $countryCodeResolver,
+        Request $request,
+    ): Response {
+        $agency = $this->findAgency($slug, $userRepository);
+        $query = mb_trim($request->query->getString('q'));
+
+        $results = [];
+
+        foreach (
+            $propertyRepository->findAgencyFilterCountries(
+                $agency,
+                '' !== $query ? $query : null,
+                $request->getLocale(),
+                self::PUBLIC_STATUTS,
+            ) as $name
+        ) {
+            $code = $countryCodeResolver->resolve($name) ?? mb_strtoupper($name);
+
+            $results[] = [
+                'label' => $name,
+                'name' => $name,
+                'country_name' => $name,
+                'code' => $code,
+                'country_code' => $code,
+                'display_name' => $name,
+            ];
+        }
+
+        return $this->json(['results' => $results]);
+    }
+
+    /**
+     * Auto-complétion « Ville », restreinte au pays éventuellement sélectionné.
+     */
+    #[Route('/agency/{slug}/filtres/villes', name: 'app_public_detail_agence_filter_cities', methods: ['GET'])]
+    public function filterCities(
+        string $slug,
+        UserRepository $userRepository,
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $agency = $this->findAgency($slug, $userRepository);
+        $query = mb_trim($request->query->getString('q'));
+        $countryName = mb_trim($request->query->getString('country_name'));
+
+        $results = [];
+
+        foreach (
+            $propertyRepository->findAgencyFilterCities(
+                $agency,
+                '' !== $query ? $query : null,
+                '' !== $countryName ? $countryName : null,
+                $request->getLocale(),
+                self::PUBLIC_STATUTS,
+            ) as $ville
+        ) {
+            $results[] = [
+                'city_name' => $ville,
+                'name' => $ville,
+                'label' => $ville,
+                'country_name' => $countryName,
+                'display_name' => '' !== $countryName ? $ville.' — '.$countryName : $ville,
+            ];
+        }
+
+        return $this->json(['results' => $results]);
+    }
+
+    /**
+     * Auto-complétion « Quartier », restreinte à la ville éventuellement sélectionnée.
+     */
+    #[Route('/agency/{slug}/filtres/quartiers', name: 'app_public_detail_agence_filter_districts', methods: ['GET'])]
+    public function filterDistricts(
+        string $slug,
+        UserRepository $userRepository,
+        PropertyRepository $propertyRepository,
+        Request $request,
+    ): Response {
+        $agency = $this->findAgency($slug, $userRepository);
+        $query = mb_trim($request->query->getString('q'));
+        $cityName = mb_trim($request->query->getString('city_name'));
+
+        $results = [];
+
+        foreach (
+            $propertyRepository->findAgencyFilterDistricts(
+                $agency,
+                '' !== $query ? $query : null,
+                '' !== $cityName ? $cityName : null,
+                $request->getLocale(),
+                self::PUBLIC_STATUTS,
+            ) as $quartier
+        ) {
+            $results[] = [
+                'name' => $quartier,
+                'district_name' => $quartier,
+                'city_name' => $cityName,
+                'display_name' => '' !== $cityName ? $quartier.' — '.$cityName : $quartier,
+            ];
+        }
+
+        return $this->json(['results' => $results]);
+    }
+
+    private function findAgency(string $slug, UserRepository $userRepository): User
+    {
+        $agency = $userRepository->findOneBy(['slug' => $slug]);
+
+        if (!$agency instanceof User) {
+            throw $this->createNotFoundException('Agence introuvable.');
+        }
+
+        return $agency;
     }
 
     private function recordProfileVisit(
