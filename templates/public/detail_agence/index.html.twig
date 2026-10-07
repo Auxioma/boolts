@@ -226,147 +226,84 @@
 
                         </div>
 
-                        {# Contact desktop #}
-                        <aside class="col-12 col-lg-5 mt-0">
-                            <div class="agence-contact-card" data-controller="agence-contact-form">
-                                <div class="agence-contact-head d-flex gap-4">
-                                    {% if avatar %}
-                                        <img src="{{ avatar }}" alt="{{ user.entreprise }}">
-                                    {% else %}
-                                        <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ user.entreprise }}">
-                                    {% endif %}
+                        {# Contact (même carte sticky que la fiche bien) #}
+                        {% set property = {user: user} %}
+                        <div class="col-12 col-lg-5 mt-0 bt-contact-sticky-wrapper">
+                            <aside class="bt-contact-sticky">
+                                <div class="bt-contact-card" data-controller="agence-contact-form">
 
-                                    <div>
-                                        <h3>{{ user.entreprise }}</h3>
+                                    <div class="d-flex align-items-start gap-4 mb-3">
+                                        <div class="bt-contact-card__avatar">
+                                            {{ include('public/detail_bien/_partials/composant/image_entreprise.html.twig') }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="p-accent mb-0">{{ user.entreprise }}</p>
+                                            <p class="bt-contact-card__address">
+                                                {{ 'detail_bien.contact.agency_type'|trans }} -
+                                                {{ user.adresseContact }}
+                                                {{ user.codePostalContact }}
+                                                {{ user.villeContact }}
+                                                {{ user.paysContact }}
+                                            </p>
+                                            <div class="d-flex flex-column align-items-start gap-1 mt-3">
+                                                {% if user.numeroContact is not empty %}
+                                                    <button
+                                                        type="button"
+                                                        class="btn-full-white w-auto ms-0"
+                                                        data-action="click->agence-contact-form#showPhoneNumber"
+                                                        data-agence-contact-form-target="phoneButton"
+                                                    >
+                                                        {{ 'detail_bien.contact.show_number'|trans }}
+                                                    </button>
+                                                    <a
+                                                        href="tel:{{ user.numeroContact }}"
+                                                        class="bt-contact-card__email d-none"
+                                                        data-agence-contact-form-target="phoneNumber"
+                                                    >
+                                                        {{ user.numeroContact }}
+                                                    </a>
+                                                {% endif %}
+                                                {% if user.emailContact is not empty %}
+                                                    <a href="mailto:{{ user.emailContact }}" class="bt-contact-card__email">
+                                                        {{ user.emailContact }}
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                        <p>
-                                            Agence immobilière -
-                                            {{ user.adresseContact }}
-                                            {{ user.codePostalContact }}
-                                            {{ user.villeContact }}
-                                        </p>
+                                    {{ include('public/detail_bien/_partials/horaire.html.twig') }}
 
-                                        {% if user.numeroContact is not empty %}
-                                            <button
-                                                type="button"
-                                                class="agence-btn agence-btn-outline agence-contact-number"
-                                                data-action="click->agence-contact-form#showPhoneNumber"
-                                                data-agence-contact-form-target="phoneButton"
-                                            >
-                                                Afficher le numéro
-                                            </button>
-
-                                            <a
-                                                href="tel:{{ user.numeroContact }}"
-                                                class="agence-contact-phone d-none"
-                                                data-agence-contact-form-target="phoneNumber"
-                                            >
-                                                {{ user.numeroContact }}
+                                    <div class="d-grid gap-2 mt-3">
+                                        {% if user.whatsApp is not empty %}
+                                            <a href="https://wa.me/{{ user.whatsApp }}" class="agence-btn agence-btn-whatsapp p-accent">
+                                                {{ 'detail_bien.contact.whatsapp'|trans }}
                                             </a>
                                         {% endif %}
 
-                                        <a href="mailto:{{ user.emailContact }}" class="agence-contact-email d-lg-none">
-                                            {{ user.emailContact }}
-                                        </a>
+                                        {% if user.numeroContact is not empty %}
+                                            <a href="tel:{{ user.numeroContact }}" class="agence-btn agence-btn-primary p-accent">
+                                                <i class="icon-phone"></i>
+                                                {{ 'detail_bien.contact.call'|trans }}
+                                            </a>
+                                        {% endif %}
+
+                                        <button
+                                            type="button"
+                                            class="bt-btn bt-btn--outline-primary w-100 p-accent"
+                                            data-action="click->agence-contact-form#open"
+                                            data-agence-contact-form-target="button"
+                                            aria-controls="agency_contact_form"
+                                            aria-expanded="false"
+                                        >
+                                            <i class="bi bi-envelope"></i>
+                                            {{ 'detail_bien.contact.email'|trans }}
+                                        </button>
                                     </div>
+                                    {{ include('public/detail_bien/_partials/composant/formulaire.html.twig') }}
                                 </div>
-
-                                {% set horairesRenseignes = user.horaireOuvertures|filter(horaire =>
-                                    horaire.open
-                                    and (
-                                    (horaire.ouvertureMatin and horaire.fermetureMatin)
-                                    or
-                                    (horaire.ouvertureApresMidi and horaire.fermetureApresMidi)
-                                    ),
-                                    ) %}
-
-                                {% if horairesRenseignes|length > 0 %}
-                                    {{ include('public/detail_agence/_partials/horaire_ouverture.html.twig') }}
-                                    {{ include('public/detail_agence/_partials/liste_horaire_ouverture.html.twig') }}
-                                {% endif %}
-
-                                <div class="agence-contact-actions">
-                                    {% if user.whatsApp is not empty %}
-                                        <a href="https://wa.me/{{ user.whatsApp }}" class="agence-btn agence-btn-whatsapp p-accent">
-                                            Contacter via Whatsapp
-                                        </a>
-                                    {% endif %}
-                                    {% if user.numeroContact is not empty %}
-                                        <a href="tel:{{ user.numeroContact }}" class="agence-btn agence-btn-primary  p-accent">
-                                            <i class="icon-phone"></i>
-                                            Appeler l’agence
-                                        </a>
-                                    {% endif %}
-
-                                    <button
-                                        type="button"
-                                        class="agence-btn agence-btn-outline  p-accent"
-                                        data-action="click->agence-contact-form#open"
-                                        data-agence-contact-form-target="button"
-                                        aria-controls="agency_contact_form"
-                                        aria-expanded="false"
-                                    >
-                                        <i class="icon-mail"></i>
-                                        Contacter par email
-                                    </button>
-                                </div>
-                                {{ form_start(form, {
-                                    attr: {
-                                        id: 'agency_contact_form',
-                                        class: 'agence-contact-form d-none flex-column',
-                                        'data-agence-contact-form-target': 'form',
-                                    },
-                                }) }}
-                                <div class="agence-field">
-                                    <label for="contact_lastname">Votre nom*</label>
-                                    {{ form_widget(form.nom, {
-                                            attr: {
-                                                id: 'contact_lastname',
-                                                placeholder: 'Veuillez saisir votre nom',
-                                                'data-agence-contact-form-target': 'firstField',
-                                            },
-                                        }) }}
-                                </div>
-
-                                <div class="agence-field">
-                                    <label for="contact_firstname">Votre prénom*</label>
-                                    {{ form_widget(form.prenom, {
-                                            id: 'contact_firstname',
-                                            attr: {
-                                                placeholder: 'Veuillez saisir votre prénom',
-                                                class: 'contact_firstname',
-                                            },
-                                        }) }}
-                                </div>
-
-                                <div class="agence-field">
-                                    <label for="contact_email">Votre e-mail*</label>
-                                    {{ form_widget(form.email, {
-                                            id: 'contact_email',
-                                            attr: {
-                                                placeholder: 'Veuillez saisir votre e-mail',
-                                            },
-                                        }) }}
-                                </div>
-
-                                <div class="agence-field">
-                                    <label for="contact_message">Votre message*</label>
-                                    {{ form_widget(form.message, {
-                                            id: 'contact_message',
-                                            attr: {
-                                                placeholder: 'Veuillez saisir votre message',
-                                                rows: 6,
-                                            },
-                                        }) }}
-                                </div>
-
-                                <button type="submit" class="agence-btn agence-btn-primary w-100">
-                                    <i class="icon-mail"></i>
-                                    Envoyer le mail
-                                </button>
-                                {{ form_end(form) }}
-                            </div>
-                        </aside>
+                            </aside>
+                        </div>
 
                     </div>
 
