@@ -61,7 +61,7 @@ h3,
     font-style: normal;
 }
 
-p {
+p, .paragraphe {
     font-size: clamp(12px, calc(12px + (2 * (100vw - 375px) / 1065)), 14px);
 
     line-height: clamp(16px, calc(16px + (4 * (100vw - 375px) / 1065)), 20px);

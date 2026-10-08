@@ -612,22 +612,12 @@ body.bt-modal-open {
 
     color: var(--bt-muted);
 
-    font-size: 14px;
 
-    font-weight: 500;
-
-    line-height: 20px;
 }
 
 .bt-contact-card__email {
     color: var(--bt-primary);
-
-    font-size: 14px;
     margin-top: 8px;
-
-    font-weight: 500;
-
-    line-height: 20px;
 }
 
 .bt-hours {
@@ -1265,6 +1255,9 @@ body.bt-modal-open {
 @media (max-width: 991px) {
         .bt-contact-card__link .icon-chevron-right::before {
         top: initial;
+    }
+    .m-24-991 {
+        margin-top:24px;
     }
 }
 

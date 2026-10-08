@@ -112,9 +112,9 @@
 
     color: var(--color-white);
 
-    font-size: 16px;
+    /*font-size: 16px;*/
 
-    font-weight: 700;
+    /*font-weight: 700;*/
 
     text-decoration: none;
 }
@@ -262,12 +262,6 @@
     background: var(--color-white);
 
     color: var(--color-gray);
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    line-height: 20px;
 }
 
 .agence-properties h2 {

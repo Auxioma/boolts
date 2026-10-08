@@ -33,7 +33,7 @@
             {# Barre violette desktop uniquement #}
             <div class="agence-preview-bar d-none d-lg-flex align-items-center justify-content-center">
                 <span>Voici comment votre agence est présentée aux particuliers.</span>
-                <a href="{{ path('agence_immobiliere_parametres') }}" class="agence-preview-btn">Modifier</a>
+                <a href="{{ path('agence_immobiliere_parametres') }}" class="agence-preview-btn p-accent rounded-pill">Modifier</a>
             </div>
         {% endif %}
 
@@ -105,7 +105,7 @@
 
                                     <button
                                         type="button"
-                                        class="agence-filter-btn"
+                                        class="agence-filter-btn rounded-pill p-accent"
                                         data-bs-toggle="modal"
                                         data-bs-target="#booltsFiltersModal"
                                         aria-controls="booltsFiltersModal"
@@ -235,7 +235,7 @@
                         {# Contact (même carte sticky que la fiche bien) #}
                         {% set property = {user: user} %}
                         <div class="col-12 col-lg-5 mt-0 bt-contact-sticky-wrapper">
-                            <aside class="bt-contact-sticky">
+                            <aside class="bt-contact-sticky m-24-991">
                                 <div class="bt-contact-card" data-controller="agence-contact-form">
 
                                     <div class="d-flex align-items-start gap-4 mb-3">
@@ -255,7 +255,7 @@
                                                 {% if user.numeroContact is not empty %}
                                                     <button
                                                         type="button"
-                                                        class="btn-full-white w-auto ms-0"
+                                                        class="btn-full-white w-auto ms-0 p-accent"
                                                         data-action="click->agence-contact-form#showPhoneNumber"
                                                         data-agence-contact-form-target="phoneButton"
                                                     >
@@ -270,7 +270,7 @@
                                                     </a>
                                                 {% endif %}
                                                 {% if user.emailContact is not empty %}
-                                                    <a href="mailto:{{ user.emailContact }}" class="bt-contact-card__email">
+                                                    <a href="mailto:{{ user.emailContact }}" class="bt-contact-card__email paragraphe">
                                                         {{ user.emailContact }}
                                                     </a>
                                                 {% endif %}

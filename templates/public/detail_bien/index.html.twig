@@ -155,7 +155,7 @@
                                                 <div class="d-flex flex-column align-items-start gap-1 mt-3">
                                                     <button
                                                         type="button"
-                                                        class="btn-full-white w-auto ms-0"
+                                                        class="btn-full-white w-auto ms-0 p-accent"
                                                         type="button"
                                                         class="agence-btn agence-btn-outline agence-contact-number"
                                                         data-action="click->agence-contact-form#showPhoneNumber"
@@ -170,8 +170,8 @@
                                                     >
                                                         {{ property.user.numeroContact }}
                                                     </a>
-                                                    <a href="mailto:agence@agence.agence" class="bt-contact-card__email">
-                                                        agence@agence.agence
+                                                    <a href="mailto:agence@agence.agence" class="bt-contact-card__email paragraphe">
+                                                        {{ property.user.emailContact }}
                                                     </a>
                                                 </div>
                                             </div>
