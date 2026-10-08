@@ -121,7 +121,7 @@
 
                     <article
                         id="search-card-map-preview"
-                        class="search-card-map-preview search-card-desktop-only"
+                        class="search-card-map-preview"
                         data-search-card-map-target="preview"
                         hidden
                     >
@@ -131,81 +131,14 @@
                             aria-label="{{ 'search.map.close_preview'|trans }}"
                             data-action="click->search-card-map#hidePreview"
                         >
-                            <i
-                                class="icon-x"
-                                aria-hidden="true"
-                            ></i>
+                            <i class="icon-x" aria-hidden="true"></i>
                         </button>
 
-                        <a
-                            href="#"
-                            class="search-card-map-preview-link"
-                            id="search-card-map-preview-link"
-                            data-search-card-map-target="previewLink"
-                        >
-                            <div
-                                class="search-card-map-preview-media"
-                                id="search-card-map-preview-media"
-                                data-search-card-map-target="previewMedia"
-                            ></div>
-
-                            <div class="search-card-map-preview-body">
-                                <h2
-                                    id="search-card-map-preview-title"
-                                    data-search-card-map-target="previewTitle"
-                                ></h2>
-
-                                <div class="search-card-map-preview-price">
-                                    <strong
-                                        id="search-card-map-preview-price"
-                                        data-search-card-map-target="previewPrice"
-                                    ></strong>
-
-                                    <span
-                                        id="search-card-map-preview-period"
-                                        data-search-card-map-target="previewPeriod"
-                                    ></span>
-
-                                    <em
-                                        id="search-card-map-preview-badge"
-                                        data-search-card-map-target="previewBadge"
-                                    ></em>
-                                </div>
-
-                                <p
-                                    id="search-card-map-preview-description"
-                                    data-search-card-map-target="previewDescription"
-                                ></p>
-
-                                <p
-                                    id="search-card-map-preview-details"
-                                    data-search-card-map-target="previewDetails"
-                                ></p>
-
-                                <p
-                                    id="search-card-map-preview-address"
-                                    data-search-card-map-target="previewAddress"
-                                ></p>
-
-                                <p
-                                    id="search-card-map-preview-reference"
-                                    class="search-card-map-preview-reference"
-                                    data-search-card-map-target="previewReference"
-                                ></p>
-
-                                <p
-                                    id="search-card-map-preview-mapbox"
-                                    class="search-card-map-preview-mapbox"
-                                    data-search-card-map-target="previewMapbox"
-                                ></p>
-
-                                <p
-                                    id="search-card-map-preview-energy"
-                                    class="search-card-map-preview-energy"
-                                    data-search-card-map-target="previewEnergy"
-                                ></p>
-                            </div>
-                        </a>
+                        {# Reçoit un clone de la <twig:Property:Card> de la liste (même rendu, même CSS) #}
+                        <div
+                            class="agence-properties"
+                            data-search-card-map-target="previewCard"
+                        ></div>
                     </article>
                 </div>
             </aside>

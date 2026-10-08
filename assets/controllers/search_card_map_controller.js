@@ -22,18 +22,7 @@ export default class extends Controller {
         'title',
 
         'preview',
-        'previewLink',
-        'previewMedia',
-        'previewTitle',
-        'previewPrice',
-        'previewPeriod',
-        'previewBadge',
-        'previewDescription',
-        'previewDetails',
-        'previewAddress',
-        'previewReference',
-        'previewMapbox',
-        'previewEnergy',
+        'previewCard',
 
         'layout',
         'listColumn',
@@ -885,163 +874,24 @@ export default class extends Controller {
     }
 
     showPreview(property) {
-        if (!this.hasPreviewTarget || !property) {
+        if (!this.hasPreviewTarget || !this.hasPreviewCardTarget || !property) {
             return;
         }
 
+        const card =
+            property.card?.querySelector('.property-card-link');
+
+        if (!card) {
+            this.hidePreview();
+
+            return;
+        }
+
+        this.previewCardTarget.replaceChildren(
+            card.cloneNode(true)
+        );
+
         this.previewTarget.hidden = false;
-
-        if (this.hasPreviewLinkTarget) {
-            this.previewLinkTarget.href =
-                property.url || '#';
-        }
-
-        if (this.hasPreviewTitleTarget) {
-            this.previewTitleTarget.textContent =
-                property.title || '';
-        }
-
-        if (this.hasPreviewPriceTarget) {
-            this.previewPriceTarget.textContent =
-                property.price || '';
-        }
-
-        if (this.hasPreviewPeriodTarget) {
-            this.previewPeriodTarget.textContent =
-                property.period || '';
-
-            this.previewPeriodTarget.hidden =
-                !property.period;
-        }
-
-        if (this.hasPreviewBadgeTarget) {
-            this.previewBadgeTarget.textContent =
-                property.badge || '';
-
-            this.previewBadgeTarget.hidden =
-                !property.badge;
-        }
-
-        if (this.hasPreviewDescriptionTarget) {
-            this.previewDescriptionTarget.textContent =
-                property.description || '';
-
-            this.previewDescriptionTarget.hidden =
-                !property.description;
-        }
-
-        if (this.hasPreviewDetailsTarget) {
-            this.previewDetailsTarget.textContent =
-                property.details || '';
-
-            this.previewDetailsTarget.hidden =
-                !property.details;
-        }
-
-        if (this.hasPreviewAddressTarget) {
-            this.previewAddressTarget.textContent =
-                property.address || '';
-
-            this.previewAddressTarget.hidden =
-                !property.address;
-        }
-
-        if (this.hasPreviewReferenceTarget) {
-            const reference =
-                property.referenceInterne
-                    ? this.label('reference', { reference: property.referenceInterne }, `Référence : ${property.referenceInterne}`)
-                    : '';
-
-            this.previewReferenceTarget.textContent =
-                reference;
-
-            this.previewReferenceTarget.hidden =
-                !reference;
-        }
-
-        if (this.hasPreviewMapboxTarget) {
-            const parts = [];
-
-            if (property.mapboxId) {
-                parts.push(
-                    `Mapbox : ${property.mapboxId}`
-                );
-            }
-
-            if (property.featureType) {
-                parts.push(
-                    this.label('type', { type: property.featureType }, `Type : ${property.featureType}`)
-                );
-            }
-
-            if (
-                property.codePostal ||
-                property.ville
-            ) {
-                parts.push(
-                    `${property.codePostal || ''} ${property.ville || ''}`.trim()
-                );
-            }
-
-            this.previewMapboxTarget.textContent =
-                parts.join(' · ');
-
-            this.previewMapboxTarget.hidden =
-                parts.length === 0;
-        }
-
-        if (this.hasPreviewEnergyTarget) {
-            const parts = [];
-
-            if (property.surfaceTotal) {
-                parts.push(
-                    `${property.surfaceTotal} m²`
-                );
-            }
-
-            if (property.chambres) {
-                const bedrooms =
-                    Number(property.chambres);
-
-                parts.push(
-                    this.label(bedrooms > 1 ? 'bedroomsOther' : 'bedroomsOne', { count: property.chambres }, `${property.chambres} chambre${bedrooms > 1 ? 's' : ''}`)
-                );
-            }
-
-            if (property.salleDeBains) {
-                const bathrooms =
-                    Number(property.salleDeBains);
-
-                parts.push(
-                    this.label(bathrooms > 1 ? 'bathroomsOther' : 'bathroomsOne', { count: property.salleDeBains }, `${property.salleDeBains} salle${bathrooms > 1 ? 's' : ''} de bains`)
-                );
-            }
-
-            if (property.dpeLettre) {
-                parts.push(
-                    `DPE ${property.dpeLettre}`
-                );
-            }
-
-            if (property.gesLettre) {
-                parts.push(
-                    `GES ${property.gesLettre}`
-                );
-            }
-
-            this.previewEnergyTarget.textContent =
-                parts.join(' · ');
-
-            this.previewEnergyTarget.hidden =
-                parts.length === 0;
-        }
-
-        if (this.hasPreviewMediaTarget) {
-            this.previewMediaTarget.style.backgroundImage =
-                property.image
-                    ? `url("${property.image}")`
-                    : '';
-        }
     }
 
     activateProperty(property) {
