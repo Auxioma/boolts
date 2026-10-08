@@ -12,6 +12,7 @@ const MAPBOX_JS_URLS = [
 
 /* Marge (px) entre la carte et la barre de recherche, et entre la carte et le bas de l'écran */
 const MAP_GAP = 32;
+const MAP_MIN_MOBILE_HEIGHT = 320;
 
 export default class extends Controller {
     static targets = [
@@ -330,7 +331,8 @@ export default class extends Controller {
      * La carte est placée par un padding-top sur sa colonne (le sticky seul ne
      * suffit pas quand la colonne n'a pas de place, ex. carte agrandie), et sa
      * hauteur est calculée sur sa position réelle à l'écran, y compris au scroll.
-     * En dessous de 992px, les hauteurs du CSS responsive s'appliquent.
+     * En dessous de 992px : la carte prend la hauteur de l'écran restante
+     * sous le HTML qui la précède (recalculée au resize, ex. barre d'adresse mobile).
      */
     updateMapHeight() {
         if (!this.hasMapPanelTarget || !this.hasMapColumnTarget) {
@@ -340,7 +342,12 @@ export default class extends Controller {
         if (!window.matchMedia('(min-width: 992px)').matches) {
             this.mapColumnTarget.style.removeProperty('padding-top');
             this.mapPanelTarget.style.removeProperty('--search-card-map-top');
-            this.mapPanelTarget.style.removeProperty('--search-card-map-height');
+
+            /* Hauteur de l'écran moins le HTML au-dessus de la carte (navbar, barre de recherche...) */
+            const panelTop = this.mapPanelTarget.getBoundingClientRect().top + window.scrollY;
+            const height = Math.max(Math.round(window.innerHeight - panelTop), MAP_MIN_MOBILE_HEIGHT);
+
+            this.mapPanelTarget.style.setProperty('--search-card-map-height', `${height}px`);
             this.resizeMapAfterLayoutChange();
 
             return;
