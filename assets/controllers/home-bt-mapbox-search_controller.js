@@ -26,6 +26,11 @@ export default class extends Controller {
             type: String,
             default: 'fr',
         },
+        /* true : le formulaire (champs cachés compris) est envoyé dès le clic sur une suggestion */
+        submitOnSelect: {
+            type: Boolean,
+            default: false,
+        },
     };
 
     connect() {
@@ -37,7 +42,21 @@ export default class extends Controller {
 
         document.addEventListener('click', this.handleClickOutside);
 
-        this.clearHiddenFields();
+        /*
+         * Champs cachés préremplis par le serveur (ex. barre de recherche
+         * de la page résultats) : on les garde pour qu'ils repartent au submit.
+         */
+        if (!this.hasPrefilledLocation()) {
+            this.clearHiddenFields();
+        }
+    }
+
+    hasPrefilledLocation() {
+        return Boolean(
+            this.inputTarget.value.trim() &&
+            this.hasSelectedValueTarget &&
+            this.selectedValueTarget.value.trim()
+        );
     }
 
     disconnect() {
@@ -194,6 +213,10 @@ export default class extends Controller {
         this.fillHiddenFields(location);
 
         this.clearResults();
+
+        if (this.submitOnSelectValue) {
+            this.element.requestSubmit();
+        }
     }
 
     async fetchPostcodeFromCoordinates(longitude, latitude) {

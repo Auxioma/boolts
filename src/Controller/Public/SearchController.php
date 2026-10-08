@@ -159,6 +159,12 @@ final class SearchController extends AbstractController
             'selectedFeatureType' => $criteria[
             'selectedFeatureType'
             ],
+
+            'selectedCityName' => $criteria['selectedCityName'],
+            'selectedPostalCode' => $criteria['selectedPostalCode'],
+            'selectedCountryName' => $criteria['selectedCountryName'],
+            'selectedLocale' => $criteria['selectedLocale'],
+            'selectedLocationJson' => $criteria['selectedLocationJson'],
         ]);
 
         $this->entityManager->persist($sessionRecherche);
@@ -783,6 +789,23 @@ final class SearchController extends AbstractController
             'selectedFeatureType' => '' !== $selectedFeatureType
                 ? $selectedFeatureType
                 : null,
+
+            /*
+             * Valeurs brutes des champs cachés, conservées telles quelles
+             * pour la page suivante (ville/cp/pays ci-dessus sont normalisés
+             * pour la recherche Doctrine).
+             */
+            'selectedCityName' => $selectedCityName,
+            'selectedPostalCode' => $selectedPostalCode,
+            'selectedCountryName' => $selectedCountryName,
+
+            'selectedLocale' => $this->cleanValue(
+                $filter->getSelectedLocale()
+            ),
+
+            'selectedLocationJson' => $this->cleanValue(
+                $filter->getSelectedLocationJson()
+            ),
         ];
     }
 
@@ -823,15 +846,15 @@ final class SearchController extends AbstractController
         );
 
         $filter->setSelectedCityName(
-            $criteria['ville'] ?? null
+            $criteria['selectedCityName'] ?? $criteria['ville'] ?? null
         );
 
         $filter->setSelectedPostalCode(
-            $criteria['cp'] ?? null
+            $criteria['selectedPostalCode'] ?? $criteria['cp'] ?? null
         );
 
         $filter->setSelectedCountryName(
-            $criteria['pays'] ?? null
+            $criteria['selectedCountryName'] ?? $criteria['pays'] ?? null
         );
 
         $filter->setSelectedCountryCode(
@@ -860,6 +883,14 @@ final class SearchController extends AbstractController
 
         $filter->setSelectedFeatureType(
             $criteria['selectedFeatureType'] ?? null
+        );
+
+        $filter->setSelectedLocale(
+            $criteria['selectedLocale'] ?? null
+        );
+
+        $filter->setSelectedLocationJson(
+            $criteria['selectedLocationJson'] ?? null
         );
 
         return $filter;
