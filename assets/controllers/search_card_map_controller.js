@@ -10,6 +10,9 @@ const MAPBOX_JS_URLS = [
     'https://cdn.jsdelivr.net/npm/mapbox-gl@3.25.0/dist/mapbox-gl.js',
 ];
 
+/* Marge (px) entre la carte et la barre de recherche, et entre la carte et le bas de l'écran */
+const MAP_GAP = 32;
+
 export default class extends Controller {
     static targets = [
         'mapbox',
@@ -75,6 +78,14 @@ export default class extends Controller {
         window.addEventListener('resize', this.onStickyResize);
         this.updateStickyTop();
 
+        this.mapTop = 0;
+        this.mapHeightFrame = null;
+        this.onMapHeightResize = this.updateMapHeight.bind(this);
+        this.onMapHeightScroll = this.scheduleMapHeight.bind(this);
+        window.addEventListener('resize', this.onMapHeightResize);
+        window.addEventListener('scroll', this.onMapHeightScroll, { passive: true });
+        this.updateMapHeight();
+
         this.loadCssOnce(MAPBOX_CSS_URLS[0]);
 
         this.loadScriptWithFallback(MAPBOX_JS_URLS)
@@ -94,7 +105,13 @@ export default class extends Controller {
         window.clearTimeout(this.boundsRequestTimeout);
         window.clearTimeout(this.mapResizeTimeout);
         window.removeEventListener('resize', this.onStickyResize);
+        window.removeEventListener('resize', this.onMapHeightResize);
+        window.removeEventListener('scroll', this.onMapHeightScroll);
+        window.cancelAnimationFrame(this.mapHeightFrame);
+        this.mapColumnTarget.style.removeProperty('padding-top');
         this.mapPanelTarget.style.removeProperty('--search-card-map-sticky-top');
+        this.mapPanelTarget.style.removeProperty('--search-card-map-top');
+        this.mapPanelTarget.style.removeProperty('--search-card-map-height');
 
         if (this.boundsRequestController) {
             this.boundsRequestController.abort();
@@ -206,7 +223,7 @@ export default class extends Controller {
 
         this.updateExpandButton(true);
         this.hidePreview();
-        this.resizeMapAfterLayoutChange();
+        this.updateMapHeight();
     }
 
     shrinkMap() {
@@ -261,7 +278,7 @@ export default class extends Controller {
 
         this.updateExpandButton(false);
         this.hidePreview();
-        this.resizeMapAfterLayoutChange();
+        this.updateMapHeight();
     }
 
     updateStickyTop() {
@@ -269,6 +286,89 @@ export default class extends Controller {
         const paddingTop = Number.parseFloat(window.getComputedStyle(column).paddingTop) || 0;
         const initialTop = column.getBoundingClientRect().top + window.scrollY + paddingTop;
         this.mapPanelTarget.style.setProperty('--search-card-map-sticky-top', `${initialTop}px`);
+    }
+
+    /*
+     * Écrans >= 992px, carte normale ou agrandie :
+     * - haut de la carte à 32px sous la barre de recherche (fixe) ;
+     * - bas de la carte à 32px du bas de l'écran.
+     * La carte est placée par un padding-top sur sa colonne (le sticky seul ne
+     * suffit pas quand la colonne n'a pas de place, ex. carte agrandie), et sa
+     * hauteur est calculée sur sa position réelle à l'écran, y compris au scroll.
+     * En dessous de 992px, les hauteurs du CSS responsive s'appliquent.
+     */
+    updateMapHeight() {
+        if (!this.hasMapPanelTarget || !this.hasMapColumnTarget) {
+            return;
+        }
+
+        if (!window.matchMedia('(min-width: 992px)').matches) {
+            this.mapColumnTarget.style.removeProperty('padding-top');
+            this.mapPanelTarget.style.removeProperty('--search-card-map-top');
+            this.mapPanelTarget.style.removeProperty('--search-card-map-height');
+            this.resizeMapAfterLayoutChange();
+
+            return;
+        }
+
+        const toolbar = document.querySelector('.search-card-toolbar');
+        this.mapTop = toolbar
+            ? Math.round(toolbar.getBoundingClientRect().bottom) + MAP_GAP
+            : MAP_GAP;
+
+        this.mapPanelTarget.style.setProperty('--search-card-map-top', `${this.mapTop}px`);
+
+        /* Position de la colonne dans la page, sans son padding actuel */
+        this.mapColumnTarget.style.removeProperty('padding-top');
+        const columnTop = this.mapColumnTarget.getBoundingClientRect().top + window.scrollY;
+        const paddingTop = Math.max(Math.round(this.mapTop - columnTop), 0);
+
+        if (paddingTop > 0) {
+            this.mapColumnTarget.style.setProperty('padding-top', `${paddingTop}px`, 'important');
+        }
+
+        this.applyMapHeight();
+        this.resizeMapAfterLayoutChange();
+    }
+
+    scheduleMapHeight() {
+        if (this.mapHeightFrame) {
+            return;
+        }
+
+        this.mapHeightFrame = window.requestAnimationFrame(() => {
+            this.mapHeightFrame = null;
+
+            if (!window.matchMedia('(min-width: 992px)').matches) {
+                return;
+            }
+
+            if (this.applyMapHeight() && this.map) {
+                this.map.resize();
+            }
+        });
+    }
+
+    /*
+     * Hauteur = hauteur de l'écran - haut visible de la carte - 32px.
+     * Quand la carte remonte au-dessus de sa position (fin de colonne au scroll),
+     * on garde la hauteur calculée à sa position normale.
+     * Retourne true si la hauteur a changé.
+     */
+    applyMapHeight() {
+        const top = Math.max(
+            this.mapPanelTarget.getBoundingClientRect().top,
+            this.mapTop || 0
+        );
+        const height = `${Math.max(Math.round(window.innerHeight - top - MAP_GAP), 0)}px`;
+
+        if (this.mapPanelTarget.style.getPropertyValue('--search-card-map-height') === height) {
+            return false;
+        }
+
+        this.mapPanelTarget.style.setProperty('--search-card-map-height', height);
+
+        return true;
     }
 
     updateExpandButton(isExpanded) {

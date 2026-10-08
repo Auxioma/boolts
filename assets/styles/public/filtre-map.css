@@ -2,8 +2,7 @@
     position: sticky;
     top: calc(var(--search-card-toolbar-height, 85px) + 104px);
     width: 100%;
-    /* Toute la hauteur visible sous le haut du panneau, avec 32px de marge en bas */
-    height: calc(100vh - var(--search-card-toolbar-height, 85px) - 104px - 32px);
+    height: 525px;
     z-index: 10;
     border-radius: 30px;
     overflow: hidden;
@@ -325,4 +324,19 @@
     .search-card-desktop-only {
         display: none;
     }
+}
+
+/* PC (>= 992px), carte normale ou agrandie : position et hauteur calculées en JS
+   (search_card_map_controller#updateMapHeight) : 32px sous la barre de recherche,
+   32px au-dessus du bas de l'écran */
+@media (min-width: 992px) {
+    .search-card-map-panel {
+        top: var(--search-card-map-top, calc(var(--search-card-toolbar-height, 85px) + 104px));
+        height: var(--search-card-map-height, 525px);
+    }
+}
+
+/* Carte agrandie : pas de pagination (règle CSS car la pagination est remplacée en AJAX) */
+.search-card-main:has(.search-card-map-results--expanded) #search-card-pagination {
+    display: none;
 }
