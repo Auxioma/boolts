@@ -1,0 +1,52 @@
+/* =========================================================
+   Bouton « Filtres » : état actif + pastille du nombre de filtres
+   (classes posées par assets/lib/filter_badge.js)
+   ========================================================= */
+
+.boolts-filter-active {
+    position: relative;
+}
+
+button.boolts-filter-active,
+button.boolts-filter-active:hover,
+button.boolts-filter-active:focus {
+    color: #fff !important;
+
+    background: var(--Brand-color, #5D00FF) !important;
+
+    border-color: var(--Brand-color, #5D00FF) !important;
+}
+
+.boolts-filter-badge {
+    position: absolute;
+
+    top: -8px;
+
+    left: -8px;
+
+    z-index: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 24px;
+
+    height: 24px;
+
+    color: #fff;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    background: #5D00FF;
+
+    border: 2px solid #fff;
+
+    border-radius: 50%;
+}

@@ -1,8 +1,9 @@
 import { Controller } from '@hotwired/stimulus';
 import { Modal } from 'bootstrap';
+import { countActiveFilters, renderFilterBadge } from '../lib/filter_badge.js';
 
 export default class extends Controller {
-    static targets = ['frame', 'modal', 'start', 'end', 'sortButton', 'sortMenu', 'filters', 'filterCount'];
+    static targets = ['frame', 'modal', 'start', 'end', 'sortButton', 'sortMenu', 'filters', 'filterButton'];
     static values = { url: String };
 
     connect() {
@@ -31,20 +32,11 @@ export default class extends Controller {
     }
 
     updateFilterCount(parameters) {
-        if (!this.hasFilterCountTarget) {
+        if (!this.hasFilterButtonTarget) {
             return;
         }
 
-        const groups = new Set();
-        parameters.forEach((value, key) => {
-            const match = key.match(/^modal_filter\[([^\]]+)\]/);
-            if (!match || match[1].endsWith('Search') || !value || value === '[]') {
-                return;
-            }
-            groups.add(match[1].replace(/^(min|max)/, ''));
-        });
-        this.filterCountTarget.textContent = groups.size;
-        this.filterCountTarget.hidden = groups.size === 0;
+        renderFilterBadge(this.filterButtonTarget, countActiveFilters(parameters));
     }
 
     syncFilterParameters() {

@@ -1676,36 +1676,6 @@ a.notification-card__link:hover {
     box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .65);
 }
 
-.properties-filter-count {
-    position: absolute;
-
-    top: -8px;
-
-    left: -8px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 24px;
-
-    height: 24px;
-
-    color: #fff;
-
-    background: #5d00ff;
-
-    border: 2px solid #fff;
-
-    border-radius: 50%;
-
-    font-size: 14px;
-
-    font-weight: 700;
-}
-
 .property-item {
     position: relative;
 
@@ -2605,10 +2575,6 @@ a.notification-card__link:hover {
     outline: 2px solid var(--bt-filter-brand);
 
     outline-offset: 3px;
-}
-
-.properties-filter-count[hidden] {
-    display: none;
 }
 
 @media (max-width: 575.98px) {
