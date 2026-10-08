@@ -79,6 +79,7 @@ export default class extends Controller {
         this.updateStickyTop();
 
         this.mapTop = 0;
+        this.scrollBeforeExpand = 0;
         this.mapHeightFrame = null;
         this.onMapHeightResize = this.updateMapHeight.bind(this);
         this.onMapHeightScroll = this.scheduleMapHeight.bind(this);
@@ -162,6 +163,11 @@ export default class extends Controller {
         this.mapExpanded = true;
 
         /*
+         * Mémorise la position dans les annonces pour y revenir à la réduction.
+         */
+        this.scrollBeforeExpand = window.scrollY;
+
+        /*
          * Masque le H1.
          */
         this.titleTarget.classList.add('d-none');
@@ -224,6 +230,12 @@ export default class extends Controller {
         this.updateExpandButton(true);
         this.hidePreview();
         this.updateMapHeight();
+
+        /*
+         * La liste masquée raccourcit la page : sans ça, la carte s'ouvrirait
+         * plus ou moins haut selon l'endroit où l'on était dans les annonces.
+         */
+        this.scrollMapIntoPlace();
     }
 
     shrinkMap() {
@@ -279,6 +291,40 @@ export default class extends Controller {
         this.updateExpandButton(false);
         this.hidePreview();
         this.updateMapHeight();
+
+        /*
+         * Retour à l'endroit où l'on était dans les annonces avant l'agrandissement.
+         */
+        this.scrollToInstantly(this.scrollBeforeExpand || 0);
+    }
+
+    /*
+     * Place la carte agrandie toujours au même endroit de l'écran :
+     * son bord haut à 32px sous la barre de recherche.
+     */
+    scrollMapIntoPlace() {
+        const panelTop = this.mapPanelTarget.getBoundingClientRect().top + window.scrollY;
+
+        this.scrollToInstantly(panelTop - (this.mapTop || 0));
+    }
+
+    /*
+     * Scroll sans animation (html a scroll-behavior: smooth dans global.css),
+     * puis recalcul de la hauteur de la carte à sa nouvelle position.
+     */
+    scrollToInstantly(top) {
+        window.scrollTo({
+            top: Math.max(Math.round(top), 0),
+            behavior: 'instant',
+        });
+
+        if (
+            window.matchMedia('(min-width: 992px)').matches &&
+            this.applyMapHeight() &&
+            this.map
+        ) {
+            this.map.resize();
+        }
     }
 
     updateStickyTop() {
