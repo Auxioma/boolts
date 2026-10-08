@@ -23,10 +23,10 @@
         class="agence-page"
     >
         {# Barre retour mobile #}
-        <div class="agence-mobile-topbar d-flex d-md-none align-items-center">
-            <button type="button" class="agence-icon-btn">
+        <div class="bt-mobile-topbar align-items-center justify-content-center">
+            <a href="javascript:history.go(-1)" class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" type="button" aria-label="{{ 'detail_bien.topbar.back'|trans }}">
                 <i class="icon-chevron-left"></i>
-            </button>
+            </a>
         </div>
 
         {% if app.user and is_granted('ROLE_AGENCE') %}

@@ -45,13 +45,7 @@
 >
     <div class="container-lg search-card-container">
 
-        <h3
-            class="my-32"
-            id="search-card-total-results"
-            data-search-card-map-target="title totalResults"
-        >
-            {{ (resultsCount > 1 ? 'search.results.count.other' : 'search.results.count.one')|trans({'%count%': resultsCount}) }}
-        </h3>
+
 
         <div
             class="row g-4 align-items-start search-card-map-layout"
@@ -61,7 +55,13 @@
                 class="col-12 col-lg-6 search-card-list-column"
                 aria-label="{{ 'search.map.list_aria_label'|trans }}"
                 data-search-card-map-target="listColumn"
-            >
+            >        <h3
+            class="my-32"
+            id="search-card-total-results"
+            data-search-card-map-target="title totalResults"
+        >
+            {{ (resultsCount > 1 ? 'search.results.count.other' : 'search.results.count.one')|trans({'%count%': resultsCount}) }}
+        </h3>
                 <div
                     class="row g-4 agence-properties"
                     id="search-card-results-grid"

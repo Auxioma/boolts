@@ -1172,13 +1172,13 @@
 
 
 .mapboxgl-ctrl-top-right {
-    top: 76px !important;
+    top: 55px !important;
 }
 
 .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
     height: 90px;
 
-    padding: 16px 10px !important;
+    padding: 16px 6px !important;
 }
 
 .mapboxgl-ctrl-group {

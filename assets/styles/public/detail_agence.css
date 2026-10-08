@@ -67,20 +67,6 @@
     color: var(--color-primary);
 }
 
-.agence-icon-btn {
-    border: 0;
-
-    background: transparent;
-
-    color: var(--color-text);
-
-    font-size: 24px;
-
-    line-height: 1;
-
-    padding: 0;
-}
-
 .agence-preview-bar {
     height: 64px;
 
@@ -868,14 +854,6 @@
     text-decoration: none;
 }
 
-.agence-mobile-topbar {
-    height: 44px;
-
-    border-bottom: 1px solid var(--color-gray-light);
-
-    padding-inline: 12px;
-}
-
 .agence-mobile-tabbar {
     position: fixed;
 
@@ -1053,5 +1031,12 @@
 
     .agence-profile-content {
         max-width: none;
+    }
+}
+
+/* Barre retour mobile (.bt-mobile-topbar, fixe sous le header) : on réserve sa hauteur */
+@media (max-width: 767px) {
+    .agence-page {
+        padding-top: 44px;
     }
 }
