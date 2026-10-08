@@ -1192,3 +1192,7 @@
 .search-card-mobile-only .icon-chevron-left::before {
     font-size: 24px;
 }
+
+.search-card-map-preview-close .icon-x::before {
+    position: inherit;
+}

@@ -19,7 +19,9 @@
 
     --bt-transition: all .2s ease;
 }
-
+.mapboxgl-ctrl-logo {
+    display: none !important;
+}
 body.bt-modal-open {
     overflow: hidden;
 }
@@ -1294,7 +1296,7 @@ body.bt-modal-open {
     }
 
     .bt-mobile-topbar {
-        position: fixed;
+        position: sticky;
         top: 72px;
         right: 0;
         left: 0;
