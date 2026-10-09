@@ -20,7 +20,7 @@
     {% set currentTransactionId = firstTransaction.id %}
 {% endif %}
 
-<div class="home-bt-search-hero">
+<div class="home-bt-search-hero" data-controller="home--search-tabs">
 
     <ul
         class="nav nav-tabs home-bt-search-tabs"
@@ -37,6 +37,8 @@
             data-home-bt-transaction-name="{{ transaction.name }}"
             data-home-bt-transaction-icone="{{ transaction.icone }}"
             role="tab"
+            data-home--search-tabs-target="tab"
+            data-action="click->home--search-tabs#select"
             aria-selected="{{ currentTransactionId ~ '' == transaction.id ~ '' ? 'true' : 'false' }}"
         >
             {% if transaction.icone %}
@@ -63,6 +65,8 @@
         data-home-bt-transaction-name="Vendre"
         data-home-bt-transaction-icone="icon-pencil-line"
         role="tab"
+        data-home--search-tabs-target="tab"
+        data-action="click->home--search-tabs#select"
         aria-selected="false"
     >
         <i class="icon-pencil-line" aria-hidden="true"></i>
@@ -92,6 +96,7 @@
             attr: {
                 class: 'd-none',
                 'data-home-bt-transaction-input': '',
+                'data-home--search-tabs-target': 'transactionInput',
             },
         }) }}
 
@@ -205,51 +210,3 @@
 
 </div>
 
-<script>
-(() => {
-    const bindHomeBtSearchTabs = () => {
-        const searchHeroes = document.querySelectorAll('.home-bt-search-hero');
-
-        searchHeroes.forEach(function (hero) {
-            if (hero.dataset.searchTabsBound === 'true') {
-                return;
-            }
-
-            const tabs = hero.querySelectorAll('.home-bt-search-tab');
-            const transactionInput = hero.querySelector('[data-home-bt-transaction-input]');
-
-            if (!tabs.length || !transactionInput) {
-                return;
-            }
-
-            hero.dataset.searchTabsBound = 'true';
-
-            tabs.forEach(function (tab) {
-                tab.addEventListener('click', function () {
-                    tabs.forEach(function (item) {
-                        item.classList.remove('active');
-                        item.setAttribute('aria-selected', 'false');
-                    });
-
-                    tab.classList.add('active');
-                    tab.setAttribute('aria-selected', 'true');
-
-                    /*
-                     * EntityType :
-                     * On met l'id de CategoryBienTransaction dans le select caché.
-                     * Symfony convertira cet id en vraie entité.
-                     */
-                    transactionInput.value = tab.dataset.homeBtTransactionId || '';
-
-                    transactionInput.dispatchEvent(new Event('change', {
-                        bubbles: true,
-                    }));
-                });
-            });
-        });
-    };
-
-    document.addEventListener('DOMContentLoaded', bindHomeBtSearchTabs);
-    document.addEventListener('turbo:load', bindHomeBtSearchTabs);
-})();
-</script>

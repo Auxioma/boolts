@@ -36,24 +36,24 @@ export default class extends Controller {
 
             breakpoints: {
                 1920: {
-                    fixedWidth: '317px',
+                    fixedWidth: '311px',
                 },
                 1440: {
-                    fixedWidth: '273px',
+                    fixedWidth: '312px',
                 },
                 1200: {
-                    fixedWidth: '309px',
+                    fixedWidth: '267px',
                     gap: '16px',
                 },
                 991: {
-                    fixedWidth: '352px',
+                    fixedWidth: '341px',
                 },
                 768: {
-                    fixedWidth: '285px',
+                    fixedWidth: '270px',
                     gap: '12px',
                 },
                 576: {
-                    fixedWidth: '255px',
+                    fixedWidth: '290px',
                     gap: '12px',
                 },
             },
