@@ -99,6 +99,8 @@ export default class extends Controller {
         window.removeEventListener('resize', this.onMapHeightResize);
         window.removeEventListener('scroll', this.onMapHeightScroll);
         window.cancelAnimationFrame(this.mapHeightFrame);
+        window.cancelAnimationFrame(this.previewFrame);
+        this.previewFrame = null;
         this.mapColumnTarget.style.removeProperty('padding-top');
         this.mapPanelTarget.style.removeProperty('--search-card-map-sticky-top');
         this.mapPanelTarget.style.removeProperty('--search-card-map-top');
@@ -591,6 +593,15 @@ export default class extends Controller {
             this.hidePreview();
         });
 
+        // La preview suit son marqueur pendant les déplacements / zooms (comme Airbnb)
+        this.map.on('move', () => {
+            this.schedulePreviewPosition();
+        });
+
+        this.map.on('resize', () => {
+            this.schedulePreviewPosition();
+        });
+
         this.map.on('error', (event) => {
             if (event?.error?.message) {
                 console.error(
@@ -875,7 +886,11 @@ export default class extends Controller {
 
         if (this.hasPreviewTarget) {
             this.previewTarget.hidden = true;
+            this.resetPreviewPosition();
         }
+
+        this.activePropertyId = null;
+        this.activeProperty = null;
 
         this.clearActiveState();
     }
@@ -899,9 +914,140 @@ export default class extends Controller {
         );
 
         this.previewTarget.hidden = false;
+
+        this.positionPreview();
+
+        // La hauteur de la card change quand l'image clonée finit de charger
+        this.previewCardTarget
+            .querySelectorAll('img')
+            .forEach((image) => {
+                if (!image.complete) {
+                    image.addEventListener('load', () => this.positionPreview(), { once: true });
+                }
+            });
+    }
+
+    /* ================================================================ */
+    /* Positionnement dynamique de la preview (desktop / tablette)        */
+    /* ================================================================ */
+
+    isFloatingPreviewEnabled() {
+        return window.matchMedia('(min-width: 768px)').matches;
+    }
+
+    schedulePreviewPosition() {
+        if (!this.activeProperty || this.previewFrame) {
+            return;
+        }
+
+        this.previewFrame = window.requestAnimationFrame(() => {
+            this.previewFrame = null;
+            this.positionPreview();
+        });
+    }
+
+    resetPreviewPosition() {
+        const preview = this.previewTarget;
+
+        preview.classList.remove('is-floating');
+        preview.style.removeProperty('top');
+        preview.style.removeProperty('left');
+        preview.style.removeProperty('right');
+        preview.style.removeProperty('bottom');
+        preview.style.removeProperty('visibility');
+    }
+
+    /*
+     * Place la card à côté du marqueur actif : au-dessus, sinon en dessous,
+     * sinon à droite, sinon à gauche ; puis la garde dans les limites de la carte.
+     */
+    positionPreview() {
+        if (!this.hasPreviewTarget || this.previewTarget.hidden || !this.map || !this.activeProperty) {
+            return;
+        }
+
+        const preview = this.previewTarget;
+
+        if (!this.isFloatingPreviewEnabled()) {
+            this.resetPreviewPosition();
+
+            return;
+        }
+
+        const panel = this.hasMapPanelTarget ? this.mapPanelTarget : preview.offsetParent;
+
+        if (!panel) {
+            return;
+        }
+
+        const markerElement = this.markerElements.get(String(this.activeProperty.id));
+        const point = this.map.project([this.activeProperty.lng, this.activeProperty.lat]);
+        const mapElement = this.map.getContainer();
+
+        // Coordonnées du point d'ancrage du marqueur (bas-centre) dans le panneau
+        const x = point.x + mapElement.offsetLeft;
+        const y = point.y + mapElement.offsetTop;
+
+        const panelWidth = panel.clientWidth;
+        const panelHeight = panel.clientHeight;
+
+        preview.classList.add('is-floating');
+        preview.style.right = 'auto';
+        preview.style.bottom = 'auto';
+
+        // Marqueur sorti de la zone visible : on masque sans fermer
+        if (x < 0 || y < 0 || x > panelWidth || y > panelHeight) {
+            preview.style.visibility = 'hidden';
+
+            return;
+        }
+
+        preview.style.visibility = '';
+
+        const padding = 16;
+        const gap = 8;
+        const cardWidth = preview.offsetWidth;
+        const cardHeight = preview.offsetHeight;
+        const markerWidth = markerElement ? markerElement.offsetWidth : 0;
+        const markerHeight = markerElement ? markerElement.offsetHeight : 0;
+
+        const placements = [
+            {
+                left: x - cardWidth / 2,
+                top: y - markerHeight - gap - cardHeight,
+                space: y - markerHeight - gap - padding - cardHeight,
+            },
+            {
+                left: x - cardWidth / 2,
+                top: y + gap,
+                space: panelHeight - padding - (y + gap + cardHeight),
+            },
+            {
+                left: x + markerWidth / 2 + gap,
+                top: y - markerHeight / 2 - cardHeight / 2,
+                space: panelWidth - padding - (x + markerWidth / 2 + gap + cardWidth),
+            },
+            {
+                left: x - markerWidth / 2 - gap - cardWidth,
+                top: y - markerHeight / 2 - cardHeight / 2,
+                space: x - markerWidth / 2 - gap - padding - cardWidth,
+            },
+        ];
+
+        const placement =
+            placements.find((candidate) => candidate.space >= 0) ||
+            placements.reduce((best, candidate) => (candidate.space > best.space ? candidate : best));
+
+        const clamp = (value, min, max) => Math.max(min, Math.min(value, Math.max(min, max)));
+
+        preview.style.left = `${Math.round(clamp(placement.left, padding, panelWidth - cardWidth - padding))}px`;
+        preview.style.top = `${Math.round(clamp(placement.top, padding, panelHeight - cardHeight - padding))}px`;
     }
 
     activateProperty(property) {
+        this.activePropertyId = String(property.id);
+        this.activeProperty = property;
+
         this.clearActiveState();
 
         const propertyId =
@@ -1213,7 +1359,7 @@ export default class extends Controller {
                 payload.pagination || ''
             );
 
-            this.hidePreview();
+            const previousActiveId = this.activePropertyId;
 
             this.currentProperties =
                 this.getValidPropertiesFromCards();
@@ -1221,6 +1367,17 @@ export default class extends Controller {
             this.renderMarkers(
                 this.currentProperties
             );
+
+            // Le bien sélectionné est toujours dans la zone : on garde sa preview ouverte
+            const stillVisible = previousActiveId
+                ? this.currentProperties.find((property) => String(property.id) === previousActiveId)
+                : null;
+
+            if (stillVisible) {
+                this.activateProperty(stillVisible);
+            } else {
+                this.hidePreview();
+            }
         } catch (error) {
             if (error.name === 'AbortError') {
                 return;

@@ -151,6 +151,16 @@
                         #search-card-map-preview .property-card__content {
                             padding-bottom: 12px;
                         }
+
+                        /* Preview positionnée en JS à côté de son marqueur (>= 768px) */
+                        #search-card-map-preview.is-floating:not([hidden]) {
+                            animation: search-card-map-preview-in .18s ease-out;
+                        }
+
+                        @keyframes search-card-map-preview-in {
+                            from { opacity: 0; transform: translateY(4px) scale(.98); }
+                            to { opacity: 1; transform: none; }
+                        }
                     </style>
                 </div>
             </aside>
