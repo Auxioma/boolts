@@ -4,7 +4,7 @@
 
 {% block body %}
 
-{% set statusLabels = {
+    {% set statusLabels = {
     publiee: 'agency_listings.status.publiee',
     depubliee: 'agency_listings.status.depubliee',
     pending: 'agency_listings.status.pending',
@@ -12,710 +12,719 @@
     suspendue: 'agency_listings.status.suspendue',
 } %}
 
-<main id="dashboard" class="dashboard">
+    <main id="dashboard" class="dashboard">
 
-    <div class="container-fluid">
-        <div class="row">
+        <div class="container-fluid">
+            <div class="row">
 
-            {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+                {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-            <div class="col-10 col-md-10 col-12 dashboard-main bg-white">
+                <div class="col-10 col-md-10 col-12 dashboard-main bg-white">
 
-                <div class="row">
-                    <div class="col-12 col-md-10 mx-auto">
+                    <div class="row">
+                        <div class="col-12 col-md-10 mx-auto">
 
-                        <div class="agence-mes-biens-list">
+                            <div class="agence-mes-biens-list">
 
-                            {# ===================================================
+                                {# ===================================================
                                EN-TÊTE : titre + compteurs (annonces / boosts)
                                =================================================== #}
-                            <div class="mes-biens-header mb-24">
+                                <div class="mes-biens-header mb-24">
 
-                                <h2>{{ 'agency_listings.title'|trans }}</h2>
+                                    <h2>{{ 'agency_listings.title'|trans }}</h2>
 
-                            <div class="d-flex align-items-center">
-                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
+                                    <div class="d-flex align-items-center">
+                                        {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
 
-                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
+                                        {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
 
-                            </div>
-
-                            </div> 
-
-                            {# ===================================================
-                               BARRE DE RECHERCHE / FILTRES / TRI / DÉPÔT
-                               =================================================== #}
-                               <div class="property-tools mb-24 d-flex justify-content-end align-items-center gap-2">
-
-                                <button
-                                    type="button"
-                                    class="p-accent btn-dashboard-filter"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#booltsFiltersModal"
-                                    data-controller="boolts-filter-badge"
-                                >
-                                    <i class="icon-sliders-horizontal"></i>
-                                    <span class="d-none d-lg-inline">{{ 'agency_listings.filters'|trans }}</span>
-                                </button>
-
-                                {% set routeName = app.request.attributes.get('_route') %}
-                                {% set baseParams = app.request.query.all|merge({page: 1}) %}
-
-                                {% set currentSort = sortValue|default('p.updatedAt') %}
-                                {% set currentDirection = directionValue|default('DESC')|lower %}
-
-                                {% set sortOptions = [
-                                    {sort: 'p.updatedAt', direction: 'desc', label: 'agency_listings.sort.updated_desc', short: 'agency_listings.sort.updated_desc'},
-                                    {sort: 'p.updatedAt', direction: 'asc', label: 'agency_listings.sort.updated_asc', short: 'agency_listings.sort.updated_asc'},
-                                ] %}
-
-                                {% set currentLabel = 'agency_listings.sort.updated_desc' %}
-                                {% for option in sortOptions %}
-                                    {% if option.sort == currentSort and option.direction == currentDirection %}
-                                        {% set currentLabel = option.short %}
-                                    {% endif %}
-                                {% endfor %}
-
-                                <div class="agence-filter-sort" data-controller="agence-sort">
-
-                                    <button
-                                        type="button"
-                                        class="p-accent btn-dashboard-filter"
-                                        data-action="click->agence-sort#toggle"
-                                        data-agence-sort-target="button"
-                                        aria-expanded="false"
-                                    >
-                                        <i class="icon-arrow-down-up"></i>
-                                        <span class="d-none d-lg-inline">{{ 'agency_listings.sort'|trans }} {{ currentLabel|trans }} </span> 
-                                    </button>
-
-                                    <div
-                                        class="agence-filter-sort__dropdown d-none"
-                                        data-agence-sort-target="menu"
-                                        role="menu"
-                                        aria-label="{{ 'agency_listings.sort.aria_label'|trans }}"
-                                    >
-                                        {% for option in sortOptions %}
-                                            <a
-                                                href="{{ path(routeName, baseParams|merge({sort: option.sort, direction: option.direction})) }}"
-                                                class="agence-filter-sort__item {{ option.sort == currentSort and option.direction == currentDirection ? 'agence-filter-sort__item--active' : '' }}"
-                                                role="menuitem"
-                                            >
-                                                {{ option.label|trans }}
-                                            </a>
-                                        {% endfor %}
                                     </div>
 
-                                </div>
+                                </div> 
 
-                                <a
-                                    href="{{ path('agence_immobiliere_mes_biens', {token: random(2147483647)}) }}"
-                                    class="p-accent btn-deposer-annonce"
-                                >
-                                    <i class="icon-plus"></i>
-                                    {{ 'agency_listings.add_listing'|trans }}
-                                </a>
-                                </div>
+                                {# ===================================================
+                               BARRE DE RECHERCHE / FILTRES / TRI / DÉPÔT
+                               =================================================== #}
 
 
-                            <div class="property-tools mb-24">
 
-                                <form
-                                    method="get"
-                                    action="{{ path('agence_immobiliere_mes_biens_list') }}"
-                                    class="property-search"
-                                    role="search"
-                                    data-controller="mes-biens--search-suggestions"
-                                    data-mes-biens--search-suggestions-url-value="{{ path('agence_immobiliere_mes_biens_search_suggestions') }}"
-                                >
+                                <div class="property-tools mb-24 d-flex flex-nowrap align-items-center gap-2">
 
-                                    <input
-                                        type="search"
-                                        name="search"
-                                        value="{{ app.request.query.get('search') }}"
-                                        placeholder="{{ 'agency_listings.search.placeholder'|trans }}"
-                                        autocomplete="off"
-                                        data-mes-biens--search-suggestions-target="input"
-                                        data-action="input->mes-biens--search-suggestions#onInput keydown->mes-biens--search-suggestions#onKeydown"
+                                    <form
+                                        method="get"
+                                        action="{{ path('agence_immobiliere_mes_biens_list') }}"
+                                        class="property-search"
+                                        role="search"
+                                        data-controller="mes-biens--search-suggestions"
+                                        data-mes-biens--search-suggestions-url-value="{{ path('agence_immobiliere_mes_biens_search_suggestions') }}"
                                     >
 
-                                    {% if app.request.query.get('sort') %}
                                         <input
-                                            type="hidden"
-                                            name="sort"
-                                            value="{{ app.request.query.get('sort') }}"
+                                            type="search"
+                                            name="search"
+                                            value="{{ app.request.query.get('search') }}"
+                                            placeholder="{{ 'agency_listings.search.placeholder'|trans }}"
+                                            autocomplete="off"
+                                            data-mes-biens--search-suggestions-target="input"
+                                            data-action="input->mes-biens--search-suggestions#onInput keydown->mes-biens--search-suggestions#onKeydown"
                                         >
-                                    {% endif %}
 
-                                    {% if app.request.query.get('direction') %}
-                                        <input
-                                            type="hidden"
-                                            name="direction"
-                                            value="{{ app.request.query.get('direction') }}"
-                                        >
-                                    {% endif %}
-
-                                    {% for key, value in app.request.query.all('modal_filter') %}
-
-                                        {% if value is iterable %}
-
-                                            {% for childKey, childValue in value %}
-                                                <input
-                                                    type="hidden"
-                                                    name="modal_filter[{{ key }}][{{ childKey }}]"
-                                                    value="{{ childValue }}"
-                                                >
-                                            {% endfor %}
-
-                                        {% else %}
-
+                                        {% if app.request.query.get('sort') %}
                                             <input
                                                 type="hidden"
-                                                name="modal_filter[{{ key }}]"
-                                                value="{{ value }}"
+                                                name="sort"
+                                                value="{{ app.request.query.get('sort') }}"
                                             >
-
                                         {% endif %}
 
-                                    {% endfor %}
+                                        {% if app.request.query.get('direction') %}
+                                            <input
+                                                type="hidden"
+                                                name="direction"
+                                                value="{{ app.request.query.get('direction') }}"
+                                            >
+                                        {% endif %}
 
-                                    <button
-                                        type="submit"
-                                        class="property-search-submit"
-                                        aria-label="{{ 'agency_listings.search.submit'|trans }}"
+                                        {% for key, value in app.request.query.all('modal_filter') %}
+
+                                            {% if value is iterable %}
+
+                                                {% for childKey, childValue in value %}
+                                                    <input
+                                                        type="hidden"
+                                                        name="modal_filter[{{ key }}][{{ childKey }}]"
+                                                        value="{{ childValue }}"
+                                                    >
+                                                {% endfor %}
+
+                                            {% else %}
+
+                                                <input
+                                                    type="hidden"
+                                                    name="modal_filter[{{ key }}]"
+                                                    value="{{ value }}"
+                                                >
+
+                                            {% endif %}
+
+                                        {% endfor %}
+
+                                        <button
+                                            type="submit"
+                                            class="property-search-submit"
+                                            aria-label="{{ 'agency_listings.search.submit'|trans }}"
+                                        >
+                                            <i class="icon-search" aria-hidden="true"></i>
+                                        </button>
+
+                                        <div
+                                            class="property-search-suggestions"
+                                            role="listbox"
+                                            data-mes-biens--search-suggestions-target="results"
+                                            hidden
+                                        ></div>
+
+                                    </form>
+
+                                    <div class="flex-shrink-0">
+                                    <a
+                                        href="{{ path('agence_immobiliere_mes_biens', {token: random(2147483647)}) }}"
+                                        class="p-accent btn-deposer-annonce text-nowrap"
+                                        aria-label="{{ 'agency_listings.add_listing'|trans }}"
                                     >
-                                        <i class="icon-search" aria-hidden="true"></i>
-                                    </button>
+                                        <i class="icon-plus"></i>
+                                        <span class="d-none d-sm-inline">{{ 'agency_listings.add_listing'|trans }}</span>
+                                    </a>
+                                </div>
+                                </div>
 
-                                    <div
-                                        class="property-search-suggestions"
-                                        role="listbox"
-                                        data-mes-biens--search-suggestions-target="results"
-                                        hidden
-                                    ></div>
+                                {% if drafts is not empty or properties|length %}
 
-                                </form>
-
-                            </div>
-
-                            {% if drafts is not empty or properties|length %}
-
-                                <form
-                                    method="post"
-                                    action="{{ path('agence_immobiliere_mes_biens_bulk_action') }}"
-                                    data-controller="mes-biens--property-bulk-actions"
-                                >
-
-                                    <input
-                                        type="hidden"
-                                        name="_token"
-                                        value="{{ csrf_token('property_bulk_action') }}"
+                                    <form
+                                        method="post"
+                                        action="{{ path('agence_immobiliere_mes_biens_bulk_action') }}"
+                                        data-controller="mes-biens--property-bulk-actions"
                                     >
 
-                                    <input
-                                        type="hidden"
-                                        name="action"
-                                        value=""
-                                    >
+                                        <input
+                                            type="hidden"
+                                            name="_token"
+                                            value="{{ csrf_token('property_bulk_action') }}"
+                                        >
 
-                                    {# ===========================================
-                                       BARRE D'OUTILS : sélection + actions groupées
-                                       =========================================== #}
-                                    {% if properties|length %}
+                                        <input
+                                            type="hidden"
+                                            name="action"
+                                            value=""
+                                        >
 
-<div class="property-toolbar mb-24 d-flex flex-column flex-xl-row align-items-start align-items-xl-center">
 
-    <label class="property-select-all order-2 order-xl-1 mt-3 mt-xl-0">
 
-        <input
-            type="checkbox"
-            data-mes-biens--property-bulk-actions-target="selectAll"
-            data-action="change->mes-biens--property-bulk-actions#toggleAll"
-        >
-
-        <span>{{ 'agency_listings.bulk.select_all'|trans }}</span>
-
-        <span
-            class="property-selection-count"
-            data-mes-biens--property-bulk-actions-target="counter"
-        ></span>
-
-    </label>
-
-    <div class="property-bulk-actions order-1 order-xl-2">
-
-        {# TODO: action groupée "Booster" — endpoint back-end à implémenter #}
-        <button
-            type="button"
-            class="bulk-action bulk-action--boost"
-            disabled
-            data-mes-biens--property-bulk-actions-target="action"
-        >
-            <i class="icon-rocket"></i>
-            {{ 'agency_listings.boost'|trans }}
-        </button>
-
-        <button
-            type="button"
-            class="bulk-action bulk-action--pause"
-            disabled
-            aria-label="{{ 'agency_listings.bulk.pause'|trans }}"
-            data-mes-biens--property-bulk-actions-target="action"
-            data-action="click->mes-biens--property-bulk-actions#setAction"
-            data-action-value="pause"
-        >
-            <i class="icon-pause"></i>
-            <span class="bulk-action__label d-none d-lg-inline">
-                {{ 'agency_listings.bulk.pause'|trans }}
-            </span>
-        </button>
-
-        <button
-            type="button"
-            class="bulk-action bulk-action--reactivate"
-            disabled
-            aria-label="{{ 'agency_listings.reactivate'|trans }}"
-            data-mes-biens--property-bulk-actions-target="action"
-            data-action="click->mes-biens--property-bulk-actions#setAction"
-            data-action-value="reactivate"
-        >
-            <i class="icon-play"></i>
-            <span class="bulk-action__label d-none d-lg-inline">
-                {{ 'agency_listings.reactivate'|trans }}
-            </span>
-        </button>
-
-        <button
-            type="button"
-            class="bulk-action bulk-action--danger bulk-action--delete"
-            disabled
-            aria-label="{{ 'agency_listings.delete'|trans }}"
-            data-mes-biens--property-bulk-actions-target="action"
-            data-action="click->mes-biens--property-bulk-actions#setAction"
-            data-action-value="delete"
-        >
-            <i class="icon-trash"></i>
-            <span class="bulk-action__label d-none d-lg-inline">
-                {{ 'agency_listings.delete'|trans }}
-            </span>
-        </button>
-
-    </div>
-
-</div>
-
-                                    {% endif %}
-
-                                    {# ===========================================
+                                        {# ===========================================
                                        BROUILLONS
                                        Règle métier : 4 brouillons max par utilisateur,
                                        purge auto après 3 mois (mail 30 jours avant).
                                        =========================================== #}
-                                    {% if drafts is not empty %}
+                                        {% if drafts is not empty %}
 
-                                        <section class="mes-biens-card mes-biens-drafts mb-24">
+                                            <section class="mes-biens-card mes-biens-drafts mb-24">
 
-                                            <div class="mes-biens-drafts-grid">
+                                                <div class="mes-biens-drafts-grid">
 
-                                                {% for draft in drafts %}
+                                                    {% for draft in drafts %}
 
-                                                    <article class="draft-row">
+                                                        <article class="draft-row">
 
-                                                        <span class="draft-thumb">
-                                                            <i class="icon-file-text"></i>
-                                                        </span>
+                                                            <span class="draft-thumb">
+                                                                <i class="icon-file-text"></i>
+                                                            </span>
 
-                                                        <div class="draft-info">
+                                                            <div class="draft-info">
 
-                                                            <a
-                                                                href="{{ path('agence_immobiliere_mes_biens_edit', {
+                                                                <a
+                                                                    href="{{ path('agence_immobiliere_mes_biens_edit', {
                                                                     id: draft.id,
                                                                 }) }}"
-                                                                class="draft-title"
-                                                            >
-                                                                {{ draft.titreDuLogement ?: 'agency_listings.draft.untitled'|trans({'%number%': loop.index}) }}
-                                                            </a>
+                                                                    class="draft-title"
+                                                                >
+                                                                    {{ draft.titreDuLogement ?: 'agency_listings.draft.untitled'|trans({'%number%': loop.index}) }}
+                                                                </a>
 
-                                                            <p class="draft-meta">
-                                                                {{ 'agency_listings.draft.updated_at'|trans({
+                                                                <p class="draft-meta">
+                                                                    {{ 'agency_listings.draft.updated_at'|trans({
                                                                     '%date%': (draft.updatedAt ?? draft.createdAt)|date('d/m/Y'),
                                                                     '%time%': (draft.updatedAt ?? draft.createdAt)|date('H:i'),
                                                                 }) }}
-                                                            </p>
+                                                                </p>
 
-                                                        </div>
+                                                            </div>
 
-                                                        <div class="draft-actions">
+                                                            <div class="draft-actions">
 
-                                                            <a
-                                                                href="{{ path('agence_immobiliere_mes_biens_edit', {
+                                                                <a
+                                                                    href="{{ path('agence_immobiliere_mes_biens_edit', {
                                                                     id: draft.id,
                                                                 }) }}"
-                                                                class="row-icon-btn"
-                                                                title="{{ 'agency_listings.draft.edit'|trans }}"
-                                                            >
-                                                                <i class="icon-pencil"></i>
-                                                            </a>
+                                                                    class="row-icon-btn"
+                                                                    title="{{ 'agency_listings.draft.edit'|trans }}"
+                                                                >
+                                                                    <i class="icon-pencil"></i>
+                                                                </a>
 
-                                                            <button
-                                                                type="submit"
-                                                                class="row-icon-btn row-icon-btn--wide"
-                                                                title="{{ 'agency_listings.draft.delete'|trans }}"
-                                                                formaction="{{ path('agence_immobiliere_mes_biens_delete', {
+                                                                <button
+                                                                    type="submit"
+                                                                    class="row-icon-btn row-icon-btn--wide"
+                                                                    title="{{ 'agency_listings.draft.delete'|trans }}"
+                                                                    formaction="{{ path('agence_immobiliere_mes_biens_delete', {
                                                                     id: draft.id,
                                                                 }) }}"
-                                                                formmethod="post"
-                                                                name="_property_token"
-                                                                value="{{ csrf_token('property_delete_' ~ draft.id) }}"
-                                                                onclick="return confirm('{{ 'agency_listings.draft.delete_confirm'|trans|e('js') }}');"
-                                                            >
-                                                                <i class="icon-trash"></i>
-                                                            </button>
+                                                                    formmethod="post"
+                                                                    name="_property_token"
+                                                                    value="{{ csrf_token('property_delete_' ~ draft.id) }}"
+                                                                    onclick="return confirm('{{ 'agency_listings.draft.delete_confirm'|trans|e('js') }}');"
+                                                                >
+                                                                    <i class="icon-trash"></i>
+                                                                </button>
 
-                                                        </div>
+                                                            </div>
 
-                                                    </article>
+                                                        </article>
 
-                                                {% endfor %}
+                                                    {% endfor %}
+
+                                                </div>
+
+                                            </section>
+
+                                        {% endif %}
+
+                                        {# ===========================================
+                                       LISTE DES ANNONCES
+                                       =========================================== #}
+                                        {% if properties|length %}
+
+                                            <section class="mes-biens-card mes-biens-listings">
+
+                                                <div class="d-flex align-items-center justify-content-between gap-3 mb-24">
+                                                    <h3 class="mb-0">Liste</h3>
+                                                                                    <div class="property-tools d-flex flex-nowrap justify-content-end align-items-center gap-2 ms-auto">
+
+                                    <button
+                                        type="button"
+                                        class="p-accent btn-dashboard-filter"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#booltsFiltersModal"
+                                        data-controller="boolts-filter-badge"
+                                    >
+                                        <i class="icon-sliders-horizontal"></i>
+                                        <span class="d-none d-lg-inline">{{ 'agency_listings.filters'|trans }}</span>
+                                    </button>
+
+                                    {% set routeName = app.request.attributes.get('_route') %}
+                                    {% set baseParams = app.request.query.all|merge({page: 1}) %}
+
+                                    {% set currentSort = sortValue|default('p.updatedAt') %}
+                                    {% set currentDirection = directionValue|default('DESC')|lower %}
+
+                                    {% set sortOptions = [
+                                    {sort: 'p.updatedAt', direction: 'desc', label: 'agency_listings.sort.updated_desc', short: 'agency_listings.sort.updated_desc'},
+                                    {sort: 'p.updatedAt', direction: 'asc', label: 'agency_listings.sort.updated_asc', short: 'agency_listings.sort.updated_asc'},
+                                ] %}
+
+                                    {% set currentLabel = 'agency_listings.sort.updated_desc' %}
+                                    {% for option in sortOptions %}
+                                        {% if option.sort == currentSort and option.direction == currentDirection %}
+                                            {% set currentLabel = option.short %}
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <div class="agence-filter-sort" data-controller="agence-sort">
+
+                                        <button
+                                            type="button"
+                                            class="p-accent btn-dashboard-filter"
+                                            data-action="click->agence-sort#toggle"
+                                            data-agence-sort-target="button"
+                                            aria-expanded="false"
+                                        >
+                                            <i class="icon-arrow-down-up"></i>
+                                            <span class="d-none d-lg-inline">{{ 'agency_listings.sort'|trans }} {{ currentLabel|trans }} </span> 
+                                        </button>
+
+                                        <div
+                                            class="agence-filter-sort__dropdown d-none"
+                                            data-agence-sort-target="menu"
+                                            role="menu"
+                                            aria-label="{{ 'agency_listings.sort.aria_label'|trans }}"
+                                        >
+                                            {% for option in sortOptions %}
+                                                <a
+                                                    href="{{ path(routeName, baseParams|merge({sort: option.sort, direction: option.direction})) }}"
+                                                    class="agence-filter-sort__item {{ option.sort == currentSort and option.direction == currentDirection ? 'agence-filter-sort__item--active' : '' }}"
+                                                    role="menuitem"
+                                                >
+                                                    {{ option.label|trans }}
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+
+                                    </div>
+                                </div>
+                                                </div>
+                                               
+                                                                                       {# ===========================================
+                                       BARRE D'OUTILS : sélection + actions groupées
+                                       =========================================== #}
+                                        {% if properties|length %}
+
+                                            <div class="property-toolbar mb-24 d-flex flex-column flex-xl-row align-items-start align-items-xl-center">
+
+                                                <label class="property-select-all order-2 order-xl-1 mt-3 mt-xl-0">
+
+                                                    <input
+                                                        type="checkbox"
+                                                        data-mes-biens--property-bulk-actions-target="selectAll"
+                                                        data-action="change->mes-biens--property-bulk-actions#toggleAll"
+                                                    >
+
+                                                    <span>{{ 'agency_listings.bulk.select_all'|trans }}</span>
+
+                                                    <span
+                                                        class="property-selection-count"
+                                                        data-mes-biens--property-bulk-actions-target="counter"
+                                                    ></span>
+
+                                                </label>
+
+                                                <div class="property-bulk-actions order-1 order-xl-2">
+
+                                                    {# TODO: action groupée "Booster" — endpoint back-end à implémenter #}
+                                                    <button
+                                                        type="button"
+                                                        class="bulk-action bulk-action--boost"
+                                                        disabled
+                                                        data-mes-biens--property-bulk-actions-target="action"
+                                                    >
+                                                        <i class="icon-rocket"></i>
+                                                        {{ 'agency_listings.boost'|trans }}
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        class="bulk-action bulk-action--pause"
+                                                        disabled
+                                                        aria-label="{{ 'agency_listings.bulk.pause'|trans }}"
+                                                        data-mes-biens--property-bulk-actions-target="action"
+                                                        data-action="click->mes-biens--property-bulk-actions#setAction"
+                                                        data-action-value="pause"
+                                                    >
+                                                        <i class="icon-pause"></i>
+                                                        <span class="bulk-action__label d-none d-lg-inline">
+                                                            {{ 'agency_listings.bulk.pause'|trans }}
+                                                        </span>
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        class="bulk-action bulk-action--reactivate"
+                                                        disabled
+                                                        aria-label="{{ 'agency_listings.reactivate'|trans }}"
+                                                        data-mes-biens--property-bulk-actions-target="action"
+                                                        data-action="click->mes-biens--property-bulk-actions#setAction"
+                                                        data-action-value="reactivate"
+                                                    >
+                                                        <i class="icon-play"></i>
+                                                        <span class="bulk-action__label d-none d-lg-inline">
+                                                            {{ 'agency_listings.reactivate'|trans }}
+                                                        </span>
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        class="bulk-action bulk-action--danger bulk-action--delete"
+                                                        disabled
+                                                        aria-label="{{ 'agency_listings.delete'|trans }}"
+                                                        data-mes-biens--property-bulk-actions-target="action"
+                                                        data-action="click->mes-biens--property-bulk-actions#setAction"
+                                                        data-action-value="delete"
+                                                    >
+                                                        <i class="icon-trash"></i>
+                                                        <span class="bulk-action__label d-none d-lg-inline">
+                                                            {{ 'agency_listings.delete'|trans }}
+                                                        </span>
+                                                    </button>
+
+                                                </div>
 
                                             </div>
 
-                                        </section>
+                                        {% endif %} 
 
-                                    {% endif %}
+                                                <div class="property-listings">
 
-                                    {# ===========================================
-                                       LISTE DES ANNONCES
-                                       =========================================== #}
-                                    {% if properties|length %}
+                                                    {% for property in properties %}
 
-                                        <section class="mes-biens-card mes-biens-listings">
+                                                        {% set firstImage = property.propertyImages|first %}
 
-                                            <div class="property-listings">
-
-                                                {% for property in properties %}
-
-                                                    {% set firstImage = property.propertyImages|first %}
-
-                                                    {% set uploadedImage = firstImage
+                                                        {% set uploadedImage = firstImage
                                                         ? vich_uploader_asset(firstImage, 'imageFile')
                                                         : null
                                                     %}
 
-                                                    {% set isBoosted = property.id in boostedPropertyIds %}
-                                                    {% set price = property.prix ?? property.montantLoyerHorsCharge %}
+                                                        {% set isBoosted = property.id in boostedPropertyIds %}
+                                                        {% set price = property.prix ?? property.montantLoyerHorsCharge %}
 
-                                                    <article class="property-listing">
+                                                        <article class="property-listing">
 
-                                                        {% set isPending = property.statut.value == 'pending' %}
+                                                            {% set isPending = property.statut.value == 'pending' %}
 
-                                                        <label class="property-listing-check{{ isPending ? ' property-listing-check--disabled' : '' }}">
+                                                            <label class="property-listing-check{{ isPending ? ' property-listing-check--disabled' : '' }}">
 
-                                                            <input
-                                                                type="checkbox"
-                                                                name="properties[]"
-                                                                value="{{ property.id }}"
-                                                                data-mes-biens--property-bulk-actions-target="checkbox"
-                                                                data-status="{{ property.statut.value }}"
-                                                                data-action="change->mes-biens--property-bulk-actions#refresh"
-                                                                {% if isPending %}
+                                                                <input
+                                                                    type="checkbox"
+                                                                    name="properties[]"
+                                                                    value="{{ property.id }}"
+                                                                    data-mes-biens--property-bulk-actions-target="checkbox"
+                                                                    data-status="{{ property.statut.value }}"
+                                                                    data-action="change->mes-biens--property-bulk-actions#refresh"
+                                                                    {% if isPending %}
                                                                     disabled
                                                                     title="{{ 'agency_listings.pending_selection_disabled'|trans }}"
-                                                                {% endif %}
-                                                            >
-
-                                                        </label>
-
-                                                        <a
-                                                            href="{{ path('app_public_detail_bien', {
-                                                                slug: property.slug,
-                                                            }) }}"
-                                                            class="property-listing-image"
-                                                            aria-label="{{ 'agency_listings.listing.view_detail'|trans({'%title%': property.titreDuLogement ?: 'agency_listings.listing.this_listing'|trans}) }}"
-                                                        >
-
-                                                            {% if uploadedImage %}
-                                                                <img
-                                                                    src="{{ uploadedImage }}"
-                                                                    alt="{{ property.titreDuLogement ?: 'agency_listings.listing.image_alt'|trans }}"
+                                                                    {% endif %}
                                                                 >
-                                                            {% else %}
-                                                                <span class="property-listing-image-empty">
-                                                                    <i class="icon-image-off"></i>
-                                                                </span>
-                                                            {% endif %}
 
-                                                        </a>
-
-                                                        <div class="property-listing-body">
+                                                            </label>
 
                                                             <a
                                                                 href="{{ path('app_public_detail_bien', {
-                                                                    slug: property.slug,
-                                                                }) }}"
-                                                                class="property-listing-title"
+                                                                slug: property.slug,
+                                                            }) }}"
+                                                                class="property-listing-image"
+                                                                aria-label="{{ 'agency_listings.listing.view_detail'|trans({'%title%': property.titreDuLogement ?: 'agency_listings.listing.this_listing'|trans}) }}"
                                                             >
-                                                                {{ property.titreDuLogement ?: 'agency_listings.listing.untitled'|trans }}
+
+                                                                {% if uploadedImage %}
+                                                                    <img
+                                                                        src="{{ uploadedImage }}"
+                                                                        alt="{{ property.titreDuLogement ?: 'agency_listings.listing.image_alt'|trans }}"
+                                                                    >
+                                                                {% else %}
+                                                                    <span class="property-listing-image-empty">
+                                                                        <i class="icon-image-off"></i>
+                                                                    </span>
+                                                                {% endif %}
+
                                                             </a>
 
-                                                            <div class="property-listing-price-row">
+                                                            <div class="property-listing-body">
 
-                                                                {% if price %}
-                                                                    <span class="property-listing-price">
-                                                                        {{ price|number_format(0, ',', ' ') }}
-                                                                        {{ property.user.devise.signe|default('€') }}
+                                                                <a
+                                                                    href="{{ path('app_public_detail_bien', {
+                                                                    slug: property.slug,
+                                                                }) }}"
+                                                                    class="property-listing-title"
+                                                                >
+                                                                    {{ property.titreDuLogement ?: 'agency_listings.listing.untitled'|trans }}
+                                                                </a>
+
+                                                                <div class="property-listing-price-row">
+
+                                                                    {% if price %}
+                                                                        <span class="property-listing-price">
+                                                                            {{ price|number_format(0, ',', ' ') }}
+                                                                            {{ property.user.devise.signe|default('€') }}
+                                                                        </span>
+                                                                    {% endif %}
+
+                                                                    <span class="status-badge status-badge--{{ property.statut.value }}">
+                                                                        {{ statusLabels[property.statut.value] is defined ? statusLabels[property.statut.value]|trans : property.statut.label }}
                                                                     </span>
-                                                                {% endif %}
 
-                                                                <span class="status-badge status-badge--{{ property.statut.value }}">
-                                                                    {{ statusLabels[property.statut.value] is defined ? statusLabels[property.statut.value]|trans : property.statut.label }}
-                                                                </span>
+                                                                    {% if isBoosted %}
+                                                                        <span class="status-badge status-badge--boosted">
+                                                                            {{ 'agency_listings.status.boosted'|trans }}
+                                                                        </span>
+                                                                    {% endif %}
 
-                                                                {% if isBoosted %}
-                                                                    <span class="status-badge status-badge--boosted">
-                                                                        {{ 'agency_listings.status.boosted'|trans }}
+                                                                </div>
+
+                                                                <p class="property-listing-location">
+                                                                    <strong>
+                                                                        {{ property.ville ?: 'agency_listings.listing.no_location'|trans }}{% if property.pays %}, {{ property.pays }}{% endif %}
+                                                                    </strong>
+                                                                    <span>
+                                                                        &nbsp;-&nbsp;
+                                                                        {%- if property.updatedAt -%}
+                                                                            {{ 'agency_listings.listing.updated_at'|trans({'%date%': property.updatedAt|date('d/m/Y')}) }}
+                                                                        {%- else -%}
+                                                                            {{ 'agency_listings.listing.created_at'|trans({'%date%': property.createdAt|date('d/m/Y')}) }}
+                                                                        {%- endif -%}
                                                                     </span>
-                                                                {% endif %}
+                                                                </p>
+
+                                                                <p class="property-listing-ref">
+                                                                    {{ property.referenceInterne ?: property.slug }}
+                                                                </p>
 
                                                             </div>
 
-                                                            <p class="property-listing-location">
-                                                                <strong>
-                                                                    {{ property.ville ?: 'agency_listings.listing.no_location'|trans }}{% if property.pays %}, {{ property.pays }}{% endif %}
-                                                                </strong>
-                                                                <span>
-                                                                    &nbsp;-&nbsp;
-                                                                    {%- if property.updatedAt -%}
-                                                                        {{ 'agency_listings.listing.updated_at'|trans({'%date%': property.updatedAt|date('d/m/Y')}) }}
-                                                                    {%- else -%}
-                                                                        {{ 'agency_listings.listing.created_at'|trans({'%date%': property.createdAt|date('d/m/Y')}) }}
-                                                                    {%- endif -%}
-                                                                </span>
-                                                            </p>
+                                                            <div class="property-listing-actions">
 
-                                                            <p class="property-listing-ref">
-                                                                {{ property.referenceInterne ?: property.slug }}
-                                                            </p>
+                                                                {% if property.statut.value in ['publiee', 'depubliee'] and not isBoosted %}
+                                                                    <button
+                                                                        type="button"
+                                                                        class="btn-booster"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#boostModal{{ property.id }}"
+                                                                    >
+                                                                        <i class="icon-rocket"></i>
+                                                                        {{ 'agency_listings.boost'|trans }}
+                                                                    </button>
+                                                                {% endif %}
 
-                                                        </div>
-
-                                                        <div class="property-listing-actions">
-
-                                                            {% if property.statut.value in ['publiee', 'depubliee'] and not isBoosted %}
-                                                                <button
-                                                                    type="button"
-                                                                    class="btn-booster"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#boostModal{{ property.id }}"
-                                                                >
-                                                                    <i class="icon-rocket"></i>
-                                                                    {{ 'agency_listings.boost'|trans }}
-                                                                </button>
-                                                            {% endif %}
-
-                                                            <a
-                                                                href="{{ path('agence_immobiliere_mes_biens_edit', {
+                                                                <a
+                                                                    href="{{ path('agence_immobiliere_mes_biens_edit', {
                                                                     id: property.id,
                                                                 }) }}"
-                                                                class="row-icon-btn"
-                                                                title="{{ 'agency_listings.listing.edit'|trans }}"
-                                                            >
-                                                                <i class="icon-pencil"></i>
-                                                            </a>
-
-                                                            <div class="dropdown property-listing-menu">
-
-                                                                <button
-                                                                    type="button"
                                                                     class="row-icon-btn"
-                                                                    data-bs-toggle="dropdown"
-                                                                    aria-expanded="false"
-                                                                    aria-label="{{ 'agency_listings.listing.more_actions'|trans }}"
+                                                                    title="{{ 'agency_listings.listing.edit'|trans }}"
                                                                 >
-                                                                    <i class="icon-more-vertical"></i>
-                                                                </button>
+                                                                    <i class="icon-pencil"></i>
+                                                                </a>
 
-                                                                <div class="dropdown-menu dropdown-menu-end property-menu">
-
-                                                                    {% if property.statut.value == 'publiee' %}
-                                                                        <button
-                                                                            type="submit"
-                                                                            class="property-menu-item"
-                                                                            formaction="{{ path('agence_immobiliere_mes_biens_pause', {
-                                                                                id: property.id,
-                                                                            }) }}"
-                                                                            formmethod="post"
-                                                                            name="_property_token"
-                                                                            value="{{ csrf_token('property_pause_' ~ property.id) }}"
-                                                                        >
-                                                                            <i class="icon-pause"></i>
-                                                                            {{ 'agency_listings.listing.pause'|trans }}
-                                                                        </button>
-                                                                    {% elseif property.statut.value == 'depubliee' %}
-                                                                        <button
-                                                                            type="submit"
-                                                                            class="property-menu-item"
-                                                                            formaction="{{ path('agence_immobiliere_mes_biens_reactivate', {
-                                                                                id: property.id,
-                                                                            }) }}"
-                                                                            formmethod="post"
-                                                                            name="_property_token"
-                                                                            value="{{ csrf_token('property_reactivate_' ~ property.id) }}"
-                                                                        >
-                                                                            <i class="icon-play"></i>
-                                                                            {{ 'agency_listings.reactivate'|trans }}
-                                                                        </button>
-                                                                    {% endif %}
+                                                                <div class="dropdown property-listing-menu">
 
                                                                     <button
-                                                                        type="submit"
-                                                                        class="property-menu-item property-menu-item--danger"
-                                                                        formaction="{{ path('agence_immobiliere_mes_biens_delete', {
+                                                                        type="button"
+                                                                        class="row-icon-btn"
+                                                                        data-bs-toggle="dropdown"
+                                                                        aria-expanded="false"
+                                                                        aria-label="{{ 'agency_listings.listing.more_actions'|trans }}"
+                                                                    >
+                                                                        <i class="icon-more-vertical"></i>
+                                                                    </button>
+
+                                                                    <div class="dropdown-menu dropdown-menu-end property-menu">
+
+                                                                        {% if property.statut.value == 'publiee' %}
+                                                                            <button
+                                                                                type="submit"
+                                                                                class="property-menu-item"
+                                                                                formaction="{{ path('agence_immobiliere_mes_biens_pause', {
+                                                                                id: property.id,
+                                                                            }) }}"
+                                                                                formmethod="post"
+                                                                                name="_property_token"
+                                                                                value="{{ csrf_token('property_pause_' ~ property.id) }}"
+                                                                            >
+                                                                                <i class="icon-pause"></i>
+                                                                                {{ 'agency_listings.listing.pause'|trans }}
+                                                                            </button>
+                                                                        {% elseif property.statut.value == 'depubliee' %}
+                                                                            <button
+                                                                                type="submit"
+                                                                                class="property-menu-item"
+                                                                                formaction="{{ path('agence_immobiliere_mes_biens_reactivate', {
+                                                                                id: property.id,
+                                                                            }) }}"
+                                                                                formmethod="post"
+                                                                                name="_property_token"
+                                                                                value="{{ csrf_token('property_reactivate_' ~ property.id) }}"
+                                                                            >
+                                                                                <i class="icon-play"></i>
+                                                                                {{ 'agency_listings.reactivate'|trans }}
+                                                                            </button>
+                                                                        {% endif %}
+
+                                                                        <button
+                                                                            type="submit"
+                                                                            class="property-menu-item property-menu-item--danger"
+                                                                            formaction="{{ path('agence_immobiliere_mes_biens_delete', {
                                                                             id: property.id,
                                                                         }) }}"
-                                                                        formmethod="post"
-                                                                        name="_property_token"
-                                                                        value="{{ csrf_token('property_delete_' ~ property.id) }}"
-                                                                        onclick="return confirm('{{ 'agency_listings.listing.delete_confirm'|trans|e('js') }}');"
-                                                                    >
-                                                                        <i class="icon-trash"></i>
-                                                                        {{ 'agency_listings.delete'|trans }}
-                                                                    </button>
+                                                                            formmethod="post"
+                                                                            name="_property_token"
+                                                                            value="{{ csrf_token('property_delete_' ~ property.id) }}"
+                                                                            onclick="return confirm('{{ 'agency_listings.listing.delete_confirm'|trans|e('js') }}');"
+                                                                        >
+                                                                            <i class="icon-trash"></i>
+                                                                            {{ 'agency_listings.delete'|trans }}
+                                                                        </button>
+
+                                                                    </div>
 
                                                                 </div>
 
                                                             </div>
 
-                                                        </div>
+                                                        </article>
 
-                                                    </article>
-
-                                                    {# ===========================================
+                                                        {# ===========================================
                                                        MODAL DE CONFIRMATION DU BOOST
                                                        =========================================== #}
-{% if property.statut.value in ['publiee', 'depubliee'] and not isBoosted %}
+                                                        {% if property.statut.value in ['publiee', 'depubliee'] and not isBoosted %}
 
-    <div
-        class="modal fade boost-confirm-modal"
-        id="boostModal{{ property.id }}"
-        tabindex="-1"
-        aria-labelledby="boostModalLabel{{ property.id }}"
-        aria-hidden="true"
-    >
+                                                            <div
+                                                                class="modal fade boost-confirm-modal"
+                                                                id="boostModal{{ property.id }}"
+                                                                tabindex="-1"
+                                                                aria-labelledby="boostModalLabel{{ property.id }}"
+                                                                aria-hidden="true"
+                                                            >
 
-        <div class="modal-dialog modal-dialog-centered boost-confirm-dialog">
+                                                                <div class="modal-dialog modal-dialog-centered boost-confirm-dialog">
 
-            <div class="modal-content boost-confirm-content">
+                                                                    <div class="modal-content boost-confirm-content">
 
-                {% if boostPreview.available >= 1 %}
+                                                                        {% if boostPreview.available >= 1 %}
 
-                    {# HEADER FIGMA #}
-                    <div class="boost-confirm-header">
+                                                                            {# HEADER FIGMA #}
+                                                                            <div class="boost-confirm-header">
 
-                        <h2
-                            class="boost-confirm-title"
-                            id="boostModalLabel{{ property.id }}"
-                        >
-                            {{ 'agency_listings.boost_modal.title'|trans }}
-                        </h2>
+                                                                                <h2
+                                                                                    class="boost-confirm-title"
+                                                                                    id="boostModalLabel{{ property.id }}"
+                                                                                >
+                                                                                    {{ 'agency_listings.boost_modal.title'|trans }}
+                                                                                </h2>
 
-                        <button
-                            type="button"
-                            class="boost-confirm-close"
-                            data-bs-dismiss="modal"
-                            aria-label="{{ 'agency_listings.boost_modal.close'|trans }}"
-                        >
-                            <i class="icon-x" aria-hidden="true"></i>
-                        </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    class="boost-confirm-close"
+                                                                                    data-bs-dismiss="modal"
+                                                                                    aria-label="{{ 'agency_listings.boost_modal.close'|trans }}"
+                                                                                >
+                                                                                    <i class="icon-x" aria-hidden="true"></i>
+                                                                                </button>
 
-                    </div>
-
-
-                    {# IMAGE EXACTE DU FIGMA #}
-                    <div class="boost-confirm-illustration">
-                        <img
-                            src="{{ asset('images/boost/boost-illustration.png') }}"
-                            alt=""
-                            width="122"
-                            height="122"
-                        >
-                    </div>
+                                                                            </div>
 
 
-                    {# INFORMATIONS #}
-                    <div class="boost-confirm-infos">
-
-                        <div class="boost-confirm-info-row">
-
-                            <span class="boost-confirm-info-label">
-                                {{ 'agency_listings.boost_modal.remaining'|trans }}
-                            </span>
-
-                            <strong class="boost-confirm-info-value">
-                                {{ boostPreview.available }}
-                            </strong>
-
-                        </div>
-
-                        <div class="boost-confirm-info-row">
-
-                            <span class="boost-confirm-info-label">
-                                {{ 'agency_listings.boost_modal.duration'|trans }}
-                            </span>
-
-                            <strong class="boost-confirm-info-value">
-                                {{ boostPreview.durationDays }}
-                                {{ (boostPreview.durationDays > 1 ? 'agency_listings.boost_modal.days' : 'agency_listings.boost_modal.day')|trans }}
-                            </strong>
-
-                        </div>
-
-                    </div>
+                                                                            {# IMAGE EXACTE DU FIGMA #}
+                                                                            <div class="boost-confirm-illustration">
+                                                                                <img
+                                                                                    src="{{ asset('images/boost/boost-illustration.png') }}"
+                                                                                    alt=""
+                                                                                    width="122"
+                                                                                    height="122"
+                                                                                >
+                                                                            </div>
 
 
-                    {# TEXTE FIGMA #}
-                    <p class="boost-confirm-description">
+                                                                            {# INFORMATIONS #}
+                                                                            <div class="boost-confirm-infos">
 
-                        {{ 'agency_listings.boost_modal.description'|trans({
+                                                                                <div class="boost-confirm-info-row">
+
+                                                                                    <span class="boost-confirm-info-label">
+                                                                                        {{ 'agency_listings.boost_modal.remaining'|trans }}
+                                                                                    </span>
+
+                                                                                    <strong class="boost-confirm-info-value">
+                                                                                        {{ boostPreview.available }}
+                                                                                    </strong>
+
+                                                                                </div>
+
+                                                                                <div class="boost-confirm-info-row">
+
+                                                                                    <span class="boost-confirm-info-label">
+                                                                                        {{ 'agency_listings.boost_modal.duration'|trans }}
+                                                                                    </span>
+
+                                                                                    <strong class="boost-confirm-info-value">
+                                                                                        {{ boostPreview.durationDays }}
+                                                                                        {{ (boostPreview.durationDays > 1 ? 'agency_listings.boost_modal.days' : 'agency_listings.boost_modal.day')|trans }}
+                                                                                    </strong>
+
+                                                                                </div>
+
+                                                                            </div>
+
+
+                                                                            {# TEXTE FIGMA #}
+                                                                            <p class="boost-confirm-description">
+
+                                                                                {{ 'agency_listings.boost_modal.description'|trans({
                             '%days%': boostPreview.durationDays,
                             '%dayLabel%': (boostPreview.durationDays > 1 ? 'agency_listings.boost_modal.days' : 'agency_listings.boost_modal.day')|trans,
                         }) }}
 
-                        {{ 'agency_listings.boost_modal.paused_notice'|trans }}
+                                                                                {{ 'agency_listings.boost_modal.paused_notice'|trans }}
 
-                    </p>
+                                                                            </p>
 
 
-                    {# ACTIONS #}
-                    <div class="boost-confirm-actions">
+                                                                            {# ACTIONS #}
+                                                                            <div class="boost-confirm-actions">
 
-                        <button
-                            type="button"
-                            class="boost-confirm-cancel"
-                            data-bs-dismiss="modal"
-                        >
-                            {{ 'agency_listings.boost_modal.cancel'|trans }}
-                        </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    class="boost-confirm-cancel"
+                                                                                    data-bs-dismiss="modal"
+                                                                                >
+                                                                                    {{ 'agency_listings.boost_modal.cancel'|trans }}
+                                                                                </button>
 
-                        <button
-                            type="submit"
-                            class="boost-confirm-submit"
-                            formaction="{{ path('agence_immobiliere_mes_biens_boost', {
+                                                                                <button
+                                                                                    type="submit"
+                                                                                    class="boost-confirm-submit"
+                                                                                    formaction="{{ path('agence_immobiliere_mes_biens_boost', {
                                 id: property.id
                             }) }}"
-                            formmethod="post"
-                            name="_property_token"
-                            value="{{ csrf_token('property_boost_' ~ property.id) }}"
-                        >
-                            {{ 'agency_listings.boost_modal.submit'|trans }}
-                        </button>
+                                                                                    formmethod="post"
+                                                                                    name="_property_token"
+                                                                                    value="{{ csrf_token('property_boost_' ~ property.id) }}"
+                                                                                >
+                                                                                    {{ 'agency_listings.boost_modal.submit'|trans }}
+                                                                                </button>
 
-                    </div>
+                                                                            </div>
 
 
-                {% else %}
+                                                                        {% else %}
 
-                    {#
+                                                                            {#
                         Aucun écran "plus de boost" n'existe
                         dans le node Figma fourni.
 
@@ -723,80 +732,80 @@
                         sans inventer un nouveau design.
                     #}
 
-                    <div class="boost-confirm-no-boost">
+                                                                            <div class="boost-confirm-no-boost">
 
-                        <p>
-                            {{ 'agency_listings.boost_modal.empty'|trans }}
-                        </p>
+                                                                                <p>
+                                                                                    {{ 'agency_listings.boost_modal.empty'|trans }}
+                                                                                </p>
 
-                        <a
-                            href="{{ path('agence_immobiliere_options') }}"
-                            class="boost-confirm-submit"
-                        >
-                            {{ 'agency_listings.boost_modal.packs'|trans }}
-                        </a>
+                                                                                <a
+                                                                                    href="{{ path('agence_immobiliere_options') }}"
+                                                                                    class="boost-confirm-submit"
+                                                                                >
+                                                                                    {{ 'agency_listings.boost_modal.packs'|trans }}
+                                                                                </a>
 
-                    </div>
+                                                                            </div>
 
-                {% endif %}
+                                                                        {% endif %}
 
-            </div>
+                                                                    </div>
 
-        </div>
+                                                                </div>
 
-    </div>
+                                                            </div>
 
-{% endif %}
+                                                        {% endif %}
 
-                                                {% endfor %}
+                                                    {% endfor %}
 
-                                            </div>
-
-                                            {% if properties.pageCount > 1 %}
-                                                <div class="mes-biens-pagination">
-                                                    {{ knp_pagination_render(properties, 'pagination/agence_pagination.html.twig') }}
                                                 </div>
-                                            {% endif %}
 
-                                        </section>
+                                                {% if properties.pageCount > 1 %}
+                                                    <div class="mes-biens-pagination">
+                                                        {{ knp_pagination_render(properties, 'pagination/agence_pagination.html.twig') }}
+                                                    </div>
+                                                {% endif %}
 
-                                    {% endif %}
+                                            </section>
 
-                                </form>
+                                        {% endif %}
 
-                            {% endif %}
+                                    </form>
 
-                            {% if drafts is empty and not properties|length %}
+                                {% endif %}
 
-                                <div class="property-empty">
+                                {% if drafts is empty and not properties|length %}
 
-                                    <i class="icon-building-2"></i>
+                                    <div class="property-empty">
 
-                                    <h2>
-                                        {{ 'agency_listings.empty.title'|trans }}
-                                    </h2>
+                                        <i class="icon-building-2"></i>
 
-                                    <p>
-                                        {{ 'agency_listings.empty.description'|trans }}
-                                    </p>
+                                        <h2>
+                                            {{ 'agency_listings.empty.title'|trans }}
+                                        </h2>
 
-                                </div>
+                                        <p>
+                                            {{ 'agency_listings.empty.description'|trans }}
+                                        </p>
 
-                            {% endif %}
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
 
                         </div>
-
                     </div>
+
                 </div>
 
             </div>
-
         </div>
-    </div>
 
-</main>
+    </main>
 
-{{ include('composant/_search/_search.html.twig', {
+    {{ include('composant/_search/_search.html.twig', {
     formModal: filterForm,
     totalResults: properties.getTotalItemCount,
     filterCountUrl: path('agence_immobiliere_mes_biens_filters_count'),
