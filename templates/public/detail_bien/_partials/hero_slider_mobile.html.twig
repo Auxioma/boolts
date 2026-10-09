@@ -1,0 +1,89 @@
+{#
+ Template: templates/public/detail_bien/_partials/hero_slider_mobile.html.twig
+ Role: Slider Splide des photos du bien, affiché uniquement sur mobile (< 768px).
+ Context: Inclus depuis public/detail_bien/index.html.twig (variables : property, totalPictures).
+ Maintenance: Le JS est dans assets/controllers/detailbien/hero_slider_controller.js.
+#}
+
+<section
+    class="bt-hero-responsive position-relative overflow-hidden"
+    data-controller="detailbien--hero-slider"
+    data-open-gallery
+>
+    <div
+        class="splide bt-hero-slider"
+        data-detailbien--hero-slider-target="slider"
+        aria-label="{{ 'detail_bien.photo.main_alt'|trans }}"
+    >
+        <div class="splide__track">
+            <ul class="splide__list">
+                {% for picture in property.propertyImages %}
+                    {% set imageSrc = vich_uploader_asset(picture, 'imageFile') %}
+
+                    {% if imageSrc %}
+                        <li class="splide__slide">
+                            <img
+                                src="{{ imageSrc }}"
+                                class="bt-hero-responsive__image js-bt-img"
+                                alt="{{ 'detail_bien.photo.alt'|trans({'%index%': loop.index}) }}"
+                                loading="{{ loop.first ? 'eager' : 'lazy' }}"
+                            >
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
+        <button
+            class="bt-btn bt-btn--glass"
+            type="button"
+            data-open-gallery
+            data-detailbien--hero-slider-target="counter"
+        >
+            1/{{ totalPictures }}
+        </button>
+    </div>
+</section>
+
+<style>
+    .bt-hero-slider,
+    .bt-hero-slider .splide__track,
+    .bt-hero-slider .splide__list,
+    .bt-hero-slider .splide__slide {
+        height: 100%;
+    }
+
+    /* Dots centrés en bas de l'image, au-dessus du dégradé (::after z-index 2) */
+    .bt-hero-slider .bt-hero-slider__pagination {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 16px;
+        z-index: 3;
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin: 0;
+        padding: 0 72px;
+        pointer-events: none;
+    }
+
+    .bt-hero-slider .bt-hero-slider__dot {
+        width: 8px;
+        height: 8px;
+        margin: 0;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, .5);
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
+
+    .bt-hero-slider .bt-hero-slider__dot.is-active {
+        background: #fff;
+        transform: none;
+    }
+</style>

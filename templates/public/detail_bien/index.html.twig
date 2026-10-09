@@ -54,23 +54,8 @@
             <main>
 
                 {% if totalPictures > 0 and firstPicture %}
-                    <section
-                        class="bt-hero-responsive position-relative overflow-hidden"
-                        data-open-gallery
-                    >
-                        <img
-                            src="{{ vich_uploader_asset(firstPicture, 'imageFile') }}"
-                            class="bt-hero-responsive__image js-bt-img"
-                            alt="{{ 'detail_bien.photo.main_alt'|trans }}"
-                            loading="lazy"
-                        >
-
-                        <div class="bt-hero-responsive__actions d-flex align-items-center gap-3">
-                            <button class="bt-btn bt-btn--glass" type="button" data-open-gallery>
-                                1/{{ totalPictures }}
-                            </button>
-                        </div>
-                    </section>
+                    {# Slider photos mobile (< 768px) — Splide #}
+                    {{ include('public/detail_bien/_partials/hero_slider_mobile.html.twig') }}
                 {% endif %}
                 <style>
                     /* Actions au-dessus */
