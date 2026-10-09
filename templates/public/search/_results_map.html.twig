@@ -140,6 +140,18 @@
                             data-search-card-map-target="previewCard"
                         ></div>
                     </article>
+
+                    {# Aperçu carte : on masque le titre du bien (description) et l'adresse de la card clonée (sans toucher au composant) #}
+                    <style>
+                        #search-card-map-preview .property-card__description,
+                        #search-card-map-preview .property-card__footer {
+                            display: none;
+                        }
+
+                        #search-card-map-preview .property-card__content {
+                            padding-bottom: 12px;
+                        }
+                    </style>
                 </div>
             </aside>
         </div>
