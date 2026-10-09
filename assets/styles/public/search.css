@@ -474,7 +474,7 @@ width: 44px;
 .boolts-filter-content {
     border: 0;
 
-    border-radius: 44px;
+    border-radius: 24px;
 
     background: var(--color-white);
 }
@@ -930,6 +930,12 @@ width: 44px;
 }
 
 @media (max-width: 767.98px) {
+
+    .boolts-filter-modal {
+        bottom: 0;
+        height: 90%;
+        top: initial;
+    }
     .bt-research-main {
         padding-top: 42px;
 
@@ -1022,7 +1028,7 @@ width: 44px;
 
         height: 100%;
 
-        margin: 0;
+        margin: auto;
     }
 
     .boolts-filter-content {
@@ -1030,12 +1036,10 @@ width: 44px;
 
         border-radius: 24px 24px 0 0;
 
-        padding: 24px 16px 16px;
+
     }
 
-    .boolts-filter-header {
-        margin-bottom: 24px;
-    }
+
 
     .boolts-filter-block h3,
     .boolts-filter-accordion .accordion-button {
@@ -1311,7 +1315,7 @@ width: 44px;
 }
 
 .boolts-choice i {
-    font-size: 22px;
+    /*font-size: 22px;*/
 
     line-height: 1;
 
@@ -1769,14 +1773,6 @@ width: 44px;
     .boolts-filter-content {
         height: 100dvh;
         border-radius: 28px 28px 0 0;
-    }
-
-    .boolts-filter-header {
-        padding: 28px 24px 24px;
-    }
-
-    .boolts-filter-reset-wrapper {
-        padding: 24px 24px 16px;
     }
 
     .boolts-filter-body {
