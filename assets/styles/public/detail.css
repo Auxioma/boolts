@@ -20,9 +20,7 @@
     --bt-transition: all .2s ease;
 }
 
-.mapboxgl-ctrl-logo {
-    display: none !important;
-}
+
 
 body.bt-modal-open {
     overflow: hidden;

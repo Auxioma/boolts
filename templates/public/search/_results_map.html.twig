@@ -161,6 +161,113 @@
                             from { opacity: 0; transform: translateY(4px) scale(.98); }
                             to { opacity: 1; transform: none; }
                         }
+
+                        /* Mobile (< 768px) : card horizontale ancrée en bas de la carte, façon Airbnb */
+                        @media (max-width: 767.98px) {
+                            /* 8px au-dessus du bloc Liste/Carte (.search-card-switch : fixed, bottom 18px, hauteur 44px) */
+                            #search-card-map-preview {
+                                position: fixed;
+                                left: 16px;
+                                right: 16px;
+                                bottom: calc(18px + 44px + 8px);
+                                top: auto;
+                                width: auto;
+                                border: 0;
+                                border-radius: 20px;
+                                background: transparent;
+                                overflow: visible;
+                                box-shadow: 0 6px 20px rgba(11, 15, 20, .2);
+                            }
+
+                            #search-card-map-preview:not([hidden]) {
+                                animation: search-card-map-preview-up .22s ease-out;
+                            }
+
+                            #search-card-map-preview .property-card-link {
+                                display: block;
+                                color: inherit;
+                                text-decoration: none;
+                            }
+
+                            #search-card-map-preview .property-card {
+                                display: grid;
+                                grid-template-columns: 38% minmax(0, 1fr);
+                                grid-template-rows: auto 1fr;
+                                height: auto;
+                                min-height: 124px;
+                                border-radius: 20px;
+                            }
+
+                            #search-card-map-preview .property-card__media {
+                                grid-column: 1;
+                                grid-row: 1 / -1;
+                                position: relative;
+                                border-bottom: 0;
+                                border-right: 2px solid var(--color-gray-light);
+                            }
+
+                            #search-card-map-preview .property-card__picture,
+                            #search-card-map-preview .property-card__image {
+                                position: absolute;
+                                inset: 0;
+                                display: block;
+                                width: 100%;
+                                height: 100%;
+                                aspect-ratio: auto;
+                            }
+
+                            #search-card-map-preview .property-card__header {
+                                grid-column: 2;
+                                grid-row: 1;
+                                gap: 8px;
+                                padding: 12px 12px 0;
+                            }
+
+                            #search-card-map-preview .property-card__title {
+                                white-space: nowrap;
+                            }
+
+                            #search-card-map-preview .property-card__favorite {
+                                font-size: 20px;
+                            }
+
+                            #search-card-map-preview .property-card__content {
+                                grid-column: 2;
+                                grid-row: 2;
+                                padding: 8px 12px 12px;
+                            }
+
+                            #search-card-map-preview .property-card__price-row {
+                                flex-wrap: wrap;
+                                gap: 4px 8px;
+                            }
+
+                            #search-card-map-preview .property-card__badge {
+                                margin-left: 0;
+                            }
+
+                            #search-card-map-preview .property-card__details {
+                                display: -webkit-box;
+                                margin-top: 8px;
+                                overflow: hidden;
+                                -webkit-line-clamp: 2;
+                                -webkit-box-orient: vertical;
+                            }
+
+                            #search-card-map-preview .search-card-map-preview-close {
+                                top: 8px;
+                                left: 8px;
+                                width: 28px;
+                                height: 28px;
+                                font-size: 16px;
+                                box-shadow: 0 2px 6px rgba(11, 15, 20, .18);
+                            }
+                        }
+
+                        @keyframes search-card-map-preview-up {
+                            from { opacity: 0; transform: translateY(16px); }
+                            to { opacity: 1; transform: none; }
+                        }
                     </style>
                 </div>
             </aside>
