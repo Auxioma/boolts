@@ -112,7 +112,7 @@
 .agence-profile {
     gap: 24px;
 
-    margin-bottom: clamp(24px, calc(24px + (8 * (100vw - 375px) / 1065)), 32px); 
+    margin-bottom: clamp(32px, calc(32px + (16 * (100vw - 375px) / 1065)), 48px);
 }
 
 .agence-profile-avatar {
@@ -139,8 +139,7 @@
     line-height: 34px;
 }
 
-.agence-profile-description
- {
+.agence-profile-description {
     margin: 0;
 
     font-size: 14px;
@@ -578,12 +577,11 @@
 }
 
 .agence-color {
-    color: #0b0f14!important;
+    color: #0b0f14 !important;
 }
 
 
-.agence-availability p
- {
+.agence-availability p {
     color: #858789;
 }
 
@@ -719,32 +717,19 @@
 }
 
 .agence-field label {
-    color: var(--color-text);
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    line-height: 20px;
+    color: #0b0f14;
 }
 
 .agence-field input,
 .agence-field textarea {
     width: 100%;
 
-    border: 2px solid var(--color-gray-light);
-
-    border-radius: var(--radius-sm);
 
     padding: 12px 14px;
 
     color: var(--color-text);
 
-    font-size: 14px;
 
-    font-weight: 500;
-
-    line-height: 20px;
 
     outline: none;
 }
@@ -1019,11 +1004,12 @@
     margin-top: clamp(16px, calc(16px + 8 * ((100vw - 375px) / 1065)), 24px);
 }
 
-.country-flag-agency li{
+.country-flag-agency li {
     padding: 4px 16px;
-  border: 2px solid #ebecec;
-  border-radius: var(--radius-full);
+    border: 2px solid #ebecec;
+    border-radius: var(--radius-full);
 }
+
 @media (max-width: 767.98px) {
     .agence-profile {
         flex-direction: column;
@@ -1031,12 +1017,5 @@
 
     .agence-profile-content {
         max-width: none;
-    }
-}
-
-/* Barre retour mobile (.bt-mobile-topbar, fixe sous le header) : on réserve sa hauteur */
-@media (max-width: 767px) {
-    .agence-page {
-        padding-top: 44px;
     }
 }

@@ -285,6 +285,7 @@ button, input {font-family: inherit;}
 .home-bt-search-bar input {flex: 1;
     
     min-width: 0;
+    border-radius: var(--radius-full);
     
     outline: 0;
     

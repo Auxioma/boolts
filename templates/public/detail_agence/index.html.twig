@@ -10,6 +10,8 @@
 {% block title %}Axa Immobilier
 {% endblock %}
 
+{% block mobile_tabbar %}{% endblock %}
+
 {% block body %}
 
     {% set avatar = user.imageName ? vich_uploader_asset(user, 'imageFile') : null %}
@@ -332,30 +334,6 @@
             } : {},
         }) }}
 
-        {# Tab bar mobile #}
-        {% if app.user and is_granted('ROLE_AGENCE') %}
-            <nav class="agence-mobile-tabbar d-flex d-md-none">
-                <a href="#" class="active">
-                    <i class="icon-search"></i>
-                    Explorer
-                </a>
-
-                <a href="#">
-                    <i class="icon-heart"></i>
-                    Favoris
-                </a>
-
-                <a href="#">
-                    <i class="icon-message-circle"></i>
-                    Messagerie
-                </a>
-
-                <a href="#">
-                    <i class="icon-user-round"></i>
-                    Compte
-                </a>
-            </nav>
-        {% endif %}
 
     </div>
 

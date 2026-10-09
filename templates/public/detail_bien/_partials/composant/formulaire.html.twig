@@ -8,12 +8,12 @@
 {{ form_start(form, {
     attr: {
         id: 'agency_contact_form',
-        class: 'agence-contact-form d-none flex-column',
+        class: 'agence-contact-form d-none flex-column mt-16',
         'data-agence-contact-form-target': 'form',
     },
 }) }}
 <div class="agence-field">
-    <label for="contact_lastname">{{ 'detail_bien.form.lastname.label'|trans }}</label>
+    <label class="p-accent" for="contact_lastname">{{ 'detail_bien.form.lastname.label'|trans }}</label>
     {{ form_widget(form.nom, {
         attr: {
             id: 'contact_lastname',
@@ -24,7 +24,7 @@
 </div>
 
 <div class="agence-field">
-    <label for="contact_firstname">{{ 'detail_bien.form.firstname.label'|trans }}</label>
+    <label class="p-accent" for="contact_firstname">{{ 'detail_bien.form.firstname.label'|trans }}</label>
     {{ form_widget(form.prenom, {
         id: 'contact_firstname',
         attr: {
@@ -35,7 +35,7 @@
 </div>
 
 <div class="agence-field">
-    <label for="contact_email">{{ 'detail_bien.form.email.label'|trans }}</label>
+    <label class="p-accent" for="contact_email">{{ 'detail_bien.form.email.label'|trans }}</label>
     {{ form_widget(form.email, {
         id: 'contact_email',
         attr: {
@@ -45,7 +45,7 @@
 </div>
 
 <div class="agence-field">
-    <label for="contact_message">{{ 'detail_bien.form.message.label'|trans }}</label>
+    <label class="p-accent" for="contact_message">{{ 'detail_bien.form.message.label'|trans }}</label>
     {{ form_widget(form.message, {
         id: 'contact_message',
         attr: {
@@ -55,8 +55,8 @@
     }) }}
 </div>
 
-<button type="submit" class="agence-btn agence-btn-primary w-100">
-    <i class="icon-mail"></i>
+<button type="submit" class="btn-full-blue w-100">
+    <i class="icon-mail me-2"></i>
     {{ 'detail_bien.form.submit'|trans }}
 </button>
 {{ form_end(form) }}
