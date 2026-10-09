@@ -40,7 +40,8 @@ export default class extends Controller {
 
         this.handleClickOutside = this.handleClickOutside.bind(this);
 
-        document.addEventListener('click', this.handleClickOutside);
+        // pointerdown (et non click) : sur iOS, un tap sur une zone non cliquable n'envoie pas de click au document
+        document.addEventListener('pointerdown', this.handleClickOutside);
 
         /*
          * Champs cachés préremplis par le serveur (ex. barre de recherche
@@ -60,7 +61,7 @@ export default class extends Controller {
     }
 
     disconnect() {
-        document.removeEventListener('click', this.handleClickOutside);
+        document.removeEventListener('pointerdown', this.handleClickOutside);
 
         if (this.abortController) {
             this.abortController.abort();
@@ -388,6 +389,12 @@ export default class extends Controller {
     clearResults() {
         this.resultsTarget.innerHTML = '';
         this.resultsTarget.classList.remove('is-active');
+    }
+
+    handleKeydown(event) {
+        if (event.key === 'Escape') {
+            this.clearResults();
+        }
     }
 
     handleClickOutside(event) {

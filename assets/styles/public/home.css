@@ -1161,7 +1161,7 @@ button, input {font-family: inherit;}
     
     border-radius: 16px;
     
-    height: 250px;
+    max-height: 250px;
     
     overflow-y: auto;}
 .home-bt-search-bar__results.is-active {display: block;
