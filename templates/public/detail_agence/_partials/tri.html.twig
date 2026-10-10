@@ -13,18 +13,18 @@
                                     {% set currentSort = app.request.query.get('sort', 'p.createdAt') %}
                                     {% set currentDirection = app.request.query.get('direction', 'desc') %}
 
-                                    {% set currentLabel = 'Plus récentes' %}
+                                    {% set currentLabel = 'detail_agence.sort.current.newest'|trans %}
 
                                     {% if currentSort == 'p.createdAt' and currentDirection == 'asc' %}
-                                        {% set currentLabel = 'Plus anciennes' %}
+                                        {% set currentLabel = 'detail_agence.sort.current.oldest'|trans %}
                                     {% elseif currentSort == 'p.views' and currentDirection == 'desc' %}
-                                        {% set currentLabel = 'Vues : plus → moins' %}
+                                        {% set currentLabel = 'detail_agence.sort.current.views_desc'|trans %}
                                     {% elseif currentSort == 'p.views' and currentDirection == 'asc' %}
-                                        {% set currentLabel = 'Vues : moins → plus' %}
+                                        {% set currentLabel = 'detail_agence.sort.current.views_asc'|trans %}
                                     {% elseif currentSort == 'favorisCount' and currentDirection == 'desc' %}
-                                        {% set currentLabel = 'Favoris : plus → moins' %}
+                                        {% set currentLabel = 'detail_agence.sort.current.favorites_desc'|trans %}
                                     {% elseif currentSort == 'favorisCount' and currentDirection == 'asc' %}
-                                        {% set currentLabel = 'Favoris : moins → plus' %}
+                                        {% set currentLabel = 'detail_agence.sort.current.favorites_asc'|trans %}
                                     {% endif %}
 <div class="agence-filter-sort" data-controller="agence-sort">
     <button
@@ -35,21 +35,21 @@
         aria-expanded="false"
     >
         <i class="icon-arrow-down-up"></i>
-        Tri : {{ currentLabel }}
+        {{ 'detail_agence.sort.button'|trans({'%label%': currentLabel}) }}
     </button>
 
     <div
         class="agence-filter-sort__dropdown d-none"
         data-agence-sort-target="menu"
         role="menu"
-        aria-label="Trier les annonces"
+        aria-label="{{ 'detail_agence.sort.aria_label'|trans }}"
     >
         <a
             href="{{ path(routeName, baseParams|merge({sort: 'p.createdAt', direction: 'desc'})) }}"
             class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
-            Date d'ajout (récent → ancien)
+            {{ 'detail_agence.sort.option.date_desc'|trans }}
         </a>
 
         <a
@@ -57,7 +57,7 @@
             class="agence-filter-sort__item {{ currentSort == 'p.createdAt' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
-            Date d'ajout (ancien → récent)
+            {{ 'detail_agence.sort.option.date_asc'|trans }}
         </a>
 
         <a
@@ -65,7 +65,7 @@
             class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
-            Vues (plus → moins)
+            {{ 'detail_agence.sort.option.views_desc'|trans }}
         </a>
 
         <a
@@ -73,7 +73,7 @@
             class="agence-filter-sort__item {{ currentSort == 'p.views' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
-            Vues (moins → plus)
+            {{ 'detail_agence.sort.option.views_asc'|trans }}
         </a>
 
         <a
@@ -81,7 +81,7 @@
             class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'desc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
-            Favoris (plus → moins)
+            {{ 'detail_agence.sort.option.favorites_desc'|trans }}
         </a>
 
         <a
@@ -89,7 +89,7 @@
             class="agence-filter-sort__item {{ currentSort == 'favorisCount' and currentDirection == 'asc' ? 'agence-filter-sort__item--active' : '' }}"
             role="menuitem"
         >
-            Favoris (moins → plus)
+            {{ 'detail_agence.sort.option.favorites_asc'|trans }}
         </a>
     </div>
 </div>

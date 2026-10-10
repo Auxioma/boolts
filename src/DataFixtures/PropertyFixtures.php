@@ -67,6 +67,7 @@ final class PropertyFixtures extends Fixture implements DependentFixtureInterfac
             $property
                 ->setUser($this->getReference(UserFixtures::USER_AGENCE_REFERENCE_PREFIX.$data['agency'], User::class))
                 ->setReferenceInterne($data['referenceInterne'])
+                ->setCreatedAt(self::randomDateInLastSixMonths())
                 ->setSlug($data['slug'])
                 ->setStatut(StatutAnnonceImmobiliere::PUBLIEE)
                 ->setTypeBien($this->getReference(
@@ -178,6 +179,17 @@ final class PropertyFixtures extends Fixture implements DependentFixtureInterfac
             $property->addPropertyImage($propertyImage);
             $manager->persist($propertyImage);
         }
+    }
+
+    /**
+     * Date aléatoire entre il y a 6 mois et maintenant.
+     */
+    private static function randomDateInLastSixMonths(): \DateTimeImmutable
+    {
+        $now = new \DateTimeImmutable();
+        $from = $now->modify('-6 months');
+
+        return $now->setTimestamp(random_int($from->getTimestamp(), $now->getTimestamp()));
     }
 
     /**

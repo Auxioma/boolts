@@ -34,8 +34,8 @@
         {% if app.user and is_granted('ROLE_AGENCE') %}
             {# Barre violette desktop uniquement #}
             <div class="agence-preview-bar d-none d-lg-flex align-items-center justify-content-center">
-                <span>Voici comment votre agence est présentée aux particuliers.</span>
-                <a href="{{ path('agence_immobiliere_parametres') }}" class="agence-preview-btn p-accent rounded-pill">Modifier</a>
+                <span>{{ 'detail_agence.preview.message'|trans }}</span>
+                <a href="{{ path('agence_immobiliere_parametres') }}" class="agence-preview-btn p-accent rounded-pill">{{ 'detail_agence.preview.edit'|trans }}</a>
             </div>
         {% endif %}
 
@@ -65,7 +65,7 @@
 
                                     <div class="agence-profile-infos">
                                          <p class="mb-0" style="color:#5d00ff">{{ user.emailContact }}</p>  
-                                         <p class="mt-2 mb-0" style="color:#0b0f14">Agence immobilière -
+                                         <p class="mt-2 mb-0" style="color:#0b0f14">{{ 'detail_agence.profile.agency_type'|trans }} -
                                             {{ user.adresseContact }}
                                             {{ user.codePostalContact }}
                                             {{ user.villeContact }}
@@ -99,7 +99,7 @@
 
                                 <div class="d-flex mb-3 gap-2">
 
-                                     <h3 class="mb-0">Biens de l’agence récemment ajoutés</h3>
+                                     <h3 class="mb-0">{{ 'detail_agence.properties.title'|trans }}</h3>
                                 </div>
                                 <div class="d-flex flex-wrap gap-2">
 
@@ -114,7 +114,7 @@
                                         aria-controls="booltsFiltersModal"
                                     >
                                         <i class="icon-sliders-horizontal"></i>
-                                        Filtres
+                                        {{ 'detail_agence.filters.button'|trans }}
                                     </button>
 
                                     {{ include('public/detail_agence/_partials/tri.html.twig') }}
@@ -145,20 +145,20 @@
 
                                         {% set isLocation = transactionSlug|lower in ['location', 'louer', 'rent'] or transactionName|lower in ['location', 'louer', 'rent'] %}
 
-                                        {% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
+                                        {% set propertyTitle = 'detail_agence.card.title'|trans({'%type%': bienImmobilier.typeBien.name, '%transaction%': bienImmobilier.typeTransaction.name}) %}
                                         {% set devise = bienImmobilier.user and bienImmobilier.user.devise ? bienImmobilier.user.devise.signe|default('€') : '€' %}
                                         {% set chargesNumber = bienImmobilier.montantDesCharges is not empty ? bienImmobilier.montantDesCharges + 0 : 0 %}
 
                                         {% if isLocation and bienImmobilier.montantLoyerHorsCharge is not empty %}
                                             {% set propertyPrice = (bienImmobilier.montantLoyerHorsCharge + chargesNumber)|number_format(0, ',', ' ') ~ ' ' ~ devise %}
-                                            {% set propertyPeriod = 'search.card.per_month'|trans %}
-                                            {% set propertyBadge = chargesNumber > 0 ? 'search.card.charges_included'|trans : 'search.card.charges_excluded'|trans %}
+                                            {% set propertyPeriod = 'detail_agence.card.per_month'|trans %}
+                                            {% set propertyBadge = chargesNumber > 0 ? 'detail_agence.card.charges_included'|trans : 'detail_agence.card.charges_excluded'|trans %}
                                         {% elseif bienImmobilier.prix is not empty %}
                                             {% set propertyPrice = bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ devise %}
                                             {% set propertyPeriod = '' %}
-                                            {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'search.card.sale'|trans %}
+                                            {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'detail_agence.card.sale'|trans %}
                                         {% else %}
-                                            {% set propertyPrice = 'search.card.price_on_request'|trans %}
+                                            {% set propertyPrice = 'detail_agence.card.price_on_request'|trans %}
                                             {% set propertyPeriod = '' %}
                                             {% set propertyBadge = transactionName|capitalize %}
                                         {% endif %}
@@ -175,13 +175,13 @@
 
                                         {% if bienImmobilier.chambres is not empty %}
                                             {% set details = details|merge([
-                                            bienImmobilier.chambres ~ ' chambre' ~ (bienImmobilier.chambres > 1 ? 's' : ''),
+                                            (bienImmobilier.chambres > 1 ? 'detail_agence.card.bedrooms.other' : 'detail_agence.card.bedrooms.one')|trans({'%count%': bienImmobilier.chambres}),
                                         ]) %}
                                         {% endif %}
 
                                         {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
                                             {% set details = details|merge([
-                                            bienImmobilier.salleDeBains ~ ' salle' ~ (bienImmobilier.salleDeBains > 1 ? 's' : '') ~ ' de bains',
+                                            (bienImmobilier.salleDeBains > 1 ? 'detail_agence.card.bathrooms.other' : 'detail_agence.card.bathrooms.one')|trans({'%count%': bienImmobilier.salleDeBains}),
                                         ]) %}
                                         {% endif %}
 
@@ -234,7 +234,7 @@
 
                                         <div class="col-12">
                                             <div class="agence-empty-state">
-                                                Aucun bien n’est disponible pour le moment.
+                                                {{ 'detail_agence.properties.empty'|trans }}
                                             </div>
                                         </div>
 
