@@ -54,7 +54,10 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        '/public/search',
+        path: [
+            'en' => '/public/search',
+            'fr' => '/fr/public/search',
+        ],
         name: 'app_public_search',
         methods: ['POST']
     )]
@@ -203,7 +206,10 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        '/public/search/{searchToken}',
+        path: [
+            'en' => '/public/search/{searchToken}',
+            'fr' => '/fr/public/search/{searchToken}',
+        ],
         name: 'app_public_search_results',
         requirements: ['searchToken' => '[0-9a-f]{32}'],
         methods: ['GET']
@@ -412,7 +418,10 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        '/public/search/resume',
+        path: [
+            'en' => '/public/search/resume',
+            'fr' => '/fr/public/search/resume',
+        ],
         name: 'app_public_search_resume',
         methods: ['GET']
     )]
@@ -512,7 +521,10 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        '/public/search/forget',
+        path: [
+            'en' => '/public/search/forget',
+            'fr' => '/fr/public/search/forget',
+        ],
         name: 'app_public_search_forget',
         methods: ['GET']
     )]
@@ -537,7 +549,10 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        '/public/search/{searchToken}/map-bounds',
+        path: [
+            'en' => '/public/search/{searchToken}/map-bounds',
+            'fr' => '/fr/public/search/{searchToken}/map-bounds',
+        ],
         name: 'app_public_search_map_bounds',
         requirements: ['searchToken' => '[0-9a-f]{32}'],
         methods: ['GET']

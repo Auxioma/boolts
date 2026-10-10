@@ -46,7 +46,14 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         'adresseComplementContact',
     ];
 
-    #[Route('/dashboard/api/profile', name: 'api_profile_agence_immobiliere', methods: ['POST'])]
+    #[Route(
+        path: [
+            'en' => '/dashboard/api/profile',
+            'fr' => '/fr/dashboard/api/profile',
+        ],
+        name: 'api_profile_agence_immobiliere',
+        methods: ['POST']
+    )]
     /**
      * Handles the index controller action.
      */

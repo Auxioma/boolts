@@ -260,7 +260,7 @@
                                         <span class="d-none d-lg-inline">{{ 'agency_listings.filters'|trans }}</span>
                                     </button>
 
-                                    {% set routeName = app.request.attributes.get('_route') %}
+                                    {% set routeName = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) %}
                                     {% set baseParams = app.request.query.all|merge({page: 1}) %}
 
                                     {% set currentSort = sortValue|default('p.updatedAt') %}

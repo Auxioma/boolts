@@ -37,7 +37,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Le bien courant est celui de la session (`mes_biens_property_id`), comme pour
  * la génération IA de description.
  */
-#[Route('/mes/biens/photos', name: 'agence_immobiliere_mes_biens_photo_')]
+#[Route(
+    path: [
+        'en' => '/mes/biens/photos',
+        'fr' => '/fr/mes/biens/photos',
+    ],
+    name: 'agence_immobiliere_mes_biens_photo_'
+)]
 #[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereMesBiensImagesController extends AbstractController
 {

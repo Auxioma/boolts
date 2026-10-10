@@ -22,7 +22,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/immobiliere/factures', name: 'agence_immobiliere_facture_')]
+#[Route(
+    path: [
+        'en' => '/immobiliere/factures',
+        'fr' => '/fr/immobiliere/factures',
+    ],
+    name: 'agence_immobiliere_facture_'
+)]
 #[IsGranted('ROLE_AGENCE')]
 /**
  * Consultation et téléchargement des factures d'abonnement d'une agence.

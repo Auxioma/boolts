@@ -40,7 +40,13 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/mes/biens', name: 'agence_immobiliere_')]
+#[Route(
+    path: [
+        'en' => '/mes/biens',
+        'fr' => '/fr/mes/biens',
+    ],
+    name: 'agence_immobiliere_'
+)]
 #[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {

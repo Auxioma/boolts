@@ -23,7 +23,13 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class VisiteurDashboardController extends AbstractController
 {
-    #[Route('/visiteur/dashboard', name: 'app_visiteur_dashboard')]
+    #[Route(
+        path: [
+            'en' => '/visiteur/dashboard',
+            'fr' => '/fr/visiteur/dashboard',
+        ],
+        name: 'app_visiteur_dashboard'
+    )]
     /**
      * Handles the index controller action.
      */

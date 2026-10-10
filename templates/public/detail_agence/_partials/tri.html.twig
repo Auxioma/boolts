@@ -5,7 +5,7 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-{% set routeName = app.request.attributes.get('_route') %}
+{% set routeName = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) %}
                                     {% set routeParams = app.request.attributes.get('_route_params') %}
                                     {% set queryParams = app.request.query.all %}
                                     {% set baseParams = routeParams|merge(queryParams)|merge({page: 1}) %}

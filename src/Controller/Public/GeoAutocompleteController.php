@@ -21,7 +21,12 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-#[Route('/geo/autocomplete')]
+#[Route(
+    path: [
+        'en' => '/geo/autocomplete',
+        'fr' => '/fr/geo/autocomplete',
+    ]
+)]
 /**
  * HTTP controller for module Public / GeoAutocompleteController.
  *

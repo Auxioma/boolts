@@ -13,7 +13,7 @@
 
         <div class="px-10 py-10 color-active">
             <a href="{{ path('agence_immobiliere_dashboard') }}"
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_dashboard' ? 'active' : '' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_dashboard' ? 'active' : '' }}">
                 <span>
                     <i class="icon-layout-dashboard mr-10"></i>
                     {{ 'agency_dashboard.sidebar.dashboard'|trans }}
@@ -27,7 +27,7 @@
 
         <div class="px-10 py-10 mt-22 color-active">
             <a href="{{ path('agence_immobiliere_mes_biens_list') }}"
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
                 <span>
                     <i class="icon-building-2 mr-10"></i>
                     {{ 'agency_dashboard.sidebar.listings'|trans }}
@@ -40,7 +40,7 @@
            l'agence lit l'issue de la revue de ses documents. #}
         <div class="px-10 py-10 mt-8 color-active">
             <a href="{{ path('agence_immobiliere_notifications') }}"
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_notifications' ? 'active' : '' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_notifications' ? 'active' : '' }}">
                 <span>
                     <i class="icon-bell mr-10"></i>
                     {{ 'agency_dashboard.notifications'|trans }}
@@ -50,7 +50,7 @@
 
         <div class="px-10 py-10 mt-8 color-active">
             <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_messagerie') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_messagerie' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_messagerie' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
                 <span>
                     <i class="icon-message-circle-more mr-10"></i>
                     {{ 'agency_dashboard.sidebar.messaging'|trans }}
@@ -64,7 +64,7 @@
 
         <div class="px-10 py-10 mt-22 color-active">
             <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_options') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_options' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_options' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
                 <span>
                     <i class="icon-credit-card mr-10"></i>
                     {{ 'agency_dashboard.sidebar.options'|trans }}
@@ -74,7 +74,7 @@
 
         <div class="px-10 py-10 mt-8 color-active">
             <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_mes_factures') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_mes_factures' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_mes_factures' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
                 <span>
                     <i class="icon-receipt mr-10"></i>
                     {{ 'agency_dashboard.sidebar.invoices'|trans }}
@@ -84,7 +84,7 @@
 
         <div class="px-10 py-10 mt-8 color-active">
             <a href="{{ path('agence_immobiliere_parametres') }}"
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_parametres' ? 'active' : '' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_parametres' ? 'active' : '' }}">
                 <span>
                     <i class="icon-settings mr-10"></i>
                     {{ 'agency_dashboard.sidebar.settings'|trans }}
@@ -98,7 +98,7 @@
 
         <div class="px-10 py-10 mt-22 color-active">
             <a href="{{ path('agence_immobiliere_aide') }}"
-               class="menu-dashboard-title {{ app.request.attributes.get('_route') == 'agence_immobiliere_aide' ? 'active' : '' }}">
+               class="menu-dashboard-title {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_aide' ? 'active' : '' }}">
                 <span>
                     <i class="icon-circle-help mr-10"></i>
                     {{ 'agency_dashboard.sidebar.help'|trans }}

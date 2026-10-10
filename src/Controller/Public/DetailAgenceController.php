@@ -53,7 +53,13 @@ final class DetailAgenceController extends AbstractController
     ) {
     }
 
-    #[Route('/agency/{slug}', name: 'app_public_detail_agence')]
+    #[Route(
+        path: [
+            'en' => '/agency/{slug}',
+            'fr' => '/fr/agency/{slug}',
+        ],
+        name: 'app_public_detail_agence'
+    )]
     /**
      * Handles the index controller action.
      */
@@ -170,7 +176,14 @@ final class DetailAgenceController extends AbstractController
     /**
      * Compteur « Voir les X logements » de la modale de filtres.
      */
-    #[Route('/agency/{slug}/filtres/count', name: 'app_public_detail_agence_filters_count', methods: ['GET'])]
+    #[Route(
+        path: [
+            'en' => '/agency/{slug}/filtres/count',
+            'fr' => '/fr/agency/{slug}/filtres/count',
+        ],
+        name: 'app_public_detail_agence_filters_count',
+        methods: ['GET']
+    )]
     public function filtersCount(
         string $slug,
         UserRepository $userRepository,
@@ -205,7 +218,14 @@ final class DetailAgenceController extends AbstractController
     /**
      * Auto-complétion « Pays » : uniquement les pays des annonces publiées de l'agence.
      */
-    #[Route('/agency/{slug}/filtres/pays', name: 'app_public_detail_agence_filter_countries', methods: ['GET'])]
+    #[Route(
+        path: [
+            'en' => '/agency/{slug}/filtres/pays',
+            'fr' => '/fr/agency/{slug}/filtres/pays',
+        ],
+        name: 'app_public_detail_agence_filter_countries',
+        methods: ['GET']
+    )]
     public function filterCountries(
         string $slug,
         UserRepository $userRepository,
@@ -244,7 +264,14 @@ final class DetailAgenceController extends AbstractController
     /**
      * Auto-complétion « Ville », restreinte au pays éventuellement sélectionné.
      */
-    #[Route('/agency/{slug}/filtres/villes', name: 'app_public_detail_agence_filter_cities', methods: ['GET'])]
+    #[Route(
+        path: [
+            'en' => '/agency/{slug}/filtres/villes',
+            'fr' => '/fr/agency/{slug}/filtres/villes',
+        ],
+        name: 'app_public_detail_agence_filter_cities',
+        methods: ['GET']
+    )]
     public function filterCities(
         string $slug,
         UserRepository $userRepository,
@@ -281,7 +308,14 @@ final class DetailAgenceController extends AbstractController
     /**
      * Auto-complétion « Quartier », restreinte à la ville éventuellement sélectionnée.
      */
-    #[Route('/agency/{slug}/filtres/quartiers', name: 'app_public_detail_agence_filter_districts', methods: ['GET'])]
+    #[Route(
+        path: [
+            'en' => '/agency/{slug}/filtres/quartiers',
+            'fr' => '/fr/agency/{slug}/filtres/quartiers',
+        ],
+        name: 'app_public_detail_agence_filter_districts',
+        methods: ['GET']
+    )]
     public function filterDistricts(
         string $slug,
         UserRepository $userRepository,

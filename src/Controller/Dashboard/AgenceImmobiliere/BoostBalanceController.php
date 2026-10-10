@@ -23,7 +23,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_AGENCE')]
 final class BoostBalanceController extends AbstractController
 {
-    #[Route('/pro/boost-balance', name: 'agence_immobiliere_boost_balance', methods: ['GET'])]
+    #[Route(
+        path: [
+            'en' => '/pro/boost-balance',
+            'fr' => '/fr/pro/boost-balance',
+        ],
+        name: 'agence_immobiliere_boost_balance',
+        methods: ['GET']
+    )]
     public function button(
         BoosterTransactionRepository $boosterTransactionRepository,
         string $variant = 'dashboard',
@@ -44,7 +51,14 @@ final class BoostBalanceController extends AbstractController
         ]);
     }
 
-    #[Route('/pro/boost-balance/annonce', name: 'agence_immobiliere_boost_balance_annonce', methods: ['GET'])]
+    #[Route(
+        path: [
+            'en' => '/pro/boost-balance/annonce',
+            'fr' => '/fr/pro/boost-balance/annonce',
+        ],
+        name: 'agence_immobiliere_boost_balance_annonce',
+        methods: ['GET']
+    )]
     public function annonce(
         AgencyPropertyQuotaCalculator $agencyPropertyQuotaCalculator,
         string $variant = 'dashboard',

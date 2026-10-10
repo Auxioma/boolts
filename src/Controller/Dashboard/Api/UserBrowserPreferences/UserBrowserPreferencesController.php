@@ -34,7 +34,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class UserBrowserPreferencesController extends AbstractController
 {
-    #[Route('/api/user/browser-preferences', name: 'app_user_browser_preferences', methods: ['POST'])]
+    #[Route(
+        path: [
+            'en' => '/api/user/browser-preferences',
+            'fr' => '/fr/api/user/browser-preferences',
+        ],
+        name: 'app_user_browser_preferences',
+        methods: ['POST']
+    )]
     /**
      * Handles the save controller action.
      */

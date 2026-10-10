@@ -23,7 +23,12 @@ use Symfony\Component\Routing\Attribute\Route;
 // use Symfony\Component\Security\Csrf\CsrfToken;
 // use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
-#[Route('/account/2fa')]
+#[Route(
+    path: [
+        'en' => '/account/2fa',
+        'fr' => '/fr/account/2fa',
+    ]
+)]
 /**
  * HTTP controller for module Authentification / DoubleAuthentification / AccountTwoFactorController.
  *

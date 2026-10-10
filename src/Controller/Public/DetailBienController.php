@@ -40,7 +40,10 @@ final class DetailBienController extends AbstractController
     }
 
     #[Route(
-        '/public/detail/bien/{slug}',
+        path: [
+            'en' => '/public/detail/bien/{slug}',
+            'fr' => '/fr/public/detail/bien/{slug}',
+        ],
         name: 'app_public_detail_bien'
     )]
     public function index(

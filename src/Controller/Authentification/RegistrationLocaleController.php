@@ -27,7 +27,14 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class RegistrationLocaleController extends AbstractController
 {
-    #[Route('/inscription/preferences-locales', name: 'app_registration_locale', methods: ['POST'])]
+    #[Route(
+        path: [
+            'en' => '/inscription/preferences-locales',
+            'fr' => '/fr/inscription/preferences-locales',
+        ],
+        name: 'app_registration_locale',
+        methods: ['POST']
+    )]
     public function save(
         Request $request,
         UserRepository $userRepository,

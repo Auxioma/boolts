@@ -27,7 +27,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 // validation des documents (AgencyDocumentVoter), mais les notifications sont
 // toujours accessibles : l'agence doit pouvoir y lire l'issue de la revue de
 // ses documents (acceptation / refus) avant même que le compte soit validé.
-#[Route('/immobiliere/notifications', name: 'agence_immobiliere_')]
+#[Route(
+    path: [
+        'en' => '/immobiliere/notifications',
+        'fr' => '/fr/immobiliere/notifications',
+    ],
+    name: 'agence_immobiliere_'
+)]
 #[IsGranted('ROLE_AGENCE')]
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereNotificationsController.

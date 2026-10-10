@@ -16,7 +16,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/agence/aide', name: 'agence_immobiliere_')]
+#[Route(
+    path: [
+        'en' => '/agence/aide',
+        'fr' => '/fr/agence/aide',
+    ],
+    name: 'agence_immobiliere_'
+)]
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereAideController.
  *

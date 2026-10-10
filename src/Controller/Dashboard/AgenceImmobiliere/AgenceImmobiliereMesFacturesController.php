@@ -21,7 +21,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/mes/factures', name: 'agence_immobiliere_')]
+#[Route(
+    path: [
+        'en' => '/mes/factures',
+        'fr' => '/fr/mes/factures',
+    ],
+    name: 'agence_immobiliere_'
+)]
 #[IsGranted('ROLE_AGENCE')]
 #[IsGranted(
     AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD,

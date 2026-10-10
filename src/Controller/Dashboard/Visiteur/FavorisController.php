@@ -30,7 +30,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 class FavorisController extends AbstractController
 {
-    #[Route('/favoris/property/{id}/toggle', name: 'app_favoris_property_toggle', methods: ['POST'])]
+    #[Route(
+        path: [
+            'en' => '/favoris/property/{id}/toggle',
+            'fr' => '/fr/favoris/property/{id}/toggle',
+        ],
+        name: 'app_favoris_property_toggle',
+        methods: ['POST']
+    )]
     /**
      * Handles the toggle controller action.
      */

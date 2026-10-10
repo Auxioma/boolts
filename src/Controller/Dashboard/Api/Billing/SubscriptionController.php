@@ -47,7 +47,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/api/agence/billing')]
+#[Route(
+    path: [
+        'en' => '/api/agence/billing',
+        'fr' => '/fr/api/agence/billing',
+    ]
+)]
 #[IsGranted('ROLE_AGENCE')]
 /**
  * HTTP controller for module Dashboard / Api / Billing / SubscriptionController.

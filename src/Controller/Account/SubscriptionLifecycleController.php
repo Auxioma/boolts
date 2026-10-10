@@ -26,7 +26,13 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/account/subscription', name: 'account_subscription_')]
+#[Route(
+    path: [
+        'en' => '/account/subscription',
+        'fr' => '/fr/account/subscription',
+    ],
+    name: 'account_subscription_'
+)]
 #[IsGranted('ROLE_AGENCE')]
 final class SubscriptionLifecycleController extends AbstractController
 {

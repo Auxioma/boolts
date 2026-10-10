@@ -24,7 +24,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/immobiliere/parametres', name: 'agence_immobiliere_')]
+#[Route(
+    path: [
+        'en' => '/immobiliere/parametres',
+        'fr' => '/fr/immobiliere/parametres',
+    ],
+    name: 'agence_immobiliere_'
+)]
 #[IsGranted('ROLE_AGENCE')]
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereParametresController.

@@ -48,7 +48,13 @@ final class ResultFilterController extends AbstractController
     ) {
     }
 
-    #[Route('/filter', name: 'app_public_search_card')]
+    #[Route(
+        path: [
+            'en' => '/filter',
+            'fr' => '/fr/filter',
+        ],
+        name: 'app_public_search_card'
+    )]
     /**
      * Handles the index controller action.
      */

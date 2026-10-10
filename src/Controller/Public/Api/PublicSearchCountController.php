@@ -25,7 +25,14 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class PublicSearchCountController extends AbstractController
 {
-    #[Route('/public/search/count', name: 'app_public_search_count', methods: ['GET'])]
+    #[Route(
+        path: [
+            'en' => '/public/search/count',
+            'fr' => '/fr/public/search/count',
+        ],
+        name: 'app_public_search_count',
+        methods: ['GET']
+    )]
     /**
      * Handles the __invoke controller action.
      */
