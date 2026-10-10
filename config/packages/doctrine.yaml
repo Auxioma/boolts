@@ -8,6 +8,13 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
 
+        # Force InnoDB : si le serveur crée les tables en MyISAM/Aria, la limite
+        # d'index est de 1000 octets et un VARCHAR(255) utf8mb4 (1020 octets) casse.
+        default_table_options:
+            engine: InnoDB
+            charset: utf8mb4
+            collate: utf8mb4_unicode_ci
+
         # Tables techniques hors ORM (gérées uniquement par migration) :
         # empêche doctrine:schema:update de vouloir les supprimer.
         schema_filter: '~^(?!invoice_number_sequence$)~'
