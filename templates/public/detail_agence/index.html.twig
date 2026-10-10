@@ -143,12 +143,25 @@
                                             {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
                                         {% endif %}
 
-                                        {% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
+                                        {% set isLocation = transactionSlug|lower in ['location', 'louer', 'rent'] or transactionName|lower in ['location', 'louer', 'rent'] %}
 
                                         {% set propertyTitle = bienImmobilier.typeBien.name ~ ' à ' ~ bienImmobilier.typeTransaction.name %}
-                                        {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ '€' : 'Prix sur demande' %}
-                                        {% set propertyPeriod = isLocation ? '/mois' : '' %}
-                                        {% set propertyBadge = isLocation ? 'C. Comprises' : transactionName|capitalize %}
+                                        {% set devise = bienImmobilier.user and bienImmobilier.user.devise ? bienImmobilier.user.devise.signe|default('€') : '€' %}
+                                        {% set chargesNumber = bienImmobilier.montantDesCharges is not empty ? bienImmobilier.montantDesCharges + 0 : 0 %}
+
+                                        {% if isLocation and bienImmobilier.montantLoyerHorsCharge is not empty %}
+                                            {% set propertyPrice = (bienImmobilier.montantLoyerHorsCharge + chargesNumber)|number_format(0, ',', ' ') ~ ' ' ~ devise %}
+                                            {% set propertyPeriod = 'search.card.per_month'|trans %}
+                                            {% set propertyBadge = chargesNumber > 0 ? 'search.card.charges_included'|trans : 'search.card.charges_excluded'|trans %}
+                                        {% elseif bienImmobilier.prix is not empty %}
+                                            {% set propertyPrice = bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ devise %}
+                                            {% set propertyPeriod = '' %}
+                                            {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'search.card.sale'|trans %}
+                                        {% else %}
+                                            {% set propertyPrice = 'search.card.price_on_request'|trans %}
+                                            {% set propertyPeriod = '' %}
+                                            {% set propertyBadge = transactionName|capitalize %}
+                                        {% endif %}
 
                                         {% set details = [] %}
 
