@@ -26,6 +26,26 @@ class CategoryBienTransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, CategoryBienTransaction::class);
     }
 
+    /**
+     * Identifiant d'un type de transaction à partir de son slug français
+     * (« acheter », « louer »), stable contrairement à l'identifiant en base.
+     */
+    public function findIdByFrenchSlug(string $slug): ?int
+    {
+        $id = $this->createQueryBuilder('c')
+            ->select('c.id')
+            ->innerJoin('c.translations', 't')
+            ->andWhere('t.locale = :locale')
+            ->andWhere('t.slug = :slug')
+            ->setParameter('locale', 'fr')
+            ->setParameter('slug', $slug)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return null === $id ? null : (int) $id['id'];
+    }
+
     //    /**
     //     * @return CategoryBienTransaction[] Returns an array of CategoryBienTransaction objects
     //     */

@@ -41,6 +41,7 @@ final class HomeController extends AbstractController
         private readonly string $mapboxPublicToken,
         private readonly PropertyRepository $propertyRepository,
         private readonly PropertySearchSessionRepository $propertySearchSessionRepository,
+        private readonly CategoryBienTransactionRepository $categoryBienTransactionRepository,
     ) {
     }
 
@@ -228,13 +229,17 @@ final class HomeController extends AbstractController
         ?float $latitude = null,
         ?float $longitude = null,
     ): array {
+        // Les identifiants changent à chaque rechargement des données : on passe par le slug.
+        $venteId = $this->categoryBienTransactionRepository->findIdByFrenchSlug('acheter') ?? 0;
+        $locationId = $this->categoryBienTransactionRepository->findIdByFrenchSlug('louer') ?? 0;
+
         return [
-            'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($countryIsoCode, $locale, 1),
-            'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($countryIsoCode, $city, $locale, 1, $latitude, $longitude),
-            'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($countryIsoCode, $locale, 2),
-            'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($countryIsoCode, $city, $locale, 2, $latitude, $longitude),
-            'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($countryIsoCode, $city, $locale, 2, $latitude, $longitude),
-            'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($countryIsoCode, $city, $locale, 1, $latitude, $longitude),
+            'logementPopulaireVente' => $this->propertyRepository->logementPopulaire($countryIsoCode, $locale, $venteId),
+            'logementAjouterRecementVente' => $this->propertyRepository->logemntRecementAjouter($countryIsoCode, $city, $locale, $venteId, $latitude, $longitude),
+            'logementPopulaireLocation' => $this->propertyRepository->logementPopulaire($countryIsoCode, $locale, $locationId),
+            'logementAjouterRecementLocation' => $this->propertyRepository->logemntRecementAjouter($countryIsoCode, $city, $locale, $locationId, $latitude, $longitude),
+            'aLaUneLocation' => $this->propertyRepository->findActiveBoostedForHome($countryIsoCode, $city, $locale, $locationId, $latitude, $longitude),
+            'aLaUneVente' => $this->propertyRepository->findActiveBoostedForHome($countryIsoCode, $city, $locale, $venteId, $latitude, $longitude),
         ];
     }
 

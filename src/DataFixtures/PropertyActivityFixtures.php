@@ -36,8 +36,10 @@ final class PropertyActivityFixtures extends Fixture implements DependentFixture
     private const MAX_DAILY_PROFILE_VISITS = 25;
 
     private const BOOSTER_PACK_CODE = 'boost-20';
-    private const ACTIVE_BOOSTS_PER_AGENCY = 5;
-    private const EXPIRED_BOOSTS_PER_AGENCY = 0;
+    /**
+     * L'accueil affiche les biens « À la Une » séparément pour la vente et la location.
+     */
+    private const ACTIVE_BOOSTS_PER_TRANSACTION_TYPE = 5;
 
     public function load(ObjectManager $manager): void
     {
@@ -107,8 +109,8 @@ final class PropertyActivityFixtures extends Fixture implements DependentFixture
     }
 
     /**
-     * Achat d'un pack, puis consommation de crédits : quelques boosts
-     * expirés dans le passé et quelques boosts encore actifs.
+     * Achat d'un pack, puis consommation de crédits : des boosts actifs
+     * pour la vente et pour la location.
      *
      * @param list<Property> $properties
      */
@@ -128,28 +130,20 @@ final class PropertyActivityFixtures extends Fixture implements DependentFixture
 
         shuffle($properties);
 
-        $active = array_splice($properties, 0, self::ACTIVE_BOOSTS_PER_AGENCY);
+        $propertiesByTransactionType = [];
 
-        foreach ($active as $property) {
-            $startsAt = self::randomDateBetween(
-                max($property->getCreatedAt() ?? $now, $now->modify(\sprintf('-%d days', $durationDays - 1))),
-                $now,
-            );
-            $this->addBoost($manager, $agency, $property, $pack, $startsAt, $durationDays, PropertyBoostStatus::ACTIVE);
+        foreach ($properties as $property) {
+            $propertiesByTransactionType[$property->getTypeTransaction()?->getId()][] = $property;
         }
 
-        // Un boost expiré doit avoir commencé et fini après la mise en ligne du bien.
-        $expirable = array_filter(
-            $properties,
-            static fn (Property $property): bool => ($property->getCreatedAt() ?? $now) < $now->modify(\sprintf('-%d days', $durationDays + 1)),
-        );
-
-        foreach (\array_slice($expirable, 0, self::EXPIRED_BOOSTS_PER_AGENCY) as $property) {
-            $startsAt = self::randomDateBetween(
-                $property->getCreatedAt() ?? $now,
-                $now->modify(\sprintf('-%d days', $durationDays + 1)),
-            );
-            $this->addBoost($manager, $agency, $property, $pack, $startsAt, $durationDays, PropertyBoostStatus::EXPIRED);
+        foreach ($propertiesByTransactionType as $sameTypeProperties) {
+            foreach (\array_slice($sameTypeProperties, 0, self::ACTIVE_BOOSTS_PER_TRANSACTION_TYPE) as $property) {
+                $startsAt = self::randomDateBetween(
+                    max($property->getCreatedAt() ?? $now, $now->modify(\sprintf('-%d days', $durationDays - 1))),
+                    $now,
+                );
+                $this->addBoost($manager, $agency, $property, $pack, $startsAt, $durationDays, PropertyBoostStatus::ACTIVE);
+            }
         }
     }
 
