@@ -84,8 +84,18 @@ class MesBiensType extends AbstractType
 
         if (3 === $step) {
             $builder
-                ->add('adresse')
-                ->add('codePostal')
+
+->add('adresse', TextType::class, [
+    'attr' => [
+        'class' => 'form-control input',
+    ],
+])
+
+                ->add('codePostal', TextType::class, [
+    'attr' => [
+        'class' => 'input',
+    ],
+])
                 ->add('ville')
                 ->add('pays', CountryType::class, [
                     'placeholder' => 'Saisissez le pays',
@@ -255,7 +265,7 @@ class MesBiensType extends AbstractType
                 'label' => 'Enregistrer et quitter',
                 'validation_groups' => false,
                 'attr' => [
-                    'class' => 'btn-retour py-10 px-16',
+                    'class' => 'btn-retour py-10 px-16 p-accent',
                     'formnovalidate' => 'formnovalidate',
                 ],
             ])

@@ -168,6 +168,8 @@
                                         {% if drafts is not empty %}
 
                                             <section class="mes-biens-card mes-biens-drafts mb-24">
+                                                
+                                                <h3 class="mb-4">{{ 'agency_listings.drafts'|trans }}</h3>
 
                                                 <div class="mes-biens-drafts-grid">
 
@@ -319,7 +321,7 @@
 
                                             <div class="property-toolbar mb-24 d-flex flex-column flex-xl-row align-items-start align-items-xl-center">
 
-                                                <label class="property-select-all order-2 order-xl-1 mt-3 mt-xl-0">
+                                                <label class="property-select-all order-1 order-xl-1 mt-0">
 
                                                     <input
                                                         type="checkbox"
@@ -336,7 +338,7 @@
 
                                                 </label>
 
-                                                <div class="property-bulk-actions order-1 order-xl-2">
+                                                <div class="property-bulk-actions order-2 order-xl-2">
 
                                                     {# TODO: action groupée "Booster" — endpoint back-end à implémenter #}
                                                     <button

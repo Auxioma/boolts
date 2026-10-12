@@ -24,6 +24,14 @@ body {
     background-color: var(--color-white);
 }
 
+
+.form-control {
+    all: revert;
+    display: block;
+    width: 100%;
+}
+
+
 a {
     color: inherit;
 
@@ -61,7 +69,7 @@ h3,
     font-style: normal;
 }
 
-p, .paragraphe {
+p, .paragraphe, .input[placeholder] {
     font-size: clamp(12px, calc(12px + (2 * (100vw - 375px) / 1065)), 14px);
 
     line-height: clamp(16px, calc(16px + (4 * (100vw - 375px) / 1065)), 20px);
@@ -71,7 +79,8 @@ p, .paragraphe {
     font-style: normal;
 }
 
-input, textarea {
+input, textarea,
+.input {
     font-size: 14px;
     border: 2px solid #ebecec;
     line-height: 20px;
@@ -79,6 +88,13 @@ input, textarea {
     border-radius: 12px;
     font-weight: 500;
 }
+
+.input {
+    height: 44px;
+    padding: 0 14px;
+}
+
+
 
 input:focus {
     outline: none;

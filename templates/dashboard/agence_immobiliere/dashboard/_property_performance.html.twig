@@ -14,12 +14,25 @@
                     <div class="property-image-wrapper">
                         {% set imagePerformance = property.propertyImages|first %}
                         {% if imagePerformance %}
-                            <img src="{{ vich_uploader_asset(imagePerformance, 'imageFile') }}" alt="">
+                            <img src="{{ vich_uploader_asset(imagePerformance, 'imageFile') }}" alt="" class="property-image">
                         {% endif %}
                     </div>
 
                     <div class="property-information">
-                        <h3 class="property-title">{{ property.referenceInterne }}</h3>
+                        <h3 class="property-title">
+                            {% if property.slug %}
+                                <a
+                                    href="{{ path('app_public_detail_bien', {slug: property.slug}) }}"
+                                    class="text-reset text-decoration-none bleu-hover"
+                                    data-turbo-frame="_top"
+                                    
+                                >
+                                    {{ property.referenceInterne }}
+                                </a>
+                            {% else %}
+                                {{ property.referenceInterne }}
+                            {% endif %}
+                        </h3>
                         <div class="d-flex align-items-center property-price-line">
                             {% set price = property.prix ?? property.montantLoyerHorsCharge %}
                             <span class="property-price">

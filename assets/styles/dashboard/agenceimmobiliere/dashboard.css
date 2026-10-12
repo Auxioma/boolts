@@ -2601,3 +2601,7 @@ a.notification-card__link:hover {
         border-radius: 32px 32px 0 0;
     }
 }
+
+.bleu-hover:hover {
+    color: #5d00ff!important;
+}

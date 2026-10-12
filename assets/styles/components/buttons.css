@@ -119,21 +119,12 @@
     position: absolute;
     
     top: 7px;}
-.btn-retour, .property-browse-button {border-radius: 50px;
-    
+.btn-retour, .property-browse-button {
+    border-radius: 50px;
     border: 2px solid #5d00ff;
-    
     background: #fff;
-    
     color: #5d00ff;
-    
-    font-size: 16px;
-    
-    font-style: normal;
-    
-    font-weight: 700;
-    
-    line-height: 20px;}
+    }
 .btn-suivant {border-radius: 50px;
     
     background: #5d00ff;
