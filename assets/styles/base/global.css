@@ -17,7 +17,7 @@ html {
 body {
     margin: 0;
 
-    font-family: var(--font-family-base);
+    font-family: "Eudoxus Sans", Arial, sans-serif !important;
 
     color: var(--color-text);
 
@@ -69,7 +69,7 @@ h3,
     font-style: normal;
 }
 
-p, .paragraphe, .input[placeholder] {
+p, .paragraphe, .input[placeholder], textarea[placeholder] {
     font-size: clamp(12px, calc(12px + (2 * (100vw - 375px) / 1065)), 14px);
     line-height: clamp(16px, calc(16px + (4 * (100vw - 375px) / 1065)), 20px);
     font-weight: 500;
@@ -100,6 +100,11 @@ input:focus {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: none;
+}
+
+textarea {
+    font-family: "Eudoxus Sans", Arial, sans-serif !important;
+    padding: 14px!important;
 }
 
 .btn-disabled[disabled] {
