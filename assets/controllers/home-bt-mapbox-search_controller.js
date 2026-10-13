@@ -37,8 +37,16 @@ export default class extends Controller {
         this.timeout = null;
         this.abortController = null;
         this.selectedLocation = null;
+        this.lastQuery = '';
+        this.lastLocations = [];
+        this.isResolvingSubmit = false;
+        this.allowNextSubmit = false;
 
         this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+
+        // Entrée dans l'input et clic sur la loupe passent tous deux par l'événement submit
+        this.element.addEventListener('submit', this.handleSubmit);
 
         // pointerdown (et non click) : sur iOS, un tap sur une zone non cliquable n'envoie pas de click au document
         document.addEventListener('pointerdown', this.handleClickOutside);
@@ -62,6 +70,7 @@ export default class extends Controller {
 
     disconnect() {
         document.removeEventListener('pointerdown', this.handleClickOutside);
+        this.element.removeEventListener('submit', this.handleSubmit);
 
         if (this.abortController) {
             this.abortController.abort();
@@ -86,9 +95,28 @@ export default class extends Controller {
     }
 
     async fetchResults(query) {
+        try {
+            const locations = await this.fetchLocations(query);
+
+            this.renderResults(locations, query);
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            console.error(error);
+            this.clearResults();
+        }
+    }
+
+    /*
+     * Interroge Mapbox et renvoie les localisations exploitables
+     * (même liste que celle affichée dans le menu déroulant).
+     */
+    async fetchLocations(query) {
         if (!this.tokenValue) {
             console.error('Token Mapbox manquant.');
-            return;
+            return [];
         }
 
         if (this.abortController) {
@@ -107,43 +135,32 @@ export default class extends Controller {
 
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?${params.toString()}`;
 
-        try {
-            const response = await fetch(url, {
-                signal: this.abortController.signal,
-            });
+        const response = await fetch(url, {
+            signal: this.abortController.signal,
+        });
 
-            if (!response.ok) {
-                throw new Error(`Erreur Mapbox : ${response.status}`);
-            }
-
-            const data = await response.json();
-
-            this.renderResults(data.features || []);
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                return;
-            }
-
-            console.error(error);
-            this.clearResults();
+        if (!response.ok) {
+            throw new Error(`Erreur Mapbox : ${response.status}`);
         }
+
+        const data = await response.json();
+
+        return (data.features || [])
+            .map((feature) => this.buildLocation(feature))
+            .filter((location) => location.value);
     }
 
-    renderResults(features) {
+    renderResults(locations, query) {
         this.resultsTarget.innerHTML = '';
+        this.lastQuery = query;
+        this.lastLocations = locations;
 
-        if (!features.length) {
+        if (!locations.length) {
             this.clearResults();
             return;
         }
 
-        features.forEach((feature) => {
-            const location = this.buildLocation(feature);
-
-            if (!location.value) {
-                return;
-            }
-
+        locations.forEach((location) => {
             const item = document.createElement('li');
 
             item.classList.add('home-bt-search-bar__result');
@@ -395,6 +412,78 @@ export default class extends Controller {
         if (event.key === 'Escape') {
             this.clearResults();
         }
+    }
+
+    /*
+     * Envoi du formulaire (Entrée dans l'input ou clic sur la loupe)
+     * sans avoir cliqué sur une suggestion : on prend le 1er résultat
+     * du menu déroulant (ex. "pari" => Paris) pour remplir les champs
+     * cachés, puis on envoie le formulaire.
+     */
+    async handleSubmit(event) {
+        if (this.allowNextSubmit) {
+            this.allowNextSubmit = false;
+            return;
+        }
+
+        const query = this.inputTarget.value.trim();
+
+        // Une suggestion correspondant à l'input est déjà sélectionnée : envoi normal
+        if (!query || this.isCurrentSelection(query)) {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (this.isResolvingSubmit) {
+            return;
+        }
+
+        this.isResolvingSubmit = true;
+        clearTimeout(this.timeout);
+
+        try {
+            let locations = this.lastQuery === query ? this.lastLocations : null;
+
+            if (!locations) {
+                locations = query.length >= 2 ? await this.fetchLocations(query) : [];
+            }
+
+            if (locations.length) {
+                await this.selectLocation(locations[0]);
+            } else {
+                this.clearHiddenFields();
+                this.clearResults();
+            }
+
+            // selectLocation envoie déjà le formulaire quand submitOnSelect est actif
+            if (!locations.length || !this.submitOnSelectValue) {
+                this.submitForm();
+            }
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error(error);
+                this.submitForm();
+            }
+        } finally {
+            this.isResolvingSubmit = false;
+        }
+    }
+
+    /*
+     * Renvoie le formulaire sans repasser par la résolution du 1er résultat.
+     */
+    submitForm() {
+        this.allowNextSubmit = true;
+        this.element.requestSubmit();
+    }
+
+    isCurrentSelection(query) {
+        return Boolean(
+            this.hasSelectedValueTarget &&
+            this.selectedValueTarget.value.trim() &&
+            this.selectedValueTarget.value.trim() === query
+        );
     }
 
     handleClickOutside(event) {
