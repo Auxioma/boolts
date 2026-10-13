@@ -13,6 +13,9 @@
 {% block mobile_tabbar %}{% endblock %}
 
 {% block body %}
+    {# Devise choisie par l'agence qui publie le bien (€ par défaut). #}
+    {% set devise = property.user.devise.signe ?? '€' %}
+
     {% set totalPictures = property.propertyImages|length %}
     {% set pictures = property.propertyImages|slice(0, 5) %}
     {% set firstPicture = pictures|first %}

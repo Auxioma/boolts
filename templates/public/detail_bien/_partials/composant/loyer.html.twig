@@ -17,13 +17,13 @@
     {% if hasPrixVente or hasLoyerAside %}
         {% if hasPrixVente %}
             <div class="bt-price">
-                {{ prixVente|number_format(0, ',', ' ') }} €
+                {{ prixVente|number_format(0, ',', ' ') }} {{ devise }}
             </div>
         {% elseif hasLoyerAside %}
             {% set location = loyerHorsCharge + charges %}
 
             <div class="bt-price">
-                {{ location|number_format(0, ',', ' ') }} €
+                {{ location|number_format(0, ',', ' ') }} {{ devise }}
             </div>
 
             <div class="bt-charge-badge">

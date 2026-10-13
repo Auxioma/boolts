@@ -59,10 +59,21 @@
                                             {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
                                         {% endif %}
 
-                                        {% set isLocation = transactionSlug == 'location' or transactionSlug == 'louer' or transactionName|lower == 'location' %}
+                                        {% set isLocation = transactionSlug in ['location', 'louer', 'rent']
+                                            or transactionName|lower == 'location'
+                                            or (bienImmobilier.prix is empty and bienImmobilier.montantLoyerHorsCharge is not empty) %}
 
                                         {% set propertyTitle = 'detail_bien.similar.card.title'|trans({'%type%': bienImmobilier.typeBien.name, '%transaction%': bienImmobilier.typeTransaction.name}) %}
-                                        {% set propertyPrice = bienImmobilier.prix is not empty ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe : ' ' %}
+                                        {# Vente : prix ; location : loyer charges comprises (comme composant/loyer.html.twig). #}
+                                        {% set propertyAmount = null %}
+
+                                        {% if bienImmobilier.prix is not empty %}
+                                            {% set propertyAmount = bienImmobilier.prix %}
+                                        {% elseif bienImmobilier.montantLoyerHorsCharge is not empty %}
+                                            {% set propertyAmount = bienImmobilier.montantLoyerHorsCharge + (bienImmobilier.montantDesCharges|default(0)) %}
+                                        {% endif %}
+
+                                        {% set propertyPrice = propertyAmount is not null ? propertyAmount|number_format(0, ',', ' ') ~ ' ' ~ (bienImmobilier.user.devise.signe ?? '€') : ' ' %}
                                         {% set propertyPeriod = isLocation ? 'detail_bien.similar.card.per_month'|trans : '' %}
                                         {% set propertyBadge = isLocation ? 'detail_bien.similar.card.charges_included'|trans : transactionName|capitalize %}
 
