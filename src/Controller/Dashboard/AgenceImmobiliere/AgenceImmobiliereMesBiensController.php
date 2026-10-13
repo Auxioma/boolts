@@ -612,8 +612,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 ->getSlug();
 
             $typeTransactionCode = match ($slugFr) {
-                'vente' => '1',
-                'location' => '2',
+                'vente', 'acheter' => '1',
+                'location', 'louer' => '2',
                 default => null,
             };
 
@@ -1371,8 +1371,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     ->getSlug();
 
                 $typeTransactionCode = match ($slugFr) {
-                    'vente' => '1',
-                    'location' => '2',
+                    'vente', 'acheter' => '1',
+                    'location', 'louer' => '2',
                     default => null,
                 };
 
@@ -2081,8 +2081,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             ->getSlug();
 
         $typeTransactionCode = match ($slugFr) {
-            'vente' => '1',
-            'location' => '2',
+            'vente', 'acheter' => '1',
+            'location', 'louer' => '2',
             default => null,
         };
 

@@ -9,14 +9,14 @@
     <div>
         <label
             for="{{ form.prix.vars.id }}"
-            class="mb-16"
+            class="mb-16 p-accent"
         >
             Prix du logement*
         </label>
 
         {{ form_widget(form.prix, {
             attr: {
-                class: 'form-control mb-32',
+                class: 'form-control input mb-32',
                 placeholder: '€',
                 'data-mes-biens-required-field': 'true',
             },
