@@ -82,7 +82,6 @@ export default class extends Controller {
 
         this.enableAllCards();
         this.ensureMinimumCards();
-        this.ensureOneEmptyCardIfPossible();
         this.normalizeGrid();
 
         this.notifySubmitController();
@@ -186,7 +185,6 @@ export default class extends Controller {
 
         this.normalizeGrid();
         this.ensureMinimumCards();
-        this.ensureOneEmptyCardIfPossible();
         this.notifySubmitController();
 
         this.processQueue();
@@ -206,7 +204,15 @@ export default class extends Controller {
             ${this.imageActionsHtml}
         `;
 
-        this.element.insertBefore(card, this.browseCardTarget);
+        // La photo prend la place de la première carte vide (s'il y en a) :
+        // les cartes vides ne servent qu'à compléter la grille jusqu'au minimum.
+        const emptyCard = this.getEmptyCards()[0];
+
+        if (emptyCard) {
+            this.element.replaceChild(card, emptyCard);
+        } else {
+            this.element.insertBefore(card, this.browseCardTarget);
+        }
 
         return card;
     }
@@ -452,18 +458,6 @@ export default class extends Controller {
         this.updatePositions();
     }
 
-    ensureOneEmptyCardIfPossible() {
-        if (this.getPreviewCards().length >= this.maxImagesValue) {
-            return;
-        }
-
-        if (this.getEmptyCards().length > 0) {
-            return;
-        }
-
-        this.createEmptyCard();
-    }
-
     openFileInputForCard(card) {
         if (!card || !card.classList.contains('is-empty')) {
             return;
@@ -526,7 +520,6 @@ export default class extends Controller {
             card.remove();
 
             this.ensureMinimumCards();
-            this.ensureOneEmptyCardIfPossible();
             this.normalizeGrid();
             this.notifySubmitController();
 
@@ -555,7 +548,6 @@ export default class extends Controller {
                 card.remove();
 
                 this.ensureMinimumCards();
-                this.ensureOneEmptyCardIfPossible();
                 this.normalizeGrid();
                 this.notifySubmitController();
                 this.schedulePersistOrder();

@@ -462,26 +462,11 @@
     background: #f8f8f8;
 
     color: #858789;
-
-    font-size: 16px;
-
-    font-style: normal;
-
-    font-weight: 700;
-
-    line-height: 20px;
 }
 
 .attention-photos-images span {
     color: #fd7e14;
 
-    font-size: 16px;
-
-    font-style: normal;
-
-    font-weight: 700;
-
-    line-height: 20px;
 }
 
 .mes-bien-stepper {
@@ -526,7 +511,7 @@
 .property-upload-card {
     position: relative;
 
-    height: 197px;
+    aspect-ratio: 16/9;
 
     background: #f1f1f1;
 

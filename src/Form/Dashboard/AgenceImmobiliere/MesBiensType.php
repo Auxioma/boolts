@@ -85,22 +85,36 @@ class MesBiensType extends AbstractType
         if (3 === $step) {
             $builder
 
-->add('adresse', TextType::class, [
-    'attr' => [
-        'class' => 'form-control input',
-    ],
-])
+                ->add('adresse', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control input',
+                    ],
+                ])
 
                 ->add('codePostal', TextType::class, [
-    'attr' => [
-        'class' => 'input',
-    ],
-])
-                ->add('ville')
+                    'attr' => [
+                        'class' => 'form-control mb-32 input',
+                    ],
+                ])
+
+                ->add('ville', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control mb-32 input ',
+                    ],
+                ])
+
                 ->add('pays', CountryType::class, [
+                    'attr' => [
+                        'class' => 'form-select mb-32 input ',
+                    ],
                     'placeholder' => 'Saisissez le pays',
                 ])
-                ->add('neighborhood')
+
+                ->add('neighborhood', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control mb-32 input',
+                    ],
+                ])
             ;
 
             /*
@@ -123,7 +137,11 @@ class MesBiensType extends AbstractType
             ));
 
             $builder
-                ->add('locality')
+                ->add('locality', TextType::class, [
+                    'attr' => [
+                        'class' => 'form-control mb-32 input',
+                    ],
+                ])
                 ->add('mapboxId', HiddenType::class)
                 ->add('fullAddress', HiddenType::class)
                 ->add('featureType', HiddenType::class)
@@ -231,7 +249,7 @@ class MesBiensType extends AbstractType
                 ->add('titreDuLogement')
                 ->add('descriptionLogement', TextareaType::class, [
                     'attr' => [
-                        'rows' => 5,
+                        'rows' => 7,
                     ],
                 ])
                 ->add('referenceInterne')

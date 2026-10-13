@@ -1,9 +1,3 @@
-{#
- Template: templates/dashboard/agence_immobiliere/_partials/mes_biens/informations-principales.html.twig
- Role: Renders the dashboard/agence_immobiliere/_partials/mes_biens Twig view.
- Context: Provided by the rendering controller, parent template, or including template.
- Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
-#}
 
 <div
     class="js-tab-content mes-biens-immobilier formulaire"
@@ -14,267 +8,355 @@
     data-mes-biens--adresse-autocomplete-limit-value="10"
     data-mes-biens--adresse-autocomplete-types-value="address,poi,street,place,locality,neighborhood,postcode,region,country"
 >
-    <div class="d-flex justify-content-between align-items-end">
-        <h2>Où se situe votre bien ?</h2>
+    {# En-tête #}
+    <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+        <h2 class="mb-0">Où se situe votre bien ?</h2>
 
-        <div class="d-flex align-items-end">
+        <div class="flex-shrink-0">
             {{ form_widget(form.saveAndExit) }}
         </div>
     </div>
 
     <div class="mt-48">
-        <div class="row">
+        <div class="row g-4">
+
+            {# Adresse #}
             <div class="col-12">
-                <div class="row">
+                <div class="js-address-autocomplete-field position-relative">
+                    <label for="{{ form.adresse.vars.id }}" class="form-label mb-2 p-accent">
+                        Adresse du logement
+                    </label>
 
-                    <div class="js-address-autocomplete-field position-relative">
-                        <label for="adresse" class="mb-16 p-accent">
-                            Adresse du logement
-                        </label>
-
-                        {{ form_widget(form.adresse, {
-                            attr: {
-                                placeholder: 'Entrez un numéro et un nom de rue',
-                                autocomplete: 'off',
-                                'data-mes-biens--adresse-autocomplete-target': 'adresse',
-                                'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur',
-                            },
-                        }) }}
-                        <div
-                            class="mapbox-autocomplete-results list-group shadow"
-                            data-mes-biens--adresse-autocomplete-target="results"
-                            hidden
-                        ></div>
-                        <p class="text-muted my-8">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M12.0004 9.00022V13.0002M12.0004 17.0002H12.0104M21.7304 18.0002L13.7304 4.00022C13.556 3.69243 13.303 3.43641 12.9973 3.25829C12.6917 3.08017 12.3442 2.98633 11.9904 2.98633C11.6366 2.98633 11.2892 3.08017 10.9835 3.25829C10.6778 3.43641 10.4249 3.69243 10.2504 4.00022L2.25042 18.0002C2.0741 18.3056 1.98165 18.6521 1.98243 19.0047C1.98321 19.3573 2.0772 19.7035 2.25486 20.008C2.43253 20.3126 2.68757 20.5648 2.99411 20.7391C3.30066 20.9133 3.64783 21.0034 4.00042 21.0002H20.0004C20.3513 20.9999 20.6959 20.9072 20.9997 20.7315C21.3035 20.5558 21.5556 20.3033 21.7309 19.9993C21.9062 19.6954 21.9985 19.3506 21.9984 18.9997C21.9983 18.6488 21.9059 18.3041 21.7304 18.0002Z" stroke="#DC3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            L’adresse est utilisée pour enrichir les informations du bien (quartier,  arrondissement, code postal) et ne sera pas affichée publiquement par défaut.
-                        </p>
-
-
-                    </div>
-
-                    <div class="affiche_addr_fo_wrapper mt-32">
-                        <div class="affiche_addr_fo_label p-accent">
-                            Afficher publiquement l’adresse
-                        </div>
-
-                        <label class="affiche_addr_fo_switch">
-                            {{ form_widget(form.showAdresse, {
-            attr: {
-                class: 'affiche_addr_fo_input',
-            },
-        }) }}
-
-                            <span class="affiche_addr_fo_slider"></span>
-                        </label>
-                    </div>
-
-                    <style>
-                        .affiche_addr_fo_wrapper {
-                            display: flex;
-                            align-items: center;
-                            justify-content: space-between;
-                            gap: 16px;
-                            width: 100%;
+                    {{ form_widget(form.adresse, {
+                        attr: {
+                            
+                            placeholder: 'Entrez un numéro et un nom de rue',
+                            autocomplete: 'off',
+                            'data-mes-biens--adresse-autocomplete-target': 'adresse',
+                            'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur'
                         }
-
-                        .affiche_addr_fo_label {
-                            color: #222;
-                        }
-
-                        .affiche_addr_fo_switch {
-                            position: relative;
-                            display: inline-block;
-                            width: 44px;
-                            height: 24px;
-                            flex: 0 0 auto;
-                        }
-
-                        .affiche_addr_fo_input {
-                            opacity: 0;
-                            width: 0;
-                            height: 0;
-                        }
-
-                        .affiche_addr_fo_slider {
-                            position: absolute;
-                            cursor: pointer;
-                            inset: 0;
-                            background-color: #e5e5e5;
-                            border: 2px solid #777;
-                            border-radius: 999px;
-                            transition: 0.25s ease;
-                        }
-
-                        .affiche_addr_fo_slider::before {
-                            content: "";
-                            position: absolute;
-                            width: 16px;
-                            height: 16px;
-                            left: 2px;
-                            top: 2px;
-                            background-color: #ffffff;
-                            border-radius: 50%;
-                            transition: 0.25s ease;
-                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-                        }
-
-                        .affiche_addr_fo_input:checked + .affiche_addr_fo_slider {
-                            background-color: #21b26f;
-                            border-color: #21b26f;
-                        }
-
-                        .affiche_addr_fo_input:checked + .affiche_addr_fo_slider::before {
-                            transform: translateX(20px);
-                        }
-                    </style>
-
-                    <div class="mt-32">
-                        <label for="codePostal" class="mb-16  p-accent">
-                            Code postal*
-                        </label>
-
-                        {{ form_widget(form.codePostal, {
-                            attr: {
-                                class: 'form-control mb-32',
-                                placeholder: 'Entrez un code postal',
-                                autocomplete: 'off',
-                                'data-mes-biens--adresse-autocomplete-target': 'codePostal',
-                                'data-mes-biens-required-field': 'true',
-                            },
-                        }) }}
-                    </div>
-
-                    <div class="row">
-                        <div class="col-6">
-                            <div>
-                                <label for="ville" class="mb-16  p-accent">
-                                    Ville*
-                                </label>
-
-                                {{ form_widget(form.ville, {
-                                    attr: {
-                                        class: 'form-control',
-                                        placeholder: 'Choisissez une ville',
-                                        autocomplete: 'off',
-                                        'data-mes-biens--adresse-autocomplete-target': 'ville',
-                                        'data-mes-biens-required-field': 'true',
-                                    },
-                                }) }}
-                            </div>
-                        </div>
-
-                        <div class="col-6">
-                            <div>
-                                <label for="pays" class="mb-16  p-accent">
-                                    Pays*
-                                </label>
-
-                                {{ form_widget(form.pays, {
-                                    attr: {
-                                        class: 'form-control',
-                                        autocomplete: 'off',
-                                        'data-mes-biens--adresse-autocomplete-target': 'pays',
-                                        'data-mes-biens-required-field': 'true',
-                                    },
-                                }) }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-32">
-                        <div class="col-6">
-                            <label for="latitude" class="mb-16">
-                                Quartier
-                            </label>
-
-                            {{ form_widget(form.neighborhood, {
-                                attr: {
-                                    'data-mes-biens--adresse-autocomplete-target': 'neighborhood',
-                                },
-                            }) }}
-                        </div>
-
-                        <div class="col-6">
-                            <label for="longitude" class="mb-16">
-                                Arrondissement
-                            </label>
-
-                            {{ form_widget(form.locality, {
-                                attr: {
-                                    'data-mes-biens--adresse-autocomplete-target': 'locality',
-                                },
-                            }) }}
-
-                        </div>
-                    </div>
-
-                    {# Champs cachés Mapbox #}
-
-                    {{ form_widget(form.mapboxId, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'mapboxId',
-                        },
                     }) }}
 
-                    {{ form_widget(form.fullAddress, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'fullAddress',
-                        },
-                    }) }}
+                    <div
+                        class="mapbox-autocomplete-results list-group shadow"
+                        data-mes-biens--adresse-autocomplete-target="results"
+                        hidden
+                    ></div>
 
-                    {{ form_widget(form.featureType, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'featureType',
-                        },
-                    }) }}
+                    <p class="text-muted my-2 d-flex align-items-start gap-2">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            class="flex-shrink-0"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M12 9V13M12 17H12.01M21.73 18L13.73 4C13.56 3.69 13.3 3.44 13 3.26C12.69 3.08 12.34 2.99 11.99 2.99C11.64 2.99 11.29 3.08 10.98 3.26C10.68 3.44 10.42 3.69 10.25 4L2.25 18C2.07 18.31 1.98 18.65 1.98 19C1.98 19.36 2.08 19.7 2.25 20.01C2.43 20.31 2.69 20.56 2.99 20.74C3.3 20.91 3.65 21 4 21H20C20.35 21 20.7 20.91 21 20.73C21.3 20.56 21.56 20.3 21.73 20C21.91 19.7 22 19.35 22 19C22 18.65 21.91 18.3 21.73 18Z"
+                                stroke="#DC3545"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
 
-                    {{ form_widget(form.codeIsoPays, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'codeIsoPays',
-                        },
-                    }) }}
-
-                    {{ form_widget(form.region, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'region',
-                        },
-                    }) }}
-
-                    {{ form_widget(form.district, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'district',
-                        },
-                    }) }}
-
-                    {{ form_widget(form.poi, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'poi',
-                        },
-                    }) }}
-
-                    {{ form_widget(form.longitude, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'longitude',
-                        },
-                    }) }}
-
-                    {{ form_widget(form.latitude, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'latitude',
-                        },
-                    }) }}
-
-                    {{ form_widget(form.sessionIdMapbox, {
-                        attr: {
-                            'data-mes-biens--adresse-autocomplete-target': 'sessionIdMapbox',
-                        },
-                    }) }}
-
+                        <span>
+                            L’adresse est utilisée pour enrichir les informations du bien
+                            (quartier, arrondissement et code postal). Elle ne sera pas
+                            affichée publiquement par défaut.
+                        </span>
+                    </p>
                 </div>
             </div>
+
+            {# Visibilité de l'adresse #}
+            <div class="col-12">
+                <div class="affiche_addr_fo_wrapper">
+                    <div class="affiche_addr_fo_label p-accent">
+                        Afficher publiquement l’adresse
+                    </div>
+
+                    <label class="affiche_addr_fo_switch">
+                        {{ form_widget(form.showAdresse, {
+                            attr: {
+                                class: 'affiche_addr_fo_input'
+                            }
+                        }) }}
+
+                        <span class="affiche_addr_fo_slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            {# Code postal #}
+            <div class="col-12">
+                <label
+                    for="{{ form.codePostal.vars.id }}"
+                    class="form-label mb-2 p-accent"
+                >
+                    Code postal
+                </label>
+
+                {{ form_widget(form.codePostal, {
+                    attr: {
+                       
+                        placeholder: 'Entrez un code postal',
+                        autocomplete: 'off',
+                        'data-mes-biens--adresse-autocomplete-target': 'codePostal',
+                        'data-mes-biens-required-field': 'true'
+                    }
+                }) }}
+            </div>
+
+            {# Ville et pays #}
+            <div class="col-12 col-md-6">
+                <label
+                    for="{{ form.ville.vars.id }}"
+                    class="form-label mb-2 p-accent"
+                >
+                    Ville
+                </label>
+
+                {{ form_widget(form.ville, {
+                    attr: {
+                      
+                        placeholder: 'Choisissez une ville',
+                        autocomplete: 'off',
+                        'data-mes-biens--adresse-autocomplete-target': 'ville',
+                        'data-mes-biens-required-field': 'true'
+                    }
+                }) }}
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label
+                    for="{{ form.pays.vars.id }}"
+                    class="form-label mb-2 p-accent"
+                >
+                    Pays
+                </label>
+
+                {{ form_widget(form.pays, {
+                    attr: {
+                        
+                        autocomplete: 'off',
+                        'data-mes-biens--adresse-autocomplete-target': 'pays',
+                        'data-mes-biens-required-field': 'true'
+                    }
+                }) }}
+            </div>
+
+            {# Quartier et arrondissement #}
+            <div class="col-12 col-md-6">
+                <label
+                    for="{{ form.neighborhood.vars.id }}"
+                    class="form-label p-accent mb-2"
+                >
+                    Quartier
+                </label>
+
+                {{ form_widget(form.neighborhood, {
+                    attr: {
+                        
+                        'data-mes-biens--adresse-autocomplete-target': 'neighborhood'
+                    }
+                }) }}
+            </div>
+
+            <div class="col-12 col-md-6">
+                <label
+                    for="{{ form.locality.vars.id }}"
+                    class="form-label p-accent mb-2"
+                >
+                    Arrondissement
+                </label>
+
+                {{ form_widget(form.locality, {
+                    attr: {
+                       
+                        'data-mes-biens--adresse-autocomplete-target': 'locality'
+                    }
+                }) }}
+            </div>
+
         </div>
     </div>
+
+    {# Champs cachés Mapbox : conserver les cibles Stimulus #}
+    {{ form_widget(form.mapboxId, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'mapboxId'
+        }
+    }) }}
+
+    {{ form_widget(form.fullAddress, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'fullAddress'
+        }
+    }) }}
+
+    {{ form_widget(form.featureType, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'featureType'
+        }
+    }) }}
+
+    {{ form_widget(form.codeIsoPays, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'codeIsoPays'
+        }
+    }) }}
+
+    {{ form_widget(form.region, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'region'
+        }
+    }) }}
+
+    {{ form_widget(form.district, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'district'
+        }
+    }) }}
+
+    {{ form_widget(form.poi, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'poi'
+        }
+    }) }}
+
+    {{ form_widget(form.longitude, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'longitude'
+        }
+    }) }}
+
+    {{ form_widget(form.latitude, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'latitude'
+        }
+    }) }}
+
+    {{ form_widget(form.sessionIdMapbox, {
+        attr: {
+            'data-mes-biens--adresse-autocomplete-target': 'sessionIdMapbox'
+        }
+    }) }}
 </div>
+
+<style>
+    /* Uniformiser les champs du formulaire */
+    .mes-biens-immobilier .form-label {
+        display: block;
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .mes-biens-immobilier .form-control {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    /* Ligne de visibilité de l'adresse */
+    .mes-biens-immobilier .affiche_addr_fo_wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .mes-biens-immobilier .affiche_addr_fo_label {
+        color: #222;
+        margin: 0;
+    }
+
+    /* Interrupteur */
+    .mes-biens-immobilier .affiche_addr_fo_switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+        flex: 0 0 44px;
+        margin: 0;
+    }
+
+    .mes-biens-immobilier .affiche_addr_fo_input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+    }
+
+    .mes-biens-immobilier .affiche_addr_fo_slider {
+        position: absolute;
+        inset: 0;
+        cursor: pointer;
+        background-color: #e5e5e5;
+        border: 2px solid #777;
+        border-radius: 999px;
+        transition: background-color 0.25s ease,
+                    border-color 0.25s ease;
+    }
+
+    .mes-biens-immobilier .affiche_addr_fo_slider::before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        left: 2px;
+        top: 2px;
+        background-color: #fff;
+        border-radius: 50%;
+        transition: transform 0.25s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .mes-biens-immobilier
+    .affiche_addr_fo_input:checked
+    + .affiche_addr_fo_slider {
+        background-color: #21b26f;
+        border-color: #21b26f;
+    }
+
+    .mes-biens-immobilier
+    .affiche_addr_fo_input:checked
+    + .affiche_addr_fo_slider::before {
+        transform: translateX(20px);
+    }
+
+    .mes-biens-immobilier
+    .affiche_addr_fo_input:focus-visible
+    + .affiche_addr_fo_slider {
+        outline: 2px solid #0d6efd;
+        outline-offset: 3px;
+    }
+
+    /* Résultats Mapbox au-dessus du reste du formulaire */
+    .mes-biens-immobilier .mapbox-autocomplete-results {
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+        background: #fff;
+        max-height: 280px;
+        overflow-y: auto;
+    }
+
+    .mes-biens-immobilier .mapbox-autocomplete-results[hidden] {
+        display: none !important;
+    }
+
+    /* Éviter les débordements sur mobile */
+    @media (max-width: 767.98px) {
+        .mes-biens-immobilier .d-flex.justify-content-between h2 {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+    }
+</style>

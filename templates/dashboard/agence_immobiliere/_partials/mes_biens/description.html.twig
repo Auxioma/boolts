@@ -29,14 +29,14 @@
                 <div>
                     <label
                         for="{{ form.titreDuLogement.vars.id }}"
-                        class="mb-16"
+                        class="mb-16 p-accent"
                     >
                         Titre du logement <span>(facultatif)</span>
                     </label>
 
                     {{ form_widget(form.titreDuLogement, {
                         attr: {
-                            class: 'form-control mb-32',
+                            class: 'form-control input mb-32',
                             placeholder: 'Exemple : Logement spacieux et lumineux',
                             'data-mes-biens--ai-description-target': 'title',
                         },
@@ -48,14 +48,14 @@
                 <div>
                     <label
                         for="{{ form.descriptionLogement.vars.id }}"
-                        class="mb-16"
+                        class="mb-16 p-accent"
                     >
                         Description du logement*
                     </label>
 
                     {{ form_widget(form.descriptionLogement, {
                         attr: {
-                            class: 'form-control mb-26',
+                            class: 'form-control input h-auto mb-26',
                             placeholder: 'Exemple : Logement spacieux et lumineux',
                             'data-mes-biens-required-field': 'true',
                             'data-mes-biens--ai-description-target': 'description',
@@ -79,14 +79,14 @@
                 <div class="mt-32">
                     <label
                         for="{{ form.referenceInterne.vars.id }}"
-                        class="mb-16"
+                        class="mb-16 p-accent"
                     >
                         Référence interne <span>(facultatif)</span>
                     </label>
 
                     {{ form_widget(form.referenceInterne, {
                         attr: {
-                            class: 'form-control mb-26',
+                            class: 'form-control input mb-26',
                             placeholder: 'Saisissez votre référence interne',
                         },
                     }) }}

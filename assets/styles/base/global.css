@@ -71,11 +71,8 @@ h3,
 
 p, .paragraphe, .input[placeholder] {
     font-size: clamp(12px, calc(12px + (2 * (100vw - 375px) / 1065)), 14px);
-
     line-height: clamp(16px, calc(16px + (4 * (100vw - 375px) / 1065)), 20px);
-
     font-weight: 500;
-
     font-style: normal;
 }
 
@@ -92,15 +89,16 @@ input, textarea,
 .input {
     height: 44px;
     padding: 0 14px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 
 
 input:focus {
     outline: none;
-
     border-color: var(--color-primary);
-
     box-shadow: none;
 }
 
@@ -193,8 +191,13 @@ input:focus {
 
     position: relative;
 }
+input.form-control.input.p-accent-placeholder::placeholder {
+    color: #0b0f14 !important;
+    opacity: 1 !important;
+}
 
-.p-accent {
+.p-accent,
+.p-accent-placeholder.input[placeholder] {
     font-size: clamp(14px, calc(14px + (2 * (100vw - 375px) / 1065)), 16px);
 
     font-style: normal;

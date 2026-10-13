@@ -23,7 +23,7 @@
                     <div class="">
                         <div class="row">
 
-                            <h2 class="mb-32">Pièces</h2>
+                            <h3 class="mb-32">Pièces</h3>
 
                             <div>
 
@@ -34,7 +34,7 @@
                                 >
                                     {{ form_widget(form.chambres, {
                                         attr: {
-                                            class: 'chambre-input',
+                                            'class': 'chambre-input',
                                             'data-mes-biens--chambres-target': 'input',
                                             'data-mes-biens-required-min-value': '1',
                                         },
@@ -42,8 +42,8 @@
 
                                     <input
                                         type="text"
-                                        class="form-control pe-5 fw-bold-700"
-                                        placeholder="Chambre*"
+                                        class="form-control input p-accent-placeholder"
+                                        placeholder="Chambre"
                                         readonly
                                     >
 
@@ -88,7 +88,7 @@
                                 >
                                     {{ form_widget(form.salleDeBains, {
                                         attr: {
-                                            class: 'salle-bain-input',
+                                            'class': 'salle-bain-input',
                                             'data-mes-biens--salle-de-bains-target': 'input',
                                             'data-mes-biens-required-min-value': '0.5',
                                         },
@@ -96,8 +96,8 @@
 
                                     <input
                                         type="text"
-                                        class="form-control pe-5 fw-bold-700"
-                                        placeholder="Salle de bain*"
+                                        class="form-control input p-accent-placeholder"
+                                        placeholder="Salle de bain"
                                         readonly
                                     >
 
@@ -135,22 +135,22 @@
                                     {{ form_errors(form.salleDeBains) }}
                                 </div>
 
-                                <small class="mb-32 d-block">
+                                <p class="mb-32" style="color:#858789">
                                     Si votre bien comprend des toilettes séparées de la salle de bain, sélectionnez la valeur de 0,5.
-                                </small>
+                                </p>
 
                                 {# SURFACE #}
                                 <div>
                                     <label
                                         for="{{ form.surfaceTotal.vars.id }}"
-                                        class="mb-16"
+                                        class="mb-16 p-accent"
                                     >
                                         Surface totale*
                                     </label>
 
                                     {{ form_widget(form.surfaceTotal, {
                                         attr: {
-                                            class: 'form-control mb-32',
+                                            class: 'form-control input mb-32',
                                             placeholder: 'Exemple : 150',
                                             'data-mes-biens-required-field': 'true',
                                         },
@@ -163,14 +163,14 @@
                                 <div>
                                     <label
                                         for="{{ form.anneeConstruction.vars.id }}"
-                                        class="mb-16"
+                                        class="mb-16 p-accent"
                                     >
                                         Année de construction <span>(facultatif)</span>
                                     </label>
 
                                     {{ form_widget(form.anneeConstruction, {
                                         attr: {
-                                            class: 'form-control mb-48',
+                                            class: 'form-control input mb-48',
                                             placeholder: 'Exemple : 1983',
                                         },
                                     }) }}
@@ -179,9 +179,9 @@
                                 </div>
 
                                 {# CARACTERISTIQUES #}
-                                <h2 class="mb-32">
+                                <h3 class="mb-32">
                                     Caractéristiques
-                                </h2>
+                                </h3>
 
                                 <div
                                     class="row"
@@ -213,7 +213,7 @@
                                                     </div>
 
                                                     <div>
-                                                        <span>
+                                                        <span class="p-accent">
                                                             {{ choice.label }}
                                                         </span>
                                                     </div>

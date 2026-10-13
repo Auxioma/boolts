@@ -7,13 +7,14 @@
  Les photos sont téléversées / réordonnées / supprimées en AJAX
  (mes-biens--images Stimulus controller -> AgenceImmobiliereMesBiensImagesController).
  Elles sont persistées au fil de l'eau : `propertyImages` contient les photos
- déjà en base (triées par position) et leurs miniatures sont générées par
- LiipImagine (filtre `property_upload_thumbnail`).
+ déjà en base (triées par position). Le chemin est résolu par VichUploader
+ (mapping `biens` + PropertyDirectoryNamer) et les miniatures sont générées
+ par LiipImagine (filtre `property_upload_thumbnail`).
 #}
 
 <div class="js-tab-content mes-biens-immobilier formulaire" id="cat6">
     <div class="d-flex justify-content-between align-items-end">
-        <h2>
+        <h2 style="max-width: 55%">
             Téléchargez quelques photos de votre bien
         </h2>
 
@@ -24,8 +25,9 @@
 
     <div class="mt-48 mb-24">
         <div class="attention-photos-images py-22 px-22">
-            <span>Attention :</span> Les annonces comprenant moins de 5 images sont généralement moins attrayantes pour les particuliers et, de ce fait, moins mises en avant par Boolts. Nous vous recommandons d’ajouter au moins 5 images.
-        </div>
+            <p class="mb-0">
+            <span class="p-accent">Attention :</span> Les annonces comprenant moins de 5 images sont généralement moins attrayantes pour les particuliers et, de ce fait, moins mises en avant par Boolts. Nous vous recommandons d’ajouter au moins 5 images.
+        </p></div>
     </div>
 
     {% set existingImages = propertyImages|default([]) %}
@@ -53,7 +55,7 @@
                 draggable="true"
             >
                 <img
-                    src="{{ ('properties/' ~ image.imageName)|imagine_filter('property_upload_thumbnail') }}"
+                    src="{{ vich_uploader_asset(image, 'imageFile')|imagine_filter('property_upload_thumbnail') }}"
                     alt="Photo du bien"
                 >
 
