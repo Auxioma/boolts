@@ -14,13 +14,17 @@
             {{ 'mes_biens.prix.prix.label'|trans }}
         </label>
 
-        {{ form_widget(form.prix, {
-            attr: {
-                class: 'form-control input mb-32',
-                placeholder: '€',
-                'data-mes-biens-required-field': 'true',
-            },
-        }) }}
+        <div class="input-group mes-biens-price-group mb-32">
+            {{ form_widget(form.prix, {
+                attr: {
+                    class: 'form-control input',
+                    'aria-describedby': form.prix.vars.id ~ '_devise',
+                    'data-mes-biens-required-field': 'true',
+                },
+            }) }}
+
+            <span class="input-group-text" id="{{ form.prix.vars.id }}_devise">{{ devise }}</span>
+        </div>
 
         {{ form_errors(form.prix) }}
     </div>

@@ -18,15 +18,19 @@
                 {{ 'mes_biens.prix.loyer.label'|trans }}
             </label>
 
-            {{ form_widget(form.montantLoyerHorsCharge, {
-                attr: {
-                    class: 'form-control input mb-32',
-                    placeholder: 'mes_biens.prix.per_month'|trans,
-                    'data-mes-biens-required-field': 'true',
-                    'data-mes-biens--loyer-target': 'loyerHorsCharge',
-                    'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
-                },
-            }) }}
+            <div class="input-group mes-biens-price-group mb-32">
+                {{ form_widget(form.montantLoyerHorsCharge, {
+                    attr: {
+                        class: 'form-control input',
+                        'aria-describedby': form.montantLoyerHorsCharge.vars.id ~ '_devise',
+                        'data-mes-biens-required-field': 'true',
+                        'data-mes-biens--loyer-target': 'loyerHorsCharge',
+                        'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
+                    },
+                }) }}
+
+                <span class="input-group-text" id="{{ form.montantLoyerHorsCharge.vars.id }}_devise">{{ 'mes_biens.prix.per_month'|trans({'%devise%': devise}) }}</span>
+            </div>
 
             {{ form_errors(form.montantLoyerHorsCharge) }}
         </div>
@@ -41,15 +45,19 @@
                 {{ 'mes_biens.prix.charges.label'|trans }}
             </label>
 
-            {{ form_widget(form.montantDesCharges, {
-                attr: {
-                    class: 'form-control input mb-32',
-                    placeholder: 'mes_biens.prix.per_month'|trans,
-                    'data-mes-biens-required-field': 'true',
-                    'data-mes-biens--loyer-target': 'charges',
-                    'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
-                },
-            }) }}
+            <div class="input-group mes-biens-price-group mb-32">
+                {{ form_widget(form.montantDesCharges, {
+                    attr: {
+                        class: 'form-control input',
+                        'aria-describedby': form.montantDesCharges.vars.id ~ '_devise',
+                        'data-mes-biens-required-field': 'true',
+                        'data-mes-biens--loyer-target': 'charges',
+                        'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
+                    },
+                }) }}
+
+                <span class="input-group-text" id="{{ form.montantDesCharges.vars.id }}_devise">{{ 'mes_biens.prix.per_month'|trans({'%devise%': devise}) }}</span>
+            </div>
 
             {{ form_errors(form.montantDesCharges) }}
         </div>
@@ -59,7 +67,7 @@
         <h3>
             {{ 'mes_biens.prix.loyer_affiche'|trans }}
             <span data-mes-biens--loyer-target="total">0</span>
-            <span class="cc-mois">{{ 'mes_biens.prix.cc_mois'|trans }}</span>
+            <span class="cc-mois">{{ 'mes_biens.prix.cc_mois'|trans({'%devise%': devise}) }}</span>
         </h3>
     </div>
 
@@ -71,12 +79,16 @@
             {{ 'mes_biens.prix.depot.label'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
         </label>
 
-        {{ form_widget(form.montantDepotDeGarantie, {
-            attr: {
-                class: 'form-control input mb-32',
-                placeholder: '€',
-            },
-        }) }}
+        <div class="input-group mes-biens-price-group mb-32">
+            {{ form_widget(form.montantDepotDeGarantie, {
+                attr: {
+                    class: 'form-control input',
+                    'aria-describedby': form.montantDepotDeGarantie.vars.id ~ '_devise',
+                },
+            }) }}
+
+            <span class="input-group-text" id="{{ form.montantDepotDeGarantie.vars.id }}_devise">{{ devise }}</span>
+        </div>
 
         {{ form_errors(form.montantDepotDeGarantie) }}
     </div>

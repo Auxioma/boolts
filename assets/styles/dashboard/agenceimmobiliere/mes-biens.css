@@ -1328,3 +1328,31 @@
 body.ai-service-modal-open {
     overflow: hidden;
 }
+
+/* Étape prix : input + devise à droite (structure Bootstrap .input-group, design .input) */
+.mes-biens-price-group {
+    flex-wrap: nowrap;
+}
+
+.mes-biens-price-group > .input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.mes-biens-price-group > .input-group-text {
+    height: 44px;
+    margin-left: -2px;
+    padding: 0 14px;
+    border: 2px solid #ebecec;
+    border-radius: 0 12px 12px 0;
+    background: #fff;
+    color: #858789;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.mes-biens-price-group:focus-within > .input,
+.mes-biens-price-group:focus-within > .input-group-text {
+    border-color: var(--color-primary);
+}
