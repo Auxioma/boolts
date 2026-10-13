@@ -28,6 +28,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Gestion AJAX des photos de l'étape 6 du tunnel « Mes biens ».
@@ -57,6 +58,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
         private readonly EntityManagerInterface $entityManager,
         private readonly CacheManager $imagineCacheManager,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -78,7 +80,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
 
         if ($property->getPropertyImages()->count() >= self::MAX_IMAGES) {
             return $this->error(
-                \sprintf('Vous ne pouvez pas dépasser %d photos.', self::MAX_IMAGES),
+                $this->translator->trans('mes_biens.photos.error.max_images', ['%max%' => self::MAX_IMAGES]),
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
@@ -87,7 +89,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
 
         if (!$file instanceof UploadedFile || !$file->isValid()) {
             return $this->error(
-                'Aucun fichier valide reçu.',
+                $this->translator->trans('mes_biens.photos.error.no_file'),
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
@@ -99,14 +101,14 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
             || \in_array($mime, self::DISALLOWED_MIMES, true)
         ) {
             return $this->error(
-                'Le fichier doit être une image (JPG, PNG, WebP…).',
+                $this->translator->trans('mes_biens.photos.error.not_image'),
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
 
         if ($file->getSize() > self::MAX_FILE_SIZE) {
             return $this->error(
-                'Chaque image doit peser moins de 15 Mo.',
+                $this->translator->trans('mes_biens.photos.error.too_large'),
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
@@ -134,7 +136,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
         $payload = json_decode($request->getContent(), true);
 
         if (!\is_array($payload)) {
-            return $this->error('Données invalides.', Response::HTTP_BAD_REQUEST);
+            return $this->error($this->translator->trans('mes_biens.error.invalid_data'), Response::HTTP_BAD_REQUEST);
         }
 
         $error = $this->guard(
@@ -154,7 +156,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
         )));
 
         if ([] === $order) {
-            return $this->error('Ordre vide.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->error($this->translator->trans('mes_biens.photos.error.empty_order'), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         /** @var array<int, PropertyImage> $imagesById */
@@ -166,7 +168,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
 
         if ([] !== array_diff($order, array_keys($imagesById))) {
             return $this->error(
-                'Une des photos ne fait pas partie de ce bien.',
+                $this->translator->trans('mes_biens.photos.error.not_in_property'),
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
@@ -221,7 +223,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
         }
 
         if ($id < 1) {
-            return $this->error('Photo introuvable.', Response::HTTP_NOT_FOUND);
+            return $this->error($this->translator->trans('mes_biens.photos.error.not_found'), Response::HTTP_NOT_FOUND);
         }
 
         $image = $propertyImageRepository->find($id);
@@ -231,7 +233,7 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
             || $image->getProperty()?->getId() !== $property->getId()
         ) {
             return $this->error(
-                'Photo introuvable.',
+                $this->translator->trans('mes_biens.photos.error.not_found'),
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -266,38 +268,38 @@ final class AgenceImmobiliereMesBiensImagesController extends AbstractController
         $property = null;
 
         if (!$request->isXmlHttpRequest()) {
-            return $this->error('Requête invalide.', Response::HTTP_BAD_REQUEST);
+            return $this->error($this->translator->trans('mes_biens.error.invalid_request'), Response::HTTP_BAD_REQUEST);
         }
 
         if (!$this->csrfTokenManager->isTokenValid(new CsrfToken(self::CSRF_TOKEN_ID, $csrfToken))) {
-            return $this->error('Token CSRF invalide.', Response::HTTP_FORBIDDEN);
+            return $this->error($this->translator->trans('mes_biens.error.invalid_csrf'), Response::HTTP_FORBIDDEN);
         }
 
         $user = $this->getUser();
 
         if (!$user instanceof User) {
-            return $this->error('Vous devez être connecté.', Response::HTTP_FORBIDDEN);
+            return $this->error($this->translator->trans('mes_biens.error.not_logged_in'), Response::HTTP_FORBIDDEN);
         }
 
         if (!$request->hasSession()) {
-            return $this->error('Aucun bien en cours.', Response::HTTP_NOT_FOUND);
+            return $this->error($this->translator->trans('mes_biens.photos.error.no_current_property'), Response::HTTP_NOT_FOUND);
         }
 
         $propertyId = $request->getSession()->get('mes_biens_property_id');
 
         if (null === $propertyId || '' === $propertyId) {
-            return $this->error('Aucun bien en cours.', Response::HTTP_NOT_FOUND);
+            return $this->error($this->translator->trans('mes_biens.photos.error.no_current_property'), Response::HTTP_NOT_FOUND);
         }
 
         $found = $propertyRepository->find((int) $propertyId);
 
         if (!$found instanceof Property) {
-            return $this->error('Aucun bien en cours.', Response::HTTP_NOT_FOUND);
+            return $this->error($this->translator->trans('mes_biens.photos.error.no_current_property'), Response::HTTP_NOT_FOUND);
         }
 
         if ($found->getUser()?->getId() !== $user->getId()) {
             return $this->error(
-                'Vous ne pouvez pas modifier ce bien.',
+                $this->translator->trans('mes_biens.photos.error.forbidden'),
                 Response::HTTP_FORBIDDEN
             );
         }

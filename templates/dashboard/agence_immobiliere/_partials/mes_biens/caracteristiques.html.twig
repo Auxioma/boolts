@@ -8,7 +8,7 @@
 <div class="js-tab-content mes-biens-immobilier formulaire" id="cat4">
     <div class="d-flex justify-content-between align-items-end">
         <h2>
-            Remplissez les caractéristiques de votre bien
+            {{ 'mes_biens.caracteristiques.title'|trans }}
         </h2>
 
         <div class="d-flex align-items-end">
@@ -23,7 +23,7 @@
                     <div class="">
                         <div class="row">
 
-                            <h3 class="mb-32">Pièces</h3>
+                            <h3 class="mb-32">{{ 'mes_biens.caracteristiques.pieces'|trans }}</h3>
 
                             <div>
 
@@ -43,7 +43,7 @@
                                     <input
                                         type="text"
                                         class="form-control input p-accent-placeholder"
-                                        placeholder="Chambre"
+                                        placeholder="{{ 'mes_biens.caracteristiques.chambre'|trans }}"
                                         readonly
                                     >
 
@@ -97,7 +97,7 @@
                                     <input
                                         type="text"
                                         class="form-control input p-accent-placeholder"
-                                        placeholder="Salle de bain"
+                                        placeholder="{{ 'mes_biens.caracteristiques.salle_de_bain'|trans }}"
                                         readonly
                                     >
 
@@ -136,7 +136,7 @@
                                 </div>
 
                                 <p class="mb-32" style="color:#858789">
-                                    Si votre bien comprend des toilettes séparées de la salle de bain, sélectionnez la valeur de 0,5.
+                                    {{ 'mes_biens.caracteristiques.salle_de_bain.help'|trans }}
                                 </p>
 
                                 {# SURFACE #}
@@ -145,13 +145,13 @@
                                         for="{{ form.surfaceTotal.vars.id }}"
                                         class="mb-16 p-accent"
                                     >
-                                        Surface totale*
+                                        {{ 'mes_biens.caracteristiques.surface.label'|trans }}
                                     </label>
 
                                     {{ form_widget(form.surfaceTotal, {
                                         attr: {
                                             class: 'form-control input mb-32',
-                                            placeholder: 'Exemple : 150',
+                                            placeholder: 'mes_biens.caracteristiques.surface.placeholder'|trans,
                                             'data-mes-biens-required-field': 'true',
                                         },
                                     }) }}
@@ -165,13 +165,13 @@
                                         for="{{ form.anneeConstruction.vars.id }}"
                                         class="mb-16 p-accent"
                                     >
-                                        Année de construction <span>(facultatif)</span>
+                                        {{ 'mes_biens.caracteristiques.annee.label'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
                                     </label>
 
                                     {{ form_widget(form.anneeConstruction, {
                                         attr: {
                                             class: 'form-control input mb-48',
-                                            placeholder: 'Exemple : 1983',
+                                            placeholder: 'mes_biens.caracteristiques.annee.placeholder'|trans,
                                         },
                                     }) }}
 
@@ -180,7 +180,7 @@
 
                                 {# CARACTERISTIQUES #}
                                 <h3 class="mb-32">
-                                    Caractéristiques
+                                    {{ 'mes_biens.caracteristiques.caracteristiques'|trans }}
                                 </h3>
 
                                 <div

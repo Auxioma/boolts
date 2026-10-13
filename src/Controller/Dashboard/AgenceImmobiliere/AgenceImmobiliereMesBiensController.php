@@ -39,6 +39,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route(
     path: [
@@ -50,6 +51,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
+    }
+
     #[Route('/liste', name: 'mes_biens_list', methods: ['GET'])]
     public function list(
         PropertyRepository $propertyRepository,
@@ -1321,7 +1327,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 if (!$transaction instanceof CategoryBienTransaction) {
                     $this->addFlash(
                         'danger',
-                        'Veuillez sélectionner un type de transaction.'
+                        $this->translator->trans('mes_biens.type_transaction.required')
                     );
 
                     return $this->redirectToRoute(
@@ -1687,7 +1693,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 if ($isEditMode) {
                     $this->addFlash(
                         'success',
-                        'L’annonce a été modifiée avec succès.'
+                        $this->translator->trans('mes_biens.flash.updated')
                     );
 
                     return $this->redirectToRoute(

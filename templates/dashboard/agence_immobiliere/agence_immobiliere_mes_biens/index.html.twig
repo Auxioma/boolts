@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes biens immobiliers{% endblock %}
+{% block title %}{{ 'mes_biens.page_title'|trans }}{% endblock %}
 
 {% block body %}
     <main id="dashboard" class="dashboard">
@@ -81,14 +81,14 @@
                                                     href="{{ path('agence_immobiliere_mes_biens', previousParams) }}"
                                                     class="btn-retour py-10 px-16 mr-12 js-navigation-retour"
                                                 >
-                                                    Retour
+                                                    {{ 'mes_biens.navigation.back'|trans }}
                                                 </a>
                                             {% else %}
                                                 <a
                                                     href="#"
                                                     class="btn-retour py-10 px-16 mr-12 js-navigation-retour is-first-page"
                                                 >
-                                                    Retour
+                                                    {{ 'mes_biens.navigation.back'|trans }}
                                                 </a>
                                             {% endif %}
 
@@ -119,13 +119,12 @@
                         <div class="boolts-limit-modal__content">
                             <div class="boolts-limit-modal__text">
                                 <h2 id="limitAnnonceModalTitle" class="boolts-limit-modal__title">
-                                    Vous avez atteint la limite<br>
-                                    de dépôt d’annonces
+                                    {{ 'mes_biens.limit_modal.title_line_1'|trans }}<br>
+                                    {{ 'mes_biens.limit_modal.title_line_2'|trans }}
                                 </h2>
 
                                 <p id="limitAnnonceModalDescription" class="boolts-limit-modal__description">
-                                    Vous avez atteint la limite de dépôt d’annonces de votre forfait actuel.
-                                    Pour pouvoir publier davantage d’annonces sur Boolts, rendez-vous sur nos offres d’abonnements.
+                                    {{ 'mes_biens.limit_modal.description'|trans }}
                                 </p>
                             </div>
 
@@ -133,7 +132,7 @@
                                 href="{{ abonnementUrl|default('#') }}"
                                 class="boolts-limit-modal__button"
                             >
-                                Voir les abonnements
+                                {{ 'mes_biens.limit_modal.button'|trans }}
                             </a>
                         </div>
                     </div>

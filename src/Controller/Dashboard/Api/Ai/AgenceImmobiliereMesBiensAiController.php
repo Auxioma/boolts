@@ -24,6 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * HTTP controller for module Dashboard / Api / Ai / AgenceImmobiliereMesBiensAiController.
@@ -37,20 +38,13 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
     private const OPENAI_MAX_OUTPUT_TOKENS = 700;
 
     /**
-     * Message générique renvoyé au front dès qu'un incident empêche la
-     * génération IA (quota / facturation OpenAI, clé absente, time-out, réponse
-     * inexploitable…). On n'expose jamais le détail technique de l'API tierce :
-     * le front affiche une modale « Service momentanément indisponible ».
-     */
-    private const SERVICE_UNAVAILABLE_MESSAGE = 'Service momentanément indisponible.';
-
-    /**
      * Handles the __construct controller action.
      */
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly CsrfTokenManagerInterface $csrfTokenManager,
         private readonly LoggerInterface $logger,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -72,7 +66,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         if (!$request->isXmlHttpRequest()) {
             return $this->json([
                 'success' => false,
-                'message' => 'Requête invalide.',
+                'message' => $this->translator->trans('mes_biens.error.invalid_request'),
             ], 400);
         }
 
@@ -81,7 +75,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         if (!\is_array($payload)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Données invalides.',
+                'message' => $this->translator->trans('mes_biens.error.invalid_data'),
             ], 400);
         }
 
@@ -90,7 +84,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('generate_ai_description', $csrfToken))) {
             return $this->json([
                 'success' => false,
-                'message' => 'Token CSRF invalide.',
+                'message' => $this->translator->trans('mes_biens.error.invalid_csrf'),
             ], 403);
         }
 
@@ -99,7 +93,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         if (!$user instanceof User) {
             return $this->json([
                 'success' => false,
-                'message' => 'Vous devez être connecté pour générer une description.',
+                'message' => $this->translator->trans('mes_biens.description.error.not_logged_in'),
             ], 403);
         }
 
@@ -111,7 +105,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         if (!$property instanceof Property) {
             return $this->json([
                 'success' => false,
-                'message' => 'Aucun bien courant n’a été trouvé en base de données.',
+                'message' => $this->translator->trans('mes_biens.description.error.no_current_property'),
             ], 404);
         }
 
@@ -121,7 +115,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         ) {
             return $this->json([
                 'success' => false,
-                'message' => 'Vous ne pouvez pas générer une description pour ce bien.',
+                'message' => $this->translator->trans('mes_biens.description.error.forbidden'),
             ], 403);
         }
 
@@ -158,7 +152,7 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         if ('' === $propertyContext && '' === $title && '' === $currentDescription) {
             return $this->json([
                 'success' => false,
-                'message' => 'Aucune donnée du bien n’a été trouvée en base de données.',
+                'message' => $this->translator->trans('mes_biens.description.error.no_data'),
             ], 400);
         }
 
@@ -245,8 +239,10 @@ SYSTEM,
 
     /**
      * Réponse standard d'incident : détail technique journalisé côté serveur,
-     * message générique + drapeau `serviceUnavailable` côté client (modale
-     * « Service momentanément indisponible »).
+     * message générique (clé mes_biens.description.error.service_unavailable)
+     * + drapeau `serviceUnavailable` côté client (modale « Service momentanément
+     * indisponible »). On n'expose jamais le détail technique de l'API tierce
+     * (quota / facturation OpenAI, clé absente, time-out, réponse inexploitable…).
      */
     private function serviceUnavailable(
         string $internalReason,
@@ -260,7 +256,7 @@ SYSTEM,
         return $this->json([
             'success' => false,
             'serviceUnavailable' => true,
-            'message' => self::SERVICE_UNAVAILABLE_MESSAGE,
+            'message' => $this->translator->trans('mes_biens.description.error.service_unavailable'),
         ], Response::HTTP_SERVICE_UNAVAILABLE);
     }
 

@@ -27,22 +27,22 @@
     {
         step: 1,
         tab: 'cat1',
-        title: 'Type de bien',
+        title: 'mes_biens.stepper.type_bien'|trans,
     },
     {
         step: 2,
         tab: 'cat2',
-        title: 'Type de transaction',
+        title: 'mes_biens.stepper.type_transaction'|trans,
     },
     {
         step: 3,
         tab: 'cat3',
-        title: 'Adresse',
+        title: 'mes_biens.stepper.adresse'|trans,
     },
     {
         step: 4,
         tab: 'cat4',
-        title: 'Caractéristiques',
+        title: 'mes_biens.stepper.caracteristiques'|trans,
     },
 ] %}
 
@@ -52,7 +52,7 @@
         {
             step: 5,
             tab: 'cat5',
-            title: 'Bilan énergétique',
+            title: 'mes_biens.stepper.bilan_energetique'|trans,
         },
     ]) %}
 {% endif %}
@@ -61,17 +61,17 @@
     {
         step: 6,
         tab: 'cat6',
-        title: 'Photos',
+        title: 'mes_biens.stepper.photos'|trans,
     },
     {
         step: 7,
         tab: 'cat7',
-        title: 'Description',
+        title: 'mes_biens.stepper.description'|trans,
     },
     {
         step: 8,
         tab: 'cat8',
-        title: 'Prix',
+        title: 'mes_biens.stepper.prix'|trans,
     },
 ]) %}
 
@@ -133,7 +133,7 @@
                     {% if isVisualActive %}mes-bien-stepper-item-active{% endif %}
                 "
                 data-tab="{{ item.tab }}"
-                title="Aller à l’étape {{ item.title }}"
+                title="{{ 'mes_biens.stepper.go_to_step'|trans({'%step%': item.title}) }}"
             >
                 <div class="mes-bien-stepper-circle"></div>
 

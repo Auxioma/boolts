@@ -11,6 +11,11 @@ export default class extends Controller {
     static values = {
         url: String,
         csrfToken: String,
+        // Clé mes_biens.description.generating, injectée par description.html.twig.
+        generatingLabel: {
+            type: String,
+            default: 'Génération...',
+        },
     };
 
     connect() {
@@ -148,7 +153,7 @@ export default class extends Controller {
         this.buttonTarget.disabled = isLoading;
 
         if (isLoading) {
-            this.buttonTarget.innerHTML = 'Génération...';
+            this.buttonTarget.textContent = this.generatingLabelValue;
             return;
         }
 

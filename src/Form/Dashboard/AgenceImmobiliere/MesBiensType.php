@@ -53,7 +53,7 @@ class MesBiensType extends AbstractType
                     'required' => true,
                     'constraints' => [
                         new NotBlank(
-                            message: 'Veuillez sélectionner un type de bien.',
+                            message: 'mes_biens.type_bien.required',
                             groups: ['step_1']
                         ),
                     ],
@@ -107,7 +107,7 @@ class MesBiensType extends AbstractType
                     'attr' => [
                         'class' => 'form-select mb-32 input ',
                     ],
-                    'placeholder' => 'Saisissez le pays',
+                    'placeholder' => 'mes_biens.adresse.pays.placeholder',
                 ])
 
                 ->add('neighborhood', TextType::class, [
@@ -280,7 +280,7 @@ class MesBiensType extends AbstractType
 
         $builder
             ->add('saveAndExit', SubmitType::class, [
-                'label' => 'Enregistrer et quitter',
+                'label' => 'mes_biens.navigation.save_and_exit',
                 'validation_groups' => false,
                 'attr' => [
                     'class' => 'btn-retour py-10 px-16 p-accent',
@@ -288,7 +288,7 @@ class MesBiensType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Suivant',
+                'label' => 'mes_biens.navigation.next',
                 'attr' => [
                     'class' => 'py-10 px-16 btn-suivant',
                     'data-mes-biens--submit-target' => 'submit',

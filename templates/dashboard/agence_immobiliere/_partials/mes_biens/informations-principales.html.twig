@@ -10,7 +10,7 @@
 >
     {# En-tête #}
     <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
-        <h2 class="mb-0">Où se situe votre bien ?</h2>
+        <h2 class="mb-0">{{ 'mes_biens.adresse.title'|trans }}</h2>
 
         <div class="flex-shrink-0">
             {{ form_widget(form.saveAndExit) }}
@@ -24,13 +24,13 @@
             <div class="col-12">
                 <div class="js-address-autocomplete-field position-relative">
                     <label for="{{ form.adresse.vars.id }}" class="form-label mb-2 p-accent">
-                        Adresse du logement
+                        {{ 'mes_biens.adresse.adresse.label'|trans }}
                     </label>
 
                     {{ form_widget(form.adresse, {
                         attr: {
-                            
-                            placeholder: 'Entrez un numéro et un nom de rue',
+
+                            placeholder: 'mes_biens.adresse.adresse.placeholder'|trans,
                             autocomplete: 'off',
                             'data-mes-biens--adresse-autocomplete-target': 'adresse',
                             'data-action': 'input->mes-biens--adresse-autocomplete#search keydown->mes-biens--adresse-autocomplete#onKeydown blur->mes-biens--adresse-autocomplete#onBlur'
@@ -63,9 +63,7 @@
                         </svg>
 
                         <span>
-                            L’adresse est utilisée pour enrichir les informations du bien
-                            (quartier, arrondissement et code postal). Elle ne sera pas
-                            affichée publiquement par défaut.
+                            {{ 'mes_biens.adresse.adresse.help'|trans }}
                         </span>
                     </p>
                 </div>
@@ -75,7 +73,7 @@
             <div class="col-12">
                 <div class="affiche_addr_fo_wrapper">
                     <div class="affiche_addr_fo_label p-accent">
-                        Afficher publiquement l’adresse
+                        {{ 'mes_biens.adresse.show_adresse'|trans }}
                     </div>
 
                     <label class="affiche_addr_fo_switch">
@@ -96,13 +94,13 @@
                     for="{{ form.codePostal.vars.id }}"
                     class="form-label mb-2 p-accent"
                 >
-                    Code postal
+                    {{ 'mes_biens.adresse.code_postal.label'|trans }}
                 </label>
 
                 {{ form_widget(form.codePostal, {
                     attr: {
-                       
-                        placeholder: 'Entrez un code postal',
+
+                        placeholder: 'mes_biens.adresse.code_postal.placeholder'|trans,
                         autocomplete: 'off',
                         'data-mes-biens--adresse-autocomplete-target': 'codePostal',
                         'data-mes-biens-required-field': 'true'
@@ -116,13 +114,13 @@
                     for="{{ form.ville.vars.id }}"
                     class="form-label mb-2 p-accent"
                 >
-                    Ville
+                    {{ 'mes_biens.adresse.ville.label'|trans }}
                 </label>
 
                 {{ form_widget(form.ville, {
                     attr: {
-                      
-                        placeholder: 'Choisissez une ville',
+
+                        placeholder: 'mes_biens.adresse.ville.placeholder'|trans,
                         autocomplete: 'off',
                         'data-mes-biens--adresse-autocomplete-target': 'ville',
                         'data-mes-biens-required-field': 'true'
@@ -135,7 +133,7 @@
                     for="{{ form.pays.vars.id }}"
                     class="form-label mb-2 p-accent"
                 >
-                    Pays
+                    {{ 'mes_biens.adresse.pays.label'|trans }}
                 </label>
 
                 {{ form_widget(form.pays, {
@@ -154,7 +152,7 @@
                     for="{{ form.neighborhood.vars.id }}"
                     class="form-label p-accent mb-2"
                 >
-                    Quartier
+                    {{ 'mes_biens.adresse.quartier.label'|trans }}
                 </label>
 
                 {{ form_widget(form.neighborhood, {
@@ -170,7 +168,7 @@
                     for="{{ form.locality.vars.id }}"
                     class="form-label p-accent mb-2"
                 >
-                    Arrondissement
+                    {{ 'mes_biens.adresse.arrondissement.label'|trans }}
                 </label>
 
                 {{ form_widget(form.locality, {

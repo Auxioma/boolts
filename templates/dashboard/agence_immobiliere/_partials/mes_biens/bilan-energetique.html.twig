@@ -8,7 +8,7 @@
 <div class="js-tab-content mes-biens-immobilier formulaire" id="cat5">
     <div class="d-flex justify-content-between align-items-end">
         <h2>
-            Indiquez les résultats de votre diagnostic de performance énergétique (DPE)
+            {{ 'mes_biens.bilan_energetique.title'|trans }}
         </h2>
 
         <div class="d-flex align-items-end">
@@ -25,7 +25,7 @@
                         for="{{ form.dpe.vars.id }}"
                         class="mb-16"
                     >
-                        Consommation en énergie primaire*
+                        {{ 'mes_biens.bilan_energetique.dpe.label'|trans }}
                     </label>
 
                     <div class="position-relative">
@@ -38,7 +38,7 @@
                         }) }}
 
                         <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                            kWhEP/m2/an
+                            {{ 'mes_biens.bilan_energetique.dpe.unit'|trans }}
                         </span>
                     </div>
 
@@ -63,11 +63,11 @@
 
                     <div class="d-flex justify-content-between mt-16">
                         <small>
-                            Logement économe
+                            {{ 'mes_biens.bilan_energetique.dpe.econome'|trans }}
                         </small>
 
                         <small>
-                            Logement énergivore
+                            {{ 'mes_biens.bilan_energetique.dpe.energivore'|trans }}
                         </small>
                     </div>
 
@@ -79,7 +79,7 @@
                         for="{{ form.ges.vars.id }}"
                         class="mb-16"
                     >
-                        Emissions de gaz à effet de serre*
+                        {{ 'mes_biens.bilan_energetique.ges.label'|trans }}
                     </label>
 
                     <div class="position-relative">
@@ -92,7 +92,7 @@
                         }) }}
 
                         <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                            kgCO2/m2/an
+                            {{ 'mes_biens.bilan_energetique.ges.unit'|trans }}
                         </span>
                     </div>
 
@@ -117,11 +117,11 @@
 
                     <div class="d-flex justify-content-between mt-16">
                         <small>
-                            Peu d’émissions
+                            {{ 'mes_biens.bilan_energetique.ges.peu'|trans }}
                         </small>
 
                         <small>
-                            Beaucoup d’émissions
+                            {{ 'mes_biens.bilan_energetique.ges.beaucoup'|trans }}
                         </small>
                     </div>
 
@@ -130,7 +130,7 @@
 
                 <div class="mt-32 mb-24">
                     <h2>
-                        Estimation des coûts d'énergie du logement
+                        {{ 'mes_biens.bilan_energetique.couts.title'|trans }}
                     </h2>
                 </div>
 
@@ -141,7 +141,7 @@
                                 for="{{ form.dpeMin.vars.id }}"
                                 class="mb-16"
                             >
-                                Minimum <span>(facultatif)</span>
+                                {{ 'mes_biens.bilan_energetique.couts.minimum'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
                             </label>
 
                             <div class="position-relative">
@@ -153,7 +153,7 @@
                                 }) }}
 
                                 <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                                    €/an
+                                    {{ 'mes_biens.bilan_energetique.couts.unit'|trans }}
                                 </span>
                             </div>
 
@@ -167,7 +167,7 @@
                                 for="{{ form.dpeMax.vars.id }}"
                                 class="mb-16"
                             >
-                                Maximum <span>(facultatif)</span>
+                                {{ 'mes_biens.bilan_energetique.couts.maximum'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
                             </label>
 
                             <div class="position-relative">
@@ -179,7 +179,7 @@
                                 }) }}
 
                                 <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                                    €/an
+                                    {{ 'mes_biens.bilan_energetique.couts.unit'|trans }}
                                 </span>
                             </div>
 
@@ -192,7 +192,7 @@
                             for="{{ form.dateIndexationEnergie.vars.id }}"
                             class="mb-16"
                         >
-                            Date d'indexation du prix des énergies <span>(facultatif)</span>
+                            {{ 'mes_biens.bilan_energetique.couts.date_indexation'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
                         </label>
 
                         <div class="position-relative">

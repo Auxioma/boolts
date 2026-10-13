@@ -15,13 +15,13 @@
                 for="{{ form.montantLoyerHorsCharge.vars.id }}"
                 class="mb-16 p-accent"
             >
-                Montant du loyer hors charges*
+                {{ 'mes_biens.prix.loyer.label'|trans }}
             </label>
 
             {{ form_widget(form.montantLoyerHorsCharge, {
                 attr: {
                     class: 'form-control input mb-32',
-                    placeholder: '€/mois',
+                    placeholder: 'mes_biens.prix.per_month'|trans,
                     'data-mes-biens-required-field': 'true',
                     'data-mes-biens--loyer-target': 'loyerHorsCharge',
                     'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
@@ -38,13 +38,13 @@
                 for="{{ form.montantDesCharges.vars.id }}"
                 class="mb-16 p-accent"
             >
-                Montant des charges*
+                {{ 'mes_biens.prix.charges.label'|trans }}
             </label>
 
             {{ form_widget(form.montantDesCharges, {
                 attr: {
                     class: 'form-control input mb-32',
-                    placeholder: '€/mois',
+                    placeholder: 'mes_biens.prix.per_month'|trans,
                     'data-mes-biens-required-field': 'true',
                     'data-mes-biens--loyer-target': 'charges',
                     'data-action': 'input->mes-biens--loyer#calculate change->mes-biens--loyer#calculate',
@@ -57,9 +57,9 @@
 
     <div class="mb-32">
         <h3>
-            Loyer affiché sur l’annonce :
+            {{ 'mes_biens.prix.loyer_affiche'|trans }}
             <span data-mes-biens--loyer-target="total">0</span>
-            <span class="cc-mois">€ CC/mois</span>
+            <span class="cc-mois">{{ 'mes_biens.prix.cc_mois'|trans }}</span>
         </h3>
     </div>
 
@@ -68,7 +68,7 @@
             for="{{ form.montantDepotDeGarantie.vars.id }}"
             class="mb-16 p-accent"
         >
-            Montant du dépôt de garantie <span>(facultatif)</span>
+            {{ 'mes_biens.prix.depot.label'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
         </label>
 
         {{ form_widget(form.montantDepotDeGarantie, {

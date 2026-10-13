@@ -24,7 +24,29 @@ export default class extends Controller {
             type: Number,
             default: 5,
         },
+        // Libellés traduits (clés mes_biens.photos.*), injectés par images.html.twig.
+        labels: {
+            type: Object,
+            default: {},
+        },
     };
+
+    static defaultLabels = {
+        imageAlt: 'Photo du bien',
+        actions: 'Actions de l\'image',
+        cover: 'Définir comme couverture',
+        forward: 'Déplacer vers l’avant',
+        backward: 'Déplacer vers l’arrière',
+        delete: 'Supprimer',
+        retry: 'Réessayer',
+        invalidResponse: 'Réponse invalide du serveur.',
+        uploadFailed: 'Le téléversement a échoué.',
+        deleteFailed: 'La suppression a échoué.',
+    };
+
+    label(key) {
+        return this.labelsValue[key] || this.constructor.defaultLabels[key] || key;
+    }
 
     connect() {
         this.draggedCard = null;
@@ -39,7 +61,7 @@ export default class extends Controller {
                 <button
                     type="button"
                     class="property-image-actions-button js-property-image-actions-button"
-                    aria-label="Actions de l'image"
+                    aria-label="${this.escapeHtml(this.label('actions'))}"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                         <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -50,19 +72,19 @@ export default class extends Controller {
 
                 <div class="property-image-actions-menu d-none">
                     <button type="button" data-image-action="cover" class="couverture-image">
-                        <i class="icon-image mr-8"></i> Définir comme couverture
+                        <i class="icon-image mr-8"></i> ${this.escapeHtml(this.label('cover'))}
                     </button>
 
                     <button type="button" data-image-action="forward" class="avant-image">
-                        <i class="icon-chevrons-up-down mr-8"></i> Déplacer vers l’avant
+                        <i class="icon-chevrons-up-down mr-8"></i> ${this.escapeHtml(this.label('forward'))}
                     </button>
 
                     <button type="button" data-image-action="backward" class="arriere-image">
-                        <i class="icon-chevrons-up-down mr-8"></i> Déplacer vers l’arrière
+                        <i class="icon-chevrons-up-down mr-8"></i> ${this.escapeHtml(this.label('backward'))}
                     </button>
 
                     <button type="button" data-image-action="delete" class="supprime-image">
-                        <i class="icon-trash mr-8"></i> Supprimer
+                        <i class="icon-trash mr-8"></i> ${this.escapeHtml(this.label('delete'))}
                     </button>
                 </div>
             </div>
@@ -197,7 +219,7 @@ export default class extends Controller {
         card.className = 'property-preview-card is-uploading';
         card.dataset.previewUrl = previewUrl;
         card.innerHTML = `
-            <img src="${previewUrl}" alt="Photo du bien">
+            <img src="${previewUrl}" alt="${this.escapeHtml(this.label('imageAlt'))}">
             <div class="property-image-uploading">
                 <span class="property-image-uploading-spinner"></span>
             </div>
@@ -265,16 +287,16 @@ export default class extends Controller {
 
             const result = await response.json().catch(() => ({
                 success: false,
-                message: 'Réponse invalide du serveur.',
+                message: this.label('invalidResponse'),
             }));
 
             if (!response.ok || !result.success) {
-                throw new Error(result.message || 'Le téléversement a échoué.');
+                throw new Error(result.message || this.label('uploadFailed'));
             }
 
             this.markCardUploaded(card, result.image);
         } catch (error) {
-            this.markCardError(card, file, error.message || 'Le téléversement a échoué.');
+            this.markCardError(card, file, error.message || this.label('uploadFailed'));
         }
     }
 
@@ -318,7 +340,7 @@ export default class extends Controller {
         card.innerHTML = `
             <div class="property-image-error">
                 <span>${this.escapeHtml(message)}</span>
-                <button type="button" data-image-retry>Réessayer</button>
+                <button type="button" data-image-retry>${this.escapeHtml(this.label('retry'))}</button>
             </div>
         `;
 
@@ -341,7 +363,7 @@ export default class extends Controller {
         card.classList.remove('is-error');
         card.classList.add('is-uploading');
         card.innerHTML = `
-            <img src="${previewUrl}" alt="Photo du bien">
+            <img src="${previewUrl}" alt="${this.escapeHtml(this.label('imageAlt'))}">
             <div class="property-image-uploading">
                 <span class="property-image-uploading-spinner"></span>
             </div>
@@ -541,7 +563,7 @@ export default class extends Controller {
             .then((response) => response.json().catch(() => ({ success: false })))
             .then((result) => {
                 if (!result.success) {
-                    throw new Error(result.message || 'La suppression a échoué.');
+                    throw new Error(result.message || this.label('deleteFailed'));
                 }
 
                 this.revokePreview(card);
@@ -554,7 +576,7 @@ export default class extends Controller {
             })
             .catch((error) => {
                 card.classList.remove('is-uploading');
-                window.alert(error.message || 'La suppression a échoué.');
+                window.alert(error.message || this.label('deleteFailed'));
             });
     }
 

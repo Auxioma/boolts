@@ -15,7 +15,7 @@
 <div class="js-tab-content mes-biens-immobilier formulaire" id="cat6">
     <div class="d-flex justify-content-between align-items-end">
         <h2 style="max-width: 55%">
-            Téléchargez quelques photos de votre bien
+            {{ 'mes_biens.photos.title'|trans }}
         </h2>
 
         <div class="d-flex align-items-end">
@@ -26,7 +26,7 @@
     <div class="mt-48 mb-24">
         <div class="attention-photos-images py-22 px-22">
             <p class="mb-0">
-            <span class="p-accent">Attention :</span> Les annonces comprenant moins de 5 images sont généralement moins attrayantes pour les particuliers et, de ce fait, moins mises en avant par Boolts. Nous vous recommandons d’ajouter au moins 5 images.
+            <span class="p-accent">{{ 'mes_biens.photos.warning.label'|trans }}</span> {{ 'mes_biens.photos.warning.text'|trans }}
         </p></div>
     </div>
 
@@ -44,6 +44,18 @@
         data-mes-biens--images-reorder-url-value="{{ path('agence_immobiliere_mes_biens_photo_reorder') }}"
         data-mes-biens--images-delete-url-value="{{ path('agence_immobiliere_mes_biens_photo_delete', {id: '__ID__'}) }}"
         data-mes-biens--images-csrf-token-value="{{ csrf_token('mes_biens_photos') }}"
+        data-mes-biens--images-labels-value="{{ {
+            imageAlt: 'mes_biens.photos.image_alt'|trans,
+            actions: 'mes_biens.photos.actions'|trans,
+            cover: 'mes_biens.photos.cover'|trans,
+            forward: 'mes_biens.photos.forward'|trans,
+            backward: 'mes_biens.photos.backward'|trans,
+            delete: 'mes_biens.photos.delete'|trans,
+            retry: 'mes_biens.photos.retry'|trans,
+            invalidResponse: 'mes_biens.photos.invalid_response'|trans,
+            uploadFailed: 'mes_biens.photos.upload_failed'|trans,
+            deleteFailed: 'mes_biens.photos.delete_failed'|trans,
+        }|json_encode|e('html_attr') }}"
         data-mes-biens-required-images="1"
     >
         {# Images déjà enregistrées en BDD #}
@@ -56,14 +68,14 @@
             >
                 <img
                     src="{{ vich_uploader_asset(image, 'imageFile')|imagine_filter('property_upload_thumbnail') }}"
-                    alt="Photo du bien"
+                    alt="{{ 'mes_biens.photos.image_alt'|trans }}"
                 >
 
                 <div class="property-image-actions">
                     <button
                         type="button"
                         class="property-image-actions-button js-property-image-actions-button"
-                        aria-label="Actions de l'image"
+                        aria-label="{{ 'mes_biens.photos.actions'|trans }}"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="#5D00FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -74,19 +86,19 @@
 
                     <div class="property-image-actions-menu d-none">
                         <button type="button" data-image-action="cover" class="couverture-image">
-                            <i class="icon-image mr-8"></i> Définir comme couverture
+                            <i class="icon-image mr-8"></i> {{ 'mes_biens.photos.cover'|trans }}
                         </button>
 
                         <button type="button" data-image-action="forward" class="avant-image">
-                            <i class="icon-chevrons-up-down mr-8"></i> Déplacer vers l’avant
+                            <i class="icon-chevrons-up-down mr-8"></i> {{ 'mes_biens.photos.forward'|trans }}
                         </button>
 
                         <button type="button" data-image-action="backward" class="arriere-image">
-                            <i class="icon-chevrons-up-down mr-8"></i> Déplacer vers l’arrière
+                            <i class="icon-chevrons-up-down mr-8"></i> {{ 'mes_biens.photos.backward'|trans }}
                         </button>
 
                         <button type="button" data-image-action="delete" class="supprime-image">
-                        <i class="icon-trash mr-8"></i>  Supprimer
+                        <i class="icon-trash mr-8"></i>  {{ 'mes_biens.photos.delete'|trans }}
                         </button>
                     </div>
                 </div>
@@ -132,7 +144,7 @@
             </svg>
 
             <span class="property-browse-label fw-bold">
-                Glissez-déposer un fichier
+                {{ 'mes_biens.photos.drop'|trans }}
             </span>
 
             <button
@@ -142,7 +154,7 @@
                 data-mes-biens--images-target="browseButton"
                 data-action="click->mes-biens--images#browse"
             >
-                Parcourir
+                {{ 'mes_biens.photos.browse'|trans }}
             </button>
         </div>
     </div>

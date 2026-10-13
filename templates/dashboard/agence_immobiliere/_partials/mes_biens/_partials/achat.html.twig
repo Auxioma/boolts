@@ -11,7 +11,7 @@
             for="{{ form.prix.vars.id }}"
             class="mb-16 p-accent"
         >
-            Prix du logement*
+            {{ 'mes_biens.prix.prix.label'|trans }}
         </label>
 
         {{ form_widget(form.prix, {
