@@ -63,12 +63,13 @@
         </div>
     </div>
 
-    <div class="mb-32">
-        <h3>
-            {{ 'mes_biens.prix.loyer_affiche'|trans }}
-            <span data-mes-biens--loyer-target="total">0</span>
-            <span class="cc-mois">{{ 'mes_biens.prix.cc_mois'|trans({'%devise%': devise}) }}</span>
-        </h3>
+    <div class="mb-32 d-inline-flex">
+        <p class="p-accent mb-0">
+            {{ 'mes_biens.prix.loyer_affiche'|trans }}</p>
+            <strong class="p-accent" data-mes-biens--loyer-target="total">0</strong>
+            <strong class="p-accent">&nbsp;{{ devise }}</strong>
+            <strong class="mb-0 paragraphe" style="#858789">&nbsp;{{ 'mes_biens.prix.cc_mois'|trans }}</strong>
+        
     </div>
 
     <div>

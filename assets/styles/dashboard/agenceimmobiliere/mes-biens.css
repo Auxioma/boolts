@@ -888,22 +888,52 @@
 
 .condition-de-insertion-bien {
     color: #858789 !important;
-
-    font-size: 14px !important;
-
-    font-style: normal !important;
-
-    font-weight: 500 !important;
-
-    line-height: 20px !important;
+    align-items: center;
 }
 
 .condition-de-insertion-bien input {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    box-sizing: border-box;
+
     width: 18px !important;
+    min-width: 18px;
     height: 18px !important;
+    min-height: 18px;
+    padding: 0;
+    flex-shrink: 0;
+
     border: 2px solid #ebecec;
+    border-radius: 5px;
+    background-color: #fff;
+
+    position: relative;
+    cursor: pointer;
 
     margin: auto 12px auto 0;
+}
+
+.condition-de-insertion-bien input:checked {
+    background-color: #5d00ff;
+    border-color: #5d00ff;
+}
+
+.condition-de-insertion-bien input:checked::after {
+    content: "";
+
+    position: absolute;
+    top: 45%;
+    left: 50%;
+
+    width: 4px;
+    height: 8px;
+
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+
+    transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .property-pagination {
@@ -1337,20 +1367,21 @@ body.ai-service-modal-open {
 
 .mes-biens-price-group > .input-group-text {
     height: 44px;
-    margin-left: -2px;
+    margin-left: 0 !important;
     padding: 0 14px;
     border: 2px solid #ebecec;
+    border-left-width: 0;
     border-radius: 0 12px 12px 0;
     background: #fff;
     color: #858789;
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
-    border-left-color: transparent;
 }
 
-.mes-biens-price-group input {
-    border-right-color: transparent;
+/* Pas de bordure à la jonction input / devise : les bords haut et bas restent continus */
+.mes-biens-price-group > .input {
+    border-right-width: 0;
 }
 
 .mes-biens-price-group:focus-within > .input,

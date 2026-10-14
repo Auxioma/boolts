@@ -290,7 +290,7 @@ class MesBiensType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'mes_biens.navigation.next',
                 'attr' => [
-                    'class' => 'py-10 px-16 btn-suivant',
+                    'class' => 'py-10 px-16 btn-suivant p-accent',
                     'data-mes-biens--submit-target' => 'submit',
                 ],
             ])

@@ -79,14 +79,14 @@
 
                                                 <a
                                                     href="{{ path('agence_immobiliere_mes_biens', previousParams) }}"
-                                                    class="btn-retour py-10 px-16 mr-12 js-navigation-retour"
+                                                    class="btn-retour py-10 px-16 mr-12 p-accent js-navigation-retour"
                                                 >
                                                     {{ 'mes_biens.navigation.back'|trans }}
                                                 </a>
                                             {% else %}
                                                 <a
                                                     href="#"
-                                                    class="btn-retour py-10 px-16 mr-12 js-navigation-retour is-first-page"
+                                                    class="btn-retour py-10 px-16 mr-12 p-accent js-navigation-retour is-first-page"
                                                 >
                                                     {{ 'mes_biens.navigation.back'|trans }}
                                                 </a>
@@ -145,14 +145,11 @@
     <style>
         .btn-suivant:disabled,
         .btn-suivant.is-disabled {
-            border-radius: 50px;
-            border: 2px solid #EBECEC;
-            background: #FFF;
-            color: #858789;
-            font-size: 16px;
-            font-style: normal;
-            font-weight: 700;
-            line-height: 20px;
+border-radius: 50px;
+
+  background: #ebecec;
+  color: #9d9fa1;
+
         }
 
         /* Modal Figma - node 5400:14709 */
