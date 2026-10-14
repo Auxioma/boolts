@@ -14,11 +14,11 @@
     data-mes-biens--ai-description-generating-label-value="{{ 'mes_biens.description.generating'|trans }}"
 >
     <div class="d-flex justify-content-between align-items-end">
-        <h1>
+        <h2 class="w-75 mb-0">
             {{ 'mes_biens.description.title'|trans }}
-        </h1>
+        </h2>
 
-        <div class="d-flex align-items-end">
+        <div class="d-flex align-items-end my-auto">
             {{ form_widget(form.saveAndExit) }}
         </div>
     </div>
@@ -56,7 +56,8 @@
 
                     {{ form_widget(form.descriptionLogement, {
                         attr: {
-                            class: 'form-control input h-auto mb-26',
+                            class: 'form-control input mb-26',
+                            style: 'width: 100%; max-width: 100%; height: auto; resize: vertical;',
                             placeholder: 'mes_biens.description.description.placeholder'|trans,
                             'data-mes-biens-required-field': 'true',
                             'data-mes-biens--ai-description-target': 'description',

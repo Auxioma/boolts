@@ -10,9 +10,10 @@
 >
     {# En-tête #}
     <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
-        <h2 class="mb-0">{{ 'mes_biens.adresse.title'|trans }}</h2>
+        <h2 class="w-75 mb-0">
+            {{ 'mes_biens.adresse.title'|trans }}</h2>
 
-        <div class="flex-shrink-0">
+        <div class="d-flex align-items-end my-auto">
             {{ form_widget(form.saveAndExit) }}
         </div>
     </div>
@@ -72,9 +73,7 @@
             {# Visibilité de l'adresse #}
             <div class="col-12">
                 <div class="affiche_addr_fo_wrapper">
-                    <div class="affiche_addr_fo_label p-accent">
-                        {{ 'mes_biens.adresse.show_adresse'|trans }}
-                    </div>
+
 
                     <label class="affiche_addr_fo_switch">
                         {{ form_widget(form.showAdresse, {
@@ -82,9 +81,12 @@
                                 class: 'affiche_addr_fo_input'
                             }
                         }) }}
-
-                        <span class="affiche_addr_fo_slider"></span>
                     </label>
+
+                    <div class="affiche_addr_fo_label p-accent">
+                        {{ 'mes_biens.adresse.show_adresse'|trans }}
+                    </div>
+
                 </div>
             </div>
 
@@ -263,7 +265,7 @@
     .mes-biens-immobilier .affiche_addr_fo_wrapper {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        /*justify-content: space-between;*/
         gap: 16px;
         width: 100%;
         min-height: 44px;
@@ -276,21 +278,24 @@
 
     /* Interrupteur */
     .mes-biens-immobilier .affiche_addr_fo_switch {
-        position: relative;
+        /*position: relative;
         display: inline-block;
         width: 44px;
         height: 24px;
-        flex: 0 0 44px;
+        flex: 0 0 44px;*/
         margin: 0;
     }
 
     .mes-biens-immobilier .affiche_addr_fo_input {
-        position: absolute;
-        opacity: 0;
-        width: 1px;
-        height: 1px;
+       /* position: absolute;
+        opacity: 0;*/
+        width: 18px;
+        height: 18px;
     }
-
+.affiche_addr_fo_input:checked,
+.form-check-therms:checked {
+    accent-color: #5d00ff;
+}
     .mes-biens-immobilier .affiche_addr_fo_slider {
         position: absolute;
         inset: 0;
@@ -318,8 +323,8 @@
     .mes-biens-immobilier
     .affiche_addr_fo_input:checked
     + .affiche_addr_fo_slider {
-        background-color: #21b26f;
-        border-color: #21b26f;
+        background-color: #5d00ff;
+        border-color: #5d00ff;
     }
 
     .mes-biens-immobilier

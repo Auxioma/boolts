@@ -899,12 +899,8 @@
 }
 
 .condition-de-insertion-bien input {
-    width: 24px !important;
-
-    height: 24px !important;
-
-    border-radius: 5px;
-
+    width: 18px !important;
+    height: 18px !important;
     border: 2px solid #ebecec;
 
     margin: auto 12px auto 0;
@@ -1350,6 +1346,11 @@ body.ai-service-modal-open {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
+    border-left-color: transparent;
+}
+
+.mes-biens-price-group input {
+    border-right-color: transparent;
 }
 
 .mes-biens-price-group:focus-within > .input,
