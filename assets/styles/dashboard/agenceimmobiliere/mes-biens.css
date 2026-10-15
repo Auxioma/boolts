@@ -582,6 +582,11 @@
     cursor: default;
 }
 
+/* Étapes accessibles (liens) : curseur normal d'un lien. */
+a.mes-bien-stepper-item {
+    cursor: pointer;
+}
+
 .property-upload-grid {
     display: grid;
 
