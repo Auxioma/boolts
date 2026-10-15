@@ -489,11 +489,17 @@
     width: var(--dpe-bien-width);
     padding: 5px;
     background: var(--dpe-bien-bg);
-    color: var(--dpe-bien-color);
+    /*color: var(--dpe-bien-color);*/
     white-space: nowrap;
     border-radius: 2px 0 0 2px;
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
     transition: background .2s ease, color .2s ease;
+}
+
+.mes-bien-stepper-item .icon-chevron-right::before {
+    content: "\e06f";
+  position: absolute;
+  top: 13px;
 }
 
 .dpe-bien-row-a { --dpe-bien-width: 46px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #0b0f14; }

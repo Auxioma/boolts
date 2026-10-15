@@ -96,7 +96,7 @@ final class AgenceImmobiliereMesBiensTranslationFixtures extends Fixture
                 'mes_biens.bilan_energetique.couts.title' => 'Estimation des coûts d\'énergie du logement',
                 'mes_biens.bilan_energetique.couts.minimum' => 'Minimum',
                 'mes_biens.bilan_energetique.couts.maximum' => 'Maximum',
-                'mes_biens.bilan_energetique.couts.unit' => '€/an',
+                'mes_biens.bilan_energetique.couts.unit' => '%devise%/an',
                 'mes_biens.bilan_energetique.couts.date_indexation' => 'Date d\'indexation du prix des énergies',
 
                 'mes_biens.photos.title' => 'Téléchargez quelques photos de votre bien',
@@ -226,7 +226,7 @@ final class AgenceImmobiliereMesBiensTranslationFixtures extends Fixture
                 'mes_biens.bilan_energetique.couts.title' => 'Estimated energy costs of the property',
                 'mes_biens.bilan_energetique.couts.minimum' => 'Minimum',
                 'mes_biens.bilan_energetique.couts.maximum' => 'Maximum',
-                'mes_biens.bilan_energetique.couts.unit' => '€/year',
+                'mes_biens.bilan_energetique.couts.unit' => '%devise%/year',
                 'mes_biens.bilan_energetique.couts.date_indexation' => 'Energy price indexation date',
 
                 'mes_biens.photos.title' => 'Upload a few photos of your property',

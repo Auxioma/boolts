@@ -187,7 +187,7 @@
                                 }) }}
 
                                 <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                                    {{ 'mes_biens.bilan_energetique.couts.unit'|trans }}
+                                    {{ 'mes_biens.bilan_energetique.couts.unit'|trans({'%devise%': app.user.devise.signe ?? '€'}) }}
                                 </span>
                             </div>
 
@@ -213,7 +213,7 @@
                                 }) }}
 
                                 <span class="position-absolute top-50 end-0 translate-middle-y pr-16 text-muted kwhep-m-an">
-                                    {{ 'mes_biens.bilan_energetique.couts.unit'|trans }}
+                                    {{ 'mes_biens.bilan_energetique.couts.unit'|trans({'%devise%': app.user.devise.signe ?? '€'}) }}
                                 </span>
                             </div>
 
