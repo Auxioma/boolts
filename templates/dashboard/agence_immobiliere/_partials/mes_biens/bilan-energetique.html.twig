@@ -23,7 +23,7 @@
                 <div>
                     <label
                         for="{{ form.dpe.vars.id }}"
-                        class="mb-16"
+                        class="mb-16 p-accent"
                     >
                         {{ 'mes_biens.bilan_energetique.dpe.label'|trans }}
                     </label>
@@ -31,7 +31,7 @@
                     <div class="position-relative">
                         {{ form_widget(form.dpe, {
                             attr: {
-                                class: 'form-control pe-120 js-dpe-input',
+                                class: 'form-control pe-120 js-dpe-input input',
                                 placeholder: '0',
                                 'data-mes-biens-required-field': 'true',
                             },
@@ -62,11 +62,11 @@
                     </div>
 
                     <div class="d-flex justify-content-between mt-16">
-                        <small>
+                        <small class="paragraphe">
                             {{ 'mes_biens.bilan_energetique.dpe.econome'|trans }}
                         </small>
 
-                        <small>
+                        <small class="paragraphe">
                             {{ 'mes_biens.bilan_energetique.dpe.energivore'|trans }}
                         </small>
                     </div>
@@ -77,7 +77,7 @@
                 <div class="mt-32">
                     <label
                         for="{{ form.ges.vars.id }}"
-                        class="mb-16"
+                        class="mb-16 p-accent"
                     >
                         {{ 'mes_biens.bilan_energetique.ges.label'|trans }}
                     </label>
@@ -85,7 +85,7 @@
                     <div class="position-relative">
                         {{ form_widget(form.ges, {
                             attr: {
-                                class: 'form-control pe-120 js-ges-input',
+                                class: 'form-control pe-120 input js-ges-input',
                                 placeholder: '0',
                                 'data-mes-biens-required-field': 'true',
                             },
@@ -116,11 +116,11 @@
                     </div>
 
                     <div class="d-flex justify-content-between mt-16">
-                        <small>
+                        <small class="paragraphe">
                             {{ 'mes_biens.bilan_energetique.ges.peu'|trans }}
                         </small>
 
-                        <small>
+                        <small class="paragraphe">
                             {{ 'mes_biens.bilan_energetique.ges.beaucoup'|trans }}
                         </small>
                     </div>
@@ -128,10 +128,43 @@
                     {{ form_errors(form.gesLettre) }}
                 </div>
 
+                {# Classe finale = la moins bonne des deux lettres (DPE / GES). #}
+                {% set dpe_bien_active = null %}
+                {% for field in [form.dpeLettre, form.gesLettre] %}
+                    {% for child in field %}
+                        {% if child.vars.checked and (dpe_bien_active is null or child.vars.value|lower > dpe_bien_active) %}
+                            {% set dpe_bien_active = child.vars.value|lower %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+
+                <div class="dpe-bien mt-32 js-dpe-bien">
+                    <p class="p-accent mb-16">
+                        {{ 'mes_biens.bilan_energetique.resultat.title'|trans }}
+                    </p>
+
+                    <ul class="dpe-bien-list">
+                        {% for row in [
+                            { letter: 'a', range: '< 71' },
+                            { letter: 'b', range: '71 – 110' },
+                            { letter: 'c', range: '111 – 180' },
+                            { letter: 'd', range: '181 – 250' },
+                            { letter: 'e', range: '251 – 330' },
+                            { letter: 'f', range: '331 – 420' },
+                            { letter: 'g', range: '> 420' },
+                        ] %}
+                            <li class="dpe-bien-row dpe-bien-row-{{ row.letter }} {% if row.letter == dpe_bien_active %}active{% endif %}" data-letter="{{ row.letter }}">
+                                <span class="dpe-bien-letter paragraphe">{{ row.letter|upper }}</span>
+                                <span class="dpe-bien-bar paragraphe">{{ row.range }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
                 <div class="mt-32 mb-24">
-                    <h2>
+                    <p class="p-accent">
                         {{ 'mes_biens.bilan_energetique.couts.title'|trans }}
-                    </h2>
+                    </p>
                 </div>
 
                 <div class="row mb-32">
@@ -139,15 +172,16 @@
                         <div>
                             <label
                                 for="{{ form.dpeMin.vars.id }}"
-                                class="mb-16"
+                                class="mb-16 p-accent"
                             >
-                                {{ 'mes_biens.bilan_energetique.couts.minimum'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
+                                {{ 'mes_biens.bilan_energetique.couts.minimum'|trans }} 
+                                <span>{{ 'mes_biens.optional'|trans }}</span>
                             </label>
 
                             <div class="position-relative">
                                 {{ form_widget(form.dpeMin, {
                                     attr: {
-                                        class: 'form-control pe-120',
+                                        class: 'form-control input pe-120',
                                         placeholder: '',
                                     },
                                 }) }}
@@ -165,7 +199,7 @@
                         <div>
                             <label
                                 for="{{ form.dpeMax.vars.id }}"
-                                class="mb-16"
+                                class="mb-16 p-accent"
                             >
                                 {{ 'mes_biens.bilan_energetique.couts.maximum'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
                             </label>
@@ -173,7 +207,7 @@
                             <div class="position-relative">
                                 {{ form_widget(form.dpeMax, {
                                     attr: {
-                                        class: 'form-control pe-120',
+                                        class: 'form-control input pe-120',
                                         placeholder: '',
                                     },
                                 }) }}
@@ -190,7 +224,7 @@
                     <div class="mt-32">
                         <label
                             for="{{ form.dateIndexationEnergie.vars.id }}"
-                            class="mb-16"
+                            class="mb-16 p-accent"
                         >
                             {{ 'mes_biens.bilan_energetique.couts.date_indexation'|trans }} <span>{{ 'mes_biens.optional'|trans }}</span>
                         </label>
@@ -198,7 +232,7 @@
                         <div class="position-relative">
                             {{ form_widget(form.dateIndexationEnergie, {
                                 attr: {
-                                    class: 'form-control text-uppercase',
+                                    class: 'form-control text-uppercase input',
                                     placeholder: '',
                                 },
                             }) }}
@@ -332,5 +366,40 @@
                 selectLetter(item.closest('.energy-scale'), item.dataset.letter);
             });
         });
+
+        // Le bloc "Résultat de votre bilan énergétique" affiche la classe finale :
+        // la moins bonne des deux lettres sélectionnées (DPE et GES).
+        const dpeBien = document.querySelector('.js-dpe-bien');
+
+        function activeLetter(scaleSelector) {
+            const item = document.querySelector(scaleSelector + ' .energy-item.active');
+
+            return item ? item.dataset.letter : null;
+        }
+
+        function updateDpeBien() {
+            const letters = [activeLetter('.js-dpe-scale'), activeLetter('.js-ges-scale')]
+                .filter(function (letter) {
+                    return letter !== null;
+                });
+
+            const worst = letters.length
+                ? letters.reduce(function (a, b) {
+                    return LETTERS.indexOf(a) >= LETTERS.indexOf(b) ? a : b;
+                })
+                : null;
+
+            dpeBien.querySelectorAll('.dpe-bien-row').forEach(function (row) {
+                row.classList.toggle('active', row.dataset.letter === worst);
+            });
+        }
+
+        if (dpeBien) {
+            document.querySelectorAll('.js-dpe-scale, .js-ges-scale').forEach(function (scale) {
+                scale.addEventListener('change', updateDpeBien);
+            });
+
+            updateDpeBien();
+        }
     })();
 </script>

@@ -290,14 +290,6 @@
 
 .caracteristique-logements small {
     color: #858789;
-
-    font-size: 14px;
-
-    font-style: normal;
-
-    font-weight: 500;
-
-    line-height: 20px;
 }
 
 .energy-scale {
@@ -438,6 +430,93 @@
 .energy-item.active.ges-f,
 .energy-item.active.ges-g {
     color: #fff;
+}
+
+/* Résultat de votre bilan énergétique */
+.dpe-bien {
+    padding: 16px;
+    background: #f8f8f8;
+    border: 2px solid #ebecec;
+    border-radius: 24px;
+}
+
+.dpe-bien-title {
+    margin: 0;
+
+    color: #0b0f14;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    line-height: 20px;
+}
+
+.dpe-bien-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin: 0;
+
+    padding: 0;
+
+    list-style: none;
+}
+
+.dpe-bien-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    --dpe-bien-bg: #6b6b6b;
+
+    --dpe-bien-color: #fff;
+}
+
+.dpe-bien-letter {
+    width: 12px;
+    color: #3d3f43;
+}
+
+.dpe-bien-bar {
+    display: flex;
+    align-items: center;
+    width: var(--dpe-bien-width);
+    padding: 5px;
+    background: var(--dpe-bien-bg);
+    color: var(--dpe-bien-color);
+    white-space: nowrap;
+    border-radius: 2px 0 0 2px;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);
+    transition: background .2s ease, color .2s ease;
+}
+
+.dpe-bien-row-a { --dpe-bien-width: 46px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-b { --dpe-bien-width: 66px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-c { --dpe-bien-width: 80px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-d { --dpe-bien-width: 105px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #3d3f43; }
+.dpe-bien-row-e { --dpe-bien-width: 130px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-f { --dpe-bien-width: 158px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-g { --dpe-bien-width: 190px; --dpe-bien-bg: #cecfd0; --dpe-bien-color: #0b0f14; }
+
+/* Lettre sélectionnée : couleurs officielles du DPE */
+.dpe-bien-row-a.active { --dpe-bien-bg: #038748; --dpe-bien-color: #fff; }
+.dpe-bien-row-b.active { --dpe-bien-bg: #5fac2d; --dpe-bien-color: #fff; }
+.dpe-bien-row-c.active { --dpe-bien-bg: #cadb0d; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-d.active { --dpe-bien-bg: #f6ed05; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-e.active { --dpe-bien-bg: #eba900; --dpe-bien-color: #0b0f14; }
+.dpe-bien-row-f.active { --dpe-bien-bg: #e38102; --dpe-bien-color: #fff; }
+.dpe-bien-row-g.active { --dpe-bien-bg: #d64302; --dpe-bien-color: #fff; }
+
+.dpe-bien-row.active .dpe-bien-letter {
+    color: #0b0f14;
+
+    font-weight: 700;
 }
 
 .kwhep-m-an {

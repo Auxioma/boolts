@@ -55,15 +55,9 @@
     font-weight: 500;
     
     line-height: 20px;}
-.formulaire small {color: #858789;
-    
-    font-size: 14px;
-    
-    font-style: normal;
-    
-    font-weight: 500;
-    
-    line-height: 20px;}
+.formulaire small {
+    color: #858789;
+    }
 .form-check-therms #complete_profile_agreeTerms {-moz-appearance: none;
     
     appearance: none;
