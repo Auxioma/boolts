@@ -33,7 +33,7 @@
                                                 novalidate: 'novalidate',
                                                 enctype: 'multipart/form-data',
                                                 'data-turbo': 'false',
-                                                'data-controller': 'mes-biens--submit',
+                                                'data-controller': 'mes-biens--submit mes-biens--back-navigation',
                                             },
                                         }) }}
 
@@ -80,6 +80,7 @@
                                                 <a
                                                     href="{{ path('agence_immobiliere_mes_biens', previousParams) }}"
                                                     class="btn-retour py-10 px-16 mr-12 p-accent js-navigation-retour"
+                                                    data-mes-biens-back-step="{{ previousStep }}"
                                                 >
                                                     {{ 'mes_biens.navigation.back'|trans }}
                                                 </a>

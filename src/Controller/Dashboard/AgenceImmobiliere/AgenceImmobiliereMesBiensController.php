@@ -30,9 +30,11 @@ use App\Service\NumericSlugGenerator;
 use App\Service\Property\AgencyPropertySubmissionMailer;
 use App\Service\Property\CountryCodeResolver;
 use App\Service\Property\PropertyNotificationLabeler;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Button;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -593,6 +595,10 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $session->set(
             'mes_biens_reached_step',
             $resumeStep
+        );
+
+        $session->remove(
+            'mes_biens_saved_steps'
         );
 
         $transaction = $property->getTypeTransaction();
@@ -1174,6 +1180,49 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 false
             );
 
+        /*
+         * Retour vers une étape précédente (bouton « Retour » ou stepper) :
+         * les données saisies sur la page sont enregistrées en BDD, sans
+         * validation, puis l'utilisateur est redirigé vers l'étape demandée.
+         * Si le quota d'annonces est atteint, on redirige sans enregistrer.
+         */
+        $backToStep = $request->isMethod('POST')
+            ? $request->request->getInt('mes_biens_back_to_step')
+            : 0;
+
+        if ($backToStep >= 1 && $backToStep < $step) {
+            if ($form->isSubmitted() && !$showLimitAnnonceModal) {
+                $this->saveMesBiensDraftStep(
+                    step: $step,
+                    mesBiens: $mesBiens,
+                    user: $user,
+                    form: $form,
+                    session: $session,
+                    entityManager: $entityManager,
+                    numericSlugGenerator: $numericSlugGenerator,
+                    mapboxAddressTranslator: $mapboxAddressTranslator,
+                );
+
+                /*
+                 * L'étape quittée a été enregistrée : elle doit apparaître
+                 * comme effectuée dans le stepper, même si elle n'a pas
+                 * encore été validée avec « Suivant ».
+                 */
+                if ($this->isStepFilled($step, $form, $mesBiens)) {
+                    $this->markStepSaved($session, $step);
+                }
+            }
+
+            return $this->redirectToRoute(
+                'agence_immobiliere_mes_biens',
+                $this->buildStepParameters(
+                    step: $backToStep,
+                    property: $mesBiens,
+                    session: $session
+                )
+            );
+        }
+
         if ($form->isSubmitted() && !$showLimitAnnonceModal) {
             if (
                 $form->has('saveAndExit')
@@ -1737,6 +1786,15 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 ),
 
                 /*
+                 * Étapes enregistrées lors d'un retour en arrière, sans
+                 * avoir été validées avec « Suivant ».
+                 */
+                'savedSteps' => $session->get(
+                    'mes_biens_saved_steps',
+                    []
+                ),
+
+                /*
                  * Code métier :
                  *
                  * 1 = vente
@@ -2129,6 +2187,62 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     }
 
     /**
+     * Indique si l'étape contient des informations renseignées
+     * (au moins un champ non vide, ou au moins une photo pour l'étape 6).
+     *
+     * @param FormInterface<Property> $form
+     */
+    private function isStepFilled(
+        int $step,
+        FormInterface $form,
+        Property $property,
+    ): bool {
+        if (6 === $step) {
+            return !$property->getPropertyImages()->isEmpty();
+        }
+
+        foreach ($form as $child) {
+            if ($child instanceof Button || '_token' === $child->getName()) {
+                continue;
+            }
+
+            $data = $child->getData();
+
+            if ($data instanceof Collection) {
+                $data = $data->toArray();
+            }
+
+            if (null !== $data && '' !== $data && [] !== $data && false !== $data) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Mémorise une étape enregistrée lors d'un retour en arrière.
+     */
+    private function markStepSaved(
+        SessionInterface $session,
+        int $step,
+    ): void {
+        $savedSteps = $session->get(
+            'mes_biens_saved_steps',
+            []
+        );
+
+        if (!\in_array($step, $savedSteps, true)) {
+            $savedSteps[] = $step;
+
+            $session->set(
+                'mes_biens_saved_steps',
+                $savedSteps
+            );
+        }
+    }
+
+    /**
      * Mise à jour de l'étape maximale atteinte.
      */
     private function updateReachedStep(
@@ -2199,6 +2313,10 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $session->remove(
             'mes_biens_reached_step'
+        );
+
+        $session->remove(
+            'mes_biens_saved_steps'
         );
 
         $session->remove(

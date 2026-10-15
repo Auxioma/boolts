@@ -93,6 +93,8 @@
     Une étape est effectuée dès qu'elle a été validée, c'est-à-dire
     lorsque l'étape maximale atteinte la dépasse. Revenir en arrière
     ne modifie donc pas cet état.
+    Une étape enregistrée lors d'un retour en arrière (savedSteps) est
+    également effectuée.
     L'étape 8 n'est jamais dépassée (la session est vidée à sa validation) :
     elle est considérée effectuée si un prix ou un loyer est déjà enregistré
     (modification d'une annonce existante).
@@ -105,7 +107,10 @@
 {% set completedSteps = [] %}
 {% set lastCompletedPosition = 0 %}
 {% for item in steps %}
-    {% if item.step < reachedStep or (item.step == 8 and hasSavedPrice) %}
+    {% if item.step < reachedStep
+        or item.step in savedSteps|default([])
+        or (item.step == 8 and hasSavedPrice)
+    %}
         {% set completedSteps = completedSteps|merge([item.step]) %}
         {% set lastCompletedPosition = loop.index %}
     {% endif %}
@@ -160,6 +165,8 @@
                     {% if isVisualActive %}mes-bien-stepper-item-active{% endif %}
                 "
                 data-tab="{{ item.tab }}"
+                {# Étape précédente : les données de la page sont enregistrées avant le retour. #}
+                {% if item.step < step %}data-mes-biens-back-step="{{ item.step }}"{% endif %}
                 title="{{ 'mes_biens.stepper.go_to_step'|trans({'%step%': item.title}) }}"
             >
                 <div class="mes-bien-stepper-circle"></div>
