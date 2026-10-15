@@ -88,9 +88,35 @@
     {% set activePosition = showBilanEnergetique ? visualStep : visualStep - 1 %}
 {% endif %}
 
+{#
+    Étapes effectuées : indépendantes de l'étape affichée.
+    Une étape est effectuée dès qu'elle a été validée, c'est-à-dire
+    lorsque l'étape maximale atteinte la dépasse. Revenir en arrière
+    ne modifie donc pas cet état.
+    L'étape 8 n'est jamais dépassée (la session est vidée à sa validation) :
+    elle est considérée effectuée si un prix ou un loyer est déjà enregistré
+    (modification d'une annonce existante).
+#}
+{% set propertyData = form.vars.data ?? null %}
+{% set hasSavedPrice = propertyData is not null
+    and (propertyData.prix is not null or propertyData.montantLoyerHorsCharge is not null)
+%}
+
+{% set completedSteps = [] %}
+{% set lastCompletedPosition = 0 %}
+{% for item in steps %}
+    {% if item.step < reachedStep or (item.step == 8 and hasSavedPrice) %}
+        {% set completedSteps = completedSteps|merge([item.step]) %}
+        {% set lastCompletedPosition = loop.index %}
+    {% endif %}
+{% endfor %}
+
+{# La ligne de progression couvre l'étape active et toutes les étapes effectuées. #}
+{% set progressPosition = max(activePosition, lastCompletedPosition) %}
+
 {% set totalSteps = steps|length %}
 {% set progressPercent = totalSteps > 1
-    ? ((activePosition - 1) / (totalSteps - 1) * 99)
+    ? ((progressPosition - 1) / (totalSteps - 1) * 99)
     : 0
 %}
 
@@ -108,7 +134,8 @@
     {% for item in steps %}
         {% set isCurrentDisplayedStep = item.step == step %}
         {% set isVisualActive = item.step == visualStep %}
-        {% set isCompleted = item.step < visualStep %}
+        {# L'état actif prime visuellement : l'étape affichée garde son style actif. #}
+        {% set isCompleted = item.step in completedSteps and not isVisualActive %}
         {% set isClickable = item.step <= reachedStep or isCurrentDisplayedStep %}
 
         {% set routeParams = {
