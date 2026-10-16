@@ -15,7 +15,7 @@
             {{ 'mes_biens.type_bien.title'|trans }}
         </h2>
 
-        <div class="d-flex align-items-end my-auto">
+        <div class="d-none align-items-end my-auto">
             {{ form_widget(form.saveAndExit) }}
         </div>
     </div>
@@ -29,7 +29,7 @@
                             {% for choice in form.typeBien.vars.choices %}
                                 {% set isChecked = form.typeBien.vars.value == choice.value %}
 
-                                <div class="col-4 mb-21">
+                                <div class="col-6 col-xl-4 mb-21">
                                     <label
                                         class="type-bien px-24 py-24 w-100 js-type-bien-item {% if isChecked %}active{% endif %}"
                                         for="type_bien_{{ loop.index0 }}"

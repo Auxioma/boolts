@@ -16,16 +16,16 @@
 
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                <div class="col-10 p-48 bg-white">
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main bg-white">
                     <div class="row">
-                        <div class="col-10 mx-auto">
+                        <div class="col-12 col-md-10 mx-auto">
                             <div class="row">
 
-                                <div class="col-4 pr-24">
+                                <div class="col-4 d-none d-lg-block pr-24">
                                     {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/navbar.html.twig') }}
                                 </div>
 
-                                <div class="col-8">
+                                <div class="col-12 col-lg-8">
                                     <div class="col-12">
 
                                         {{ form_start(form, {
