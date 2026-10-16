@@ -1,0 +1,56 @@
+{#
+ Template: templates/dashboard/agence_immobiliere/_partials/mes_biens/_partials/topbar-mobile.html.twig
+ Role: Barre mobile (< 767px) avec flèche de retour vers la liste « Mes biens ».
+ Context: Incluse sur toutes les étapes d'insertion d'un bien.
+ Maintenance: Masquée à partir de 767px.
+#}
+
+<div class="bt-mobile-topbar align-items-center justify-content-center">
+    <a
+        href="{{ path('agence_immobiliere_mes_biens_list') }}"
+        class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2"
+        aria-label="{{ 'mes_biens.navigation.back'|trans }}"
+    >
+        <i class="icon-x"></i>
+    </a>
+
+    <p class="p-accent mb-0">Gestion du bien</p>
+</div>
+
+<style>
+    .mes-bien-topbar-mobile {
+        display: none;
+    }
+
+    @media (max-width: 766.98px) {
+        .mes-bien-topbar-mobile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            height: 44px;
+            border-bottom: 1px solid #ebecec;
+        }
+
+        .mes-bien-topbar-mobile .icon-x::before {
+            position: initial;
+        }
+
+        .mes-bien-topbar-mobile__back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            color: #0b0f14;
+            font-size: 22px;
+            line-height: 1;
+            text-decoration: none;
+        }
+
+        .mes-bien-topbar-mobile__back:hover,
+        .mes-bien-topbar-mobile__back:focus-visible {
+            color: #0b0f14;
+            text-decoration: none;
+        }
+    }
+</style>

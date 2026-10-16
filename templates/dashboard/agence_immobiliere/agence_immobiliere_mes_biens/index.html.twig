@@ -10,7 +10,8 @@
 {% block title %}{{ 'mes_biens.page_title'|trans }}{% endblock %}
 
 {% block body %}
-    <main id="dashboard" class="dashboard">
+    <main id="dashboard" class="dashboard"> 
+        {{ include('dashboard/agence_immobiliere/_partials/mes_biens/_partials/topbar-mobile.html.twig') }}
         <div class="container-fluid">
             <div class="row">
 
