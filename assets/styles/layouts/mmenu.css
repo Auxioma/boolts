@@ -1,0 +1,53 @@
+/*
+ * Menu mobile mmenu-light (voir assets/controllers/mobile_menu_controller.js).
+ * Tous les sélecteurs sont préfixés par "body" : le CSS de mmenu-light est chargé
+ * après app.css, la spécificité supplémentaire garantit nos surcharges.
+ * Aucune règle ne cible les modals existantes.
+ */
+
+body .mm-ocd {
+    --mm-ocd-width: 85%;
+    --mm-ocd-max-width: 380px;
+}
+
+/* Évite un flash du tiroir avant le chargement du CSS de mmenu-light. */
+body .mm-ocd:not(.mm-ocd--open) {
+    visibility: hidden;
+}
+
+body .mm-ocd__content {
+    background: var(--color-white, #fff);
+}
+
+body .topbar-mmenu.mm-spn {
+    --mm-spn-item-height: 52px;
+    --mm-spn-item-indent: 24px;
+
+    font-family: inherit;
+    color: var(--color-black, #000);
+}
+
+body .topbar-mmenu.mm-spn a {
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color var(--transition-fast, .2s), background var(--transition-fast, .2s);
+}
+
+body .topbar-mmenu.mm-spn a:hover,
+body .topbar-mmenu.mm-spn a:focus-visible {
+    color: #5d00ff;
+    background: #dfcbff;
+}
+
+body .topbar-mmenu .topbar-mmenu__cta a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #5d00ff;
+    font-weight: 700;
+}
+
+body .topbar-mmenu .topbar-mmenu__account a {
+    font-weight: 700;
+}

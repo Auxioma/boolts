@@ -5,7 +5,19 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<header class="topbar position-relative" data-dashboard-layout-target="header">
+<header
+    class="topbar position-relative"
+    data-dashboard-layout-target="header"
+    data-controller="mobile-menu"
+>
+    {% if is_granted('ROLE_ADMIN') %}
+        {% set dashboardPath = path('admin') %}
+    {% elseif is_granted('ROLE_AGENCE') %}
+        {% set dashboardPath = path('agence_immobiliere_dashboard') %}
+    {% elseif app.user %}
+        {% set dashboardPath = path('app_visiteur_dashboard') %}
+    {% endif %}
+
     <div class="container-fluid g-0">
         <nav class="navbar navbar-expand-xl topbar-nav">
 
@@ -24,6 +36,10 @@
                     class="navbar-toggler topbar-toggler"
                     type="button"
                     aria-label="{{ 'navbar.mobile.aria_label'|trans }}"
+                    aria-controls="mobile-menu"
+                    aria-expanded="false"
+                    data-mobile-menu-target="button"
+                    data-action="mobile-menu#open"
                 >
                     <span class="icon-menu" aria-hidden="true"></span>
                 </button>
@@ -69,15 +85,6 @@
                                 <i data-lucide="circle-user" class="icon-user"></i>
                             </a>
                         {% else %}
-
-                            {% if is_granted('ROLE_ADMIN') %}
-                                {% set dashboardPath = path('admin') %}
-                            {% elseif is_granted('ROLE_AGENCE') %}
-                                {% set dashboardPath = path('agence_immobiliere_dashboard') %}
-                            {% else %}
-                                {% set dashboardPath = path('app_visiteur_dashboard') %}
-                            {% endif %}
-
                             {% set avatar = app.user.imageName
                                 ? vich_uploader_asset(app.user, 'imageFile')
                                 : null
@@ -116,6 +123,32 @@
                 </ul>
             </div>
 
+        </nav>
+    </div>
+
+    {# Menu mobile : déplacé dans le tiroir mmenu-light sous 1200px (voir mobile_menu_controller.js) #}
+    <div class="topbar-mmenu-source" data-mobile-menu-target="source" hidden>
+        <nav id="mobile-menu" class="topbar-mmenu" data-mobile-menu-target="menu">
+            <ul>
+                <li><a href="#">{{ 'navbar.buy'|trans }}</a></li>
+                <li><a href="#">{{ 'navbar.rent'|trans }}</a></li>
+                <li><a href="#">{{ 'navbar.sell'|trans }}</a></li>
+                <li><a href="#">{{ 'navbar.find_professional'|trans }}</a></li>
+                <li><a href="#">{{ 'navbar.exclusives'|trans }}</a></li>
+                <li class="topbar-mmenu__cta">
+                    <a href="{{ path('agence_immobiliere_mes_biens') }}">
+                        <i class="icon-plus" aria-hidden="true"></i>
+                        {{ 'navbar.submit_listing'|trans }}
+                    </a>
+                </li>
+                <li class="topbar-mmenu__account">
+                    {% if app.user %}
+                        <a href="{{ dashboardPath }}">{{ 'navbar.account.aria_label'|trans }}</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}">{{ 'navbar.mobile.login'|trans }}</a>
+                    {% endif %}
+                </li>
+            </ul>
         </nav>
     </div>
 </header>

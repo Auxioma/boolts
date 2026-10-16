@@ -76,4 +76,11 @@ return [
     '@symfony/ux-live-component' => [
         'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
     ],
+    'mmenu-light' => [
+        'version' => '3.2.2',
+    ],
+    'mmenu-light/dist/mmenu-light.css' => [
+        'version' => '3.2.2',
+        'type' => 'css',
+    ],
 ];
