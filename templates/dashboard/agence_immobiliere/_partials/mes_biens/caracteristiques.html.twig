@@ -190,7 +190,7 @@
                                     {% for choice in form.caracteristique.vars.choices %}
                                         {% set isChecked = choice.value in form.caracteristique.vars.value|default([]) %}
 
-                                        <div class="col-4 mb-21">
+                                        <div class="col-6 col-xl-4 mb-21">
                                             <label
                                                 class="type-bien px-24 py-24 w-100 js-property-feature-card {% if isChecked %}active{% endif %}"
                                                 for="property_feature_{{ loop.index0 }}"
