@@ -106,7 +106,14 @@ input[type="date"].input {
     display: block;
     max-width: 100%;
     min-height: 44px;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* Marges égales à gauche et à droite : la date reste centrée malgré l'icône. */
+    padding-left: 46px;
     padding-right: 46px;
+    text-align: center;
+    /* 44px - 2 x 2px de bordure : la date est centrée verticalement (iOS). */
+    line-height: 40px;
     background-clip: padding-box;
     color: #0b0f14;
     /* Safari n'affiche pas d'icône calendrier : on la dessine en fond. */
@@ -119,7 +126,9 @@ input[type="date"].input {
 /* Chrome / Edge : icône native invisible mais toujours cliquable, posée sur la nôtre. */
 input[type="date"].input::-webkit-calendar-picker-indicator {
     position: absolute;
+    top: 50%;
     right: 14px;
+    transform: translateY(-50%);
     width: 20px;
     height: 20px;
     margin: 0;
@@ -131,19 +140,22 @@ input[type="date"].input::-webkit-calendar-picker-indicator {
 /* Firefox garde son icône native : pas de doublon. */
 @supports (-moz-appearance: none) {
     input[type="date"].input {
+        padding-left: 14px;
         padding-right: 14px;
         background-image: none;
     }
 }
 
 input[type="date"].input::-webkit-date-and-time-value {
-    text-align: left;
+    text-align: center;
     margin: 0;
     min-height: 1.2em;
+    line-height: 40px;
 }
 
 input[type="date"].input::-webkit-datetime-edit {
     padding: 0;
+    line-height: 40px;
 }
 
 
