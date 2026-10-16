@@ -9,7 +9,7 @@
     class="row"
     data-controller="mes-biens--loyer"
 >
-    <div class="col-6">
+    <div class="col-12 col-md-6">
         <div>
             <label
                 for="{{ form.montantLoyerHorsCharge.vars.id }}"
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <div class="col-6">
+    <div class="col-12 col-md-6">
         <div>
             <label
                 for="{{ form.montantDesCharges.vars.id }}"
@@ -63,13 +63,15 @@
         </div>
     </div>
 
-    <div class="mb-32 d-inline-flex">
+    {# < 768px : texte sur une ligne, prix + devise en dessous. #}
+    <div class="mb-32 d-flex flex-column d-md-inline-flex flex-md-row">
         <p class="p-accent mb-0">
             {{ 'mes_biens.prix.loyer_affiche'|trans }}&nbsp;</p>
+        <span>
             <strong class="p-accent" data-mes-biens--loyer-target="total">0</strong>
             <strong class="p-accent">&nbsp;{{ devise }}</strong>
-            <strong class="mb-0 paragraphe" style="#858789">&nbsp;{{ 'mes_biens.prix.cc_mois'|trans }}</strong>
-        
+            <strong class="mb-0 paragraphe" style="color: #858789">&nbsp;{{ 'mes_biens.prix.cc_mois'|trans }}</strong>
+        </span>
     </div>
 
     <div>

@@ -95,6 +95,30 @@ input, textarea,
     box-sizing: border-box;
 }
 
+/*
+ * Safari iOS : les input date gardent leur rendu natif (fond gris, coins,
+ * valeur centrée, hauteur écrasée quand vide, débordement en largeur).
+ */
+input[type="date"].input {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    max-width: 100%;
+    min-height: 44px;
+    background-clip: padding-box;
+    color: #0b0f14;
+}
+
+input[type="date"].input::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+    min-height: 1.2em;
+}
+
+input[type="date"].input::-webkit-datetime-edit {
+    padding: 0;
+}
+
 
 
 input:focus {
