@@ -590,7 +590,9 @@ a.mes-bien-stepper-item {
 .property-upload-grid {
     display: grid;
 
-    grid-template-columns: repeat(2, 1fr);
+    /* minmax(0, 1fr) : colonnes strictement égales, le contenu
+       (ex. bouton "Parcourir") ne peut plus élargir une colonne. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
 
     gap: 8px;
 
@@ -806,6 +808,39 @@ a.mes-bien-stepper-item {
     justify-content: center;
 
     cursor: pointer;
+}
+
+/* Mobile : la carte "Parcourir" garde le même format 16/9 que les autres. */
+@media (max-width: 767.98px) {
+    .property-browse-card {
+        min-height: 0;
+
+        overflow: hidden;
+
+        gap: 4px !important;
+
+        padding: 8px !important;
+    }
+
+    .property-browse-card svg {
+        flex-shrink: 0;
+    }
+
+    .property-browse-card .property-browse-label {
+        font-size: 12px;
+
+        line-height: 16px;
+    }
+
+    .property-browse-card .property-browse-button {
+        max-width: 100%;
+
+        padding: 4px 12px !important;
+
+        font-size: 12px;
+
+        white-space: normal;
+    }
 }
 
 .property-image-actions {
