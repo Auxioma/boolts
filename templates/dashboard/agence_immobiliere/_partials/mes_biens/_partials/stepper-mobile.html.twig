@@ -1,0 +1,128 @@
+{#
+ Template: templates/dashboard/agence_immobiliere/_partials/mes_biens/_partials/stepper-mobile.html.twig
+ Role: Stepper compact affiché sous 991px (titre de l'étape, position X/Y et barre de progression).
+ Context: Mêmes variables que navbar.html.twig (form, step, stepperStep, savedSteps, showBilanEnergetique).
+ Maintenance: La logique de calcul reprend celle de navbar.html.twig, les deux doivent rester alignées.
+#}
+
+{% set paysCode = form.vars.data.pays ?? null %}
+{% set paysNormalized = paysCode is not empty ? paysCode|trim|lower : '' %}
+
+{% set showBilanEnergetique = showBilanEnergetique|default(
+    paysNormalized in ['fr', 'france'],
+) %}
+
+{% set reachedStep = stepperStep|default(step) %}
+
+{% set steps = [
+    { step: 1, title: 'mes_biens.stepper.type_bien'|trans },
+    { step: 2, title: 'mes_biens.stepper.type_transaction'|trans },
+    { step: 3, title: 'mes_biens.stepper.adresse'|trans },
+    { step: 4, title: 'mes_biens.stepper.caracteristiques'|trans },
+] %}
+
+{# L'étape 5 est affichée uniquement si l'adresse est en France. #}
+{% if showBilanEnergetique %}
+    {% set steps = steps|merge([
+        { step: 5, title: 'mes_biens.stepper.bilan_energetique'|trans },
+    ]) %}
+{% endif %}
+
+{% set steps = steps|merge([
+    { step: 6, title: 'mes_biens.stepper.photos'|trans },
+    { step: 7, title: 'mes_biens.stepper.description'|trans },
+    { step: 8, title: 'mes_biens.stepper.prix'|trans },
+]) %}
+
+{# Position visuelle : sans bilan énergétique, les étapes 6/7/8 remontent d'un cran. #}
+{% if step <= 4 %}
+    {% set activePosition = step %}
+{% elseif step == 5 %}
+    {% set activePosition = showBilanEnergetique ? 5 : 4 %}
+{% else %}
+    {% set activePosition = showBilanEnergetique ? step : step - 1 %}
+{% endif %}
+
+{% set currentTitle = '' %}
+{% for item in steps %}
+    {% if item.step == step %}
+        {% set currentTitle = item.title %}
+    {% endif %}
+{% endfor %}
+
+{% set totalSteps = steps|length %}
+
+{# La barre suit la page affichée : elle avance avec « Suivant » et recule avec « Retour ». #}
+{% set progressPosition = min(activePosition, totalSteps) %}
+{% set progressPercent = totalSteps > 0 ? (progressPosition / totalSteps * 100) : 0 %}
+
+<div class="mes-bien-stepper-mobile d-lg-none">
+    <div class="mes-bien-stepper-mobile__header">
+        <h3>
+            {{ currentTitle }}
+        </h3>
+
+        <p class="mes-bien-stepper-mobile__count">
+            {{ activePosition }}/{{ totalSteps }}
+        </p>
+    </div>
+
+    <div
+        class="mes-bien-stepper-mobile__track"
+        role="progressbar"
+        aria-valuemin="0"
+        aria-valuemax="{{ totalSteps }}"
+        aria-valuenow="{{ progressPosition }}"
+        aria-label="{{ currentTitle }}"
+    >
+        <div
+            class="mes-bien-stepper-mobile__bar"
+            style="width: {{ progressPercent }}%;"
+        ></div>
+    </div>
+</div>
+
+<style>
+    .mes-bien-stepper-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 24px;
+    }
+
+    .mes-bien-stepper-mobile__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .mes-bien-stepper-mobile__count {
+        flex-shrink: 0;
+        margin: 0;
+        color: #858789;
+    }
+
+    .mes-bien-stepper-mobile__track {
+        position: relative;
+        width: 100%;
+        height: 4px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #ebecec;
+    }
+
+    .mes-bien-stepper-mobile__bar {
+        height: 100%;
+        border-radius: 999px;
+        background: #5d00ff;
+        transition: width 0.3s ease;
+    }
+
+    @media (min-width: 992px) {
+        .mes-bien-stepper-mobile {
+            display: none !important;
+        }
+    }
+</style>

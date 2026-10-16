@@ -732,6 +732,24 @@ a.mes-bien-stepper-item {
     padding-right: 108px;
 }
 
+/* Sous 576px : boutons Retour / Suivant centrés, 50% chacun. */
+@media (max-width: 575.98px) {
+    .navigation-fixed {
+        justify-content: center;
+
+        padding-right: 16px;
+
+        padding-left: 16px;
+    }
+
+    .navigation-fixed .btn-retour,
+    .navigation-fixed .btn-suivant {
+        flex: 1 1 50%;
+
+        text-align: center;
+    }
+}
+
 .navigation-fixed .is-last-page {
     border-radius: 50px;
 
