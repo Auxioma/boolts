@@ -29,47 +29,51 @@
 
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                <div class="col-10">
+                <div class="col-12 col-md-10 mx-auto">
                     <main class="achat-forfait-main">
-                        <div class="container-fluid achat-forfait-container">
+                        <div class="col-12 col-md-10 mx-auto">
                             <div class="row achat-forfait-row">
 
                                 {% if is_downgrade %}
                                     <div class="col-12">
-                                        <h1 class="achat-forfait-main-title mb-24">
+                                        <h2 class="achat-forfait-main-title mb-24">
                                             Changement de forfait
-                                        </h1>
+                                        </h2>
 
                                         <div class="achat-forfait-plan-compare">
                                             <div class="achat-forfait-plan-compare-card">
-                                                <p class="achat-forfait-plan-compare-label">
+                                                <span class="p-accent forfait-changement">
                                                     Forfait actuel
-                                                </p>
+                                                </span>
 
-                                                <p class="achat-forfait-plan-compare-name">
+                                                <h2>
                                                     {{ current_plan.name }}
-                                                </p>
+                                                </h2>
 
                                                 {% if current_plan_price %}
-                                                    <p class="achat-forfait-plan-compare-price">
-                                                        {{ (current_plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                        {{ current_plan_price.currency.signe }}/{{ current_plan_price.billingPeriod.value == 'annual' ? 'an' : 'mois' }}
-                                                    </p>
+                                                    <div class="d-flex align-items-baseline gap-1">
+                                                        <h3 class="mb-0">
+                                                            {{ (current_plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                        </h3>
+                                                        <span class="p-accent">
+                                                            {{ current_plan_price.currency.signe }}/{{ current_plan_price.billingPeriod.value == 'annual' ? 'an' : 'mois' }}
+                                                        </span>
+                                                    </div>
                                                 {% endif %}
                                             </div>
 
                                             <span class="achat-forfait-plan-compare-arrow" aria-hidden="true">
-                                                <i class="bi bi-chevron-right"></i>
+                                                <i class="icon-chevron-right"></i>
                                             </span>
 
                                             <div class="achat-forfait-plan-compare-card achat-forfait-plan-compare-card-new">
-                                                <p class="achat-forfait-plan-compare-label">
+                                                <span class="p-accent forfait-changement">
                                                     Nouveau forfait
-                                                </p>
+                                                </span>
 
-                                                <p class="achat-forfait-plan-compare-name">
+                                                <h2>
                                                     {{ plan.name }}
-                                                </p>
+                                                </h2>
 
                                                 <p class="achat-forfait-plan-compare-price">
                                                     {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
@@ -79,11 +83,11 @@
                                         </div>
 
                                         <div class="achat-forfait-explain">
-                                            <h2 class="achat-forfait-section-title">
+                                            <h3 class="mb-0">
                                                 Que va-t-il se passer ?
-                                            </h2>
+                                            </h3>
 
-                                            <ul class="achat-forfait-explain-list">
+                                            <ul class="achat-forfait-explain-list paragraphe">
                                                 <li>
                                                     {% if downgrade_effective_at %}
                                                         Le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>,

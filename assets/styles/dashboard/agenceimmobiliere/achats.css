@@ -284,17 +284,12 @@
     flex-direction: column;
     
     gap: 32px;}
-.achat-forfait-main-title {margin: 0;
+.achat-forfait-main-title {
     
     color: #0b0f14;
     
     font-family: "Eudoxus Sans",Arial,sans-serif;
-    
-    font-size: 30px;
-    
-    font-weight: 700;
-    
-    line-height: 34px;}
+}
 .achat-forfait-section {display: flex;
     
     width: 100%;
@@ -695,15 +690,21 @@
     padding-left: 20px;
     
     font-family: "Eudoxus Sans",Arial,sans-serif;
-    
-    font-size: 14px;
-    
-    font-weight: 500;
-    
-    line-height: 20px;}
+}
 .achat-forfait-total-label {display: flex;
     
     flex-direction: column;}
 .achat-forfait-total-note {margin-top: 6px;}
 @media (max-width: 575.98px) {.achat-forfait-plan-compare {flex-direction: column;}
     .achat-forfait-plan-compare-arrow {transform: rotate(90deg);}}
+
+
+
+    .forfait-changement {
+        color: #5d00ff;
+    }
+
+
+    .achat-forfait-plan-compare-arrow .icon-chevron-right::before {
+        font-size: 44px;
+    }
