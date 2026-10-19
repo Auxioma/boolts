@@ -21,145 +21,62 @@
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
                 {# Contenu principal #}
-                <div class="col-md-10 col-12 dashboard-main">
-                    <div class="dashboard-content">
-                        <section class="notifications-page">
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main bg-white">
+                    <div class="row">
+                        <div class="col-12 col-md-10 mx-auto">
+                        <section id="agence-notifications" class="js-agence-notifications" data-controller="agence-notifications"
+                                 data-agence-notifications-csrf-token-value="{{ csrf_token('agency_notification_read') }}">
                             <h2 class="notifications-page__title">Notifications</h2>
 
                             <div class="notifications-page__body">
                                 <div class="notifications-filter" role="tablist">
-                                    <button type="button" class="notifications-filter__button active" data-filter="all">
+                                    <button type="button" class="p-accent notifications-filter__button active" data-filter="all"
+                                            data-agence-notifications-target="filterButton"
+                                            data-action="agence-notifications#filter">
                                         Toutes
                                     </button>
 
-                                    <button type="button" class="notifications-filter__button" data-filter="unread">
+                                    <button type="button" class="p-accent notifications-filter__button" data-filter="unread"
+                                            data-agence-notifications-target="filterButton"
+                                            data-action="agence-notifications#filter">
                                         Non lues
-                                        <span class="notifications-filter__count" data-unread-count>{{ unreadCount }}</span>
+                                        <span class="notifications-filter__count" data-agence-notifications-target="unreadCount">{{ unreadCount }}</span>
                                     </button>
                                 </div>
 
-                                <div class="notifications-feed" data-csrf-token="{{ csrf_token('agency_notification_read') }}">
+                                <div class="notifications-feed">
                                     {% for notification in notifications %}
                                         {# Ces notifications renvoient vers la section de dépôt de documents du dashboard. #}
                                         {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' or notification.nom starts with 'Votre compte est en attente de validation' %}
                                         <article class="notification-card{{ notification.read ? ' notification-card--read' }}"
                                                  data-read="{{ notification.read ? 'true' : 'false' }}"
+                                                 data-agence-notifications-target="card"
+                                                 data-action="mouseenter->agence-notifications#markRead"
                                                  data-mark-read-url="{{ path('agence_immobiliere_notifications_mark_read', {id: notification.id}) }}">
                                             {% if not notification.read %}
-                                                <span class="notification-card__dot" aria-hidden="true"></span>
+                                                <span class="notification-card__dot js-notification-dot" aria-hidden="true"></span>
                                             {% endif %}
 
                                             {% if is_documents_rejected %}
-                                                <a class="notification-card__text notification-card__link"
+                                                <a class="notification-card__text notification-card__link paragraphe"
                                                    href="{{ path('agence_immobiliere_dashboard', {documents: 1}) }}#documents">{{ notification.nom }}</a>
                                             {% else %}
-                                                <p class="notification-card__text">{{ notification.nom }}</p>
+                                                <p class="notification-card__text paragraphe">{{ notification.nom }}</p>
                                             {% endif %}
 
-                                            <p class="notification-card__date">{{ notification.date|date('d/m/Y') }}</p>
+                                            <p class="notification-card__date paragraphe">{{ notification.date|date('d/m/Y') }}</p>
                                         </article>
                                     {% else %}
-                                        <p class="notification-card__text">Vous n'avez aucune notification.</p>
+                                        <p class="notification-card__text paragraphe">Vous n'avez aucune notification.</p>
                                     {% endfor %}
                                 </div>
                             </div>
                         </section>
-                    </div>
+                    </div></div>
                 </div>
 
             </div>
         </div>
     </main>
 
-    <script>
-        (function () {
-            var root = document.querySelector('.notifications-page');
-
-            if (!root) {
-                return;
-            }
-
-            var feed = root.querySelector('.notifications-feed');
-            var buttons = root.querySelectorAll('.notifications-filter__button');
-            var cards = root.querySelectorAll('.notification-card');
-            var unreadBadge = root.querySelector('[data-unread-count]');
-            var csrfToken = feed ? feed.getAttribute('data-csrf-token') : '';
-
-            function activeFilter() {
-                var active = root.querySelector('.notifications-filter__button.active');
-
-                return active ? active.getAttribute('data-filter') : 'all';
-            }
-
-            function applyFilter(filter) {
-                cards.forEach(function (card) {
-                    var isRead = card.getAttribute('data-read') === 'true';
-                    card.hidden = filter === 'unread' && isRead;
-                });
-            }
-
-            function setUnreadBadge(count) {
-                if (unreadBadge && typeof count === 'number' && !isNaN(count)) {
-                    unreadBadge.textContent = String(Math.max(0, count));
-                }
-            }
-
-            buttons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    buttons.forEach(function (item) {
-                        item.classList.toggle('active', item === button);
-                    });
-
-                    applyFilter(button.getAttribute('data-filter'));
-                });
-            });
-
-            cards.forEach(function (card) {
-                card.addEventListener('mouseenter', function () {
-                    if (card.getAttribute('data-read') === 'true' || card.dataset.marking === 'true') {
-                        return;
-                    }
-
-                    var url = card.getAttribute('data-mark-read-url');
-
-                    if (!url) {
-                        return;
-                    }
-
-                    card.dataset.marking = 'true';
-
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                        .then(function (response) {
-                            return response.ok ? response.json() : Promise.reject(response);
-                        })
-                        .then(function (data) {
-                            card.setAttribute('data-read', 'true');
-                            card.classList.add('notification-card--read');
-
-                            var dot = card.querySelector('.notification-card__dot');
-
-                            if (dot) {
-                                dot.remove();
-                            }
-
-                            setUnreadBadge(data && data.unreadCount);
-
-                            if (activeFilter() === 'unread') {
-                                card.hidden = true;
-                            }
-                        })
-                        .catch(function () {})
-                        .finally(function () {
-                            delete card.dataset.marking;
-                        });
-                });
-            });
-        })();
-    </script>
 {% endblock %}

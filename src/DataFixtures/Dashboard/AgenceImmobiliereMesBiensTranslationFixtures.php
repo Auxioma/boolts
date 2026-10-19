@@ -39,6 +39,7 @@ final class AgenceImmobiliereMesBiensTranslationFixtures extends Fixture
                 'mes_biens.navigation.back' => 'Retour',
                 'mes_biens.navigation.save_and_exit' => 'Enregistrer et quitter',
                 'mes_biens.navigation.next' => 'Suivant',
+                'mes_biens.navigation.publish' => 'Publier',
 
                 'mes_biens.limit_modal.title_line_1' => 'Vous avez atteint la limite',
                 'mes_biens.limit_modal.title_line_2' => 'de dépôt d’annonces',
@@ -169,6 +170,7 @@ final class AgenceImmobiliereMesBiensTranslationFixtures extends Fixture
                 'mes_biens.navigation.back' => 'Back',
                 'mes_biens.navigation.save_and_exit' => 'Save and exit',
                 'mes_biens.navigation.next' => 'Next',
+                'mes_biens.navigation.publish' => 'Publish',
 
                 'mes_biens.limit_modal.title_line_1' => 'You have reached the limit',
                 'mes_biens.limit_modal.title_line_2' => 'for posting listings',

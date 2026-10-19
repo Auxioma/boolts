@@ -29,12 +29,7 @@
 .achat-content-shell h3 {margin-bottom: 20px;
     
     color: #0b0f14;
-    
-    font-size: 20px;
-    
-    font-weight: 700;
-    
-    line-height: 24px;}
+    }
 .achat-title-row {gap: 24px;
     
     margin-bottom: 22px;}
@@ -130,11 +125,6 @@
     
     font-family: inherit;
     
-    font-size: 16px;
-    
-    font-weight: 700;
-    
-    line-height: 20px;
     
     transition: background-color .2s ease,color .2s ease;}
 .achat-billing-option:hover {background-color: #f8f8f8;}

@@ -31,6 +31,7 @@
             class="achat-pricing-card {{ plan.isFree ? 'achat-basic-card' : '' }} {{ isCurrentPlan ? 'achat-current-pricing-card' : '' }} w-100"
         >
             <div>
+                <p>toto</p>
                 <h3>
                     {{ plan.name }}
                 </h3>
@@ -111,14 +112,11 @@
 
     <style>
         .subscription-card {
-            width: 100%;
-            padding: 28px 38px 30px;
+            padding: 24px;
             background: #ffffff;
-            border: 1px solid #dddddd;
-            border-radius: 26px;
-            box-shadow:
-                0 1px 3px rgba(0, 0, 0, 0.03),
-                0 3px 10px rgba(0, 0, 0, 0.025);
+            border: 2px solid #ebecec;
+            border-radius: 24px;
+            margin-bottom: 24px;
         }
 
         .subscription-card-header {
@@ -149,9 +147,9 @@
             align-items: center;
             justify-content: center;
             min-height: 32px;
-            padding: 7px 12px;
+            padding: 5px 12px;
             background: #e2f3e7;
-            border-radius: 6px;
+            border-radius: 9999px;
             color: #2a7f48;
             font-size: 12px;
             line-height: 1;
@@ -176,7 +174,7 @@
                 minmax(180px, 1fr)
                 minmax(100px, .75fr);
             gap: 30px;
-            margin-bottom: 34px;
+            margin-bottom: 32px;
         }
 
         .subscription-detail {
@@ -240,21 +238,20 @@
         }
 
         .btn-subscription-cancel {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 48px;
-            padding: 0 22px;
-            border: 1px solid #ef9aa7;
-            border-radius: 8px;
-            background: #ffffff;
-            color: #dc3545;
-            text-decoration: none;
-            font-size: 14px;
-            line-height: 1;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .15s ease;
+display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 10px 16px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  border: 2px solid #dc3545;
+  background: var(--color-white);
+  color: #dc3545;
         }
 
         .btn-subscription-cancel:hover {
@@ -311,7 +308,7 @@
             }
 
             .subscription-card-header {
-                margin-bottom: 28px;
+                margin-bottom: 32px;
             }
 
             .subscription-details {
@@ -372,11 +369,16 @@
                     <div class="container pt-48 achat-content-shell px-0">
 
                         <div class="achat-title-row d-flex align-items-center justify-content-between">
-                            <h1>
+                            <h2>
                                 Options et abonnements
-                            </h1>
+                            </h2>
 
-                            {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button', {variant: 'options'})) }}
+                                                    <div class="d-flex align-items-center">
+                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::annonce')) }}
+
+                                {{ render(controller('App\\Controller\\Dashboard\\AgenceImmobiliere\\BoostBalanceController::button')) }}
+
+                            </div>
                         </div>
 
                         {# Flashes propres à l'espace « Options et abonnements ».
@@ -398,9 +400,9 @@
                            ABONNEMENTS
                            ===================================================== #}
 
-                        <h2>
+                        <h3>
                             Choisissez votre abonnement
-                        </h2>
+                        </h3>
 
         {# Le cadre « Abonnement » n'a de sens que pour un forfait payant.
            Sur une offre gratuite, on n'affiche que le choix des forfaits et des boosts. #}
@@ -412,41 +414,26 @@
 
                     <div>
 
-                        <h2 class="subscription-card-title">
-                            Abonnement
-                        </h2>
-
-                        <p class="subscription-card-subtitle">
-
-                            {% if subscription.plan is defined and subscription.plan %}
-
-                                {{ subscription.plan.name }}
-
-                            {% else %}
-
-                                Non renseigné
-
-                            {% endif %}
-
-                        </p>
-
+                        <div class="p-accent" style="color:#858789;">
+                            Abonnement actuel
+                        </div>
                     </div>
 
                     {% if subscription.status in ['active', 'free'] %}
 
-                        <span class="subscription-status">
+                        <span class="subscription-status paragraphe">
                             Actif
                         </span>
 
                     {% elseif subscription.status|default('') == 'canceled' %}
 
-                        <span class="subscription-status cancelled">
+                        <span class="subscription-status cancelled paragraphe">
                             Résilié
                         </span>
 
                     {% else %}
 
-                        <span class="subscription-status pending">
+                        <span class="subscription-status pending paragraphe">
                             En attente
                         </span>
 
@@ -466,7 +453,7 @@
                             Forfait
                         </span>
 
-                        <span class="subscription-detail-value">
+                        <span class="subscription-detail-value p-accent">
 
                             {% if subscription.plan is defined and subscription.plan %}
 
@@ -488,7 +475,7 @@
                             Périodicité
                         </span>
 
-                        <span class="subscription-detail-value">
+                        <span class="subscription-detail-value p-accent">
 
                             {% if subscription.billingPeriod == 'annual' %}
 
@@ -508,11 +495,11 @@
 
                         <span class="subscription-detail-label">
                             Prochain
-                            <br>
+                           
                             renouvellement
                         </span>
 
-                        <span class="subscription-detail-value">
+                        <span class="subscription-detail-value p-accent">
 
                             {% if subscription.currentPeriodEnd is defined and subscription.currentPeriodEnd %}
 
@@ -538,7 +525,7 @@
                             Prix
                         </span>
 
-                        <span class="subscription-detail-value">
+                        <span class="subscription-detail-value p-accent">
 
                             {% if subscription.price is defined %}
 
@@ -572,7 +559,7 @@
 
                     <a
                         href="{{ path('agence_immobiliere_parametres') }}#cat4"
-                        class="btn-subscription-payment"
+                        class="btn-full-blue"
                     >
                         Mettre à jour mon moyen de paiement
                     </a>
@@ -714,7 +701,7 @@
                         >
                             <button
                                 type="button"
-                                class="achat-billing-option {{ selectedPeriod == 'annual' ? 'achat-active' : '' }}"
+                                class="achat-billing-option p-accent {{ selectedPeriod == 'annual' ? 'achat-active' : '' }}"
                                 data-period="annual"
                                 data-options--billing-period-target="option"
                                 data-action="click->options--billing-period#select"
@@ -725,7 +712,7 @@
 
                             <button
                                 type="button"
-                                class="achat-billing-option {{ selectedPeriod == 'monthly' ? 'achat-active' : '' }}"
+                                class="achat-billing-option p-accent {{ selectedPeriod == 'monthly' ? 'achat-active' : '' }}"
                                 data-period="monthly"
                                 data-options--billing-period-target="option"
                                 data-action="click->options--billing-period#select"

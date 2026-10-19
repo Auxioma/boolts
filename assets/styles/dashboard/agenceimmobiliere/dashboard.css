@@ -672,9 +672,7 @@ a.notification-text--link:hover {
 }
 
 .notifications-page__title {
-    margin: 0;
-
-    color: #0b0f14;
+    margin-bottom: clamp(24px, calc(24px + (18 * (100vw - 375px) / 1065)), 32px);
 }
 
 .notifications-page__body {
@@ -728,11 +726,6 @@ a.notification-text--link:hover {
 
     font-family: "Eudoxus Sans", Arial, sans-serif;
 
-    font-size: 16px;
-
-    font-weight: 700;
-
-    line-height: 20px;
 
     white-space: nowrap;
 
@@ -831,13 +824,6 @@ a.notification-text--link:hover {
     margin: 0;
 
     color: #858789;
-
-    font-size: 14px;
-
-    font-weight: 500;
-
-    line-height: 20px;
-
     text-align: right;
 
     white-space: nowrap;
