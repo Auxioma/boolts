@@ -298,9 +298,26 @@ display: inline-flex;
             line-height: 1.5;
         }
 
-        @media (max-width: 900px) {
+        /* Sous 991px : deux détails par ligne (50 % chacun), jusqu'au mobile. */
+        @media (max-width: 991px) {
             .subscription-details {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            /* Boutons empilés, en pleine largeur. */
+            .subscription-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .subscription-actions .btn-full-blue,
+            .btn-subscription-payment,
+            .btn-subscription-cancel {
+                width: 100%;
+            }
+
+            .achat-boost-description {
+                text-align: center!important;
             }
         }
 
@@ -317,22 +334,6 @@ display: inline-flex;
             .subscription-details {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 24px 20px;
-            }
-
-            .subscription-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .btn-subscription-payment,
-            .btn-subscription-cancel {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 450px) {
-            .subscription-details {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -403,7 +404,7 @@ display: inline-flex;
                            ABONNEMENTS
                            ===================================================== #}
 
-                        <h3>
+                        <h3 class="mb-4">
                             Choisissez votre abonnement
                         </h3>
 
@@ -771,7 +772,7 @@ display: inline-flex;
 
                                     {% set pack = boostPrice.boosterPack %}
 
-                                    <div class="col-12 col-md-4">
+                                    <div class="col-12 col-lg-4">
                                         <article class="achat-boost-item h-100">
 
                                             <img

@@ -237,7 +237,7 @@
     
     text-align: left;}
 @media (max-width: 991.98px) {.achat-content-shell {width: 100%;}
-    .achat-pricing-card {min-height: 360px;}}
+    .achat-pricing-card {min-height: 250px;}}
 @media (max-width: 575.98px) {.achat-content-shell h1 {font-size: 25px;
         
         line-height: 30px;}
