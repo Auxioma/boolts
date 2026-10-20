@@ -264,9 +264,8 @@
     padding-right: 24px;
     
     padding-left: 24px;}
-.achat-forfait-row {--bs-gutter-x: 24px;
-    
-    --bs-gutter-y: 24px;
+.achat-forfait-row {
+
     
     align-items: flex-start;}
 .achat-forfait-card {width: 100%;
@@ -310,8 +309,7 @@
     
     line-height: 20px;}
 .achat-forfait-product-name {margin: 0;
-    
-    font-weight: 700;}
+    }
 .achat-forfait-features {display: flex;
     
     flex-direction: column;
@@ -694,4 +692,10 @@
 
     .achat-forfait-plan-compare-arrow .icon-chevron-right::before {
         font-size: 44px;
+    }
+
+    .payment-modal-close .icon-x::before {
+        font-size: 24px;
+        top: 0px;
+        position: initial;
     }

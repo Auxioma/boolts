@@ -11,560 +11,566 @@
 
 {% block body %}
 
-<div
-    data-controller="payment-method options--purchase"
-    data-payment-method-public-key-value="{{ stripe_public_key }}"
-    data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
-    data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
-    data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
-    data-options--purchase-subscription-url-value="{{ path('api_agency_billing_subscription_create') }}"
-    data-options--purchase-subscription-csrf-value="{{ csrf_token('agency_subscription') }}"
-    data-options--purchase-plan-price-id-value="{{ plan_price.id }}"
-    data-options--purchase-redirect-url-value="{{ path('agence_immobiliere_options') }}"
-    data-options--purchase-default-payment-method-id-value="{{ default_payment_method ? default_payment_method.id : '' }}"
->
-    <main id="dashboard" class="dashboard">
-        <div class="container-fluid">
-            <div class="row">
+    <div
+        data-controller="payment-method options--purchase"
+        data-payment-method-public-key-value="{{ stripe_public_key }}"
+        data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
+        data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
+        data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+        data-options--purchase-subscription-url-value="{{ path('api_agency_billing_subscription_create') }}"
+        data-options--purchase-subscription-csrf-value="{{ csrf_token('agency_subscription') }}"
+        data-options--purchase-plan-price-id-value="{{ plan_price.id }}"
+        data-options--purchase-redirect-url-value="{{ path('agence_immobiliere_options') }}"
+        data-options--purchase-default-payment-method-id-value="{{ default_payment_method ? default_payment_method.id : '' }}"
+    >
+        <main id="dashboard" class="dashboard">
+            <div class="container-fluid">
+                <div class="row">
 
-                {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+                    {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                <div class="col-md-9 col-lg-10 col-12 dashboard-main">
-                    <main class="achat-forfait-main">
-                        <div class="col-12 col-md-10 mx-auto">
-                            <div class="row achat-forfait-row">
+                    <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+                        <main class="achat-forfait-main">
+                            <div class="col-12 col-md-10 mx-auto">
+                                <div class="row achat-forfait-row">
 
-                                {% if is_downgrade %}
-                                    <div class="col-12">
-                                        <h2 class="achat-forfait-main-title mb-24">
-                                            Changement de forfait
-                                        </h2>
+                                    {% if is_downgrade %}
+                                        <div class="col-12">
+                                            <h2 class="achat-forfait-main-title mb-24">
+                                                Changement de forfait
+                                            </h2>
 
-                                        <div class="achat-forfait-plan-compare">
-                                            <div class="achat-forfait-plan-compare-card">
-                                                <span class="p-accent forfait-changement">
-                                                    Forfait actuel
-                                                </span>
+                                            <div class="achat-forfait-plan-compare">
+                                                <div class="achat-forfait-plan-compare-card">
+                                                    <span class="p-accent forfait-changement">
+                                                        Forfait actuel
+                                                    </span>
 
-                                                <h2>
-                                                    {{ current_plan.name }}
-                                                </h2>
+                                                    <h2>
+                                                        {{ current_plan.name }}
+                                                    </h2>
 
-                                                {% if current_plan_price %}
-                                                    <div class="d-flex align-items-baseline gap-1">
-                                                        <h3 class="mb-0">
-                                                            {{ (current_plan_price.amountMinor / 100)|number_format(2, ',', ' ') }} 
-                                                            {{ current_plan_price.currency.signe }}
-                                                        </h3>
-                                                        <span class="p-accent" style="color:#858789">
-                                                           /{{ current_plan_price.billingPeriod.value == 'annual' ? 'an' : 'mois' }}
-                                                        </span>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-
-                                            <span class="achat-forfait-plan-compare-arrow" aria-hidden="true">
-                                                <i class="icon-chevron-right"></i>
-                                            </span>
-
-                                            <div class="achat-forfait-plan-compare-card achat-forfait-plan-compare-card-new">
-                                                <span class="p-accent forfait-changement">
-                                                    Nouveau forfait
-                                                </span>
-
-                                                <h2>
-                                                    {{ plan.name }}
-                                                </h2>
-
-                                                    <div class="d-flex align-items-baseline gap-1">
-                                                        <h3 class="mb-0">
-                                                                 {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                    {{ plan_price.currency.signe }}
-                                                        </h3>
-                                                        <span class="p-accent" style="color:#858789">
-                                                         /{{ current_plan_price.billingPeriod.value == 'annual' ? 'an' : 'mois' }}
-                                                        </span>
-                                                    </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div class="achat-forfait-explain">
-                                            <h3 class="mb-0">
-                                                Que va-t-il se passer ?
-                                            </h3>
-
-                                            <ul class="achat-forfait-explain-list paragraphe">
-                                                <li>
-                                                    {% if downgrade_effective_at %}
-                                                        Le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>,
-                                                    {% else %}
-                                                        À la fin de votre période en cours,
+                                                    {% if current_plan_price %}
+                                                        <div class="d-flex align-items-baseline gap-1">
+                                                            <h3 class="mb-0">
+                                                                {{ (current_plan_price.amountMinor / 100)|number_format(2, ',', ' ') }} 
+                                                                {{ current_plan_price.currency.signe }}
+                                                            </h3>
+                                                            <span class="p-accent" style="color:#858789">
+                                                                /{{ current_plan_price.billingPeriod.value == 'annual' ? 'an' : 'mois' }}
+                                                            </span>
+                                                        </div>
                                                     {% endif %}
-                                                    votre nouveau forfait
-                                                    <strong>« {{ plan.name }} »</strong>
-                                                    prendra effet et vous serez facturé de
-                                                    <strong>
-                                                        {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                        {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
-                                                    </strong>.
-                                                </li>
-
-                                                <li>
-                                                    Jusqu’à cette date, vous continuerez de profiter des avantages de votre forfait
-                                                    <strong>« {{ current_plan.name }} »</strong>.
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                {% endif %}
-
-                                <div class="col-12 col-xl-6 mt-0">
-                                    <section class="achat-forfait-card achat-forfait-purchase-card">
-
-                                        {% if not is_downgrade %}
-                                            <h1 class="achat-forfait-main-title">
-                                                Récapitulatif de votre achat
-                                            </h1>
-
-                                            <section class="achat-forfait-section">
-                                                <h2 class="achat-forfait-section-title">
-                                                    Article
-                                                </h2>
-
-                                                <div class="achat-forfait-product-description">
-                                                    <p class="achat-forfait-product-name">
-                                                        1 x Abonnement {{ plan.name }}
-                                                    </p>
                                                 </div>
-                                            </section>
-                                        {% endif %}
 
-                                        <section
-                                            class="achat-forfait-section"
-                                            data-options--purchase-target="defaultCardBlock"
-                                        >
-                                            <h3 class="achat-forfait-section-title">
-                                                {{ is_downgrade ? 'Moyen de paiement' : 'Carte bancaire par défaut' }}
-                                            </h3>
+                                                <span class="achat-forfait-plan-compare-arrow" aria-hidden="true">
+                                                    <i class="icon-chevron-right"></i>
+                                                </span>
 
-                                            {% if default_payment_method %}
-                                                {% set card_brand = default_payment_method.brand|default('')|lower %}
-                                                {% set card_logo = card_brand in ['visa', 'mastercard']
+                                                <div class="achat-forfait-plan-compare-card achat-forfait-plan-compare-card-new">
+                                                    <span class="p-accent forfait-changement">
+                                                        Nouveau forfait
+                                                    </span>
+
+                                                    <h2>
+                                                        {{ plan.name }}
+                                                    </h2>
+
+                                                    <div class="d-flex align-items-baseline gap-1">
+                                                        <h3 class="mb-0">
+                                                            {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                            {{ plan_price.currency.signe }}
+                                                        </h3>
+                                                        <span class="p-accent" style="color:#858789">
+                                                            /{{ current_plan_price.billingPeriod.value == 'annual' ? 'an' : 'mois' }}
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="achat-forfait-explain">
+                                                <h3 class="mb-0">
+                                                    Que va-t-il se passer ?
+                                                </h3>
+
+                                                <ul class="achat-forfait-explain-list paragraphe">
+                                                    <li>
+                                                        {% if downgrade_effective_at %}
+                                                            Le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>,
+                                                        {% else %}
+                                                            À la fin de votre période en cours,
+                                                        {% endif %}
+                                                        votre nouveau forfait
+                                                        <strong>« {{ plan.name }} »</strong>
+                                                        prendra effet et vous serez facturé de
+                                                        <strong>
+                                                            {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                            {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
+                                                        </strong>.
+                                                    </li>
+
+                                                    <li>
+                                                        Jusqu’à cette date, vous continuerez de profiter des avantages de votre forfait
+                                                        <strong>« {{ current_plan.name }} »</strong>.
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    <h2 class="achat-forfait-main-title mb-24">
+                                        Récapitulatif de votre achat
+                                    </h2>          
+                                    <div class="col-12 col-xl-6 mt-0">
+
+                       
+                                        <section class="achat-forfait-card achat-forfait-purchase-card">
+
+                                            {% if not is_downgrade %}
+                                         
+
+                                                <section class="achat-forfait-section">
+                                                    <h3 class="achat-forfait-section-title">
+                                                        Article
+                                                    </h3>
+
+                                                    <div class="achat-forfait-product-description">
+                                                        <p class="achat-forfait-product-name">
+                                                            1 x Abonnement {{ plan.name }}
+                                                        </p>
+                                                    </div>
+                                                </section>
+                                            {% endif %}
+
+                                            <section
+                                                class="achat-forfait-section"
+                                                data-options--purchase-target="defaultCardBlock"
+                                            >
+                                                <h3 class="achat-forfait-section-title">
+                                                    {{ is_downgrade ? 'Moyen de paiement' : 'Moyen de paiement' }}
+                                                </h3>
+
+                                                {% if default_payment_method %}
+                                                    {% set card_brand = default_payment_method.brand|default('')|lower %}
+                                                    {% set card_logo = card_brand in ['visa', 'mastercard']
                                                     ? 'images/paiement_card/' ~ card_brand ~ '.svg'
                                                     : null
                                                 %}
 
-                                                <div class="achat-forfait-current-card">
-                                                    <div class="achat-forfait-visa-box">
-                                                        <img
-                                                            src="{{ card_logo ? asset(card_logo) : '' }}"
-                                                            alt="{{ default_payment_method.brand|capitalize }}"
-                                                            class="achat-forfait-visa-logo{{ card_logo ? '' : ' d-none' }}"
-                                                            data-options--purchase-target="selectedCardLogo"
-                                                        >
-                                                        <span
-                                                            class="icon-credit-card{{ card_logo ? ' d-none' : '' }}"
-                                                            aria-hidden="true"
-                                                            data-options--purchase-target="selectedCardIcon"
-                                                        ></span>
+                                                    <div class="achat-forfait-current-card">
+                                                        <div class="achat-forfait-visa-box">
+                                                            <img
+                                                                src="{{ card_logo ? asset(card_logo) : '' }}"
+                                                                alt="{{ default_payment_method.brand|capitalize }}"
+                                                                class="achat-forfait-visa-logo{{ card_logo ? '' : ' d-none' }}"
+                                                                data-options--purchase-target="selectedCardLogo"
+                                                            >
+                                                            <span
+                                                                class="icon-credit-card{{ card_logo ? ' d-none' : '' }}"
+                                                                aria-hidden="true"
+                                                                data-options--purchase-target="selectedCardIcon"
+                                                            ></span>
+                                                        </div>
+
+                                                        <div class="achat-forfait-bank-card-content">
+                                                            <p
+                                                                class="achat-forfait-bank-card-name p-accent"
+                                                                id="selected-card-name"
+                                                                data-options--purchase-target="selectedCardName"
+                                                            >
+                                                                {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                                {{ default_payment_method.last4 }}
+                                                            </p>
+
+                                                            <p
+                                                                class="achat-forfait-bank-card-expiration paragraphe"
+                                                                id="selected-card-expiration"
+                                                                data-options--purchase-target="selectedCardExpiration"
+                                                            >
+                                                                Date d’expiration :
+                                                                {{ '%02d'|format(default_payment_method.expMonth) }}/{{ default_payment_method.expYear }}
+                                                            </p>
+                                                        </div>
+
+                                                        {% if payment_methods|length > 1 %}
+                                                            <button
+                                                                class="achat-forfait-edit-button"
+                                                                type="button"
+                                                                id="show-payment-methods"
+                                                                aria-controls="payment-methods-block"
+                                                                aria-expanded="false"
+                                                                data-options--purchase-target="showPaymentMethodsButton"
+                                                                data-action="options--purchase#showPaymentMethods"
+                                                            >
+                                                                Modifier
+                                                            </button>
+                                                        {% endif %}
                                                     </div>
-
-                                                    <div class="achat-forfait-bank-card-content">
-                                                        <p
-                                                            class="achat-forfait-bank-card-name p-accent"
-                                                            id="selected-card-name"
-                                                            data-options--purchase-target="selectedCardName"
-                                                        >
-                                                            {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
-                                                            {{ default_payment_method.last4 }}
-                                                        </p>
-
-                                                        <p
-                                                            class="achat-forfait-bank-card-expiration paragraphe"
-                                                            id="selected-card-expiration"
-                                                            data-options--purchase-target="selectedCardExpiration"
-                                                        >
-                                                            Date d’expiration :
-                                                            {{ '%02d'|format(default_payment_method.expMonth) }}/{{ default_payment_method.expYear }}
-                                                        </p>
-                                                    </div>
-
-                                                    {% if payment_methods|length > 1 %}
+                                                {% else %}
+                                                    <div class="d-flex mt-32 mb-32">
                                                         <button
-                                                            class="achat-forfait-edit-button"
                                                             type="button"
-                                                            id="show-payment-methods"
-                                                            aria-controls="payment-methods-block"
-                                                            aria-expanded="false"
-                                                            data-options--purchase-target="showPaymentMethodsButton"
-                                                            data-action="options--purchase#showPaymentMethods"
+                                                            class="btn-full-blue payment-open-btn"
+                                                            data-action="payment-method#open"
                                                         >
-                                                            Modifier
+                                                            <span class="icon-plus mr-6"></span>
+                                                            Ajouter un mode de paiement
                                                         </button>
-                                                    {% endif %}
-                                                </div>
-                                            {% else %}
-                                                <div class="d-flex mt-32 mb-32">
-                                                    <button
-                                                        type="button"
-                                                        class="btn-add-payment py-10 px-16 payment-open-btn"
-                                                        data-action="payment-method#open"
-                                                    >
-                                                        <span class="icon-plus mr-6"></span>
-                                                        Ajouter un mode de paiement
-                                                    </button>
-                                                </div>
-                                            {% endif %}
-                                        </section>
+                                                    </div>
+                                                {% endif %}
+                                            </section>
 
-                                        {% if payment_methods|length > 1 %}
-                                            <section
-                                                class="achat-forfait-section d-none"
-                                                id="payment-methods-block"
-                                                aria-hidden="true"
-                                                data-options--purchase-target="paymentBlock"
-                                            >
-                                                <h3 class="achat-forfait-section-title">
-                                                    Moyen de paiement
-                                                </h3>
+                                            {% if payment_methods|length > 1 %}
+                                                <section
+                                                    class="achat-forfait-section d-none"
+                                                    id="payment-methods-block"
+                                                    aria-hidden="true"
+                                                    data-options--purchase-target="paymentBlock"
+                                                >
+                                                    <h3 class="achat-forfait-section-title">
+                                                        Moyen de paiement
+                                                    </h3>
 
-                                                <div class="achat-forfait-payment-list">
-                                                    {% for payment_method in payment_methods %}
-                                                        {% set is_current = payment_method.id == default_payment_method.id %}
-                                                        {% set option_brand = payment_method.brand|default('')|lower %}
-                                                        {% set option_logo = option_brand in ['visa', 'mastercard']
+                                                    <div class="achat-forfait-payment-list">
+                                                        {% for payment_method in payment_methods %}
+                                                            {% set is_current = payment_method.id == default_payment_method.id %}
+                                                            {% set option_brand = payment_method.brand|default('')|lower %}
+                                                            {% set option_logo = option_brand in ['visa', 'mastercard']
                                                             ? asset('images/paiement_card/' ~ option_brand ~ '.svg')
                                                             : ''
                                                         %}
 
-                                                        <label
-                                                            class="achat-forfait-payment-option{{ is_current ? ' achat-forfait-payment-option-selected' : '' }}"
-                                                            data-options--purchase-target="paymentOption"
-                                                        >
-                                                            <input
-                                                                type="radio"
-                                                                name="payment-method"
-                                                                value="{{ payment_method.id }}"
-                                                                class="visually-hidden"
-                                                                {% if is_current %}checked{% endif %}
-                                                                data-card-name="{{ payment_method.brand|default('Carte bancaire')|capitalize }} {{ payment_method.last4 }}"
-                                                                data-card-expiration="Date d’expiration : {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}"
-                                                                data-card-brand="{{ payment_method.brand|default('Carte bancaire')|capitalize }}"
-                                                                data-card-logo="{{ option_logo }}"
-                                                                data-options--purchase-target="paymentMethod"
-                                                                data-action="change->options--purchase#selectPaymentMethod"
+                                                            <label
+                                                                class="achat-forfait-payment-option{{ is_current ? ' achat-forfait-payment-option-selected' : '' }}"
+                                                                data-options--purchase-target="paymentOption"
                                                             >
+                                                                <input
+                                                                    type="radio"
+                                                                    name="payment-method"
+                                                                    value="{{ payment_method.id }}"
+                                                                    class="visually-hidden"
+                                                                    {% if is_current %}checked{% endif %}
+                                                                    data-card-name="{{ payment_method.brand|default('Carte bancaire')|capitalize }} {{ payment_method.last4 }}"
+                                                                    data-card-expiration="Date d’expiration : {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}"
+                                                                    data-card-brand="{{ payment_method.brand|default('Carte bancaire')|capitalize }}"
+                                                                    data-card-logo="{{ option_logo }}"
+                                                                    data-options--purchase-target="paymentMethod"
+                                                                    data-action="change->options--purchase#selectPaymentMethod"
+                                                                >
 
-                                                            <span class="achat-forfait-visa-box">
-                                                                {% if option_logo %}
-                                                                    <img
-                                                                        src="{{ option_logo }}"
-                                                                        alt="{{ payment_method.brand|capitalize }}"
-                                                                        class="achat-forfait-visa-logo"
-                                                                    >
-                                                                {% else %}
-                                                                    <span
-                                                                        class="icon-credit-card"
-                                                                        aria-hidden="true"
-                                                                    ></span>
-                                                                {% endif %}
-                                                            </span>
-
-                                                            <span class="achat-forfait-bank-card-content">
-                                                                <span class="achat-forfait-bank-card-name p-accent">
-                                                                    {{ payment_method.brand|default('Carte bancaire')|capitalize }}
-                                                                    {{ payment_method.last4 }}
+                                                                <span class="achat-forfait-visa-box">
+                                                                    {% if option_logo %}
+                                                                        <img
+                                                                            src="{{ option_logo }}"
+                                                                            alt="{{ payment_method.brand|capitalize }}"
+                                                                            class="achat-forfait-visa-logo"
+                                                                        >
+                                                                    {% else %}
+                                                                        <span
+                                                                            class="icon-credit-card"
+                                                                            aria-hidden="true"
+                                                                        ></span>
+                                                                    {% endif %}
                                                                 </span>
 
-                                                                <span class="achat-forfait-bank-card-expiration paragraphe">
-                                                                    Date d’expiration :
-                                                                    {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}
+                                                                <span class="achat-forfait-bank-card-content">
+                                                                    <span class="achat-forfait-bank-card-name p-accent">
+                                                                        {{ payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                                        {{ payment_method.last4 }}
+                                                                    </span>
+
+                                                                    <span class="achat-forfait-bank-card-expiration paragraphe">
+                                                                        Date d’expiration :
+                                                                        {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}
+                                                                    </span>
                                                                 </span>
-                                                            </span>
-                                                        </label>
-                                                    {% endfor %}
+                                                            </label>
+                                                        {% endfor %}
+                                                    </div>
+
+                                                    <div class="achat-forfait-payment-actions">
+                                                        <button
+                                                            type="button"
+                                                            class="btn-full-blue"
+                                                            id="confirm-payment-method"
+                                                            data-action="options--purchase#confirmPaymentMethod"
+                                                        >
+                                                            Utiliser cette méthode de paiement
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            class="btn-full-white"
+                                                            data-action="payment-method#open"
+                                                        >
+                                                            <i class="icon-plus me-1" aria-hidden="true"></i>
+                                                            <span>Ajouter un mode de paiement</span>
+                                                        </button>
+                                                    </div>
+                                                </section>
+                                            {% endif %}
+
+                                        </section>
+                                    </div>
+
+                                    <div class="col-12 col-xl-6 mt-3 mt-xl-0">
+                                        <aside class="achat-forfait-card achat-forfait-summary-card">
+                                            {% if is_downgrade %}
+                                                <p class="achat-forfait-legal-text paragraphe">
+                                                    En confirmant ce changement de forfait, vous acceptez les
+                                                    conditions générales de vente de Boolts. Veuillez consulter
+                                                    notre notice de protection de vos informations personnelles,
+                                                    notre notice cookies et notre notice sur les annonces
+                                                    publicitaires basées sur vos centres d’intérêt.
+                                                </p>
+
+                                                <div class="achat-forfait-total">
+                                                    <div class="achat-forfait-total-label">
+                                                        <strong class="h-03">Montant :</strong>
+
+                                                        <p class="achat-forfait-legal-text achat-forfait-total-note paragraphe" style="color:#0b0f14">
+                                                            Le montant sera prélevé
+                                                            {% if downgrade_effective_at %}
+                                                                le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>.
+                                                            {% else %}
+                                                                à la fin de votre période en cours.
+                                                            {% endif %}
+                                                        </p>
+                                                    </div>
+
+                                                    <div class="d-flex align-items-baseline flex-nowrap gap-1">
+                                                        <strong class="h-03">
+                                                            {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                            {{ plan_price.currency.signe }}
+                                                        </strong>
+                                                        <strong class="p-accent" style="color:#858789">/{{ period == 'annual' ? 'an' : 'mois' }}</strong>
+                                                    </div>
                                                 </div>
+                                            {% else %}
+                                                <div class="achat-forfait-total">
+                                                    <strong>Montant total :</strong>
 
-                                                <div class="achat-forfait-payment-actions">
-                                                    <button
-                                                        type="button"
-                                                        class="btn-full-blue"
-                                                        id="confirm-payment-method"
-                                                        data-action="options--purchase#confirmPaymentMethod"
-                                                    >
-                                                        Utiliser cette méthode de paiement
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        class="btn-full-white"
-                                                        data-action="payment-method#open"
-                                                    >
-                                                        <i class="icon-plus me-1" aria-hidden="true"></i>
-                                                        <span>Ajouter un mode de paiement</span>
-                                                    </button>
-                                                </div>
-                                            </section>
-                                        {% endif %}
-
-                                    </section>
-                                </div>
-
-                                <div class="col-12 col-xl-6 mt-3 mt-xl-0">
-                                    <aside class="achat-forfait-card achat-forfait-summary-card">
-                                        {% if is_downgrade %}
-                                            <p class="achat-forfait-legal-text paragraphe">
-                                                En confirmant ce changement de forfait, vous acceptez les
-                                                conditions générales de vente de Boolts. Veuillez consulter
-                                                notre notice de protection de vos informations personnelles,
-                                                notre notice cookies et notre notice sur les annonces
-                                                publicitaires basées sur vos centres d’intérêt.
-                                            </p>
-
-                                            <div class="achat-forfait-total">
-                                                <div class="achat-forfait-total-label">
-                                                    <strong class="h-03">Montant :</strong>
-
-                                                    <p class="achat-forfait-legal-text achat-forfait-total-note paragraphe" style="color:#0b0f14">
-                                                        Le montant sera prélevé
-                                                        {% if downgrade_effective_at %}
-                                                            le <strong>{{ downgrade_effective_at|date('d/m/Y') }}</strong>.
-                                                        {% else %}
-                                                            à la fin de votre période en cours.
-                                                        {% endif %}
-                                                    </p>
-                                                </div>
-
-                                                <div class="d-flex align-items-baseline flex-nowrap gap-1">
-                                                    <strong class="h-03">
+                                                    <strong>
                                                         {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                        {{ plan_price.currency.signe }}
+                                                        {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
                                                     </strong>
-                                                    <strong class="p-accent" style="color:#858789">/{{ period == 'annual' ? 'an' : 'mois' }}</strong>
                                                 </div>
-                                            </div>
-                                        {% else %}
-                                            <div class="achat-forfait-total">
-                                                <strong>Montant total :</strong>
+                                            {% endif %}
 
-                                                <strong>
-                                                    {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                    {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
-                                                </strong>
-                                            </div>
-                                        {% endif %}
-
-                                        <button
-                                            type="button"
-                                            class="btn achat-forfait-primary-button"
-                                            id="subscribe-button"
-                                            data-options--purchase-target="subscribeButton"
-                                            data-action="options--purchase#subscribe"
-                                            {% if not default_payment_method %}disabled{% endif %}
-                                        >
-                                            {{ is_downgrade ? 'Changer de forfait' : 'S’abonner' }}
-                                        </button>
+                                            <button
+                                                type="button"
+                                                class="btn achat-forfait-primary-button"
+                                                id="subscribe-button"
+                                                data-options--purchase-target="subscribeButton"
+                                                data-action="options--purchase#subscribe"
+                                                {% if not default_payment_method %}disabled{% endif %}
+                                            >
+                                                {{ is_downgrade ? 'Changer de forfait' : 'S’abonner' }}
+                                            </button>
 
 
-                                    </aside>
+                                        </aside>
+                                    </div>
+
                                 </div>
-
                             </div>
-                        </div>
-                    </main>
+                        </main>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <div
-        class="payment-modal-overlay"
-        data-payment-method-target="modal"
-        data-action="
+        <div
+            class="payment-modal-overlay"
+            data-payment-method-target="modal"
+            data-action="
             click->payment-method#closeFromOverlay
             keydown@window->payment-method#closeFromKeyboard
         "
-        aria-hidden="true"
-    >
-        <div
-            class="payment-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="payment-modal-title"
+            aria-hidden="true"
         >
-            <button
-                type="button"
-                class="payment-modal-close"
-                data-action="payment-method#close"
-                aria-label="Fermer"
+            <div
+                class="payment-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="payment-modal-title"
             >
-                <i class="icon-x" aria-hidden="true"></i>
-            </button>
+                <button
+                    type="button"
+                    class="payment-modal-close"
+                    data-action="payment-method#close"
+                    aria-label="Fermer"
+                >
+                    <i class="icon-x" aria-hidden="true"></i>
+                </button>
 
-            <div class="payment-modal-header">
-                <h2 id="payment-modal-title" class="payment-modal-title">
-                    Indiquez les informations de votre carte
-                </h2>
-            </div>
-
-            <form
-                class="payment-modal-form formulaire"
-                data-action="submit->payment-method#submit"
-                novalidate
-            >
-                <div
-                    class="payment-form-error d-none mb-16"
-                    role="alert"
-                    data-payment-method-target="error"
-                ></div>
-
-                <div
-                    class="payment-form-success d-none mb-16"
-                    role="status"
-                    data-payment-method-target="success"
-                ></div>
-
-                <div class="payment-form-group">
-                    <label for="payment-cardholder-name" class="mb-16">
-                        Nom du titulaire
-                    </label>
-
-                    <input
-                        type="text"
-                        id="payment-cardholder-name"
-                        class="payment-form-control mb-16"
-                        placeholder="Saisissez le nom du titulaire"
-                        autocomplete="cc-name"
-                        data-payment-method-target="cardholderName"
-                        required
-                    >
+                <div class="payment-modal-header">
+                    <h3 id="payment-modal-title" class="payment-modal-title">
+                        Indiquez les informations de votre carte
+                    </h3>
                 </div>
 
-                <div class="payment-form-group">
-                    <label class="mb-16">
-                        Numéro de la carte
-                    </label>
+                <form
+                    class="payment-modal-form formulaire"
+                    data-action="submit->payment-method#submit"
+                    novalidate
+                >
+                    <div
+                        class="payment-form-error d-none mb-16"
+                        role="alert"
+                        data-payment-method-target="error"
+                    ></div>
 
                     <div
-                        class="payment-stripe-element mb-16"
-                        data-payment-method-target="cardNumber"
+                        class="payment-form-success d-none mb-16"
+                        role="status"
+                        data-payment-method-target="success"
                     ></div>
-                </div>
 
-                <div class="payment-form-row">
-                    <div class="payment-form-group payment-form-group--half">
-                        <label class="mb-16">
-                            Date d’expiration
+                    <div class="payment-form-group">
+                        <label for="payment-cardholder-name" class="mb-16 p-accent">
+                            Nom du titulaire
+                        </label>
+
+                        <input
+                            type="text"
+                            id="payment-cardholder-name"
+                            class="form-control input mb-16"
+                            placeholder="Saisissez le nom du titulaire"
+                            autocomplete="cc-name"
+                            data-payment-method-target="cardholderName"
+                            required
+                        >
+                    </div>
+
+                    <div class="payment-form-group">
+                        <label class="mb-16 p-accent">
+                            Numéro de la carte
                         </label>
 
                         <div
                             class="payment-stripe-element mb-16"
-                            data-payment-method-target="cardExpiry"
+                            data-payment-method-target="cardNumber"
                         ></div>
                     </div>
 
-                    <div class="payment-form-group payment-form-group--half">
-                        <label class="mb-16">
-                            Code de sécurité
+                    <div class="payment-form-row">
+                        <div class="payment-form-group payment-form-group--half">
+                            <label class="mb-16 p-accent">
+                                Date d’expiration
+                            </label>
+
+                            <div
+                                class="payment-stripe-element mb-16"
+                                data-payment-method-target="cardExpiry"
+                            ></div>
+                        </div>
+
+                        <div class="payment-form-group payment-form-group--half">
+                            <label class="mb-16 p-accent">
+                                Code de sécurité
+                            </label>
+
+                            <div
+                                class="payment-stripe-element mb-16"
+                                data-payment-method-target="cardCvc"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="payment-form-group">
+                        <label for="payment-country " class="mb-16 p-accent">
+                            Pays
                         </label>
 
-                        <div
-                            class="payment-stripe-element mb-16"
-                            data-payment-method-target="cardCvc"
-                        ></div>
+                        <select
+                            id="payment-country"
+                            class="payment-form-control mb-16"
+                            autocomplete="country"
+                            data-payment-method-target="country"
+                            required
+                        >
+                            <option value="FR" selected>France</option>
+                            <option value="BE">Belgique</option>
+                            <option value="CH">Suisse</option>
+                            <option value="LU">Luxembourg</option>
+                            <option value="MC">Monaco</option>
+                            <option value="DE">Allemagne</option>
+                            <option value="ES">Espagne</option>
+                            <option value="IT">Italie</option>
+                            <option value="PT">Portugal</option>
+                            <option value="NL">Pays-Bas</option>
+                            <option value="GB">Royaume-Uni</option>
+                        </select>
                     </div>
-                </div>
 
-                <div class="payment-form-group">
-                    <label for="payment-country" class="mb-16">
-                        Pays
+                    <label class="payment-checkbox">
+                        <input
+                            type="checkbox"
+                            name="defaultPayment"
+                            value="1"
+                            class="mr-12"
+                            data-payment-method-target="defaultCheckbox"
+                        >
+
+                        <span></span>
+                        Définir comme moyen de paiement par défaut
                     </label>
 
-                    <select
-                        id="payment-country"
-                        class="payment-form-control mb-16"
-                        autocomplete="country"
-                        data-payment-method-target="country"
-                        required
-                    >
-                        <option value="FR" selected>France</option>
-                        <option value="BE">Belgique</option>
-                        <option value="CH">Suisse</option>
-                        <option value="LU">Luxembourg</option>
-                        <option value="MC">Monaco</option>
-                        <option value="DE">Allemagne</option>
-                        <option value="ES">Espagne</option>
-                        <option value="IT">Italie</option>
-                        <option value="PT">Portugal</option>
-                        <option value="NL">Pays-Bas</option>
-                        <option value="GB">Royaume-Uni</option>
-                    </select>
-                </div>
+                    <div class="payment-modal-actions">
+                        <button
+                            type="button"
+                            class="payment-btn-cancel"
+                            data-action="payment-method#close"
+                        >
+                            Annuler
+                        </button>
 
-                <label class="payment-checkbox">
-                    <input
-                        type="checkbox"
-                        name="defaultPayment"
-                        value="1"
-                        class="mr-12"
-                        data-payment-method-target="defaultCheckbox"
-                    >
-
-                    <span></span>
-                    Définir comme moyen de paiement par défaut
-                </label>
-
-                <div class="payment-modal-actions">
-                    <button
-                        type="button"
-                        class="payment-btn-cancel"
-                        data-action="payment-method#close"
-                    >
-                        Annuler
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="payment-btn-submit"
-                        data-payment-method-target="submitButton"
-                        disabled
-                    >
-                        Ajouter
-                    </button>
-                </div>
-            </form>
+                        <button
+                            type="submit"
+                            class="payment-btn-submit"
+                            data-payment-method-target="submitButton"
+                            disabled
+                        >
+                            Ajouter
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+
     </div>
 
-</div>
+    <style>
+        .payment-form-row {
+            display: flex;
+            gap: 16px;
+        }
 
-<style>
-.payment-form-row {
-    display: flex;
-    gap: 16px;
-}
+        .payment-form-group--half {
+            flex: 1;
+            min-width: 0;
+        }
 
-.payment-form-group--half {
-    flex: 1;
-    min-width: 0;
-}
-
-.payment-stripe-element {
-    border: 1px solid #D5D9E2;
-    border-radius: 10px;
-    padding: 12px 14px;
+        .payment-stripe-element {
+    font-size: 14px;
+    border: 2px solid #ebecec;
+    line-height: 20px;
     background: #fff;
-}
+    border-radius: 12px;
+    font-weight: 500;
+            padding: 12px 14px;
 
-.payment-stripe-element.StripeElement--focus {
-    border-color: #FF8A1E;
-}
+        }
 
-.payment-stripe-element.StripeElement--invalid {
-    border-color: #DC3545;
-}
-</style>
-<script src="https://js.stripe.com/v3/"></script>
+        .payment-stripe-element.StripeElement--focus {
+            border-color: #5d00ff;
+        }
+
+        .payment-stripe-element.StripeElement--invalid {
+            border-color: #dc3545;
+        }
+    </style>
+    <script src="https://js.stripe.com/v3/"></script>
 
 {% endblock %}

@@ -368,9 +368,9 @@
     
     background: #fff;
     
-    border-radius: 32px;
+    border-radius: 24px;
     
-    padding: 32px;
+    padding: 24px;
     
     position: relative;}
 .payment-modal-close {position: absolute;
@@ -398,11 +398,14 @@
     font-size: 18px;}
 .payment-modal-header {display: flex;
     
-    align-items: flex-start;
-    
+    align-items: center;
+
+    justify-content: center;
+
     gap: 18px;
-    
-    margin-bottom: 32px;}
+    max-width: 256px;
+
+    margin: 0 auto 32px;}
 .payment-modal-icon {width: 64px;
     
     height: 64px;
@@ -421,14 +424,7 @@
 .payment-modal-title {color: #000;
     
     text-align: center;
-    
-    font-size: 20px;
-    
-    font-style: normal;
-    
-    font-weight: 700;
-    
-    line-height: 24px;}
+    }
 .payment-modal-subtitle {margin-top: 10px;
     
     margin-bottom: 0;
