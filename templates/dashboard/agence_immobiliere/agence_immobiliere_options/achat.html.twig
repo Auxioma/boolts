@@ -134,23 +134,36 @@
                                         {% endif %}
 
                                         <section class="achat-forfait-section">
-                                            <h2 class="achat-forfait-section-title">
+                                            <h3 class="achat-forfait-section-title">
                                                 {{ is_downgrade ? 'Moyen de paiement' : 'Carte bancaire par défaut' }}
-                                            </h2>
+                                            </h3>
 
                                             {% if default_payment_method %}
+                                                {% set card_brand = default_payment_method.brand|default('')|lower %}
+                                                {% set card_logo = card_brand in ['visa', 'mastercard']
+                                                    ? 'images/paiement_card/' ~ card_brand ~ '.svg'
+                                                    : null
+                                                %}
+
                                                 <div class="achat-forfait-current-card">
                                                     <div class="achat-forfait-visa-box">
-                                                        <img
-                                                            src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
-                                                            alt="{{ default_payment_method.brand|default('Carte bancaire')|capitalize }}"
-                                                            class="achat-forfait-visa-logo"
-                                                        >
+                                                        {% if card_logo %}
+                                                            <img
+                                                                src="{{ asset(card_logo) }}"
+                                                                alt="{{ default_payment_method.brand|capitalize }}"
+                                                                class="achat-forfait-visa-logo"
+                                                            >
+                                                        {% else %}
+                                                            <span
+                                                                class="icon-credit-card"
+                                                                aria-hidden="true"
+                                                            ></span>
+                                                        {% endif %}
                                                     </div>
 
                                                     <div class="achat-forfait-bank-card-content">
                                                         <p
-                                                            class="achat-forfait-bank-card-name"
+                                                            class="achat-forfait-bank-card-name p-accent"
                                                             id="selected-card-name"
                                                             data-options--purchase-target="selectedCardName"
                                                         >
@@ -159,7 +172,7 @@
                                                         </p>
 
                                                         <p
-                                                            class="achat-forfait-bank-card-expiration"
+                                                            class="achat-forfait-bank-card-expiration paragraphe"
                                                             id="selected-card-expiration"
                                                             data-options--purchase-target="selectedCardExpiration"
                                                         >
