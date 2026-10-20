@@ -3,9 +3,12 @@ import { Controller } from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = [
         'paymentBlock',
+        'defaultCardBlock',
         'paymentOption',
         'paymentMethod',
         'showPaymentMethodsButton',
+        'selectedCardLogo',
+        'selectedCardIcon',
         'selectedCardName',
         'selectedCardExpiration',
         'subscribeButton',
@@ -39,8 +42,21 @@ export default class extends Controller {
             return;
         }
 
+        this.paymentMethodTargets.forEach((method) => {
+            const isCurrent = method.value === String(this.selectedPaymentMethodId);
+
+            method.checked = isCurrent;
+            method
+                .closest('.achat-forfait-payment-option')
+                ?.classList.toggle('achat-forfait-payment-option-selected', isCurrent);
+        });
+
         this.paymentBlockTarget.classList.remove('d-none');
         this.paymentBlockTarget.setAttribute('aria-hidden', 'false');
+
+        if (this.hasDefaultCardBlockTarget) {
+            this.defaultCardBlockTarget.classList.add('d-none');
+        }
         this.showPaymentMethodsButtonTarget.setAttribute(
             'aria-expanded',
             'true'
@@ -59,6 +75,10 @@ export default class extends Controller {
 
         this.paymentBlockTarget.classList.add('d-none');
         this.paymentBlockTarget.setAttribute('aria-hidden', 'true');
+
+        if (this.hasDefaultCardBlockTarget) {
+            this.defaultCardBlockTarget.classList.remove('d-none');
+        }
 
         if (this.hasShowPaymentMethodsButtonTarget) {
             this.showPaymentMethodsButtonTarget.setAttribute(
@@ -103,6 +123,19 @@ export default class extends Controller {
         if (this.hasSelectedCardExpirationTarget) {
             this.selectedCardExpirationTarget.textContent =
                 selectedMethod.dataset.cardExpiration || '';
+        }
+
+        if (this.hasSelectedCardLogoTarget) {
+            const logo = selectedMethod.dataset.cardLogo || '';
+
+            this.selectedCardLogoTarget.src = logo;
+            this.selectedCardLogoTarget.alt =
+                selectedMethod.dataset.cardBrand || '';
+            this.selectedCardLogoTarget.classList.toggle('d-none', !logo);
+
+            if (this.hasSelectedCardIconTarget) {
+                this.selectedCardIconTarget.classList.toggle('d-none', !!logo);
+            }
         }
 
         this.selectedPaymentMethodId = selectedMethod.value;

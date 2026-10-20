@@ -252,8 +252,7 @@
 .achat-forfait-main {flex: 1 1 auto;
     
     min-width: 0;
-    
-    padding: 48px 0;
+
     
     background: #fff;}
 .achat-forfait-container {width: 100%;
@@ -358,7 +357,7 @@
     
     border: 1px solid #f2f1f1;
     
-    border-radius: 6px;}
+    border-radius: 14px;}
 .achat-forfait-visa-logo {display: block;
     
     width: 49px;
@@ -511,12 +510,7 @@
     color: #858789;
     
     font-family: "Eudoxus Sans",Arial,sans-serif;
-    
-    font-size: 14px;
-    
-    font-weight: 500;
-    
-    line-height: 20px;}
+    }
 .achat-forfait-legal-text a {color: inherit;
     
     text-decoration: underline;
@@ -596,7 +590,8 @@
     gap: 24px;
     
     margin-bottom: 24px;}
-.achat-forfait-plan-compare-card {display: flex;
+.achat-forfait-plan-compare-card {
+    display: flex;
     
     flex: 1 1 0;
     
@@ -604,7 +599,7 @@
     
     flex-direction: column;
     
-    gap: 24px;
+    gap: 16px;
     
     padding: 24px;
     
@@ -684,8 +679,11 @@
     
     flex-direction: column;}
 .achat-forfait-total-note {margin-top: 6px;}
-@media (max-width: 575.98px) {.achat-forfait-plan-compare {flex-direction: column;}
-    .achat-forfait-plan-compare-arrow {transform: rotate(90deg);}}
+@media (max-width: 575.98px) {.achat-forfait-plan-compare {display: inline-block;}
+    .achat-forfait-plan-compare-card {width: 100%;}
+    .achat-forfait-plan-compare-arrow {
+
+        transform: rotate(90deg);}}
 
 
 

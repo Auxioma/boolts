@@ -179,11 +179,6 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             $defaultPaymentMethod ??= $paymentMethods[0] ?? null;
         }
 
-        $otherPaymentMethods = array_values(array_filter(
-            $paymentMethods,
-            static fn (AgencyPaymentMethod $paymentMethod): bool => $paymentMethod !== $defaultPaymentMethod
-        ));
-
         $currentSubscription = $agency instanceof User
             ? $agencySubscriptionRepository->findOneActivePaidForAgency($agency)
             : null;
@@ -202,7 +197,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'plan_price' => $planPrice,
                 'period' => $period,
                 'default_payment_method' => $defaultPaymentMethod,
-                'other_payment_methods' => $otherPaymentMethods,
+                'payment_methods' => $paymentMethods,
                 'stripe_public_key' => $stripePublicKey,
                 'is_downgrade' => $isDowngrade,
                 'current_plan' => $currentPlanPrice?->getPlan(),
