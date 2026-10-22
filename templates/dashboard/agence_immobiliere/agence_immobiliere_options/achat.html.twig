@@ -205,7 +205,7 @@
                                                             </p>
                                                         </div>
 
-                                                        {% if payment_methods|length > 1 %}
+                                                        {% if payment_methods|length >= 1 %}
                                                             <button
                                                                 class="achat-forfait-edit-button"
                                                                 type="button"
@@ -233,7 +233,7 @@
                                                 {% endif %}
                                             </section>
 
-                                            {% if payment_methods|length > 1 %}
+                                            {% if payment_methods|length >= 1 %}
                                                 <section
                                                     class="achat-forfait-section d-none"
                                                     id="payment-methods-block"
