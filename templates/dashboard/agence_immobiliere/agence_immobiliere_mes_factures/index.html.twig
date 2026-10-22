@@ -18,12 +18,12 @@
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
                 {# Contenu principal #}
-                <div class="col-md-10 col-12 dashboard-main">
-                    <div class="dashboard-content">
-                        <section class="invoices-page">
-                            <h1 class="invoices-page__title">Mes factures</h1>
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+                    <div class="col-12 col-md-10 mx-auto">
+                        <section>
+                            <h2 class="mb-32">Mes factures</h2>
 
-                            <form class="invoices-search" method="get" role="search">
+                            <form class="invoices-search mb-32" method="get" role="search">
                                 <input
                                     type="search"
                                     name="q"
@@ -43,19 +43,18 @@
                                         {% set issued_at = invoice.issuedAt ?? invoice.createdAt %}
                                         <div class="invoice-row">
                                             <div class="invoice-row__info">
-                                                <p class="invoice-row__reference">{{ invoice.number }}</p>
+                                                <p class="invoice-row__reference__invoice p-accent">{{ invoice.number }}</p>
 
-                                                <p class="invoice-row__date">
+                                                <p class="invoice-row__date paragraphe">
                                                     Créé le {{ issued_at|format_datetime('long', 'none', locale: 'fr') }}
-                                                    · {{ (invoice.totalMinor / 100)|number_format(2, ',', ' ') }}
-                                                    {{ invoice.currency.signe|default('€') }}
+                                                    
                                                 </p>
                                             </div>
 
                                             <div class="invoice-row__actions">
                                                 <a
                                                     href="{{ path('agence_immobiliere_facture_show', {id: invoice.id}) }}"
-                                                    class="invoice-action"
+                                                    class="invoice-action p-accent"
                                                     target="_blank"
                                                     rel="noopener"
                                                 >
@@ -65,9 +64,9 @@
 
                                                 <a
                                                     href="{{ path('agence_immobiliere_facture_download', {id: invoice.id}) }}"
-                                                    class="invoice-action"
+                                                    class="invoice-action p-accent"
                                                 >
-                                                    <i class="icon-download" aria-hidden="true"></i>
+                                                    <i class="icon-arrow-down-to-line" aria-hidden="true"></i>
                                                     Télécharger
                                                 </a>
                                             </div>

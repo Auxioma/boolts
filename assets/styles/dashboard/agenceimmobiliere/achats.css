@@ -699,3 +699,10 @@
         top: 0px;
         position: initial;
     }
+
+.btn:disabled {
+    background-color: #ebecec!important;
+    border-color: transparent!important;
+    opacity: 1!important;
+    color: #9d9fa1!important;
+}
