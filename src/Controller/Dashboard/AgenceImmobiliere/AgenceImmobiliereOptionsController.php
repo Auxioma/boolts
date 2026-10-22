@@ -254,6 +254,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'boost_pack' => $boostPrice->getBoosterPack(),
                 'boost_price' => $boostPrice,
                 'default_payment_method' => $defaultPaymentMethod,
+                'payment_methods' => $paymentMethods,
                 'other_payment_methods' => $otherPaymentMethods,
                 'stripe_public_key' => $stripePublicKey,
             ]

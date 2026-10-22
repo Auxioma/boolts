@@ -13,9 +13,12 @@ import { Controller } from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = [
         'paymentBlock',
+        'defaultCardBlock',
         'paymentOption',
         'paymentMethod',
         'showPaymentMethodsButton',
+        'selectedCardLogo',
+        'selectedCardIcon',
         'selectedCardName',
         'selectedCardExpiration',
         'selectedCardSummary',
@@ -49,8 +52,21 @@ export default class extends Controller {
             return;
         }
 
+        this.paymentMethodTargets.forEach((method) => {
+            const isCurrent = method.value === String(this.selectedPaymentMethodId);
+
+            method.checked = isCurrent;
+            method
+                .closest('.achat-forfait-payment-option')
+                ?.classList.toggle('achat-forfait-payment-option-selected', isCurrent);
+        });
+
         this.paymentBlockTarget.classList.remove('d-none');
         this.paymentBlockTarget.setAttribute('aria-hidden', 'false');
+
+        if (this.hasDefaultCardBlockTarget) {
+            this.defaultCardBlockTarget.classList.add('d-none');
+        }
 
         if (this.hasShowPaymentMethodsButtonTarget) {
             this.showPaymentMethodsButtonTarget.setAttribute(
@@ -73,6 +89,10 @@ export default class extends Controller {
         this.paymentBlockTarget.classList.add('d-none');
         this.paymentBlockTarget.setAttribute('aria-hidden', 'true');
 
+        if (this.hasDefaultCardBlockTarget) {
+            this.defaultCardBlockTarget.classList.remove('d-none');
+        }
+
         if (this.hasShowPaymentMethodsButtonTarget) {
             this.showPaymentMethodsButtonTarget.setAttribute(
                 'aria-expanded',
@@ -82,7 +102,13 @@ export default class extends Controller {
     }
 
     selectPaymentMethod(event) {
-        this.applyPaymentMethod(event.currentTarget);
+        this.paymentOptionTargets.forEach((option) => {
+            option.classList.remove('achat-forfait-payment-option-selected');
+        });
+
+        event.currentTarget
+            .closest('.achat-forfait-payment-option')
+            ?.classList.add('achat-forfait-payment-option-selected');
     }
 
     confirmPaymentMethod() {
@@ -120,6 +146,18 @@ export default class extends Controller {
         if (this.hasSelectedCardExpirationTarget) {
             this.selectedCardExpirationTarget.textContent =
                 radio.dataset.cardExpiration || '';
+        }
+
+        if (this.hasSelectedCardLogoTarget) {
+            const logo = radio.dataset.cardLogo || '';
+
+            this.selectedCardLogoTarget.src = logo;
+            this.selectedCardLogoTarget.alt = radio.dataset.cardBrand || '';
+            this.selectedCardLogoTarget.classList.toggle('d-none', !logo);
+
+            if (this.hasSelectedCardIconTarget) {
+                this.selectedCardIconTarget.classList.toggle('d-none', !!logo);
+            }
         }
 
         if (this.hasSelectedCardSummaryTarget) {

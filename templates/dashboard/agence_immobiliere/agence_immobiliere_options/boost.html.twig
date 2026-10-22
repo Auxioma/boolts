@@ -1,5 +1,5 @@
 {#
- Template: templates/dashboard/agence_immobiliere/agence_immobiliere_options/achat.html.twig
+ Template: templates/dashboard/agence_immobiliere/agence_immobiliere_options/boost.html.twig
  Role: Renders the dashboard/agence_immobiliere/agence_immobiliere_options Twig view.
  Context: Provided by the rendering controller, parent template, or including template.
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
@@ -11,428 +11,458 @@
 
 {% block body %}
 
-<div
-    data-controller="payment-method options--boost-purchase"
-    data-payment-method-public-key-value="{{ stripe_public_key }}"
-    data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
-    data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
-    data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
-    data-options--boost-purchase-payment-url-value="{{ path('agence_immobiliere_boost_payment', {id: boost_price.id}) }}"
-    data-options--boost-purchase-payment-csrf-value="{{ csrf_token('agency_boost_purchase') }}"
-    data-options--boost-purchase-redirect-url-value="{{ path('agence_immobiliere_options') }}"
-    data-options--boost-purchase-default-payment-method-id-value="{{ default_payment_method ? default_payment_method.id : '' }}"
->
-    <main id="dashboard" class="dashboard">
-        <div class="container-fluid">
-            <div class="row">
+    <div
+        data-controller="payment-method options--boost-purchase"
+        data-payment-method-public-key-value="{{ stripe_public_key }}"
+        data-payment-method-create-url-value="{{ path('api_agency_billing_setup_intent') }}"
+        data-payment-method-complete-url-value="{{ path('api_agency_billing_payment_method_complete') }}"
+        data-payment-method-csrf-value="{{ csrf_token('agency_payment_method') }}"
+        data-options--boost-purchase-payment-url-value="{{ path('agence_immobiliere_boost_payment', {id: boost_price.id}) }}"
+        data-options--boost-purchase-payment-csrf-value="{{ csrf_token('agency_boost_purchase') }}"
+        data-options--boost-purchase-redirect-url-value="{{ path('agence_immobiliere_options') }}"
+        data-options--boost-purchase-default-payment-method-id-value="{{ default_payment_method ? default_payment_method.id : '' }}"
+    >
+        <main id="dashboard" class="dashboard">
+            <div class="container-fluid">
+                <div class="row">
 
-                {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+                    {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
-                <div class="col-10">
-                    <main class="achat-forfait-main">
-                        <div class="container-fluid achat-forfait-container">
-                            <div class="row achat-forfait-row">
+                    <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+                        <main class="achat-forfait-main">
+                            <div class="col-12 col-md-10 mx-auto">
+                                <div class="row achat-forfait-row">
 
-                                <div class="col-12 col-xl-6">
-                                    <section class="achat-forfait-card achat-forfait-purchase-card">
+                                    <h2 class="achat-forfait-main-title mb-24">
+                                        Récapitulatif de votre achat
+                                    </h2>
+                                    <div class="col-12 col-xl-6 mt-0">
 
-                                        <h1 class="achat-forfait-main-title">
-                                            Récapitulatif de votre achat
-                                        </h1>
 
-                                        <section class="achat-forfait-section">
-                                            <h2 class="achat-forfait-section-title">
-                                                Article
-                                            </h2>
+                                        <section class="achat-forfait-card achat-forfait-purchase-card">
 
-                                            <div class="achat-forfait-product-description">
-                                                <p class="achat-forfait-product-name">
-                                                    1 x Pack boost {{ boost_pack.name }}
-                                                </p>
-                                            </div>
-                                        </section>
+                                            <section class="achat-forfait-section">
+                                                <h3 class="achat-forfait-section-title">
+                                                    Article
+                                                </h3>
 
-                                        <section class="achat-forfait-section">
-                                            <h2 class="achat-forfait-section-title">
-                                                Carte bancaire par défaut
-                                            </h2>
-
-                                            {% if default_payment_method %}
-                                                <div class="achat-forfait-current-card">
-                                                    <div class="achat-forfait-visa-box">
-                                                        <img
-                                                            src="https://www.figma.com/api/mcp/asset/ce43295d-91cd-4b8b-8856-526b341b5a04"
-                                                            alt="{{ default_payment_method.brand|default('Carte bancaire')|capitalize }}"
-                                                            class="achat-forfait-visa-logo"
-                                                        >
-                                                    </div>
-
-                                                    <div class="achat-forfait-bank-card-content">
-                                                        <p
-                                                            class="achat-forfait-bank-card-name"
-                                                            id="selected-card-name"
-                                                            data-options--boost-purchase-target="selectedCardName"
-                                                        >
-                                                            {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
-                                                            {{ default_payment_method.last4 }}
-                                                        </p>
-
-                                                        <p
-                                                            class="achat-forfait-bank-card-expiration"
-                                                            id="selected-card-expiration"
-                                                            data-options--boost-purchase-target="selectedCardExpiration"
-                                                        >
-                                                            Date d’expiration :
-                                                            {{ '%02d'|format(default_payment_method.expMonth) }}/{{ default_payment_method.expYear }}
-                                                        </p>
-                                                    </div>
-
-                                                    {% if other_payment_methods is not empty %}
-                                                        <button
-                                                            class="achat-forfait-edit-button"
-                                                            type="button"
-                                                            id="show-payment-methods"
-                                                            aria-controls="payment-methods-block"
-                                                            aria-expanded="false"
-                                                            data-options--boost-purchase-target="showPaymentMethodsButton"
-                                                            data-action="options--boost-purchase#showPaymentMethods"
-                                                        >
-                                                            Modifier
-                                                        </button>
-                                                    {% endif %}
-                                                </div>
-                                            {% else %}
-                                                <div class="d-flex mt-32 mb-32">
-                                                    <button
-                                                        type="button"
-                                                        class="btn-add-payment py-10 px-16 payment-open-btn"
-                                                        data-action="payment-method#open"
-                                                    >
-                                                        <span class="icon-plus mr-6"></span>
-                                                        Ajouter un mode de paiement
-                                                    </button>
-                                                </div>
-                                            {% endif %}
-                                        </section>
-
-                                        {% if other_payment_methods is not empty %}
-                                            <section
-                                                class="achat-forfait-section d-none"
-                                                id="payment-methods-block"
-                                                aria-hidden="true"
-                                                data-options--boost-purchase-target="paymentBlock"
-                                            >
-                                                <h2 class="achat-forfait-section-title">
-                                                    Choisissez une autre carte bancaire
-                                                </h2>
-
-                                                <div class="achat-forfait-payment-list">
-                                                    {% for payment_method in other_payment_methods %}
-                                                        <label
-                                                            class="achat-forfait-payment-option"
-                                                            data-options--boost-purchase-target="paymentOption"
-                                                        >
-                                                            <input
-                                                                type="radio"
-                                                                name="payment-method"
-                                                                value="{{ payment_method.id }}"
-                                                                class="visually-hidden"
-                                                                data-card-name="{{ payment_method.brand|default('Carte bancaire')|capitalize }} {{ payment_method.last4 }}"
-                                                                data-card-expiration="Date d’expiration : {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}"
-                                                                data-options--boost-purchase-target="paymentMethod"
-                                                                data-action="change->options--boost-purchase#selectPaymentMethod"
-                                                            >
-
-                                                            <span class="achat-forfait-bank-card-content">
-                                                                <span class="achat-forfait-bank-card-name">
-                                                                    {{ payment_method.brand|default('Carte bancaire')|capitalize }}
-                                                                    {{ payment_method.last4 }}
-                                                                </span>
-
-                                                                <span class="achat-forfait-bank-card-expiration">
-                                                                    Date d’expiration :
-                                                                    {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}
-                                                                </span>
-                                                            </span>
-                                                        </label>
-                                                    {% endfor %}
-                                                </div>
-
-                                                <div class="achat-forfait-payment-actions">
-                                                    <button
-                                                        type="button"
-                                                        class="btn achat-forfait-primary-button"
-                                                        id="confirm-payment-method"
-                                                        data-action="options--boost-purchase#confirmPaymentMethod"
-                                                    >
-                                                        Utiliser cette méthode de paiement
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        class="btn achat-forfait-outline-button"
-                                                        id="cancel-payment-method"
-                                                        data-action="options--boost-purchase#hidePaymentMethods"
-                                                    >
-                                                        Annuler
-                                                    </button>
-
-                                                    <button
-                                                        type="button"
-                                                        class="btn achat-forfait-outline-button"
-                                                        data-action="payment-method#open"
-                                                    >
-                                                        <i class="bi bi-plus-lg" aria-hidden="true"></i>
-                                                        <span>Ajouter un mode de paiement</span>
-                                                    </button>
+                                                <div class="achat-forfait-product-description">
+                                                    <p class="achat-forfait-product-name">
+                                                        1 x Pack boost {{ boost_pack.name }}
+                                                    </p>
                                                 </div>
                                             </section>
-                                        {% endif %}
 
-                                    </section>
-                                </div>
+                                            <section
+                                                class="achat-forfait-section"
+                                                data-options--boost-purchase-target="defaultCardBlock"
+                                            >
+                                                <h3 class="achat-forfait-section-title">
+                                                    Moyen de paiement
+                                                </h3>
 
-                                <div class="col-12 col-xl-6">
-                                    <aside class="achat-forfait-card achat-forfait-summary-card">
-                                        <div class="achat-forfait-total">
-                                            <strong>Montant total :</strong>
+                                                {% set card_logo_files = {
+                                                    visa: 'visa',
+                                                    mastercard: 'mastercard',
+                                                    amex: 'amex',
+                                                    american_express: 'amex',
+                                                    discover: 'discover',
+                                                    diners: 'diners',
+                                                    diners_club: 'diners',
+                                                    jcb: 'jcb',
+                                                    unionpay: 'unionpay',
+                                                } %}
 
-                                            <strong>
-                                                {{ (boost_price.amountMinor / 100)|number_format(2, ',', ' ') }}
-                                                {{ boost_price.currency.signe }}
-                                            </strong>
-                                        </div>
+                                                {% if default_payment_method %}
+                                                    {% set card_brand = default_payment_method.brand|default('')|lower %}
+                                                    {% set card_logo_file = card_logo_files[card_brand]|default(null) %}
+                                                    {% set card_logo = card_logo_file
+                                                    ? 'images/paiement_card/' ~ card_logo_file ~ '.svg'
+                                                    : null
+                                                %}
 
-                                        <button
-                                            type="button"
-                                            class="btn achat-forfait-primary-button"
-                                            id="boost-payment-button"
-                                            data-options--boost-purchase-target="purchaseButton"
-                                            data-action="options--boost-purchase#purchase"
-                                            {% if not default_payment_method %}disabled{% endif %}
-                                        >
-                                            Acheter le pack boost
-                                        </button>
+                                                    <div class="achat-forfait-current-card">
+                                                        <div class="achat-forfait-visa-box">
+                                                            <img
+                                                                src="{{ card_logo ? asset(card_logo) : '' }}"
+                                                                alt="{{ default_payment_method.brand|capitalize }}"
+                                                                class="achat-forfait-visa-logo{{ card_logo ? '' : ' d-none' }}"
+                                                                data-options--boost-purchase-target="selectedCardLogo"
+                                                            >
+                                                            <span
+                                                                class="icon-credit-card{{ card_logo ? ' d-none' : '' }}"
+                                                                aria-hidden="true"
+                                                                data-options--boost-purchase-target="selectedCardIcon"
+                                                            ></span>
+                                                        </div>
 
-                                        <p
-                                            id="boost-payment-card"
-                                            class="mt-16 mb-0"
-                                            aria-live="polite"
-                                            data-options--boost-purchase-target="selectedCardSummary"
-                                        >
-                                            {% if default_payment_method %}
-                                                Carte débitée :
-                                                {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
-                                                •••• {{ default_payment_method.last4 }}
-                                            {% else %}
-                                                Aucune carte bancaire sélectionnée.
+                                                        <div class="achat-forfait-bank-card-content">
+                                                            <p
+                                                                class="achat-forfait-bank-card-name p-accent"
+                                                                id="selected-card-name"
+                                                                data-options--boost-purchase-target="selectedCardName"
+                                                            >
+                                                                {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                                {{ default_payment_method.last4 }}
+                                                            </p>
+
+                                                            <p
+                                                                class="achat-forfait-bank-card-expiration paragraphe"
+                                                                id="selected-card-expiration"
+                                                                data-options--boost-purchase-target="selectedCardExpiration"
+                                                            >
+                                                                Date d’expiration :
+                                                                {{ '%02d'|format(default_payment_method.expMonth) }}/{{ default_payment_method.expYear }}
+                                                            </p>
+                                                        </div>
+
+                                                        {% if payment_methods|length >= 1 %}
+                                                            <button
+                                                                class="achat-forfait-edit-button"
+                                                                type="button"
+                                                                id="show-payment-methods"
+                                                                aria-controls="payment-methods-block"
+                                                                aria-expanded="false"
+                                                                data-options--boost-purchase-target="showPaymentMethodsButton"
+                                                                data-action="options--boost-purchase#showPaymentMethods"
+                                                            >
+                                                                Modifier
+                                                            </button>
+                                                        {% endif %}
+                                                    </div>
+                                                {% else %}
+                                                    <div class="d-flex mt-32 mb-32">
+                                                        <button
+                                                            type="button"
+                                                            class="btn-full-blue payment-open-btn"
+                                                            data-action="payment-method#open"
+                                                        >
+                                                            <span class="icon-plus mr-6"></span>
+                                                            Ajouter un mode de paiement
+                                                        </button>
+                                                    </div>
+                                                {% endif %}
+                                            </section>
+
+                                            {% if payment_methods|length >= 1 %}
+                                                <section
+                                                    class="achat-forfait-section d-none"
+                                                    id="payment-methods-block"
+                                                    aria-hidden="true"
+                                                    data-options--boost-purchase-target="paymentBlock"
+                                                >
+                                                    <h3 class="achat-forfait-section-title">
+                                                        Moyen de paiement
+                                                    </h3>
+
+                                                    <div class="achat-forfait-payment-list">
+                                                        {% for payment_method in payment_methods %}
+                                                            {% set is_current = payment_method.id == default_payment_method.id %}
+                                                            {% set option_brand = payment_method.brand|default('')|lower %}
+                                                            {% set option_logo_file = card_logo_files[option_brand]|default(null) %}
+                                                            {% set option_logo = option_logo_file
+                                                            ? asset('images/paiement_card/' ~ option_logo_file ~ '.svg')
+                                                            : ''
+                                                        %}
+
+                                                            <label
+                                                                class="achat-forfait-payment-option{{ is_current ? ' achat-forfait-payment-option-selected' : '' }}"
+                                                                data-options--boost-purchase-target="paymentOption"
+                                                            >
+                                                                <input
+                                                                    type="radio"
+                                                                    name="payment-method"
+                                                                    value="{{ payment_method.id }}"
+                                                                    class="visually-hidden"
+                                                                    {% if is_current %}checked{% endif %}
+                                                                    data-card-name="{{ payment_method.brand|default('Carte bancaire')|capitalize }} {{ payment_method.last4 }}"
+                                                                    data-card-expiration="Date d’expiration : {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}"
+                                                                    data-card-brand="{{ payment_method.brand|default('Carte bancaire')|capitalize }}"
+                                                                    data-card-logo="{{ option_logo }}"
+                                                                    data-options--boost-purchase-target="paymentMethod"
+                                                                    data-action="change->options--boost-purchase#selectPaymentMethod"
+                                                                >
+
+                                                                <span class="achat-forfait-visa-box">
+                                                                    {% if option_logo %}
+                                                                        <img
+                                                                            src="{{ option_logo }}"
+                                                                            alt="{{ payment_method.brand|capitalize }}"
+                                                                            class="achat-forfait-visa-logo"
+                                                                        >
+                                                                    {% else %}
+                                                                        <span
+                                                                            class="icon-credit-card"
+                                                                            aria-hidden="true"
+                                                                        ></span>
+                                                                    {% endif %}
+                                                                </span>
+
+                                                                <span class="achat-forfait-bank-card-content">
+                                                                    <span class="achat-forfait-bank-card-name p-accent">
+                                                                        {{ payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                                        {{ payment_method.last4 }}
+                                                                    </span>
+
+                                                                    <span class="achat-forfait-bank-card-expiration paragraphe">
+                                                                        Date d’expiration :
+                                                                        {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}
+                                                                    </span>
+                                                                </span>
+                                                            </label>
+                                                        {% endfor %}
+                                                    </div>
+
+                                                    <div class="achat-forfait-payment-actions">
+                                                        <button
+                                                            type="button"
+                                                            class="btn-full-blue"
+                                                            id="confirm-payment-method"
+                                                            data-action="options--boost-purchase#confirmPaymentMethod"
+                                                        >
+                                                            Utiliser cette méthode de paiement
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            class="btn-full-white"
+                                                            data-action="payment-method#open"
+                                                        >
+                                                            <i class="icon-plus me-1" aria-hidden="true"></i>
+                                                            <span>Ajouter un mode de paiement</span>
+                                                        </button>
+                                                    </div>
+                                                </section>
                                             {% endif %}
-                                        </p>
 
-                                        <p
-                                            id="boost-payment-message"
-                                            class="mt-16 mb-0"
-                                            role="status"
-                                            data-options--boost-purchase-target="purchaseMessage"
-                                        ></p>
-                                    </aside>
+                                        </section>
+                                    </div>
+
+                                    <div class="col-12 col-xl-6 mt-3 mt-xl-0">
+                                        <aside class="achat-forfait-card achat-forfait-summary-card">
+                                            <div class="achat-forfait-total">
+                                                <strong>Montant total :</strong>
+
+                                                <strong>
+                                                    {{ (boost_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                    {{ boost_price.currency.signe }}
+                                                </strong>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                class="btn achat-forfait-primary-button"
+                                                id="boost-payment-button"
+                                                data-options--boost-purchase-target="purchaseButton"
+                                                data-action="options--boost-purchase#purchase"
+                                                {% if not default_payment_method %}disabled{% endif %}
+                                            >
+                                                Acheter le pack boost
+                                            </button>
+
+
+                                        </aside>
+                                    </div>
+
                                 </div>
-
                             </div>
-                        </div>
-                    </main>
+                        </main>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <div
-        class="payment-modal-overlay"
-        data-payment-method-target="modal"
-        data-action="
+        <div
+            class="payment-modal-overlay"
+            data-payment-method-target="modal"
+            data-action="
             click->payment-method#closeFromOverlay
             keydown@window->payment-method#closeFromKeyboard
         "
-        aria-hidden="true"
-    >
-        <div
-            class="payment-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="payment-modal-title"
+            aria-hidden="true"
         >
-            <button
-                type="button"
-                class="payment-modal-close"
-                data-action="payment-method#close"
-                aria-label="Fermer"
+            <div
+                class="payment-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="payment-modal-title"
             >
-                <i class="icon-x" aria-hidden="true"></i>
-            </button>
+                <button
+                    type="button"
+                    class="payment-modal-close"
+                    data-action="payment-method#close"
+                    aria-label="Fermer"
+                >
+                    <i class="icon-x" aria-hidden="true"></i>
+                </button>
 
-            <div class="payment-modal-header">
-                <h2 id="payment-modal-title" class="payment-modal-title">
-                    Indiquez les informations de votre carte
-                </h2>
-            </div>
-
-            <form
-                class="payment-modal-form formulaire"
-                data-action="submit->payment-method#submit"
-                novalidate
-            >
-                <div
-                    class="payment-form-error d-none mb-16"
-                    role="alert"
-                    data-payment-method-target="error"
-                ></div>
-
-                <div
-                    class="payment-form-success d-none mb-16"
-                    role="status"
-                    data-payment-method-target="success"
-                ></div>
-
-                <div class="payment-form-group">
-                    <label for="payment-cardholder-name" class="mb-16">
-                        Nom du titulaire
-                    </label>
-
-                    <input
-                        type="text"
-                        id="payment-cardholder-name"
-                        class="payment-form-control mb-16"
-                        placeholder="Saisissez le nom du titulaire"
-                        autocomplete="cc-name"
-                        data-payment-method-target="cardholderName"
-                        required
-                    >
+                <div class="payment-modal-header">
+                    <h3 id="payment-modal-title" class="payment-modal-title">
+                        Indiquez les informations de votre carte
+                    </h3>
                 </div>
 
-                <div class="payment-form-group">
-                    <label class="mb-16">
-                        Numéro de la carte
-                    </label>
+                <form
+                    class="payment-modal-form formulaire"
+                    data-action="submit->payment-method#submit"
+                    novalidate
+                >
+                    <div
+                        class="payment-form-error d-none mb-16"
+                        role="alert"
+                        data-payment-method-target="error"
+                    ></div>
 
                     <div
-                        class="payment-stripe-element mb-16"
-                        data-payment-method-target="cardNumber"
+                        class="payment-form-success d-none mb-16"
+                        role="status"
+                        data-payment-method-target="success"
                     ></div>
-                </div>
 
-                <div class="payment-form-row">
-                    <div class="payment-form-group payment-form-group--half">
-                        <label class="mb-16">
-                            Date d’expiration
+                    <div class="payment-form-group">
+                        <label for="payment-cardholder-name" class="mb-16 p-accent">
+                            Nom du titulaire
+                        </label>
+
+                        <input
+                            type="text"
+                            id="payment-cardholder-name"
+                            class="form-control input mb-16"
+                            placeholder="Saisissez le nom du titulaire"
+                            autocomplete="cc-name"
+                            data-payment-method-target="cardholderName"
+                            required
+                        >
+                    </div>
+
+                    <div class="payment-form-group">
+                        <label class="mb-16 p-accent">
+                            Numéro de la carte
                         </label>
 
                         <div
                             class="payment-stripe-element mb-16"
-                            data-payment-method-target="cardExpiry"
+                            data-payment-method-target="cardNumber"
                         ></div>
                     </div>
 
-                    <div class="payment-form-group payment-form-group--half">
-                        <label class="mb-16">
-                            Code de sécurité
+                    <div class="payment-form-row">
+                        <div class="payment-form-group payment-form-group--half">
+                            <label class="mb-16 p-accent">
+                                Date d’expiration
+                            </label>
+
+                            <div
+                                class="payment-stripe-element mb-16"
+                                data-payment-method-target="cardExpiry"
+                            ></div>
+                        </div>
+
+                        <div class="payment-form-group payment-form-group--half">
+                            <label class="mb-16 p-accent">
+                                Code de sécurité
+                            </label>
+
+                            <div
+                                class="payment-stripe-element mb-16"
+                                data-payment-method-target="cardCvc"
+                            ></div>
+                        </div>
+                    </div>
+
+                    <div class="payment-form-group">
+                        <label for="payment-country " class="mb-16 p-accent">
+                            Pays
                         </label>
 
-                        <div
-                            class="payment-stripe-element mb-16"
-                            data-payment-method-target="cardCvc"
-                        ></div>
+                        <select
+                            id="payment-country"
+                            class="payment-form-control mb-16"
+                            autocomplete="country"
+                            data-payment-method-target="country"
+                            required
+                        >
+                            <option value="FR" selected>France</option>
+                            <option value="BE">Belgique</option>
+                            <option value="CH">Suisse</option>
+                            <option value="LU">Luxembourg</option>
+                            <option value="MC">Monaco</option>
+                            <option value="DE">Allemagne</option>
+                            <option value="ES">Espagne</option>
+                            <option value="IT">Italie</option>
+                            <option value="PT">Portugal</option>
+                            <option value="NL">Pays-Bas</option>
+                            <option value="GB">Royaume-Uni</option>
+                        </select>
                     </div>
-                </div>
 
-                <div class="payment-form-group">
-                    <label for="payment-country" class="mb-16">
-                        Pays
+                    <label class="payment-checkbox">
+                        <input
+                            type="checkbox"
+                            name="defaultPayment"
+                            value="1"
+                            class="mr-12"
+                            data-payment-method-target="defaultCheckbox"
+                        >
+
+                        <span></span>
+                        Définir comme moyen de paiement par défaut
                     </label>
 
-                    <select
-                        id="payment-country"
-                        class="payment-form-control mb-16"
-                        autocomplete="country"
-                        data-payment-method-target="country"
-                        required
-                    >
-                        <option value="FR" selected>France</option>
-                        <option value="BE">Belgique</option>
-                        <option value="CH">Suisse</option>
-                        <option value="LU">Luxembourg</option>
-                        <option value="MC">Monaco</option>
-                        <option value="DE">Allemagne</option>
-                        <option value="ES">Espagne</option>
-                        <option value="IT">Italie</option>
-                        <option value="PT">Portugal</option>
-                        <option value="NL">Pays-Bas</option>
-                        <option value="GB">Royaume-Uni</option>
-                    </select>
-                </div>
+                    <div class="payment-modal-actions">
+                        <button
+                            type="button"
+                            class="btn-full-white w-auto"
+                            data-action="payment-method#close"
+                        >
+                            Annuler
+                        </button>
 
-                <label class="payment-checkbox">
-                    <input
-                        type="checkbox"
-                        name="defaultPayment"
-                        value="1"
-                        class="mr-12"
-                        data-payment-method-target="defaultCheckbox"
-                    >
-
-                    <span></span>
-                    Définir comme moyen de paiement par défaut
-                </label>
-
-                <div class="payment-modal-actions">
-                    <button
-                        type="button"
-                        class="payment-btn-cancel"
-                        data-action="payment-method#close"
-                    >
-                        Annuler
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="payment-btn-submit"
-                        data-payment-method-target="submitButton"
-                        disabled
-                    >
-                        Ajouter
-                    </button>
-                </div>
-            </form>
+                        <button
+                            type="submit"
+                            class="payment-btn-submit btn-full-blue "
+                            data-payment-method-target="submitButton"
+                            disabled
+                        >
+                            Ajouter
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
+
     </div>
 
-</div>
+    <style>
+        .payment-form-row {
+            display: flex;
+            gap: 16px;
+        }
 
-<style>
-.payment-form-row {
-    display: flex;
-    gap: 16px;
-}
+        .payment-form-group--half {
+            flex: 1;
+            min-width: 0;
+        }
 
-.payment-form-group--half {
-    flex: 1;
-    min-width: 0;
-}
-
-.payment-stripe-element {
-    border: 1px solid #D5D9E2;
-    border-radius: 10px;
-    padding: 12px 14px;
+        .payment-stripe-element {
+    font-size: 14px;
+    border: 2px solid #ebecec;
+    line-height: 20px;
     background: #fff;
-}
+    border-radius: 12px;
+    font-weight: 500;
+            padding: 12px 14px;
 
-.payment-stripe-element.StripeElement--focus {
-    border-color: #FF8A1E;
-}
+        }
 
-.payment-stripe-element.StripeElement--invalid {
-    border-color: #DC3545;
-}
-</style>
-<script src="https://js.stripe.com/v3/"></script>
+        .payment-stripe-element.StripeElement--focus {
+            border-color: #5d00ff;
+        }
+
+        .payment-stripe-element.StripeElement--invalid {
+            border-color: #dc3545;
+        }
+    </style>
+    <script src="https://js.stripe.com/v3/"></script>
 
 {% endblock %}
