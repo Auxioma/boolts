@@ -36,26 +36,12 @@
 .btn-bg-border-gris:hover {border-color: #d7d9da;
     
     color: var(--color-text);}
-.btn-submit, .payment-btn-submit {display: inline-flex;
-    
-    align-items: center;
-    
-    justify-content: center;
+.btn-submit, .payment-btn-submit {
     
     min-height: 44px;
     
-    padding: 10px 16px;
-    
-    border: 0;
-    
-    border-radius: var(--radius-pill);
-    
-    background: var(--color-primary);
-    
     color: var(--color-white);
-    
-    font-weight: 700;
-    
+
     cursor: pointer;
     
     transition: background var(--transition-fast),box-shadow var(--transition-fast);}

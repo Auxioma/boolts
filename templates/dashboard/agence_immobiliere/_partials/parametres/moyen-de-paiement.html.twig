@@ -173,21 +173,29 @@
                                     mastercard: 'Mastercard',
                                     amex: 'Amex',
                                     american_express: 'Amex',
+                                    discover: 'Discover',
+                                    diners: 'Diners Club',
+                                    diners_club: 'Diners Club',
+                                    jcb: 'JCB',
+                                    unionpay: 'UnionPay',
                                 }[brand]|default(
                                     paymentMethod.brand|default('Carte bancaire')|capitalize,
                                 ) %}
 
-                                {% set logo = brand in [
-                                    'visa',
-                                    'mastercard',
-                                    'amex',
-                                    'american_express',
-                                ]
-                                    ? 'images/paiement_card/' ~ (
-                                        brand == 'american_express'
-                                            ? 'amex'
-                                            : brand
-                                    ) ~ '.svg'
+                                {% set logoFile = {
+                                    visa: 'visa',
+                                    mastercard: 'mastercard',
+                                    amex: 'amex',
+                                    american_express: 'amex',
+                                    discover: 'discover',
+                                    diners: 'diners',
+                                    diners_club: 'diners',
+                                    jcb: 'jcb',
+                                    unionpay: 'unionpay',
+                                }[brand]|default(null) %}
+
+                                {% set logo = logoFile
+                                    ? 'images/paiement_card/' ~ logoFile ~ '.svg'
                                     : null
                                 %}
 

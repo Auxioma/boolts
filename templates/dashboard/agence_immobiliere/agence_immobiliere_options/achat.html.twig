@@ -150,10 +150,23 @@
                                                     {{ is_downgrade ? 'Moyen de paiement' : 'Moyen de paiement' }}
                                                 </h3>
 
+                                                {% set card_logo_files = {
+                                                    visa: 'visa',
+                                                    mastercard: 'mastercard',
+                                                    amex: 'amex',
+                                                    american_express: 'amex',
+                                                    discover: 'discover',
+                                                    diners: 'diners',
+                                                    diners_club: 'diners',
+                                                    jcb: 'jcb',
+                                                    unionpay: 'unionpay',
+                                                } %}
+
                                                 {% if default_payment_method %}
                                                     {% set card_brand = default_payment_method.brand|default('')|lower %}
-                                                    {% set card_logo = card_brand in ['visa', 'mastercard']
-                                                    ? 'images/paiement_card/' ~ card_brand ~ '.svg'
+                                                    {% set card_logo_file = card_logo_files[card_brand]|default(null) %}
+                                                    {% set card_logo = card_logo_file
+                                                    ? 'images/paiement_card/' ~ card_logo_file ~ '.svg'
                                                     : null
                                                 %}
 
@@ -235,8 +248,9 @@
                                                         {% for payment_method in payment_methods %}
                                                             {% set is_current = payment_method.id == default_payment_method.id %}
                                                             {% set option_brand = payment_method.brand|default('')|lower %}
-                                                            {% set option_logo = option_brand in ['visa', 'mastercard']
-                                                            ? asset('images/paiement_card/' ~ option_brand ~ '.svg')
+                                                            {% set option_logo_file = card_logo_files[option_brand]|default(null) %}
+                                                            {% set option_logo = option_logo_file
+                                                            ? asset('images/paiement_card/' ~ option_logo_file ~ '.svg')
                                                             : ''
                                                         %}
 
@@ -520,7 +534,7 @@
                     <div class="payment-modal-actions">
                         <button
                             type="button"
-                            class="payment-btn-cancel"
+                            class="btn-full-white w-auto"
                             data-action="payment-method#close"
                         >
                             Annuler
@@ -528,7 +542,7 @@
 
                         <button
                             type="submit"
-                            class="payment-btn-submit"
+                            class="payment-btn-submit btn-full-blue "
                             data-payment-method-target="submitButton"
                             disabled
                         >
