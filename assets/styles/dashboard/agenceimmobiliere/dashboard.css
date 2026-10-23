@@ -1060,6 +1060,30 @@ width: 100%;
     border-color: #5d00ff;
 }
 
+@media (max-width: 991px) {
+    .invoice-row {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .invoice-row__info {
+        width: 100%;
+
+        max-width: none;
+    }
+
+    .invoice-row__actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 768px) {
+    .invoices-title {
+        display: none;
+    }
+}
+
 .messagerie {
     display: flex;
 

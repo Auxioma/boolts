@@ -9,6 +9,8 @@
 
 {% block title %}Mes factures{% endblock %}
 
+{% block mobile_tabbar %}{% endblock %}
+
 {% block body %}
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
@@ -16,12 +18,19 @@
 
                 {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
+                    <div class="bt-mobile-topbar align-items-center justify-content-center">
+    <a href="/mes/biens/liste" class="bt-icon-btn bt-icon-btn--small position-absolute start-0 ms-2" aria-label="Back">
+        <i class="icon-chevron-left"></i>
+    </a>
 
+    <p class="p-accent mb-0">Mes factures</p>
+</div>
                 {# Contenu principal #}
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+
                     <div class="col-12 col-md-10 mx-auto">
                         <section>
-                            <h2 class="mb-32">Mes factures</h2>
+                            <h2 class="mb-32 invoices-title">Mes factures</h2>
 
                             <form class="invoices-search mb-32" method="get" role="search">
                                 <input
@@ -43,7 +52,7 @@
                                         {% set issued_at = invoice.issuedAt ?? invoice.createdAt %}
                                         <div class="invoice-row">
                                             <div class="invoice-row__info">
-                                                <p class="invoice-row__reference__invoice p-accent">{{ invoice.number }}</p>
+                                                <p class="invoice-row__reference__invoice p-accent mb-0">{{ invoice.number }}</p>
 
                                                 <p class="invoice-row__date paragraphe">
                                                     Créé le {{ issued_at|format_datetime('long', 'none', locale: 'fr') }}
