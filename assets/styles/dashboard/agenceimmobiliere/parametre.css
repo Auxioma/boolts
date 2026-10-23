@@ -587,3 +587,68 @@
     top: 2px;
     
     position: relative;}
+
+/* Navigation en étapes : liste des sous-pages, puis contenu seul */
+.parametres-step--list .menu-parametres {
+    max-width: 560px;
+
+    padding: 0 24px;
+}
+
+.parametres-step--content > .row {
+    max-width: 1040px;
+
+    margin: 0 auto;
+}
+
+.parametres-back__button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    text-decoration: none;
+}
+
+.parametres-back__button:hover {
+    color: #5d00ff;
+}
+
+.parametres-back__button .icon-chevron-left::before {
+    font-size: 16px;
+}
+
+.parametres-back__button:focus-visible,
+.menu-parametres .js-tab-link:focus-visible {
+    outline: 2px solid #5d00ff;
+
+    outline-offset: 2px;
+}
+
+.contenue-des-page-des-parametres h3:focus {
+    outline: none;
+}
+
+@media (max-width: 767px) {
+    .parametres-step.pt-48,
+    .parametres-step--content .pt-48 {
+        padding-top: 24px !important;
+    }
+
+    .parametres-step--list .menu-parametres {
+        max-width: none;
+
+        padding: 0 16px;
+    }
+
+    .parametres-step--content .px-48 {
+        padding-right: 16px !important;
+
+        padding-left: 16px !important;
+    }
+
+    .parametres-step--content .col-10 {
+        width: 100%;
+    }
+}

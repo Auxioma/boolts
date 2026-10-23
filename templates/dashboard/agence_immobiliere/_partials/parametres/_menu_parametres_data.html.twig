@@ -14,7 +14,7 @@
             tab: 'cat1',
             icon: 'icon-user-round',
             label: 'Profile public',
-            active: true,
+            active: false,
         },
         {
             wrapper: 'information-personnelles',
@@ -67,7 +67,7 @@
 
     {% for item in section.items %}
         <div class="{{ item.wrapper }} {{ loop.first ? 'mt-22' : 'mt-8' }} px-10 py-10">
-            <a href="#"
+            <a href="#{{ item.tab }}"
                class="menu-btn js-tab-link{{ item.active ? ' active' : '' }}"
                data-tab="{{ item.tab }}">
                 <i class="{{ item.icon }} mr-10"></i>
