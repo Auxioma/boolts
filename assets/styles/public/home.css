@@ -55,6 +55,8 @@
 
     --mockup-img: url("../../images/home/cookies/06.png");
 
+    --banner-img: url("../../images/home/cookies/07.png");
+
     --icon-flame: url("https://www.figma.com/api/mcp/asset/49ddd3d9-d539-4136-a65b-45b5cf8670b5");
 
     --arrow-doodle-1: url("../../images/home/droite.svg");
@@ -905,8 +907,41 @@ input {
     background-image: var(--content-img-2);
 }
 
+.home-bt-banner {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    min-height: 518px;
+
+    padding: clamp(80px, calc(80px + (80 * (100vw - 375px) / 1065)), 160px) 16px;
+
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 35.379%, rgba(0, 0, 0, 0)), var(--banner-img) center/cover no-repeat, var(--color-gray-light);
+}
+
+.home-bt-banner-text {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    width: 482px;
+
+    max-width: 100%;
+}
+
+.home-bt-banner-text h2,
+.home-bt-banner-text p {
+    margin: 0;
+
+    color: #fff;
+}
+
 .home-bt-codes {
-    padding-top: clamp(48px, calc(48px + (32 * (100vw - 375px) / 1065)), 80px);
+    padding-top:clamp(48px, calc(48px + (32 * (100vw - 375px) / 1065)), 80px);
 }
 
 .home-bt-codes-title {
