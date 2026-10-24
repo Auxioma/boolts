@@ -8,6 +8,7 @@ import { Controller } from '@hotwired/stimulus';
  * L'état ne dépend que du hash, il est donc identique quelle que soit
  * la largeur d'écran et survit au rechargement ou à un accès direct.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['list', 'content', 'back'];
 

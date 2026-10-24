@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import { Modal } from 'bootstrap';
 import { countActiveFilters, renderFilterBadge } from '../lib/filter_badge.js';
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['frame', 'modal', 'start', 'end', 'sortButton', 'sortMenu', 'filters', 'filterButton'];
     static values = { url: String };

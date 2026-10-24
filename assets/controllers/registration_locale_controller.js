@@ -7,6 +7,7 @@ import { Controller } from '@hotwired/stimulus';
  * - dépose un cookie `boolts_locale_hints` lu lors de la soumission finale ;
  * - envoie un beacon immédiat pour une prise en compte anticipée.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static values = {
         url: String,

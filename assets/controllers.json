@@ -3,7 +3,7 @@
         "@symfony/ux-autocomplete": {
             "autocomplete": {
                 "enabled": true,
-                "fetch": "eager",
+                "fetch": "lazy",
                 "autoimport": {
                     "tom-select/dist/css/tom-select.default.css": true,
                     "tom-select/dist/css/tom-select.bootstrap4.css": false,
@@ -14,13 +14,13 @@
         "@symfony/ux-chartjs": {
             "chart": {
                 "enabled": true,
-                "fetch": "eager"
+                "fetch": "lazy"
             }
         },
         "@symfony/ux-live-component": {
             "live": {
                 "enabled": true,
-                "fetch": "eager",
+                "fetch": "lazy",
                 "autoimport": {
                     "@symfony/ux-live-component/dist/live.min.css": true
                 }

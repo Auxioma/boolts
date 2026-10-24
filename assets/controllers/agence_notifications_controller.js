@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['filterButton', 'card', 'unreadCount'];
     static values = { csrfToken: String };

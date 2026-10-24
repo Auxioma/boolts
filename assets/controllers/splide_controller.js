@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import Splide from '@splidejs/splide';
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['slider', 'previous', 'next'];
 

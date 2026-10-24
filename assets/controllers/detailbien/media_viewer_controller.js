@@ -20,6 +20,7 @@ import { Controller } from '@hotwired/stimulus';
  * Les déclencheurs ([data-open-slider], [data-open-gallery]) sont dans les partials
  * d'images et dans la grille générée : ils sont gérés par délégation sur l'élément racine.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['gridModal', 'sliderModal', 'grid', 'stage', 'sliderImage', 'counter', 'prevButton', 'nextButton'];
 

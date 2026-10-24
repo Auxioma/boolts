@@ -8,6 +8,7 @@ import { Controller } from '@hotwired/stimulus';
  * colonnes que le LIKE SQL de la recherche (référence, titre, ville, pays,
  * adresse). Choisir une proposition remplit le champ et soumet le formulaire.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['input', 'results'];
 

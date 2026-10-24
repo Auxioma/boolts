@@ -23,6 +23,7 @@ import { Controller } from '@hotwired/stimulus';
  * only appears when the form is submitted (clicking "Suivant"), which blocks
  * navigation to the next step until the two passwords match.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['input', 'meter', 'confirmInput', 'confirmError', 'submit'];
 

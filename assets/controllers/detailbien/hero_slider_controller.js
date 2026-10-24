@@ -6,6 +6,7 @@ import Splide from '@splidejs/splide';
  * Template : templates/public/detail_bien/_partials/hero_slider_mobile.html.twig
  * Monté uniquement sous 768px, détruit au-dessus.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['slider', 'counter'];
 

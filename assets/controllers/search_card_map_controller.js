@@ -14,6 +14,7 @@ const MAPBOX_JS_URLS = [
 const MAP_GAP = 32;
 const MAP_MIN_MOBILE_HEIGHT = 320;
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = [
         'mapbox',

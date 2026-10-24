@@ -4,6 +4,7 @@ import { Controller } from '@hotwired/stimulus';
  * Onglets de transaction de la barre de recherche de la home.
  * Template : templates/public/home/_partials/composant/search.html.twig
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['tab', 'transactionInput'];
 

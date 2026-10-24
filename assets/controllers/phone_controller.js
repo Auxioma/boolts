@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import intlTelInput from 'intl-tel-input';
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['input'];
 

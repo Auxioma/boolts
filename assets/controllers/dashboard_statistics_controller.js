@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import { Modal } from 'bootstrap';
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['modal', 'start', 'end', 'profileViews', 'published', 'views', 'favorites', 'chart'];
     static values = { url: String };

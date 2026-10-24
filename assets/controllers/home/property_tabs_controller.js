@@ -11,6 +11,7 @@ import { Controller } from '@hotwired/stimulus';
  * que son conteneur revient dans le DOM, quel que soit le mécanisme
  * (chargement initial, Turbo, ou remplacement du HTML).
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['button', 'panel'];
 

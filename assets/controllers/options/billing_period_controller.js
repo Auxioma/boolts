@@ -5,6 +5,7 @@ import { Controller } from '@hotwired/stimulus';
  * Chaque périodicité a son propre bloc de cartes (`group`) : on affiche
  * celui de la période choisie et on masque l'autre.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['option', 'group'];
 

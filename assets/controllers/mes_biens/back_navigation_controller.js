@@ -10,6 +10,7 @@ import { Controller } from '@hotwired/stimulus';
  * Les liens concernés portent l'attribut data-mes-biens-back-step="<étape>".
  * Sans JavaScript, le lien reste une navigation classique.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     connect() {
         this.handleClick = this.handleClick.bind(this);

@@ -6,6 +6,7 @@ import { Controller } from '@hotwired/stimulus';
  * l'attribut autoplay n'est alors pas toujours rejoué et la vidéo reste figée / grise.
  * On relance donc la lecture à chaque connexion du controller.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     connect() {
         this.onCanPlay = () => this.play();

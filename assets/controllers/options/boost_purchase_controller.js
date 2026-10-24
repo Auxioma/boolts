@@ -10,6 +10,7 @@ import { Controller } from '@hotwired/stimulus';
  * L'ajout d'une nouvelle carte est géré par le contrôleur `payment-method`
  * (modale Stripe Elements), qui recharge la page une fois la carte enregistrée.
  */
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = [
         'paymentBlock',

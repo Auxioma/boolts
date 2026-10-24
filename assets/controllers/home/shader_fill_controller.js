@@ -20,6 +20,7 @@ const EFFECTS = {
     'pattern-grid': patternGrid,
 };
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static values = {
         effect: String,
