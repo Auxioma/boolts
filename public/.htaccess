@@ -5,6 +5,83 @@
 # to each configured DirectoryIndex file (e.g. index.php, index.html, index.pl).
 DirectoryIndex index.php
 
+# ---------------------------------------------------------------------------
+# Performance
+# Chaque bloc est entouré de <IfModule> : sans le module, il est ignoré.
+# ---------------------------------------------------------------------------
+
+AddDefaultCharset utf-8
+
+<IfModule mod_mime.c>
+    AddType application/javascript js mjs
+    AddType application/json json map
+    AddType application/manifest+json webmanifest
+    AddType image/svg+xml svg svgz
+    AddType image/webp webp
+    AddType image/avif avif
+    AddType font/woff woff
+    AddType font/woff2 woff2
+    AddType font/ttf ttf
+    AddType font/otf otf
+    AddType application/vnd.ms-fontobject eot
+    AddCharset utf-8 .js .mjs .css .json .map .svg .webmanifest
+</IfModule>
+
+# Compression : Brotli si disponible, sinon gzip.
+# Les formats déjà compressés (images, woff2, vidéos) sont exclus.
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml text/javascript application/javascript application/json application/ld+json application/manifest+json application/xml application/rss+xml image/svg+xml image/x-icon font/ttf font/otf application/vnd.ms-fontobject text/vnd.turbo-stream.html
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml text/javascript application/javascript application/json application/ld+json application/manifest+json application/xml application/rss+xml image/svg+xml image/x-icon font/ttf font/otf application/vnd.ms-fontobject text/vnd.turbo-stream.html
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(js|mjs|css|json|svg|ttf|otf|eot|ico|html)$">
+        Header append Vary Accept-Encoding
+    </FilesMatch>
+</IfModule>
+
+# Cache navigateur des fichiers statiques.
+# Le HTML n'est pas concerné : son cache reste piloté par Symfony.
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Uploads (noms uniques via SmartUniqueNamer) et images
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/avif "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 month"
+    ExpiresByType video/mp4 "access plus 1 month"
+    ExpiresByType video/webm "access plus 1 month"
+    ExpiresByType video/quicktime "access plus 1 month"
+
+    # Polices
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+
+    # CSS/JS non versionnés (ex. public/js) : court, pour voir les déploiements
+    ExpiresByType text/css "access plus 1 day"
+    ExpiresByType application/javascript "access plus 1 day"
+    ExpiresByType text/javascript "access plus 1 day"
+</IfModule>
+
+# Fichiers AssetMapper versionnés (ex. /assets/app-18aRNWz.js) :
+# le nom change à chaque modification, on peut donc les cacher 1 an.
+<IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_URI} =~ m#/assets/.+-[A-Za-z0-9_~-]{7}\.[A-Za-z0-9]+$#"
+</IfModule>
+
+# ETag sans inode : identique d'un serveur à l'autre.
+FileETag MTime Size
+
 # By default, Apache does not evaluate symbolic links if you did not enable this
 # feature in your server configuration. Uncomment the following line if you
 # install assets as symlinks or if you experience problems related to symlinks
