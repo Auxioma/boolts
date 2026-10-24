@@ -1,0 +1,340 @@
+{#
+ Template: templates/authentification/login.html.twig
+ Role: Shared login screen for individual and professional accounts.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'visiteur.login.meta.title'|trans }}{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body.login-page {
+            background: #fff !important;
+            overflow-x: hidden;
+        }
+
+        body.login-page .topbar-logo {
+            width: 112px;
+            height: 36px;
+        }
+
+        body.login-page .topbar-menu .nav-link {
+            font-weight: 700;
+        }
+
+        body.login-page .topbar-menu .nav-item:nth-child(4) .nav-link {
+            color: #5d00ff;
+            background: #dfcbff;
+        }
+
+        .shared-login {
+            display: flex;
+            justify-content: center;
+            min-height: 520px;
+            padding: 48px 24px 80px;
+            background: #fff;
+        }
+
+        .shared-login__inner {
+            width: 100%;
+            max-width: 456px;
+        }
+
+        .shared-login__title {
+            margin: 0 0 32px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 34px;
+        }
+
+        .shared-login__socials {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .shared-login__social {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 50%;
+            height: 44px;
+            padding: 10px 16px;
+            border: 2px solid #ebecec;
+            border-radius: 50px;
+            color: #9d9fa1;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+            text-decoration: none;
+        }
+
+        .shared-login__social:hover,
+        .shared-login__social:focus-visible {
+            color: #0b0f14;
+        }
+
+        .shared-login__social--apple {
+            border-color: #0b0f14;
+            background: #0b0f14;
+            color: #fff;
+        }
+
+        .shared-login__social--apple:hover,
+        .shared-login__social--apple:focus-visible {
+            color: #fff;
+        }
+
+        .shared-login__apple-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .shared-login__google-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 24px;
+        }
+
+        .shared-login__divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            color: #858789;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .shared-login__divider::before,
+        .shared-login__divider::after {
+            flex: 1;
+            height: 1px;
+            background: #bfc0c1;
+            content: "";
+        }
+
+        .shared-login__field {
+            margin-bottom: 16px;
+        }
+
+        .shared-login__field label {
+            display: block;
+            margin-bottom: 16px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .shared-login__field input {
+            height: 44px;
+            padding: 12px 14px;
+            border: 2px solid #ebecec;
+            border-radius: 8px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .shared-login__field input:focus {
+            border-color: #5d00ff;
+            box-shadow: none;
+        }
+
+        .shared-login__field input::placeholder {
+            color: #858789;
+            opacity: 1;
+        }
+
+        .shared-login__field input.flash-input-error {
+            border-color: #ea868f;
+            background: rgba(248, 215, 218, 0.4);
+        }
+
+        .shared-login__error {
+            display: block;
+            margin-top: 24px;
+            color: #dc3545;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .shared-login__submit {
+            width: 100%;
+            height: 44px;
+            margin-top: 32px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 50px;
+            background: #5d00ff;
+            color: #fff;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .shared-login__submit:hover,
+        .shared-login__submit:focus-visible {
+            background: #4d00d2;
+        }
+
+        .shared-login__forgot,
+        .shared-login__register-link {
+            color: #5d00ff;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+            text-decoration: none;
+        }
+
+        .shared-login__forgot {
+            display: block;
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .shared-login__forgot:hover,
+        .shared-login__forgot:focus-visible,
+        .shared-login__register-link:hover,
+        .shared-login__register-link:focus-visible {
+            text-decoration: underline;
+        }
+
+        .shared-login__register {
+            margin: 36px 0 0;
+            color: #858789;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 767.98px) {
+            .shared-login {
+                min-height: auto;
+                padding: 48px 24px 56px;
+            }
+
+            .shared-login__socials {
+                flex-direction: column;
+            }
+
+            .shared-login__social {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <main class="shared-login">
+        <div class="shared-login__inner">
+            <h1 class="shared-login__title">{{ 'visiteur.login.title'|trans }}</h1>
+
+            <div class="shared-login__socials">
+                <a href="#" class="shared-login__social shared-login__social--apple" data-turbo="false">
+                    <i class="icon-apple shared-login__apple-icon" aria-hidden="true"></i>
+                    <span>Apple</span>
+                </a>
+
+                <a
+                    href="{{ path('app_google_connect', {type: loginType}) }}"
+                    class="shared-login__social"
+                    data-turbo="false"
+                >
+                    <span class="shared-login__google-icon" aria-hidden="true">G</span>
+                    <span>Google</span>
+                </a>
+            </div>
+
+            <div class="shared-login__divider"><span>OU</span></div>
+
+            <form method="post" data-turbo="false">
+                <div class="shared-login__field">
+                    <label for="inputEmail">Adresse e-mail</label>
+                    <input
+                        type="email"
+                        value="{{ last_username }}"
+                        name="email"
+                        id="inputEmail"
+                        class="form-control{% if error %} flash-input-error{% endif %}"
+                        autocomplete="email"
+                        placeholder="Veuillez entrer votre adresse e-mail"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="shared-login__field">
+                    <label for="inputPassword">Mot de passe</label>
+                    <input
+                        type="password"
+                        name="password"
+                        id="inputPassword"
+                        class="form-control{% if error %} flash-input-error{% endif %}"
+                        autocomplete="current-password"
+                        placeholder="Veuillez entrer votre mot de passe"
+                        required
+                    >
+                </div>
+
+                <input
+                    type="hidden"
+                    name="_csrf_token"
+                    data-controller="csrf-protection"
+                    value="{{ csrf_token('authenticate') }}"
+                >
+
+                {% for label, messages in app.flashes %}
+                    {% if label in ['danger', 'error', 'warning'] %}
+                        {% for message in messages %}
+                            <span class="shared-login__error">{{ message|trans }}</span>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if error %}
+                    <span class="shared-login__error">Adresse e-mail ou mot de passe incorrect</span>
+                {% endif %}
+
+                <button class="shared-login__submit" type="submit">Se connecter</button>
+            </form>
+
+            <a href="{{ path(forgotPasswordRoute) }}" class="shared-login__forgot" data-turbo="false">
+                Mot de passe oublié ?
+            </a>
+
+            <p class="shared-login__register">
+                Pas encore inscrit sur Boolts ?
+                <a href="{{ path('app_registration_choice') }}" class="shared-login__register-link" data-turbo="false">S’inscrire</a>
+            </p>
+        </div>
+    </main>
+{% endblock %}
+
+{% block body_class %}login-page{% endblock %}

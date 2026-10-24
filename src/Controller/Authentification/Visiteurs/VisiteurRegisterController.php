@@ -20,7 +20,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * HTTP controller for module Authentification / Visiteurs / VisiteurRegisterController.
@@ -29,13 +28,6 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class VisiteurRegisterController extends AbstractController
 {
-    #[Route(
-        path: [
-            'fr' => '/fr/signup',
-            'en' => '/signup',
-        ],
-        name: 'app_visiteur_inscription'
-    )]
     /**
      * Handles the index controller action.
      */

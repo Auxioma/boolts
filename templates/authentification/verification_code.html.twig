@@ -1,0 +1,334 @@
+{#
+ Template: templates/authentification/verification_code.html.twig
+ Role: Shared OTP screen for individual and professional registrations.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% set translationPrefix = translationPrefix|default('visiteur') %}
+
+{% block title %}{{ (translationPrefix ~ '.register.verify_code.meta.title')|trans }}{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body.verification-code-page {
+            background: #fff !important;
+            overflow-x: hidden;
+        }
+
+        body.verification-code-page .topbar-logo {
+            width: 112px;
+            height: 36px;
+        }
+
+        body.verification-code-page .topbar-menu .nav-link {
+            font-weight: 700;
+        }
+
+        body.verification-code-page .topbar-menu .nav-item:nth-child(4) .nav-link {
+            color: #5d00ff;
+            background: #dfcbff;
+        }
+
+        .verification-code {
+            min-height: calc(100vh - 72px);
+            background: #fff;
+        }
+
+        .verification-code__content {
+            display: flex;
+            align-items: flex-start;
+            width: 50.7%;
+            min-height: calc(100vh - 72px);
+            padding: 48px clamp(32px, 9.86vw, 142px) 48px clamp(32px, 9.17vw, 132px);
+        }
+
+        .verification-code__inner {
+            width: 100%;
+            max-width: 456px;
+        }
+
+        .verification-code__title {
+            max-width: 380px;
+            margin: 0 0 32px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 34px;
+        }
+
+        .verification-code__form {
+            margin: 0;
+        }
+
+        .verification-code__hidden-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            border: 0;
+            clip: rect(0, 0, 0, 0);
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .verification-code__digits {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .verification-code__digit {
+            width: 48px;
+            height: 44px;
+            padding: 12px 8px;
+            border: 2px solid #ebecec;
+            border-radius: 8px;
+            color: #858789;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+            text-align: center;
+        }
+
+        .verification-code__digit:focus {
+            border-color: #5d00ff;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .verification-code__message {
+            display: block;
+            margin-bottom: 24px;
+            color: #dc3545;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .verification-code__message--success {
+            color: #198754;
+        }
+
+        .verification-code__submit {
+            width: 100%;
+            height: 44px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 50px;
+            background: #5d00ff;
+            color: #fff;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .verification-code__submit:hover,
+        .verification-code__submit:focus-visible {
+            background: #4d00d2;
+        }
+
+        .verification-code__divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 32px 0;
+            color: #858789;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .verification-code__divider::before,
+        .verification-code__divider::after {
+            flex: 1;
+            height: 1px;
+            background: #bfc0c1;
+            content: "";
+        }
+
+        .verification-code__resend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 44px;
+            padding: 10px 16px;
+            border: 2px solid #5d00ff;
+            border-radius: 50px;
+            background: #fff;
+            color: #5d00ff;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+            text-decoration: none;
+        }
+
+        .verification-code__resend:hover,
+        .verification-code__resend:focus-visible {
+            background: #dfcbff;
+            color: #5d00ff;
+        }
+
+        .verification-code__change-email {
+            display: block;
+            margin-top: 24px;
+            color: #5d00ff;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .verification-code__change-email:hover,
+        .verification-code__change-email:focus-visible {
+            text-decoration: underline;
+        }
+
+        .verification-code__visual {
+            width: 49.3%;
+            min-height: calc(100vh - 72px);
+            background-color: #fff;
+            background-image: url("{{ asset('images/authentification/test.png') }}");
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-size: 200% auto;
+        }
+
+        @media (max-width: 1199.98px) {
+            .verification-code__content {
+                width: 55%;
+                padding-right: 64px;
+                padding-left: 64px;
+            }
+
+            .verification-code__visual {
+                width: 45%;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .verification-code {
+                min-height: auto;
+            }
+
+            .verification-code__content {
+                width: 100%;
+                min-height: calc(100vh - 72px);
+                padding: 48px 24px 56px;
+            }
+
+            .verification-code__digits {
+                gap: 8px;
+            }
+
+            .verification-code__digit {
+                flex: 1;
+                width: auto;
+            }
+
+            .verification-code__visual {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <main class="verification-code d-flex">
+        <section class="verification-code__content">
+            <div class="verification-code__inner">
+                <h1 class="verification-code__title">
+                    {{ (translationPrefix ~ '.register.verify_code.title')|trans }}
+                </h1>
+
+                {{ form_start(codeForm, {
+                    attr: stimulus_controller('otp')|merge(
+                        stimulus_action('otp', 'submit', 'submit'),
+                    )|merge({
+                        novalidate: 'novalidate',
+                        id: 'otp-form',
+                        class: 'verification-code__form',
+                        'data-turbo': 'false',
+                    }),
+                }) }}
+                    {{ form_widget(codeForm.code, {
+                        attr: stimulus_target('otp', 'hiddenInput')|merge({
+                            class: 'verification-code__hidden-input',
+                            autocomplete: 'one-time-code',
+                            inputmode: 'numeric',
+                        }),
+                    }) }}
+
+                    <div class="verification-code__digits">
+                        {% for i in 1..6 %}
+                            <input
+                                class="verification-code__digit"
+                                type="text"
+                                maxlength="1"
+                                inputmode="numeric"
+                                pattern="[0-9]*"
+                                autocomplete="{{ loop.first ? 'one-time-code' : 'off' }}"
+                                aria-label="{{ (translationPrefix ~ '.register.verify_code.digit_label')|trans({'%position%': i}) }}"
+                                {{ stimulus_target('otp', 'digit') }}
+                                {{ stimulus_action('otp', 'input', 'input') }}
+                                {{ stimulus_action('otp', 'keydown', 'keydown') }}
+                                {{ stimulus_action('otp', 'paste', 'paste') }}
+                            >
+                        {% endfor %}
+                    </div>
+
+                    {% for label, messages in app.flashes %}
+                        {% if label in ['danger', 'error', 'warning', 'success'] %}
+                            {% for message in messages %}
+                                <span class="verification-code__message{% if label == 'success' %} verification-code__message--success{% endif %}">
+                                    {{ message|trans }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if codeForm.vars.errors|length > 0 %}
+                        {% for error in codeForm.vars.errors %}
+                            <span class="verification-code__message">{{ error.message|trans }}</span>
+                        {% endfor %}
+                    {% endif %}
+
+                    <button class="verification-code__submit" type="submit">
+                        {{ (translationPrefix ~ '.register.verify_code.submit')|trans }}
+                    </button>
+                {{ form_end(codeForm) }}
+
+                <div class="verification-code__divider"><span>OU</span></div>
+
+                <a
+                    href="{{ path(resendRoute) }}"
+                    class="verification-code__resend"
+                    data-turbo="false"
+                >
+                    {{ (translationPrefix ~ '.register.verify_code.resend_code')|trans }}
+                </a>
+
+                <a
+                    href="{{ path(changeEmailRoute) }}"
+                    class="verification-code__change-email"
+                    data-turbo="false"
+                >
+                    {{ (translationPrefix ~ '.register.verify_code.change_email')|trans }}
+                </a>
+            </div>
+        </section>
+
+        <div class="verification-code__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+    </main>
+{% endblock %}
+
+{% block body_class %}verification-code-page{% endblock %}

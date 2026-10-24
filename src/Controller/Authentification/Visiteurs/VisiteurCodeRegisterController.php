@@ -103,8 +103,11 @@ final class VisiteurCodeRegisterController extends AbstractController
             return $this->redirectToRoute('app_visiteur_profile_complete');
         }
 
-        return $this->render('authentification/visiteurs/code_verification.html.twig', [
+        return $this->render('authentification/verification_code.html.twig', [
             'codeForm' => $codeForm->createView(),
+            'translationPrefix' => 'visiteur',
+            'resendRoute' => 'app_auth_resend_code',
+            'changeEmailRoute' => 'app_visiteur_inscription',
         ]);
     }
 }

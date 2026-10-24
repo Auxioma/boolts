@@ -21,7 +21,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * HTTP controller for module Authentification / AgenceImmobiliere / AgenceImmobiliereRegisterController.
@@ -30,13 +29,6 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class AgenceImmobiliereRegisterController extends AbstractController
 {
-    #[Route(
-        path: [
-            'fr' => '/fr/pro/signup',
-            'en' => '/pro/signup',
-        ],
-        name: 'app_professionnelle_register'
-    )]
     /**
      * Handles the registerPro controller action.
      */

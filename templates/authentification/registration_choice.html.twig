@@ -1,0 +1,242 @@
+{#
+ Template: templates/authentification/registration_choice.html.twig
+ Role: First registration step: profile choice.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscrivez-vous gratuitement | Boolts{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body.registration-choice-page {
+            background: #fff !important;
+            overflow-x: hidden;
+        }
+
+        body.registration-choice-page .topbar-logo {
+            width: 112px;
+            height: 36px;
+        }
+
+        body.registration-choice-page .topbar-menu .nav-link {
+            font-weight: 700;
+        }
+
+        body.registration-choice-page .topbar-menu .nav-item:nth-child(4) .nav-link {
+            color: #5d00ff;
+            background: #dfcbff;
+        }
+
+        .registration-choice {
+            min-height: calc(100vh - 72px);
+            background: #fff;
+        }
+
+        .registration-choice__content {
+            display: flex;
+            align-items: center;
+            width: 50.7%;
+            min-height: calc(100vh - 72px);
+            padding: 40px clamp(32px, 9.86vw, 142px) 40px clamp(32px, 9.17vw, 132px);
+        }
+
+        .registration-choice__inner {
+            width: 100%;
+            max-width: 456px;
+        }
+
+        .registration-choice__title {
+            margin: 0 0 32px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 34px;
+        }
+
+        .registration-choice__subtitle {
+            margin: 0 0 8px;
+            color: #858789;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        .registration-choice__choices {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .registration-choice__choice {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 94px;
+            padding: 16px;
+            border: 2px solid #ebecec;
+            border-radius: 16px;
+            color: #0b0f14;
+            text-decoration: none;
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        .registration-choice__choice:hover,
+        .registration-choice__choice:focus-visible {
+            border-color: #5d00ff;
+            box-shadow: 0 4px 12px rgba(93, 0, 255, 0.1);
+            color: #0b0f14;
+        }
+
+        .registration-choice__choice-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .registration-choice__icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 58px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: #cfb3ff;
+            color: #5d00ff;
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .registration-choice__label {
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .registration-choice__arrow {
+            flex: 0 0 24px;
+            color: #0b0f14;
+            font-size: 24px;
+            line-height: 1;
+        }
+
+        .registration-choice__login {
+            margin: 34px 0 0;
+            color: #858789;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 20px;
+        }
+
+        .registration-choice__login a {
+            color: #5d00ff;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .registration-choice__login a:hover,
+        .registration-choice__login a:focus-visible {
+            text-decoration: underline;
+        }
+
+        .registration-choice__visual {
+            width: 49.3%;
+            min-height: calc(100vh - 72px);
+            background-color: #fff;
+            background-image: url("{{ asset('images/authentification/test.png') }}");
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-size: 200% auto;
+        }
+
+        @media (max-width: 1199.98px) {
+            .registration-choice__content {
+                width: 55%;
+                padding-right: 64px;
+                padding-left: 64px;
+            }
+
+            .registration-choice__visual {
+                width: 45%;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .registration-choice {
+                min-height: auto;
+            }
+
+            .registration-choice__content {
+                width: 100%;
+                min-height: calc(100vh - 72px);
+                padding: 48px 24px 56px;
+            }
+
+            .registration-choice__title {
+                font-size: 26px;
+                line-height: 32px;
+            }
+
+            .registration-choice__visual {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <main class="registration-choice d-flex">
+        <section class="registration-choice__content">
+            <div class="registration-choice__inner">
+                <h1 class="registration-choice__title">Inscrivez-vous gratuitement</h1>
+
+                <p class="registration-choice__subtitle">Choisissez votre profil :</p>
+
+                <div class="registration-choice__choices">
+                    <a
+                        href="{{ path('app_visiteur_inscription') }}"
+                        class="registration-choice__choice"
+                        data-turbo="false"
+                    >
+                        <span class="registration-choice__choice-content">
+                            <span class="registration-choice__icon" aria-hidden="true">
+                                <i class="icon-user"></i>
+                            </span>
+                            <span class="registration-choice__label">Particulier</span>
+                        </span>
+                        <i class="icon-chevron-right registration-choice__arrow" aria-hidden="true"></i>
+                    </a>
+
+                    <a
+                        href="{{ path('app_professionnelle_register') }}"
+                        class="registration-choice__choice"
+                        data-turbo="false"
+                    >
+                        <span class="registration-choice__choice-content">
+                            <span class="registration-choice__icon" aria-hidden="true">
+                                <i class="icon-briefcase"></i>
+                            </span>
+                            <span class="registration-choice__label">Professionnel</span>
+                        </span>
+                        <i class="icon-chevron-right registration-choice__arrow" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <p class="registration-choice__login">
+                    Déjà inscrit sur Boolts ?
+                    <a href="{{ path('app_login') }}" data-turbo="false">Se connecter</a>
+                </p>
+            </div>
+        </section>
+
+        <div class="registration-choice__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+    </main>
+{% endblock %}
+
+{% block body_class %}registration-choice-page{% endblock %}

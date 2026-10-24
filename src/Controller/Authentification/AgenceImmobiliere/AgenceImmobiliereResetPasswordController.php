@@ -86,8 +86,12 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
             );
         }
 
-        return $this->render('authentification/agence_immobiliere/rest_password.html.twig', [
+        return $this->render('authentification/reset_password_request.html.twig', [
             'requestForm' => $form,
+            'resetPasswordMetaTitle' => 'professionnel.forgot_password.meta.title',
+            'resetPasswordTitle' => 'professionnel.forgot_password.title',
+            'resetPasswordEmailLabel' => 'professionnel.forgot_password.email.label',
+            'resetPasswordSubmit' => 'professionnel.forgot_password.submit',
         ]);
     }
 
@@ -106,7 +110,11 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
             $resetToken = $this->resetPasswordHelper->generateFakeResetToken();
         }
 
-        return $this->render('authentification/agence_immobiliere/link_mot_de_passe.html.twig', [
+        return $this->render('authentification/reset_password_check_email.html.twig', [
+            'resetPasswordCheckMetaTitle' => 'professionnel.reset_password.check_email.meta.title',
+            'resetPasswordCheckTitle' => 'professionnel.reset_password.check_email.title',
+            'resetPasswordResendLink' => 'professionnel.reset_password.check_email.resend_link',
+            'resetPasswordResendRoute' => 'agence_immobiliereforgot_password_request',
             'resetToken' => $resetToken,
         ]);
     }
@@ -170,8 +178,15 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
             ? Response::HTTP_UNPROCESSABLE_ENTITY
             : Response::HTTP_OK;
 
-        return $this->render('authentification/agence_immobiliere/formulaire_reset_password.html.twig', [
+        return $this->render('authentification/reset_password_form.html.twig', [
             'resetForm' => $form,
+            'resetPasswordMetaTitle' => 'professionnel.reset_password.meta.title',
+            'resetPasswordTitle' => 'professionnel.reset_password.title',
+            'resetPasswordPasswordLabel' => 'professionnel.reset_password.password.label',
+            'resetPasswordPasswordPlaceholder' => 'professionnel.reset_password.password.placeholder',
+            'resetPasswordPasswordConfirmLabel' => 'professionnel.reset_password.password_confirm.label',
+            'resetPasswordPasswordConfirmPlaceholder' => 'professionnel.reset_password.password_confirm.placeholder',
+            'resetPasswordSubmit' => 'professionnel.reset_password.submit',
         ], new Response(status: $statusCode));
     }
 

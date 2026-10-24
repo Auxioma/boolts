@@ -1,0 +1,321 @@
+{#
+ Template: templates/authentification/registration.html.twig
+ Role: Shared first registration step for individuals and professionals.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription | Boolts{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body.registration-page {
+            background: #fff !important;
+            overflow-x: hidden;
+        }
+
+        body.registration-page .topbar-logo {
+            width: 112px;
+            height: 36px;
+        }
+
+        body.registration-page .topbar-menu .nav-link {
+            font-weight: 700;
+        }
+
+        body.registration-page .topbar-menu .nav-item:nth-child(4) .nav-link {
+            color: #5d00ff;
+            background: #dfcbff;
+        }
+
+        .registration {
+            min-height: calc(100vh - 72px);
+            background: #fff;
+        }
+
+        .registration__content {
+            display: flex;
+            align-items: flex-start;
+            width: 50.7%;
+            min-height: calc(100vh - 72px);
+            padding: 48px clamp(32px, 9.86vw, 142px) 48px clamp(32px, 9.17vw, 132px);
+        }
+
+        .registration__inner {
+            width: 100%;
+            max-width: 456px;
+        }
+
+        .registration__title {
+            margin: 0 0 32px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 30px;
+            font-weight: 700;
+            line-height: 34px;
+        }
+
+        .registration__socials {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .registration__social {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 50%;
+            height: 44px;
+            padding: 10px 16px;
+            border: 2px solid #ebecec;
+            border-radius: 50px;
+            color: #9d9fa1;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+            text-decoration: none;
+        }
+
+        .registration__social:hover,
+        .registration__social:focus-visible {
+            color: #0b0f14;
+        }
+
+        .registration__social--apple {
+            border-color: #0b0f14;
+            background: #0b0f14;
+            color: #fff;
+        }
+
+        .registration__social--apple:hover,
+        .registration__social--apple:focus-visible {
+            color: #fff;
+        }
+
+        .registration__apple-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .registration__google-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 24px;
+        }
+
+        .registration__divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            color: #858789;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .registration__divider::before,
+        .registration__divider::after {
+            flex: 1;
+            height: 1px;
+            background: #bfc0c1;
+            content: "";
+        }
+
+        .registration__field {
+            margin-bottom: 32px;
+        }
+
+        .registration__field label {
+            display: block;
+            margin-bottom: 16px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .registration__field .form-control {
+            height: 44px;
+            padding: 12px 14px;
+            border: 2px solid #ebecec;
+            border-radius: 8px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+        }
+
+        .registration__field .form-control:focus {
+            border-color: #5d00ff;
+            box-shadow: none;
+        }
+
+        .registration__field .form-control::placeholder {
+            color: #858789;
+            opacity: 1;
+        }
+
+        .registration__field .form-control.is-invalid,
+        .registration__field .form-control:invalid:focus {
+            border-color: #ea868f;
+            background: rgba(248, 215, 218, 0.4);
+        }
+
+        .registration__field .invalid-feedback,
+        .registration__flash {
+            display: block;
+            margin-top: 24px;
+            color: #dc3545;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .registration__flash + .registration__flash {
+            margin-top: 8px;
+        }
+
+        .registration__submit {
+            width: 100%;
+            height: 44px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 50px;
+            background: #5d00ff;
+            color: #fff;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .registration__submit:hover,
+        .registration__submit:focus-visible {
+            background: #4d00d2;
+        }
+
+        .registration__visual {
+            width: 49.3%;
+            min-height: calc(100vh - 72px);
+            background-color: #fff;
+            background-image: url("{{ asset('images/authentification/test.png') }}");
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-size: 200% auto;
+        }
+
+        @media (max-width: 1199.98px) {
+            .registration__content {
+                width: 55%;
+                padding-right: 64px;
+                padding-left: 64px;
+            }
+
+            .registration__visual {
+                width: 45%;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .registration {
+                min-height: auto;
+            }
+
+            .registration__content {
+                width: 100%;
+                min-height: calc(100vh - 72px);
+                padding: 48px 24px 56px;
+            }
+
+            .registration__socials {
+                flex-direction: column;
+            }
+
+            .registration__social {
+                width: 100%;
+            }
+
+            .registration__visual {
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <main class="registration d-flex">
+        <section class="registration__content">
+            <div class="registration__inner">
+                <h1 class="registration__title">Inscription</h1>
+
+                <div class="registration__socials">
+                    <a href="#" class="registration__social registration__social--apple" data-turbo="false">
+                        <i class="icon-apple registration__apple-icon" aria-hidden="true"></i>
+                        <span>Apple</span>
+                    </a>
+
+                    <a
+                        href="{{ path('app_google_connect', {type: registrationType}) }}"
+                        class="registration__social"
+                        data-turbo="false"
+                    >
+                        <span class="registration__google-icon" aria-hidden="true">G</span>
+                        <span>Google</span>
+                    </a>
+                </div>
+
+                <div class="registration__divider"><span>OU</span></div>
+
+                {{ form_start(emailForm, {
+                    attr: {
+                        class: 'registration__form',
+                        'data-turbo': 'false',
+                    },
+                }) }}
+                    <div class="registration__field">
+                        {{ form_label(emailForm.email, 'Inscription via adresse e-mail*') }}
+                        {{ form_widget(emailForm.email, {
+                            attr: {
+                                class: 'form-control' ~ (emailForm.email.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                placeholder: 'Veuillez entrer votre adresse e-mail',
+                            },
+                        }) }}
+
+                        {{ form_errors(emailForm.email) }}
+
+                        {% for label, messages in app.flashes %}
+                            {% if label in ['danger', 'error', 'warning'] %}
+                                {% for message in messages %}
+                                    <span class="registration__flash">{{ message|trans }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <button class="registration__submit" type="submit">Continuer</button>
+                {{ form_end(emailForm) }}
+            </div>
+        </section>
+
+        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+    </main>
+{% endblock %}
+
+{% block body_class %}registration-page{% endblock %}
