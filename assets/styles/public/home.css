@@ -286,7 +286,7 @@ input {
 
     border-radius: 24px;
 
-    background: var(--color-white);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .home-bt-search-tabs {
@@ -316,7 +316,7 @@ input {
 
     background: transparent;
 
-    color: var(--color-gray);
+    color: var(--color-text);
 
     font-size: 16px;
 
@@ -1465,7 +1465,7 @@ input {
 
     padding: clamp(16px, calc(16px + (8 * (100vw - 375px) / 1065)), 24px);
 
-    background: #fff;
+    background: rgba(255, 255, 255, 0.5);
 
     border-radius: 24px;
 }
@@ -1513,11 +1513,11 @@ input {
 
     padding: 0;
 
-    color: #858789;
+    color: #0b0f14;
 
     font-size: clamp(16px, calc(14px + (2 * (100vw - 375px) / 1065)), 14px);
 
-    font-weight: 600;
+    font-weight: 700;
 
     line-height: 20px;
 
