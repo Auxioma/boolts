@@ -1,0 +1,279 @@
+{#
+ Template: templates/public/home/_partials/_partout_slider.html.twig
+ Role: Slider éditorial « Achetez. Louez. Partout. » de la page d'accueil.
+ Context: Inclus par templates/public/home/index.html.twig.
+ Maintenance: Les cartes sont des compositions fixes (maquette Figma 6634:20037) ;
+              les positions internes sont en px sur la taille desktop et mises à
+              l'échelle par `zoom` dans home.css.
+#}
+
+{% macro more_button() %}
+    <a href="#" class="home-bt-partout-btn">
+        <span>{{ 'home.partout.more'|trans }}</span>
+        <img src="{{ asset('images/home/partout/chevron-right.svg') }}" width="24" height="24" alt="" aria-hidden="true">
+    </a>
+{% endmacro %}
+
+{% import _self as partout %}
+
+<section class="home-bt-partout" data-controller="home--partout-slider">
+    <h2 class="home-bt-partout-title">{{ 'home.partout.title'|trans }}</h2>
+
+    <div class="home-bt-partout-rows">
+        {# ===== Rangée du haut : grandes cartes ===== #}
+        <div class="splide home-bt-partout-row" data-home--partout-slider-target="top" aria-label="{{ 'home.partout.title'|trans }}">
+            <div class="splide__track">
+                <ul class="splide__list">
+
+                    {# Crush immobilier #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-large is-crush">
+                            <canvas
+                                class="home-bt-partout-shader"
+                                data-controller="home--shader-fill"
+                                data-home--shader-fill-effect-value="moving-gradient"
+                                data-home--shader-fill-params-value="{{ {
+                                    intensity: 2.319999933242798,
+                                    gradient: { stops: [
+                                        { position: 0, color: { r: 0.7590849995613098, g: 0.6196078658103943, b: 1, a: 1 } },
+                                        { position: 0.5, color: { r: 0.42352941632270813, g: 0, b: 0, a: 1 } },
+                                        { position: 1, color: { r: 0.800000011920929, g: 0, b: 1, a: 1 } }
+                                    ] },
+                                    gradientBalance: 0,
+                                    material: 0,
+                                    morphSpeed: 5,
+                                    detail: 1.559999942779541,
+                                    twist: 0,
+                                    zoom: 76,
+                                    gradientMethod: 0,
+                                    warp: 0,
+                                    rotationSpeed: 35
+                                }|json_encode }}"
+                            ></canvas>
+
+                            <div class="home-bt-partout-crush-list">
+                                <div class="home-bt-partout-crush-images">
+                                    <img src="{{ asset('images/home/partout/crush-1.png') }}" alt="">
+                                    <img src="{{ asset('images/home/partout/crush-2.png') }}" alt="">
+                                    <img src="{{ asset('images/home/partout/crush-3.png') }}" alt="">
+                                </div>
+                                <div class="home-bt-partout-crush-texts">
+                                    <div>
+                                        <p>Paris 16ème, 3 Bedrooms - 129 m² Apartment for rent</p>
+                                        <span>173 Favoris</span>
+                                    </div>
+                                    <div>
+                                        <p>Paris 6ème, 3 Bedrooms - 188 m² Apartment for rent</p>
+                                        <span>429 Favoris</span>
+                                    </div>
+                                    <div>
+                                        <p>Paris 5ème, 3 Bedrooms - 134 m² Apartment for rent</p>
+                                        <span>829 Favoris</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h3 class="home-bt-partout-crush-title">
+                                <span>Votre prochain</span>
+                                <strong>Cruuuuuuuuuuuuuuuuush</strong>
+                                <span class="is-last">immobilier !</span>
+                            </h3>
+
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                    {# Portugal #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-large is-portugal">
+                            <div class="home-bt-partout-photo is-portugal-photo">
+                                <img src="{{ asset('images/home/partout/portugal.png') }}" alt="">
+                            </div>
+                            <h3 class="home-bt-partout-portugal-title">Nos coups de coeur du mois.</h3>
+                            <p class="home-bt-partout-portugal-country">Portugal</p>
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                    {# Budapest #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-large is-budapest">
+                            <div class="home-bt-partout-photo is-budapest-photo">
+                                <img src="{{ asset('images/home/partout/budapest.png') }}" alt="">
+                            </div>
+                            <p class="home-bt-partout-budapest-kicker">Vivre à</p>
+                            <h3 class="home-bt-partout-budapest-title">Budapest</h3>
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                    {# Biens à rénover #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-large is-renover">
+                            <img class="home-bt-partout-renover-image" src="{{ asset('images/home/partout/renover.png') }}" alt="">
+                            <h3 class="home-bt-partout-renover-title">
+                                <span>Des biens</span>
+                                <strong>à rénover</strong>
+                            </h3>
+                            <div class="home-bt-partout-renover-vector" aria-hidden="true">
+                                <div>
+                                    <img src="{{ asset('images/home/partout/renover-vector.svg') }}" width="334.766" height="213.032" alt="">
+                                </div>
+                            </div>
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+
+        {# ===== Rangée du bas : petites cartes ===== #}
+        <div class="splide home-bt-partout-row" data-home--partout-slider-target="bottom" aria-label="{{ 'home.partout.title'|trans }}">
+            <div class="splide__track">
+                <ul class="splide__list">
+
+                    {# Vivre à la mer #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-small is-mer">
+                            <img class="home-bt-partout-cover" src="{{ asset('images/home/partout/mer.png') }}" alt="">
+                            <div class="home-bt-partout-mer-gradient"></div>
+                            <h3 class="home-bt-partout-mer-title">
+                                <span>Vivre à la</span>
+                                <strong>Mer</strong>
+                            </h3>
+                            <p class="home-bt-partout-mer-cities">
+                                Cannes - Barcelone<br>
+                                Dubrovnik - Corfou<br>
+                                Dakar
+                            </p>
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                    {# Propriétaire en Europe #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-small is-europe">
+                            <canvas
+                                class="home-bt-partout-shader"
+                                data-controller="home--shader-fill"
+                                data-home--shader-fill-effect-value="concentric-patterns"
+                                data-home--shader-fill-params-value="{{ {
+                                    falloff: 4.099999904632568,
+                                    inverseFalloff: false,
+                                    ringCount: 8,
+                                    offset: 0,
+                                    shape: 1,
+                                    transform: { x: 50, y: 0, radius: 52.003875732421875, angle: 0 },
+                                    color: { r: 1, g: 0, b: 0.016666695475578308, a: 1 }
+                                }|json_encode }}"
+                            ></canvas>
+                            <div class="home-bt-partout-europe-gradient"></div>
+
+                            <p class="home-bt-partout-europe-price">50 000 €</p>
+                            <p class="home-bt-partout-europe-text">
+                                Devenez propriétaire<br>
+                                en Europe<br>
+                                pour moins de
+                            </p>
+
+                            <div class="home-bt-partout-europe-card is-gata">
+                                <img src="{{ asset('images/home/partout/gata.png') }}" alt="">
+                                <span class="home-bt-partout-europe-city">Gata, Espagne</span>
+                                <span class="home-bt-partout-europe-amount">29 000 €</span>
+                            </div>
+                            <div class="home-bt-partout-europe-card is-bas">
+                                <img src="{{ asset('images/home/partout/europe-bas.png') }}" alt="">
+                            </div>
+                            <div class="home-bt-partout-europe-card is-haut">
+                                <img src="{{ asset('images/home/partout/europe-haut.png') }}" alt="">
+                            </div>
+                            <div class="home-bt-partout-europe-card is-badolato">
+                                <img src="{{ asset('images/home/partout/badolato.png') }}" alt="">
+                                <span class="home-bt-partout-europe-city">Badolato, Italie</span>
+                                <span class="home-bt-partout-europe-amount">36 000 €</span>
+                            </div>
+
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                    {# Top 5 Italie #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-small is-italie">
+                            <div class="home-bt-partout-italie-image">
+                                <img src="{{ asset('images/home/partout/italie.png') }}" alt="">
+                            </div>
+                            <p class="home-bt-partout-italie-kicker">Top 5 des villes où investir</p>
+                            <h3 class="home-bt-partout-italie-title">en Italie</h3>
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                    {# Agences à Marrakech #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-small is-marrakech">
+                            <div class="home-bt-partout-marrakech-image">
+                                <img src="{{ asset('images/home/partout/marrakech.png') }}" alt="">
+                            </div>
+                            <div class="home-bt-partout-marrakech-grid">
+                                <canvas
+                                    class="home-bt-partout-shader"
+                                    data-controller="home--shader-fill"
+                                    data-home--shader-fill-effect-value="pattern-grid"
+                                    data-home--shader-fill-params-value="{{ {
+                                        transform: { x: 50, y: 50, radius: 100, angle: 0 },
+                                        softness: 0,
+                                        strokeColor: { r: 0.5329999923706055, g: 0.5329999923706055, b: 0.5329999923706055, a: 1 },
+                                        gridLayout: 'grid',
+                                        offset: { x: 0, y: 0 },
+                                        clipToCell: false,
+                                        zoom: 0.8499999642372131,
+                                        size: 40,
+                                        shapeColor: { r: 0.20098558068275452, g: 0.20098558068275452, b: 0.33253830671310425, a: 1 },
+                                        bgColor: { r: 0.10199999809265137, g: 0.10199999809265137, b: 0.18000000715255737, a: 1 },
+                                        shape: 'diamond',
+                                        strokeWidth: 0
+                                    }|json_encode }}"
+                                ></canvas>
+                            </div>
+                            <div class="home-bt-partout-marrakech-gradient"></div>
+
+                            <ul class="home-bt-partout-marrakech-agencies">
+                                {% for avatar in ['agence-1.png', 'agence-2.png', 'agence-2.png'] %}
+                                    <li>
+                                        <img src="{{ asset('images/home/partout/' ~ avatar) }}" width="36.318" height="36.318" alt="">
+                                        <div>
+                                            <p>Axa Immobilier</p>
+                                            <span>173 Annonces</span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+
+                            <p class="home-bt-partout-marrakech-kicker">Les agences<br>à Marrakech</p>
+                            <h3 class="home-bt-partout-marrakech-title">qui ont la côte.</h3>
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                    {# Maisons à la campagne #}
+                    <li class="splide__slide">
+                        <article class="home-bt-partout-card is-small is-campagne">
+                            <img class="home-bt-partout-campagne-image" src="{{ asset('images/home/partout/campagne.png') }}" alt="">
+                            <h3 class="home-bt-partout-campagne-title">
+                                <span>Des Maisons à la</span>
+                                <strong>Campagne</strong>
+                            </h3>
+                            <p class="home-bt-partout-campagne-country">France</p>
+                            {{ partout.more_button() }}
+                        </article>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="home-bt-partout-pagination" data-home--partout-slider-target="pagination"></div>
+</section>
