@@ -13,8 +13,6 @@
 namespace App\Security;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
-use App\Security\Exception\ProfessionalAccountLoginException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +36,6 @@ class VisiteurAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
-        private UserRepository $userRepository,
     ) {
     }
 
@@ -47,8 +44,6 @@ class VisiteurAuthenticator extends AbstractLoginFormAuthenticator
         $email = $request->getPayload()->getString('email');
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
-
-        $this->guardAgainstProfessionalAccount($request, $email);
 
         return new Passport(
             new UserBadge($email),
@@ -62,6 +57,17 @@ class VisiteurAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $user = $token->getUser();
+        $roles = $user instanceof User ? $user->getRoles() : [];
+
+        if (\in_array('ROLE_ADMIN', $roles, true)) {
+            return new RedirectResponse($this->urlGenerator->generate('admin'));
+        }
+
+        if (\in_array('ROLE_AGENCE', $roles, true)) {
+            return new RedirectResponse($this->urlGenerator->generate('agence_immobiliere_dashboard'));
+        }
+
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
@@ -76,34 +82,8 @@ class VisiteurAuthenticator extends AbstractLoginFormAuthenticator
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 
-    /**
-     * La page /login est réservée exclusivement aux comptes visiteurs
-     * (ROLE_USER). Un compte agence (ROLE_AGENCE) est rejeté et invité, via un
-     * message flash, à se connecter depuis son espace pro.
-     */
-    private function guardAgainstProfessionalAccount(Request $request, string $email): void
-    {
-        if ('' === $email) {
-            return;
-        }
-
-        $user = $this->userRepository->findOneBy(['email' => $email]);
-
-        if (!$user instanceof User || !\in_array('ROLE_AGENCE', $user->getRoles(), true)) {
-            return;
-        }
-
-        throw new ProfessionalAccountLoginException();
-    }
-
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
-        if ($exception instanceof ProfessionalAccountLoginException) {
-            $request->getSession()->getFlashBag()->add('danger', $exception->getMessageKey());
-
-            return new RedirectResponse($this->getLoginUrl($request));
-        }
-
         return parent::onAuthenticationFailure($request, $exception);
     }
 }

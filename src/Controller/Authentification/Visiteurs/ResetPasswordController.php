@@ -86,8 +86,12 @@ class ResetPasswordController extends AbstractController
             );
         }
 
-        return $this->render('authentification/visiteurs/visiteur_mots_de_passe_oublie.html.twig', [
+        return $this->render('authentification/reset_password_request.html.twig', [
             'requestForm' => $form,
+            'resetPasswordMetaTitle' => 'visiteur.forgot_password.meta.title',
+            'resetPasswordTitle' => 'visiteur.forgot_password.title',
+            'resetPasswordEmailLabel' => 'visiteur.forgot_password.email.label',
+            'resetPasswordSubmit' => 'visiteur.forgot_password.submit',
         ]);
     }
 
@@ -106,7 +110,11 @@ class ResetPasswordController extends AbstractController
             $resetToken = $this->resetPasswordHelper->generateFakeResetToken();
         }
 
-        return $this->render('authentification/visiteurs/reset_password_link.html.twig', [
+        return $this->render('authentification/reset_password_check_email.html.twig', [
+            'resetPasswordCheckMetaTitle' => 'visiteur.reset_password.check_email.meta.title',
+            'resetPasswordCheckTitle' => 'visiteur.reset_password.check_email.title',
+            'resetPasswordResendLink' => 'visiteur.reset_password.check_email.resend_link',
+            'resetPasswordResendRoute' => 'app_forgot_password_request',
             'resetToken' => $resetToken,
         ]);
     }
@@ -166,8 +174,15 @@ class ResetPasswordController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        return $this->render('authentification/visiteurs/visiteur_reset_password_form.html.twig', [
+        return $this->render('authentification/reset_password_form.html.twig', [
             'resetForm' => $form,
+            'resetPasswordMetaTitle' => 'visiteur.reset_password.reset.meta.title',
+            'resetPasswordTitle' => 'visiteur.reset_password.reset.title',
+            'resetPasswordPasswordLabel' => 'visiteur.reset_password.reset.password.label',
+            'resetPasswordPasswordPlaceholder' => 'visiteur.reset_password.reset.password.placeholder',
+            'resetPasswordPasswordConfirmLabel' => 'visiteur.reset_password.reset.password_confirm.label',
+            'resetPasswordPasswordConfirmPlaceholder' => 'visiteur.reset_password.reset.password_confirm.placeholder',
+            'resetPasswordSubmit' => 'visiteur.reset_password.reset.submit',
         ]);
     }
 

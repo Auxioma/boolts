@@ -132,8 +132,11 @@ final class AgenceImmobiliereOptController extends AbstractController
             return $this->redirectToRoute($agencyRegistrationProgress->routeForStep($currentStep));
         }
 
-        return $this->render('authentification/agence_immobiliere/otp.html.twig', [
+        return $this->render('authentification/verification_code.html.twig', [
             'codeForm' => $codeForm->createView(),
+            'translationPrefix' => 'professionnel',
+            'resendRoute' => 'app_professionnelle_resend_code',
+            'changeEmailRoute' => 'app_professionnelle_register',
         ]);
     }
 }

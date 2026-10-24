@@ -24,13 +24,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
  */
 final class VisiteurLoginController extends AbstractController
 {
-    #[Route(
-        path: [
-            'fr' => '/fr/login',
-            'en' => '/login',
-        ],
-        name: 'app_login'
-    )]
     /**
      * Handles the index controller action.
      */

@@ -32,7 +32,16 @@ final class VisiteurRequestNewCode extends AbstractController
             'fr' => '/fr/request-new-code',
             'en' => '/request-new-code',
         ],
-        name: 'app_auth_resend_code'
+        name: 'app_auth_resend_code',
+        defaults: ['registrationType' => 'particulier']
+    )]
+    #[Route(
+        path: [
+            'fr' => '/fr/pro/request-new-code',
+            'en' => '/pro/request-new-code',
+        ],
+        name: 'app_professionnelle_resend_code',
+        defaults: ['registrationType' => 'professionnel']
     )]
     /**
      * Handles the index controller action.
@@ -41,14 +50,19 @@ final class VisiteurRequestNewCode extends AbstractController
         Request $request,
         UserRepository $userRepository,
         EmailVerificationService $emailVerificationService,
+        string $registrationType,
     ): Response {
         $session = $request->getSession();
         $authUserId = $session->get('auth_user_id');
+        $isProfessional = 'professionnel' === $registrationType;
+        $verificationRoute = $isProfessional
+            ? 'app_professionnelle_otp'
+            : 'app_visiteur_verification_code';
 
         if (!$authUserId) {
             $this->addFlash('warning', 'Votre session a expiré. Veuillez recommencer.');
 
-            return $this->redirectToRoute('app_visiteur_verification_code');
+            return $this->redirectToRoute($verificationRoute);
         }
 
         $user = $userRepository->find($authUserId);
@@ -59,7 +73,7 @@ final class VisiteurRequestNewCode extends AbstractController
 
             $this->addFlash('danger', 'Utilisateur introuvable.');
 
-            return $this->redirectToRoute('app_visiteur_verification_code');
+            return $this->redirectToRoute($verificationRoute);
         }
 
         $lastRequestAt = $user->getEmailAuthCodeRequestedAt();
@@ -70,7 +84,7 @@ final class VisiteurRequestNewCode extends AbstractController
         ) {
             $this->addFlash('warning', 'Veuillez patienter 60 secondes avant de demander un nouveau code.');
 
-            return $this->redirectToRoute('app_visiteur_verification_code');
+            return $this->redirectToRoute($verificationRoute);
         }
 
         $emailVerificationService->prepare($user);
@@ -78,6 +92,6 @@ final class VisiteurRequestNewCode extends AbstractController
 
         $this->addFlash('success', 'Un nouveau code vous a été envoyé.');
 
-        return $this->redirectToRoute('app_visiteur_verification_code');
+        return $this->redirectToRoute($verificationRoute);
     }
 }

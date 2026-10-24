@@ -14,7 +14,6 @@ namespace App\Controller\Authentification\AgenceImmobiliere;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 /**
@@ -24,13 +23,6 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
  */
 final class AgenceImmobiliereLoginController extends AbstractController
 {
-    #[Route(
-        path: [
-            'fr' => '/fr/pro/login',
-            'en' => '/pro/login',
-        ],
-        name: 'app_professionnelle_connexion'
-    )]
     /**
      * Handles the login controller action.
      */
