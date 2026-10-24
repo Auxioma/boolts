@@ -1,5 +1,5 @@
-{% macro amount_minor(amount_minor, currency_sign) %}
-    {{ (amount_minor|default(0) / 100)|number_format(2, ',', ' ') }}{% if currency_sign %} {{ currency_sign }}{% endif %}
+{% macro amount_minor(amount_minor, currency_sign, currency) %}
+    {{ amount_minor|default(0)|minor_amount(currency) }}{% if currency_sign %} {{ currency_sign }}{% endif %}
 {% endmacro %}
 
 {% import _self as payments_format %}
@@ -55,7 +55,7 @@
                     <strong class="fs-5">0,00</strong>
                 {% else %}
                     {% for total in totals %}
-                        <strong class="fs-5 d-block">{{ payments_format.amount_minor(total.amountMinor, total.currencySign) }}</strong>
+                        <strong class="fs-5 d-block">{{ payments_format.amount_minor(total.amountMinor, total.currencySign, total.currencyName) }}</strong>
                     {% endfor %}
                 {% endif %}
             </div>
@@ -138,7 +138,7 @@
                                     {{ payment_status_labels[payment.status.value]|default(payment.status.value) }}
                                     {% if payment.amountRefundedMinor > 0 %}
                                         <span class="d-block small text-body-secondary">
-                                            Remboursé : {{ payments_format.amount_minor(payment.amountRefundedMinor, payment.currency.signe) }}
+                                            Remboursé : {{ payments_format.amount_minor(payment.amountRefundedMinor, payment.currency.signe, payment.currency) }}
                                         </span>
                                     {% endif %}
                                 {% else %}
@@ -147,9 +147,9 @@
                             </td>
                             <td class="text-end">
                                 {% if payment %}
-                                    {{ payments_format.amount_minor(payment.amountPaidMinor - payment.amountRefundedMinor, payment.currency.signe) }}
+                                    {{ payments_format.amount_minor(payment.amountPaidMinor - payment.amountRefundedMinor, payment.currency.signe, payment.currency) }}
                                 {% else %}
-                                    {{ payments_format.amount_minor(0, period.currency.signe) }}
+                                    {{ payments_format.amount_minor(0, period.currency.signe, period.currency) }}
                                 {% endif %}
                             </td>
                         </tr>

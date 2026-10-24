@@ -29,7 +29,7 @@
     <tr>
         <td><strong>Montant réglé</strong></td>
         <td>
-            {{ (amount_minor / 100)|number_format(2, ',', ' ') }} {{ currency_sign|default('') }}
+            {{ amount_minor|minor_amount(currency_name|default(null)) }} {{ currency_sign|default('') }}
             {% if billing_period == 'annual' %}/ an{% else %}/ mois{% endif %}
         </td>
     </tr>

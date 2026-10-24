@@ -13,6 +13,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Billing\SubscriptionPlan;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
@@ -41,7 +42,7 @@ class SubscriptionPlanCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_NEW, 'Ajouter un forfait')
             ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le forfait')
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détail du forfait')
-            ->setDefaultSort(['position' => 'ASC', 'name' => 'ASC']);
+            ->setDefaultSort(['position' => 'ASC']);
     }
 
     public function configureFields(string $pageName): iterable
@@ -49,8 +50,11 @@ class SubscriptionPlanCrudController extends AbstractCrudController
         return [
             IdField::new('id', 'ID')->hideOnForm(),
             TextField::new('code', 'Code')->setColumns(4),
-            TextField::new('name', 'Nom')->setColumns(8),
-            TextareaField::new('description', 'Description')->setColumns(12),
+            TextField::new('name', 'Nom')->onlyOnIndex(),
+            TextField::new('nameFr', 'Nom (FR)')->hideOnIndex()->setColumns(4),
+            TextField::new('nameEn', 'Nom (EN)')->hideOnIndex()->setColumns(4),
+            TextareaField::new('descriptionFr', 'Description (FR)')->hideOnIndex()->setColumns(6)->setRequired(false),
+            TextareaField::new('descriptionEn', 'Description (EN)')->hideOnIndex()->setColumns(6)->setRequired(false),
             IntegerField::new('propertyLimit', 'Limite de biens')->setColumns(4),
             IntegerField::new('includedBoosts', 'Boosts inclus')->setColumns(4),
             IntegerField::new('boostDurationDays', 'Durée d’un boost (jours)')->setColumns(4),
@@ -61,5 +65,26 @@ class SubscriptionPlanCrudController extends AbstractCrudController
             DateTimeField::new('createdAt', 'Créé le')->onlyOnDetail(),
             DateTimeField::new('updatedAt', 'Mis à jour le')->onlyOnDetail(),
         ];
+    }
+
+    // Les traductions FR/EN créées depuis le formulaire doivent être
+    // rattachées au forfait avant l'enregistrement (KnpDoctrineBehaviors).
+
+    public function persistEntity(EntityManagerInterface $entityManager, object $entityInstance): void
+    {
+        if ($entityInstance instanceof SubscriptionPlan) {
+            $entityInstance->mergeNewTranslations();
+        }
+
+        parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, object $entityInstance): void
+    {
+        if ($entityInstance instanceof SubscriptionPlan) {
+            $entityInstance->mergeNewTranslations();
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
     }
 }

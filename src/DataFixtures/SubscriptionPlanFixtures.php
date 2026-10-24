@@ -29,10 +29,15 @@ final class SubscriptionPlanFixtures extends Fixture
             $plan = FixtureEntityHelper::findOrCreate($manager, SubscriptionPlan::class, [
                 'code' => $data['code'],
             ]);
+            foreach (['fr', 'en'] as $locale) {
+                $plan->translate($locale, false)
+                    ->setName($data['name'][$locale])
+                    ->setDescription($data['description'][$locale]);
+            }
+            $plan->mergeNewTranslations();
+
             $plan
                 ->setCode($data['code'])
-                ->setName($data['name'])
-                ->setDescription($data['description'])
                 ->setPropertyLimit($data['propertyLimit'])
                 ->setIncludedBoosts($data['includedBoosts'])
                 ->setBoostDurationDays($data['boostDurationDays'])

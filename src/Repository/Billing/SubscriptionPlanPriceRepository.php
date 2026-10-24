@@ -14,6 +14,7 @@ namespace App\Repository\Billing;
 
 use App\Entity\Billing\Enum\SubscriptionBillingPeriod;
 use App\Entity\Billing\SubscriptionPlanPrice;
+use App\Entity\Devise;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,7 +27,7 @@ final class SubscriptionPlanPriceRepository extends ServiceEntityRepository
     }
 
     /** @return list<SubscriptionPlanPrice> */
-    public function findActiveWithPlanAndCurrency(): array
+    public function findActiveWithPlanAndCurrency(Devise $currency): array
     {
         return $this->createQueryBuilder('price')
             ->addSelect('plan', 'currency')
@@ -34,14 +35,16 @@ final class SubscriptionPlanPriceRepository extends ServiceEntityRepository
             ->innerJoin('price.currency', 'currency')
             ->where('price.isActive = :active')
             ->andWhere('plan.isActive = :active')
+            ->andWhere('price.currency = :currency')
             ->setParameter('active', true)
+            ->setParameter('currency', $currency)
             ->orderBy('plan.position', 'ASC')
             ->addOrderBy('price.billingPeriod', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
-    public function findActiveForPlanAndPeriod(int $planId, SubscriptionBillingPeriod $billingPeriod): ?SubscriptionPlanPrice
+    public function findActiveForPlanAndPeriod(int $planId, SubscriptionBillingPeriod $billingPeriod, Devise $currency): ?SubscriptionPlanPrice
     {
         return $this->createQueryBuilder('price')
             ->addSelect('plan', 'currency')
@@ -51,14 +54,16 @@ final class SubscriptionPlanPriceRepository extends ServiceEntityRepository
             ->andWhere('price.billingPeriod = :period')
             ->andWhere('price.isActive = :active')
             ->andWhere('plan.isActive = :active')
+            ->andWhere('price.currency = :currency')
             ->setParameter('id', $planId)
+            ->setParameter('currency', $currency)
             ->setParameter('period', $billingPeriod)
             ->setParameter('active', true)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
-    public function findDefaultFreeMonthlyPrice(): ?SubscriptionPlanPrice
+    public function findDefaultFreeMonthlyPrice(Devise $currency): ?SubscriptionPlanPrice
     {
         return $this->createQueryBuilder('price')
             ->addSelect('plan', 'currency')
@@ -68,6 +73,8 @@ final class SubscriptionPlanPriceRepository extends ServiceEntityRepository
             ->andWhere('price.amountMinor = :amount')
             ->andWhere('plan.isFree = :free')
             ->andWhere('plan.isDefault = :default')
+            ->andWhere('price.currency = :currency')
+            ->setParameter('currency', $currency)
             ->setParameter('period', SubscriptionBillingPeriod::MONTHLY)
             ->setParameter('amount', 0)
             ->setParameter('free', true)
@@ -76,6 +83,21 @@ final class SubscriptionPlanPriceRepository extends ServiceEntityRepository
             ->addOrderBy('price.isActive', 'DESC')
             ->addOrderBy('plan.position', 'ASC')
             ->addOrderBy('price.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function hasActivePricesInCurrency(Devise $currency): bool
+    {
+        return null !== $this->createQueryBuilder('price')
+            ->select('price.id')
+            ->innerJoin('price.plan', 'plan')
+            ->where('price.currency = :currency')
+            ->andWhere('price.isActive = :active')
+            ->andWhere('plan.isActive = :active')
+            ->setParameter('currency', $currency)
+            ->setParameter('active', true)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();

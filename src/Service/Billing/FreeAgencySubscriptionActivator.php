@@ -28,6 +28,7 @@ final readonly class FreeAgencySubscriptionActivator
         private EntityManagerInterface $entityManager,
         private AgencySubscriptionRepository $agencySubscriptionRepository,
         private SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
+        private SubscriptionCurrencyResolver $subscriptionCurrencyResolver,
     ) {
     }
 
@@ -39,7 +40,9 @@ final readonly class FreeAgencySubscriptionActivator
             return $existingSubscription;
         }
 
-        $freePlanPrice = $this->subscriptionPlanPriceRepository->findDefaultFreeMonthlyPrice();
+        $freePlanPrice = $this->subscriptionPlanPriceRepository->findDefaultFreeMonthlyPrice(
+            $this->subscriptionCurrencyResolver->resolve($agency),
+        );
 
         if (!$freePlanPrice instanceof SubscriptionPlanPrice) {
             throw new \LogicException('Aucune offre gratuite n’est configurée.');

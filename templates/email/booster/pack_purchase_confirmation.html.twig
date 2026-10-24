@@ -45,7 +45,7 @@
         </tr>
         <tr>
             <td><strong>Montant réglé</strong></td>
-            <td>{{ amount|number_format(2, ',', ' ') }} {{ currencySign }}</td>
+            <td>{{ amountMinor|minor_amount(currencyName) }} {{ currencySign }}</td>
         </tr>
         <tr>
             <td><strong>Référence de paiement</strong></td>

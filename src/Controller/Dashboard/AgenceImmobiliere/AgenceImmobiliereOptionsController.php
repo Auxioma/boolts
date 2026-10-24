@@ -33,6 +33,7 @@ use App\Repository\Billing\SubscriptionPlanPriceRepository;
 use App\Repository\Booster\BoosterPackPriceRepository;
 use App\Security\Voter\AgencyDocumentVoter;
 use App\Service\Billing\InvoiceIssuer;
+use App\Service\Billing\SubscriptionCurrencyResolver;
 use App\Service\Booster\BoosterPackPurchaseMailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -81,6 +82,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         BoosterPackPriceRepository $boosterPackPriceRepository,
         AgencySubscriptionRepository $agencySubscriptionRepository,
         PaymentRepository $paymentRepository,
+        SubscriptionCurrencyResolver $subscriptionCurrencyResolver,
     ): Response {
         $agency = $this->getUser();
 
@@ -88,7 +90,10 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             throw $this->createAccessDeniedException('Utilisateur non authentifié.');
         }
 
-        $subscriptionPrices = $subscriptionPlanPriceRepository->findActiveWithPlanAndCurrency();
+        // Forfaits affichés dans la devise de l'agence (EUR par défaut).
+        $subscriptionPrices = $subscriptionPlanPriceRepository->findActiveWithPlanAndCurrency(
+            $subscriptionCurrencyResolver->resolve($agency),
+        );
 
         // Un forfait = un plan + son unique prix. On regroupe les forfaits par
         // périodicité pour que le toggle affiche soit le bloc mensuel, soit le
@@ -142,6 +147,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
         AgencyPaymentMethodRepository $paymentMethodRepository,
         AgencySubscriptionRepository $agencySubscriptionRepository,
+        SubscriptionCurrencyResolver $subscriptionCurrencyResolver,
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
     ): Response {
@@ -151,20 +157,26 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             throw $this->createNotFoundException('Période de facturation invalide.');
         }
 
+        $agency = $this->getUser();
+
+        if (!$agency instanceof User) {
+            throw $this->createAccessDeniedException('Utilisateur non authentifié.');
+        }
+
         $planPrice = $subscriptionPlanPriceRepository->findActiveForPlanAndPeriod(
             $id,
             SubscriptionBillingPeriod::from($period),
+            $subscriptionCurrencyResolver->resolve($agency),
         );
 
         if (!$planPrice instanceof SubscriptionPlanPrice) {
             throw $this->createNotFoundException('Forfait indisponible pour cette période de facturation.');
         }
 
-        $agency = $this->getUser();
         $paymentMethods = [];
         $defaultPaymentMethod = null;
 
-        if ($agency instanceof User && null !== $agency->getBillingProfile()) {
+        if (null !== $agency->getBillingProfile()) {
             $paymentMethods = $paymentMethodRepository->findActiveByBillingProfile(
                 $agency->getBillingProfile()
             );
@@ -179,9 +191,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             $defaultPaymentMethod ??= $paymentMethods[0] ?? null;
         }
 
-        $currentSubscription = $agency instanceof User
-            ? $agencySubscriptionRepository->findOneActivePaidForAgency($agency)
-            : null;
+        $currentSubscription = $agencySubscriptionRepository->findOneActivePaidForAgency($agency);
         $currentPlanPrice = $currentSubscription?->getPlanPrice();
 
         $isDowngrade = $currentPlanPrice instanceof SubscriptionPlanPrice

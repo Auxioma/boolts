@@ -93,7 +93,7 @@
                                 </div>
 
                                 <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
-                                    {{ ((payment.amountPaidMinor > 0 ? payment.amountPaidMinor : payment.amountTotalMinor) / 100)|number_format(2, ',', ' ') }}
+                                    {{ (payment.amountPaidMinor > 0 ? payment.amountPaidMinor : payment.amountTotalMinor)|minor_amount(payment.currency) }}
                                     {{ currency_sign }}
                                 </p>
                             </div>

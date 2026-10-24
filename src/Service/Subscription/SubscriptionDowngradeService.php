@@ -22,6 +22,7 @@ use App\Entity\Billing\Enum\SubscriptionStatus;
 use App\Entity\Billing\SubscriptionPlanPrice;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Billing\SubscriptionPlanPriceRepository;
+use App\Service\Billing\SubscriptionCurrencyResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -31,6 +32,7 @@ final readonly class SubscriptionDowngradeService
         private EntityManagerInterface $entityManager,
         private AgencySubscriptionRepository $subscriptionRepository,
         private SubscriptionPlanPriceRepository $planPriceRepository,
+        private SubscriptionCurrencyResolver $currencyResolver,
         private SubscriptionEntitlementService $entitlementService,
         private SubscriptionHistoryRecorder $historyRecorder,
         private SubscriptionEmailDispatcher $emailDispatcher,
@@ -119,7 +121,9 @@ final readonly class SubscriptionDowngradeService
             return $freeSubscription;
         }
 
-        $freePlanPrice = $this->planPriceRepository->findDefaultFreeMonthlyPrice();
+        $freePlanPrice = $this->planPriceRepository->findDefaultFreeMonthlyPrice(
+            $this->currencyResolver->resolve($paidSubscription->getAgency()),
+        );
 
         if (!$freePlanPrice instanceof SubscriptionPlanPrice) {
             throw new \LogicException('Aucune offre gratuite n’est configurée.');

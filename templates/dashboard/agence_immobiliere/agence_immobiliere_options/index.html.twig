@@ -44,7 +44,7 @@
                         Gratuit
                     {% else %}
                         <span class="achat-price-value">
-                            {{ (price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                            {{ price.amountMinor|minor_amount(price.currency) }}
                             {{ price.currency.signe }}
                         </span>
 
@@ -347,7 +347,7 @@ display: inline-flex;
         status: abonnement_actuel.status.value,
         billingPeriod: abonnement_actuel.planPrice ? abonnement_actuel.planPrice.billingPeriod.value : 'monthly',
         currentPeriodEnd: abonnement_actuel.currentPeriodEnd,
-        price: abonnement_actuel.amountSnapshotMinor / 100,
+        price: abonnement_actuel.amountSnapshotMinor|minor_amount(abonnement_actuel.currencySnapshot),
         currencySign: abonnement_actuel.currencySnapshot ? abonnement_actuel.currencySnapshot.signe : '€',
         cancelAtPeriodEnd: abonnement_actuel.cancelAtPeriodEnd,
     } : null %}
@@ -533,7 +533,7 @@ display: inline-flex;
 
                             {% if subscription.price is defined %}
 
-                                {{ subscription.price|number_format(2, ',', ' ') }}
+                                {{ subscription.price }}
                                 {{ subscription.currencySign }}
 
                             {% elseif subscription.plan is defined
@@ -662,7 +662,7 @@ display: inline-flex;
                         Le paiement de
 
                         <strong>
-                            {{ (abonnement_actuel.pendingPlanPrice.amountMinor / 100)|number_format(2, ',', ' ') }}
+                            {{ abonnement_actuel.pendingPlanPrice.amountMinor|minor_amount(abonnement_actuel.pendingPlanPrice.currency) }}
                             {{ abonnement_actuel.pendingPlanPrice.currency.signe }}
                         </strong>
 
@@ -786,7 +786,7 @@ display: inline-flex;
                                             </h2>
 
                                             <h3 class="achat-boost-price">
-                                                {{ (boostPrice.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                {{ boostPrice.amountMinor|minor_amount(boostPrice.currency) }}
                                                 {{ boostPrice.currency.signe }}
                                             </h3>
 

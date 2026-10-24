@@ -53,7 +53,7 @@
                                                     {% if current_plan_price %}
                                                         <div class="d-flex align-items-baseline gap-1">
                                                             <h3 class="mb-0">
-                                                                {{ (current_plan_price.amountMinor / 100)|number_format(2, ',', ' ') }} 
+                                                                {{ current_plan_price.amountMinor|minor_amount(current_plan_price.currency) }} 
                                                                 {{ current_plan_price.currency.signe }}
                                                             </h3>
                                                             <span class="p-accent" style="color:#858789">
@@ -78,7 +78,7 @@
 
                                                     <div class="d-flex align-items-baseline gap-1">
                                                         <h3 class="mb-0">
-                                                            {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                            {{ plan_price.amountMinor|minor_amount(plan_price.currency) }}
                                                             {{ plan_price.currency.signe }}
                                                         </h3>
                                                         <span class="p-accent" style="color:#858789">
@@ -105,7 +105,7 @@
                                                         <strong>« {{ plan.name }} »</strong>
                                                         prendra effet et vous serez facturé de
                                                         <strong>
-                                                            {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                            {{ plan_price.amountMinor|minor_amount(plan_price.currency) }}
                                                             {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
                                                         </strong>.
                                                     </li>
@@ -354,7 +354,7 @@
 
                                                     <div class="d-flex align-items-baseline flex-nowrap gap-1">
                                                         <strong class="h-03">
-                                                            {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                            {{ plan_price.amountMinor|minor_amount(plan_price.currency) }}
                                                             {{ plan_price.currency.signe }}
                                                         </strong>
                                                         <strong class="p-accent" style="color:#858789">/{{ period == 'annual' ? 'an' : 'mois' }}</strong>
@@ -365,7 +365,7 @@
                                                     <strong>Montant total :</strong>
 
                                                     <strong>
-                                                        {{ (plan_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                        {{ plan_price.amountMinor|minor_amount(plan_price.currency) }}
                                                         {{ plan_price.currency.signe }}/{{ period == 'annual' ? 'an' : 'mois' }}
                                                     </strong>
                                                 </div>

@@ -81,7 +81,7 @@
                         <div>
                             <span>Prix</span>
                             <strong>
-                                {{ (current_subscription.amountSnapshotMinor / 100)|number_format(2, ',', ' ') }}
+                                {{ current_subscription.amountSnapshotMinor|minor_amount(current_subscription.currencySnapshot) }}
                                 {{ currency_sign }}
                             </strong>
                         </div>

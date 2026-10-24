@@ -32,6 +32,7 @@ use App\Entity\User;
 use App\Exception\PlanChangeException;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Service\Billing\InvoiceIssuer;
+use App\Service\Billing\SubscriptionCurrencyResolver;
 use App\Service\Stripe\StripeSubscriptionService;
 use App\Service\Subscription\SubscriptionEmailDispatcher;
 use App\Service\Subscription\SubscriptionPlanChangeService;
@@ -74,6 +75,7 @@ final class SubscriptionController extends AbstractController
         private readonly InvoiceIssuer $invoiceIssuer,
         private readonly SubscriptionEmailDispatcher $emailDispatcher,
         private readonly LoggerInterface $logger,
+        private readonly SubscriptionCurrencyResolver $currencyResolver,
     ) {
     }
 
@@ -110,6 +112,11 @@ final class SubscriptionController extends AbstractController
 
         if (!$planPrice instanceof SubscriptionPlanPrice || !$planPrice->isActive() || !$planPrice->getPlan()->isActive()) {
             return $this->json(['success' => false, 'message' => 'Forfait indisponible.'], 404);
+        }
+
+        // Le prix doit être dans la devise de l'agence (celle affichée sur la page des forfaits).
+        if ($planPrice->getCurrency() !== $this->currencyResolver->resolve($agency)) {
+            return $this->json(['success' => false, 'message' => 'Ce forfait n’est pas proposé dans votre devise.'], 400);
         }
 
         if ($planPrice->getAmountMinor() <= 0) {
@@ -264,6 +271,7 @@ final class SubscriptionController extends AbstractController
                 'billing_period' => $planPrice->getBillingPeriod()->value,
                 'amount_minor' => $planPrice->getAmountMinor(),
                 'currency_sign' => $planPrice->getCurrency()->getSigne(),
+                'currency_name' => $planPrice->getCurrency()->getNom(),
                 'effective_at' => $effectiveAt?->format(\DATE_ATOM),
                 'property_limit' => $planPrice->getPlan()->getPropertyLimit(),
                 'included_boosts' => $planPrice->getPlan()->getIncludedBoosts(),
@@ -400,6 +408,7 @@ final class SubscriptionController extends AbstractController
                 'billing_period' => $planPrice->getBillingPeriod()->value,
                 'amount_minor' => $planPrice->getAmountMinor(),
                 'currency_sign' => $planPrice->getCurrency()->getSigne(),
+                'currency_name' => $planPrice->getCurrency()->getNom(),
                 'payment_reference' => $payment->getReference(),
                 'period_start' => $periodStart->format(\DATE_ATOM),
                 'period_end' => $periodEnd->format(\DATE_ATOM),
@@ -452,6 +461,7 @@ final class SubscriptionController extends AbstractController
                 'billing_period' => $newPlanPrice->getBillingPeriod()->value,
                 'amount_minor' => $newPlanPrice->getAmountMinor(),
                 'currency_sign' => $newPlanPrice->getCurrency()->getSigne(),
+                'currency_name' => $newPlanPrice->getCurrency()->getNom(),
                 'period_start' => $periodStart?->format(\DATE_ATOM),
                 'period_end' => $periodEnd?->format(\DATE_ATOM),
                 'property_limit' => $newPlanPrice->getPlan()->getPropertyLimit(),

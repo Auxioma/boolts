@@ -52,7 +52,9 @@ class SubscriptionPlanPriceCrudController extends AbstractCrudController
             IdField::new('id', 'ID')->hideOnForm(),
             AssociationField::new('plan', 'Forfait')->setColumns(6),
             AssociationField::new('currency', 'Devise')->setColumns(6),
-            IntegerField::new('amountMinor', 'Montant (unité mineure)')->setColumns(4),
+            IntegerField::new('amountMinor', 'Montant (unité mineure)')
+                ->setHelp('En centimes (1999 = 19,99). Devises sans centimes (JPY, KRW…) : montant entier (3599 = 3 599 ¥). ISK : montant × 100.')
+                ->setColumns(4),
             ChoiceField::new('billingPeriod', 'Période de facturation')
                 ->setChoices([
                     'Mensuelle' => SubscriptionBillingPeriod::MONTHLY,

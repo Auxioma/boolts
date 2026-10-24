@@ -244,7 +244,7 @@
                                                 <strong>Montant total :</strong>
 
                                                 <strong>
-                                                    {{ (boost_price.amountMinor / 100)|number_format(2, ',', ' ') }}
+                                                    {{ boost_price.amountMinor|minor_amount(boost_price.currency) }}
                                                     {{ boost_price.currency.signe }}
                                                 </strong>
                                             </div>
