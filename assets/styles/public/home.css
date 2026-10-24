@@ -1468,6 +1468,56 @@ input {
     background: rgba(255, 255, 255, 0.5);
 
     border-radius: 24px;
+
+    /* Effet « Liquid Glass » repris du CodePen Cosmos-815/MYwGbWJ.
+       Pas d'overflow: hidden ici (il couperait la liste des résultats) :
+       les calques héritent de l'arrondi à la place. */
+    position: relative;
+
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5), 0 0 2px rgba(0, 0, 0, 0.6);
+}
+
+.home-bt-search-hero .glass-filter,
+.home-bt-search-hero .glass-overlay,
+.home-bt-search-hero .glass-specular {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 0;
+
+    border-radius: inherit;
+
+    backdrop-filter: blur(2px);
+
+    filter: url(#lg-dist);
+
+    isolation: isolate;
+
+    pointer-events: none;
+}
+
+/* Liseré lumineux du CodePen (porté par .glass-content là-bas). */
+.home-bt-search-hero::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1;
+
+    border-radius: inherit;
+
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.85), inset 0 0 4px rgba(255, 255, 255, 0.85);
+
+    pointer-events: none;
+}
+
+.home-bt-search-hero > .home-bt-search-tabs {
+    position: relative;
+
+    z-index: 2;
 }
 
 .home-bt-search-tabs {
