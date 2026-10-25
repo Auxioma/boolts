@@ -411,7 +411,13 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                         ? '%d crédit Boost a été ajouté à votre compte.'
                         : '%d crédits Boost ont été ajoutés à votre compte.',
                     $boostQuantity,
-                ));
+                ))
+                ->setTranslation(
+                    1 === $boostQuantity
+                        ? 'agency_notifications.message.boost_added.one'
+                        : 'agency_notifications.message.boost_added.other',
+                    ['%count%' => $boostQuantity],
+                );
 
             $entityManager->persist($payment);
             $entityManager->persist($boostTransaction);

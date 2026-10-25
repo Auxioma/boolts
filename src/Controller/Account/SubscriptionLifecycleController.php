@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route(
     path: [
@@ -43,6 +44,7 @@ final class SubscriptionLifecycleController extends AbstractController
         private readonly StripeCustomerService $stripeCustomerService,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly LoggerInterface $logger,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -50,21 +52,21 @@ final class SubscriptionLifecycleController extends AbstractController
     public function cancel(Request $request): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('account_subscription_cancel', $this->readCsrfToken($request))) {
-            $this->addFlash('subscription_error', 'Jeton de sécurité invalide.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.invalid_csrf'));
 
             return $this->redirectAfterLifecycleAction($request);
         }
 
         try {
             $this->cancellationService->requestCancellation($this->agency());
-            $this->addFlash('subscription_success', 'Votre résiliation est programmée à la fin de la période déjà payée.');
+            $this->addFlash('subscription_success', $this->translator->trans('agency_options.flash.cancel_success'));
         } catch (\Throwable $exception) {
             $this->logger->error('[SUBSCRIPTION] Unable to schedule cancellation from customer area.', [
                 'agency' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
                 'message' => $exception->getMessage(),
             ]);
 
-            $this->addFlash('subscription_error', 'Impossible de programmer la résiliation de votre abonnement.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.cancel_error'));
         }
 
         return $this->redirectAfterLifecycleAction($request);
@@ -74,21 +76,21 @@ final class SubscriptionLifecycleController extends AbstractController
     public function reactivate(Request $request): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('account_subscription_reactivate', $this->readCsrfToken($request))) {
-            $this->addFlash('subscription_error', 'Jeton de sécurité invalide.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.invalid_csrf'));
 
             return $this->redirectAfterLifecycleAction($request);
         }
 
         try {
             $this->cancellationService->revokeCancellation($this->agency());
-            $this->addFlash('subscription_success', 'Votre abonnement restera actif après la période en cours.');
+            $this->addFlash('subscription_success', $this->translator->trans('agency_options.flash.reactivate_success'));
         } catch (\Throwable $exception) {
             $this->logger->error('[SUBSCRIPTION] Unable to reactivate subscription from customer area.', [
                 'agency' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
                 'message' => $exception->getMessage(),
             ]);
 
-            $this->addFlash('subscription_error', 'Impossible de réactiver votre abonnement.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.reactivate_error'));
         }
 
         return $this->redirectAfterLifecycleAction($request);
@@ -98,7 +100,7 @@ final class SubscriptionLifecycleController extends AbstractController
     public function cancelPlanChange(Request $request): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('account_subscription_cancel_plan_change', $this->readCsrfToken($request))) {
-            $this->addFlash('subscription_error', 'Jeton de sécurité invalide.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.invalid_csrf'));
 
             return $this->redirectAfterLifecycleAction($request);
         }
@@ -106,21 +108,21 @@ final class SubscriptionLifecycleController extends AbstractController
         $subscription = $this->subscriptionRepository->findOneActivePaidForAgency($this->agency());
 
         if (!$subscription instanceof AgencySubscription || !$subscription->hasPendingPlanChange()) {
-            $this->addFlash('subscription_error', 'Aucun changement de forfait n’est programmé.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.no_plan_change'));
 
             return $this->redirectAfterLifecycleAction($request);
         }
 
         try {
             $this->planChangeService->cancelScheduledDowngrade($subscription);
-            $this->addFlash('subscription_success', 'Le changement de forfait programmé a été annulé.');
+            $this->addFlash('subscription_success', $this->translator->trans('agency_options.flash.cancel_plan_change_success'));
         } catch (\Throwable $exception) {
             $this->logger->error('[SUBSCRIPTION] Unable to cancel scheduled plan change from customer area.', [
                 'agency' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
                 'message' => $exception->getMessage(),
             ]);
 
-            $this->addFlash('subscription_error', 'Impossible d’annuler le changement de forfait programmé.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.cancel_plan_change_error'));
         }
 
         return $this->redirectAfterLifecycleAction($request);
@@ -134,7 +136,7 @@ final class SubscriptionLifecycleController extends AbstractController
         $stripeCustomerId = $billingProfile?->getStripeCustomerId();
 
         if (!\is_string($stripeCustomerId) || !str_starts_with($stripeCustomerId, 'cus_')) {
-            $this->addFlash('subscription_error', 'Aucun profil de facturation Stripe actif n’est disponible.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.no_billing_profile'));
 
             return $this->redirectToBillingSettings();
         }
@@ -151,7 +153,7 @@ final class SubscriptionLifecycleController extends AbstractController
                 'message' => $exception->getMessage(),
             ]);
 
-            $this->addFlash('subscription_error', 'Impossible d’ouvrir le portail de paiement pour le moment.');
+            $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.customer_portal_error'));
 
             return $this->redirectToBillingSettings();
         }

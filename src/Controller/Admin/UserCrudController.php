@@ -487,9 +487,11 @@ class UserCrudController extends AbstractCrudController
         if ($hasRejected) {
             $outcome = DocumentRequestStatus::REJECTED;
             $message = 'Un ou plusieurs de vos documents n’ont pas été acceptés. Redéposez les documents.';
+            $translationKey = 'agency_notifications.message.documents_rejected';
         } elseif ($allApproved) {
             $outcome = DocumentRequestStatus::APPROVED;
             $message = 'Votre compte a été validé.';
+            $translationKey = 'agency_notifications.message.account_validated';
         } else {
             return;
         }
@@ -514,7 +516,8 @@ class UserCrudController extends AbstractCrudController
 
         $notification = (new AgencyNotification())
             ->setAgency($user)
-            ->setNom($message);
+            ->setNom($message)
+            ->setTranslation($translationKey);
 
         $entityManager->persist($notification);
     }

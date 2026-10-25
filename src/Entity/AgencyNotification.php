@@ -13,6 +13,7 @@
 namespace App\Entity;
 
 use App\Repository\AgencyNotificationRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AgencyNotificationRepository::class)]
@@ -29,6 +30,21 @@ class AgencyNotification
      */
     #[ORM\Column(length: 255)]
     private string $nom;
+
+    /**
+     * Clé de traduction du libellé (null pour les notifications antérieures,
+     * qui n'ont que le libellé français stocké dans $nom).
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $translationKey = null;
+
+    /**
+     * Paramètres de la traduction (ex. ['%count%' => 3]).
+     *
+     * @var array<string, string|int>|null
+     */
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $translationParameters = null;
 
     /**
      * Date de création de la notification.
@@ -67,6 +83,30 @@ class AgencyNotification
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getTranslationKey(): ?string
+    {
+        return $this->translationKey;
+    }
+
+    /**
+     * @return array<string, string|int>
+     */
+    public function getTranslationParameters(): array
+    {
+        return $this->translationParameters ?? [];
+    }
+
+    /**
+     * @param array<string, string|int> $parameters
+     */
+    public function setTranslation(?string $key, array $parameters = []): static
+    {
+        $this->translationKey = $key;
+        $this->translationParameters = null === $key || [] === $parameters ? null : $parameters;
 
         return $this;
     }

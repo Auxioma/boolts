@@ -26,10 +26,15 @@ final class BoosterPackFixtures extends Fixture
             $pack = FixtureEntityHelper::findOrCreate($manager, BoosterPack::class, [
                 'code' => $data['code'],
             ]);
+            foreach (['fr', 'en'] as $locale) {
+                $pack->translate($locale, false)
+                    ->setName($data['name'][$locale])
+                    ->setDescription($data['description'][$locale]);
+            }
+            $pack->mergeNewTranslations();
+
             $pack
                 ->setCode($data['code'])
-                ->setName($data['name'])
-                ->setDescription($data['description'])
                 ->setBoostQuantity($data['boostQuantity'])
                 ->setBoostDurationDays($data['boostDurationDays'])
                 ->setIsActive(true)

@@ -128,10 +128,16 @@ class PropertyCrudController extends AbstractCrudController
             return false;
         }
 
-        $message = match ($newStatut) {
-            StatutAnnonceImmobiliere::PUBLIEE => $this->propertyNotificationLabeler->acceptedLabel($property),
-            StatutAnnonceImmobiliere::REFUSEE => $this->propertyNotificationLabeler->refusedLabel($property),
-            default => null,
+        [$message, $translation] = match ($newStatut) {
+            StatutAnnonceImmobiliere::PUBLIEE => [
+                $this->propertyNotificationLabeler->acceptedLabel($property),
+                $this->propertyNotificationLabeler->acceptedTranslation($property),
+            ],
+            StatutAnnonceImmobiliere::REFUSEE => [
+                $this->propertyNotificationLabeler->refusedLabel($property),
+                $this->propertyNotificationLabeler->refusedTranslation($property),
+            ],
+            default => [null, null],
         };
 
         if (null === $message) {
@@ -148,6 +154,7 @@ class PropertyCrudController extends AbstractCrudController
             (new AgencyNotification())
                 ->setAgency($agency)
                 ->setNom($message)
+                ->setTranslation(...$translation)
         );
 
         return StatutAnnonceImmobiliere::PUBLIEE === $newStatut;
@@ -318,10 +325,16 @@ class PropertyCrudController extends AbstractCrudController
 
             $property->setStatut($targetStatut);
 
-            $message = match ($targetStatut) {
-                StatutAnnonceImmobiliere::PUBLIEE => $this->propertyNotificationLabeler->acceptedLabel($property),
-                StatutAnnonceImmobiliere::REFUSEE => $this->propertyNotificationLabeler->refusedLabel($property),
-                default => null,
+            [$message, $translation] = match ($targetStatut) {
+                StatutAnnonceImmobiliere::PUBLIEE => [
+                    $this->propertyNotificationLabeler->acceptedLabel($property),
+                    $this->propertyNotificationLabeler->acceptedTranslation($property),
+                ],
+                StatutAnnonceImmobiliere::REFUSEE => [
+                    $this->propertyNotificationLabeler->refusedLabel($property),
+                    $this->propertyNotificationLabeler->refusedTranslation($property),
+                ],
+                default => [null, null],
             };
 
             $agency = $property->getUser();
@@ -331,6 +344,7 @@ class PropertyCrudController extends AbstractCrudController
                     (new AgencyNotification())
                         ->setAgency($agency)
                         ->setNom($message)
+                        ->setTranslation(...$translation)
                 );
             }
 

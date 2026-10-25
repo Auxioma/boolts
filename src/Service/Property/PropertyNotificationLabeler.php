@@ -60,6 +60,56 @@ final class PropertyNotificationLabeler
             : $label;
     }
 
+    /**
+     * Clé et paramètres de traduction équivalents à {@see pendingLabel}.
+     *
+     * @return array{0: string, 1: array<string, string>}
+     */
+    public function pendingTranslation(Property $property): array
+    {
+        return $this->composeTranslation($property, 'property_pending');
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>}
+     */
+    public function acceptedTranslation(Property $property): array
+    {
+        return $this->composeTranslation($property, 'property_accepted');
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>}
+     */
+    public function refusedTranslation(Property $property): array
+    {
+        return $this->composeTranslation($property, 'property_refused');
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>}
+     */
+    public function boostActiveTranslation(Property $property): array
+    {
+        $name = $this->identify($property);
+
+        return '' === $name
+            ? ['agency_notifications.message.boost_active_untitled', []]
+            : ['agency_notifications.message.boost_active', ['%name%' => $name]];
+    }
+
+    /**
+     * @return array{0: string, 1: array<string, string>}
+     */
+    private function composeTranslation(Property $property, string $message): array
+    {
+        $descriptor = $this->describe($property);
+
+        return '' === $descriptor
+            ? ['agency_notifications.message.'.$message.'_untitled', []]
+            : ['agency_notifications.message.'.$message, ['%property%' => $descriptor]];
+    }
+
     private function compose(Property $property, string $outcome, string $suffix = ''): string
     {
         $descriptor = $this->describe($property);

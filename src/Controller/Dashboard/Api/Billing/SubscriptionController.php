@@ -478,7 +478,11 @@ final class SubscriptionController extends AbstractController
             ->setNom(\sprintf(
                 'Votre abonnement %s a été activé.',
                 $planPrice->getPlan()->getName(),
-            ));
+            ))
+            ->setTranslation(
+                'agency_notifications.message.plan_activated',
+                ['%plan%' => $planPrice->getPlan()->getName()],
+            );
     }
 
     private function createSubscriptionCreditTransaction(

@@ -260,7 +260,8 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
 
             $notification = (new AgencyNotification())
                 ->setAgency($user)
-                ->setNom('Votre compte est en attente de validation. Déposez les documents demandés.');
+                ->setNom('Votre compte est en attente de validation. Déposez les documents demandés.')
+                ->setTranslation('agency_notifications.message.account_pending_documents');
             $em->persist($notification);
 
             $em->flush();

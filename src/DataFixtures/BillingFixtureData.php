@@ -167,24 +167,33 @@ final class BillingFixtureData
     public const BOOSTER_PACKS = [
         [
             'code' => 'boost-1',
-            'name' => '1 boost',
-            'description' => '1 boost s’applique sur 1 annonce et dure 15 jours.',
+            'name' => ['fr' => '1 boost', 'en' => '1 boost'],
+            'description' => [
+                'fr' => '1 boost s’applique sur 1 annonce et dure 15 jours.',
+                'en' => '1 boost applies to 1 listing and lasts 15 days.',
+            ],
             'boostQuantity' => 1,
             'boostDurationDays' => 15,
             'position' => 1,
         ],
         [
             'code' => 'boost-5',
-            'name' => '5 boosts',
-            'description' => '5 boosts à utiliser sur vos annonces pendant 15 jours chacun.',
+            'name' => ['fr' => '5 boosts', 'en' => '5 boosts'],
+            'description' => [
+                'fr' => '5 boosts à utiliser sur vos annonces pendant 15 jours chacun.',
+                'en' => '5 boosts to use on your listings for 15 days each.',
+            ],
             'boostQuantity' => 5,
             'boostDurationDays' => 15,
             'position' => 2,
         ],
         [
             'code' => 'boost-20',
-            'name' => '20 boosts',
-            'description' => '20 boosts à utiliser sur vos annonces pendant 15 jours chacun.',
+            'name' => ['fr' => '20 boosts', 'en' => '20 boosts'],
+            'description' => [
+                'fr' => '20 boosts à utiliser sur vos annonces pendant 15 jours chacun.',
+                'en' => '20 boosts to use on your listings for 15 days each.',
+            ],
             'boostQuantity' => 20,
             'boostDurationDays' => 15,
             'position' => 3,

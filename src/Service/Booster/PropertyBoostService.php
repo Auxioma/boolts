@@ -191,6 +191,12 @@ final class PropertyBoostService
                         $remainingBalance,
                         1 === $remainingBalance ? 'restant' : 'restants',
                     ))
+                    ->setTranslation(
+                        1 === $remainingBalance
+                            ? 'agency_notifications.message.boost_low_balance.one'
+                            : 'agency_notifications.message.boost_low_balance.other',
+                        ['%count%' => $remainingBalance],
+                    )
             );
         }
 

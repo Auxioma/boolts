@@ -1,3 +1,4 @@
+{% set annonces_restantes_label = annonces_restantes is null ? 'boost_balance.listings.unlimited'|trans : annonces_restantes|default(0) %}
 {% if variant == 'options' %}
     <button
         class="btn achat-btn-outline-brand achat-boost-balance"
@@ -10,13 +11,13 @@
         >
 
         <span>
-            Annonces : {{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}
+            {{ 'boost_balance.listings.count'|trans({'%count%': annonces_restantes_label}) }}
         </span>
     </button>
 {% else %}
     <a href="#" class="p-accent btn dashboard-boost-button">
         <i class="icon-building-2"></i>
-        <span class="dashboard-annonce-label d-none d-md-inline">Annonces restantes :</span>
-        <span>{{ annonces_restantes is null ? 'Illimité' : annonces_restantes|default(0) }}</span>
+        <span class="dashboard-annonce-label d-none d-md-inline">{{ 'boost_balance.listings.remaining'|trans }}</span>
+        <span>{{ annonces_restantes_label }}</span>
     </a>
 {% endif %}

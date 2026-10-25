@@ -33,7 +33,7 @@
             <div>
                 {# Repère du forfait souscrit, réservé aux offres payantes. #}
                 {% if isCurrentPlan and not plan.isFree %}
-                    <p class="p-accent mb-3" style="color:#5d00ff">Abonnement actuel</p>
+                    <p class="p-accent mb-3" style="color:#5d00ff">{{ 'agency_options.plan.current'|trans }}</p>
                 {% endif %}
                 <h3>
                     {{ plan.name }}
@@ -41,7 +41,7 @@
 
                 <h2 class="achat-price">
                     {% if plan.isFree %}
-                        Gratuit
+                        {{ 'agency_options.plan.free'|trans }}
                     {% else %}
                         <span class="achat-price-value">
                             {{ price.amountMinor|minor_amount(price.currency) }}
@@ -49,7 +49,7 @@
                         </span>
 
                         <span class="achat-price-period p-accent">
-                            {{ period == 'annual' ? '/an' : '/mois' }}
+                            {{ (period == 'annual' ? 'agency_options.plan.per_year' : 'agency_options.plan.per_month')|trans }}
                         </span>
                     {% endif %}
                 </h2>
@@ -64,7 +64,7 @@
                     href="{{ path('agence_immobiliere_achat', {id: plan.id, period: period}) }}"
                     class="btn-full-blue w-100 {{ canSubscribe ? '' : 'd-none' }}"
                 >
-                    Souscrire
+                    {{ 'agency_options.plan.subscribe'|trans }}
                 </a>
             {% endif %}
         </article>
@@ -83,8 +83,8 @@
             <strong>
                 ✓
                 {{ plan.propertyLimit is null
-                    ? 'Biens illimités'
-                    : plan.propertyLimit ~ ' biens'
+                    ? 'agency_options.plan.properties_unlimited'|trans
+                    : 'agency_options.plan.properties'|trans({'%count%': plan.propertyLimit})
                 }}
             </strong>
         </p>
@@ -92,22 +92,18 @@
         <p>
             <strong>
                 ✓
-                {{ plan.includedBoosts }}
-                boost{{ plan.includedBoosts > 1 ? 's' : '' }}
-                inclus
+                {{ (plan.includedBoosts > 1 ? 'agency_options.plan.included_boosts.other' : 'agency_options.plan.included_boosts.one')|trans({'%count%': plan.includedBoosts}) }}
             </strong>
         </p>
 
         <p>
-            Durée d’un boost :
-            {{ plan.boostDurationDays }}
-            jours
+            {{ 'agency_options.plan.boost_duration'|trans({'%days%': plan.boostDurationDays}) }}
         </p>
     {% endif %}
 {% endmacro %}
 
 {% block title %}
-    Options et abonnements
+    {{ 'agency_options.page_title'|trans }}
 {% endblock %}
 
 {% block stylesheets %}
@@ -374,7 +370,7 @@ display: inline-flex;
 
                         <div class="achat-title-row d-flex align-items-center justify-content-between">
                             <h2>
-                                Options et abonnements
+                                {{ 'agency_options.title'|trans }}
                             </h2>
 
                                                     <div class="d-flex align-items-center">
@@ -405,7 +401,7 @@ display: inline-flex;
                            ===================================================== #}
 
                         <h3 class="mb-4">
-                            Choisissez votre abonnement
+                            {{ 'agency_options.choose_plan'|trans }}
                         </h3>
 
         {# Le cadre « Abonnement » n'a de sens que pour un forfait payant.
@@ -419,26 +415,26 @@ display: inline-flex;
                     <div>
 
                         <div class="p-accent" style="color:#858789;">
-                            Abonnement actuel
+                            {{ 'agency_options.subscription.current'|trans }}
                         </div>
                     </div>
 
                     {% if subscription.status in ['active', 'free'] %}
 
                         <span class="subscription-status paragraphe">
-                            Actif
+                            {{ 'agency_options.subscription.status.active'|trans }}
                         </span>
 
                     {% elseif subscription.status|default('') == 'canceled' %}
 
                         <span class="subscription-status cancelled paragraphe">
-                            Résilié
+                            {{ 'agency_options.subscription.status.canceled'|trans }}
                         </span>
 
                     {% else %}
 
                         <span class="subscription-status pending paragraphe">
-                            En attente
+                            {{ 'agency_options.subscription.status.pending'|trans }}
                         </span>
 
                     {% endif %}
@@ -454,7 +450,7 @@ display: inline-flex;
                     <div class="subscription-detail">
 
                         <span class="subscription-detail-label">
-                            Forfait
+                            {{ 'agency_options.subscription.plan'|trans }}
                         </span>
 
                         <span class="subscription-detail-value p-accent">
@@ -465,7 +461,7 @@ display: inline-flex;
 
                             {% else %}
 
-                                Non renseigné
+                                {{ 'agency_options.subscription.not_specified'|trans }}
 
                             {% endif %}
 
@@ -476,18 +472,18 @@ display: inline-flex;
                     <div class="subscription-detail">
 
                         <span class="subscription-detail-label">
-                            Périodicité
+                            {{ 'agency_options.subscription.billing_period'|trans }}
                         </span>
 
                         <span class="subscription-detail-value p-accent">
 
                             {% if subscription.billingPeriod == 'annual' %}
 
-                                Annuelle
+                                {{ 'agency_options.subscription.billing_period.annual'|trans }}
 
                             {% else %}
 
-                                Mensuelle
+                                {{ 'agency_options.subscription.billing_period.monthly'|trans }}
 
                             {% endif %}
 
@@ -498,9 +494,7 @@ display: inline-flex;
                     <div class="subscription-detail">
 
                         <span class="subscription-detail-label">
-                            Prochain
-                           
-                            renouvellement
+                            {{ 'agency_options.subscription.next_renewal'|trans }}
                         </span>
 
                         <span class="subscription-detail-value p-accent">
@@ -515,7 +509,7 @@ display: inline-flex;
 
                             {% else %}
 
-                                Non renseigné
+                                {{ 'agency_options.subscription.not_specified'|trans }}
 
                             {% endif %}
 
@@ -526,7 +520,7 @@ display: inline-flex;
                     <div class="subscription-detail">
 
                         <span class="subscription-detail-label">
-                            Prix
+                            {{ 'agency_options.subscription.price'|trans }}
                         </span>
 
                         <span class="subscription-detail-value p-accent">
@@ -545,7 +539,7 @@ display: inline-flex;
 
                             {% else %}
 
-                                Non renseigné
+                                {{ 'agency_options.subscription.not_specified'|trans }}
 
                             {% endif %}
 
@@ -565,7 +559,7 @@ display: inline-flex;
                         href="{{ path('agence_immobiliere_parametres') }}#cat4"
                         class="btn-full-blue"
                     >
-                        Mettre à jour mon moyen de paiement
+                        {{ 'agency_options.subscription.update_payment_method'|trans }}
                     </a>
 
                     {% if not subscription.plan.isFree and not subscription.cancelAtPeriodEnd %}
@@ -576,13 +570,13 @@ display: inline-flex;
                             data-bs-toggle="modal"
                             data-bs-target="#cancelSubscriptionModal"
                         >
-                            Résilier mon abonnement
+                            {{ 'agency_options.subscription.cancel'|trans }}
                         </button>
 
                     {% elseif subscription.cancelAtPeriodEnd %}
 
                         <span class="subscription-status cancelled">
-                            Résiliation programmée
+                            {{ 'agency_options.subscription.cancellation_scheduled'|trans }}
                         </span>
 
                     {% endif %}
@@ -593,9 +587,7 @@ display: inline-flex;
 
                     <div class="subscription-cancellation-info">
 
-                        Votre abonnement est résilié.
-
-                        Il restera actif jusqu'au
+                        {{ 'agency_options.subscription.cancellation_info.before_date'|trans }}
 
                         {% if subscription.currentPeriodEnd is defined
                             and subscription.currentPeriodEnd %}
@@ -613,8 +605,7 @@ display: inline-flex;
 
                         {% endif %}
 
-                        puis votre compte repassera automatiquement
-                        sur le forfait gratuit.
+                        {{ 'agency_options.subscription.cancellation_info.after_date'|trans }}
 
                         <form
                             method="post"
@@ -634,7 +625,7 @@ display: inline-flex;
                             >
 
                             <button type="submit" class="btn-subscription-resume">
-                                Annuler la résiliation
+                                {{ 'agency_options.subscription.reactivate'|trans }}
                             </button>
                         </form>
 
@@ -646,27 +637,27 @@ display: inline-flex;
 
                     <div class="subscription-cancellation-info">
 
-                        Changement de forfait programmé pour
+                        {{ 'agency_options.subscription.pending_change.before_plan'|trans }}
 
                         <strong>{{ abonnement_actuel.pendingPlanPrice.plan.name }}</strong>
 
                         {% if abonnement_actuel.pendingPlanChangeEffectiveAt %}
-                            le
+                            {{ 'agency_options.subscription.pending_change.on_date'|trans }}
                             <strong>
                                 {{ abonnement_actuel.pendingPlanChangeEffectiveAt|date('d/m/Y') }}
                             </strong>
                         {% else %}
-                            à la fin de votre période en cours
+                            {{ 'agency_options.subscription.pending_change.end_of_period'|trans }}
                         {% endif %}.
 
-                        Le paiement de
+                        {{ 'agency_options.subscription.pending_change.before_amount'|trans }}
 
                         <strong>
                             {{ abonnement_actuel.pendingPlanPrice.amountMinor|minor_amount(abonnement_actuel.pendingPlanPrice.currency) }}
                             {{ abonnement_actuel.pendingPlanPrice.currency.signe }}
                         </strong>
 
-                        sera effectué ce jour-là. D'ici là, votre forfait actuel reste inchangé.
+                        {{ 'agency_options.subscription.pending_change.after_amount'|trans }}
 
                         <form
                             method="post"
@@ -686,7 +677,7 @@ display: inline-flex;
                             >
 
                             <button type="submit" class="btn-subscription-cancel">
-                                Annuler le changement programmé
+                                {{ 'agency_options.subscription.cancel_plan_change'|trans }}
                             </button>
                         </form>
 
@@ -701,7 +692,7 @@ display: inline-flex;
                         <div
                             class="achat-billing-switch mx-auto"
                             role="group"
-                            aria-label="Période de facturation"
+                            aria-label="{{ 'agency_options.billing_switch.aria_label'|trans }}"
                         >
                             <button
                                 type="button"
@@ -711,7 +702,7 @@ display: inline-flex;
                                 data-action="click->options--billing-period#select"
                                 aria-pressed="{{ selectedPeriod == 'annual' ? 'true' : 'false' }}"
                             >
-                                Annuel
+                                {{ 'agency_options.billing_switch.annual'|trans }}
                             </button>
 
                             <button
@@ -722,7 +713,7 @@ display: inline-flex;
                                 data-action="click->options--billing-period#select"
                                 aria-pressed="{{ selectedPeriod == 'monthly' ? 'true' : 'false' }}"
                             >
-                                Mensuel
+                                {{ 'agency_options.billing_switch.monthly'|trans }}
                             </button>
                         </div>
 
@@ -742,9 +733,7 @@ display: inline-flex;
                                 {% else %}
                                     <div class="col-12">
                                         <p>
-                                            Aucun forfait
-                                            {{ period == 'annual' ? 'annuel' : 'mensuel' }}
-                                            n’est disponible pour le moment.
+                                            {{ (period == 'annual' ? 'agency_options.plans.empty.annual' : 'agency_options.plans.empty.monthly')|trans }}
                                         </p>
                                     </div>
                                 {% endfor %}
@@ -756,7 +745,7 @@ display: inline-flex;
                            ===================================================== #}
 
                         <h3 class="achat-boost-title">
-                            Boostez vos annonces
+                            {{ 'agency_options.boosts.title'|trans }}
                         </h3>
 
                         <section id="boosts" class="achat-boost-card">
@@ -792,16 +781,10 @@ display: inline-flex;
 
                                             <p class="achat-boost-description">
                                                 {{ pack.description
-                                                    ?: pack.boostQuantity
-                                                    ~ ' boost'
-                                                    ~ (pack.boostQuantity > 1 ? 's' : '')
-                                                    ~ ' s’applique sur '
-                                                    ~ pack.boostQuantity
-                                                    ~ ' annonce'
-                                                    ~ (pack.boostQuantity > 1 ? 's' : '')
-                                                    ~ ' et dure '
-                                                    ~ pack.boostDurationDays
-                                                    ~ ' jours.'
+                                                    ?: (pack.boostQuantity > 1 ? 'agency_options.boosts.description.other' : 'agency_options.boosts.description.one')|trans({
+                                                        '%count%': pack.boostQuantity,
+                                                        '%days%': pack.boostDurationDays,
+                                                    })
                                                 }}
                                             </p>
 
@@ -809,7 +792,7 @@ display: inline-flex;
                                                 href="{{ path('agence_immobiliere_boost', {id: boostPrice.id}) }}"
                                                 class="btn-full-white w-100"
                                             >
-                                                Acheter
+                                                {{ 'agency_options.boosts.buy'|trans }}
                                             </a>
 
                                         </article>
@@ -819,7 +802,7 @@ display: inline-flex;
 
                                     <div class="col-12">
                                         <p>
-                                            Aucun pack boost n’est disponible pour le moment.
+                                            {{ 'agency_options.boosts.empty'|trans }}
                                         </p>
                                     </div>
 
@@ -850,25 +833,25 @@ display: inline-flex;
                             id="cancelSubscriptionModalLabel"
                             style="color:#0b0f14"
                         >
-                            Résilier mon abonnement
+                            {{ 'agency_options.cancel_modal.title'|trans }}
                         </h3>
 
                         <button
                             type="button"
                             class="btn-close position-absolute top-0 end-0"
                             data-bs-dismiss="modal"
-                            aria-label="Fermer"
+                            aria-label="{{ 'agency_options.cancel_modal.close'|trans }}"
                             style="padding-top:17px"
                         ></button>
                     </div>
 
                     <div class="p-accent my-48 text-center">
                         <p class="mb-2 p-accent" style="color:#0b0f14">
-                            Êtes-vous certain de vouloir résilier votre abonnement ?
+                            {{ 'agency_options.cancel_modal.question'|trans }}
                         </p>
 
                         <p class="text-muted mb-0 paragraphe" style="color:#858789!important">
-                            Votre abonnement restera actif jusqu'à la fin de votre période de facturation actuelle.
+                            {{ 'agency_options.cancel_modal.description'|trans }}
                         </p>
                     </div>
 
@@ -878,7 +861,7 @@ display: inline-flex;
                             class="btn-full-white"
                             data-bs-dismiss="modal"
                         >
-                            Annuler
+                            {{ 'agency_options.cancel_modal.cancel'|trans }}
                         </button>
 
                         <form
@@ -902,7 +885,7 @@ display: inline-flex;
                                 class="btn-subscription-cancel"
                                 style="color:#fff;background:#dc3545"
                             >
-                                Confirmer la résiliation
+                                {{ 'agency_options.cancel_modal.confirm'|trans }}
                             </button>
                         </form>
                     </div>

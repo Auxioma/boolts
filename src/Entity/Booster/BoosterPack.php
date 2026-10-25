@@ -14,24 +14,21 @@ namespace App\Entity\Booster;
 
 use App\Entity\Shared\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
+use Knp\DoctrineBehaviors\Contract\Entity\TranslatableInterface;
+use Knp\DoctrineBehaviors\Model\Translatable\TranslatableTrait;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'booster_pack')]
-class BoosterPack
+class BoosterPack implements TranslatableInterface
 {
     use TimestampableTrait;
+    use TranslatableTrait;
 
     #[ORM\Id, ORM\GeneratedValue, ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
     private string $code;
-
-    #[ORM\Column(length: 150)]
-    private string $name;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = null;
 
     #[ORM\Column]
     private int $boostQuantity = 1;
@@ -57,7 +54,7 @@ class BoosterPack
 
     public function __toString(): string
     {
-        return $this->name;
+        return $this->getName() ?: $this->code;
     }
 
     public function getCode(): string
@@ -72,26 +69,79 @@ class BoosterPack
         return $this;
     }
 
+    // Nom et description sont traduits (BoosterPackTranslation) :
+    // ces accesseurs lisent/écrivent la traduction de la locale courante.
+
     public function getName(): string
     {
-        return $this->name;
+        return $this->translate()->getName() ?? '';
     }
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        $this->translate()->setName($name);
 
         return $this;
     }
 
     public function getDescription(): ?string
     {
-        return $this->description;
+        return $this->translate()->getDescription();
     }
 
     public function setDescription(?string $description): static
     {
-        $this->description = $description;
+        $this->translate()->setDescription($description);
+
+        return $this;
+    }
+
+    // Accès explicite au français et à l'anglais (formulaire d'administration).
+
+    public function getNameFr(): ?string
+    {
+        return $this->translate('fr', false)->getName();
+    }
+
+    public function setNameFr(?string $name): static
+    {
+        $this->translate('fr', false)->setName($name);
+
+        return $this;
+    }
+
+    public function getNameEn(): ?string
+    {
+        return $this->translate('en', false)->getName();
+    }
+
+    public function setNameEn(?string $name): static
+    {
+        $this->translate('en', false)->setName($name);
+
+        return $this;
+    }
+
+    public function getDescriptionFr(): ?string
+    {
+        return $this->translate('fr', false)->getDescription();
+    }
+
+    public function setDescriptionFr(?string $description): static
+    {
+        $this->translate('fr', false)->setDescription($description);
+
+        return $this;
+    }
+
+    public function getDescriptionEn(): ?string
+    {
+        return $this->translate('en', false)->getDescription();
+    }
+
+    public function setDescriptionEn(?string $description): static
+    {
+        $this->translate('en', false)->setDescription($description);
 
         return $this;
     }

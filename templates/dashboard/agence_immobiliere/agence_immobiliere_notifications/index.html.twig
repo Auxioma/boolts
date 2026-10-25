@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Notifications{% endblock %}
+{% block title %}{{ 'agency_notifications.page_title'|trans }}{% endblock %}
 
 {% block body %}
     {% set notifications = notifications|default([]) %}
@@ -26,20 +26,20 @@
                         <div class="col-12 col-md-10 mx-auto">
                         <section id="agence-notifications" class="js-agence-notifications" data-controller="agence-notifications"
                                  data-agence-notifications-csrf-token-value="{{ csrf_token('agency_notification_read') }}">
-                            <h2 class="notifications-page__title">Notifications</h2>
+                            <h2 class="notifications-page__title">{{ 'agency_notifications.title'|trans }}</h2>
 
                             <div class="notifications-page__body">
                                 <div class="notifications-filter" role="tablist">
                                     <button type="button" class="p-accent notifications-filter__button active" data-filter="all"
                                             data-agence-notifications-target="filterButton"
                                             data-action="agence-notifications#filter">
-                                        Toutes
+                                        {{ 'agency_notifications.filter.all'|trans }}
                                     </button>
 
                                     <button type="button" class="p-accent notifications-filter__button" data-filter="unread"
                                             data-agence-notifications-target="filterButton"
                                             data-action="agence-notifications#filter">
-                                        Non lues
+                                        {{ 'agency_notifications.filter.unread'|trans }}
                                         <span class="notifications-filter__count" data-agence-notifications-target="unreadCount">{{ unreadCount }}</span>
                                     </button>
                                 </div>
@@ -47,6 +47,7 @@
                                 <div class="notifications-feed">
                                     {% for notification in notifications %}
                                         {# Ces notifications renvoient vers la section de dépôt de documents du dashboard. #}
+                                        {% set notification_label = notification.translationKey ? notification.translationKey|trans(notification.translationParameters) : notification.nom %}
                                         {% set is_documents_rejected = notification.nom starts with 'Un ou plusieurs de vos documents' or notification.nom starts with 'Votre compte est en attente de validation' %}
                                         <article class="notification-card{{ notification.read ? ' notification-card--read' }}"
                                                  data-read="{{ notification.read ? 'true' : 'false' }}"
@@ -59,15 +60,15 @@
 
                                             {% if is_documents_rejected %}
                                                 <a class="notification-card__text notification-card__link paragraphe"
-                                                   href="{{ path('agence_immobiliere_dashboard', {documents: 1}) }}#documents">{{ notification.nom }}</a>
+                                                   href="{{ path('agence_immobiliere_dashboard', {documents: 1}) }}#documents">{{ notification_label }}</a>
                                             {% else %}
-                                                <p class="notification-card__text paragraphe">{{ notification.nom }}</p>
+                                                <p class="notification-card__text paragraphe">{{ notification_label }}</p>
                                             {% endif %}
 
                                             <p class="notification-card__date paragraphe">{{ notification.date|date('d/m/Y') }}</p>
                                         </article>
                                     {% else %}
-                                        <p class="notification-card__text paragraphe">Vous n'avez aucune notification.</p>
+                                        <p class="notification-card__text paragraphe">{{ 'agency_notifications.empty'|trans }}</p>
                                     {% endfor %}
                                 </div>
                             </div>

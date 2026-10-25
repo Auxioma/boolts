@@ -521,6 +521,9 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     ->setNom(
                         $propertyNotificationLabeler->boostActiveLabel($property)
                     )
+                    ->setTranslation(
+                        ...$propertyNotificationLabeler->boostActiveTranslation($property)
+                    )
             );
             $entityManager->flush();
 
@@ -1709,6 +1712,9 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                             ->setAgency($user)
                             ->setNom(
                                 $propertyNotificationLabeler->pendingLabel($mesBiens)
+                            )
+                            ->setTranslation(
+                                ...$propertyNotificationLabeler->pendingTranslation($mesBiens)
                             )
                     );
                 }
