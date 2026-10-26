@@ -47,7 +47,7 @@ final class HomeTranslationFixtures extends Fixture
                 'home.listings.previous' => 'Précédent',
                 'home.listings.next' => 'Suivant',
                 'home.content.title' => 'Le monde est plein d’adresses. Trouvez la vôtre.',
-                'home.content.description' => "Votre prochain chez-vous se trouve peut-être à deux rues de votre adresse actuelle. Ou à l’autre bout du monde.\nAvec Boolts, explorez de nouvelles opportunités immobilières, dans votre ville comme ailleurs, de l’Europe à l’Asie, de l’Afrique aux Amériques.\nToutes nos annonces proviennent d’agences immobilières dont nous vérifions l’existence avant leur publication.",
+                'home.content.description' => "Avec Boolts, explorez des opportunités immobilières partout dans le monde, proposées par des agences dont nous vérifions l’existence avant publication.",
                 'home.partout.title' => 'Achetez. Louez. Partout.',
                 'home.partout.more' => 'Voir plus',
                 'home.codes.title' => 'Boolts redéfinit',
