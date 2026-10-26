@@ -28,34 +28,13 @@
                     {# Crush immobilier #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-crush">
-                            <canvas
-                                class="home-bt-partout-shader"
-                                data-controller="home--shader-fill"
-                                data-home--shader-fill-effect-value="moving-gradient"
-                                data-home--shader-fill-params-value="{{ {
-                                    intensity: 2.319999933242798,
-                                    gradient: { stops: [
-                                        { position: 0, color: { r: 0.7590849995613098, g: 0.6196078658103943, b: 1, a: 1 } },
-                                        { position: 0.5, color: { r: 0.42352941632270813, g: 0, b: 0, a: 1 } },
-                                        { position: 1, color: { r: 0.800000011920929, g: 0, b: 1, a: 1 } }
-                                    ] },
-                                    gradientBalance: 0,
-                                    material: 0,
-                                    morphSpeed: 5,
-                                    detail: 1.559999942779541,
-                                    twist: 0,
-                                    zoom: 76,
-                                    gradientMethod: 0,
-                                    warp: 0,
-                                    rotationSpeed: 35
-                                }|json_encode }}"
-                            ></canvas>
+                            <img class="home-bt-partout-cover" src="{{ asset('images/home/partout/slide-007.jpg') }}" alt="" fetchpriority="high" decoding="async">
 
                             <div class="home-bt-partout-crush-list">
                                 <div class="home-bt-partout-crush-images">
-                                    <img src="{{ asset('images/home/partout/crush-1.png') }}" alt="">
-                                    <img src="{{ asset('images/home/partout/crush-2.png') }}" alt="">
-                                    <img src="{{ asset('images/home/partout/crush-3.png') }}" alt="">
+                                    <img src="{{ asset('images/home/partout/crush-1.png') }}" alt="" loading="lazy" decoding="async">
+                                    <img src="{{ asset('images/home/partout/crush-2.png') }}" alt="" loading="lazy" decoding="async">
+                                    <img src="{{ asset('images/home/partout/crush-3.png') }}" alt="" loading="lazy" decoding="async">
                                 </div>
                                 <div class="home-bt-partout-crush-texts">
                                     <div>
@@ -87,7 +66,7 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-portugal">
                             <div class="home-bt-partout-photo is-portugal-photo">
-                                <img src="{{ asset('images/home/partout/portugal.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/portugal.png') }}" alt="" loading="lazy" decoding="async">
                             </div>
                             <h3 class="home-bt-partout-portugal-title">Nos coups de coeur du mois.</h3>
                             <p class="home-bt-partout-portugal-country">Portugal</p>
@@ -99,7 +78,7 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-budapest">
                             <div class="home-bt-partout-photo is-budapest-photo">
-                                <img src="{{ asset('images/home/partout/budapest.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/budapest.png') }}" alt="" loading="lazy" decoding="async">
                             </div>
                             <p class="home-bt-partout-budapest-kicker">Vivre à</p>
                             <h3 class="home-bt-partout-budapest-title">Budapest</h3>
@@ -110,7 +89,7 @@
                     {# Biens à rénover #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-renover">
-                            <img class="home-bt-partout-renover-image" src="{{ asset('images/home/partout/renover.png') }}" alt="">
+                            <img class="home-bt-partout-renover-image" src="{{ asset('images/home/partout/renover.png') }}" alt="" loading="lazy" decoding="async">
                             <h3 class="home-bt-partout-renover-title">
                                 <span>Des biens</span>
                                 <strong>à rénover</strong>
@@ -136,7 +115,7 @@
                     {# Vivre à la mer #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-mer">
-                            <img class="home-bt-partout-cover" src="{{ asset('images/home/partout/mer.png') }}" alt="">
+                            <img class="home-bt-partout-cover" src="{{ asset('images/home/partout/mer.png') }}" alt="" loading="lazy" decoding="async">
                             <div class="home-bt-partout-mer-gradient"></div>
                             <h3 class="home-bt-partout-mer-title">
                                 <span>Vivre à la</span>
@@ -154,20 +133,6 @@
                     {# Propriétaire en Europe #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-europe">
-                            <canvas
-                                class="home-bt-partout-shader"
-                                data-controller="home--shader-fill"
-                                data-home--shader-fill-effect-value="concentric-patterns"
-                                data-home--shader-fill-params-value="{{ {
-                                    falloff: 4.099999904632568,
-                                    inverseFalloff: false,
-                                    ringCount: 8,
-                                    offset: 0,
-                                    shape: 1,
-                                    transform: { x: 50, y: 0, radius: 52.003875732421875, angle: 0 },
-                                    color: { r: 1, g: 0, b: 0.016666695475578308, a: 1 }
-                                }|json_encode }}"
-                            ></canvas>
                             <div class="home-bt-partout-europe-gradient"></div>
 
                             <p class="home-bt-partout-europe-price">50 000 €</p>
@@ -178,18 +143,18 @@
                             </p>
 
                             <div class="home-bt-partout-europe-card is-gata">
-                                <img src="{{ asset('images/home/partout/gata.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/gata.png') }}" alt="" loading="lazy" decoding="async">
                                 <span class="home-bt-partout-europe-city">Gata, Espagne</span>
                                 <span class="home-bt-partout-europe-amount">29 000 €</span>
                             </div>
                             <div class="home-bt-partout-europe-card is-bas">
-                                <img src="{{ asset('images/home/partout/europe-bas.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/europe-bas.png') }}" alt="" loading="lazy" decoding="async">
                             </div>
                             <div class="home-bt-partout-europe-card is-haut">
-                                <img src="{{ asset('images/home/partout/europe-haut.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/europe-haut.png') }}" alt="" loading="lazy" decoding="async">
                             </div>
                             <div class="home-bt-partout-europe-card is-badolato">
-                                <img src="{{ asset('images/home/partout/badolato.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/badolato.png') }}" alt="" loading="lazy" decoding="async">
                                 <span class="home-bt-partout-europe-city">Badolato, Italie</span>
                                 <span class="home-bt-partout-europe-amount">36 000 €</span>
                             </div>
@@ -202,7 +167,7 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-italie">
                             <div class="home-bt-partout-italie-image">
-                                <img src="{{ asset('images/home/partout/italie.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/italie.png') }}" alt="" loading="lazy" decoding="async">
                             </div>
                             <p class="home-bt-partout-italie-kicker">Top 5 des villes où investir</p>
                             <h3 class="home-bt-partout-italie-title">en Italie</h3>
@@ -214,35 +179,15 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-marrakech">
                             <div class="home-bt-partout-marrakech-image">
-                                <img src="{{ asset('images/home/partout/marrakech.png') }}" alt="">
+                                <img src="{{ asset('images/home/partout/marrakech.png') }}" alt="" loading="lazy" decoding="async">
                             </div>
-                            <div class="home-bt-partout-marrakech-grid">
-                                <canvas
-                                    class="home-bt-partout-shader"
-                                    data-controller="home--shader-fill"
-                                    data-home--shader-fill-effect-value="pattern-grid"
-                                    data-home--shader-fill-params-value="{{ {
-                                        transform: { x: 50, y: 50, radius: 100, angle: 0 },
-                                        softness: 0,
-                                        strokeColor: { r: 0.5329999923706055, g: 0.5329999923706055, b: 0.5329999923706055, a: 1 },
-                                        gridLayout: 'grid',
-                                        offset: { x: 0, y: 0 },
-                                        clipToCell: false,
-                                        zoom: 0.8499999642372131,
-                                        size: 40,
-                                        shapeColor: { r: 0.20098558068275452, g: 0.20098558068275452, b: 0.33253830671310425, a: 1 },
-                                        bgColor: { r: 0.10199999809265137, g: 0.10199999809265137, b: 0.18000000715255737, a: 1 },
-                                        shape: 'diamond',
-                                        strokeWidth: 0
-                                    }|json_encode }}"
-                                ></canvas>
-                            </div>
+                            <div class="home-bt-partout-marrakech-grid"></div>
                             <div class="home-bt-partout-marrakech-gradient"></div>
 
                             <ul class="home-bt-partout-marrakech-agencies">
                                 {% for avatar in ['agence-1.png', 'agence-2.png', 'agence-2.png'] %}
                                     <li>
-                                        <img src="{{ asset('images/home/partout/' ~ avatar) }}" width="36.318" height="36.318" alt="">
+                                        <img src="{{ asset('images/home/partout/' ~ avatar) }}" width="36.318" height="36.318" alt="" loading="lazy" decoding="async">
                                         <div>
                                             <p>Axa Immobilier</p>
                                             <span>173 Annonces</span>
@@ -260,7 +205,7 @@
                     {# Maisons à la campagne #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-campagne">
-                            <img class="home-bt-partout-campagne-image" src="{{ asset('images/home/partout/campagne.png') }}" alt="">
+                            <img class="home-bt-partout-campagne-image" src="{{ asset('images/home/partout/campagne.png') }}" alt="" loading="lazy" decoding="async">
                             <h3 class="home-bt-partout-campagne-title">
                                 <span>Des Maisons à la</span>
                                 <strong>Campagne</strong>

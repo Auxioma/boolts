@@ -2005,7 +2005,7 @@ input {
 
 /* ---------- Crush immobilier ---------- */
 
-/* Fond de repli si WebGPU est indisponible (le shader le recouvre sinon). */
+/* Fond de repli si l'image de fond ne charge pas. */
 .home-bt-partout-card.is-crush {
     background: linear-gradient(135deg, #c29eff, #6c0000 50%, #cc00ff);
 }

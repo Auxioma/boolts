@@ -8,7 +8,6 @@ import Splide from '@splidejs/splide';
  * du haut défile automatiquement toutes les 2 s, pilote la pagination et
  * entraîne la rangée du bas, qui reste aussi déplaçable seule au glisser.
  */
-/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['top', 'bottom', 'pagination'];
 
@@ -25,7 +24,8 @@ export default class extends Controller {
             arrows: false,
             pagination: false,
             drag: true,
-            speed: 800,
+            speed: 1000,
+            easing: 'cubic-bezier(.22, .61, .36, 1)',
             breakpoints: {
                 767: {
                     gap: '12px',
