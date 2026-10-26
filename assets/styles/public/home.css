@@ -2071,108 +2071,6 @@ input {
     background: linear-gradient(135deg, #c29eff, #6c0000 50%, #cc00ff);
 }
 
-.home-bt-partout-crush-list {
-    position: absolute;
-
-    top: 27.53px;
-
-    left: 302.54px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 17.044px;
-}
-
-.home-bt-partout-crush-images {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 14.75px;
-
-    width: 159.3px;
-}
-
-.home-bt-partout-crush-images img {
-    width: 100%;
-
-    aspect-ratio: 486 / 274;
-
-    border-radius: 6.556px;
-
-    background: #000;
-
-    object-fit: cover;
-}
-
-.home-bt-partout-crush-texts {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 53.756px;
-
-    width: 115.378px;
-}
-
-.home-bt-partout-crush-texts div {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 3.933px;
-}
-
-.home-bt-partout-crush-texts p {
-    color: #fff;
-
-    font-size: 9.833px;
-
-    line-height: 11.144px;
-}
-
-.home-bt-partout-crush-texts span {
-    color: rgba(255, 255, 255, 0.5);
-
-    font-size: 6.556px;
-
-    line-height: 7.867px;
-}
-
-.home-bt-partout-crush-title {
-    position: absolute;
-
-    top: 15.73px;
-
-    left: 15.73px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    width: 224.528px;
-
-    color: #fff;
-
-    font-size: 20.978px;
-
-    line-height: 20.978px;
-}
-
-.home-bt-partout-crush-title strong {
-    font-size: 51.789px;
-
-    line-height: 49.167px;
-
-    word-break: break-word;
-}
-
-.home-bt-partout-crush-title .is-last {
-    line-height: 36.056px;
-}
-
 /* ---------- Photos plein cadre (Portugal / Budapest) ---------- */
 
 .home-bt-partout-card.is-portugal,
@@ -2190,8 +2088,6 @@ input {
     height: 400.872px;
 
     overflow: hidden;
-
-    border: 4.261px solid #fb8756;
 }
 
 .home-bt-partout-photo::after {
@@ -2203,7 +2099,13 @@ input {
 }
 
 .home-bt-partout-photo.is-portugal-photo {
-    left: -29.17px;
+    inset: 0;
+
+    box-sizing: border-box;
+
+    width: 100%;
+
+    height: 100%;
 }
 
 .home-bt-partout-photo.is-portugal-photo img {
@@ -2215,288 +2117,20 @@ input {
 
     height: 100%;
 
-    object-fit: cover;
-}
-
-.home-bt-partout-photo.is-portugal-photo::after {
-    background-image:
-        linear-gradient(180deg, rgba(0, 0, 0, 0.5) 7.4407%, rgba(0, 0, 0, 0) 40.188%),
-        linear-gradient(-0.05deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 47.618%);
+    object-fit: contain;
 }
 
 .home-bt-partout-photo.is-budapest-photo {
-    left: -28.84px;
-}
+    inset: 0;
 
-.home-bt-partout-photo.is-budapest-photo img {
-    position: absolute;
-
-    top: -61.34%;
-
-    left: 0;
+    box-sizing: border-box;
 
     width: 100%;
 
-    height: 214.33%;
+    height: 100%;
 }
 
-.home-bt-partout-photo.is-budapest-photo::after {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 27.514%, rgba(0, 0, 0, 0) 59.771%);
-}
-
-.home-bt-partout-portugal-title,
-.home-bt-partout-portugal-country {
-    position: absolute;
-
-    color: #fff;
-
-    font-size: 42px;
-
-    line-height: 43.922px;
-}
-
-.home-bt-partout-portugal-title {
-    top: 249.74px;
-
-    left: 16.33px;
-
-    width: 322px;
-}
-
-.home-bt-partout-portugal-country {
-    top: 15.73px;
-
-    left: 431.68px;
-
-    width: 181.917px;
-}
-
-.home-bt-partout-budapest-kicker,
-.home-bt-partout-budapest-title {
-    position: absolute;
-
-    left: 16.73px;
-
-    width: 371.044px;
-
-    color: #fff;
-
-    line-height: 53.756px;
-}
-
-.home-bt-partout-budapest-kicker {
-    top: 16.73px;
-
-    font-size: 18px;
-}
-
-.home-bt-partout-budapest-title {
-    top: 50.74px;
-
-    font-size: 42px;
-}
-
-/* ---------- Biens à rénover ---------- */
-
-.home-bt-partout-card.is-renover {
-    background: #fded9b;
-}
-
-.home-bt-partout-renover-image {
-    position: absolute;
-
-    top: 2.95px;
-
-    left: 279.92px;
-
-    width: 442.172px;
-
-    height: 442.172px;
-
-    object-fit: cover;
-}
-
-.home-bt-partout-renover-title {
-    position: absolute;
-
-    top: 224.2px;
-
-    left: 15.73px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    width: 354.656px;
-
-    color: #0f1427;
-
-    font-size: 43.922px;
-
-    line-height: 43.922px;
-}
-
-.home-bt-partout-renover-title strong {
-    font-size: 76.7px;
-
-    line-height: 70.144px;
-}
-
-.home-bt-partout-renover-vector {
-    position: absolute;
-
-    top: -144.27px;
-
-    left: -78.67px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 327.28px;
-
-    height: 372.593px;
-}
-
-.home-bt-partout-renover-vector > div {
-    position: relative;
-
-    flex: none;
-
-    width: 318.07px;
-
-    height: 194.273px;
-
-    transform: rotate(-60deg);
-}
-
-.home-bt-partout-renover-vector img {
-    position: absolute;
-
-    top: -2.23%;
-
-    right: -0.93%;
-
-    bottom: -7.42%;
-
-    left: -4.32%;
-}
-
-/* ---------- Vivre à la mer ---------- */
-
-.home-bt-partout-card.is-mer {
-    background: #d9d9d9;
-}
-
-.home-bt-partout-mer-gradient {
-    position: absolute;
-
-    inset: 0;
-
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0) 60.812%);
-}
-
-.home-bt-partout-mer-title {
-    position: absolute;
-
-    top: 116.22px;
-
-    left: 13.95px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    width: 328.892px;
-
-    color: #fff;
-
-    font-size: 24.405px;
-
-    line-height: 47.649px;
-}
-
-.home-bt-partout-mer-title strong {
-    font-size: 50.554px;
-}
-
-.home-bt-partout-mer-cities {
-    position: absolute;
-
-    top: 13.95px;
-
-    left: 13.95px;
-
-    width: 173.453px;
-
-    color: #fff;
-
-    font-size: 15.689px;
-
-    line-height: 18.014px;
-}
-
-/* ---------- Propriétaire en Europe ---------- */
-
-.home-bt-partout-card.is-europe {
-    background: #f0f0f0;
-}
-
-.home-bt-partout-europe-gradient {
-    position: absolute;
-
-    inset: 0;
-
-    background-image: linear-gradient(-66.81deg, rgb(65, 41, 159) 0.71258%, rgba(95, 97, 255, 0) 68.899%);
-}
-
-.home-bt-partout-europe-price {
-    position: absolute;
-
-    top: 150.41px;
-
-    left: 16.95px;
-
-    color: #000;
-
-    font-size: 42px;
-
-    line-height: 47.649px;
-
-    white-space: nowrap;
-}
-
-.home-bt-partout-europe-text {
-    position: absolute;
-
-    top: 61.21px;
-
-    left: 16.95px;
-
-    width: 151.372px;
-
-    color: #000;
-
-    font-size: 18px;
-
-    line-height: 21px;
-}
-
-.home-bt-partout-europe-card {
-    position: absolute;
-
-    left: 226.91px;
-
-    overflow: hidden;
-
-    border-radius: 5.811px;
-
-    box-shadow: 0 0 14.527px rgba(0, 0, 0, 0.15);
-}
-
-.home-bt-partout-europe-card img {
+.home-bt-partout-photo.is-budapest-photo img {
     position: absolute;
 
     inset: 0;
@@ -2505,101 +2139,16 @@ input {
 
     height: 100%;
 
-    object-fit: cover;
+    object-fit: contain;
 }
 
-.home-bt-partout-europe-card.is-gata,
-.home-bt-partout-europe-card.is-badolato {
-    color: #fff;
-}
+/* ---------- Vivre à la mer ---------- */
 
-.home-bt-partout-europe-card.is-gata::after,
-.home-bt-partout-europe-card.is-badolato::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0) 42.007%);
-}
-
-.home-bt-partout-europe-card.is-gata {
-    top: 113.6px;
-
-    width: 123.48px;
-
-    height: 71.764px;
-}
-
-.home-bt-partout-europe-card.is-badolato {
-    top: 19.47px;
-
-    width: 146.4px;
-
-    height: 85.419px;
-}
-
-.home-bt-partout-europe-card.is-bas,
-.home-bt-partout-europe-card.is-haut {
-    width: 82.804px;
-
-    height: 47.939px;
-
+.home-bt-partout-card.is-mer {
     background: #d9d9d9;
 }
 
-.home-bt-partout-europe-card.is-bas {
-    top: 193.79px;
-}
-
-.home-bt-partout-europe-card.is-haut {
-    top: -34.28px;
-}
-
-.home-bt-partout-europe-city,
-.home-bt-partout-europe-amount {
-    position: absolute;
-
-    right: 6.39px;
-
-    z-index: 1;
-
-    text-align: right;
-}
-
-.home-bt-partout-europe-city {
-    font-size: 5.811px;
-
-    line-height: 6.973px;
-}
-
-.home-bt-partout-europe-amount {
-    font-size: 8.716px;
-
-    line-height: 9.878px;
-}
-
-.home-bt-partout-europe-card.is-gata .home-bt-partout-europe-city {
-    top: 47.65px;
-}
-
-.home-bt-partout-europe-card.is-gata .home-bt-partout-europe-amount {
-    top: 55.49px;
-}
-
-.home-bt-partout-europe-card.is-badolato .home-bt-partout-europe-city,
-.home-bt-partout-europe-card.is-badolato .home-bt-partout-europe-amount {
-    right: 6.07px;
-}
-
-.home-bt-partout-europe-card.is-badolato .home-bt-partout-europe-city {
-    top: 61.3px;
-}
-
-.home-bt-partout-europe-card.is-badolato .home-bt-partout-europe-amount {
-    top: 69.15px;
-}
+/* ---------- Propriétaire en Europe ---------- */
 
 /* ---------- Top 5 Italie ---------- */
 
@@ -2610,201 +2159,15 @@ input {
 .home-bt-partout-italie-image {
     position: absolute;
 
-    top: -91.26px;
-
-    left: 117.47px;
-
-    width: 265px;
-
-    height: 306px;
-
-    overflow: hidden;
+    inset: 0;
 }
 
 .home-bt-partout-italie-image img {
-    position: absolute;
+    width: 100%;
 
-    top: 0.11%;
+    height: 100%;
 
-    left: -0.14%;
-
-    width: 115.45%;
-
-    height: 99.98%;
-}
-
-.home-bt-partout-italie-kicker,
-.home-bt-partout-italie-title {
-    position: absolute;
-
-    color: #fff;
-}
-
-.home-bt-partout-italie-kicker {
-    top: 108.74px;
-
-    left: 16.47px;
-
-    width: 145px;
-
-    font-size: 18px;
-
-    line-height: 21px;
-}
-
-.home-bt-partout-italie-title {
-    top: 147.74px;
-
-    left: 13.95px;
-
-    width: 201.635px;
-
-    font-size: 42px;
-
-    line-height: 50.554px;
-}
-
-/* ---------- Agences à Marrakech ---------- */
-
-.home-bt-partout-marrakech-image {
-    position: absolute;
-
-    inset: 0;
-
-    overflow: hidden;
-}
-
-.home-bt-partout-marrakech-image img {
-    position: absolute;
-
-    top: 0.06%;
-
-    left: -24.48%;
-
-    width: 86.45%;
-
-    height: 99.94%;
-}
-
-.home-bt-partout-marrakech-grid {
-    position: absolute;
-
-    top: 0;
-
-    left: 218.78px;
-
-    width: 164.155px;
-
-    height: 215px;
-
-    background: #1a1a2e;
-}
-
-.home-bt-partout-marrakech-gradient {
-    position: absolute;
-
-    top: -0.26px;
-
-    left: 144.53px;
-
-    width: 149px;
-
-    height: 217px;
-
-    background: linear-gradient(to left, rgba(26, 26, 46, 0), #1a1a2e 50.081%, rgba(26, 26, 46, 0));
-}
-
-.home-bt-partout-marrakech-agencies {
-    position: absolute;
-
-    top: 19.76px;
-
-    left: 237.95px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 8.135px;
-
-    width: 109.243px;
-
-    margin: 0;
-
-    padding: 0;
-
-    list-style: none;
-}
-
-.home-bt-partout-marrakech-agencies li {
-    display: flex;
-
-    align-items: center;
-
-    gap: 9.878px;
-}
-
-.home-bt-partout-marrakech-agencies img {
-    flex-shrink: 0;
-
-    width: 36.318px;
-
-    height: 36.318px;
-}
-
-.home-bt-partout-marrakech-agencies div {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 3.486px;
-
-    width: 63.047px;
-}
-
-.home-bt-partout-marrakech-agencies p {
-    color: #fff;
-
-    font-size: 8.716px;
-
-    line-height: 9.878px;
-}
-
-.home-bt-partout-marrakech-agencies span {
-    color: rgba(255, 255, 255, 0.5);
-
-    font-size: 5.811px;
-
-    line-height: 6.973px;
-}
-
-.home-bt-partout-marrakech-kicker,
-.home-bt-partout-marrakech-title {
-    position: absolute;
-
-    left: 13.95px;
-
-    width: 169.095px;
-
-    color: #fff;
-
-    text-shadow: 0 -1.162px 6.711px rgba(0, 0, 0, 0.25);
-}
-
-.home-bt-partout-marrakech-kicker {
-    top: 72.74px;
-
-    font-size: 18px;
-
-    line-height: 21px;
-}
-
-.home-bt-partout-marrakech-title {
-    top: 109.74px;
-
-    font-size: 42px;
-
-    line-height: 44.162px;
+    object-fit: contain;
 }
 
 /* ---------- Maisons à la campagne ---------- */
@@ -2816,55 +2179,13 @@ input {
 .home-bt-partout-campagne-image {
     position: absolute;
 
-    top: -20.34px;
+    inset: 0;
 
-    left: 153.99px;
+    width: 100%;
 
-    width: 255.385px;
-
-    height: 255.385px;
+    height: 100%;
 
     object-fit: cover;
-}
-
-.home-bt-partout-campagne-title {
-    position: absolute;
-
-    top: 130.16px;
-
-    left: 13.95px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    width: 293.155px;
-
-    color: #000;
-
-    font-size: 18.595px;
-
-    line-height: 37.77px;
-}
-
-.home-bt-partout-campagne-title strong {
-    font-size: 36.027px;
-}
-
-.home-bt-partout-campagne-country {
-    position: absolute;
-
-    top: 13.95px;
-
-    left: 13.95px;
-
-    color: #000;
-
-    font-size: 27.311px;
-
-    line-height: 37.77px;
-
-    white-space: nowrap;
 }
 
 /* ---------- Pagination ---------- */
