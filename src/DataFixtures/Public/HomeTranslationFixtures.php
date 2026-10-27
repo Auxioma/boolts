@@ -76,7 +76,7 @@ final class HomeTranslationFixtures extends Fixture
             'en' => [
                 'home.meta.title' => 'Boolts - Real estate reinvented',
                 'home.video.unsupported' => 'Your browser does not support video playback.',
-                'home.hero.title' => 'Real estate, everywhere.',
+                'home.hero.title' => 'Real estate. Everywhere.',
                 'search.location.placeholder' => 'Search for a city or country',
                 'search.tabs.label' => 'Search type',
                 'home.search.sell' => 'Sell',
