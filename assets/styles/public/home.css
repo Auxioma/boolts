@@ -233,25 +233,25 @@ input {
 
 .home-bt-hero {
     position: relative;
-
     display: flex;
-
     flex-direction: column;
-
     justify-content: center;
-
     max-width: 100%;
-
     height: 434px;
-
     border-radius: var(--radius-16);
-
     background: linear-gradient(90deg, rgba(0, 0, 0, .3) 42.776%, rgba(0, 0, 0, 0) 100%), var(--hero-desktop) center/cover no-repeat;
-
     padding-left: clamp(16px, calc(16px + (194 * (100vw - 375px) / 1065)), 210px);
-
     padding-right: clamp(16px, calc(16px + (194 * (100vw - 375px) / 1065)), 210px);
 }
+
+.home-bt-hero::after {
+    background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.3) 100%
+    );
+}
+
 
 .home-bt-hero-content {
     display: flex;
@@ -1857,6 +1857,25 @@ input {
     overflow: visible;
 }
 
+/* Voile sombre par-dessus la vidéo (le contenu passe au-dessus via z-index). */
+.home-bt-hero::after {
+    content: '';
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50px;
+
+    background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.3) 100%
+    );
+
+    pointer-events: none;
+}
+
 .home-bt-hero video {
     position: absolute;
 
@@ -1884,6 +1903,10 @@ input {
 @media (max-width: 767px) {
     .home-bt-hero video {
         clip-path: inset(0 0 0 0 round 0px);
+    }
+
+    .home-bt-hero::after {
+        border-radius: 0;
     }
 
     .home-bt-top {
@@ -1916,24 +1939,48 @@ input {
     text-align: center;
 }
 
-/* Le titre passe du gris au noir à mesure qu'il entre dans l'écran au scroll. */
+.home-bt-partout-word {
+    white-space: nowrap;
+}
+
+/* Comme sur alan.com : le titre passe progressivement du gris au noir, de
+   gauche à droite, à mesure qu'il entre dans l'écran au scroll.
+   Le scroll fait avancer --partout-progress de 0 à 1 sur le titre ; chaque
+   lettre en déduit sa couleur selon sa position (--char-index), avec un
+   fondu étalé sur --partout-fade lettres. */
+@property --partout-progress {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 1;
+}
+
 @supports (animation-timeline: view()) {
     .home-bt-partout-title {
+        --partout-fade: 6;
+
         animation: card-appear linear both;
 
         animation-timeline: view();
 
-        animation-range: entry 0% cover 40%;
+        animation-range: entry 0% cover 65%;
+    }
+
+    .home-bt-partout-char {
+        color: color-mix(
+            in srgb,
+            #0b0f14 calc(clamp(0, (var(--partout-progress) * (var(--char-count) + var(--partout-fade)) - var(--char-index)) / var(--partout-fade), 1) * 100%),
+            #cecfd0
+        );
     }
 }
 
 @keyframes card-appear {
     from {
-        color: #cecfd0;
+        --partout-progress: 0;
     }
 
     to {
-        color: #0b0f14;
+        --partout-progress: 1;
     }
 }
 

@@ -20,7 +20,20 @@
 {% set slider_prefix = app.request.locale == 'en' ? 'en-' : '' %}
 
 <section class="home-bt-partout" data-controller="home--partout-slider">
-    <h2 class="home-bt-partout-title">{{ 'home.partout.title'|trans }}</h2> 
+    {# Chaque lettre est animée l'une après l'autre au scroll (voir home.css) ;
+       les mots restent insécables pour ne pas couper une lettre en fin de ligne. #}
+    {% set title = 'home.partout.title'|trans %}
+    {% set char_index = 0 %}
+    <h2 class="home-bt-partout-title" style="--char-count: {{ title|replace({' ': ''})|length }}" aria-label="{{ title }}">
+        {%- for word in title|split(' ') -%}
+            <span class="home-bt-partout-word" aria-hidden="true">
+                {%- for char in word|split('') -%}
+                    <span class="home-bt-partout-char" style="--char-index: {{ char_index }}">{{ char }}</span>
+                    {%- set char_index = char_index + 1 -%}
+                {%- endfor -%}
+            </span>{{ not loop.last ? ' ' }}
+        {%- endfor -%}
+    </h2>
 
     <div class="home-bt-partout-rows">
         {# ===== Rangée du haut : grandes cartes ===== #}
