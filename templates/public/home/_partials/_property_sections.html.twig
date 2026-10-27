@@ -187,7 +187,7 @@
                                                             %}
 
                                                             {% if typeBienName is not empty and transactionLabel is not empty %}
-                                                                {% set propertyTitle = typeBienName ~ ' à ' ~ transactionLabel %}
+                                                                {% set propertyTitle = 'home.property.title'|trans({'%type%': typeBienName, '%transaction%': transactionLabel}) %}
                                                             {% elseif typeBienName is not empty %}
                                                                 {% set propertyTitle = typeBienName %}
                                                             {% else %}
