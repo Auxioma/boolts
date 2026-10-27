@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { bindTrackpadSwipe } from '../../lib/trackpad_swipe.js';
 
 /**
  * Médias de la page détail d'un bien : grille photos (modale 1) et MediaViewer (modale 2).
@@ -34,9 +35,16 @@ export default class extends Controller {
 
         this.renderGrid();
         this.updateSlider();
+
+        if (this.hasSliderModalTarget) {
+            this.unbindTrackpad = bindTrackpadSwipe(this.sliderModalTarget, (direction) => {
+                direction > 0 ? this.next() : this.prev();
+            });
+        }
     }
 
     disconnect() {
+        this.unbindTrackpad?.();
         this.finishPush();
         document.body.classList.remove('bt-modal-open');
     }

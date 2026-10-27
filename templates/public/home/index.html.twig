@@ -14,7 +14,7 @@
         <main>
             <section class="home-bt-top">
                 <div class="container-md px-0 px-md-3 home-bt-hero-shell">
-
+{% set nombre = random(1, 28) %}
                     <div class="home-bt-hero mx-auto">
                         <video
                             id="videoBg"
@@ -25,11 +25,11 @@
                             webkit-playsinline
                             x-webkit-airplay="deny"
                             preload="auto"
-                            poster="{{ asset('video/01-poster.jpg') }}"
+                            poster="{{ asset('video/poster-' ~ nombre ~ '.jpg') }}"
                             data-controller="home--hero-video"
                         >
-                            <source src="{{ asset('video/01.mp4') }}" type="video/mp4">
-                            <source src="{{ asset('video/01.webm') }}" type="video/webm">
+                            <source src="{{ asset('video/Boolts-' ~ nombre ~ '.mp4') }}" type="video/mp4">
+                            <source src="{{ asset('video/Boolts-' ~ nombre ~ '.webm') }}" type="video/webm">
                             {{ 'home.video.unsupported'|trans }}
                         </video>
                         <div class="home-bt-hero-content">

@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import Splide from '@splidejs/splide';
+import { bindTrackpadSwipe } from '../../lib/trackpad_swipe.js';
 
 /*
  * Slider des photos du bien sur mobile (< 768px).
@@ -57,6 +58,10 @@ export default class extends Controller {
         this.splide.on('mounted move', () => this.updateCounter());
 
         this.splide.mount();
+
+        this.unbindTrackpad = bindTrackpadSwipe(this.sliderTarget, (direction) => {
+            this.splide.go(direction > 0 ? '>' : '<');
+        });
     }
 
     destroy() {
@@ -64,6 +69,7 @@ export default class extends Controller {
             return;
         }
 
+        this.unbindTrackpad?.();
         this.splide.destroy();
         this.splide = null;
     }

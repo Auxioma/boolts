@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import Splide from '@splidejs/splide';
+import { bindTrackpadSwipe } from '../lib/trackpad_swipe.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -66,6 +67,10 @@ export default class extends Controller {
 
         this.splide.mount();
         this.updateButtons();
+
+        this.unbindTrackpad = bindTrackpadSwipe(this.sliderTarget, (direction) => {
+            this.splide.go(direction > 0 ? '>' : '<');
+        });
     }
 
     previous() {
@@ -106,6 +111,7 @@ export default class extends Controller {
             return;
         }
 
+        this.unbindTrackpad?.();
         this.splide.destroy();
         this.splide = null;
     }
