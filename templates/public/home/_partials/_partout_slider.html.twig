@@ -16,8 +16,11 @@
 
 {% import _self as partout %}
 
+{# Les images contiennent du texte : version anglaise préfixée par « en- », française par défaut. #}
+{% set slider_prefix = app.request.locale == 'en' ? 'en-' : '' %}
+
 <section class="home-bt-partout" data-controller="home--partout-slider">
-    <h2 class="home-bt-partout-title">{{ 'home.partout.title'|trans }}</h2>
+    <h2 class="home-bt-partout-title">{{ 'home.partout.title'|trans }}</h2> 
 
     <div class="home-bt-partout-rows">
         {# ===== Rangée du haut : grandes cartes ===== #}
@@ -29,8 +32,8 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-crush">
                             <picture>
-                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/8-m.jpg') }}">
-                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/8.jpg') }}" alt="" fetchpriority="high" decoding="async">
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '1-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/' ~ slider_prefix ~ '1.jpg') }}" alt="" fetchpriority="high" decoding="async">
                             </picture>
                             {{ partout.more_button() }}
                         </article>
@@ -41,8 +44,8 @@
                         <article class="home-bt-partout-card is-large is-portugal">
                             <div class="home-bt-partout-photo is-portugal-photo">
                                 <picture>
-                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/3-m.jpg') }}">
-                                    <img src="{{ asset('images/slider/3.jpg') }}" alt="" loading="lazy" decoding="async">
+                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '2-m.jpg') }}">
+                                    <img src="{{ asset('images/slider/' ~ slider_prefix ~ '2.jpg') }}" alt="" loading="lazy" decoding="async">
                                 </picture>
                             </div>
                             {{ partout.more_button() }}
@@ -54,8 +57,8 @@
                         <article class="home-bt-partout-card is-large is-budapest">
                             <div class="home-bt-partout-photo is-budapest-photo">
                                 <picture>
-                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/4-m.jpg') }}">
-                                    <img src="{{ asset('images/slider/4.jpg') }}" alt="" loading="lazy" decoding="async">
+                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '3-m.jpg') }}">
+                                    <img src="{{ asset('images/slider/' ~ slider_prefix ~ '3.jpg') }}" alt="" loading="lazy" decoding="async">
                                 </picture>
                             </div>
                             {{ partout.more_button() }}
@@ -66,8 +69,8 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-renover">
                             <picture>
-                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/9-m.jpg') }}">
-                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/9.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '4-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/' ~ slider_prefix ~ '4.jpg') }}" alt="" loading="lazy" decoding="async">
                             </picture>
                             {{ partout.more_button() }}
                         </article>
@@ -86,8 +89,8 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-mer">
                             <picture>
-                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/5-m.jpg') }}">
-                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/5.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '5-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/' ~ slider_prefix ~ '5.jpg') }}" alt="" loading="lazy" decoding="async">
                             </picture>
                             {{ partout.more_button() }}
                         </article>
@@ -97,8 +100,8 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-europe">
                             <picture>
-                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/6-m.jpg') }}">
-                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/6.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '6-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/' ~ slider_prefix ~ '6.jpg') }}" alt="" loading="lazy" decoding="async">
                             </picture>
                             {{ partout.more_button() }}
                         </article>
@@ -109,8 +112,8 @@
                         <article class="home-bt-partout-card is-small is-italie">
                             <div class="home-bt-partout-italie-image">
                                 <picture>
-                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/2-m.jpg') }}">
-                                    <img src="{{ asset('images/slider/2.jpg') }}" alt="" loading="lazy" decoding="async">
+                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '7-m.jpg') }}">
+                                    <img src="{{ asset('images/slider/' ~ slider_prefix ~ '7.jpg') }}" alt="" loading="lazy" decoding="async">
                                 </picture>
                             </div>
                             {{ partout.more_button() }}
@@ -121,8 +124,8 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-marrakech">
                             <picture>
-                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/7-m.jpg') }}">
-                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/7.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '8-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/' ~ slider_prefix ~ '8.jpg') }}" alt="" loading="lazy" decoding="async">
                             </picture>
                             {{ partout.more_button() }}
                         </article>
@@ -132,8 +135,8 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-campagne">
                             <picture>
-                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/1-m.jpg') }}">
-                                <img class="home-bt-partout-campagne-image" src="{{ asset('images/slider/1.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/' ~ slider_prefix ~ '9-m.jpg') }}">
+                                <img class="home-bt-partout-campagne-image" src="{{ asset('images/slider/' ~ slider_prefix ~ '9.jpg') }}" alt="" loading="lazy" decoding="async">
                             </picture>
                             {{ partout.more_button() }}
                         </article>

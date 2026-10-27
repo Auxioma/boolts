@@ -1,6 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import Splide from '@splidejs/splide';
-import { bindTrackpadSwipe } from '../../lib/trackpad_swipe.js';
+import { bindTrackpadSwipe, splideSwipe } from '../../lib/trackpad_swipe.js';
 
 /**
  * Slider « Achetez. Louez. Partout. » de la page d'accueil.
@@ -67,8 +67,8 @@ export default class extends Controller {
 
         // Comme au glisser : la rangée du haut entraîne celle du bas, celle du bas bouge seule.
         this.unbindTrackpad = [
-            bindTrackpadSwipe(this.topTarget, (direction) => this.top.go(direction > 0 ? '>' : '<')),
-            bindTrackpadSwipe(this.bottomTarget, (direction) => this.bottom.go(direction > 0 ? '>' : '<')),
+            bindTrackpadSwipe(this.topTarget, splideSwipe(this.top)),
+            bindTrackpadSwipe(this.bottomTarget, splideSwipe(this.bottom)),
         ];
 
         this.buildPagination();
