@@ -7,11 +7,17 @@
 
 <footer class="boolts-footer" data-dashboard-layout-target="footer">
     <div class="container">
-        <div class="boolts-footer__box">
+        <div class="boolts-footer__box pt-32">
             <!-- Desktop + Tablet -->
             <div class="boolts-footer__desktop d-none d-md-block" data-controller="home--property-tabs">
                 <div class="boolts-footer__explore">
-                    <h3 class="boolts-footer__heading">Titre ici</h3>
+                    <h3 class="boolts-footer__heading">            <a class="navbar-brand topbar-brand" href="{{ path('app_home') }}">
+                <img
+                    src="{{ asset('images/logo/logo-blanc.svg') }}"
+                    alt="Boolts"
+                    class="topbar-logo"
+                >
+            </a> </h3>
 
                     <div class="boolts-footer__tabs">
                         <button

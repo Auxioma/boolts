@@ -1535,8 +1535,6 @@ input {
 
     backdrop-filter: blur(2px);
 
-    filter: url(#lg-dist);
-
     isolation: isolate;
 
     pointer-events: none;
