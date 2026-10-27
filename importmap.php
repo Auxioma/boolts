@@ -83,4 +83,7 @@ return [
         'version' => '3.2.2',
         'type' => 'css',
     ],
+    'lottie-web' => [
+        'version' => '5.13.0',
+    ],
 ];

@@ -5,8 +5,8 @@ import Splide from '@splidejs/splide';
  * Slider « Achetez. Louez. Partout. » de la page d'accueil.
  *
  * Deux rangées Splide (grandes cartes en haut, petites en bas) : la rangée
- * du haut défile automatiquement toutes les 2 s, pilote la pagination et
- * entraîne la rangée du bas, qui reste aussi déplaçable seule au glisser.
+ * du haut se déplace à la souris (glisser) ou via les points de pagination,
+ * et entraîne la rangée du bas, qui reste aussi déplaçable seule au glisser.
  */
 export default class extends Controller {
     static targets = ['top', 'bottom', 'pagination'];
@@ -33,7 +33,7 @@ export default class extends Controller {
             },
         };
 
-        // Seule la rangée du haut défile toute seule : elle entraîne celle du bas.
+        // La rangée du haut entraîne celle du bas.
         // Comme dans Figma, deux grandes cartes pleines sont centrées (l'espace
         // entre elles tombe au milieu) avec un bout des voisines de chaque côté :
         // la carte active démarre à 50 % - largeur de carte - demi-gap.
@@ -41,8 +41,6 @@ export default class extends Controller {
             ...options,
             focus: 0,
             padding: { left: 'calc(50% - 629.333px * var(--partout-zoom) - 8px)' },
-            autoplay: true,
-            interval: 2000,
             breakpoints: {
                 // Trop étroit pour deux grandes cartes : une seule, centrée.
                 991: {

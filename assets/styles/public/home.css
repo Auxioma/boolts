@@ -94,7 +94,9 @@ input {
 .home-bt-page {
     min-height: 100vh;
 
-    overflow-x: hidden;
+    /* clip (et non hidden) : ne crée pas de conteneur de scroll, sinon les
+       animations animation-timeline: view() restent figées. */
+    overflow-x: clip;
 }
 
 .home-bt-container {
@@ -232,17 +234,19 @@ input {
 .home-bt-hero {
     position: relative;
 
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
     max-width: 100%;
 
-    height: 418px;
+    height: 434px;
 
     border-radius: var(--radius-16);
 
     background: linear-gradient(90deg, rgba(0, 0, 0, .3) 42.776%, rgba(0, 0, 0, 0) 100%), var(--hero-desktop) center/cover no-repeat;
-
-    padding-top: 38px;
-
-    padding-bottom: 38px;
 
     padding-left: clamp(16px, calc(16px + (194 * (100vw - 375px) / 1065)), 210px);
 
@@ -254,7 +258,7 @@ input {
 
     flex-direction: column;
 
-    gap: 42px;
+    gap: 24px;
 
     width: 100%;
 }
@@ -1033,6 +1037,23 @@ input {
     line-height: 48px;
 }
 
+/* Icône animée (Lottie) : même encombrement que les icônes SVG. */
+.home-bt-feature-lottie {
+    display: inline-block;
+
+    width: 44px;
+
+    height: 44px;
+
+    margin-bottom: 24px;
+}
+
+.home-bt-feature .home-bt-feature-lottie svg {
+    display: block;
+
+    margin-bottom: 0;
+}
+
 .home-bt-feature h3 {
     margin: 0 0 12px;
 
@@ -1040,10 +1061,7 @@ input {
 }
 
 .home-bt-feature p {
-    max-width: 132px;
-
     margin: 0 auto;
-
     color: var(--color-gray);
 }
 
@@ -1470,39 +1488,6 @@ input {
     position: relative;
 }
 
-@media (min-width: 992px) {
-    .home-bt-content-section::after {
-        content: "";
-
-        position: absolute;
-
-        top: -56px;
-
-        right: -58px;
-
-        width: 189px;
-
-        height: clamp(370px, calc(370px + (150 * (100vw - 992px) / 448)), 510px);
-
-        background: var(--arrow-doodle-1) center/contain no-repeat;
-
-        pointer-events: none;
-    }
-
-    .home-bt-content-section.is-second::after {
-        top: -46px;
-
-        right: auto;
-
-        left: -64px;
-
-        width: 169px;
-
-        height: clamp(370px, calc(370px + (150 * (100vw - 992px) / 448)), 510px);
-
-        background-image: var(--arrow-doodle-2);
-    }
-}
 
 .home-bt-app-mockup,
 .home-bt-app-text {
@@ -1535,7 +1520,6 @@ input {
        les calques héritent de l'arrondi à la place. */
     position: relative;
 
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5), 0 0 2px rgba(0, 0, 0, 0.6);
 }
 
 .home-bt-search-hero .glass-filter,
@@ -1923,7 +1907,7 @@ input {
 
     padding-top: clamp(48px, calc(48px + (76 * (100vw - 375px) / 1065)), 124px);
 
-    overflow: hidden;
+    overflow: clip;
 }
 
 .home-bt-partout-title {
@@ -1931,11 +1915,28 @@ input {
 
     color: var(--color-text);
 
-    font-size: clamp(32px, calc(32px + (18 * (100vw - 375px) / 1065)), 50px);
-
-    line-height: clamp(40px, calc(40px + (20 * (100vw - 375px) / 1065)), 60px);
-
     text-align: center;
+}
+
+/* Le titre passe du gris au noir à mesure qu'il entre dans l'écran au scroll. */
+@supports (animation-timeline: view()) {
+    .home-bt-partout-title {
+        animation: card-appear linear both;
+
+        animation-timeline: view();
+
+        animation-range: entry 0% cover 40%;
+    }
+}
+
+@keyframes card-appear {
+    from {
+        color: #cecfd0;
+    }
+
+    to {
+        color: #0b0f14;
+    }
 }
 
 .home-bt-partout-rows {
@@ -2062,6 +2063,16 @@ input {
     color: var(--color-primary);
 
     background: #f8f8f8;
+}
+
+@media (max-width: 991px) {
+    .home-bt-partout-card.is-small .home-bt-partout-btn {
+        right: auto;
+
+        left: 50%;
+
+        transform: translateX(-50%);
+    }
 }
 
 /* ---------- Crush immobilier ---------- */
@@ -2239,12 +2250,28 @@ input {
     .home-bt-partout {
         --partout-zoom: 0.75;
     }
+
+    /* Les visuels mobiles (*-m.jpg, 278 x 500) sont en portrait : les cartes
+       prennent leur format pour les afficher en entier. */
+    .home-bt-partout-card.is-large {
+    width: clamp(250px, calc(250px + (28 * (100vw - 375px) / 616)), 250px);
+    height: clamp(450px, calc(450px + (50 * (100vw - 375px) / 616)), 450px);
+    }
+    
+    .home-bt-partout-card.is-small {
+        width: clamp(188px, calc(188px + (0 * (100vw - 375px) / 616)), 188px);
+        height: clamp(338px, calc(338px + (0 * (100vw - 375px) / 616)), 338px);
+
+    }
+
+    .home-bt-partout-card {
+
+    zoom: inherit;
+    }
+
 }
 
 @media (max-width: 767.98px) {
-    .home-bt-partout {
-        --partout-zoom: 0.55;
-    }
 
     .home-bt-partout-rows {
         gap: 12px;

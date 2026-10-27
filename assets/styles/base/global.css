@@ -40,9 +40,9 @@ a {
 }
 
 h1 {
-    font-size: clamp(38px, calc(38px + (26 * (100vw - 375px) / 1065)), 64px);
+    font-size: clamp(38px, calc(38px + (12 * (100vw - 375px) / 1065)), 50px);
 
-    line-height: clamp(37px, calc(37px + (23 * (100vw - 375px) / 1065)), 60px);
+    line-height: clamp(37px, calc(37px + (9 * (100vw - 375px) / 1065)), 46px);
 
     font-weight: 700;
 

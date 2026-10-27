@@ -28,7 +28,10 @@
                     {# Crush immobilier #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-crush">
-                            <img class="home-bt-partout-cover" src="{{ asset('images/slider/8.jpg') }}" alt="" fetchpriority="high" decoding="async">
+                            <picture>
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/8-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/8.jpg') }}" alt="" fetchpriority="high" decoding="async">
+                            </picture>
                             {{ partout.more_button() }}
                         </article>
                     </li>
@@ -37,7 +40,10 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-portugal">
                             <div class="home-bt-partout-photo is-portugal-photo">
-                                <img src="{{ asset('images/slider/3.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <picture>
+                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/3-m.jpg') }}">
+                                    <img src="{{ asset('images/slider/3.jpg') }}" alt="" loading="lazy" decoding="async">
+                                </picture>
                             </div>
                             {{ partout.more_button() }}
                         </article>
@@ -47,7 +53,10 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-budapest">
                             <div class="home-bt-partout-photo is-budapest-photo">
-                                <img src="{{ asset('images/slider/4.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <picture>
+                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/4-m.jpg') }}">
+                                    <img src="{{ asset('images/slider/4.jpg') }}" alt="" loading="lazy" decoding="async">
+                                </picture>
                             </div>
                             {{ partout.more_button() }}
                         </article>
@@ -56,7 +65,10 @@
                     {# Biens à rénover #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-large is-renover">
-                            <img class="home-bt-partout-cover" src="{{ asset('images/slider/9.jpg') }}" alt="" loading="lazy" decoding="async">
+                            <picture>
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/9-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/9.jpg') }}" alt="" loading="lazy" decoding="async">
+                            </picture>
                             {{ partout.more_button() }}
                         </article>
                     </li>
@@ -73,7 +85,10 @@
                     {# Vivre à la mer #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-mer">
-                            <img class="home-bt-partout-cover" src="{{ asset('images/slider/5.jpg') }}" alt="" loading="lazy" decoding="async">
+                            <picture>
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/5-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/5.jpg') }}" alt="" loading="lazy" decoding="async">
+                            </picture>
                             {{ partout.more_button() }}
                         </article>
                     </li>
@@ -81,7 +96,10 @@
                     {# Propriétaire en Europe #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-europe">
-                            <img class="home-bt-partout-cover" src="{{ asset('images/slider/6.jpg') }}" alt="" loading="lazy" decoding="async">
+                            <picture>
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/6-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/6.jpg') }}" alt="" loading="lazy" decoding="async">
+                            </picture>
                             {{ partout.more_button() }}
                         </article>
                     </li>
@@ -90,7 +108,10 @@
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-italie">
                             <div class="home-bt-partout-italie-image">
-                                <img src="{{ asset('images/slider/2.jpg') }}" alt="" loading="lazy" decoding="async">
+                                <picture>
+                                    <source media="(max-width: 991px)" srcset="{{ asset('images/slider/2-m.jpg') }}">
+                                    <img src="{{ asset('images/slider/2.jpg') }}" alt="" loading="lazy" decoding="async">
+                                </picture>
                             </div>
                             {{ partout.more_button() }}
                         </article>
@@ -99,7 +120,10 @@
                     {# Agences à Marrakech #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-marrakech">
-                            <img class="home-bt-partout-cover" src="{{ asset('images/slider/7.jpg') }}" alt="" loading="lazy" decoding="async">
+                            <picture>
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/7-m.jpg') }}">
+                                <img class="home-bt-partout-cover" src="{{ asset('images/slider/7.jpg') }}" alt="" loading="lazy" decoding="async">
+                            </picture>
                             {{ partout.more_button() }}
                         </article>
                     </li>
@@ -107,7 +131,10 @@
                     {# Maisons à la campagne #}
                     <li class="splide__slide">
                         <article class="home-bt-partout-card is-small is-campagne">
-                            <img class="home-bt-partout-campagne-image" src="{{ asset('images/slider/1.jpg') }}" alt="" loading="lazy" decoding="async">
+                            <picture>
+                                <source media="(max-width: 991px)" srcset="{{ asset('images/slider/1-m.jpg') }}">
+                                <img class="home-bt-partout-campagne-image" src="{{ asset('images/slider/1.jpg') }}" alt="" loading="lazy" decoding="async">
+                            </picture>
                             {{ partout.more_button() }}
                         </article>
                     </li>
