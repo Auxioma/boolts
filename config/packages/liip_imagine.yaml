@@ -23,7 +23,7 @@ liip_imagine:
                     mode: outbound
 
         property_card_mobile_webp:
-            quality: 82
+            quality: 100
             format: webp
             filters:
                 thumbnail:
