@@ -8,8 +8,8 @@
 <footer class="boolts-footer" data-dashboard-layout-target="footer">
     <div class="container">
         <div class="boolts-footer__box pt-32">
-            <!-- Desktop + Tablet -->
-            <div class="boolts-footer__desktop d-none d-md-block" data-controller="home--property-tabs">
+            <!-- Explorer (toutes tailles) -->
+            <div data-controller="home--property-tabs">
                 <div class="boolts-footer__explore">
                     <h3 class="boolts-footer__heading">            <a class="navbar-brand topbar-brand" href="{{ path('app_home') }}">
                 <img
@@ -159,7 +159,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <!-- Desktop + Tablet -->
+            <div class="boolts-footer__desktop d-none d-md-block">
                 <div class="row g-4 boolts-footer__top">
                     <div class="col-md-3">
                         <div class="boolts-footer__column">
@@ -229,145 +232,13 @@
             <div class="boolts-footer__mobile d-md-none">
                 <div class="accordion boolts-footer__accordion" id="booltsFooterAccordion">
                     <div class="accordion-item boolts-footer__accordion-item">
-                        <h2 class="accordion-header" id="footerHeadingOne">
+                        <h2 class="accordion-header" id="footerHeadingFour">
                             <button
                                 class="accordion-button boolts-footer__accordion-button"
                                 type="button"
                                 data-bs-toggle="collapse"
-                                data-bs-target="#footerCollapseOne"
-                                aria-expanded="true"
-                                aria-controls="footerCollapseOne"
-                            >
-                                Par localité
-                            </button>
-                        </h2>
-                        <div
-                            id="footerCollapseOne"
-                            class="accordion-collapse collapse show"
-                            aria-labelledby="footerHeadingOne"
-                            data-bs-parent="#booltsFooterAccordion"
-                        >
-                            <div class="accordion-body boolts-footer__accordion-body">
-                                <ul class="boolts-footer__links">
-                                    <li><a href="#">Paris</a></li>
-                                    <li><a href="#">Marseille</a></li>
-                                    <li><a href="#">Lyon</a></li>
-                                    <li><a href="#">Toulouse</a></li>
-                                    <li><a href="#">Nice</a></li>
-                                    <li><a href="#">Nantes</a></li>
-                                    <li><a href="#">Strasbourg</a></li>
-                                    <li><a href="#">Montpellier</a></li>
-                                    <li><a href="#">Bordeaux</a></li>
-                                    <li><a href="#">Lille</a></li>
-                                    <li><a href="#">Rennes</a></li>
-                                    <li><a href="#">Reims</a></li>
-                                    <li><a href="#">Toulon</a></li>
-                                    <li><a href="#">Grenoble</a></li>
-                                    <li><a href="#">Dijon</a></li>
-                                    <li><a href="#">Angers</a></li>
-                                    <li><a href="#">Nîmes</a></li>
-                                    <li><a href="#">Le Havre</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item boolts-footer__accordion-item">
-                        <h2 class="accordion-header" id="footerHeadingTwo">
-                            <button
-                                class="accordion-button collapsed boolts-footer__accordion-button"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#footerCollapseTwo"
-                                aria-expanded="false"
-                                aria-controls="footerCollapseTwo"
-                            >
-                                Par type de bien
-                            </button>
-                        </h2>
-                        <div
-                            id="footerCollapseTwo"
-                            class="accordion-collapse collapse"
-                            aria-labelledby="footerHeadingTwo"
-                            data-bs-parent="#booltsFooterAccordion"
-                        >
-                            <div class="accordion-body boolts-footer__accordion-body">
-                                <ul class="boolts-footer__links">
-                                    <li><a href="#">Appartements à louer</a></li>
-                                    <li><a href="#">Appartements à vendre</a></li>
-                                    <li><a href="#">Bureaux à vendre</a></li>
-                                    <li><a href="#">Fermes à louer</a></li>
-                                    <li><a href="#">Fermes à vendre</a></li>
-                                    <li><a href="#">Lofts à vendre</a></li>
-                                    <li><a href="#">Maisons à louer</a></li>
-                                    <li><a href="#">Maisons à vendre</a></li>
-                                    <li><a href="#">Parkings à vendre</a></li>
-                                    <li><a href="#">Terrains à louer</a></li>
-                                    <li><a href="#">Terrains à vendre</a></li>
-                                    <li><a href="#">Studios à vendre</a></li>
-                                    <li><a href="#">Duplex à vendre</a></li>
-                                    <li><a href="#">Villas à vendre</a></li>
-                                    <li><a href="#">Locaux commerciaux à louer</a></li>
-                                    <li><a href="#">Immeubles à vendre</a></li>
-                                    <li><a href="#">Chalets à vendre</a></li>
-                                    <li><a href="#">Garages à louer</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item boolts-footer__accordion-item">
-                        <h2 class="accordion-header" id="footerHeadingThree">
-                            <button
-                                class="accordion-button collapsed boolts-footer__accordion-button"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#footerCollapseThree"
-                                aria-expanded="false"
-                                aria-controls="footerCollapseThree"
-                            >
-                                Par caractéristiques
-                            </button>
-                        </h2>
-                        <div
-                            id="footerCollapseThree"
-                            class="accordion-collapse collapse"
-                            aria-labelledby="footerHeadingThree"
-                            data-bs-parent="#booltsFooterAccordion"
-                        >
-                            <div class="accordion-body boolts-footer__accordion-body">
-                                <ul class="boolts-footer__links">
-                                    <li><a href="#">Avec piscine</a></li>
-                                    <li><a href="#">Avec jardin</a></li>
-                                    <li><a href="#">Avec garage</a></li>
-                                    <li><a href="#">Avec ascenseur</a></li>
-                                    <li><a href="#">Avec balcon</a></li>
-                                    <li><a href="#">Avec terrasse</a></li>
-                                    <li><a href="#">Meublé</a></li>
-                                    <li><a href="#">Avec parking</a></li>
-                                    <li><a href="#">Avec cave</a></li>
-                                    <li><a href="#">Neuf</a></li>
-                                    <li><a href="#">Avec vue mer</a></li>
-                                    <li><a href="#">Avec climatisation</a></li>
-                                    <li><a href="#">Avec cheminée</a></li>
-                                    <li><a href="#">Rénové</a></li>
-                                    <li><a href="#">Avec dressing</a></li>
-                                    <li><a href="#">Proche transports</a></li>
-                                    <li><a href="#">Avec alarme</a></li>
-                                    <li><a href="#">Avec vue dégagée</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item boolts-footer__accordion-item">
-                        <h2 class="accordion-header" id="footerHeadingFour">
-                            <button
-                                class="accordion-button collapsed boolts-footer__accordion-button"
-                                type="button"
-                                data-bs-toggle="collapse"
                                 data-bs-target="#footerCollapseFour"
-                                aria-expanded="false"
+                                aria-expanded="true"
                                 aria-controls="footerCollapseFour"
                             >
                                 Entreprise
@@ -375,7 +246,7 @@
                         </h2>
                         <div
                             id="footerCollapseFour"
-                            class="accordion-collapse collapse"
+                            class="accordion-collapse collapse show"
                             aria-labelledby="footerHeadingFour"
                             data-bs-parent="#booltsFooterAccordion"
                         >
@@ -874,33 +745,106 @@
 
     @media (max-width: 767.98px) {
         .boolts-footer {
-            padding: 32px 16px;
+            padding: 32px 0;
+        }
+
+        .boolts-footer .container {
+            padding-inline: 16px;
+        }
+
+        .boolts-footer__box {
+            padding-top: 0 !important;
+        }
+
+        .boolts-footer__explore {
+            margin-bottom: 34px;
+        }
+
+        .boolts-footer__tabs {
+            justify-content: space-between;
+            gap: 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .boolts-footer__tab {
+            color: #0b0f14;
+        }
+
+        .boolts-footer__grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .boolts-footer__grid .boolts-footer__links {
+            min-width: 0;
+        }
+
+        .boolts-footer__links a {
+            font-weight: 400;
+        }
+
+        .boolts-footer__accordion-item + .boolts-footer__accordion-item {
+            margin-top: 24px;
+        }
+
+        .boolts-footer__accordion-button::after {
+            width: 24px;
+            height: 24px;
+            background-image: url("{{ asset('images/footer/chevron-down.svg') }}");
+            background-size: 24px;
+        }
+
+        .boolts-footer__accordion-body .boolts-footer__links {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .boolts-footer__accordion-body .boolts-footer__links li + li {
+            margin-top: 0;
+        }
+
+        .boolts-footer__apps-mobile {
+            margin-top: 24px;
+        }
+
+        .boolts-footer__apps-mobile .boolts-footer__stores {
+            gap: 16px;
+        }
+
+        .boolts-footer__subtitle {
+            font-weight: 400;
         }
 
         .boolts-footer__divider {
-            margin: 24px 0 16px;
+            margin: 34px 0;
         }
 
         .boolts-footer__bottom {
             flex-direction: column;
-            align-items: flex-start;
+            align-items: stretch;
             gap: 16px;
         }
 
         .boolts-footer__copyright {
             font-size: 14px;
+            font-weight: 400;
             white-space: normal;
         }
 
         .boolts-footer__meta {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
+            justify-content: space-between;
+            gap: 16px;
         }
 
         .boolts-footer__locale {
             gap: 16px;
-            flex-wrap: wrap;
+        }
+
+        .boolts-footer__meta-item {
+            font-size: 12px;
         }
     }
 
