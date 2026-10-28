@@ -34,7 +34,7 @@ class CategoryBienTransactionFixtures extends Fixture
                 'icone' => 'icon-house',
                 'translations' => [
                     'fr' => 'Acheter',
-                    'en' => 'Buy',
+                    'en' => 'sale',
                 ],
             ],
             [
