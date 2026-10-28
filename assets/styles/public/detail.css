@@ -1350,11 +1350,10 @@ body.bt-modal-open {
         line-height: 16px;
     }
 
-    .bt-info-section__text {
+    /*.bt-info-section__text {
         font-size: 12px;
-
         line-height: 16px;
-    }
+    }*/
 
     .bt-feature {
         font-size: 12px;
