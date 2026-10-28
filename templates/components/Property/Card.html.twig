@@ -25,14 +25,14 @@
                 {# Mobile - WebP #}
                 <source
                     media="(max-width: 575px)"
-                    srcset="/{{ imagePath }}"
+                    srcset="{{ imagePath }}"
                     type="image/webp" 
                 >
 
                 {# Mobile - PNG fallback #}
                 <source
                     media="(max-width: 575px)"
-                    src="/{{ imagePath }}"
+                    src="{{ imagePath }}"
                     {# srcset="{{ imagePath|imagine_filter('property_card_mobile_png') }}" #}
 
                     type="image/png"
@@ -41,7 +41,7 @@
                 {# Tablette - WebP #}
                 <source
                     media="(min-width: 576px) and (max-width: 991px)"
-                    src="/{{ imagePath }}"
+                    src="{{ imagePath }}"
                     {# srcset="{{ imagePath|imagine_filter('property_card_tablet_webp') }}" #}
                     type="image/webp"
                 >
@@ -49,7 +49,7 @@
                 {# Tablette - PNG fallback #}
                 <source
                     media="(min-width: 576px) and (max-width: 991px)"
-                    src="/{{ imagePath }}"
+                    src="{{ imagePath }}"
                     {# srcset="{{ imagePath|imagine_filter('property_card_tablet_png') }}" #}
                     type="image/png"
                 >
@@ -57,7 +57,7 @@
                 {# Desktop - WebP #}
                 <source
                     media="(min-width: 992px)"
-                    src="/{{ imagePath }}"
+                    src="{{ imagePath }}"
                     {# srcset="{{ imagePath|imagine_filter('property_card_desktop_webp') }}" #}
                     type="image/webp"
                 >
@@ -65,7 +65,7 @@
                 {# Desktop - PNG fallback #}
                 <source
                     media="(min-width: 992px)"
-                    src="/{{ imagePath }}"
+                    src="{{ imagePath }}"
                     {# srcset="{{ imagePath|imagine_filter('property_card_desktop_png') }}" #}
                     type="image/png"
                 >
