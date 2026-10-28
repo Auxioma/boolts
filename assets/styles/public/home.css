@@ -74,6 +74,13 @@
     box-sizing: border-box;
 }
 
+/* Safari iOS ignore overflow-x sur le body seul : clip sur html coupe le
+   débordement horizontal sans créer de conteneur de scroll (sticky et
+   animation-timeline: view() restent fonctionnels). */
+html {
+    overflow-x: clip;
+}
+
 body {
     margin: 0;
 
@@ -95,7 +102,9 @@ input {
     min-height: 100vh;
 
     /* clip (et non hidden) : ne crée pas de conteneur de scroll, sinon les
-       animations animation-timeline: view() restent figées. */
+       animations animation-timeline: view() restent figées.
+       hidden : repli pour iOS < 16, qui ne connaît pas clip. */
+    overflow-x: hidden;
     overflow-x: clip;
 }
 
@@ -1928,6 +1937,8 @@ input {
 
     padding-top: clamp(48px, calc(48px + (76 * (100vw - 375px) / 1065)), 124px);
 
+    /* hidden : repli pour iOS < 16, qui ne connaît pas clip. */
+    overflow: hidden;
     overflow: clip;
 }
 
