@@ -13,7 +13,7 @@
             wrapper: 'profile-public',
             tab: 'cat1',
             icon: 'icon-user-round',
-            label: 'Profile public',
+            label: 'Fiche agence',
             active: true,
         },
         {
@@ -61,14 +61,14 @@
 ] %}
 
 {% for section in menuParametres %}
-    <span class="dashboard-agence-title d-block mt-32">
+    <span class="dashboard-agence-title px-10 py-10 paragraphe d-block" style="color:#858789">
         {{ section.title }}
     </span>
 
     {% for item in section.items %}
         <div class="{{ item.wrapper }} {{ loop.first ? 'mt-22' : 'mt-8' }} px-10 py-10">
             <a href="#"
-               class="menu-btn js-tab-link{{ item.active ? ' active' : '' }}"
+               class="menu-btn js-tab-link{{ item.active ? ' active' : '' }} p-accent"
                data-tab="{{ item.tab }}">
                 <i class="{{ item.icon }} mr-10"></i>
                 {{ item.label }}

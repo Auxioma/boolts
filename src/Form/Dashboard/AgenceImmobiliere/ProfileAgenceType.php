@@ -15,11 +15,11 @@ namespace App\Form\Dashboard\AgenceImmobiliere;
 use App\Entity\Devise;
 use App\Entity\FuseauHoraire;
 use App\Entity\LangueParler;
-use App\Repository\LangueParlerRepository;
 use App\Entity\Langues;
 use App\Entity\User;
 use App\Repository\DeviseRepository;
 use App\Repository\FuseauHoraireRepository;
+use App\Repository\LangueParlerRepository;
 use App\Repository\LanguesRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -27,6 +27,8 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
@@ -54,8 +56,28 @@ class ProfileAgenceType extends AbstractType
             ->add('ville')
             ->add('codePostal')
             ->add('pays')
-            ->add('entreprise')
-            ->add('description')
+
+
+->add('entreprise', TextType::class, [
+    'required' => false,
+    'attr' => [
+        'maxlength' => 255,
+    ],
+    'constraints' => [
+        new Length(max: 255),
+    ],
+])
+            ->add('description', TextareaType::class, [
+    'required' => false,
+    'attr' => [
+        'maxlength' => 500,
+        'rows' => 3,
+        'onkeydown' => "if (event.key === 'Enter') event.preventDefault();",
+    ],
+    'constraints' => [
+        new Length(max: 500),
+    ],
+])
 
             ->add('numeroContact', TelType::class, [
                 'label' => 'Téléphone',
