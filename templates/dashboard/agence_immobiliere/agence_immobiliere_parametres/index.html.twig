@@ -19,48 +19,18 @@
 
 
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main bg-white">
-                    {#
-                        Navigation en étapes : la liste des sous-pages et le contenu
-                        d'une sous-page ne sont jamais affichés en même temps.
-                        Sans hash : liste. Avec un hash (#cat1 à #cat6) : contenu.
-                    #}
                     <div class="row">
-                        <nav
-                            class="col-12 pt-48 parametres-step parametres-step--list"
-                            data-parametre--tabs-target="list"
-                            aria-label="Paramètres"
-                        >
+                        <div class="col-2 pt-48 border-color-right-gris">
                             <div class="menu-parametres">
-                                <h2 class="mb-0">Paramètres</h2>
-
                                 {{ include(
                                     'dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig',
                                 ) }}
                             </div>
-                        </nav>
+                        </div>
 
-                        <div
-                            class="col-12 parametres-step parametres-step--content d-none"
-                            data-parametre--tabs-target="content"
-                        >
+                        <div class="col-8">
                             <div class="row bg-white">
                                 <div class="col-12 pt-48">
-                                    <div class="parametres-back px-48 mb-24">
-                                        <div class="row">
-                                            <div class="col-10 mx-auto">
-                                                <a
-                                                    href="{{ path('agence_immobiliere_parametres') }}"
-                                                    class="btn-retour parametres-back__button py-10 px-16 p-accent"
-                                                    data-parametre--tabs-target="back"
-                                                    data-action="parametre--tabs#back"
-                                                >
-                                                    <i class="icon-chevron-left" aria-hidden="true"></i>
-                                                    Retour
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {{ include('dashboard/agence_immobiliere/_partials/parametres/profile_public.html.twig') }}
                                     {{ include('dashboard/agence_immobiliere/_partials/parametres/informations_personnelles.html.twig') }}
                                     {{ include('dashboard/agence_immobiliere/_partials/parametres/connection-securise.html.twig') }}
