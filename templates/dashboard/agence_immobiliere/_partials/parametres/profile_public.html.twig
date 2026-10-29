@@ -165,28 +165,33 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="js-field-value" id="description-public-value">
                                         <p class="profile-public-description mb-0">
-                                            {{ app.user.description ?? 'Rédigez une courte description ici.' }}
+                                            {{ (app.user.description ?? 'Rédigez une courte description ici.')|u.truncate(255, '...') }}
                                         </p>
                                     </div>
 
-                                    <button type="button" class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen" data-action="click->field-save#handle" data-field-save-field-param="description" data-field-save-input-param="#{{ form.description.vars.id }}" data-field-save-output-param="#description-public-value">
+                                    <button type="button" class="btn btn-link p-0 text-decoration-none js-edit-button js-btn-pen" data-action="click->field-save#handle" data-field-save-field-param="description" data-field-save-input-param="#{{ form.description.vars.id }}" data-field-save-output-param="#description-public-value .profile-public-description" data-field-save-truncate-param="255">
                                         <i class="icon-pen"></i>
                                     </button>
                                 </div>
 
                                 <div class="d-none js-field-input">
                                     <div class="d-flex align-items-center gap-2 mt-2">
-                                        {{ form_widget(form.description, {
-                                            attr: {
-                                                class: 'w-100',
-                                            },
-                                        }) }}
+                                        <div class="w-100" data-controller="parametre--char-count">
+                                            {{ form_widget(form.description, {
+                                                attr: {
+                                                    class: 'w-100',
+                                                    'data-parametre--char-count-target': 'input',
+                                                    'data-action': 'input->parametre--char-count#update',
+                                                },
+                                            }) }}
 
-                                        <button type="button" class="btn btn-link p-0 text-decoration-none js-btn-save" data-action="click->field-save#handle" data-field-save-field-param="description" data-field-save-input-param="#{{ form.description.vars.id }}" data-field-save-output-param="#description-public-value">
+                                            <p class="text-end mb-0" data-parametre--char-count-target="count">0/500</p>
+                                        </div>
+
+                                        <button type="button" class="btn btn-link p-0 text-decoration-none js-btn-save" data-action="click->field-save#handle" data-field-save-field-param="description" data-field-save-input-param="#{{ form.description.vars.id }}" data-field-save-output-param="#description-public-value .profile-public-description" data-field-save-truncate-param="255">
                                             <i class="icon-save"></i>
                                         </button>
                                     </div>
-                                    <p>0/500</p>
                                 </div>
                             </div>
                         </div>

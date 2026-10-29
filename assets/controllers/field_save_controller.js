@@ -153,7 +153,10 @@ export default class extends Controller {
                 }));
 
                 if (output) {
-                    output.textContent = this.formatOutput(finalValue, isMultiple, fieldName, input);
+                    output.textContent = this.truncate(
+                        this.formatOutput(finalValue, isMultiple, fieldName, input),
+                        button.dataset.fieldSaveTruncateParam
+                    );
                 }
 
                 if (!isAppend && value) {
@@ -520,6 +523,17 @@ export default class extends Controller {
         }
 
         return input.dataset.fullPhoneValue ?? input.value;
+    }
+
+    // Même rendu que le filtre Twig u.truncate(length, '...').
+    truncate(text, length) {
+        const max = Number(length);
+
+        if (!max || text.length <= max) {
+            return text;
+        }
+
+        return `${text.slice(0, max - 3)}...`;
     }
 
     serializeValue(value) {
