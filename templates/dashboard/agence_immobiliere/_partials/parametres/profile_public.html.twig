@@ -925,7 +925,7 @@
 
                             </div>
 
-                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value" data-field-save-has-value-param="{{ hasOpeningHours ? 'true' : 'false' }}">
+                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value" data-field-save-has-value-param="{{ hasOpeningHours ? 'true' : 'false' }}">
                                 {{ hasOpeningHours ? 'Modifier' : 'Définir' }}
                             </button>
                         </div>
@@ -940,15 +940,24 @@
                     gap: 16px;
                 }
 
+                /* Comme Google : les créneaux d'un même jour sont empilés l'un au-dessus de l'autre */
                 .opening-day {
                     display: grid;
-                    grid-template-columns: 110px 60px 70px minmax(220px, 1fr) minmax(
-                            220px,
-                            1fr
-                        ) 80px;
+                    grid-template-columns: 110px 60px 70px minmax(220px, 280px) 80px;
                     align-items: center;
-                    gap: 14px;
+                    column-gap: 14px;
+                    row-gap: 8px;
                 }
+
+                .opening-day > .opening-day__label { grid-column: 1; grid-row: 1; }
+                .opening-day > .contenue-des-page-des-parametres-switch { grid-column: 2; grid-row: 1; }
+                .opening-day > .js-opening-status { grid-column: 3; grid-row: 1; }
+                .opening-day > .js-opening-first { grid-column: 4; grid-row: 1; }
+                .opening-day > .js-opening-second { grid-column: 4; grid-row: 2; }
+                .opening-day > .opening-day__actions { grid-column: 5; grid-row: 1; }
+
+                /* 2e créneau affiché : le bouton « − » se place sur sa ligne */
+                .opening-day:has(> .js-opening-second:not([hidden])) > .opening-day__actions { grid-row: 2; }
 
                 .opening-day__label {
                     color: #0b0f14!important;
