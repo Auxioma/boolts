@@ -142,7 +142,7 @@
 
     background-color: #fff;
 
-    border: 2px solid #8e8e93;
+    border: 2px solid #858789;
 
     border-radius: 999px;
 
@@ -166,7 +166,7 @@
 
     background-color: #fff;
 
-    border: 2px solid #8e8e93;
+    border: 2px solid #858789;
 
     border-radius: 50%;
 
@@ -176,9 +176,9 @@
 }
 
 .contenue-des-page-des-parametres .contenue-des-page-des-parametres-switch input:checked+.contenue-des-page-des-parametres-switch-slider {
-    background-color: var(--color-link-hover);
+    background-color: #5d00ff;
 
-    border-color: var(--color-link-hover);
+    border-color: #5d00ff;
 }
 
 .contenue-des-page-des-parametres .contenue-des-page-des-parametres-switch input:checked+.contenue-des-page-des-parametres-switch-slider::before {
@@ -234,10 +234,9 @@
 }
 
 .contenue-des-page-des-parametres .contenue-des-page-des-parametres-checkbox-label {
-    font-size: 16px;
-
-    color: #1d1d1f;
+    color: #858789;
 }
+
 
 .profile-public-name {
     color: #0b0f14 !important;
@@ -852,4 +851,9 @@
     top: 2px;
 
     position: relative;
+}
+
+
+.agency-languages-add.icon-search::before {
+    font-size: 24px;
 }

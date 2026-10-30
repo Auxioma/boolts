@@ -353,7 +353,7 @@
 
                                                 <span class="contenue-des-page-des-parametres-checkbox-custom"></span>
 
-                                                <span class="contenue-des-page-des-parametres-checkbox-label">
+                                                <span class="contenue-des-page-des-parametres-checkbox-label paragraphe">
                                                     Utiliser le même numéro
                                                 </span>
                                             </label>
@@ -364,7 +364,7 @@
                                                 {{ form_widget(form.whatsApp, {
                                                     id: 'whatsapp-phone',
                                                     attr: {
-                                                        class: 'form-control w-75',
+                                                        class: 'form-control w-75 input',
                                                         'data-phone-target': 'input',
                                                     },
                                                 }) }}
@@ -392,7 +392,7 @@
                                 <div class="mt-12 d-none js-field-input">
                                     {{ form_widget(form.emailContact, {
                                         attr: {
-                                            class: 'form-control w-75',
+                                            class: 'form-control w-75 input',
                                         },
                                     }) }}
                                 </div>
@@ -428,7 +428,7 @@
                                         }) }}
 
                                         <div class="agency-languages-search">
-                                            <input type="text" class="form-control agency-languages-input w-75 rounded-70 pl-44" placeholder="Rechercher une langue..." autocomplete="off" data-languages-target="search" data-action="input->languages#search">
+                                            <input type="text" class="form-control agency-languages-input w-75 rounded-70 pl-44 input" placeholder="Rechercher une langue..." autocomplete="off" data-languages-target="search" data-action="input->languages#search">
 
                                             <i class="icon-search agency-languages-add"></i>
                                         </div>
@@ -480,13 +480,13 @@
                         .agency-languages-add {
                             position: absolute;
                             top: 50%;
-                            left: 10px;
+                            left: 16px;
                             width: 24px;
                             height: 24px;
                             transform: translateY(-50%);
                             border: 0;
                             border-radius: 50%;
-                            color: var(--color-gray-light);
+                            color: #858789;
                             font-size: 2rem;
                             line-height: 1;
                             display: flex;
@@ -541,14 +541,16 @@
                         }
 
                         .agency-language-tag span {
-                            font-size: 1.4rem;
+                            display: inline-flex;
+                            align-items: center;
+                            font-size: 1.2rem;
                             line-height: 1;
                         }
 
-                        .agency-language-tag:hover {
-                            background: #5d00ff;
-                            color: #ffffff;
+                        .agency-language-tag .icon-x::before {
+                            position: static;
                         }
+
 
                         @media (max-width: 576px) {
                             .agency-languages-input {

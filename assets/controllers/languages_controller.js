@@ -92,7 +92,7 @@ export default class extends Controller {
             tag.className = 'agency-language-tag';
             tag.dataset.action = 'click->languages#remove';
             tag.dataset.value = option.value;
-            tag.innerHTML = `${option.text} <span>×</span>`;
+            tag.innerHTML = `${option.text} <span><i class="icon-x"></i></span>`;
 
             this.tagsTarget.appendChild(tag);
         });
