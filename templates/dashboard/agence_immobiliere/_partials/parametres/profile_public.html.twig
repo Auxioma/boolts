@@ -410,9 +410,11 @@
                             <div class="w-100">
                                 <h3 class="p-accent mb-0">Langues parlées par l’agence</h3>
 
-                                <p class="mt-12 mb-0 js-field-value" id="langues-parlees-value">
+                                <p class="mt-12 mb-0 js-field-value agency-languages-value" id="langues-parlees-value">
                                     {% if app.user.langueParlers is not empty %}
-                                        {{ app.user.langueParlers|map(langue => langue.labelWithFlag)|join(', ') }}
+                                        {% for langue in app.user.langueParlers %}
+                                            <span>{{ langue.labelWithFlag }}{{ not loop.last ? ',' }}</span>
+                                        {% endfor %}
                                     {% else %}
                                         Définissez les langues parlées par l’agence
                                     {% endif %}
@@ -499,24 +501,40 @@
                             z-index: 20;
                             width: 75%;
                             margin-top: 8px;
-                            background: #ffffff;
-                            border-radius: 18px;
-                            overflow: hidden;
+                            padding: 8px;
+                            max-height: 250px;
+                            overflow-y: auto;
+                            background: #fff;
+                            border: 1px solid rgba(0, 0, 0, .08);
+                            border-radius: 16px;
+                            box-shadow: 0 18px 45px rgba(15, 23, 42, .14);
+                        }
+
+                        .agency-languages-results:empty {
+                            display: none;
                         }
 
                         .agency-languages-result {
+                            display: block;
                             width: 100%;
-                            padding: 12px 22px;
+                            padding: 12px 14px;
                             border: 0;
-                            background: #ffffff;
+                            border-radius: 12px;
+                            background: transparent;
                             text-align: left;
-                            font-weight: 600;
-                            color: #212529;
+                            font-weight: 700;
+                            color: #0b0f14;
+                            cursor: pointer;
                         }
 
                         .agency-languages-result:hover {
-                            background: #f5f0ff;
-                            color: #5d00ff;
+                            background: #f8f8f8;
+                        }
+
+                        .agency-languages-value {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 10px;
                         }
 
                         .agency-languages-tags {
@@ -657,16 +675,16 @@
 
                                     {# Lundi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Lundi</label>
+                                        <label class="opening-day__label paragraphe">Lundi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '0'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status">Fermé</span>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
-                                        <div class="opening-slot js-opening-first" hidden>
+                                        <div class="opening-slot js-opening-first" hidden> 
                                             {{ protoOuvertureMatin|replace({__name__: '0'})|raw }}
                                             <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '0'})|raw }}
@@ -691,14 +709,14 @@
 
                                     {# Mardi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Mardi</label>
+                                        <label class="opening-day__label  paragraphe">Mardi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '1'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status">Fermé</span>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '1'})|raw }}
@@ -725,14 +743,14 @@
 
                                     {# Mercredi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Mercredi</label>
+                                        <label class="opening-day__label paragraphe">Mercredi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '2'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status">Fermé</span>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '2'})|raw }}
@@ -759,14 +777,14 @@
 
                                     {# Jeudi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Jeudi</label>
+                                        <label class="opening-day__label  paragraphe">Jeudi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '3'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status">Fermé</span>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '3'})|raw }}
@@ -793,14 +811,14 @@
 
                                     {# Vendredi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Vendredi</label>
+                                        <label class="opening-day__label paragraphe">Vendredi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '4'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status">Fermé</span>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '4'})|raw }}
@@ -827,14 +845,14 @@
 
                                     {# Samedi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Samedi</label>
+                                        <label class="opening-day__label paragraphe">Samedi</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '5'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status">Fermé</span>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '5'})|raw }}
@@ -861,14 +879,14 @@
 
                                     {# Dimanche #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label">Dimanche</label>
+                                        <label class="opening-day__label paragraphe">Dimanche</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '6'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status">Fermé</span>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '6'})|raw }}
@@ -922,26 +940,15 @@
                 }
 
                 .opening-day__label {
-                    color: #0b0f14;
-                    font-size: 14px;
-                    font-style: normal;
-                    font-weight: 500;
-                    line-height: 20px;
+                    color: #0b0f14!important;
                 }
 
                 .js-opening-status {
                     color: #858789;
-                    font-size: 14px;
-                    font-style: normal;
-                    font-weight: 500;
-                    line-height: 20px;
                 }
 
                 .opening-day:not(.is-closed) .js-opening-status {
-                    font-size: 4px;
-                    font-style: normal;
-                    font-weight: 500;
-                    line-height: 20px;
+                    color:#0b0f14
                 }
 
                 .opening-slot {

@@ -152,7 +152,9 @@ export default class extends Controller {
                     }
                 }));
 
-                if (output) {
+                if (output && fieldName === 'langueParlers') {
+                    this.renderLanguagesOutput(output, input);
+                } else if (output) {
                     output.textContent = this.truncate(
                         this.formatOutput(finalValue, isMultiple, fieldName, input),
                         button.dataset.fieldSaveTruncateParam
@@ -540,6 +542,25 @@ export default class extends Controller {
         return typeof value === 'object'
             ? JSON.stringify(value)
             : String(value ?? '');
+    }
+
+    // Une <span> par langue pour espacer les libellés (gap CSS sur .agency-languages-value).
+    renderLanguagesOutput(output, input) {
+        const labels = this.getSelectedLanguagesLabels(input);
+
+        if (labels.length === 0) {
+            output.textContent = 'Définissez les langues parlées par l’agence';
+
+            return;
+        }
+
+        output.replaceChildren(...labels.map((label, index) => {
+            const span = document.createElement('span');
+
+            span.textContent = index < labels.length - 1 ? `${label},` : label;
+
+            return span;
+        }));
     }
 
     formatOutput(value, isMultiple, fieldName = null, input = null) {
