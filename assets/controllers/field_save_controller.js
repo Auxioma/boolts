@@ -214,7 +214,7 @@ export default class extends Controller {
             const openingHoursContainer = field.querySelector('.opening-hours') ?? field;
 
             const inputs = isOpeningHours
-                ? openingHoursContainer.querySelectorAll('input[type="time"], .js-opening-toggle')
+                ? openingHoursContainer.querySelectorAll('input[type="time"], select.js-opening-time, .js-opening-toggle')
                 : isLanguages && input
                     ? [input]
                     : isMultiple
@@ -290,7 +290,7 @@ export default class extends Controller {
     }
 
     hasAtLeastOneOpeningHour(container) {
-        return Array.from(container.querySelectorAll('input[type="time"]'))
+        return Array.from(container.querySelectorAll('input[type="time"], select.js-opening-time'))
             .some((input) => input.value.trim() !== '');
     }
 
@@ -315,7 +315,7 @@ export default class extends Controller {
             }
 
             const toggle = dayElement.querySelector('.js-opening-toggle');
-            const timeInputs = dayElement.querySelectorAll('input[type="time"]');
+            const timeInputs = dayElement.querySelectorAll('input[type="time"], select.js-opening-time');
 
             values[day] = {
                 jour: day,

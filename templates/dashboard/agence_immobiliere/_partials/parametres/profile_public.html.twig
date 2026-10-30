@@ -651,20 +651,31 @@
                                     }) }}
                                 {% endset %}
 
+                                {# Sélecteur d'heure façon Google : de 00:00 à 23:30 par pas de 30 minutes #}
+                                {% set openingTimeOptions %}
+                                    <option value="">--:--</option>
+                                    {% for hour in 0..23 %}
+                                        {% for minute in ['00', '30'] %}
+                                            {% set time = '%02d'|format(hour) ~ ':' ~ minute %}
+                                            <option value="{{ time }}">{{ time }}</option>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% endset %}
+
                                 {% set protoOuvertureMatin %}
-                                    {{ form_widget(prototype.ouvertureMatin) }}
+                                    <select id="{{ prototype.ouvertureMatin.vars.id }}" name="{{ prototype.ouvertureMatin.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
                                 {% endset %}
 
                                 {% set protoFermetureMatin %}
-                                    {{ form_widget(prototype.fermetureMatin) }}
+                                    <select id="{{ prototype.fermetureMatin.vars.id }}" name="{{ prototype.fermetureMatin.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
                                 {% endset %}
 
                                 {% set protoOuvertureApresMidi %}
-                                    {{ form_widget(prototype.ouvertureApresMidi) }}
+                                    <select id="{{ prototype.ouvertureApresMidi.vars.id }}" name="{{ prototype.ouvertureApresMidi.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
                                 {% endset %}
 
                                 {% set protoFermetureApresMidi %}
-                                    {{ form_widget(prototype.fermetureApresMidi) }}
+                                    <select id="{{ prototype.fermetureApresMidi.vars.id }}" name="{{ prototype.fermetureApresMidi.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
                                 {% endset %}
 
                                 <div
@@ -969,7 +980,8 @@
                     color: #6b7280;
                 }
 
-                .opening-slot input[type="time"] {
+                .opening-slot input[type="time"],
+                .opening-slot select.js-opening-time {
                     width: 100%;
                     height: 40px;
                     padding: 0 8px;
@@ -980,7 +992,20 @@
                     background-color: transparent;
                 }
 
-                .opening-slot input[type="time"]:focus {
+                .opening-slot select.js-opening-time {
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    appearance: none;
+                    background-image: none;
+                    cursor: pointer;
+                }
+
+                .opening-slot select.js-opening-time::-ms-expand {
+                    display: none;
+                }
+
+                .opening-slot input[type="time"]:focus,
+                .opening-slot select.js-opening-time:focus {
                     outline: 2px solid #5d00ff;
                     outline-offset: 2px;
                 }

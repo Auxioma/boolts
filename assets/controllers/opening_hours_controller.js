@@ -60,7 +60,7 @@ export default class extends Controller {
 
         secondSlot.hidden = false;
 
-        secondSlot.querySelectorAll('input[type="time"]').forEach((input) => {
+        secondSlot.querySelectorAll('input[type="time"], select.js-opening-time').forEach((input) => {
             input.disabled = false;
         });
 
@@ -90,7 +90,7 @@ export default class extends Controller {
 
         secondSlot.hidden = true;
 
-        secondSlot.querySelectorAll('input[type="time"]').forEach((input) => {
+        secondSlot.querySelectorAll('input[type="time"], select.js-opening-time').forEach((input) => {
             input.value = '';
             input.disabled = true;
         });
@@ -125,7 +125,7 @@ export default class extends Controller {
         if (firstSlot) {
             firstSlot.hidden = false;
 
-            firstSlot.querySelectorAll('input[type="time"]').forEach((input) => {
+            firstSlot.querySelectorAll('input[type="time"], select.js-opening-time').forEach((input) => {
                 input.disabled = false;
             });
         }
@@ -133,7 +133,7 @@ export default class extends Controller {
         if (secondSlot) {
             secondSlot.hidden = !showSecondSlot;
 
-            secondSlot.querySelectorAll('input[type="time"]').forEach((input) => {
+            secondSlot.querySelectorAll('input[type="time"], select.js-opening-time').forEach((input) => {
                 if (!showSecondSlot && clearHiddenSecondSlot) {
                     input.value = '';
                 }
@@ -177,7 +177,7 @@ export default class extends Controller {
         if (firstSlot) {
             firstSlot.hidden = true;
 
-            firstSlot.querySelectorAll('input[type="time"]').forEach((input) => {
+            firstSlot.querySelectorAll('input[type="time"], select.js-opening-time').forEach((input) => {
                 if (clearValues) {
                     input.value = '';
                 }
@@ -189,7 +189,7 @@ export default class extends Controller {
         if (secondSlot) {
             secondSlot.hidden = true;
 
-            secondSlot.querySelectorAll('input[type="time"]').forEach((input) => {
+            secondSlot.querySelectorAll('input[type="time"], select.js-opening-time').forEach((input) => {
                 if (clearValues) {
                     input.value = '';
                 }
@@ -213,32 +213,36 @@ export default class extends Controller {
 
     applyDayValues(day, values) {
         const toggle = day.querySelector('.js-opening-toggle');
-        const timeInputs = day.querySelectorAll('input[type="time"]');
+        const timeInputs = day.querySelectorAll('input[type="time"], select.js-opening-time');
 
         if (toggle) {
             toggle.checked = this.isTruthy(values.isOpen);
         }
 
-        if (timeInputs[0]) {
-            timeInputs[0].value = values.ouvertureMatin || '';
+        this.setTimeValue(timeInputs[0], values.ouvertureMatin);
+        this.setTimeValue(timeInputs[1], values.fermetureMatin);
+        this.setTimeValue(timeInputs[2], values.ouvertureApresMidi);
+        this.setTimeValue(timeInputs[3], values.fermetureApresMidi);
+    }
+
+    setTimeValue(input, value) {
+        if (!input) {
+            return;
         }
 
-        if (timeInputs[1]) {
-            timeInputs[1].value = values.fermetureMatin || '';
+        const time = value || '';
+
+        // Une heure enregistrée hors pas de 30 min (ex. 09:15) est ajoutée au select pour ne pas être perdue.
+        if (input.tagName === 'SELECT' && time && !Array.from(input.options).some((option) => option.value === time)) {
+            input.add(new Option(time, time));
         }
 
-        if (timeInputs[2]) {
-            timeInputs[2].value = values.ouvertureApresMidi || '';
-        }
-
-        if (timeInputs[3]) {
-            timeInputs[3].value = values.fermetureApresMidi || '';
-        }
+        input.value = time;
     }
 
     refreshDayState(day) {
         const toggle = day.querySelector('.js-opening-toggle');
-        const timeInputs = day.querySelectorAll('input[type="time"]');
+        const timeInputs = day.querySelectorAll('input[type="time"], select.js-opening-time');
         const hasAnyTime = Array.from(timeInputs).some((input) => input.value.trim() !== '');
         const hasSecondSlot = Boolean(
             timeInputs[2]?.value.trim() || timeInputs[3]?.value.trim()
