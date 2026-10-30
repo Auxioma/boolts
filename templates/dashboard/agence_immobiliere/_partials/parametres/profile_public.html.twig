@@ -5,7 +5,7 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<div class="js-tab-content px-48 pb-92 contenue-des-page-des-parametres" id="cat1">
+<div class="js-tab-content  pb-92 contenue-des-page-des-parametres" id="cat1">
     <div class="row">
         <div class="col-10 mx-auto">
             <h2 class="mb-0">Fiche agence</h2>
@@ -429,13 +429,15 @@
                                             },
                                         }) }}
 
-                                        <div class="agency-languages-search">
-                                            <input type="text" class="form-control agency-languages-input w-75 rounded-70 pl-44 input" placeholder="Rechercher une langue..." autocomplete="off" data-languages-target="search" data-action="input->languages#search">
+                                        <div class="agency-languages-dropdown">
+                                            <div class="agency-languages-search">
+                                                <input type="text" class="form-control agency-languages-input w-75 rounded-70 pl-44 input" placeholder="Rechercher une langue..." autocomplete="off" data-languages-target="search" data-action="input->languages#search">
 
-                                            <i class="icon-search agency-languages-add"></i>
+                                                <i class="icon-search agency-languages-add"></i>
+                                            </div>
+
+                                            <div class="agency-languages-results" data-languages-target="results"></div>
                                         </div>
-
-                                        <div class="agency-languages-results" data-languages-target="results"></div>
 
                                         <div class="agency-languages-tags" data-languages-target="tags"></div>
                                     </div>
@@ -458,6 +460,11 @@
                         .agency-languages-search {
                             position: relative;
                             margin-top: 24px;
+                        }
+
+                        .agency-languages-dropdown {
+                            position: relative;
+                            z-index: 1000;
                         }
 
                         .agency-languages-input {
@@ -497,7 +504,9 @@
                         }
 
                         .agency-languages-results {
-                            position: relative;
+                            position: absolute;
+                            top: 100%;
+                            left: 0;
                             z-index: 20;
                             width: 75%;
                             margin-top: 8px;
@@ -706,11 +715,11 @@
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
                                                 <i class="icon-plus"></i>
                                             </button>
 
-                                            <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
+                                            <button type="button" class="js-opening-remove p-0" data-action="opening-hours#remove" hidden>
                                                 <i class="icon-minus"></i>
                                             </button>
                                         </div>
@@ -738,7 +747,7 @@
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
                                                 <i class="icon-plus"></i>
                                             </button>
 
@@ -770,7 +779,7 @@
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
                                                 <i class="icon-plus"></i>
                                             </button>
 
@@ -802,7 +811,7 @@
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
                                                 <i class="icon-plus"></i>
                                             </button>
 
@@ -834,7 +843,7 @@
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
                                                 <i class="icon-plus"></i>
                                             </button>
 
@@ -866,7 +875,7 @@
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
                                                 <i class="icon-plus"></i>
                                             </button>
 
@@ -898,7 +907,7 @@
                                         </div>
 
                                         <div class="opening-day__actions" hidden>
-                                            <button type="button" class="js-opening-add" data-action="opening-hours#add">
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
                                                 <i class="icon-plus"></i>
                                             </button>
 
@@ -929,7 +938,7 @@
                 /* Comme Google : les créneaux d'un même jour sont empilés l'un au-dessus de l'autre */
                 .opening-day {
                     display: grid;
-                    grid-template-columns: 110px 60px 70px minmax(220px, 280px) 80px;
+                    /*grid-template-columns: 110px 60px 70px minmax(220px, 280px) 80px;*/
                     align-items: center;
                     column-gap: 14px;
                     row-gap: 8px;
