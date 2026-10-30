@@ -26,6 +26,13 @@ export default class extends Controller {
 
             this.refreshDayState(day);
         });
+
+        this.enhanceTimeSelects();
+    }
+
+    disconnect() {
+        document.removeEventListener('click', this.onDocumentClick);
+        document.removeEventListener('keydown', this.onDocumentKeydown);
     }
 
     toggle(event) {
@@ -37,10 +44,11 @@ export default class extends Controller {
 
         if (event.currentTarget.checked) {
             this.openDay(day, true);
-            return;
+        } else {
+            this.closeDay(day, true);
         }
 
-        this.closeDay(day, true);
+        this.syncTimeTriggers(day);
     }
 
     add(event) {
@@ -71,6 +79,8 @@ export default class extends Controller {
         if (removeButton) {
             removeButton.hidden = false;
         }
+
+        this.syncTimeTriggers(day);
     }
 
     remove(event) {
@@ -102,6 +112,113 @@ export default class extends Controller {
         if (removeButton) {
             removeButton.hidden = true;
         }
+
+        this.syncTimeTriggers(day);
+    }
+
+    // ============================================================
+    // LISTE D'HEURES (même design que les résultats de recherche de la homepage)
+    // Le <select> reste la source des valeurs ; il est masqué et piloté par la liste.
+    // ============================================================
+
+    enhanceTimeSelects() {
+        const selects = this.element.querySelectorAll('select.js-opening-time');
+
+        if (selects.length === 0) {
+            return;
+        }
+
+        selects.forEach((select) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'opening-time';
+
+            const trigger = document.createElement('button');
+            trigger.type = 'button';
+            trigger.className = 'opening-time__trigger';
+            trigger.addEventListener('click', () => this.toggleTimeList(wrapper));
+
+            const list = document.createElement('ul');
+            list.className = 'opening-time__results';
+            list.hidden = true;
+
+            select.parentNode.insertBefore(wrapper, select);
+            wrapper.append(select, trigger, list);
+        });
+
+        this.onDocumentClick = (event) => {
+            if (!event.target.closest('.opening-time')) {
+                this.closeTimeLists();
+            }
+        };
+
+        this.onDocumentKeydown = (event) => {
+            if (event.key === 'Escape') {
+                this.closeTimeLists();
+            }
+        };
+
+        document.addEventListener('click', this.onDocumentClick);
+        document.addEventListener('keydown', this.onDocumentKeydown);
+
+        this.syncTimeTriggers(this.element);
+    }
+
+    toggleTimeList(wrapper) {
+        const list = wrapper.querySelector('.opening-time__results');
+        const isOpen = !list.hidden;
+
+        this.closeTimeLists();
+
+        if (isOpen) {
+            return;
+        }
+
+        const select = wrapper.querySelector('select');
+
+        list.replaceChildren(...Array.from(select.options)
+            .filter((option) => option.value !== '')
+            .map((option) => {
+                const item = document.createElement('li');
+                item.className = 'opening-time__result';
+                item.textContent = option.text;
+                item.classList.toggle('is-selected', option.value === select.value);
+
+                item.addEventListener('click', () => {
+                    select.value = option.value;
+                    select.dispatchEvent(new Event('input', { bubbles: true }));
+                    select.dispatchEvent(new Event('change', { bubbles: true }));
+
+                    this.syncTimeTriggers(wrapper);
+                    this.closeTimeLists();
+                });
+
+                return item;
+            }));
+
+        list.hidden = false;
+
+        // Fait défiler la liste (pas la page) jusqu'à l'heure sélectionnée.
+        const selected = list.querySelector('.is-selected');
+
+        if (selected) {
+            list.scrollTop = selected.offsetTop - (list.clientHeight - selected.offsetHeight) / 2;
+        }
+    }
+
+    closeTimeLists() {
+        this.element.querySelectorAll('.opening-time__results').forEach((list) => {
+            list.hidden = true;
+        });
+    }
+
+    syncTimeTriggers(root) {
+        root.querySelectorAll('.opening-time').forEach((wrapper) => {
+            const select = wrapper.querySelector('select');
+            const trigger = wrapper.querySelector('.opening-time__trigger');
+
+            trigger.textContent = select.value || '--:--';
+            trigger.disabled = select.disabled;
+        });
     }
 
     openDay(day, clearHiddenSecondSlot = true) {
