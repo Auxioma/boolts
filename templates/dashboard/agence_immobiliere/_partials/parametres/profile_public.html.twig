@@ -697,13 +697,11 @@
 
                                         <div class="opening-slot js-opening-first" hidden> 
                                             {{ protoOuvertureMatin|replace({__name__: '0'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '0'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
                                             {{ protoOuvertureApresMidi|replace({__name__: '0'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureApresMidi|replace({__name__: '0'})|raw }}
                                         </div>
 
@@ -731,13 +729,11 @@
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '1'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '1'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
                                             {{ protoOuvertureApresMidi|replace({__name__: '1'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureApresMidi|replace({__name__: '1'})|raw }}
                                         </div>
 
@@ -765,13 +761,11 @@
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '2'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '2'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
                                             {{ protoOuvertureApresMidi|replace({__name__: '2'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureApresMidi|replace({__name__: '2'})|raw }}
                                         </div>
 
@@ -799,13 +793,11 @@
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '3'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '3'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
                                             {{ protoOuvertureApresMidi|replace({__name__: '3'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureApresMidi|replace({__name__: '3'})|raw }}
                                         </div>
 
@@ -833,13 +825,11 @@
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '4'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '4'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
                                             {{ protoOuvertureApresMidi|replace({__name__: '4'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureApresMidi|replace({__name__: '4'})|raw }}
                                         </div>
 
@@ -867,13 +857,11 @@
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '5'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '5'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
                                             {{ protoOuvertureApresMidi|replace({__name__: '5'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureApresMidi|replace({__name__: '5'})|raw }}
                                         </div>
 
@@ -901,13 +889,11 @@
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '6'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureMatin|replace({__name__: '6'})|raw }}
                                         </div>
 
                                         <div class="opening-slot js-opening-second" hidden>
                                             {{ protoOuvertureApresMidi|replace({__name__: '6'})|raw }}
-                                            <span class="opening-slot__separator">à</span>
                                             {{ protoFermetureApresMidi|replace({__name__: '6'})|raw }}
                                         </div>
 
@@ -971,34 +957,25 @@
                     color:#0b0f14
                 }
 
+                /* Comme Google : deux champs séparés (ouverture / fermeture) */
                 .opening-slot {
                     display: grid;
-                    grid-template-columns: 1fr 20px 1fr;
+                    grid-template-columns: 1fr 1fr;
                     align-items: center;
                     gap: 8px;
-                    min-height: 52px;
-                    padding: 6px 10px;
-                    border: 2px solid #e5e7eb;
-                    border-radius: 12px;
-                    background-color: #fff;
                 }
 
-                .opening-slot__separator {
-                    text-align: center;
-                    font-size: 14px;
-                    color: #6b7280;
-                }
 
                 .opening-slot input[type="time"],
                 .opening-slot select.js-opening-time {
                     width: 100%;
-                    height: 40px;
-                    padding: 0 8px;
-                    border: 0;
-                    border-radius: 8px;
+                    height: 44px;
+                    padding: 0 12px;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 12px;
                     font-size: 15px;
                     color: #374151;
-                    background-color: transparent;
+                    background-color: #fff;
                 }
 
                 .opening-slot select.js-opening-time {
@@ -1006,6 +983,8 @@
                     -moz-appearance: none;
                     appearance: none;
                     background-image: none;
+                    text-align: center;
+                    text-align-last: center;
                     cursor: pointer;
                 }
 
