@@ -68,7 +68,7 @@
             {% set totalDone = doneRequiredItems|length %}
 
             {% set progress = totalRequired > 0 ? ((totalDone / totalRequired) * 100)|round : 0 %}
-            {% set publicProfileUrl = app.user.slug is not empty ? path('app_public_detail_agence', {slug: app.user.slug}) : '' %}
+            {% set publicProfileUrl = app.user.slug is not empty ? path('app_public_detail_agence', {slug : app.user.slug}) : '' %}
             {% set profileComplete = totalDone == totalRequired %}
             {% set publicProfileReady = publicProfileUrl is not empty and profileComplete %}
             {% set hasContactAddress = app.user and (app.user.adresseContact is not empty or app.user.codePostalContact is not empty or app.user.villeContact is not empty or app.user.paysContact is not empty) %}
@@ -202,7 +202,8 @@
                 
 
                 <div
-                    class="connexion-securite mt-32 bg-white">
+                    class="connexion-securite mt-32 bg-white"
+                >
 
                     {# Adresse de contact #}
                     <div class="js-editable-field formulaire my-20">
@@ -234,11 +235,12 @@
                                     data-controller="mes-biens--adresse-autocomplete"
                                     data-mes-biens--adresse-autocomplete-provider-value="nominatim"
                                     data-mes-biens--adresse-autocomplete-language-value="{{ app.request.locale|default('fr') }}"
-                                    data-mes-biens--adresse-autocomplete-limit-value="8">
+                                    data-mes-biens--adresse-autocomplete-limit-value="8"
+                                >
                                     <div class="mb-16">
                                         {{ form_widget(form.adresseContact, {
                                             attr: {
-                                                class: 'form-control js-address-input',
+                                                class: 'form-control js-address-input input',
                                                 placeholder: 'Entrez un numéro et un nom de rue',
                                                 autocomplete: 'off',
                                                 'data-name': 'adresseContact',
@@ -253,11 +255,11 @@
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="mb-16">
-                                                <label class="form-label mb-16">Code postal</label>
+                                                <label class="form-label mb-16 p-accent">Code postal</label>
 
                                                 {{ form_widget(form.codePostalContact, {
                                                     attr: {
-                                                        class: 'form-control js-address-input',
+                                                        class: 'form-control js-address-input input',
                                                         placeholder: 'Entrez un code postal',
                                                         autocomplete: 'off',
                                                         'data-name': 'codePostalContact',
@@ -268,11 +270,11 @@
                                         </div>
 
                                         <div class="col-6">
-                                            <label class="form-label mb-16">Ville</label>
+                                            <label class="form-label mb-16 p-accent">Ville</label>
 
                                             {{ form_widget(form.villeContact, {
                                                 attr: {
-                                                    class: 'form-control js-address-input',
+                                                    class: 'form-control js-address-input input',
                                                     placeholder: 'Choisissez une ville',
                                                     autocomplete: 'off',
                                                     'data-name': 'villeContact',
@@ -283,11 +285,11 @@
                                     </div>
 
                                     <div>
-                                        <label class="form-label mb-16">Pays*</label>
+                                        <label class="form-label mb-16 p-accent">Pays</label>
 
                                         {{ form_widget(form.paysContact, {
                                             attr: {
-                                                class: 'form-control js-address-input',
+                                                class: 'form-control js-address-input input',
                                                 placeholder: 'France',
                                                 autocomplete: 'off',
                                                 'data-name': 'paysContact',
@@ -298,7 +300,7 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="adresseContact" data-field-save-multiple-param="true" data-field-save-output-param="#adresse-contact-value" data-field-save-has-value-param="{{ hasContactAddress ? 'true' : 'false' }}">
+                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent p-accent" data-action="click->field-save#handle" data-field-save-field-param="adresseContact" data-field-save-multiple-param="true" data-field-save-output-param="#adresse-contact-value" data-field-save-has-value-param="{{ hasContactAddress ? 'true' : 'false' }}">
                                 {{ hasContactAddress ? 'Modifier' : 'Définir' }}
                             </button>
                         </div>
@@ -318,7 +320,7 @@
                                         </p>
                                     </div>
 
-                                    <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="numeroContact" data-field-save-input-param="#telephone-input" data-field-save-output-param="#numero-contact-value" data-field-save-whatsapp-switch-param="#whatsapp-switch" data-field-save-same-number-param="#same-number-checkbox" data-field-save-whatsapp-input-param="#whatsapp-phone" data-field-save-has-value-param="{{ hasContactNumber ? 'true' : 'false' }}">
+                                    <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="numeroContact" data-field-save-input-param="#telephone-input" data-field-save-output-param="#numero-contact-value" data-field-save-whatsapp-switch-param="#whatsapp-switch" data-field-save-same-number-param="#same-number-checkbox" data-field-save-whatsapp-input-param="#whatsapp-phone" data-field-save-has-value-param="{{ hasContactNumber ? 'true' : 'false' }}">
                                         {{ hasContactNumber ? 'Modifier' : 'Définir' }}
                                     </button>
                                 </div>
@@ -329,7 +331,7 @@
                                         {{ form_widget(form.numeroContact, {
                                             id: 'telephone-input',
                                             attr: {
-                                                class: 'form-control w-75',
+                                                class: 'form-control w-75 input',
                                                 'data-phone-target': 'input',
                                             },
                                         }) }}
@@ -396,7 +398,7 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="emailContact" data-field-save-input-param="#{{ form.emailContact.vars.id }}" data-field-save-output-param="#email-contact-value" data-field-save-has-value-param="{{ hasContactEmail ? 'true' : 'false' }}">
+                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="emailContact" data-field-save-input-param="#{{ form.emailContact.vars.id }}" data-field-save-output-param="#email-contact-value" data-field-save-has-value-param="{{ hasContactEmail ? 'true' : 'false' }}">
                                 {{ hasContactEmail ? 'Modifier' : 'Définir' }}
                             </button>
                         </div>
@@ -438,7 +440,7 @@
                                 </div>
                             </div>
 
-                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="langueParlers" data-field-save-input-param="#{{ form.langueParlers.vars.id }}" data-field-save-output-param="#langues-parlees-value" data-field-save-multiple-param="true" data-field-save-has-value-param="{{ hasSpokenLanguages ? 'true' : 'false' }}">
+                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="langueParlers" data-field-save-input-param="#{{ form.langueParlers.vars.id }}" data-field-save-output-param="#langues-parlees-value" data-field-save-multiple-param="true" data-field-save-has-value-param="{{ hasSpokenLanguages ? 'true' : 'false' }}">
                                 {{ hasSpokenLanguages ? 'Modifier' : 'Définir' }}
                             </button>
                         </div>
@@ -457,14 +459,13 @@
                         }
 
                         .agency-languages-input {
-                            ;
                             /*height: 64px;
-    padding: 0 76px 0 32px;
-    border: 1px solid #e5e5e5;
-    border-radius: 999px;
-    font-size: 1rem;
-    font-weight: 600;
-    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);*/
+                            padding: 0 76px 0 32px;
+                            border: 1px solid #e5e5e5;
+                            border-radius: 999px;
+                            font-size: 1rem;
+                            font-weight: 600;
+                            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);*/
                         }
 
                         .agency-languages-input::placeholder {
@@ -549,7 +550,7 @@
                             color: #ffffff;
                         }
 
-                        @media(max-width: 576px) {
+                        @media (max-width: 576px) {
                             .agency-languages-input {
                                 height: 58px;
                                 padding-left: 22px;
@@ -622,7 +623,7 @@
                                 {% set prototype = form.horaireOuvertures.vars.prototype %}
 
                                 {% set protoIsOpen %}
-                                {{ form_widget(prototype.isOpen, {
+                                    {{ form_widget(prototype.isOpen, {
                                         attr: {
                                             class: 'js-opening-toggle',
                                             'data-action': 'change->opening-hours#toggle',
@@ -631,25 +632,26 @@
                                 {% endset %}
 
                                 {% set protoOuvertureMatin %}
-                                {{ form_widget(prototype.ouvertureMatin) }}
+                                    {{ form_widget(prototype.ouvertureMatin) }}
                                 {% endset %}
 
                                 {% set protoFermetureMatin %}
-                                {{ form_widget(prototype.fermetureMatin) }}
+                                    {{ form_widget(prototype.fermetureMatin) }}
                                 {% endset %}
 
                                 {% set protoOuvertureApresMidi %}
-                                {{ form_widget(prototype.ouvertureApresMidi) }}
+                                    {{ form_widget(prototype.ouvertureApresMidi) }}
                                 {% endset %}
 
                                 {% set protoFermetureApresMidi %}
-                                {{ form_widget(prototype.fermetureApresMidi) }}
+                                    {{ form_widget(prototype.fermetureApresMidi) }}
                                 {% endset %}
 
                                 <div
                                     class="opening-hours mt-12 d-none js-field-input"
                                     data-controller="opening-hours"
-                                    data-opening-hours-initial-value="{{ openingHoursInitial|json_encode|e('html_attr') }}">
+                                    data-opening-hours-initial-value="{{ openingHoursInitial|json_encode|e('html_attr') }}"
+                                >
 
                                     {# Lundi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
@@ -892,7 +894,7 @@
 
                             </div>
 
-                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value" data-field-save-has-value-param="{{ hasOpeningHours ? 'true' : 'false' }}">
+                            <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value" data-field-save-has-value-param="{{ hasOpeningHours ? 'true' : 'false' }}">
                                 {{ hasOpeningHours ? 'Modifier' : 'Définir' }}
                             </button>
                         </div>
@@ -909,13 +911,16 @@
 
                 .opening-day {
                     display: grid;
-                    grid-template-columns: 110px 60px 70px minmax(220px, 1fr) minmax(220px, 1fr) 80px;
+                    grid-template-columns: 110px 60px 70px minmax(220px, 1fr) minmax(
+                            220px,
+                            1fr
+                        ) 80px;
                     align-items: center;
                     gap: 14px;
                 }
 
                 .opening-day__label {
-                    color: #0B0F14;
+                    color: #0b0f14;
                     font-size: 14px;
                     font-style: normal;
                     font-weight: 500;
@@ -1033,20 +1038,24 @@
                     transition: 0.2s ease;
                 }
 
-                .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider {
+                .contenue-des-page-des-parametres-switch
+                    input:checked
+                    + .contenue-des-page-des-parametres-switch-slider {
                     background-color: #5d00ff;
                 }
 
-                .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider::before {
+                .contenue-des-page-des-parametres-switch
+                    input:checked
+                    + .contenue-des-page-des-parametres-switch-slider::before {
                     transform: translateX(20px);
                 }
             </style>
             <div class="fiche-public mt-48">
                 <a
                     {% if publicProfileReady %}
-                        href="{{ publicProfileUrl }}"
-                        target="_blank"
-                        rel="noopener"
+                    href="{{ publicProfileUrl }}"
+                    target="_blank"
+                    rel="noopener"
                     {% endif %}
                     aria-disabled="{{ publicProfileReady ? 'false' : 'true' }}"
                     tabindex="{{ publicProfileReady ? '0' : '-1' }}"
