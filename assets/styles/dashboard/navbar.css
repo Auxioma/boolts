@@ -70,3 +70,20 @@
     color: #5d00ff;}
 .color-active:has(.menu-dashboard-title--disabled):hover {background: transparent;}
 .color-active:has(.menu-dashboard-title--disabled):hover span, .color-active:has(.menu-dashboard-title--disabled):hover span i:before {color: #b8b8b8;}
+/* Entre 768px et 991px : sidebar réduite aux icônes, le contenu principal prend la place libérée */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .aside-dashboard-navbar {flex: 0 0 72px;
+
+        width: 72px;
+
+        max-width: 72px;}
+    .aside-dashboard-navbar p {display: none;}
+    .aside-dashboard-navbar .menu-dashboard-title span {font-size: 0;}
+    .aside-dashboard-navbar .menu-dashboard-title span i {margin-right: 0 !important;}
+    .aside-dashboard-navbar .menu-dashboard-title {justify-content: center;}
+    .row > .aside-dashboard-navbar ~ [class*="col-"] {flex: 1 1 0;
+
+        width: auto;
+
+        max-width: none;}
+}

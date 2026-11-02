@@ -20,7 +20,7 @@
 
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main bg-white">
                     <div class="row">
-                        <div class="col-3 border-color-right-gris">
+                        <div class="col-3 border-color-right-gris d-none d-md-block">
                             <div class="menu-parametres">
                                 {{ include(
                                     'dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig',
@@ -28,7 +28,7 @@
                             </div>
                         </div>
 
-                        <div class="col-9">
+                        <div class="col-12 col-md-9">
                             <div class="row bg-white">
                                 <div class="col-12">
                                     {{ include('dashboard/agence_immobiliere/_partials/parametres/profile_public.html.twig') }}

@@ -259,8 +259,7 @@
     line-height: 20px;
 }
 
-.fiche-public a.is-disabled,
-.fiche-public a.is-disabled:hover {
+.fiche-public a.is-disabled {
     border-color: #ebecec;
 
     background: #fff;

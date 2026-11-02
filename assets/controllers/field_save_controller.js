@@ -341,27 +341,78 @@ export default class extends Controller {
             dimanche: 'Dimanche',
         };
 
-        const result = [];
+        const days = Object.keys(labels);
 
-        Object.entries(value).forEach(([day, hours]) => {
+        // Valeur affichée pour chaque jour, dans l'ordre de la semaine
+        const dayValues = days.map((day) => {
+            const hours = value[day];
+
+            if (!hours || hours.isOpen !== '1') {
+                return 'fermé';
+            }
+
             const slots = [];
 
             if (hours.ouvertureMatin || hours.fermetureMatin) {
-                slots.push(`${hours.ouvertureMatin || '--:--'} - ${hours.fermetureMatin || '--:--'}`);
+                slots.push(`${hours.ouvertureMatin || '--:--'}–${hours.fermetureMatin || '--:--'}`);
             }
 
             if (hours.ouvertureApresMidi || hours.fermetureApresMidi) {
-                slots.push(`${hours.ouvertureApresMidi || '--:--'} - ${hours.fermetureApresMidi || '--:--'}`);
+                slots.push(`${hours.ouvertureApresMidi || '--:--'}–${hours.fermetureApresMidi || '--:--'}`);
             }
 
-            if (slots.length > 0) {
-                result.push(`${labels[day] || day} : ${slots.join(' / ')}`);
-            }
+            return slots.length > 0 ? slots.join(' / ') : 'ouvert';
         });
 
-        return result.length > 0
-            ? result.join(' | ')
-            : 'Tous les jours sont fermés par défaut';
+        if (dayValues.every((dayValue) => dayValue === 'fermé')) {
+            return 'Tous les jours sont fermés par défaut';
+        }
+
+        // Regroupe les jours ayant exactement les mêmes horaires :
+        // plages consécutives (3 jours ou plus) en « Lundi–Samedi », sinon listés
+        const lines = [];
+        const seen = new Set();
+
+        dayValues.forEach((dayValue) => {
+            if (seen.has(dayValue)) {
+                return;
+            }
+
+            seen.add(dayValue);
+
+            const items = [];
+            let runStart = null;
+
+            dayValues.forEach((current, index) => {
+                if (current !== dayValue) {
+                    return;
+                }
+
+                if (runStart === null) {
+                    runStart = index;
+                }
+
+                if (index === days.length - 1 || dayValues[index + 1] !== dayValue) {
+                    if (index - runStart >= 2) {
+                        items.push(`${labels[days[runStart]]}–${labels[days[index]]}`);
+                    } else {
+                        for (let k = runStart; k <= index; k++) {
+                            items.push(labels[days[k]]);
+                        }
+                    }
+
+                    runStart = null;
+                }
+            });
+
+            const dayLabel = items.length > 1
+                ? `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`
+                : items[0];
+
+            lines.push(`${dayLabel} : ${dayValue}`);
+        });
+
+        return lines.join('\n');
     }
 
     showSuccessMessage(message) {

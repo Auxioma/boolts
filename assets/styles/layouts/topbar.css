@@ -40,7 +40,7 @@
 .topbar-menu .nav-link:hover {color: #5d00ff;
     
     background: #dfcbff;}
-.topbar-btn, .fiche-public a {display: inline-flex;
+.topbar-btn {display: inline-flex;
     
     align-items: center;
     
@@ -61,7 +61,7 @@
     text-decoration: none;
     
     transition: background var(--transition-fast),color var(--transition-fast);}
-.topbar-btn:hover, .fiche-public a:hover {background: var(--color-link-hover);
+.topbar-btn:hover  {background: var(--color-link-hover);
     
     color: var(--color-white);}
 .topbar-btn-icon {display: inline-flex;

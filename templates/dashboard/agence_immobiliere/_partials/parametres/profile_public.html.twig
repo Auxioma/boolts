@@ -8,8 +8,6 @@
 <div class="js-tab-content  pb-92 contenue-des-page-des-parametres" id="cat1">
     <div class="row">
         <div class="col-10 mx-auto">
-            <h2 class="mb-0">Fiche agence</h2>
-
             {% set hasOpeningHours = false %}
             {% for horaire in app.user.horaireOuvertures %}
                 {% if horaire.open and (horaire.ouvertureMatin or horaire.fermetureMatin or horaire.ouvertureApresMidi or horaire.fermetureApresMidi) %}
@@ -76,6 +74,28 @@
             {% set hasContactEmail = app.user and app.user.emailContact is not empty %}
             {% set hasSpokenLanguages = app.user and app.user.langueParlers is not empty %}
 
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Fiche agence</h2>
+
+                <div class="fiche-public">
+                    <a
+                        {% if publicProfileReady %}
+                        href="{{ publicProfileUrl }}"
+                        target="_blank"
+                        rel="noopener"
+                        {% endif %}
+                        aria-disabled="{{ publicProfileReady ? 'false' : 'true' }}"
+                        tabindex="{{ publicProfileReady ? '0' : '-1' }}"
+                        class="btn-full-blue{{ publicProfileReady ? '' : ' is-disabled' }}"
+                        data-profile-preview-link
+                        data-enabled-href="{{ publicProfileUrl }}"
+                    >
+                        <i class="icon-eye mr-10"></i>
+                        Voir la fiche publique
+                    </a>
+                </div>
+            </div>
+
             <div class="complete-profile py-24 px-24 mt-32" data-controller="profile-progress"{% if profileComplete %} hidden{% endif %}>
                 <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
 
@@ -113,7 +133,7 @@
                             <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
                         {% endif %}
 
-                        <button class="btn-change-image btn-full-white rounded-pill position-absolute start-50 translate-middle-x" type="button" style="bottom: -12px;" id="change-image-button">
+                        <button class="btn-change-image btn-full-white rounded-pill position-absolute start-50 translate-middle-x w-auto" type="button" style="bottom: -12px;" id="change-image-button">
                             Modifier
                         </button>
 
@@ -469,12 +489,12 @@
 
                         .agency-languages-input {
                             /*height: 64px;
-                            padding: 0 76px 0 32px;
-                            border: 1px solid #e5e5e5;
-                            border-radius: 999px;
-                            font-size: 1rem;
-                            font-weight: 600;
-                            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);*/
+                                                    padding: 0 76px 0 32px;
+                                                    border: 1px solid #e5e5e5;
+                                                    border-radius: 999px;
+                                                    font-size: 1rem;
+                                                    font-weight: 600;
+                                                    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);*/
                         }
 
                         .agency-languages-input::placeholder {
@@ -514,9 +534,9 @@
                             max-height: 250px;
                             overflow-y: auto;
                             background: #fff;
-                            border: 1px solid rgba(0, 0, 0, .08);
+                            border: 1px solid rgba(0, 0, 0, 0.08);
                             border-radius: 16px;
-                            box-shadow: 0 18px 45px rgba(15, 23, 42, .14);
+                            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
                         }
 
                         .agency-languages-results:empty {
@@ -578,7 +598,6 @@
                             position: static;
                         }
 
-
                         @media (max-width: 576px) {
                             .agency-languages-input {
                                 height: 58px;
@@ -621,6 +640,7 @@
 
                                 {% set openingHoursInitial = {} %}
                                 {% set openingHoursSummary = [] %}
+                                {% set openingDayValues = [] %}
                                 {% for openingDay in openingDays %}
                                     {% set horaire = openingHoursByDay[openingDay.key] ?? null %}
                                     {% set dayHours = {
@@ -632,21 +652,57 @@
                                     } %}
                                     {% set openingHoursInitial = openingHoursInitial|merge({(openingDay.key): dayHours}) %}
 
+                                    {% set dayValue = 'fermé' %}
                                     {% if dayHours.isOpen %}
                                         {% set slots = [] %}
                                         {% if dayHours.ouvertureMatin or dayHours.fermetureMatin %}
-                                            {% set slots = slots|merge([(dayHours.ouvertureMatin ?: '--:--') ~ ' - ' ~ (dayHours.fermetureMatin ?: '--:--')]) %}
+                                            {% set slots = slots|merge([(dayHours.ouvertureMatin ?: '--:--') ~ '–' ~ (dayHours.fermetureMatin ?: '--:--')]) %}
                                         {% endif %}
                                         {% if dayHours.ouvertureApresMidi or dayHours.fermetureApresMidi %}
-                                            {% set slots = slots|merge([(dayHours.ouvertureApresMidi ?: '--:--') ~ ' - ' ~ (dayHours.fermetureApresMidi ?: '--:--')]) %}
+                                            {% set slots = slots|merge([(dayHours.ouvertureApresMidi ?: '--:--') ~ '–' ~ (dayHours.fermetureApresMidi ?: '--:--')]) %}
                                         {% endif %}
-                                        {% set openingHoursSummary = openingHoursSummary|merge([openingDay.label ~ ' : ' ~ (slots is not empty ? slots|join(' / ') : 'Ouvert')]) %}
+                                        {% set dayValue = slots is not empty ? slots|join(' / ') : 'ouvert' %}
+                                    {% endif %}
+                                    {% set openingDayValues = openingDayValues|merge([dayValue]) %}
+                                {% endfor %}
+                                {% set hasOpeningHours = openingDayValues|filter(v => v != 'fermé') is not empty %}
+
+                                {# Regroupe les jours ayant exactement les mêmes horaires : plages consécutives (3 jours ou plus) en « Lundi–Samedi », sinon listés #}
+                                {% set seenValues = [] %}
+                                {% for dayValue in openingDayValues %}
+                                    {% if dayValue not in seenValues %}
+                                        {% set seenValues = seenValues|merge([dayValue]) %}
+                                        {% set dayItems = [] %}
+                                        {% set runStart = null %}
+                                        {% for j in 0..6 %}
+                                            {% if openingDayValues[j] == dayValue %}
+                                                {% if runStart is null %}
+                                                    {% set runStart = j %}
+                                                {% endif %}
+                                                {% if j == 6 or openingDayValues[j + 1] != dayValue %}
+                                                    {% if j - runStart >= 2 %}
+                                                        {% set dayItems = dayItems|merge([openingDays[runStart].label ~ '–' ~ openingDays[j].label]) %}
+                                                    {% else %}
+                                                        {% for k in runStart..j %}
+                                                            {% set dayItems = dayItems|merge([openingDays[k].label]) %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                    {% set runStart = null %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% set openingHoursSummary = openingHoursSummary|merge([dayItems|join(', ', ' et ') ~ ' : ' ~ dayValue]) %}
                                     {% endif %}
                                 {% endfor %}
-                                {% set hasOpeningHours = openingHoursSummary is not empty %}
 
                                 <p class="js-field-value mb-0" id="opening-hours-value">
-                                    {{ openingHoursSummary is not empty ? openingHoursSummary|join(' | ') : 'Tous les jours sont fermés par défaut' }}
+                                    {%- if hasOpeningHours -%}
+                                        {%- for line in openingHoursSummary -%}
+                                            {{- line -}}{%- if not loop.last -%}<br>{%- endif -%}
+                                        {%- endfor -%}
+                                    {%- else -%}
+                                        Tous les jours sont fermés par défaut
+                                    {%- endif -%}
                                 </p>
 
                                 {% set prototype = form.horaireOuvertures.vars.prototype %}
@@ -929,6 +985,11 @@
                 </div>
             </div>
             <style>
+                /* Une ligne par groupe de jours */
+                #opening-hours-value {
+                    white-space: pre-line;
+                }
+
                 .opening-hours {
                     display: flex;
                     flex-direction: column;
@@ -944,18 +1005,38 @@
                     row-gap: 8px;
                 }
 
-                .opening-day > .opening-day__label { grid-column: 1; grid-row: 1; }
-                .opening-day > .contenue-des-page-des-parametres-switch { grid-column: 2; grid-row: 1; }
-                .opening-day > .js-opening-status { grid-column: 3; grid-row: 1; }
-                .opening-day > .js-opening-first { grid-column: 4; grid-row: 1; }
-                .opening-day > .js-opening-second { grid-column: 4; grid-row: 2; }
-                .opening-day > .opening-day__actions { grid-column: 5; grid-row: 1; }
+                .opening-day > .opening-day__label {
+                    grid-column: 1;
+                    grid-row: 1;
+                }
+                .opening-day > .contenue-des-page-des-parametres-switch {
+                    grid-column: 2;
+                    grid-row: 1;
+                }
+                .opening-day > .js-opening-status {
+                    grid-column: 3;
+                    grid-row: 1;
+                }
+                .opening-day > .js-opening-first {
+                    grid-column: 4;
+                    grid-row: 1;
+                }
+                .opening-day > .js-opening-second {
+                    grid-column: 4;
+                    grid-row: 2;
+                }
+                .opening-day > .opening-day__actions {
+                    grid-column: 5;
+                    grid-row: 1;
+                }
 
                 /* 2e créneau affiché : le bouton « − » se place sur sa ligne */
-                .opening-day:has(> .js-opening-second:not([hidden])) > .opening-day__actions { grid-row: 2; }
+                .opening-day:has(> .js-opening-second:not([hidden])) > .opening-day__actions {
+                    grid-row: 2;
+                }
 
                 .opening-day__label {
-                    color: #0b0f14!important;
+                    color: #0b0f14 !important;
                 }
 
                 .js-opening-status {
@@ -963,7 +1044,7 @@
                 }
 
                 .opening-day:not(.is-closed) .js-opening-status {
-                    color:#0b0f14
+                    color: #0b0f14;
                 }
 
                 /* Comme Google : deux champs séparés (ouverture / fermeture) */
@@ -973,7 +1054,6 @@
                     align-items: center;
                     gap: 8px;
                 }
-
 
                 .opening-slot input[type="time"],
                 .opening-slot select.js-opening-time {
@@ -1041,10 +1121,10 @@
                     padding: 8px;
                     margin: 0;
                     list-style: none;
-                    border: 1px solid rgba(0, 0, 0, .08);
+                    border: 1px solid rgba(0, 0, 0, 0.08);
                     border-radius: 16px;
                     background: #fff;
-                    box-shadow: 0 18px 45px rgba(15, 23, 42, .14);
+                    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
                 }
 
                 .opening-time__results[hidden] {
@@ -1146,34 +1226,7 @@
                     transform: translateX(20px);
                 }
             </style>
-            <div class="fiche-public mt-48">
-                <a
-                    {% if publicProfileReady %}
-                    href="{{ publicProfileUrl }}"
-                    target="_blank"
-                    rel="noopener"
-                    {% endif %}
-                    aria-disabled="{{ publicProfileReady ? 'false' : 'true' }}"
-                    tabindex="{{ publicProfileReady ? '0' : '-1' }}"
-                    class="btn btn-primary{{ publicProfileReady ? '' : ' is-disabled' }}"
-                    data-profile-preview-link
-                    data-enabled-href="{{ publicProfileUrl }}"
-                >
-                    <i class="icon-eye mr10"></i>
-                    Voir la fiche publique
-                </a>
-                <p
-                    class="mt-8"
-                    data-profile-preview-help
-                    data-ready-text="Telle qu'elle apparaitra aux utilisateurs"
-                    data-disabled-text="Complétez les informations obligatoires pour activer la fiche publique"
-                >
-                    {{ publicProfileReady
-                        ? "Telle qu'elle apparaitra aux utilisateurs"
-                        : 'Complétez les informations obligatoires pour activer la fiche publique'
-                    }}
-                </p>
-            </div>
+
         </div>
     </div>
 </div>
