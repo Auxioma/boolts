@@ -38,7 +38,12 @@
         {{ include('composant/__header/_navbar.html.twig') }}
         {% block body %}{% endblock %}
         {{ include('composant/_footer/_footer.html.twig') }}
-        {% block mobile_tabbar %}{{ include('composant/_footer/navbar_footer.html.twig') }}{% endblock %}
+        {# Pas de tabbar publique sur le dashboard agence : il a sa propre barre (.dashboard-bottom-bar) #}
+        {% block mobile_tabbar %}
+            {% if not (app.request.attributes.get('_canonical_route', app.request.attributes.get('_route'))|default('') starts with 'agence_immobiliere') %}
+                {{ include('composant/_footer/navbar_footer.html.twig') }}
+            {% endif %}
+        {% endblock %}
 
     
 

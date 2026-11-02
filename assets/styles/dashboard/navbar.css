@@ -87,3 +87,46 @@
 
         max-width: none;}
 }
+
+/* Barre de navigation fixe en bas de l'écran (mobile < 768px) — Figma « SideBar - Dashboard » 3678:16444 */
+.dashboard-bottom-bar {position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1030;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    min-height: 49px;
+    padding: 6px 16px env(safe-area-inset-bottom, 0);
+    background: #f8f8f8;
+    border-top: 1px solid #ebecec;}
+.dashboard-bottom-bar__item {display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 43px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #3d3f43;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;}
+.dashboard-bottom-bar__item i {font-size: 24px;
+    line-height: 24px;}
+.dashboard-bottom-bar__more {color: #0b0f14;}
+.dashboard-bottom-bar__item.active, .dashboard-bottom-bar__item:hover {color: #5d00ff;}
+.dashboard-bottom-bar__item.is-disabled {color: #b8b8b8;
+    pointer-events: none;
+    cursor: not-allowed;}
+.dashboard-bottom-bar__menu {margin-bottom: 8px !important;}
+.dashboard-bottom-bar__menu .dropdown-item.active, .dashboard-bottom-bar__menu .dropdown-item:active {background: #ebecec;
+    color: #5d00ff;}
+/* Le contenu ne passe pas sous la barre */
+@media (max-width: 767.98px) {
+    body:has(.dashboard-bottom-bar) {padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));}
+}

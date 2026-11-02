@@ -117,3 +117,74 @@
 
     </div>
 </aside>
+
+{# Barre de navigation fixe en bas de l'écran (mobile, < 768px) — Figma « SideBar - Dashboard » 3678:16444 #}
+{% set current_route = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) %}
+{% set more_routes = ['agence_immobiliere_notifications', 'agence_immobiliere_options', 'agence_immobiliere_mes_factures', 'agence_immobiliere_aide'] %}
+<nav class="dashboard-bottom-bar d-md-none" aria-label="Navigation du dashboard">
+    <a href="{{ path('agence_immobiliere_dashboard') }}"
+       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_dashboard' ? 'active' : '' }}">
+        <i class="icon-layout-dashboard"></i>
+        <span>{{ 'agency_dashboard.sidebar.dashboard'|trans }}</span>
+    </a>
+
+    <a href="{{ path('agence_immobiliere_mes_biens_list') }}"
+       class="dashboard-bottom-bar__item {{ current_route starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
+        <i class="icon-building-2"></i>
+        <span>{{ 'agency_dashboard.sidebar.listings'|trans }}</span>
+    </a>
+
+    <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_messagerie') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
+       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_messagerie' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'is-disabled' }}">
+        <i class="icon-message-circle-more"></i>
+        <span>{{ 'agency_dashboard.sidebar.messaging'|trans }}</span>
+    </a>
+
+    <a href="{{ path('agence_immobiliere_parametres') }}"
+       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_parametres' ? 'active' : '' }}">
+        <i class="icon-settings"></i>
+        <span>{{ 'agency_dashboard.sidebar.settings'|trans }}</span>
+    </a>
+
+    {# « Plus » : regroupe les autres entrées de la sidebar desktop #}
+    <div class="dropup">
+        <button type="button"
+                class="dashboard-bottom-bar__item dashboard-bottom-bar__more {{ current_route in more_routes ? 'active' : '' }}"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+            <i class="icon-grid-2x2"></i>
+            <span>Plus</span>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end dashboard-bottom-bar__menu">
+            <li>
+                <a class="dropdown-item {{ current_route == 'agence_immobiliere_notifications' ? 'active' : '' }}" href="{{ path('agence_immobiliere_notifications') }}">
+                    <i class="icon-bell mr-10"></i>{{ 'agency_dashboard.notifications'|trans }}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item {{ current_route == 'agence_immobiliere_options' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'disabled' }}"
+                   {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_options') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}>
+                    <i class="icon-credit-card mr-10"></i>{{ 'agency_dashboard.sidebar.options'|trans }}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item {{ current_route == 'agence_immobiliere_mes_factures' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'disabled' }}"
+                   {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_mes_factures') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}>
+                    <i class="icon-receipt mr-10"></i>{{ 'agency_dashboard.sidebar.invoices'|trans }}
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item {{ current_route == 'agence_immobiliere_aide' ? 'active' : '' }}" href="{{ path('agence_immobiliere_aide') }}">
+                    <i class="icon-circle-help mr-10"></i>{{ 'agency_dashboard.sidebar.help'|trans }}
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item" href="{{ path('app_logout') }}">
+                    <i class="icon-log-out mr-10"></i>{{ 'agency_dashboard.sidebar.logout'|trans }}
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
