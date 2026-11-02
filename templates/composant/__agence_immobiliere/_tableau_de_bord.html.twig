@@ -121,7 +121,15 @@
 {# Barre de navigation fixe en bas de l'écran (mobile, < 768px) — Figma « SideBar - Dashboard » 3678:16444 #}
 {% set current_route = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) %}
 {% set more_routes = ['agence_immobiliere_notifications', 'agence_immobiliere_options', 'agence_immobiliere_mes_factures', 'agence_immobiliere_aide'] %}
-<nav class="dashboard-bottom-bar d-md-none" aria-label="Navigation du dashboard">
+<div class="d-md-none" data-controller="dashboard-bottom-bar">
+{# Menu Paramètres : s'ouvre entre la topbar et la barre du bas, sans les recouvrir #}
+<div class="dashboard-settings-menu" id="dashboard-settings-menu" data-dashboard-bottom-bar-target="panel" hidden>
+    <h2 class="dashboard-settings-menu__title">{{ 'agency_dashboard.sidebar.settings'|trans }}</h2>
+
+    {{ include('dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig', {variant: 'mobile'}) }}
+</div>
+
+<nav class="dashboard-bottom-bar" aria-label="Navigation du dashboard">
     <a href="{{ path('agence_immobiliere_dashboard') }}"
        class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_dashboard' ? 'active' : '' }}">
         <i class="icon-layout-dashboard"></i>
@@ -140,11 +148,15 @@
         <span>{{ 'agency_dashboard.sidebar.messaging'|trans }}</span>
     </a>
 
-    <a href="{{ path('agence_immobiliere_parametres') }}"
-       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_parametres' ? 'active' : '' }}">
+    <button type="button"
+            class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_parametres' ? 'active' : '' }}"
+            aria-controls="dashboard-settings-menu"
+            aria-expanded="false"
+            data-dashboard-bottom-bar-target="settingsButton"
+            data-action="dashboard-bottom-bar#toggle">
         <i class="icon-settings"></i>
         <span>{{ 'agency_dashboard.sidebar.settings'|trans }}</span>
-    </a>
+    </button>
 
     {# « Plus » : regroupe les autres entrées de la sidebar desktop #}
     <div class="dropup">
@@ -188,3 +200,4 @@
         </ul>
     </div>
 </nav>
+</div>

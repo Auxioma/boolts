@@ -60,6 +60,28 @@
     },
 ] %}
 
+{# variant 'mobile' : menu ouvert depuis la barre du bas (Figma « Paramètres » 6172:24683), liens vers la page Paramètres + onglet (#catX) #}
+{% if variant|default('') == 'mobile' %}
+    {% for section in menuParametres %}
+        <div class="dashboard-settings-menu__section">
+            <p class="dashboard-settings-menu__section-title">{{ section.title }}</p>
+
+            <div class="dashboard-settings-menu__items">
+                {% for item in section.items %}
+                    <a href="{{ path('agence_immobiliere_parametres') }}#{{ item.tab }}"
+                       class="dashboard-settings-menu__item"
+                       data-action="dashboard-bottom-bar#close">
+                        <span class="dashboard-settings-menu__item-label">
+                            <i class="{{ item.icon }}"></i>
+                            {{ item.label }}
+                        </span>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
 {% for section in menuParametres %}
     <span class="dashboard-agence-title px-10 py-10 paragraphe d-block" style="color:#858789">
         {{ section.title }}
@@ -76,3 +98,4 @@
         </div>
     {% endfor %}
 {% endfor %}
+{% endif %}

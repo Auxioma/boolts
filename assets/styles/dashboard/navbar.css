@@ -130,3 +130,56 @@
 @media (max-width: 767.98px) {
     body:has(.dashboard-bottom-bar) {padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));}
 }
+
+/* Menu Paramètres ouvert depuis la barre du bas — Figma « Paramètres » 6172:24683.
+   top / bottom sont calculés en JS (dashboard-bottom-bar) pour ne couvrir ni la topbar ni la barre du bas */
+.dashboard-bottom-bar__item.is-open {color: #5d00ff;}
+.dashboard-settings-menu {position: fixed;
+    top: 72px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
+    z-index: 1025;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 24px 16px;
+    overflow-y: auto;
+    background: #fff;}
+.dashboard-settings-menu[hidden] {display: none;}
+.dashboard-settings-menu__title {margin: 0;
+    color: #0b0f14;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;}
+.dashboard-settings-menu__section {display: flex;
+    flex-direction: column;
+    gap: 22px;}
+.dashboard-settings-menu__section + .dashboard-settings-menu__section {margin-top: 22px;}
+.dashboard-settings-menu__section-title {margin: 0;
+    color: #858789;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;}
+.dashboard-settings-menu__items {display: flex;
+    flex-direction: column;
+    gap: 8px;}
+.dashboard-settings-menu__item {display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 44px;
+    padding: 10px;
+    border: 2px solid #ebecec;
+    border-radius: 12px;
+    color: #3d3f43;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 16px;
+    text-decoration: none;}
+.dashboard-settings-menu__item:hover {color: #5d00ff;}
+.dashboard-settings-menu__item-label {display: flex;
+    align-items: center;
+    gap: 10px;}
+.dashboard-settings-menu__item i {font-size: 24px;
+    line-height: 24px;}
+body.dashboard-settings-menu-open {overflow: hidden;}
