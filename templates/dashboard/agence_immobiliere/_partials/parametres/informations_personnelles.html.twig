@@ -7,13 +7,13 @@
 
 {# Onglet : informations personnelles #}
 <div
-    class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres"
+    class="js-tab-content d-none contenue-des-page-des-parametres"
     id="cat2"
     data-controller="parametre--personal-address"
 >
 
     <div class="row">
-        <div class="col-10 mx-auto">
+        <div class="col-12 col-md-10 mx-auto">
 
             <h3 class="mb-0">Informations personnelles</h3>
 
@@ -30,7 +30,7 @@
                     <div class="js-editable-field formulaire">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">Prénom</h3>
+                                <label class="p-accent mb-0" for="{{ form.prenom.vars.id }}">Prénom</label>
                                 <p class="mt-12 mb-0 js-field-value" id="prenom-value">
                                     {{ app.user.prenom ?? '***' }}
                                 </p>
@@ -38,7 +38,7 @@
 
                                     {{ form_widget(form.prenom, {
                                         attr: {
-                                            class: 'form-control w-75',
+                                            class: 'form-control w-75 input',
                                         },
                                     }) }}
                                 </div>
@@ -60,7 +60,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">Nom</h3>
+                                <label class="p-accent mb-0" for="{{ form.nom.vars.id }}">Nom</label>
                                 <p class="mt-12 mb-0 js-field-value" id="nom-value">
                                     {{ app.user.nom ?? '***' }}
                                 </p>
@@ -68,7 +68,7 @@
 
                                     {{ form_widget(form.nom, {
                                         attr: {
-                                            class: 'form-control w-75',
+                                            class: 'form-control w-75 input',
                                         },
                                     }) }}
                                 </div>
@@ -90,7 +90,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">E-mail</h3>
+                                <label class="p-accent mb-0" for="{{ form.email.vars.id }}">E-mail</label>
                                 <p class="mt-12 mb-0 js-field-value" id="email-value">
                                     {{ app.user.email ?? '***' }}
                                 </p>
@@ -98,7 +98,7 @@
 
                                     {{ form_widget(form.email, {
                                         attr: {
-                                            class: 'form-control w-75',
+                                            class: 'form-control w-75 input',
                                         },
                                     }) }}
                                 </div>
@@ -123,7 +123,7 @@
                     >
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">Numéro de téléphone</h3>
+                                <label class="p-accent mb-0" for="{{ form.telephone.vars.id }}">Numéro de téléphone</label>
 
                                 <p class="mt-12 mb-0 js-field-value" id="telephone-value">
                                     {{ app.user.telephone ?? '06 22 64 04 78' }}
@@ -132,7 +132,7 @@
                                 <div class="mt-12 d-none js-field-input">
                                     {{ form_widget(form.telephone, {
                                         attr: {
-                                            class: 'form-control w-75',
+                                            class: 'form-control w-75 input',
                                             'data-phone-target': 'input',
                                         },
                                     }) }}
@@ -156,7 +156,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">Adresse</h3>
+                                <label class="p-accent mb-0" for="{{ form.adresse.vars.id }}">Adresse</label>
 
                                 <p class="mt-12 mb-0 js-field-value" id="adresse-value">
                                     {% if app.user and app.user.adresse %}
@@ -182,7 +182,7 @@
                                     <div class="mb-16">
                                         {{ form_widget(form.adresse, {
                                             attr: {
-                                                class: 'form-control js-address-input',
+                                                class: 'form-control js-address-input input',
                                                 placeholder: 'Entrez un numéro et un nom de rue',
                                                 'data-name': 'adresse',
                                             },
@@ -196,7 +196,7 @@
 
                                         {{ form_widget(form.adresseComplement, {
                                             attr: {
-                                                class: 'form-control js-address-input',
+                                                class: 'form-control js-address-input input',
                                                 placeholder: 'Entrez un complément d’adresse',
                                                 'data-name': 'adresseComplement',
                                             },
@@ -212,7 +212,7 @@
 
                                                 {{ form_widget(form.codePostal, {
                                                     attr: {
-                                                        class: 'form-control js-address-input',
+                                                        class: 'form-control js-address-input input',
                                                         placeholder: 'Entrez un code postal',
                                                         'data-name': 'codePostal',
                                                     },
@@ -227,7 +227,7 @@
 
                                             {{ form_widget(form.ville, {
                                                 attr: {
-                                                    class: 'form-control js-address-input',
+                                                    class: 'form-control js-address-input input',
                                                     placeholder: 'Choisissez une ville',
                                                     'data-name': 'ville',
                                                 },
@@ -242,7 +242,7 @@
 
                                         {{ form_widget(form.pays, {
                                             attr: {
-                                                class: 'form-control js-address-input',
+                                                class: 'form-control js-address-input input',
                                                 placeholder: 'France',
                                                 'data-name': 'pays',
                                             },

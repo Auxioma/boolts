@@ -5,12 +5,12 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<div class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres" id="cat3">
+<div class="js-tab-content d-none contenue-des-page-des-parametres" id="cat3">
 
     <div class="row">
-        <div class="col-10 mx-auto">
+        <div class="col-12 col-md-10 mx-auto">
 
-            <h3 class="p-accent mb-0">Connexion</h3>
+            <h3 class="mb-0">Connexion et sécurité</h3>
 
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
@@ -18,7 +18,9 @@
                 data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
                 data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
             >
-
+                            <h3 class="mb-0" for="two-factor-switch">
+                                Connexion
+                            </h3>
                 <div class="connexion-securite">
 
                     {# Password #}
@@ -26,22 +28,22 @@
 
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
 
-                            <div class="w-100">
+                            <div class="w-100 mt-24">
 
-                                <h3 class="p-accent mb-0">
+                                <label class="p-accent mb-0" for="{{ form.plainPassword.first.vars.id }}">
                                     Mot de passe
-                                </h3>
+                                </label>
 
                                 <p class="mt-12 mb-0 js-field-value" id="password-value">
                                     *****************
                                 </p>
 
-                                <div class="mt-12 d-none js-field-input w-75">
+                                <div class="mt-12 d-none js-field-input">
 
                                     {{ form_widget(form.plainPassword.first, {
                                         attr: {
                                             id: 'plain-password-first',
-                                            class: 'form-control mb-12',
+                                            class: 'form-control mb-12 input',
                                             'data-name': 'password',
                                         },
                                     }) }}
@@ -49,7 +51,7 @@
                                     {{ form_widget(form.plainPassword.second, {
                                         attr: {
                                             id: 'plain-password-second',
-                                            class: 'form-control',
+                                            class: 'form-control input',
                                             'data-name': 'passwordConfirm',
                                         },
                                     }) }}
@@ -62,7 +64,7 @@
 
                             <button
                                 type="button"
-                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence js-edit-button p-accent"
                                 data-action="click->field-save#handle"
                                 data-field-save-field-param="plainPassword"
                                 data-field-save-multiple-param="true"
@@ -83,39 +85,32 @@
                         data-parametre--two-factor-toggle-url-value="{{ path('account_2fa_toggle') }}"
                     >
 
-                        <div class="d-flex justify-content-between align-items-center pt-32">
+                        <div class="d-flex justify-content-between align-items-center pt-24">
 
-                            <h3 class="p-accent mb-0">
+                            <h3 class="mb-0" for="two-factor-switch">
                                 Authentification à deux facteurs
                             </h3>
 
-                            <div class="form-check form-switch m-0">
-
-                                <label class="contenue-des-page-des-parametres-switch">
-
-                                    <input
-                                        type="checkbox"
-                                        id="two-factor-switch"
-                                        class="js-two-factor-switch"
-                                        autocomplete="off"
-                                    >
-
-                                    <span class="contenue-des-page-des-parametres-switch-slider"></span>
-
-                                </label>
-
-                            </div>
+                            <label class="contenue-des-page-des-parametres-switch">
+                                <input
+                                    type="checkbox"
+                                    id="two-factor-switch"
+                                    class="js-two-factor-switch"
+                                    autocomplete="off"
+                                >
+                                <span class="contenue-des-page-des-parametres-switch-slider"></span>
+                            </label>
 
                         </div>
 
                         <div class="d-none js-two-factor-content">
 
                             {# Code secret #}
-                            <div class="d-flex justify-content-between align-items-start pt-32">
+                            <div class="d-flex justify-content-between align-items-start pt-24">
                                 <div class="w-100">
-                                    <h3 class="mb-0">
+                                    <label class="mb-0 p-accent" for="two-factor-code">
                                         Adresse e-mail
-                                    </h3>
+                                    </label>
                                     <p class="mt-12 mb-0 js-code-secret-date">
                                         {{ app.user.email }}
                                     </p>

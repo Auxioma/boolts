@@ -82,7 +82,7 @@ class ChangePasswordFormType extends AbstractType
 
                     'label' => 'form.password.repeat',
                     'attr' => [
-                        'placeholder' => 'Veuillez confirmer votre mot de passe',
+                        'placeholder' => 'Confirmez votre mot de passe',
                         'class' => 'form-control password-input mb-32',
                     ],
                 ],

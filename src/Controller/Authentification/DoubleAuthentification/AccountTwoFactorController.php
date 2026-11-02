@@ -42,7 +42,7 @@ class AccountTwoFactorController extends AbstractController
      */
     public function status(): JsonResponse
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
         /** @var User $user */
         $user = $this->getUser();
 
@@ -60,7 +60,7 @@ class AccountTwoFactorController extends AbstractController
         EntityManagerInterface $em,
         // CsrfTokenManagerInterface $csrfTokenManager, // si CSRF
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
         // Vérification CSRF (optionnelle, si activée côté firewall/form_login)
         // $csrfHeader = $request->headers->get('X-CSRF-TOKEN');

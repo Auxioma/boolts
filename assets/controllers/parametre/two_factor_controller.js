@@ -48,6 +48,9 @@ export default class extends Controller {
     async toggleTwoFactor() {
         const desired = this.toggle.checked;
 
+        // Ouvre / ferme le bloc immédiatement, sans attendre la réponse serveur
+        this.content.classList.toggle('d-none', !desired);
+
         try {
             const response = await fetch(this.toggleUrlValue, {
                 method: 'POST',
@@ -70,17 +73,17 @@ export default class extends Controller {
 
             if (!response.ok) {
                 console.error('Toggle 2FA error', response.status, data);
-                this.toggle.checked = !desired;
+                this.refreshUI(!desired);
                 return;
             }
 
             if (data && typeof data.enabled !== 'undefined') {
                 this.refreshUI(data.enabled);
             } else {
-                this.toggle.checked = !desired;
+                this.refreshUI(!desired);
             }
         } catch {
-            this.toggle.checked = !desired;
+            this.refreshUI(!desired);
         }
     }
 

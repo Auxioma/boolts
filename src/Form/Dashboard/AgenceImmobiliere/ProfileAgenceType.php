@@ -169,7 +169,7 @@ class ProfileAgenceType extends AbstractType
 
                     'label' => 'form.password.repeat',
                     'attr' => [
-                        'placeholder' => 'Veuillez confirmer votre mot de passe',
+                        'placeholder' => 'Confirmez votre mot de passe',
                         'class' => 'form-control password-input mt-8 mb-12',
                     ],
                 ],

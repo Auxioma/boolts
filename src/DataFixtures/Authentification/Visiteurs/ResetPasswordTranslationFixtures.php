@@ -28,7 +28,7 @@ final class ResetPasswordTranslationFixtures extends Fixture
                 'visiteur.reset_password.reset.password.label' => 'Nouveau mot de passe',
                 'visiteur.reset_password.reset.password.placeholder' => 'Veuillez entrer votre mot de passe',
                 'visiteur.reset_password.reset.password_confirm.label' => 'Confirmer le mot de passe',
-                'visiteur.reset_password.reset.password_confirm.placeholder' => 'Veuillez confirmer votre mot de passe',
+                'visiteur.reset_password.reset.password_confirm.placeholder' => 'Confirmez votre mot de passe',
                 'visiteur.reset_password.reset.submit' => 'Modifier mon mot de passe',
             ],
 
