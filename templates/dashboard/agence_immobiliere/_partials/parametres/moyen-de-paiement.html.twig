@@ -4,7 +4,7 @@
 #}
 
 <div
-    class="js-tab-content d-none px-48 pb-92 contenue-des-page-des-parametres"
+    class="js-tab-content d-none contenue-des-page-des-parametres"
     id="cat4"
     data-controller="payment-method parametre--payment-menu"
     data-payment-method-public-key-value="{{ stripe_public_key }}"
@@ -19,145 +19,384 @@
                 Moyens de paiement
             </h3>
 
-            {% if current_subscription is defined and current_subscription %}
-                {% set subscription_status_label = {
-                    free: 'Gratuit',
-                    incomplete: 'Paiement à confirmer',
-                    active: 'Actif',
-                    past_due: 'Paiement en retard',
-                    payment_failed: 'Paiement échoué',
-                    cancel_scheduled: 'Résiliation programmée',
-                    canceled: 'Résilié',
-                    unpaid: 'Impayé',
-                    expired: 'Expiré',
-                }[current_subscription.status.value]|default(current_subscription.status.value) %}
-                {% set billing_period_label = current_subscription.planPrice
-                    ? {
-                        monthly: 'Mensuelle',
-                        annual: 'Annuelle',
-                    }[current_subscription.planPrice.billingPeriod.value]|default(current_subscription.planPrice.billingPeriod.value)
-                    : 'Non renseignée'
-                %}
-                {% set currency_sign = current_subscription.currencySnapshot ? current_subscription.currencySnapshot.signe|default('€') : '€' %}
-                {% set current_period_end = current_subscription.currentPeriodEnd %}
+    {% set abonnement_actuel = current_subscription is defined ? current_subscription : null %}
+    {% set subscription = abonnement_actuel ? {
+        plan: abonnement_actuel.plan,
+        status: abonnement_actuel.status.value,
+        billingPeriod: abonnement_actuel.planPrice ? abonnement_actuel.planPrice.billingPeriod.value : 'monthly',
+        currentPeriodEnd: abonnement_actuel.currentPeriodEnd,
+        price: abonnement_actuel.amountSnapshotMinor|minor_amount(abonnement_actuel.currencySnapshot),
+        currencySign: abonnement_actuel.currencySnapshot ? abonnement_actuel.currencySnapshot.signe : '€',
+        cancelAtPeriodEnd: abonnement_actuel.cancelAtPeriodEnd,
+    } : null %}
 
-                <div class="card-information-public-profile my-32 py-18 px-24 subscription-summary">
-                    <div class="subscription-summary__header">
-                        <div>
-                            <h5 class="mb-8 mode-de-paiement-profile">
-                                Abonnement
-                            </h5>
+        {# Le cadre « Abonnement » n'a de sens que pour un forfait payant.
+           Sur une offre gratuite, on n'affiche que le choix des forfaits et des boosts. #}
+        {% if subscription and not subscription.plan.isFree %}
 
-                            <p class="mb-0 subscription-summary__plan">
-                                {{ current_subscription.plan.name }}
-                            </p>
+            <section class="subscription-card mt-32">
+
+                <div class="subscription-card-header">
+
+                    <div>
+
+                        <div class="p-accent" style="color:#858789;">
+                            {{ 'agency_options.subscription.current'|trans }}
                         </div>
+                    </div>
 
-                        <span class="subscription-summary__status subscription-summary__status--{{ current_subscription.status.value }}">
-                            {{ subscription_status_label }}
+                    {% if subscription.status in ['active', 'free'] %}
+
+                        <span class="subscription-status paragraphe">
+                            {{ 'agency_options.subscription.status.active'|trans }}
                         </span>
-                    </div>
 
-                    <div class="subscription-summary__grid mt-24">
-                        <div>
-                            <span>Forfait</span>
-                            <strong>{{ current_subscription.plan.name }}</strong>
-                        </div>
+                    {% elseif subscription.status|default('') == 'canceled' %}
 
-                        <div>
-                            <span>Périodicité</span>
-                            <strong>{{ billing_period_label }}</strong>
-                        </div>
+                        <span class="subscription-status cancelled paragraphe">
+                            {{ 'agency_options.subscription.status.canceled'|trans }}
+                        </span>
 
-                        <div>
-                            <span>
-                                {{ current_subscription.cancelAtPeriodEnd ? 'Fin des droits' : 'Prochain renouvellement' }}
-                            </span>
-                            <strong>
-                                {{ current_period_end ? current_period_end|date('d/m/Y') : 'Non renseigné' }}
-                            </strong>
-                        </div>
+                    {% else %}
 
-                        <div>
-                            <span>Prix</span>
-                            <strong>
-                                {{ current_subscription.amountSnapshotMinor|minor_amount(current_subscription.currencySnapshot) }}
-                                {{ currency_sign }}
-                            </strong>
-                        </div>
-                    </div>
+                        <span class="subscription-status pending paragraphe">
+                            {{ 'agency_options.subscription.status.pending'|trans }}
+                        </span>
 
-                    {% if current_subscription.status.value in ['past_due', 'payment_failed', 'unpaid'] %}
-                        <div class="subscription-summary__notice subscription-summary__notice--warning mt-24">
-                            Votre dernier paiement a échoué. Tentative :
-                            {{ current_subscription.paymentFailureCount }} / 5.
-                            Merci de mettre à jour votre moyen de paiement.
-                        </div>
-                    {% elseif current_subscription.status.value == 'cancel_scheduled' %}
-                        <div class="subscription-summary__notice mt-24">
-                            Votre abonnement est résilié. Vous conservez votre forfait
-                            {{ current_subscription.plan.name }}
-                            jusqu’au
-                            {{ current_period_end ? current_period_end|date('d/m/Y') : 'terme de la période payée' }}.
-                        </div>
                     {% endif %}
 
-                    <div class="subscription-summary__actions mt-24">
-                        <a
-                            href="{{ path('account_subscription_customer_portal') }}"
-                            class="btn-add-payment py-10 px-16"
-                        >
-                            Mettre à jour mon moyen de paiement
-                        </a>
+                </div>
 
-                        {% if not current_subscription.plan.free %}
-                            {% if current_subscription.cancelAtPeriodEnd %}
-                                <form
-                                    method="post"
-                                    action="{{ path('account_subscription_reactivate') }}"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="_token"
-                                        value="{{ csrf_token('account_subscription_reactivate') }}"
-                                    >
+                {# ==================================================
+                   DETAILS
+                ================================================== #}
 
-                                    <button
-                                        type="submit"
-                                        class="subscription-summary__secondary-button"
-                                    >
-                                        Réactiver
-                                    </button>
-                                </form>
-                            {% elseif current_subscription.status.value in ['active', 'past_due', 'payment_failed'] %}
-                                <form
-                                    method="post"
-                                    action="{{ path('account_subscription_cancel') }}"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="_token"
-                                        value="{{ csrf_token('account_subscription_cancel') }}"
-                                    >
+                <div class="subscription-details">
 
-                                    <button
-                                        type="submit"
-                                        class="subscription-summary__danger-button"
-                                    >
-                                        Résilier mon abonnement
-                                    </button>
-                                </form>
+                    <div class="subscription-detail">
+
+                        <span class="subscription-detail-label">
+                            {{ 'agency_options.subscription.plan'|trans }}
+                        </span>
+
+                        <span class="subscription-detail-value p-accent">
+
+                            {% if subscription.plan is defined and subscription.plan %}
+
+                                {{ subscription.plan.name }}
+
+                            {% else %}
+
+                                {{ 'agency_options.subscription.not_specified'|trans }}
+
                             {% endif %}
+
+                        </span>
+
+                    </div>
+
+                    <div class="subscription-detail">
+
+                        <span class="subscription-detail-label">
+                            {{ 'agency_options.subscription.billing_period'|trans }}
+                        </span>
+
+                        <span class="subscription-detail-value p-accent">
+
+                            {% if subscription.billingPeriod == 'annual' %}
+
+                                {{ 'agency_options.subscription.billing_period.annual'|trans }}
+
+                            {% else %}
+
+                                {{ 'agency_options.subscription.billing_period.monthly'|trans }}
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                    <div class="subscription-detail">
+
+                        <span class="subscription-detail-label">
+                            {{ 'agency_options.subscription.next_renewal'|trans }}
+                        </span>
+
+                        <span class="subscription-detail-value p-accent">
+
+                            {% if subscription.currentPeriodEnd is defined and subscription.currentPeriodEnd %}
+
+                                {{ subscription.currentPeriodEnd|date('d/m/Y') }}
+
+                            {% elseif subscription.endDate is defined and subscription.endDate %}
+
+                                {{ subscription.endDate|date('d/m/Y') }}
+
+                            {% else %}
+
+                                {{ 'agency_options.subscription.not_specified'|trans }}
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                    <div class="subscription-detail">
+
+                        <span class="subscription-detail-label">
+                            {{ 'agency_options.subscription.price'|trans }}
+                        </span>
+
+                        <span class="subscription-detail-value p-accent">
+
+                            {% if subscription.price is defined %}
+
+                                {{ subscription.price }}
+                                {{ subscription.currencySign }}
+
+                            {% elseif subscription.plan is defined
+                                and subscription.plan
+                                and subscription.plan.price is defined %}
+
+                                {{ subscription.plan.price|number_format(2, ',', ' ') }}
+                                €
+
+                            {% else %}
+
+                                {{ 'agency_options.subscription.not_specified'|trans }}
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                {# ==================================================
+                   ACTIONS
+                ================================================== #}
+
+                <div class="subscription-actions">
+
+                    {# <a
+                        href="{{ path('agence_immobiliere_parametres') }}#cat4"
+                        class="btn-full-blue"
+                    >
+                        {{ 'agency_options.subscription.update_payment_method'|trans }}
+                    </a>
+ #}
+                    {% if not subscription.plan.isFree and not subscription.cancelAtPeriodEnd %}
+
+                        <button
+                            type="button"
+                            class="btn-subscription-cancel ms-auto"
+                            data-bs-toggle="modal"
+                            data-bs-target="#cancelSubscriptionModal"
+                        >
+                            {{ 'agency_options.subscription.cancel'|trans }}
+                        </button>
+
+                    {% elseif subscription.cancelAtPeriodEnd %}
+
+                        <span class="subscription-status cancelled">
+                            {{ 'agency_options.subscription.cancellation_scheduled'|trans }}
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+                {% if subscription.cancelAtPeriodEnd|default(false) %}
+
+                    <div class="subscription-cancellation-info">
+
+                        {{ 'agency_options.subscription.cancellation_info.before_date'|trans }}
+
+                        {% if subscription.currentPeriodEnd is defined
+                            and subscription.currentPeriodEnd %}
+
+                            <strong>
+                                {{ subscription.currentPeriodEnd|date('d/m/Y') }}
+                            </strong>
+
+                        {% elseif subscription.endDate is defined
+                            and subscription.endDate %}
+
+                            <strong>
+                                {{ subscription.endDate|date('d/m/Y') }}
+                            </strong>
+
                         {% endif %}
+
+                        {{ 'agency_options.subscription.cancellation_info.after_date'|trans }}
+
+                        <form
+                            method="post"
+                            action="{{ path('account_subscription_reactivate') }}"
+                            class="mt-2"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="{{ csrf_token('account_subscription_reactivate') }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="_redirect_route"
+                                value="agence_immobiliere_options"
+                            >
+
+                            <button type="submit" class="btn-subscription-resume">
+                                {{ 'agency_options.subscription.reactivate'|trans }}
+                            </button>
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+                {% if abonnement_actuel and abonnement_actuel.hasPendingPlanChange %}
+
+                    <div class="subscription-cancellation-info">
+
+                        {{ 'agency_options.subscription.pending_change.before_plan'|trans }}
+
+                        <strong>{{ abonnement_actuel.pendingPlanPrice.plan.name }}</strong>
+
+                        {% if abonnement_actuel.pendingPlanChangeEffectiveAt %}
+                            {{ 'agency_options.subscription.pending_change.on_date'|trans }}
+                            <strong>
+                                {{ abonnement_actuel.pendingPlanChangeEffectiveAt|date('d/m/Y') }}
+                            </strong>
+                        {% else %}
+                            {{ 'agency_options.subscription.pending_change.end_of_period'|trans }}
+                        {% endif %}.
+
+                        {{ 'agency_options.subscription.pending_change.before_amount'|trans }}
+
+                        <strong>
+                            {{ abonnement_actuel.pendingPlanPrice.amountMinor|minor_amount(abonnement_actuel.pendingPlanPrice.currency) }}
+                            {{ abonnement_actuel.pendingPlanPrice.currency.signe }}
+                        </strong>
+
+                        {{ 'agency_options.subscription.pending_change.after_amount'|trans }}
+
+                        <form
+                            method="post"
+                            action="{{ path('account_subscription_cancel_plan_change') }}"
+                            class="mt-2"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="{{ csrf_token('account_subscription_cancel_plan_change') }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="_redirect_route"
+                                value="agence_immobiliere_options"
+                            >
+
+                            <button type="submit" class="btn-subscription-cancel">
+                                {{ 'agency_options.subscription.cancel_plan_change'|trans }}
+                            </button>
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        {% endif %}
+
+    {% if subscription and not subscription.plan.isFree and not subscription.cancelAtPeriodEnd %}
+        <div
+            class="modal fade"
+            id="cancelSubscriptionModal"
+            tabindex="-1"
+            aria-labelledby="cancelSubscriptionModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 24px; border: 0;padding:24px">
+                    <div class="modal-header border-0 py-0 px-0 justify-content-center position-relative">
+                        <h3
+                            class="mb-0 text-center"
+                            id="cancelSubscriptionModalLabel"
+                            style="color:#0b0f14"
+                        >
+                            {{ 'agency_options.cancel_modal.title'|trans }}
+                        </h3>
+
+                        <button
+                            type="button"
+                            class="btn-close position-absolute top-0 end-0"
+                            data-bs-dismiss="modal"
+                            aria-label="{{ 'agency_options.cancel_modal.close'|trans }}"
+                            style="padding-top:17px"
+                        ></button>
+                    </div>
+
+                    <div class="p-accent my-48 text-center">
+                        <p class="mb-2 p-accent" style="color:#0b0f14">
+                            {{ 'agency_options.cancel_modal.question'|trans }}
+                        </p>
+
+                        <p class="text-muted mb-0 paragraphe" style="color:#858789!important">
+                            {{ 'agency_options.cancel_modal.description'|trans }}
+                        </p>
+                    </div>
+
+                    <div class="modal-footer" style="margin-top:0;padding:0; border-top:transparent; display:flex; flex-wrap:nowrap; justify-content:space-between; gap:12px">
+                        <button
+                            type="button"
+                            class="btn-full-white"
+                            data-bs-dismiss="modal"
+                        >
+                            {{ 'agency_options.cancel_modal.cancel'|trans }}
+                        </button>
+
+                        <form
+                            method="post"
+                            action="{{ path('account_subscription_cancel') }}"
+                        >
+                            <input
+                                type="hidden"
+                                name="_token"
+                                value="{{ csrf_token('account_subscription_cancel') }}"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="_redirect_route"
+                                value="agence_immobiliere_options"
+                            >
+
+                            <button
+                                type="submit"
+                                class="btn-subscription-cancel"
+                                style="color:#fff;background:#dc3545"
+                            >
+                                {{ 'agency_options.cancel_modal.confirm'|trans }}
+                            </button>
+                        </form>
                     </div>
                 </div>
-            {% endif %}
+            </div>
+        </div>
+    {% endif %}
 
-            <div class="card-information-public-profile my-32 py-18 px-24">
+            <div class="card-information-public-profile my-32 py-24 px-24">
                 <div class="connexion-securite">
-                    <h5 class="p-accent mode-de-paiement-profile">
+                    <h3 class="mb-24">
                         Cartes enregistrées
-                    </h5>
+                    </h3>
 
                     {% if payment_methods is empty %}
                         <p class="mb-0 text-muted">
@@ -221,17 +460,17 @@
 
                                         <div class="saved-payment-method__information">
                                             <div class="saved-payment-method__name">
-                                                {{ brandLabel }}
-                                                {{ paymentMethod.last4 }}
+                                                <span class="p-accent">{{ brandLabel }}
+                                                {{ paymentMethod.last4 }}</span>
 
                                                 {% if paymentMethod.isIsDefault %}
-                                                    <span class="saved-payment-method__default-text">
+                                                    <span class="saved-payment-method__default-text paragraphe">
                                                         — Par défaut
                                                     </span>
                                                 {% endif %}
                                             </div>
 
-                                            <div class="saved-payment-method__expiration">
+                                            <div class="saved-payment-method__expiration paragraphe">
                                                 Date d’expiration :
                                                 {{ '%02d'|format(paymentMethod.expMonth) }}/{{ paymentMethod.expYear }}
                                             </div>
@@ -402,12 +641,12 @@
             </button>
 
             <div class="payment-modal-header">
-                <h2
+                <h3
                     id="payment-modal-title"
                     class="payment-modal-title"
                 >
                     Indiquez les informations de votre carte
-                </h2>
+                </h3>
             </div>
 
             <form
@@ -431,7 +670,7 @@
                 <div class="payment-form-group">
                     <label
                         for="payment-cardholder-name-cat4"
-                        class="payment-form-label"
+                        class="mb-16 p-accent"
                     >
                         Nom du titulaire
                     </label>
@@ -439,7 +678,7 @@
                     <input
                         type="text"
                         id="payment-cardholder-name-cat4"
-                        class="payment-form-control"
+                        class="form-control input mb-16"
                         placeholder="Saisissez le nom du titulaire"
                         autocomplete="cc-name"
                         data-payment-method-target="cardholderName"
@@ -452,12 +691,12 @@
                 </div>
 
                 <div class="payment-form-group">
-                    <label class="payment-form-label">
+                    <label class="mb-16 p-accent">
                         Numéro de la carte
                     </label>
 
                     <div
-                        class="payment-stripe-element"
+                        class="payment-stripe-element mb-16"
                         data-payment-method-target="cardNumber"
                         aria-label="Numéro de la carte bancaire"
                     ></div>
@@ -465,24 +704,24 @@
 
                 <div class="payment-form-row">
                     <div class="payment-form-group payment-form-group--half">
-                        <label class="payment-form-label">
+                        <label class="mb-16 p-accent">
                             Date d’expiration
                         </label>
 
                         <div
-                            class="payment-stripe-element"
+                            class="payment-stripe-element mb-16"
                             data-payment-method-target="cardExpiry"
                             aria-label="Date d’expiration de la carte"
                         ></div>
                     </div>
 
                     <div class="payment-form-group payment-form-group--half">
-                        <label class="payment-form-label">
+                        <label class="mb-16 p-accent">
                             Code de sécurité
                         </label>
 
                         <div
-                            class="payment-stripe-element"
+                            class="payment-stripe-element mb-16"
                             data-payment-method-target="cardCvc"
                             aria-label="Code de sécurité de la carte"
                         ></div>
@@ -492,14 +731,14 @@
                 <div class="payment-form-group">
                     <label
                         for="payment-country-cat4"
-                        class="payment-form-label"
+                        class="mb-16 p-accent"
                     >
                         Pays
                     </label>
 
                     <select
                         id="payment-country-cat4"
-                        class="payment-form-control"
+                        class="payment-form-control mb-16"
                         autocomplete="country"
                         data-payment-method-target="country"
                         data-action="change->payment-method#countryChanged"
@@ -568,7 +807,7 @@
                 <div class="payment-modal-actions">
                     <button
                         type="button"
-                        class="payment-btn-cancel"
+                        class="btn-full-white w-auto"
                         data-action="click->payment-method#close"
                     >
                         Annuler
@@ -576,7 +815,7 @@
 
                     <button
                         type="submit"
-                        class="payment-btn-submit"
+                        class="payment-btn-submit btn-full-blue "
                         data-payment-method-target="submitButton"
                         disabled
                     >
@@ -622,19 +861,19 @@
     .saved-payment-method__main {
         display: flex;
         align-items: flex-start;
-        gap: 18px;
+        gap: 24px;
 
         min-width: 0;
     }
 
     .saved-payment-method__logo {
         display: flex;
-        flex: 0 0 50px;
+        margin: auto 0;
         align-items: center;
         justify-content: center;
 
-        width: 50px;
-        height: 36px;
+        width: 70px;
+        height: 48px;
 
         padding: 6px;
 
@@ -678,19 +917,11 @@
 
     .saved-payment-method__default-text {
         color: #777777;
-
-        font-size: 11px;
-        font-weight: 400;
     }
 
     .saved-payment-method__expiration {
-        margin-top: 5px;
-
+        margin-top: 8px;
         color: #8a8a8a;
-
-        font-size: 11px;
-        font-weight: 400;
-        line-height: 15px;
     }
 
     /*
@@ -701,7 +932,8 @@
         position: relative;
 
         flex: 0 0 auto;
-        margin-top: 1px;
+        margin: auto 0;
+       
     }
 
     .saved-payment-method__menu-button {
@@ -810,468 +1042,264 @@
     }
 
     /*
-     * Modale Stripe
+     * Modale Stripe (même CSS que achat.html.twig)
      */
-
-    .payment-modal-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 99999;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        padding: 24px;
-
-        background: rgba(17, 24, 39, 0.58);
-
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-
-        overflow-y: auto;
-
-        transition:
-            opacity 180ms ease,
-            visibility 180ms ease;
-    }
-
-    .payment-modal-overlay.is-open {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-    }
-
-    .payment-modal {
-        position: relative;
-        z-index: 100000;
-
-        width: 100%;
-        max-width: 560px;
-
-        padding: 32px;
-
-        background: #ffffff;
-        border-radius: 16px;
-
-        box-shadow:
-            0 24px 70px rgba(17, 24, 39, 0.24);
-
-        pointer-events: auto;
-    }
-
-    .payment-modal-close {
-        position: absolute;
-        top: 18px;
-        right: 18px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        width: 38px;
-        height: 38px;
-
-        padding: 0;
-
-        color: #161616;
-        background: transparent;
-
-        border: 0;
-        border-radius: 50%;
-
-        cursor: pointer;
-    }
-
-    .payment-modal-close:hover {
-        background: #f3f4f6;
-    }
-
-    .payment-modal-header {
-        padding-right: 45px;
-        margin-bottom: 28px;
-    }
-
-    .payment-modal-title {
-        margin: 0;
-
-        color: #161616;
-
-        font-size: 24px;
-        font-weight: 700;
-        line-height: 32px;
-    }
-
-    .payment-modal-form,
-    .payment-form-group,
-    .payment-form-row,
-    .payment-stripe-element,
-    .payment-stripe-element iframe {
-        position: relative;
-        pointer-events: auto !important;
-    }
-
-    .payment-form-group {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .payment-form-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 16px;
-    }
-
-    .payment-form-group--half {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .payment-form-label {
-        display: block;
-
-        margin-bottom: 9px;
-
-        color: #252525;
-
-        font-size: 14px;
-        font-weight: 600;
-        line-height: 20px;
-    }
-
-    .payment-form-control {
-        position: relative;
-        z-index: 1;
-
-        display: block;
-
-        width: 100%;
-        min-height: 44px;
-
-        padding: 12px 14px;
-
-        color: #161616;
-        background: #ffffff;
-
-        border: 2px solid #ebecec;
-        border-radius: 8px;
-
-        outline: none;
-
-        font-size: 16px;
-        line-height: 24px;
-
-        pointer-events: auto !important;
-        user-select: text;
-
-        transition:
-            border-color 150ms ease,
-            box-shadow 150ms ease;
-    }
-
-    .payment-form-control:focus {
-        border-color: #ff8a1e;
-
-        box-shadow:
-            0 0 0 3px rgba(255, 138, 30, 0.14);
-    }
-
-    .payment-stripe-element {
-        position: relative;
-        z-index: 1;
-
-        width: 100%;
-        min-height: 50px;
-
-        padding: 14px;
-
-        background: #ffffff;
-
-        border: 1px solid #d5d9e2;
-        border-radius: 10px;
-
-        cursor: text;
-        pointer-events: auto !important;
-
-        transition:
-            border-color 150ms ease,
-            box-shadow 150ms ease;
-    }
-
-    .payment-stripe-element iframe {
-        position: relative !important;
-        z-index: 2 !important;
-
-        width: 100% !important;
-
-        pointer-events: auto !important;
-    }
-
-    .payment-stripe-element.StripeElement--focus {
-        border-color: #ff8a1e;
-
-        box-shadow:
-            0 0 0 3px rgba(255, 138, 30, 0.14);
-    }
-
-    .payment-stripe-element.StripeElement--invalid {
-        border-color: #dc3545;
-
-        box-shadow:
-            0 0 0 3px rgba(220, 53, 69, 0.1);
-    }
-
-    .payment-stripe-element.StripeElement--complete {
-        border-color: #198754;
-    }
-
-    .payment-checkbox {
-        display: flex;
-        align-items: center;
-
-        margin: 4px 0 26px;
-
-        color: #343a40;
-
-        font-size: 14px;
-        line-height: 20px;
-
-        cursor: pointer;
-    }
-
-    .payment-checkbox input {
-        flex: 0 0 auto;
-
-        width: 18px;
-        height: 18px;
-
-        cursor: pointer;
-    }
-
-    .payment-modal-actions {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 12px;
-    }
-
-    .payment-btn-cancel,
-    .payment-btn-submit {
-        min-height: 46px;
-
-        padding: 11px 20px;
-
-        border-radius: 9px;
-
-        font-size: 15px;
-        font-weight: 600;
-        line-height: 22px;
-
-        cursor: pointer;
-
-        transition:
-            opacity 150ms ease,
-            background-color 150ms ease,
-            border-color 150ms ease;
-    }
-
-    .payment-btn-cancel {
-        color: #343a40;
-        background: #ffffff;
-
-        border: 1px solid #d5d9e2;
-    }
-
-    .payment-btn-submit {
-        color: #ffffff;
-        background: #ff8a1e;
-
-        border: 1px solid #ff8a1e;
-    }
-
-    .payment-btn-submit:hover:not(:disabled) {
-        background: #ed770c;
-        border-color: #ed770c;
-    }
-
-    .payment-btn-submit:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-    }
-
-    .payment-btn-submit.is-loading {
-        cursor: wait;
-    }
-
-    .payment-form-error,
-    .payment-form-success {
-        padding: 12px 14px;
-
-        border-radius: 8px;
-
-        font-size: 14px;
-        line-height: 21px;
-    }
-
-    .payment-form-error {
-        color: #842029;
-        background: #f8d7da;
-
-        border: 1px solid #f5c2c7;
-    }
-
-    .payment-form-success {
-        color: #0f5132;
-        background: #d1e7dd;
-
-        border: 1px solid #badbcc;
-    }
+        .payment-form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .payment-form-group--half {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .payment-stripe-element {
+    font-size: 14px;
+    border: 2px solid #ebecec;
+    line-height: 20px;
+    background: #fff;
+    border-radius: 12px;
+    font-weight: 500;
+            padding: 12px 14px;
+            height:44px;
+
+        }
+
+        .payment-stripe-element.StripeElement--focus {
+            border-color: #5d00ff;
+        }
+
+        .payment-stripe-element.StripeElement--invalid {
+            border-color: #dc3545;
+        }
 
     body.payment-modal-open {
         overflow: hidden;
     }
 
-    .subscription-summary__header,
-    .subscription-summary__actions {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 16px;
-    }
-
-    .subscription-summary__plan {
-        color: #111111;
-
-        font-size: 18px;
-        font-weight: 700;
-        line-height: 24px;
-    }
-
-    .subscription-summary__status {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-
-        min-height: 30px;
-        padding: 6px 10px;
-
-        color: #174f2d;
-        background: #e8f6ed;
-
-        border-radius: 6px;
-
-        font-size: 12px;
-        font-weight: 700;
-        line-height: 16px;
-        white-space: nowrap;
-    }
-
-    .subscription-summary__status--past_due,
-    .subscription-summary__status--payment_failed,
-    .subscription-summary__status--unpaid,
-    .subscription-summary__status--cancel_scheduled {
-        color: #7a3f00;
-        background: #fff1da;
-    }
-
-    .subscription-summary__status--canceled,
-    .subscription-summary__status--expired {
-        color: #842029;
-        background: #f8d7da;
-    }
-
-    .subscription-summary__grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 18px;
-    }
-
-    .subscription-summary__grid span {
-        display: block;
-        margin-bottom: 5px;
-
-        color: #7b7f86;
-
-        font-size: 11px;
-        font-weight: 600;
-        line-height: 15px;
-        text-transform: uppercase;
-    }
-
-    .subscription-summary__grid strong {
-        display: block;
-
-        color: #111111;
-
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 20px;
-    }
-
-    .subscription-summary__notice {
-        padding: 12px 14px;
-
-        color: #4f3300;
-        background: #fff7e8;
-
-        border: 1px solid #ffe0ac;
-        border-radius: 8px;
-
-        font-size: 13px;
-        line-height: 19px;
-    }
-
-    .subscription-summary__notice--warning {
-        color: #842029;
-        background: #f8d7da;
-
-        border-color: #f5c2c7;
-    }
-
-    .subscription-summary__secondary-button,
-    .subscription-summary__danger-button {
-        min-height: 42px;
-        padding: 9px 14px;
-
-        background: #ffffff;
-
-        border-radius: 8px;
-
-        font-size: 13px;
-        font-weight: 700;
-        line-height: 18px;
-
-        cursor: pointer;
-    }
-
-    .subscription-summary__secondary-button {
-        color: #111111;
-        border: 1px solid #d5d9e2;
-    }
-
-    .subscription-summary__danger-button {
-        color: #d91e31;
-        border: 1px solid #f3a3ad;
-    }
-
-    @media (max-width: 991px) {
-        .subscription-summary__grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-
-    @media (max-width: 575px) {
-        .subscription-summary__header,
-        .subscription-summary__actions {
-            flex-direction: column;
-            align-items: stretch;
+        .subscription-card {
+            padding: 24px;
+            background: #ffffff;
+            border: 2px solid #ebecec;
+            border-radius: 24px;
+            margin-bottom: 24px;
         }
 
-        .subscription-summary__grid {
-            grid-template-columns: 1fr;
+        .subscription-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 33px;
         }
-    }
+
+        .subscription-card-title {
+            margin: 0 0 6px;
+            color: #171717;
+            font-size: 24px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .subscription-card-subtitle {
+            margin: 0;
+            color: #747474;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .subscription-status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 32px;
+            padding: 5px 12px;
+            background: #e2f3e7;
+            border-radius: 9999px;
+            color: #2a7f48;
+            font-size: 12px;
+            line-height: 1;
+            font-weight: 600;
+        }
+
+        .subscription-status.cancelled {
+            background: #fff2f2;
+            color: #d43b4b;
+        }
+
+        .subscription-status.pending {
+            background: #fff7df;
+            color: #a56c00;
+        }
+
+        .subscription-details {
+            display: grid;
+            grid-template-columns:
+                minmax(140px, 1fr)
+                minmax(140px, 1fr)
+                minmax(180px, 1fr)
+                minmax(100px, .75fr);
+            gap: 30px;
+            margin-bottom: 32px;
+        }
+
+        .subscription-detail {
+            min-width: 0;
+        }
+
+        .subscription-detail-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #717171;
+            font-size: 11px;
+            line-height: 1.3;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .subscription-detail-value {
+            display: block;
+            color: #181818;
+            font-size: 15px;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+
+        .subscription-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .btn-subscription-payment {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 25px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(
+                90deg,
+                #7625ec 0%,
+                #6518e8 50%,
+                #5000db 100%
+            );
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 15px;
+            line-height: 1;
+            font-weight: 700;
+            cursor: pointer;
+            transition:
+                transform .15s ease,
+                box-shadow .15s ease;
+        }
+
+        .btn-subscription-payment:hover {
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 7px 18px rgba(97, 20, 224, .22);
+        }
+
+        .btn-subscription-cancel {
+display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  padding: 10px 16px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: none;
+  white-space: nowrap;
+  border: 2px solid #dc3545;
+  background: var(--color-white);
+  color: #dc3545;
+        }
+
+        .btn-subscription-cancel:hover {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: #ffffff;
+        }
+
+        .btn-subscription-resume {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 0 22px;
+            border: 1px solid #2a7f48;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #2a7f48;
+            text-decoration: none;
+            font-size: 14px;
+            line-height: 1;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+
+        .btn-subscription-resume:hover {
+            background: #2a7f48;
+            border-color: #2a7f48;
+            color: #ffffff;
+        }
+
+        .subscription-cancellation-info {
+            margin-top: 20px;
+            padding: 15px 18px;
+            border: 1px solid #f3d0d5;
+            border-radius: 12px;
+            background: #fff8f8;
+            color: #9f3340;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Sous 991px : deux détails par ligne (50 % chacun), jusqu'au mobile. */
+        @media (max-width: 991px) {
+            .subscription-details {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            /* Boutons empilés, en pleine largeur. */
+            .subscription-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .subscription-actions .btn-full-blue,
+            .btn-subscription-payment,
+            .btn-subscription-cancel {
+                width: 100%;
+            }
+
+            .achat-boost-description {
+                text-align: center!important;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .subscription-card {
+                padding: 24px 20px;
+                border-radius: 20px;
+            }
+
+            .subscription-card-header {
+                margin-bottom: 32px;
+            }
+
+            .subscription-details {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 24px 20px;
+            }
+        }
 </style>
 
 <script src="https://js.stripe.com/v3/"></script>
