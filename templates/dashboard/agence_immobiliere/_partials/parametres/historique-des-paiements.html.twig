@@ -18,12 +18,13 @@
             </h3>
 
             <div
-                class="card-information-public-profile my-32 py-18 px-24"
+                class="invoices-card my-32"
                 data-controller="field-save"
                 data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
                 data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
             >
 
+                <div class="invoices-list">
                 {% if subscription_payments is defined and subscription_payments is not empty %}
                     {% for payment in subscription_payments %}
                         {% set payment_method = payment.paymentMethod %}
@@ -55,65 +56,56 @@
                         {% set currency_sign = payment.currency ? payment.currency.signe|default('€') : '€' %}
                         {% set invoice = invoices_by_payment[payment.id]|default(null) %}
 
-                        <div class="js-editable-field formulaire {{ not loop.first ? 'mt-20' }}">
-                            <div class="d-flex justify-content-between align-items-start pb-20 {{ not loop.last ? 'ligne-border-bottom' }}">
-                                <div>
-                                    <h3 class="mb-0">
+                        <div class="invoice-row position-relative">
+                            <div class="invoice-row__info">
+                                <div class="d-flex flex-column gap-1">
+                                    <p class="invoice-row__reference__invoice p-accent mb-0" style="color:#0b0f14">
                                         {{ payment_card_label }}
                                         {% if payment_card_last4 %}
                                             {{ payment_card_last4 }}
                                         {% endif %}
-                                    </h3>
-
-                                    <p class="mt-12 mb-0 js-field-value">
-                                        {{ purchase_date|date('d/m/Y') }}
                                     </p>
 
-                                    {% if invoice %}
-                                        <p class="mt-8 mb-0">
-                                            <span class="js-field-value">Facture {{ invoice.number }}</span>
-                                            &nbsp;·&nbsp;
-                                            <a
-                                                href="{{ path('agence_immobiliere_facture_show', {id: invoice.id}) }}"
-                                                target="_blank"
-                                                rel="noopener"
-                                                class="text-decoration-none"
-                                            >
-                                                Voir
-                                            </a>
-                                            &nbsp;·&nbsp;
-                                            <a
-                                                href="{{ path('agence_immobiliere_facture_download', {id: invoice.id}) }}"
-                                                class="text-decoration-none"
-                                            >
-                                                Télécharger
-                                            </a>
-                                        </p>
-                                    {% endif %}
+                                    <p class="invoice-row__date paragraphe">
+                                        {{ purchase_date|date('d/m/Y') }}
+                                    </p>
                                 </div>
 
-                                <p class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 mb-0">
+                                <p class="invoice-row__date p-accent position-absolute start-50 translate-middle-x" style="color; #0b0f14">
                                     {{ (payment.amountPaidMinor > 0 ? payment.amountPaidMinor : payment.amountTotalMinor)|minor_amount(payment.currency) }}
                                     {{ currency_sign }}
                                 </p>
                             </div>
+
+                            {% if invoice %}
+                                <div class="invoice-row__actions">
+                                    <a
+                                        href="{{ path('agence_immobiliere_facture_show', {id: invoice.id}) }}"
+                                        class="invoice-action p-accent"
+                                        target="_blank"
+                                        rel="noopener"
+                                    >
+                                        <i class="icon-eye" aria-hidden="true"></i>
+                                        Voir
+                                    </a>
+
+                                    <a
+                                        href="{{ path('agence_immobiliere_facture_download', {id: invoice.id}) }}"
+                                        class="invoice-action p-accent"
+                                    >
+                                        <i class="icon-arrow-down-to-line" aria-hidden="true"></i>
+                                        Télécharger
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% else %}
-                    <div class="js-editable-field formulaire">
-                        <div class="d-flex justify-content-between align-items-start pb-20">
-                            <div>
-                                <h3 class="p-accent mb-0">
-                                    Aucun paiement d’abonnement
-                                </h3>
-
-                                <p class="mt-12 mb-0 js-field-value">
-                                    Les renouvellements Stripe apparaîtront ici après synchronisation.
-                                </p>
-                            </div>
-                        </div>
+                    <div class="invoice-row">
+                        <p class="invoice-row__date">Aucun paiement d’abonnement. Les renouvellements Stripe apparaîtront ici après synchronisation.</p>
                     </div>
                 {% endif %}
+                </div>
 
             </div>
 
