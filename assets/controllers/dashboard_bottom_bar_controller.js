@@ -132,7 +132,8 @@ export default class extends Controller {
         const topbar = document.querySelector('.topbar');
         const bottomBar = this.element.querySelector('.dashboard-bottom-bar');
         const top = topbar ? Math.max(topbar.getBoundingClientRect().bottom, 0) : 0;
-        const bottom = bottomBar ? bottomBar.getBoundingClientRect().height : 0;
+        // La barre flotte au-dessus du bas de l'écran : on s'arrête à son bord haut
+        const bottom = bottomBar ? Math.max(window.innerHeight - bottomBar.getBoundingClientRect().top, 0) : 0;
 
         panel.style.top = `${Math.ceil(top)}px`;
         panel.style.bottom = `${Math.ceil(bottom)}px`;
