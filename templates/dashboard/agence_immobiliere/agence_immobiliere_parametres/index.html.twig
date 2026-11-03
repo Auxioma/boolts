@@ -18,6 +18,20 @@
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
 
+                {# Topbar des pages de contenu (mobile, < 768px) — Figma « TopBar » 6934:17370 #}
+                <div class="col-12 d-md-none p-0">
+                    <div class="parametres-topbar">
+                        <button type="button"
+                                class="parametres-topbar__back"
+                                aria-label="Retour au menu Paramètres"
+                                data-action="parametre--tabs#back">
+                            <i class="icon-chevron-left" aria-hidden="true"></i>
+                        </button>
+
+                        <p class="parametres-topbar__title p-accent mb-0" data-parametre--tabs-target="title"></p>
+                    </div>
+                </div>
+
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main bg-white">
                     <div class="row">
                         <div class="col-3 border-color-right-gris d-none d-md-block">

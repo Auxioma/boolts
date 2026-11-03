@@ -88,19 +88,22 @@
         max-width: none;}
 }
 
-/* Barre de navigation fixe en bas de l'écran (mobile < 768px) — Figma « SideBar - Dashboard » 3678:16444 */
+/* Barre de navigation fixe en bas de l'écran (mobile < 768px) — Figma « SideBar - Dashboard » 6934:17418 */
 .dashboard-bottom-bar {position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 1030;
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    min-height: 49px;
-    padding: 6px 16px env(safe-area-inset-bottom, 0);
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    height: calc(83px + env(safe-area-inset-bottom, 0px));
+    padding: 0 16px env(safe-area-inset-bottom, 0px);
+    overflow: hidden;
     background: #f8f8f8;
-    border-top: 1px solid #ebecec;}
+    border-top: 1px solid #ebecec;
+    border-radius: 999999px;}
 .dashboard-bottom-bar__item {display: flex;
     flex-direction: column;
     align-items: center;
@@ -118,17 +121,15 @@
     cursor: pointer;}
 .dashboard-bottom-bar__item i {font-size: 24px;
     line-height: 24px;}
-.dashboard-bottom-bar__more {color: #0b0f14;}
 .dashboard-bottom-bar__item.active, .dashboard-bottom-bar__item:hover {color: #5d00ff;}
 .dashboard-bottom-bar__item.is-disabled {color: #b8b8b8;
     pointer-events: none;
     cursor: not-allowed;}
-.dashboard-bottom-bar__menu {margin-bottom: 8px !important;}
-.dashboard-bottom-bar__menu .dropdown-item.active, .dashboard-bottom-bar__menu .dropdown-item:active {background: #ebecec;
-    color: #5d00ff;}
+/* Un menu (Paramètres / Plus) ouvert : seul son bouton reste en couleur */
+.dashboard-bottom-bar:has(.is-open) .dashboard-bottom-bar__item.active:not(.is-open) {color: #3d3f43;}
 /* Le contenu ne passe pas sous la barre */
 @media (max-width: 767.98px) {
-    body:has(.dashboard-bottom-bar) {padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px));}
+    body:has(.dashboard-bottom-bar) {padding-bottom: calc(83px + env(safe-area-inset-bottom, 0px));}
 }
 
 /* Menu Paramètres ouvert depuis la barre du bas — Figma « Paramètres » 6172:24683.
@@ -136,7 +137,7 @@
 .dashboard-bottom-bar__item.is-open {color: #5d00ff;}
 .dashboard-settings-menu {position: fixed;
     top: 72px;
-    bottom: 49px;
+    bottom: 83px;
     left: 0;
     right: 0;
     z-index: 1025;
@@ -183,3 +184,23 @@
 .dashboard-settings-menu__item i {font-size: 24px;
     line-height: 24px;}
 body.dashboard-settings-menu-open {overflow: hidden;}
+
+/* Menu Plus ouvert depuis la barre du bas, affiché comme une page — Figma « Plus » 6934:17398 */
+.dashboard-more-menu {gap: 0;
+    padding: 28px 16px 32px;}
+.dashboard-more-menu__sections {display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;}
+.dashboard-more-menu .dashboard-settings-menu__section + .dashboard-settings-menu__section {margin-top: 0;}
+.dashboard-more-menu .dashboard-settings-menu__section-title {color: #3d3f43;}
+.dashboard-more-menu__item--plain {border: 0;
+    border-radius: 10px;}
+.dashboard-more-menu__logout {justify-content: center;
+    border: 0;
+    border-radius: 10px;
+    background: #ebecec;}
+.dashboard-settings-menu__item.active {color: #5d00ff;}
+.dashboard-settings-menu__item.is-disabled {color: #b8b8b8;
+    pointer-events: none;
+    cursor: not-allowed;}

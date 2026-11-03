@@ -887,3 +887,77 @@
 
     color: #0b0f14;
 }
+
+/* Topbar des pages de contenu Paramètres (mobile, < 768px) — Figma « TopBar » 6934:17370 */
+.parametres-topbar {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    height: 44px;
+
+    padding: 0 48px;
+
+    background: #fff;
+
+    border-bottom: 1px solid #ebecec;
+}
+
+.parametres-topbar__back {
+    position: absolute;
+
+    top: 50%;
+
+    left: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 24px;
+
+    height: 24px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #0b0f14;
+
+    font-size: 24px;
+
+    transform: translateY(-50%);
+}
+
+.parametres-topbar__title {
+    overflow: hidden;
+
+    color: #0b0f14;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+/* Pages de contenu Paramètres : pas de tabbar, sauf quand le menu Paramètres (page principale du menu) est ouvert */
+@media (max-width: 767.98px) {
+    body:has(.parametres-topbar):not(.dashboard-settings-menu-open) .dashboard-bottom-bar {
+        display: none;
+    }
+
+    body:has(.parametres-topbar):not(.dashboard-settings-menu-open) {
+        padding-bottom: 0;
+    }
+}

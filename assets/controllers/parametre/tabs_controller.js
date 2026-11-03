@@ -2,6 +2,8 @@ import { Controller } from '@hotwired/stimulus';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
+    static targets = ['title'];
+
     connect() {
         this.links = [...this.element.querySelectorAll('.js-tab-link')];
         this.contents = [...this.element.querySelectorAll('.js-tab-content')];
@@ -24,6 +26,20 @@ export default class extends Controller {
         this.cleanups.push(() => window.removeEventListener('hashchange', hashListener));
 
         this.openFromHash();
+        this.updateTitle(this.links.find((item) => item.classList.contains('active')));
+    }
+
+    // Flèche retour de la topbar mobile : rouvre le menu Paramètres (barre du bas)
+    back() {
+        window.dispatchEvent(new CustomEvent('dashboard-settings-menu:open'));
+    }
+
+    updateTitle(link) {
+        if (!this.hasTitleTarget || !link) {
+            return;
+        }
+
+        this.titleTarget.textContent = link.textContent.trim();
     }
 
     disconnect() {
@@ -75,6 +91,7 @@ export default class extends Controller {
 
         targetLink?.classList.add('active');
         targetElement.classList.remove('d-none');
+        this.updateTitle(targetLink);
 
         return true;
     }

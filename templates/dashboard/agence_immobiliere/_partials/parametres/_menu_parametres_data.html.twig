@@ -71,7 +71,7 @@
                 {% for item in section.items %}
                     <a href="{{ path('agence_immobiliere_parametres') }}#{{ item.tab }}"
                        class="dashboard-settings-menu__item"
-                       data-action="dashboard-bottom-bar#close">
+                       data-action="dashboard-bottom-bar#navigate">
                         <span class="dashboard-settings-menu__item-label">
                             <i class="{{ item.icon }}"></i>
                             {{ item.label }}
