@@ -1,0 +1,19 @@
+{#
+ Template: templates/composant/__agence_immobiliere/_topbar_contenu.html.twig
+ Role: Topbar mobile (< 768px) des pages de contenu du menu « Plus » — Figma « TopBar » 6934:17370.
+ Context: title (texte centré). La flèche rouvre le menu « Plus » de la barre du bas.
+ Maintenance: À placer juste avant .dashboard-main, dans la .row du dashboard.
+#}
+
+<div class="col-12 d-md-none p-0">
+    <div class="dashboard-content-topbar" data-controller="dashboard-content-topbar">
+        <button type="button"
+                class="parametres-topbar__back"
+                aria-label="Retour au menu Plus"
+                data-action="dashboard-content-topbar#back">
+            <i class="icon-chevron-left" aria-hidden="true"></i>
+        </button>
+
+        <p class="parametres-topbar__title p-accent mb-0">{{ title }}</p>
+    </div>
+</div>

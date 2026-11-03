@@ -364,12 +364,15 @@ display: inline-flex;
                 {# Menu du tableau de bord #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
+                {# Topbar mobile — Figma « TopBar » 6934:17370 #}
+                {{ include('composant/__agence_immobiliere/_topbar_contenu.html.twig', {title: 'Options & abonnements'}) }}
+
                 {# Contenu du tableau de bord #}
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main">
                     <div class="col-12 col-md-10 mx-auto">
 
                         <div class="achat-title-row d-flex align-items-center justify-content-between">
-                            <h2>
+                            <h2 class="d-none d-md-block">
                                 {{ 'agency_options.title'|trans }}
                             </h2>
 

@@ -121,7 +121,7 @@
 {# Barre de navigation fixe en bas de l'écran (mobile, < 768px) — Figma « SideBar - Dashboard » 6934:17418 #}
 {% set current_route = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) %}
 {% set more_routes = ['agence_immobiliere_notifications', 'agence_immobiliere_options', 'agence_immobiliere_mes_factures', 'agence_immobiliere_aide'] %}
-<div class="d-md-none" data-controller="dashboard-bottom-bar" data-action="dashboard-settings-menu:open@window->dashboard-bottom-bar#open">
+<div class="d-md-none" data-controller="dashboard-bottom-bar" data-action="dashboard-settings-menu:open@window->dashboard-bottom-bar#open dashboard-more-menu:open@window->dashboard-bottom-bar#openMore">
 {# Menu Paramètres : s'ouvre entre la topbar et la barre du bas, sans les recouvrir #}
 <div class="dashboard-settings-menu" id="dashboard-settings-menu" data-dashboard-bottom-bar-target="panel" hidden>
     <h2 class="dashboard-settings-menu__title">{{ 'agency_dashboard.sidebar.settings'|trans }}</h2>

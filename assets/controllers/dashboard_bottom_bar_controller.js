@@ -53,6 +53,12 @@ export default class extends Controller {
             : this.show(this.morePanelTarget, this.moreButtonTarget);
     }
 
+    openMore() {
+        if (this.hasMorePanelTarget) {
+            this.show(this.morePanelTarget, this.moreButtonTarget);
+        }
+    }
+
     show(panel, button) {
         this.close();
 

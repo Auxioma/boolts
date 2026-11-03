@@ -20,13 +20,16 @@
                 {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
+                {# Topbar mobile — Figma « TopBar » 6934:17370 #}
+                {{ include('composant/__agence_immobiliere/_topbar_contenu.html.twig', {title: 'Notifications'}) }}
+
                 {# Contenu principal #}
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main bg-white">
                     <div class="row">
                         <div class="col-12 col-md-10 mx-auto">
                         <section id="agence-notifications" class="js-agence-notifications" data-controller="agence-notifications"
                                  data-agence-notifications-csrf-token-value="{{ csrf_token('agency_notification_read') }}">
-                            <h2 class="notifications-page__title">{{ 'agency_notifications.title'|trans }}</h2>
+                            <h2 class="notifications-page__title d-none d-md-block">{{ 'agency_notifications.title'|trans }}</h2>
 
                             <div class="notifications-page__body">
                                 <div class="notifications-filter" role="tablist">
