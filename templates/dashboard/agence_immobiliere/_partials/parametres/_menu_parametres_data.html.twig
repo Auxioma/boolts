@@ -27,6 +27,7 @@
     },
     {
         title: 'Sécurité et paiement',
+        titleClass: 'mt-32',
         items: [
         {
             wrapper: 'connexion-securite',
@@ -83,12 +84,12 @@
     {% endfor %}
 {% else %}
 {% for section in menuParametres %}
-    <span class="dashboard-agence-title px-10 py-10 paragraphe d-block" style="color:#858789">
+    <span class="dashboard-agence-title paragraphe d-block {{ section.titleClass|default('') }}" style="color:#858789">
         {{ section.title }}
     </span>
 
     {% for item in section.items %}
-        <div class="{{ item.wrapper }} {{ loop.first ? 'mt-22' : 'mt-8' }} px-10 py-10">
+        <div class="{{ item.wrapper }} {{ loop.first ? 'mt-16' : 'mt-8' }} px-10 py-10">
             <a href="#"
                class="menu-btn js-tab-link{{ item.active ? ' active' : '' }} p-accent"
                data-tab="{{ item.tab }}">

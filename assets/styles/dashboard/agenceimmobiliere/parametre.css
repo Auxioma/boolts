@@ -856,3 +856,34 @@
 .agency-languages-add.icon-search::before {
     font-size: 24px;
 }
+/* Langue / devise préférées : mêmes résultats que « Langues parlées par l’agence » */
+.agency-languages-results .agency-autocomplete-result,
+.agency-languages-results .agency-autocomplete-empty {
+    display: block;
+
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 0;
+
+    border-radius: 12px;
+
+    background: transparent;
+
+    text-align: left;
+
+    font-weight: 700;
+
+    color: #0b0f14;
+}
+
+.agency-languages-results .agency-autocomplete-result {
+    cursor: pointer;
+}
+
+.agency-languages-results .agency-autocomplete-result:hover {
+    background: #f8f8f8;
+
+    color: #0b0f14;
+}
