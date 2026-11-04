@@ -4,11 +4,11 @@
     
     font-style: normal;
     
-    font-weight: 700;
+    font-weight: 600;
     
     line-height: 16px;}
 .menu-dashboard-title span i:before {font-size: 16px;
-    
+   font-weight: initial; 
     position: relative;
     
     top: 3px;}
@@ -119,7 +119,6 @@
     background: transparent;
     color: #0b0f14;
     font-size: 10px;
-    font-weight: 700;
     line-height: 16px;
     white-space: nowrap;
     text-decoration: none;
