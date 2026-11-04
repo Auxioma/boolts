@@ -33,24 +33,22 @@ export default class extends Controller {
         this.close();
     }
 
-    // Menu Paramètres
+    // Menu Paramètres : le clic ouvre seulement, un clic sur le bouton d'un menu déjà ouvert ne le ferme pas
     toggle() {
-        this.isOpen(this.panelTarget) ? this.close() : this.open();
+        if (!this.isOpen(this.panelTarget)) {
+            this.open();
+        }
     }
 
     open() {
         this.show(this.panelTarget, this.settingsButtonTarget);
     }
 
-    // Menu Plus
+    // Menu Plus : le clic ouvre seulement, un clic sur le bouton d'un menu déjà ouvert ne le ferme pas
     toggleMore() {
-        if (!this.hasMorePanelTarget) {
-            return;
+        if (this.hasMorePanelTarget && !this.isOpen(this.morePanelTarget)) {
+            this.show(this.morePanelTarget, this.moreButtonTarget);
         }
-
-        this.isOpen(this.morePanelTarget)
-            ? this.close()
-            : this.show(this.morePanelTarget, this.moreButtonTarget);
     }
 
     openMore() {

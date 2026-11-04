@@ -1,96 +1,171 @@
-.menu-dashboard-title span {color: #0b0f14;
-    
+.menu-dashboard-title span {
+    color: #0b0f14;
+
     font-size: 14px;
-    
+
     font-style: normal;
-    
+
     font-weight: 600;
-    
-    line-height: 16px;}
-.menu-dashboard-title span i:before {font-size: 16px;
-   font-weight: initial; 
+
+    line-height: 16px;
+}
+
+.menu-dashboard-title span i:before {
+    font-size: 16px;
+    font-weight: initial;
     position: relative;
-    
-    top: 3px;}
-.menu-dashboard-title.active span {color: #5d00ff;}
-.menu-dashboard-title--disabled {cursor: not-allowed;
-    
-    pointer-events: none;}
-.menu-dashboard-title--disabled span, .menu-dashboard-title--disabled span i:before {color: #b8b8b8;}
-.color-active:has(.menu-dashboard-title--disabled) {cursor: not-allowed;}
-.aside-dashboard-navbar {position: sticky;
-    
-    top: var(--dashboard-sticky-top,var(--topbar-height,72px));
-    
+
+    top: 3px;
+}
+
+.menu-dashboard-title.active span {
+    color: #5d00ff;
+}
+
+.menu-dashboard-title--disabled {
+    cursor: not-allowed;
+
+    pointer-events: none;
+}
+
+.menu-dashboard-title--disabled span,
+.menu-dashboard-title--disabled span i:before {
+    color: #b8b8b8;
+}
+
+.color-active:has(.menu-dashboard-title--disabled) {
+    cursor: not-allowed;
+}
+
+.aside-dashboard-navbar {
+    position: sticky;
+
+    top: var(--dashboard-sticky-top, var(--topbar-height, 72px));
+
     align-self: flex-start;
-    
+
     height: fit-content;
-    
-    max-height: var(--dashboard-sidebar-max-height,calc(100vh - var(--topbar-height,72px) - 16px));
-    
+
+    max-height: var(--dashboard-sidebar-max-height, calc(100vh - var(--topbar-height, 72px) - 16px));
+
     overflow-y: auto;
-    
+
     z-index: 1020;
-    
+
     border-right: 1px solid #ebecec;
-    
-    background: #f8f8f8;}
-.aside-dashboard-navbar > .h-100 {height: auto !important;}
-.aside-dashboard-navbar p {color: #858789;
-    
+
+    background: #f8f8f8;
+}
+
+.aside-dashboard-navbar>.h-100 {
+    height: auto !important;
+}
+
+.aside-dashboard-navbar p {
+    color: #858789;
+
     font-size: 14px;
-    
+
     font-style: normal;
-    
+
     font-weight: 500;
-    
-    line-height: 20px;}
-.deconnection {border-radius: 10px;
-    
-    background: #ebecec;}
-.mt-8.px-10.py-10.deconnection {display: flex;}
-.mt-8.px-10.py-10.deconnection > a.menu-dashboard-title {width: 100%;
-    
-    display: flex;
-    
-    align-items: center;}
-.color-active:has(.menu-dashboard-title.active) {border-radius: 10px;
-    
-    background: #ebecec;}
-.px-10.py-10.color-active {position: relative;}
-.px-10.py-10.color-active > a.menu-dashboard-title {inset: 0;
-    
-    display: flex;
-    
-    align-items: center;}
-.color-active:hover, .color-active:hover span {border-radius: 10px;
-    
+
+    line-height: 20px;
+}
+
+.deconnection {
+    border-radius: 10px;
+
     background: #ebecec;
-    
-    color: #5d00ff;}
-.color-active:has(.menu-dashboard-title--disabled):hover {background: transparent;}
-.color-active:has(.menu-dashboard-title--disabled):hover span, .color-active:has(.menu-dashboard-title--disabled):hover span i:before {color: #b8b8b8;}
+}
+
+.mt-8.px-10.py-10.deconnection {
+    display: flex;
+}
+
+.mt-8.px-10.py-10.deconnection>a.menu-dashboard-title {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+}
+
+.color-active:has(.menu-dashboard-title.active) {
+    border-radius: 10px;
+
+    background: #ebecec;
+}
+
+.px-10.py-10.color-active {
+    position: relative;
+}
+
+.px-10.py-10.color-active>a.menu-dashboard-title {
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+}
+
+.color-active:hover,
+.color-active:hover span {
+    border-radius: 10px;
+
+    background: #ebecec;
+
+    color: #5d00ff;
+}
+
+.color-active:has(.menu-dashboard-title--disabled):hover {
+    background: transparent;
+}
+
+.color-active:has(.menu-dashboard-title--disabled):hover span,
+.color-active:has(.menu-dashboard-title--disabled):hover span i:before {
+    color: #b8b8b8;
+}
+
 /* Entre 768px et 991px : sidebar réduite aux icônes, le contenu principal prend la place libérée */
 @media (min-width: 768px) and (max-width: 991.98px) {
-    .aside-dashboard-navbar {flex: 0 0 72px;
+    .aside-dashboard-navbar {
+        flex: 0 0 72px;
 
         width: 72px;
 
-        max-width: 72px;}
-    .aside-dashboard-navbar p {display: none;}
-    .aside-dashboard-navbar .menu-dashboard-title span {font-size: 0;}
-    .aside-dashboard-navbar .menu-dashboard-title span i {margin-right: 0 !important;}
-    .aside-dashboard-navbar .menu-dashboard-title {justify-content: center;}
-    .row > .aside-dashboard-navbar ~ [class*="col-"] {flex: 1 1 0;
+        max-width: 72px;
+    }
+
+    .aside-dashboard-navbar p {
+        display: none;
+    }
+
+    .aside-dashboard-navbar .menu-dashboard-title span {
+        font-size: 0;
+    }
+
+    .aside-dashboard-navbar .menu-dashboard-title span i {
+        margin-right: 0 !important;
+    }
+
+    .aside-dashboard-navbar .menu-dashboard-title {
+        justify-content: center;
+    }
+
+    .row>.aside-dashboard-navbar~[class*="col-"] {
+        flex: 1 1 0;
 
         width: auto;
 
-        max-width: none;}
+        max-width: none;
+    }
 }
 
 /* Barre de navigation flottante en bas de l'écran (mobile < 768px) — Figma « SideBar - Dashboard » 6934:17374
    350 × 64, centrée, fond blanc, bordure 1px #ebecec, ombre 0 4px 4px rgba(0,0,0,.08) */
-.dashboard-bottom-bar {position: fixed;
+.dashboard-bottom-bar {
+    position: fixed;
     left: 50%;
     bottom: calc(12px + env(safe-area-inset-bottom, 0px));
     z-index: 1030;
@@ -108,8 +183,11 @@
     border: 1px solid #ebecec;
     border-radius: 999999px;
     box-shadow: 0 4px 4px 0 rgba(0, 0, 0, .08);
-    transform: translateX(-50%);}
-.dashboard-bottom-bar__item {display: flex;
+    transform: translateX(-50%);
+}
+
+.dashboard-bottom-bar__item {
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
@@ -122,24 +200,45 @@
     line-height: 16px;
     white-space: nowrap;
     text-decoration: none;
-    cursor: pointer;}
-.dashboard-bottom-bar__item i {font-size: 24px;
-    line-height: 24px;}
-.dashboard-bottom-bar__item.active, .dashboard-bottom-bar__item:hover {color: #5d00ff;}
-.dashboard-bottom-bar__item.is-disabled {color: #b8b8b8;
+    cursor: pointer;
+}
+
+.dashboard-bottom-bar__item i {
+    font-size: 24px;
+    line-height: 24px;
+}
+
+.dashboard-bottom-bar__item.active,
+.dashboard-bottom-bar__item:hover {
+    color: #5d00ff;
+}
+
+.dashboard-bottom-bar__item.is-disabled {
+    color: #b8b8b8;
     pointer-events: none;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
+
 /* Un menu (Paramètres / Plus) ouvert : seul son bouton reste en couleur */
-.dashboard-bottom-bar:has(.is-open) .dashboard-bottom-bar__item.active:not(.is-open) {color: #0b0f14;}
+.dashboard-bottom-bar:has(.is-open) .dashboard-bottom-bar__item.active:not(.is-open) {
+    color: #0b0f14;
+}
+
 /* Le contenu ne passe pas sous la barre */
 @media (max-width: 767.98px) {
-    body:has(.dashboard-bottom-bar) {padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));}
+    body:has(.dashboard-bottom-bar) {
+        padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    }
 }
 
 /* Menu Paramètres ouvert depuis la barre du bas — Figma « Paramètres » 6172:24683.
    top / bottom sont calculés en JS (dashboard-bottom-bar) pour ne couvrir ni la topbar ni la barre du bas */
-.dashboard-bottom-bar__item.is-open {color: #5d00ff;}
-.dashboard-settings-menu {position: fixed;
+.dashboard-bottom-bar__item.is-open {
+    color: #5d00ff;
+}
+
+.dashboard-settings-menu {
+    position: fixed;
     top: 72px;
     bottom: 76px;
     left: 0;
@@ -150,23 +249,45 @@
     gap: 10px;
     padding: 24px 16px;
     overflow-y: auto;
-    background: #fff;}
-.dashboard-settings-menu[hidden] {display: none;}
-.dashboard-settings-menu__title {margin: 0;
-    color: #0b0f14;}
-.dashboard-settings-menu__section {display: flex;
+    background: #fff;
+    height: 100vh;
+}
+
+.dashboard-settings-menu[hidden] {
+    display: none;
+}
+
+.dashboard-settings-menu__title {
+    margin: 0;
+    color: #0b0f14;
+}
+
+.dashboard-settings-menu__section {
+    display: flex;
     flex-direction: column;
-    gap: 22px;}
-.dashboard-settings-menu__section + .dashboard-settings-menu__section {margin-top: 22px;}
-.dashboard-settings-menu__section-title {margin: 0;
+    gap: 22px;
+}
+
+.dashboard-settings-menu__section+.dashboard-settings-menu__section {
+    margin-top: 22px;
+}
+
+.dashboard-settings-menu__section-title {
+    margin: 0;
     color: #858789;
     font-size: 14px;
     font-weight: 400;
-    line-height: 20px;}
-.dashboard-settings-menu__items {display: flex;
+    line-height: 20px;
+}
+
+.dashboard-settings-menu__items {
+    display: flex;
     flex-direction: column;
-    gap: 8px;}
-.dashboard-settings-menu__item {display: flex;
+    gap: 8px;
+}
+
+.dashboard-settings-menu__item {
+    display: flex;
     align-items: center;
     justify-content: space-between;
     height: 44px;
@@ -177,34 +298,73 @@
     font-size: 14px;
     font-weight: 700;
     line-height: 16px;
-    text-decoration: none;}
-.dashboard-settings-menu__item:hover {color: #5d00ff;}
-.dashboard-settings-menu__item-label {display: flex;
+    text-decoration: none;
+}
+
+.dashboard-settings-menu__item:hover {
+    color: #5d00ff;
+}
+
+.dashboard-settings-menu__item-label {
+    display: flex;
     align-items: center;
-    gap: 10px;}
-.dashboard-settings-menu__item i {font-size: 24px;
-    line-height: 24px;}
-body.dashboard-settings-menu-open {overflow: hidden;}
+    gap: 10px;
+}
+
+.dashboard-settings-menu__item i {
+    font-size: 24px;
+    line-height: 24px;
+}
+
+/* Menu ouvert : aucun blocage du défilement de la page, seule la topbar reste fixe (sticky).
+   Le menu défile dans sa propre zone sans entraîner la page derrière lui. */
+.dashboard-settings-menu {
+    overscroll-behavior: contain;
+}
 
 /* Menu Plus ouvert depuis la barre du bas, affiché comme une page — Figma « Plus » 6934:17398 */
-.dashboard-more-menu {gap: 0;
-    padding: 28px 16px 32px;}
-.dashboard-more-menu__sections {display: flex;
+.dashboard-more-menu {
+    gap: 0;
+    padding: 28px 16px 32px;
+}
+
+.dashboard-more-menu__sections {
+    display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-top: 24px;}
-.dashboard-more-menu .dashboard-settings-menu__section + .dashboard-settings-menu__section {margin-top: 0;}
-.dashboard-more-menu .dashboard-settings-menu__section-title {color: #3d3f43;}
-.dashboard-more-menu__item--plain {border: 0;
-    border-radius: 10px;}
-.dashboard-more-menu__logout {justify-content: center;
+    margin-top: 24px;
+}
+
+.dashboard-more-menu .dashboard-settings-menu__section+.dashboard-settings-menu__section {
+    margin-top: 0;
+}
+
+.dashboard-more-menu .dashboard-settings-menu__section-title {
+    color: #3d3f43;
+}
+
+.dashboard-more-menu__item--plain {
     border: 0;
     border-radius: 10px;
-    background: #ebecec;}
-.dashboard-settings-menu__item.active {color: #5d00ff;}
-.dashboard-settings-menu__item.is-disabled {color: #b8b8b8;
+}
+
+.dashboard-more-menu__logout {
+    justify-content: center;
+    border: 0;
+    border-radius: 10px;
+    background: #ebecec;
+}
+
+.dashboard-settings-menu__item.active {
+    color: #5d00ff;
+}
+
+.dashboard-settings-menu__item.is-disabled {
+    color: #b8b8b8;
     pointer-events: none;
-    cursor: not-allowed;}
+    cursor: not-allowed;
+}
+
 .dashboard-settings-menu__item .icon-user-round::before,
 .dashboard-settings-menu__item .icon-circle-user::before,
 .dashboard-settings-menu__item .icon-lock::before,
