@@ -153,10 +153,7 @@
     background: #fff;}
 .dashboard-settings-menu[hidden] {display: none;}
 .dashboard-settings-menu__title {margin: 0;
-    color: #0b0f14;
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 34px;}
+    color: #0b0f14;}
 .dashboard-settings-menu__section {display: flex;
     flex-direction: column;
     gap: 22px;}
@@ -208,3 +205,11 @@ body.dashboard-settings-menu-open {overflow: hidden;}
 .dashboard-settings-menu__item.is-disabled {color: #b8b8b8;
     pointer-events: none;
     cursor: not-allowed;}
+.dashboard-settings-menu__item .icon-user-round::before,
+.dashboard-settings-menu__item .icon-circle-user::before,
+.dashboard-settings-menu__item .icon-lock::before,
+.dashboard-settings-menu__item .icon-credit-card::before,
+.dashboard-settings-menu__item .icon-history::before,
+.dashboard-settings-menu__item .icon-languages::before {
+    font-weight: initial;
+}

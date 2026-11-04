@@ -19,7 +19,7 @@
         {
             wrapper: 'information-personnelles',
             tab: 'cat2',
-            icon: 'icon-user',
+            icon: 'icon-circle-user',
             label: 'Informations personnelles',
             active: false,
         },
@@ -46,7 +46,7 @@
                 {
             wrapper: 'historique-des-paiements',
             tab: 'cat5',
-            icon: 'icon-credit-card',
+            icon: 'icon-history',
             label: 'Historique des paiements',
             active: false,
         },
@@ -72,7 +72,7 @@
                     <a href="{{ path('agence_immobiliere_parametres') }}#{{ item.tab }}"
                        class="dashboard-settings-menu__item"
                        data-action="dashboard-bottom-bar#navigate">
-                        <span class="dashboard-settings-menu__item-label">
+                        <span class="dashboard-settings-menu__item-label p-accent">
                             <i class="{{ item.icon }}"></i>
                             {{ item.label }}
                         </span>

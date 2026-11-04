@@ -954,6 +954,25 @@
 
 /* Pages de contenu Paramètres et du menu Plus : pas de tabbar, sauf quand le menu Paramètres ou Plus est ouvert */
 @media (max-width: 767.98px) {
+    /* Barre retour fixe, juste sous la topbar du site (sticky, 72px) */
+    .parametres-topbar,
+    .dashboard-content-topbar {
+        position: fixed;
+
+        top: var(--topbar-height, 72px);
+
+        left: 0;
+
+        right: 0;
+
+        z-index: 1020;
+    }
+
+    /* La colonne qui contient la barre garde sa hauteur pour que le contenu ne passe pas dessous */
+    :has(> .parametres-topbar, > .dashboard-content-topbar) {
+        height: 44px;
+    }
+
     body:has(.parametres-topbar, .dashboard-content-topbar):not(.dashboard-settings-menu-open) .dashboard-bottom-bar {
         display: none;
     }
