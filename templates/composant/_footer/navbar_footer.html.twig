@@ -69,23 +69,82 @@
 
         {% endif %}
 
-        <a
-            href="{{ path('app_login') }}"
-            class="boolts-mobile-tabbar__item{{ isLogin ? ' boolts-mobile-tabbar__item--active' }}"
-            {% if isLogin %}aria-current="page"{% endif %}
-        >
+        {% if is_granted('ROLE_AGENCE') %}
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="boolts-mobile-tabbar__icon">
-                <path d="M7 20.662V19C7 18.4696 7.21071 17.9609 7.58579 17.5858C7.96086 17.2107 8.46957 17 9 17H15C15.5304 17 16.0391 17.2107 16.4142 17.5858C16.7893 17.9609 17 18.4696 17 19V20.662M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            {# Pro connecté : photo du compte (ou initiale du prénom) + lien Dashboard, même logique que le header #}
+            {% set avatar = app.user.imageName
+                ? vich_uploader_asset(app.user, 'imageFile')
+                : null
+            %}
 
-            <span>{{ 'navbar.mobile.login'|trans }}</span>
-        </a>
+            {% set firstLetter = app.user.prenom
+                ? app.user.prenom|first|upper
+                : null
+            %}
+
+            <a
+                href="{{ path('agence_immobiliere_dashboard') }}"
+                class="boolts-mobile-tabbar__item"
+            >
+                {% if avatar %}
+                    <img
+                        src="{{ avatar }}"
+                        alt=""
+                        aria-hidden="true"
+                        class="topbar-avatar boolts-mobile-tabbar__avatar"
+                    >
+                {% elseif firstLetter %}
+                    <span class="topbar-avatar avatar-letter boolts-mobile-tabbar__avatar" aria-hidden="true">
+                        {{ firstLetter }}
+                    </span>
+                {% else %}
+                    <img
+                        src="{{ asset('images/authentification/auxioma.png') }}"
+                        alt=""
+                        aria-hidden="true"
+                        class="topbar-avatar boolts-mobile-tabbar__avatar"
+                    >
+                {% endif %}
+
+                <span>{{ 'agency_dashboard.sidebar.dashboard'|trans }}</span>
+            </a>
+
+        {% else %}
+
+            <a
+                href="{{ path('app_login') }}"
+                class="boolts-mobile-tabbar__item{{ isLogin ? ' boolts-mobile-tabbar__item--active' }}"
+                {% if isLogin %}aria-current="page"{% endif %}
+            >
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="boolts-mobile-tabbar__icon">
+                    <path d="M7 20.662V19C7 18.4696 7.21071 17.9609 7.58579 17.5858C7.96086 17.2107 8.46957 17 9 17H15C15.5304 17 16.0391 17.2107 16.4142 17.5858C16.7893 17.9609 17 18.4696 17 19V20.662M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+
+                <span>{{ 'navbar.mobile.login'|trans }}</span>
+            </a>
+
+        {% endif %}
 
     </div>
 </nav>
 
 <style>
+    /* Avatar du pro : reprend .topbar-avatar / .avatar-letter du header, à la taille des icônes (24px) */
+    .boolts-mobile-tabbar__avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 0;
+
+        font-size: 12px;
+        line-height: 1;
+    }
+
     .boolts-mobile-tabbar {
         position: fixed;
         left: 50%;
@@ -131,7 +190,7 @@
 
         height: 43px;
 
-        color: #3d3f43;
+        color: #0b0f14;
 
         font-size: 10px;
         font-weight: 700;
@@ -143,7 +202,7 @@
 
     .boolts-mobile-tabbar__item:hover,
     .boolts-mobile-tabbar__item:focus {
-        color: #3d3f43;
+        color: #5d00ff;
         text-decoration: none;
     }
 
