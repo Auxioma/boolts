@@ -201,7 +201,10 @@
     white-space: nowrap;
     text-decoration: none;
     cursor: pointer;
+    
 }
+
+.dashboard-bottom-bar__item span {font-weight: 700;}
 
 .dashboard-bottom-bar__item i {
     font-size: 24px;

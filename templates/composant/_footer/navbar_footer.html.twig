@@ -1,31 +1,36 @@
+{# Route courante : sert à mettre l'onglet actif #}
+{% set currentRoute = app.request.attributes.get('_route')|default('') %}
+{% set isHome = currentRoute == 'app_home' %}
+{% set isFavoris = currentRoute starts with 'app_dashboard_visiteur_favoris_bien' %}
+{% set isLogin = currentRoute == 'app_login' %}
+
 <nav class="boolts-mobile-tabbar" aria-label="{{ 'navbar.mobile.navigation.aria_label'|trans }}">
     <div class="boolts-mobile-tabbar__inner">
 
         <a
             href="{{ path('app_home') }}"
-            class="boolts-mobile-tabbar__item boolts-mobile-tabbar__item--active"
-            aria-current="page"
+            class="boolts-mobile-tabbar__item{{ isHome ? ' boolts-mobile-tabbar__item--active' }}"
+            {% if isHome %}aria-current="page"{% endif %}
         >
 
-            <img
-                src="{{ asset('images/footer/loupe.svg') }}"
-                alt=""
-                aria-hidden="true"
-                class="boolts-mobile-tabbar__icon"
-            >
+            {# SVG inline : stroke="currentColor" suit la couleur de l'onglet (gris / violet si actif) #}
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="boolts-mobile-tabbar__icon">
+                <path d="M21 21L16.66 16.66M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
 
             <span>{{ 'navbar.mobile.explore'|trans }}</span>
         </a>
 
         {% if not app.user or (is_granted('ROLE_USER') and not is_granted('ROLE_AGENCE')) %}
 
-            <a href="{{ path('app_dashboard_visiteur_favoris_bien_intermediaire') }}" class="boolts-mobile-tabbar__item">
-                <img
-                    src="{{ asset('images/footer/favoris.svg') }}"
-                    alt=""
-                    aria-hidden="true"
-                    class="boolts-mobile-tabbar__icon"
-                >
+            <a
+                href="{{ path('app_dashboard_visiteur_favoris_bien_intermediaire') }}"
+                class="boolts-mobile-tabbar__item{{ isFavoris ? ' boolts-mobile-tabbar__item--active' }}"
+                {% if isFavoris %}aria-current="page"{% endif %}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="boolts-mobile-tabbar__icon">
+                    <path d="M2 9.5C2.00002 8.3872 2.33759 7.30058 2.96813 6.38366C3.59867 5.46674 4.49252 4.76266 5.53161 4.3644C6.5707 3.96614 7.70616 3.89244 8.78801 4.15304C9.86987 4.41364 10.8472 4.99628 11.591 5.824C11.6434 5.88001 11.7067 5.92467 11.7771 5.9552C11.8474 5.98573 11.9233 6.00148 12 6.00148C12.0767 6.00148 12.1526 5.98573 12.2229 5.9552C12.2933 5.92467 12.3566 5.88001 12.409 5.824C13.1504 4.9909 14.128 4.40337 15.2116 4.1396C16.2952 3.87584 17.4335 3.94835 18.4749 4.34748C19.5163 4.74662 20.4114 5.45345 21.0411 6.3739C21.6708 7.29435 22.0053 8.38476 22 9.5C22 11.79 20.5 13.5 19 15L13.508 20.313C13.3217 20.527 13.0919 20.6989 12.834 20.8173C12.5762 20.9357 12.296 20.9978 12.0123 20.9996C11.7285 21.0014 11.4476 20.9428 11.1883 20.8277C10.9289 20.7126 10.697 20.5436 10.508 20.332L5 15C3.5 13.5 2 11.8 2 9.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
 
                 <span>{{ 'navbar.mobile.favorites'|trans }}</span>
             </a>
@@ -64,10 +69,14 @@
 
         {% endif %}
 
-        <a href="{{ path('app_login') }}" class="boolts-mobile-tabbar__item">
+        <a
+            href="{{ path('app_login') }}"
+            class="boolts-mobile-tabbar__item{{ isLogin ? ' boolts-mobile-tabbar__item--active' }}"
+            {% if isLogin %}aria-current="page"{% endif %}
+        >
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M7 20.662V19C7 18.4696 7.21071 17.9609 7.58579 17.5858C7.96086 17.2107 8.46957 17 9 17H15C15.5304 17 16.0391 17.2107 16.4142 17.5858C16.7893 17.9609 17 18.4696 17 19V20.662M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" stroke="#3D3F43" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" class="boolts-mobile-tabbar__icon">
+                <path d="M7 20.662V19C7 18.4696 7.21071 17.9609 7.58579 17.5858C7.96086 17.2107 8.46957 17 9 17H15C15.5304 17 16.0391 17.2107 16.4142 17.5858C16.7893 17.9609 17 18.4696 17 19V20.662M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
 
             <span>{{ 'navbar.mobile.login'|trans }}</span>
