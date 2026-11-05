@@ -1,9 +1,11 @@
 <nav class="boolts-mobile-tabbar" aria-label="{{ 'navbar.mobile.navigation.aria_label'|trans }}">
     <div class="boolts-mobile-tabbar__inner">
 
-        <a href="{{ path('app_home') }}"
-           class="boolts-mobile-tabbar__item boolts-mobile-tabbar__item--active"
-           aria-current="page">
+        <a
+            href="{{ path('app_home') }}"
+            class="boolts-mobile-tabbar__item boolts-mobile-tabbar__item--active"
+            aria-current="page"
+        >
 
             <img
                 src="{{ asset('images/footer/loupe.svg') }}"
@@ -15,52 +17,52 @@
             <span>{{ 'navbar.mobile.explore'|trans }}</span>
         </a>
 
-{% if not app.user or (is_granted('ROLE_USER') and not is_granted('ROLE_AGENCE')) %}
+        {% if not app.user or (is_granted('ROLE_USER') and not is_granted('ROLE_AGENCE')) %}
 
-    <a href="#" class="boolts-mobile-tabbar__item">
-        <img
-            src="{{ asset('images/footer/favoris.svg') }}"
-            alt=""
-            aria-hidden="true"
-            class="boolts-mobile-tabbar__icon"
-        >
+            <a href="{{ path('app_dashboard_visiteur_favoris_bien_intermediaire') }}" class="boolts-mobile-tabbar__item">
+                <img
+                    src="{{ asset('images/footer/favoris.svg') }}"
+                    alt=""
+                    aria-hidden="true"
+                    class="boolts-mobile-tabbar__icon"
+                >
 
-        <span>{{ 'navbar.mobile.favorites'|trans }}</span>
-    </a>
+                <span>{{ 'navbar.mobile.favorites'|trans }}</span>
+            </a>
 
-{% endif %}
+        {% endif %}
 
-{# Messagerie : uniquement pour un utilisateur connecté #}
-{% if app.user %}
+        {# Messagerie : uniquement pour un utilisateur connecté #}
+        {% if app.user %}
 
-    {% set messagerieRoute = null %}
+            {% set messagerieRoute = null %}
 
-    {# Agence immobilière #}
-    {% if is_granted('ROLE_AGENCE') %}
-        {% set messagerieRoute = 'agence_immobiliere_messagerie' %}
+            {# Agence immobilière #}
+            {% if is_granted('ROLE_AGENCE') %}
+                {% set messagerieRoute = 'agence_immobiliere_messagerie' %}
 
-    {# Utilisateur / visiteur #}
-    {% elseif is_granted('ROLE_USER') %}
-        {% set messagerieRoute = 'app_visiteur_messagerie' %}
-    {% endif %}
+                {# Utilisateur / visiteur #}
+            {% elseif is_granted('ROLE_USER') %}
+                {% set messagerieRoute = 'app_visiteur_messagerie' %}
+            {% endif %}
 
-    {% if messagerieRoute %}
-        <a
-            href="{{ path(messagerieRoute) }}"
-            class="boolts-mobile-tabbar__item"
-        >
-            <img
-                src="{{ asset('images/footer/messagerie.svg') }}"
-                alt=""
-                aria-hidden="true"
-                class="boolts-mobile-tabbar__icon"
-            >
+            {% if messagerieRoute %}
+                <a
+                    href="{{ path(messagerieRoute) }}"
+                    class="boolts-mobile-tabbar__item"
+                >
+                    <img
+                        src="{{ asset('images/footer/messagerie.svg') }}"
+                        alt=""
+                        aria-hidden="true"
+                        class="boolts-mobile-tabbar__icon"
+                    >
 
-            <span>{{ 'navbar.mobile.messaging'|trans }}</span>
-        </a>
-    {% endif %}
+                    <span>{{ 'navbar.mobile.messaging'|trans }}</span>
+                </a>
+            {% endif %}
 
-{% endif %}
+        {% endif %}
 
         <a href="{{ path('app_login') }}" class="boolts-mobile-tabbar__item">
 
@@ -152,10 +154,10 @@
     }
 
     /*
-     * Visible uniquement en dessous de 767px.
-     *
-     * 766.98px évite le chevauchement exact à 767px.
-     */
+         * Visible uniquement en dessous de 767px.
+         *
+         * 766.98px évite le chevauchement exact à 767px.
+         */
     @media (max-width: 766.98px) {
         .boolts-mobile-tabbar {
             display: flex;

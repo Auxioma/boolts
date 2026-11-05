@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Favoris{% endblock %}
+
+{% block body %}
+    {# Page intermédiaire Favoris : affichée uniquement sous 767px (d-md-none) #}
+    <section class="favoris-intermediaire d-md-none px-16 pt-24">
+        <h2 class="mt-0 mb-16">Favoris</h2>
+
+        <p class="favoris-intermediaire__text text-truncate mb-16">
+            Connectez vous pour consulter vos favoris.
+        </p>
+
+        <a href="{{ path('app_login') }}" class="btn-full-blue w-100">
+            Se connecter
+        </a>
+    </section>
+
+    <style>
+        .favoris-intermediaire {
+            padding-bottom: 64px;
+        }
+
+        .favoris-intermediaire__text {
+            color: #858789;
+        }
+    </style>
+{% endblock %}
