@@ -9,26 +9,8 @@
 
 {% block stylesheets %}
     <style>
-        body.login-page {
-            background: #fff !important;
-            overflow-x: hidden;
-        }
 
-        body.login-page .topbar-logo {
-            width: 112px;
-            height: 36px;
-        }
-
-        body.login-page .topbar-menu .nav-link {
-            font-weight: 700;
-        }
-
-        body.login-page .topbar-menu .nav-item:nth-child(4) .nav-link {
-            color: #5d00ff;
-            background: #dfcbff;
-        }
-
-        .shared-login {
+       .shared-login {
             display: flex;
             justify-content: center;
             min-height: 520px;
@@ -45,9 +27,6 @@
             margin: 0 0 32px;
             color: #0b0f14;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 30px;
-            font-weight: 700;
-            line-height: 34px;
         }
 
         .shared-login__socials {
@@ -135,25 +114,16 @@
             margin-bottom: 16px;
         }
 
-        .shared-login__field label {
+        .shared-login__field label { 
             display: block;
             margin-bottom: 16px;
             color: #0b0f14;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 20px;
         }
 
         .shared-login__field input {
-            height: 44px;
-            padding: 12px 14px;
-            border: 2px solid #ebecec;
-            border-radius: 8px;
             color: #0b0f14;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 14px;
-            line-height: 20px;
         }
 
         .shared-login__field input:focus {
@@ -225,7 +195,7 @@
         }
 
         .shared-login__register {
-            margin: 36px 0 0;
+            margin: 32px 0 0;
             color: #858789;
             font-family: "Eudoxus Sans", sans-serif;
             font-size: 14px;
@@ -252,13 +222,23 @@
 {% endblock %}
 
 {% block body %}
-    <main class="shared-login">
-        <div class="shared-login__inner">
-            <h1 class="shared-login__title">{{ 'visiteur.login.title'|trans }}</h1>
+    <main class="container-fluid">
+        <div class="row">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-4 mx-auto">
+            <h2 class="shared-login__title mt-48">{{ 'visiteur.login.title'|trans }}</h2>
 
             <div class="shared-login__socials">
                 <a href="#" class="shared-login__social shared-login__social--apple" data-turbo="false">
-                    <i class="icon-apple shared-login__apple-icon" aria-hidden="true"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" viewBox="0 0 16 20" fill="none">
+  <g clip-path="url(#clip0_6467_32228)">
+    <path d="M15.4909 6.818C15.3769 6.908 13.3641 8.062 13.3641 10.628C13.3641 13.596 15.9253 14.646 16.002 14.672C15.9902 14.736 15.5951 16.11 14.6516 17.51C13.8103 18.742 12.9317 19.972 11.5951 19.972C10.2585 19.972 9.9145 19.182 8.3715 19.182C6.86781 19.182 6.33317 19.998 5.11057 19.998C3.88796 19.998 3.03489 18.858 2.05405 17.458C0.917936 15.814 0 13.26 0 10.836C0 6.948 2.48452 4.886 4.92973 4.886C6.22899 4.886 7.31204 5.754 8.12776 5.754C8.90418 5.754 10.115 4.834 11.5931 4.834C12.1533 4.834 14.1661 4.886 15.4909 6.818ZM10.8914 3.188C11.5027 2.45 11.9351 1.426 11.9351 0.402C11.9351 0.26 11.9233 0.116 11.8978 0C10.9032 0.038 9.7199 0.674 9.00639 1.516C8.44619 2.164 7.92334 3.188 7.92334 4.226C7.92334 4.382 7.94889 4.538 7.96069 4.588C8.02359 4.6 8.1258 4.614 8.22801 4.614C9.12039 4.614 10.2428 4.006 10.8914 3.188Z" fill="white"/>
+  </g>
+  <defs>
+    <clipPath id="clip0_6467_32228">
+      <rect width="16" height="20" fill="white"/>
+    </clipPath>
+  </defs>
+</svg>
                     <span>Apple</span>
                 </a>
 
@@ -267,7 +247,12 @@
                     class="shared-login__social"
                     data-turbo="false"
                 >
-                    <span class="shared-login__google-icon" aria-hidden="true">G</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.66 15.63 16.88 16.79 15.71 17.57V20.34H19.28C21.36 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>
+  <path d="M12.0002 22.9996C14.9702 22.9996 17.4602 22.0196 19.2802 20.3396L15.7102 17.5696C14.7302 18.2296 13.4802 18.6296 12.0002 18.6296C9.14018 18.6296 6.71018 16.6996 5.84018 14.0996H2.18018V16.9396C3.99018 20.5296 7.70018 22.9996 12.0002 22.9996Z" fill="#34A853"/>
+  <path d="M5.84 14.0903C5.62 13.4303 5.49 12.7303 5.49 12.0003C5.49 11.2703 5.62 10.5703 5.84 9.91031V7.07031H2.18C1.43 8.55031 1 10.2203 1 12.0003C1 13.7803 1.43 15.4503 2.18 16.9303L5.03 14.7103L5.84 14.0903Z" fill="#FBBC05"/>
+  <path d="M12.0002 5.38C13.6202 5.38 15.0602 5.94 16.2102 7.02L19.3602 3.87C17.4502 2.09 14.9702 1 12.0002 1C7.70018 1 3.99018 3.47 2.18018 7.07L5.84018 9.91C6.71018 7.31 9.14018 5.38 12.0002 5.38Z" fill="#EA4335"/>
+</svg>
                     <span>Google</span>
                 </a>
             </div>
@@ -276,13 +261,13 @@
 
             <form method="post" data-turbo="false">
                 <div class="shared-login__field">
-                    <label for="inputEmail">Adresse e-mail</label>
+                    <label class="p-accent" for="inputEmail">Adresse e-mail</label>
                     <input
                         type="email"
                         value="{{ last_username }}"
                         name="email"
                         id="inputEmail"
-                        class="form-control{% if error %} flash-input-error{% endif %}"
+                        class="form-control input {% if error %} flash-input-error{% endif %}"
                         autocomplete="email"
                         placeholder="Veuillez entrer votre adresse e-mail"
                         required
@@ -290,13 +275,13 @@
                     >
                 </div>
 
-                <div class="shared-login__field">
-                    <label for="inputPassword">Mot de passe</label>
+                <div class="shared-login__field mb-0">
+                    <label class="p-accent" for="inputPassword">Mot de passe</label>
                     <input
                         type="password"
                         name="password"
                         id="inputPassword"
-                        class="form-control{% if error %} flash-input-error{% endif %}"
+                        class="form-control input {% if error %} flash-input-error{% endif %}"
                         autocomplete="current-password"
                         placeholder="Veuillez entrer votre mot de passe"
                         required
@@ -322,18 +307,18 @@
                     <span class="shared-login__error">Adresse e-mail ou mot de passe incorrect</span>
                 {% endif %}
 
-                <button class="shared-login__submit" type="submit">Se connecter</button>
+                <button class="shared-login__submit btn-full-blue" type="submit">Se connecter</button>
             </form>
 
-            <a href="{{ path(forgotPasswordRoute) }}" class="shared-login__forgot" data-turbo="false">
+            <a href="{{ path(forgotPasswordRoute) }}" class="shared-login__forgot p-accent" data-turbo="false">
                 Mot de passe oublié ?
             </a>
 
-            <p class="shared-login__register">
+            <p class="shared-login__register paragraphe">
                 Pas encore inscrit sur Boolts ?
-                <a href="{{ path('app_registration_choice') }}" class="shared-login__register-link" data-turbo="false">S’inscrire</a>
+                <a href="{{ path('app_registration_choice') }}" class="shared-login__register-link p-accent" data-turbo="false">S’inscrire</a>
             </p>
-        </div>
+        </div> </div>
     </main>
 {% endblock %}
 

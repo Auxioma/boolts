@@ -1,12 +1,14 @@
 .menu-dashboard-title span {
     color: #0b0f14;
+    display: inline-flex;
+    align-items: center;
 }
 
 .menu-dashboard-title span i:before {
+    display: block;
     font-size: 24px;
     font-weight: initial;
-    position: relative;
-    top: 5px;
+    line-height: 1;
 }
 
 .menu-dashboard-title.active span {

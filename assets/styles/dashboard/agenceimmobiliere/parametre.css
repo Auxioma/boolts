@@ -17,6 +17,7 @@
 }
 
 .contenue-des-page-des-parametres p {
+    color: #858789;
    
 }
 
@@ -36,12 +37,16 @@
     line-height: 24px;
 }
 
+.menu-parametres .menu-btn {
+    display: inline-flex;
+    align-items: center;
+}
+
 .menu-parametres i:before {
-    font-size: 16px;
-
-    position: relative;
-
-    top: 3px;
+    display: block;
+    font-size: 24px;
+    font-weight: initial;
+    line-height: 1;
 }
 
 .dashboard-agence-title {
