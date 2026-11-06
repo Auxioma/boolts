@@ -10,16 +10,6 @@
 <aside class="col-3 col-lg-2 pt-48 pb-32 px-12 aside-dashboard-navbar d-none d-md-block">
     <div class="h-100">
 
-        <div class="px-10 py-10 color-active">
-            <a href="{{ path('agence_immobiliere_dashboard') }}"
-               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_dashboard' ? 'active' : '' }}">
-                <span>
-                    <i class="icon-layout-dashboard mr-10"></i>
-                    {{ 'agency_dashboard.sidebar.dashboard'|trans }}
-                </span>
-            </a>
-        </div>
-
         <div class="mt-16">
             <p class="mb-0">{{ 'agency_dashboard.sidebar.activity'|trans }}</p>
         </div>
@@ -29,14 +19,11 @@
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
                 <span>
                     <i class="icon-building-2 mr-10"></i>
-                    {{ 'agency_dashboard.sidebar.listings'|trans }}
+                    Favoris
                 </span>
             </a>
         </div>
 
-        {# Les notifications restent toujours accessibles, même si les documents
-           de l'agence ne sont pas encore déposés ou validés : c'est là que
-           l'agence lit l'issue de la revue de ses documents. #}
         <div class="px-10 py-10 mt-8 color-active">
             <a href="{{ path('agence_immobiliere_notifications') }}"
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_notifications' ? 'active' : '' }}">
@@ -48,8 +35,8 @@
         </div>
 
         <div class="px-10 py-10 mt-8 color-active">
-            <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_messagerie') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_messagerie' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
+            <a href="{{ path('agence_immobiliere_messagerie') }}"
+               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_messagerie' ? 'active' : '' }}">
                 <span>
                     <i class="icon-message-circle-more mr-10"></i>
                     {{ 'agency_dashboard.sidebar.messaging'|trans }}
@@ -62,26 +49,6 @@
         </div>
 
         <div class="px-10 py-10 mt-22 color-active">
-            <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_options') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_options' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
-                <span>
-                    <i class="icon-credit-card mr-10"></i>
-                    {{ 'agency_dashboard.sidebar.options'|trans }}
-                </span>
-            </a>
-        </div>
-
-        <div class="px-10 py-10 mt-8 color-active">
-            <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_mes_factures') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_mes_factures' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'menu-dashboard-title--disabled' }}">
-                <span>
-                    <i class="icon-receipt mr-10"></i>
-                    {{ 'agency_dashboard.sidebar.invoices'|trans }}
-                </span>
-            </a>
-        </div>
-
-        <div class="px-10 py-10 mt-8 color-active">
             <a href="{{ path('agence_immobiliere_parametres') }}"
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_parametres' ? 'active' : '' }}">
                 <span>
@@ -119,7 +86,7 @@
 
 {# Barre de navigation fixe en bas de l'écran (mobile, < 768px) — Figma « SideBar - Dashboard » 6934:17418 #}
 {% set current_route = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) %}
-{% set more_routes = ['agence_immobiliere_notifications', 'agence_immobiliere_options', 'agence_immobiliere_mes_factures', 'agence_immobiliere_aide'] %}
+{% set more_routes = ['agence_immobiliere_notifications', 'agence_immobiliere_aide'] %}
 <div class="d-md-none" data-controller="dashboard-bottom-bar" data-action="dashboard-settings-menu:open@window->dashboard-bottom-bar#open dashboard-more-menu:open@window->dashboard-bottom-bar#openMore">
 {# Menu Paramètres : s'ouvre entre la topbar et la barre du bas, sans les recouvrir #}
 <div class="dashboard-settings-menu" id="dashboard-settings-menu" data-dashboard-bottom-bar-target="panel" hidden>
@@ -142,30 +109,6 @@
                     <span class="dashboard-settings-menu__item-label p-accent">
                         <i class="icon-bell"></i>
                         Notifications
-                    </span>
-                    <i class="icon-chevron-right"></i>
-                </a>
-            </div>
-        </div>
-
-        <div class="dashboard-settings-menu__section">
-            <p class="dashboard-settings-menu__section-title">Mon compte</p>
-
-            <div class="dashboard-settings-menu__items">
-                <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_options') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-                   class="dashboard-settings-menu__item {{ current_route == 'agence_immobiliere_options' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'is-disabled' }}">
-                    <span class="dashboard-settings-menu__item-label p-accent">
-                        <i class="icon-credit-card"></i>
-                        Options &amp; abonnements
-                    </span>
-                    <i class="icon-chevron-right"></i>
-                </a>
-
-                <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_mes_factures') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-                   class="dashboard-settings-menu__item {{ current_route == 'agence_immobiliere_mes_factures' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'is-disabled' }}">
-                    <span class="dashboard-settings-menu__item-label p-accent">
-                        <i class="icon-receipt"></i>
-                        Mes factures
                     </span>
                     <i class="icon-chevron-right"></i>
                 </a>
@@ -196,20 +139,14 @@
 </div>
 
 <nav class="dashboard-bottom-bar" aria-label="Navigation du dashboard">
-    <a href="{{ path('agence_immobiliere_dashboard') }}"
-       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_dashboard' ? 'active' : '' }}">
-        <i class="icon-layout-dashboard"></i>
-        <span>{{ 'agency_dashboard.sidebar.dashboard'|trans }}</span>
-    </a>
-
     <a href="{{ path('agence_immobiliere_mes_biens_list') }}"
        class="dashboard-bottom-bar__item {{ current_route starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
         <i class="icon-building-2"></i>
-        <span>{{ 'agency_dashboard.sidebar.listings'|trans }}</span>
+        <span>Favoris</span>
     </a>
 
-    <a {% if agency_restricted_dashboard_enabled %}href="{{ path('agence_immobiliere_messagerie') }}"{% else %}aria-disabled="true" tabindex="-1"{% endif %}
-       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_messagerie' ? 'active' : '' }} {{ agency_restricted_dashboard_enabled ? '' : 'is-disabled' }}">
+    <a href="{{ path('agence_immobiliere_messagerie') }}"
+       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_messagerie' ? 'active' : '' }}">
         <i class="icon-message-circle-more"></i>
         <span>{{ 'agency_dashboard.sidebar.messaging'|trans }}</span>
     </a>
