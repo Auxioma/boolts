@@ -10,19 +10,56 @@
 {% block title %}Messagerie{% endblock %}
 
 {% block body %}
-    {% set conversations = conversations|default([
-        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.', active: true},
-        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', subject: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
+    {# Contenu statique de la maquette — Figma « Messagerie — Étape 1 · Annonces » 6973:15993 #}
+    {% set annonces = annonces|default([
+        {title: 'Appartement très spacieux et lumineux', details: 'Appartement à louer · 765 €/mois', city: 'Saint-Nicolas-d’Aliermont', conversations: '48 conversations', unread: '12 non lues', date: 'Aujourd’hui, 19:03'},
+        {title: 'Maison familiale avec jardin', details: 'Maison à vendre · 285 000 €', city: 'Saint-Nicolas-d’Aliermont', conversations: '16 conversations', unread: '3 non lues', date: 'Aujourd’hui, 09:18'},
+        {title: 'Studio lumineux en centre-ville', details: 'Studio à louer · 620 €/mois', city: 'Saint-Nicolas-d’Aliermont', conversations: '24 conversations', unread: '4 non lues', date: 'Hier, 18:30'},
+        {title: 'Studio lumineux en centre-ville', details: 'Studio à louer · 620 €/mois', city: 'Saint-Nicolas-d’Aliermont', conversations: '24 conversations', unread: '4 non lues', date: 'Hier, 18:30'},
+        {title: 'Studio lumineux en centre-ville', details: 'Studio à louer · 620 €/mois', city: 'Saint-Nicolas-d’Aliermont', conversations: '24 conversations', unread: '4 non lues', date: 'Hier, 18:30'},
     ]) %}
 
-    {% set messages = messages|default([
-        {author: 'client', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03'},
-        {author: 'agency', text: 'Ceci est un message, ceci est un message.\nCeci est un message.', time: '19:03'},
+    {# Contenu statique de la maquette — Figma « Messagerie — Étape 2 · Conversations » 6973:16301 #}
+    {% set conversations = conversations|default([
+        {name: 'Camille Martin', time: '19:03', preview: 'Bonjour, je suis intéressée par la visite de lundi.', letter: 'M', active: true},
+        {name: 'Lucas Bernard', time: '09:36', preview: 'Pouvez-vous m’envoyer le plan de l’appartement ?', photo: true, unread: 2},
+        {name: 'Sarah Dupont', time: 'Hier', preview: 'Disponible pour une visite demain après-midi ?', letter: 'M', unread: 1},
+        {name: 'Thomas Leroy', time: 'Hier', preview: 'Le logement est-il toujours disponible ?', letter: 'M', unread: 1},
+        {name: 'Emma Petit', time: '12 févr.', preview: 'Merci, je vous transmets mon dossier.', photo: true},
+        {name: 'Hugo Moreau', time: '12 févr.', preview: 'Est-il possible de visiter ce week-end ?', initials: 'HM', unread: 1, compact: true},
+        {name: 'Léa Laurent', time: '11 févr.', preview: 'Quelles sont les pièces à fournir ?', initials: 'LL', compact: true},
     ]) %}
+
+    {% set thread = thread|default({
+        letter: 'M',
+        name: 'Camille Martin',
+        subtitle: 'À propos de votre appartement à louer',
+        date: '14 février 2026',
+        received: 'Bonjour, je suis intéressée par la visite de lundi. Est-ce que 14h vous convient ?',
+        sent: 'Oui, parfait ! Je vous envoie l’adresse exacte et le code d’accès.',
+        time: '19:03',
+    }) %}
+
+    {# Contenu statique de la maquette — Figma « Messagerie — Service client » 6987:17827 #}
+    {% set conversations_service_client = conversations_service_client|default([
+        {name: 'Support Boolts', time: '19:03', preview: 'Bonjour, nous avons bien reçu votre demande. Un conseiller vous répondra sous 24h.', letter: 'B', active: true},
+        {name: 'Support Boolts', time: '09:36', preview: 'Votre dossier a été transmis à notre équipe. Nous vous recontacterons dès validation.', letter: 'B', unread: 2},
+        {name: 'Support Boolts', time: 'Hier', preview: 'Votre abonnement a bien été mis à jour. Vos nouvelles options sont désormais actives.', letter: 'B', unread: 1},
+        {name: 'Support Boolts', time: 'Hier', preview: 'Votre facture a été générée. Vous pouvez la télécharger depuis votre espace client.', letter: 'B', unread: 1},
+        {name: 'Support Boolts', time: '12 févr.', preview: 'Votre compte a été réactivé. Vous pouvez à nouveau accéder à votre tableau de bord.', letter: 'B'},
+        {name: 'Support Boolts', time: '12 févr.', preview: 'Merci pour votre message. Nous vous aidons à rétablir l’accès à votre compte.', letter: 'B', unread: 1, compact: true},
+        {name: 'Support Boolts', time: '11 févr.', preview: 'Votre paiement a été confirmé. Votre abonnement est désormais actif.', letter: 'B', compact: true},
+    ]) %}
+
+    {% set thread_service_client = thread_service_client|default({
+        letter: 'B',
+        name: 'Support Boolts',
+        subtitle: 'Service client Boolts',
+        date: '14 février 2026',
+        received: 'Bonjour, nous avons bien reçu votre demande. Un conseiller vous répondra sous 24h.',
+        sent: 'Merci ! Je n’arrive plus à me connecter à mon compte. Comment réinitialiser mon mot de passe ?',
+        time: '19:03',
+    }) %}
 
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
@@ -32,78 +69,134 @@
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
 
                 {# Contenu principal #}
-                <div class="col-10 p-0">
-                    <div class="messagerie">
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+                    <div class="col-12 col-md-10 mx-auto">
+                        <section class="messagerie-annonces d-flex flex-column gap-4 pb-4">
 
-                        {# Liste des conversations #}
-                        <aside class="messagerie__list">
-                            {% for conversation in conversations %}
-                                <a href="{{ conversation.url|default('#') }}" class="messagerie-conv{{ conversation.active|default(false) ? ' messagerie-conv--active' }}">
-                                    <span class="messagerie-conv__thumb">
-                                        {% if conversation.thumbnail is defined and conversation.thumbnail %}
-                                            <img src="{{ conversation.thumbnail }}" alt="">
-                                        {% else %}
-                                            <i class="icon-image" aria-hidden="true"></i>
-                                        {% endif %}
-                                    </span>
+                            <h2 class="mb-0">Messagerie</h2>
 
-                                    <span class="messagerie-conv__body">
-                                        <span class="messagerie-conv__head">
-                                            <span class="messagerie-conv__name">{{ conversation.name }}</span>
-                                            <span class="messagerie-conv__date">{{ conversation.date }}</span>
-                                        </span>
+                            {# Onglets #}
+                            <ul class="messagerie-annonces__tabs nav nav-underline border-bottom" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button type="button" id="messagerie-tab-annonce" class="messagerie-annonces__tab nav-link active position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-annonce" role="tab" aria-controls="messagerie-pane-annonce" aria-selected="true">
+                                        <span class="messagerie-annonces__tab-dot messagerie-annonces__tab-dot--annonce position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
+                                        Annonce
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button type="button" id="messagerie-tab-contact" class="messagerie-annonces__tab nav-link position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-contact" role="tab" aria-controls="messagerie-pane-contact" aria-selected="false">
+                                        <span class="messagerie-annonces__tab-dot position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
+                                        Contact
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button type="button" id="messagerie-tab-service-client" class="messagerie-annonces__tab nav-link p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-service-client" role="tab" aria-controls="messagerie-pane-service-client" aria-selected="false">Service client</button>
+                                </li>
+                            </ul>
 
-                                        <span class="messagerie-conv__subject">{{ conversation.subject }}</span>
+                            <div class="tab-content">
 
-                                        <span class="messagerie-conv__preview">{{ conversation.preview }}</span>
-                                    </span>
-                                </a>
-                            {% endfor %}
-                        </aside>
+                                {# Onglet Annonce — Figma 6973:15993 et 6973:16301 #}
+                                <div id="messagerie-pane-annonce" class="tab-pane active" role="tabpanel" aria-labelledby="messagerie-tab-annonce" tabindex="0">
+                                    {# Étape 1 : annonces #}
+                                    <div id="messagerie-etape-annonces" class="collapse show" data-bs-parent="#messagerie-pane-annonce">
+                                        <div class="d-flex flex-column gap-4">
 
-                        {# Fil de discussion #}
-                        <section class="messagerie__thread">
-                            <div class="messagerie-thread__scroll">
-                                <div class="messagerie-thread__inner">
-                                    <p class="messagerie-thread__day">3 Janvier 2026</p>
+                                            {# Recherche #}
+                                            <form class="messagerie-annonces__search d-flex align-items-center gap-2 border rounded-70 ps-4 pe-2" method="get" role="search">
+                                                <input
+                                                    type="search"
+                                                    name="q"
+                                                    class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
+                                                    placeholder="Rechercher une annonce"
+                                                >
 
-                                    {% for message in messages %}
-                                        {% set is_agency = message.author == 'agency' %}
-                                        <div class="chat-bubble chat-bubble--{{ is_agency ? 'agency' : 'client' }}">
-                                            <p class="chat-bubble__body">{{ message.text|nl2br }}</p>
+                                                <button type="submit" class="messagerie-annonces__search-button d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-label="Rechercher">
+                                                    <i class="icon-search" aria-hidden="true"></i>
+                                                </button>
+                                            </form>
 
-                                            <span class="chat-bubble__meta">
-                                                <span>{{ message.time }}</span>
-                                                {% if is_agency %}
-                                                    <i class="icon-check-check" aria-hidden="true"></i>
-                                                {% endif %}
-                                            </span>
+                                            {# Zone des annonces #}
+                                            <div class="border rounded-24 p-3">
+
+                                                {# Filtres #}
+                                                <div class="d-flex flex-wrap align-items-center gap-2 pb-12">
+                                                    <div class="messagerie-annonces__filter d-flex align-items-center gap-2 flex-shrink-0 border rounded-pill bg-white px-2">
+                                                        <button type="button" class="messagerie-annonces__filter-button w-50 border-0 rounded-pill bg-primary text-white p-accent fw-bold p-0 text-nowrap">Toutes</button>
+                                                        <button type="button" class="messagerie-annonces__filter-button w-50 border-0 rounded-pill bg-transparent text-body-secondary p-accent fw-bold p-0 text-nowrap">Non lues</button>
+                                                    </div>
+
+                                                    <button type="button" class="messagerie-annonces__sort d-inline-flex align-items-center border rounded-pill bg-white px-3 p-accent fw-bold">
+                                                        <i class="icon-arrow-down-up" aria-hidden="true"></i>
+                                                        Trier
+                                                    </button>
+                                                </div>
+
+                                                {# Annonces avec conversations #}
+                                                <div class="d-flex flex-column gap-3">
+                                                    {% for annonce in annonces %}
+                                                        <a
+                                                            href="#messagerie-etape-conversations"
+                                                            class="d-flex flex-column flex-lg-row align-items-lg-center gap-4 py-4 bg-white border-bottom"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#messagerie-etape-conversations"
+                                                            aria-controls="messagerie-etape-conversations"
+                                                        >
+                                                            <span class="messagerie-annonces__thumb position-relative d-block flex-shrink-0 align-self-lg-stretch">
+                                                                <img src="{{ asset('images/messagerie/type-de-bien.png') }}" alt="" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rounded">
+                                                            </span>
+
+                                                            <div class="messagerie-annonces__infos d-flex flex-column flex-grow-1">
+                                                                <p class="p-accent fw-bold text-dark mb-0">{{ annonce.title }}</p>
+                                                                <p class="fw-normal text-secondary mb-0">{{ annonce.details }}</p>
+                                                                <p class="fw-normal text-secondary mb-0">{{ annonce.city }}</p>
+
+                                                                <div class="messagerie-annonces__volume d-flex flex-wrap align-items-center text-secondary">
+                                                                    <span>{{ annonce.conversations }}</span>
+
+                                                                    <span class="d-flex align-items-center gap-2">
+                                                                        <span class="messagerie-annonces__dot rounded-circle bg-primary" aria-hidden="true"></span>
+                                                                        <span class="bg-light rounded-pill px-10 py-1">{{ annonce.unread }}</span>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="messagerie-annonces__access d-flex flex-column align-items-lg-end flex-shrink-0">
+                                                                <span class="d-flex align-items-center gap-2 text-primary paragraphe fw-normal">
+                                                                    Voir les conversations
+                                                                    <i class="icon-chevron-right text-dark" aria-hidden="true"></i>
+                                                                </span>
+
+                                                                <span class="messagerie-annonces__mini text-secondary">{{ annonce.date }}</span>
+                                                            </div>
+                                                        </a>
+                                                    {% endfor %}
+                                                </div>
+
+                                            </div>
+
                                         </div>
-                                    {% endfor %}
+                                    </div>
+
+                                    {# Étape 2 : conversations de l'annonce #}
+                                    <div id="messagerie-etape-conversations" class="collapse" data-bs-parent="#messagerie-pane-annonce">
+                                        {{ include('dashboard/agence_immobiliere/_partials/messagerie/_conversations.html.twig', {show_annonce_context: true}) }}
+                                    </div>
                                 </div>
+
+                                {# Onglet Contact — Figma 6987:17298 #}
+                                <div id="messagerie-pane-contact" class="tab-pane" role="tabpanel" aria-labelledby="messagerie-tab-contact" tabindex="0">
+                                    {{ include('dashboard/agence_immobiliere/_partials/messagerie/_conversations.html.twig') }}
+                                </div>
+
+                                {# Onglet Service client — Figma 6987:17827 #}
+                                <div id="messagerie-pane-service-client" class="tab-pane" role="tabpanel" aria-labelledby="messagerie-tab-service-client" tabindex="0">
+                                    {{ include('dashboard/agence_immobiliere/_partials/messagerie/_conversations.html.twig', {conversations: conversations_service_client, thread: thread_service_client}) }}
+                                </div>
+
                             </div>
 
-                            <form class="messagerie-composer" method="post" action="{{ send_message_url|default('') }}">
-                                <button type="button" class="messagerie-composer__attach" aria-label="Joindre une image">
-                                    <i class="icon-image" aria-hidden="true"></i>
-                                </button>
-
-                                <div class="messagerie-composer__bar">
-                                    <input
-                                        type="text"
-                                        name="message"
-                                        class="messagerie-composer__input"
-                                        placeholder="Écrivez votre message ici..."
-                                        autocomplete="off"
-                                    >
-
-                                    <button type="submit" class="messagerie-composer__send" aria-label="Envoyer">
-                                        <i class="icon-send" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </form>
                         </section>
-
                     </div>
                 </div>
 

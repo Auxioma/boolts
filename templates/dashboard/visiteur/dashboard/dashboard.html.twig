@@ -1,14 +1,35 @@
 {#
- Template: templates/dashboard/visiteur/dashboard/dashboard.html.twig
- Role: Renders the dashboard/visiteur/dashboard Twig view.
+ Template: templates/dashboard/agence_immobiliere/dashboard/index.html.twig
+ Role: Renders the dashboard/agence_immobiliere/dashboard Twig view.
  Context: Provided by the rendering controller, parent template, or including template.
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard Visiteur{% endblock %}
+{% block title %}{{ 'agency_dashboard.title'|trans }}{% endblock %}
 
 {% block body %}
-dashboard visiteur
+    {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
+
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid dashboard-container">
+            <div class="row">
+
+                {# Sidebar existante #}
+                {{ include('composant/_visiteur/_tableau_de_bord.html.twig') }}
+
+                {# Contenu principal #}
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+                    <div class="col-12 col-md-10 mx-auto">
+                        
+
+                        dashboard content
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
 {% endblock %}

@@ -1,0 +1,157 @@
+{#
+ Template: templates/dashboard/agence_immobiliere/_partials/messagerie/_conversations.html.twig
+ Role: Bloc liste des conversations + fil de discussion de la messagerie agence.
+ Context: conversations (tableau), thread (fil affiché), show_annonce_context (bool : affiche l'annonce sélectionnée et le retour aux annonces).
+ Maintenance: Figma 6973:16301 (onglet Annonce), 6987:17298 (onglet Contact) et 6987:17827 (onglet Service client).
+#}
+
+<div class="messagerie-annonces__card d-flex flex-column flex-lg-row border rounded-24 overflow-hidden">
+
+    {# Liste des utilisateurs #}
+    <div class="messagerie-annonces__sidebar d-flex flex-column flex-shrink-0">
+
+        {% if show_annonce_context|default(false) %}
+            {# Annonce sélectionnée #}
+            <div class="messagerie-annonces__context d-flex flex-column flex-shrink-0 border-bottom border-1 px-24">
+                <button
+                    type="button"
+                    class="d-flex align-items-center gap-2 border-0 bg-transparent p-0 text-primary paragraphe fw-normal"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#messagerie-etape-annonces"
+                    aria-controls="messagerie-etape-annonces"
+                >
+                    <i class="messagerie-annonces__back-icon icon-chevron-left text-dark" aria-hidden="true"></i>
+                    Toutes les annonces
+                </button>
+
+                <div class="d-flex flex-column gap-1">
+                    <p class="messagerie-annonces__clamp p-accent fw-bold text-dark mb-0">Appartement très spacieux et lumineux avec terrasse aménagée - Appartement très spacieux et lumineux avec terrasse aménagée</p>
+                    <p class="fw-normal text-secondary mb-0">Appartement à louer · 765 €/mois · Saint-Nicolas-d’Aliermont</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Recherche et filtres #}
+        <div class="messagerie-annonces__tools d-flex flex-column flex-shrink-0{{ show_annonce_context|default(false) ? ' border-bottom border-1' }} pt-20 pb-12 px-3">
+            <div class="d-flex align-items-center justify-content-between text-nowrap">
+                <span class="p-accent fw-bold text-dark">Conversations</span>
+                <span class="messagerie-annonces__mini text-secondary">48 au total</span>
+            </div>
+
+            <div class="messagerie-annonces__search d-flex align-items-center gap-2 border rounded-70 ps-4 pe-2" role="search">
+                <input
+                    type="search"
+                    class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
+                    placeholder="Rechercher un contact..."
+                >
+
+                <button type="button" class="messagerie-annonces__search-button d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-label="Rechercher">
+                    <i class="icon-search" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <div class="messagerie-annonces__filter d-flex align-items-center gap-2 flex-shrink-0 border rounded-pill bg-white px-2">
+                    <button type="button" class="messagerie-annonces__filter-button w-50 border-0 rounded-pill bg-primary text-white p-accent fw-bold p-0 text-nowrap">Toutes</button>
+                    <button type="button" class="messagerie-annonces__filter-button w-50 border-0 rounded-pill bg-transparent text-body-secondary p-accent fw-bold p-0 text-nowrap">Non lues</button>
+                </div>
+
+                <button type="button" class="messagerie-annonces__sort d-inline-flex align-items-center border rounded-pill bg-white px-3 p-accent fw-bold">
+                    <i class="icon-arrow-down-up" aria-hidden="true"></i>
+                    Trier
+                </button>
+            </div>
+        </div>
+
+        {# Liste défilante #}
+        <div class="messagerie-annonces__list d-flex flex-column gap-2 flex-grow-1">
+            {% for conversation in conversations %}
+                {% set is_compact = conversation.compact|default(false) %}
+                <div class="messagerie-annonces__item{{ conversation.active|default(false) ? ' messagerie-annonces__item--active border-primary' }}{{ is_compact ? ' border-1' }} d-flex align-items-start flex-shrink-0 border">
+                    {% if conversation.photo is defined %}
+                        <span class="messagerie-annonces__avatar position-relative d-block flex-shrink-0 rounded-circle overflow-hidden">
+                            <img src="{{ asset('images/messagerie/avatar.png') }}" alt="" class="messagerie-annonces__avatar-photo position-absolute">
+                        </span>
+                    {% elseif conversation.initials is defined %}
+                        <span class="messagerie-annonces__avatar messagerie-annonces__avatar--initials messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-light text-secondary">{{ conversation.initials }}</span>
+                    {% else %}
+                        <span class="messagerie-annonces__avatar messagerie-annonces__avatar--letter d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle text-primary fw-bold">{{ conversation.letter }}</span>
+                    {% endif %}
+
+                    <div class="messagerie-annonces__summary d-flex flex-column flex-grow-1">
+                        <div class="d-flex align-items-center justify-content-between text-nowrap">
+                            <span class="paragraphe fw-normal text-dark">{{ conversation.name }}</span>
+                            <span class="messagerie-annonces__mini text-secondary">{{ conversation.time }}</span>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <p class="messagerie-annonces__clamp{{ is_compact ? ' messagerie-annonces__mini' }} flex-grow-1 fw-normal text-secondary mb-0">{{ conversation.preview }}</p>
+
+                            {% if conversation.unread is defined %}
+                                <span class="messagerie-annonces__badge messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-primary text-white">{{ conversation.unread }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    {# Fil de discussion #}
+    <div class="messagerie-annonces__panel d-flex flex-column flex-grow-1">
+
+        {# Contact sélectionné #}
+        <div class="messagerie-annonces__contact d-flex align-items-center flex-shrink-0 border-bottom border-1 px-24">
+            <span class="messagerie-annonces__avatar messagerie-annonces__avatar--letter messagerie-annonces__avatar--large d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle text-primary fw-bold">{{ thread.letter }}</span>
+
+            <div class="messagerie-annonces__summary d-flex flex-column flex-grow-1 gap-1">
+                <span class="p-accent fw-bold text-dark">{{ thread.name }}</span>
+                <span class="messagerie-annonces__mini text-secondary">{{ thread.subtitle }}</span>
+            </div>
+
+            <button type="button" class="messagerie-annonces__action flex-shrink-0 border-0 bg-transparent p-0 text-dark" aria-label="Supprimer la conversation">
+                <i class="icon-trash" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        {# Historique des messages #}
+        <div class="messagerie-annonces__messages d-flex flex-column align-items-center gap-4 flex-grow-1 p-4">
+            <p class="messagerie-annonces__mini w-100 fw-normal text-secondary text-center mb-0">{{ thread.date }}</p>
+
+            <div class="messagerie-annonces__message d-flex flex-column gap-2 w-100">
+                <p class="messagerie-annonces__bubble messagerie-annonces__bubble--received fw-normal p-3 mb-0">{{ thread.received }}</p>
+                <span class="messagerie-annonces__mini text-body-secondary">{{ thread.time }}</span>
+            </div>
+
+            <div class="messagerie-annonces__message d-flex flex-column align-items-end gap-2 w-100">
+                <p class="messagerie-annonces__bubble messagerie-annonces__bubble--sent w-100 fw-normal bg-primary text-white p-3 mb-0">{{ thread.sent }}</p>
+                <span class="messagerie-annonces__mini d-flex align-items-end gap-2 text-body-secondary">
+                    {{ thread.time }}
+                    <span class="messagerie-annonces__action text-primary"><i class="icon-check-check" aria-hidden="true"></i></span>
+                </span>
+            </div>
+        </div>
+
+        {# Rédiger un message #}
+        <div class="d-flex align-items-center gap-3 flex-shrink-0 pt-3 pb-20 px-24">
+            <button type="button" class="messagerie-annonces__attach messagerie-annonces__action d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle p-0" aria-label="Joindre une image">
+                <i class="icon-image" aria-hidden="true"></i>
+            </button>
+
+            <div class="messagerie-annonces__composer d-flex align-items-center flex-grow-1 gap-2 border rounded-70 ps-4 pe-2">
+                <input
+                    type="text"
+                    class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
+                    placeholder="Écrivez votre message ici..."
+                >
+
+                <button type="button" class="messagerie-annonces__send d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-label="Envoyer">
+                    <i class="icon-send" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+</div>

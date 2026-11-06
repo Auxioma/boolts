@@ -1505,6 +1505,378 @@ width: 100%;
     background: #4e00d7;
 }
 
+/* Messagerie — Étape 1 · Annonces (Figma 6973:15993) */
+.messagerie-annonces {
+    --bs-border-color: #ebecec;
+
+    --bs-border-width: 2px;
+
+    --bs-border-radius: 8px;
+
+    --bs-primary-rgb: 93, 0, 255;
+
+    --bs-secondary-rgb: 109, 111, 114;
+
+    --bs-secondary-color: #858789;
+
+    --bs-dark-rgb: 11, 15, 20;
+
+    --bs-light-rgb: 248, 248, 248;
+
+    line-height: 20px;
+}
+
+.messagerie-annonces p,
+.messagerie-annonces .p-accent,
+.messagerie-annonces .paragraphe {
+    line-height: 20px;
+}
+
+.messagerie-annonces__tabs.nav-underline {
+    --bs-nav-underline-gap: 24px;
+
+    --bs-nav-underline-link-active-color: #0b0f14;
+
+    --bs-nav-link-color: #858789;
+
+    --bs-nav-link-hover-color: #858789;
+
+    --bs-nav-link-padding-y: 8px;
+}
+
+.messagerie-annonces__tabs.nav-underline .nav-link.active {
+    border-bottom-color: #5d00ff;
+}
+
+.messagerie-annonces__tab {
+    margin-bottom: -2px;
+}
+
+.messagerie-annonces__tab-dot {
+    top: 2px;
+
+    left: -10px;
+
+    width: 8px;
+
+    height: 8px;
+}
+
+.messagerie-annonces__search {
+    height: 48px;
+}
+
+.messagerie-annonces__search-input {
+    min-width: 0;
+}
+
+.messagerie-annonces__search-input::placeholder {
+    color: #858789;
+}
+
+.messagerie-annonces__search-button {
+    width: 32px;
+
+    height: 32px;
+
+    font-size: 16px;
+}
+
+.messagerie-annonces__filter {
+    width: 193px;
+
+    height: 44px;
+}
+
+.messagerie-annonces__filter-button {
+    height: 30px;
+}
+
+.messagerie-annonces__sort {
+    gap: 10px;
+
+    height: 44px;
+
+    color: #55575b;
+}
+
+.messagerie-annonces__sort i {
+    color: #9d9fa1;
+
+    font-size: 24px;
+}
+
+.messagerie-annonces__thumb {
+    width: 166px;
+
+    min-height: 106px;
+}
+
+.messagerie-annonces__infos {
+    gap: 6px;
+
+    min-width: 0;
+}
+
+.messagerie-annonces__volume {
+    gap: 12px;
+
+    font-size: 12px;
+}
+
+.messagerie-annonces__dot {
+    width: 11px;
+
+    height: 11px;
+}
+
+.messagerie-annonces__access {
+    gap: 14px;
+}
+
+.messagerie-annonces__access i {
+    font-size: 20px;
+}
+
+.messagerie-annonces__mini {
+    font-size: 12px;
+}
+
+@media (min-width: 992px) {
+    .messagerie-annonces__access {
+        width: 212px;
+    }
+}
+
+/* Messagerie — Étape 2 · Conversations (Figma 6973:16301) */
+.messagerie-annonces .collapsing {
+    transition: none;
+}
+
+.messagerie-annonces__tab-dot--annonce {
+    left: -8px;
+}
+
+.messagerie-annonces:has(#messagerie-pane-annonce.active #messagerie-etape-annonces.show) .messagerie-annonces__tab-dot--annonce {
+    display: none;
+}
+
+.messagerie-annonces__sidebar {
+    border-bottom: 1px solid #ebecec;
+}
+
+.messagerie-annonces__context {
+    gap: 10px;
+
+    padding-top: 12px;
+
+    padding-bottom: 12px;
+}
+
+.messagerie-annonces__back-icon {
+    font-size: 18px;
+}
+
+.messagerie-annonces__clamp {
+    display: -webkit-box;
+
+    overflow: hidden;
+
+    -webkit-box-orient: vertical;
+
+    -webkit-line-clamp: 2;
+}
+
+.messagerie-annonces__tools {
+    gap: 12px;
+}
+
+.messagerie-annonces__list {
+    max-height: 400px;
+
+    margin-right: 3px;
+
+    padding-right: 6px;
+
+    padding-left: 12px;
+
+    overflow-y: auto;
+}
+
+.messagerie-annonces__list::-webkit-scrollbar {
+    width: 3px;
+}
+
+.messagerie-annonces__list::-webkit-scrollbar-track {
+    background: #ebecec;
+
+    border-radius: 4px;
+}
+
+.messagerie-annonces__list::-webkit-scrollbar-thumb {
+    background: #b6b7b8;
+
+    border-radius: 4px;
+}
+
+.messagerie-annonces__item {
+    gap: 10px;
+
+    height: 96px;
+
+    padding: 12px;
+
+    overflow: hidden;
+
+    border-radius: 16px;
+}
+
+.messagerie-annonces__item--active {
+    background: #f9f5ff;
+}
+
+.messagerie-annonces__avatar {
+    width: 32px;
+
+    height: 32px;
+}
+
+.messagerie-annonces__avatar--letter {
+    background: #ceb2ff;
+}
+
+.messagerie-annonces__avatar--large {
+    width: 48px;
+
+    height: 48px;
+
+    font-size: 24px;
+}
+
+.messagerie-annonces__avatar--initials {
+    width: 36px;
+
+    height: 36px;
+}
+
+.messagerie-annonces__avatar-photo {
+    top: -8.3%;
+
+    left: -13.33%;
+
+    width: 126.67%;
+
+    height: 126.67%;
+
+    max-width: none;
+}
+
+.messagerie-annonces__summary {
+    gap: 6px;
+
+    min-width: 0;
+}
+
+.messagerie-annonces__badge {
+    width: 20px;
+
+    height: 20px;
+}
+
+.messagerie-annonces__panel {
+    min-width: 0;
+}
+
+.messagerie-annonces__contact {
+    gap: 12px;
+
+    height: 88px;
+}
+
+.messagerie-annonces__contact .messagerie-annonces__summary {
+    gap: 4px;
+}
+
+.messagerie-annonces__action {
+    line-height: 1;
+
+    font-size: 24px;
+}
+
+.messagerie-annonces__action .icon-trash {
+    font-size: 24px;
+}
+
+.messagerie-annonces__messages {
+    min-height: 0;
+
+    overflow-y: auto;
+}
+
+.messagerie-annonces__message {
+    max-width: 539px;
+}
+
+.messagerie-annonces__bubble--received {
+    color: #3d3f43;
+
+    background: #ebecec;
+
+    border-radius: 32px 32px 32px 8px;
+}
+
+.messagerie-annonces__bubble--sent {
+    border-radius: 32px 32px 8px 32px;
+}
+
+.messagerie-annonces__attach {
+    width: 44px;
+
+    height: 44px;
+
+    color: #9d9fa1;
+
+    background: #ebecec;
+}
+
+.messagerie-annonces__composer {
+    min-width: 0;
+
+    height: 60px;
+}
+
+.messagerie-annonces__send {
+    width: 44px;
+
+    height: 44px;
+
+    font-size: 16px;
+}
+
+@media (min-width: 992px) {
+    .messagerie-annonces__card {
+        height: calc(100vh - 256px);
+
+        min-height: 640px;
+
+        max-height: 932px;
+    }
+
+    .messagerie-annonces__sidebar {
+        width: 360px;
+
+        border-right: 1px solid #ebecec;
+
+        border-bottom: 0;
+    }
+
+    .messagerie-annonces__list {
+        min-height: 0;
+
+        max-height: none;
+    }
+}
+
 .properties-performance-header {
     margin-bottom: 16px;
 }
