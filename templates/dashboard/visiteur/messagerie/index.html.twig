@@ -12,23 +12,6 @@
 {% block body %}
     {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
 
-    {# Contenu statique de la maquette — Figma « Dashboard - Messagerie » 4570:19079 #}
-    {% set conversations = conversations|default([
-        {name: 'Utilisateur', date: '14/02/2026', annonce: 'Annonce', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.', active: true},
-        {name: 'Utilisateur', date: '14/02/2026', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-        {name: 'Utilisateur', date: '14/02/2026', preview: 'Ceci est le début d’un message. Ceci est le début d’un message. Ceci est le début d’un message.'},
-    ]) %}
-
-    {% set thread = thread|default({
-        date: '3 Janvier 2026',
-        received: 'Ceci est un message, ceci est un message. Ceci est un message.',
-        sent: 'Ceci est un message, ceci est un message. Ceci est un message.',
-        time: '19:03',
-    }) %}
-
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
             <div class="row">
@@ -38,72 +21,8 @@
 
                 {# Contenu principal #}
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main p-0">
-                    <section class="messagerie-annonces messagerie-visiteur d-flex flex-column flex-lg-row">
-
-                        {# Liste des conversations #}
-                        <div class="messagerie-annonces__sidebar d-flex flex-column gap-2 flex-shrink-0 pt-48 pb-32 px-12">
-                            {% for conversation in conversations %}
-                                <div class="d-flex align-items-center gap-3 p-3 rounded-3{{ conversation.active|default(false) ? ' bg-light' }}">
-                                    {% if conversation.annonce is defined %}
-                                        <img src="{{ asset('images/messagerie/type-de-bien.png') }}" alt="" width="56" height="42" class="flex-shrink-0 object-fit-cover rounded">
-                                    {% else %}
-                                        <img src="{{ asset('images/messagerie/type-de-bien.png') }}" alt="" width="34" height="34" class="flex-shrink-0 object-fit-cover rounded-circle">
-                                    {% endif %}
-
-                                    <div class="d-flex flex-column flex-grow-1 overflow-hidden">
-                                        <div class="d-flex align-items-start justify-content-between text-nowrap">
-                                            <span class="p-accent fw-bold text-black">{{ conversation.name }}</span>
-                                            <span class="messagerie-annonces__mini fw-medium text-body-secondary">{{ conversation.date }}</span>
-                                        </div>
-
-                                        {% if conversation.annonce is defined %}
-                                            <p class="p-accent fw-bold text-body-secondary text-truncate mb-0">{{ conversation.annonce }}</p>
-                                        {% endif %}
-
-                                        <p class="messagerie-annonces__clamp fw-normal text-body-secondary mb-0">{{ conversation.preview }}</p>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-
-                        {# Fil de discussion #}
-                        <div class="messagerie-annonces__panel messagerie-visiteur__thread d-flex flex-column align-items-center justify-content-end flex-grow-1 p-3 p-lg-5">
-                            <p class="p-accent fw-bold text-body-secondary mb-0">{{ thread.date }}</p>
-
-                            <div class="messagerie-visiteur__message d-flex flex-column align-items-start gap-2">
-                                <p class="messagerie-annonces__bubble--received fw-normal text-body-secondary p-3 mb-0">{{ thread.received }}</p>
-                                <span class="messagerie-annonces__mini text-body-secondary">{{ thread.time }}</span>
-                            </div>
-
-                            <div class="messagerie-visiteur__message d-flex flex-column align-items-end gap-2">
-                                <p class="messagerie-annonces__bubble--sent fw-normal bg-primary text-white p-3 mb-0">{{ thread.sent }}</p>
-                                <span class="messagerie-annonces__mini d-flex align-items-end gap-2 text-body-secondary">
-                                    {{ thread.time }}
-                                    <span class="messagerie-annonces__action text-primary"><i class="icon-check-check" aria-hidden="true"></i></span>
-                                </span>
-                            </div>
-
-                            {# Rédiger un message #}
-                            <div class="messagerie-visiteur__reply d-flex align-items-center gap-3 w-100">
-                                <button type="button" class="messagerie-annonces__attach messagerie-annonces__action d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle p-0" aria-label="Joindre une image">
-                                    <i class="icon-image" aria-hidden="true"></i>
-                                </button>
-
-                                <div class="messagerie-annonces__composer d-flex align-items-center flex-grow-1 gap-2 border rounded-70 ps-4 pe-2">
-                                    <input
-                                        type="text"
-                                        class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
-                                        placeholder="Écrivez votre message ici..."
-                                    >
-
-                                    <button type="button" class="messagerie-annonces__send d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-label="Envoyer">
-                                        <i class="icon-send" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                    </section>
+                    {# Messagerie en direct (Live Component) — Figma « Dashboard - Messagerie » 4570:19079 #}
+                    {{ component('Messagerie:VisiteurInbox') }}
                 </div>
             </div>
         </div>

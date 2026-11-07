@@ -1,0 +1,219 @@
+{#
+ Template: templates/components/Messagerie/AgenceInbox.html.twig
+ Role: Live Component Messagerie:AgenceInbox — onglet « Annonce » de la messagerie agence.
+ Context: this.annonces / this.selectedAnnonce / this.conversations / this.unreadByConversation / this.selectedConversation.
+ Maintenance: Figma 6973:15993 (étape 1 · annonces) et 6973:16301 (étape 2 · conversations). Rafraîchi par polling.
+#}
+
+{% import 'components/Messagerie/_macros.html.twig' as m %}
+
+{% set selected_annonce = this.selectedAnnonce %}
+
+<div {{ attributes }} data-poll="delay(5000)|$render">
+
+    {% if selected_annonce is null %}
+        {# Étape 1 : annonces (id + .show conservés pour la règle CSS de la pastille d'onglet) #}
+        <div id="messagerie-etape-annonces" class="show d-flex flex-column gap-4">
+
+            {# Recherche #}
+            <div class="messagerie-annonces__search d-flex align-items-center gap-2 border rounded-70 ps-4 pe-2" role="search">
+                <input
+                    type="search"
+                    class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
+                    placeholder="Rechercher une annonce"
+                    data-model="debounce(300)|query"
+                    value="{{ query }}"
+                >
+
+                <span class="messagerie-annonces__search-button d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-hidden="true">
+                    <i class="icon-search" aria-hidden="true"></i>
+                </span>
+            </div>
+
+            {# Zone des annonces #}
+            <div class="border rounded-24 p-3">
+
+                {# Filtres #}
+                <div class="d-flex flex-wrap align-items-center gap-2 pb-12">
+                    <div class="messagerie-annonces__filter d-flex align-items-center gap-2 flex-shrink-0 border rounded-pill bg-white px-2">
+                        {% for value, label in {all: 'Toutes', unread: 'Non lues'} %}
+                            <label class="messagerie-annonces__filter-button w-50 border-0 rounded-pill {{ filter == value ? 'bg-primary text-white' : 'bg-transparent text-body-secondary' }} p-accent fw-bold p-0 text-nowrap text-center mb-0" role="button">
+                                <input type="radio" class="d-none" value="{{ value }}" data-model="filter" {{ filter == value ? 'checked' }}>
+                                {{ label }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Annonces avec conversations #}
+                <div class="d-flex flex-column gap-3">
+                    {% for annonce in this.annonces %}
+                        {% set property = annonce.property %}
+                        {% set first_image = property.propertyImages|first %}
+
+                        <a
+                            href="#"
+                            class="d-flex flex-column flex-lg-row align-items-lg-center gap-4 py-4 bg-white border-bottom"
+                            data-action="live#action:prevent"
+                            data-live-action-param="openBien"
+                            data-live-id-param="{{ property.id }}"
+                        >
+                            <span class="messagerie-annonces__thumb position-relative d-block flex-shrink-0 align-self-lg-stretch">
+                                <img src="{{ first_image ? vich_uploader_asset(first_image, 'imageFile') : asset('images/messagerie/type-de-bien.png') }}" alt="" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rounded">
+                            </span>
+
+                            <div class="messagerie-annonces__infos d-flex flex-column flex-grow-1">
+                                <p class="p-accent fw-bold text-dark mb-0">{{ property.titreDuLogement ?: property }}</p>
+                                <p class="fw-normal text-secondary mb-0">{{ m.property_details(property) }}</p>
+                                <p class="fw-normal text-secondary mb-0">{{ property.ville }}</p>
+
+                                <div class="messagerie-annonces__volume d-flex flex-wrap align-items-center text-secondary">
+                                    <span>{{ annonce.conversations }} conversation{{ annonce.conversations > 1 ? 's' }}</span>
+
+                                    <span class="d-flex align-items-center gap-2">
+                                        {% if annonce.unread > 0 %}
+                                            <span class="messagerie-annonces__dot rounded-circle bg-primary" aria-hidden="true"></span>
+                                        {% endif %}
+                                        <span class="bg-light rounded-pill px-10 py-1">{{ annonce.unread }} non lue{{ annonce.unread > 1 ? 's' }}</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="messagerie-annonces__access d-flex flex-column align-items-lg-end flex-shrink-0">
+                                <span class="d-flex align-items-center gap-2 text-primary paragraphe fw-normal">
+                                    Voir les conversations
+                                    <i class="icon-chevron-right text-dark" aria-hidden="true"></i>
+                                </span>
+
+                                <span class="messagerie-annonces__mini text-secondary">
+                                    {% if annonce.lastMessageAt|date('Y-m-d') == 'now'|date('Y-m-d') %}
+                                        Aujourd’hui, {{ annonce.lastMessageAt|date('H:i') }}
+                                    {% elseif annonce.lastMessageAt|date('Y-m-d') == '-1 day'|date('Y-m-d') %}
+                                        Hier, {{ annonce.lastMessageAt|date('H:i') }}
+                                    {% else %}
+                                        {{ annonce.lastMessageAt|format_date(pattern: 'd MMM y', locale: 'fr') }}, {{ annonce.lastMessageAt|date('H:i') }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </a>
+                    {% else %}
+                        <p class="text-secondary text-center py-4 mb-0">
+                            {{ this.allAnnonces is empty ? 'Aucun message reçu sur vos annonces pour le moment.' : 'Aucune annonce ne correspond.' }}
+                        </p>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+    {% else %}
+        {# Étape 2 : conversations de l'annonce #}
+        {% set property = selected_annonce.property %}
+        {% set unread_by_conversation = this.unreadByConversation %}
+        {% set selected_conversation = this.selectedConversation %}
+
+        <div class="messagerie-annonces__card d-flex flex-column flex-lg-row border rounded-24 overflow-hidden">
+
+            {# Liste des utilisateurs #}
+            <div class="messagerie-annonces__sidebar d-flex flex-column flex-shrink-0">
+
+                {# Annonce sélectionnée #}
+                <div class="messagerie-annonces__context d-flex flex-column flex-shrink-0 border-bottom border-1 px-24">
+                    <button
+                        type="button"
+                        class="d-flex align-items-center gap-2 border-0 bg-transparent p-0 text-primary paragraphe fw-normal"
+                        data-action="live#action"
+                        data-live-action-param="back"
+                    >
+                        <i class="messagerie-annonces__back-icon icon-chevron-left text-dark" aria-hidden="true"></i>
+                        Toutes les annonces
+                    </button>
+
+                    <div class="d-flex flex-column gap-1">
+                        <p class="messagerie-annonces__clamp p-accent fw-bold text-dark mb-0">{{ property.titreDuLogement ?: property }}</p>
+                        <p class="fw-normal text-secondary mb-0">{{ m.property_details(property) }}{{ property.ville ? ' · ' ~ property.ville }}</p>
+                    </div>
+                </div>
+
+                {# Recherche et filtres #}
+                <div class="messagerie-annonces__tools d-flex flex-column flex-shrink-0 border-bottom border-1 pt-20 pb-12 px-3">
+                    <div class="d-flex align-items-center justify-content-between text-nowrap">
+                        <span class="p-accent fw-bold text-dark">Conversations</span>
+                        <span class="messagerie-annonces__mini text-secondary">{{ this.allConversations|length }} au total</span>
+                    </div>
+
+                    <div class="messagerie-annonces__search d-flex align-items-center gap-2 border rounded-70 ps-4 pe-2" role="search">
+                        <input
+                            type="search"
+                            class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
+                            placeholder="Rechercher un contact..."
+                            data-model="debounce(300)|conversationQuery"
+                            value="{{ conversationQuery }}"
+                        >
+
+                        <span class="messagerie-annonces__search-button d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-hidden="true">
+                            <i class="icon-search" aria-hidden="true"></i>
+                        </span>
+                    </div>
+
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <div class="messagerie-annonces__filter d-flex align-items-center gap-2 flex-shrink-0 border rounded-pill bg-white px-2">
+                            {% for value, label in {all: 'Toutes', unread: 'Non lues'} %}
+                                <label class="messagerie-annonces__filter-button w-50 border-0 rounded-pill {{ conversationFilter == value ? 'bg-primary text-white' : 'bg-transparent text-body-secondary' }} p-accent fw-bold p-0 text-nowrap text-center mb-0" role="button">
+                                    <input type="radio" class="d-none" value="{{ value }}" data-model="conversationFilter" {{ conversationFilter == value ? 'checked' }}>
+                                    {{ label }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                {# Liste défilante #}
+                <div class="messagerie-annonces__list d-flex flex-column gap-2 flex-grow-1">
+                    {% for conversation in this.conversations %}
+                        {% set unread = unread_by_conversation[conversation.id] ?? 0 %}
+                        {% set is_active = selected_conversation is not null and selected_conversation.id == conversation.id %}
+
+                        <button
+                            type="button"
+                            class="messagerie-annonces__item{{ is_active ? ' messagerie-annonces__item--active border-primary' }} d-flex align-items-start flex-shrink-0 border bg-white text-start"
+                            data-action="live#action"
+                            data-live-action-param="openConversation"
+                            data-live-id-param="{{ conversation.id }}"
+                        >
+                            {{ m.avatar(conversation.visiteur) }}
+
+                            <div class="messagerie-annonces__summary d-flex flex-column flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between text-nowrap">
+                                    <span class="paragraphe {{ unread > 0 ? 'fw-bold' : 'fw-normal' }} text-dark">{{ m.name(conversation.visiteur) }}</span>
+                                    <span class="messagerie-annonces__mini text-secondary">{{ m.short_date(conversation.lastMessageAt) }}</span>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <p class="messagerie-annonces__clamp flex-grow-1 fw-normal text-secondary mb-0">{{ conversation.lastMessagePreview }}</p>
+
+                                    {% if unread > 0 %}
+                                        <span class="messagerie-annonces__badge messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-primary text-white" aria-label="{{ unread }} message(s) non lu(s)">{{ unread }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </button>
+                    {% else %}
+                        <p class="text-secondary text-center py-4 mb-0">Aucune conversation.</p>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            {# Fil de discussion #}
+            {% if selected_conversation %}
+                {{ component('Messagerie:Thread', {
+                    conversation: selected_conversation,
+                    key: 'thread-' ~ selected_conversation.id,
+                }) }}
+            {% endif %}
+
+        </div>
+    {% endif %}
+
+</div>

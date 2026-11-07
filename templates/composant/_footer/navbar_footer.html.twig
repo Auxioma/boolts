@@ -48,7 +48,7 @@
 
                 {# Utilisateur / visiteur #}
             {% elseif is_granted('ROLE_USER') %}
-                {% set messagerieRoute = 'app_visiteur_messagerie' %}
+                {% set messagerieRoute = 'app_dashboard_visiteur_messagerie' %}
             {% endif %}
 
             {% if messagerieRoute %}

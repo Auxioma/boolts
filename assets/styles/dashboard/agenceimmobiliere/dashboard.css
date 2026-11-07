@@ -1899,6 +1899,13 @@ width: 100%;
 @media (min-width: 992px) {
     .messagerie-visiteur {
         min-height: calc(100vh - var(--topbar-height, 72px));
+
+        /* Hauteur fixe pour que la liste et le fil défilent (messagerie dynamique). */
+        height: calc(100vh - var(--topbar-height, 72px));
+    }
+
+    .messagerie-visiteur .messagerie-annonces__sidebar {
+        overflow-y: auto;
     }
 }
 

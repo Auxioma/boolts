@@ -1,0 +1,133 @@
+{#
+ Template: templates/components/Messagerie/Thread.html.twig
+ Role: Fil de discussion en direct (Live Component Messagerie:Thread), côté agence et visiteur.
+ Context: this.conversation, this.messages, this.user, this.interlocutor, errors, content.
+ Maintenance: le polling appelle l'action `refresh` (marque les messages reçus comme lus).
+#}
+
+{% import 'components/Messagerie/_macros.html.twig' as m %}
+
+{% set me = this.user %}
+{% set interlocutor = this.interlocutor %}
+{% set property = this.conversation.property %}
+
+<div {{ attributes.defaults({class: 'messagerie-annonces__panel d-flex flex-column flex-grow-1 h-100'}) }} data-poll="delay(3000)|refresh">
+    <div
+        class="d-flex flex-column flex-grow-1 h-100"
+        data-controller="messagerie-thread"
+    >
+
+        {# Contact sélectionné #}
+        <div class="messagerie-annonces__contact d-flex align-items-center flex-shrink-0 border-bottom border-1 px-24">
+            {{ m.avatar(interlocutor, 'messagerie-annonces__avatar--large') }}
+
+            <div class="messagerie-annonces__summary d-flex flex-column flex-grow-1 gap-1">
+                <span class="p-accent fw-bold text-dark">{{ m.name(interlocutor) }}</span>
+                <a href="{{ path('app_public_detail_bien', {slug: property.slug}) }}" class="messagerie-annonces__mini text-secondary text-truncate">
+                    À propos de : {{ property.titreDuLogement ?: property }}
+                </a>
+            </div>
+        </div>
+
+        {# Historique des messages #}
+        <div
+            class="messagerie-annonces__messages d-flex flex-column gap-4 flex-grow-1 p-4"
+            data-messagerie-thread-target="messages"
+        >
+            {% set previous_day = null %}
+
+            {% for message in this.messages %}
+                {% set day = message.createdAt|date('Y-m-d') %}
+                {% if day != previous_day %}
+                    <p class="messagerie-annonces__mini w-100 fw-normal text-secondary text-center mb-0">
+                        {{ message.createdAt|format_date(pattern: 'd MMMM y', locale: 'fr') }}
+                    </p>
+                    {% set previous_day = day %}
+                {% endif %}
+
+                {% set is_mine = message.sender is same as(me) %}
+
+                <div class="messagerie-annonces__message d-flex flex-column gap-2 w-100{{ is_mine ? ' align-items-end align-self-end' : ' align-items-start align-self-start' }}" id="message-{{ message.id }}">
+                    {% if message.imageName %}
+                        {% set image_url = vich_uploader_asset(message, 'imageFile') %}
+                        <a href="{{ image_url }}" target="_blank" rel="noopener" class="d-block">
+                            <img src="{{ image_url }}" alt="Image envoyée" loading="lazy" class="rounded-4 mw-100" style="max-height: 260px; object-fit: cover;">
+                        </a>
+                    {% endif %}
+
+                    {% if message.content %}
+                        <p class="messagerie-annonces__bubble {{ is_mine ? 'messagerie-annonces__bubble--sent bg-primary text-white' : 'messagerie-annonces__bubble--received' }} fw-normal p-3 mb-0" style="white-space: pre-line;">{{ message.content }}</p>
+                    {% endif %}
+
+                    <span class="messagerie-annonces__mini d-flex align-items-end gap-2 text-body-secondary">
+                        {{ message.createdAt|date('H:i') }}
+                        {% if is_mine %}
+                            <span class="messagerie-annonces__action {{ message.readAt ? 'text-primary' : 'text-body-secondary' }}" title="{{ message.readAt ? 'Lu' : 'Envoyé' }}">
+                                <i class="{{ message.readAt ? 'icon-check-check' : 'icon-check' }}" aria-hidden="true"></i>
+                            </span>
+                        {% endif %}
+                    </span>
+                </div>
+            {% else %}
+                <p class="text-secondary text-center my-auto mb-0">
+                    {{ this.agenceView ? 'Aucun message pour le moment.' : 'Écrivez votre premier message à l’agence.' }}
+                </p>
+            {% endfor %}
+        </div>
+
+        {% if errors is not empty %}
+            <div class="px-24">
+                {% for error in errors %}
+                    <p class="text-danger messagerie-annonces__mini mb-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {# Aperçu de l'image sélectionnée #}
+        <div class="px-24 d-none" data-messagerie-thread-target="preview" data-live-ignore>
+            <div class="d-inline-flex align-items-center gap-2 border rounded-3 p-2">
+                <img src="" alt="" width="56" height="56" class="object-fit-cover rounded" data-messagerie-thread-target="previewImage">
+                <button type="button" class="border-0 bg-transparent p-0 text-dark" aria-label="Retirer l’image" data-action="messagerie-thread#clearImage">
+                    <i class="icon-x" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
+        {# Rédiger un message #}
+        <form
+            class="d-flex align-items-center gap-3 flex-shrink-0 pt-3 pb-20 px-24"
+            data-action="live#action:prevent"
+            data-live-action-param="files|send"
+            enctype="multipart/form-data"
+        >
+            <label data-live-ignore class="messagerie-annonces__attach messagerie-annonces__action d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle p-0 mb-0" role="button" aria-label="Joindre une image">
+                <i class="icon-image" aria-hidden="true"></i>
+                <input
+                    type="file"
+                    name="image"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    class="d-none"
+                    data-messagerie-thread-target="file"
+                    data-action="change->messagerie-thread#preview"
+                >
+            </label>
+
+            <div class="messagerie-annonces__composer d-flex align-items-center flex-grow-1 gap-2 border rounded-70 ps-4 pe-2">
+                <input
+                    type="text"
+                    class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
+                    placeholder="Écrivez votre message ici..."
+                    autocomplete="off"
+                    maxlength="{{ constant('App\\Service\\Messagerie\\MessagerieManager::MAX_CONTENT_LENGTH') }}"
+                    data-model="norender|content"
+                    value="{{ content }}"
+                >
+
+                <button type="submit" class="messagerie-annonces__send d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-label="Envoyer" data-loading="action(send)|addAttribute(disabled)">
+                    <i class="icon-send" aria-hidden="true"></i>
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>

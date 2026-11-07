@@ -1,0 +1,51 @@
+{#
+ Template: templates/components/Messagerie/_macros.html.twig
+ Role: Helpers d'affichage partagés par les composants de messagerie.
+#}
+
+{# Nom affiché : entreprise pour une agence, prénom + nom pour un visiteur. #}
+{% macro name(user) -%}
+    {%- if user is null -%}
+        Utilisateur
+    {%- elseif 'ROLE_AGENCE' in user.roles and user.entreprise is not empty -%}
+        {{ user.entreprise }}
+    {%- elseif (user.prenom ~ ' ' ~ user.nom)|trim is not empty -%}
+        {{ (user.prenom ~ ' ' ~ user.nom)|trim }}
+    {%- else -%}
+        {{ user.email|split('@')|first }}
+    {%- endif -%}
+{%- endmacro %}
+
+{# Avatar : photo si disponible, sinon initiale. #}
+{% macro avatar(user, extra_class = '') %}
+    {% import _self as self %}
+    {% if user is not null and user.imageName is not empty %}
+        <span class="messagerie-annonces__avatar {{ extra_class }} position-relative d-block flex-shrink-0 rounded-circle overflow-hidden">
+            <img src="{{ vich_uploader_asset(user, 'imageFile') }}" alt="" class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover">
+        </span>
+    {% else %}
+        <span class="messagerie-annonces__avatar messagerie-annonces__avatar--letter {{ extra_class }} d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle text-primary fw-bold">{{ self.name(user)|trim|first|upper }}</span>
+    {% endif %}
+{% endmacro %}
+
+{# Date courte de la liste : heure si aujourd'hui, « Hier », sinon jour + mois. #}
+{% macro short_date(date) -%}
+    {%- if date is null -%}
+    {%- elseif date|date('Y-m-d') == 'now'|date('Y-m-d') -%}
+        {{ date|date('H:i') }}
+    {%- elseif date|date('Y-m-d') == '-1 day'|date('Y-m-d') -%}
+        Hier
+    {%- else -%}
+        {{ date|format_date(pattern: 'd MMM', locale: 'fr') }}
+    {%- endif -%}
+{%- endmacro %}
+
+{# Résumé du bien : « Appartement · Location · 765 € ». #}
+{% macro property_details(property) -%}
+    {%- set parts = [] -%}
+    {%- if property.typeBien -%}{%- set parts = parts|merge([property.typeBien.name]) -%}{%- endif -%}
+    {%- if property.typeTransaction -%}{%- set parts = parts|merge([property.typeTransaction.name]) -%}{%- endif -%}
+    {%- set price = property.prix ?? property.montantLoyerHorsCharge -%}
+    {%- if price is not null -%}{%- set parts = parts|merge([price|number_format(0, ',', ' ') ~ ' €']) -%}{%- endif -%}
+    {{- parts|join(' · ') -}}
+{%- endmacro %}

@@ -1,0 +1,64 @@
+{#
+ Template: templates/components/Messagerie/VisiteurInbox.html.twig
+ Role: Live Component Messagerie:VisiteurInbox — historique des conversations du visiteur.
+ Context: this.conversations / this.unreadByConversation / this.selectedConversation.
+ Maintenance: Figma « Dashboard - Messagerie » 4570:19079. Rafraîchi par polling.
+#}
+
+{% import 'components/Messagerie/_macros.html.twig' as m %}
+
+{% set unread_by_conversation = this.unreadByConversation %}
+{% set selected_conversation = this.selectedConversation %}
+
+<section {{ attributes.defaults({class: 'messagerie-annonces messagerie-visiteur d-flex flex-column flex-lg-row'}) }} data-poll="delay(5000)|$render">
+
+    {# Liste des conversations #}
+    <div class="messagerie-annonces__sidebar d-flex flex-column gap-2 flex-shrink-0 pt-48 pb-32 px-12">
+        {% for conversation in this.conversations %}
+            {% set property = conversation.property %}
+            {% set first_image = property.propertyImages|first %}
+            {% set unread = unread_by_conversation[conversation.id] ?? 0 %}
+            {% set is_active = selected_conversation is not null and selected_conversation.id == conversation.id %}
+
+            <button
+                type="button"
+                class="d-flex align-items-center gap-3 p-3 rounded-3 border-0 text-start {{ is_active ? 'bg-light' : 'bg-transparent' }}"
+                data-action="live#action"
+                data-live-action-param="openConversation"
+                data-live-id-param="{{ conversation.id }}"
+            >
+                <img src="{{ first_image ? vich_uploader_asset(first_image, 'imageFile') : asset('images/messagerie/type-de-bien.png') }}" alt="" width="56" height="42" class="flex-shrink-0 object-fit-cover rounded">
+
+                <div class="d-flex flex-column flex-grow-1 overflow-hidden">
+                    <div class="d-flex align-items-start justify-content-between text-nowrap gap-2">
+                        <span class="p-accent fw-bold text-black text-truncate">{{ m.name(conversation.agence) }}</span>
+                        <span class="messagerie-annonces__mini fw-medium text-body-secondary">{{ m.short_date(conversation.lastMessageAt ?? conversation.createdAt) }}</span>
+                    </div>
+
+                    <p class="p-accent fw-bold text-body-secondary text-truncate mb-0">{{ property.titreDuLogement ?: property }}</p>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <p class="messagerie-annonces__clamp flex-grow-1 fw-normal text-body-secondary mb-0">{{ conversation.lastMessagePreview ?: 'Nouvelle conversation' }}</p>
+
+                        {% if unread > 0 %}
+                            <span class="messagerie-annonces__badge messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-primary text-white" aria-label="{{ unread }} message(s) non lu(s)">{{ unread }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </button>
+        {% else %}
+            <p class="text-body-secondary text-center p-3 mb-0">
+                Aucune conversation. Contactez une agence depuis la page d’un bien.
+            </p>
+        {% endfor %}
+    </div>
+
+    {# Fil de discussion #}
+    {% if selected_conversation %}
+        {{ component('Messagerie:Thread', {
+            conversation: selected_conversation,
+            key: 'thread-' ~ selected_conversation.id,
+        }) }}
+    {% endif %}
+
+</section>

@@ -15,14 +15,19 @@ namespace App\Controller\Dashboard\Visiteur;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 final class MessagerieController extends AbstractController
 {
     #[Route('/dashboard/visiteur/messagerie', name: 'app_dashboard_visiteur_messagerie')]
     public function index(): Response
     {
-        return $this->render('dashboard/visiteur/messagerie/index.html.twig', [
-            'controller_name' => 'MessagerieController',
-        ]);
+        // Les agences ont leur propre messagerie.
+        if ($this->isGranted('ROLE_AGENCE')) {
+            return $this->redirectToRoute('agence_immobiliere_messagerie');
+        }
+
+        return $this->render('dashboard/visiteur/messagerie/index.html.twig');
     }
 }

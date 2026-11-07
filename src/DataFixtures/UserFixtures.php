@@ -207,6 +207,19 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $avatars[\sprintf('agence%02d', $i)] = $agency;
         }
 
+        // Compte visiteur (particulier) unique.
+        $this->createUser(
+            $manager,
+            'user@user.user',
+            'user',
+            ['ROLE_USER'],
+            $defaultLanguage,
+            $defaultCurrency,
+            $defaultTimeZone,
+        )
+            ->setNom('John')
+            ->setPrenom('Doe');
+
         /*
          * L'identifiant de l'utilisateur est nécessaire à l'AvatarDirectoryNamer
          * pour ranger l'avatar dans public/avatars/<id>/.

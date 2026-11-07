@@ -8,6 +8,7 @@
 /vendor/
 /public/images/
 /public/avatars/
+/public/messagerie/
 ###< symfony/framework-bundle ###
 
 ###> phpunit/phpunit ###
