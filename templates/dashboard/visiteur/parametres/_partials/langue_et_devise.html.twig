@@ -1,0 +1,182 @@
+{#
+ Template: templates/dashboard/visiteur/parametres/_partials/langue_et_devise.html.twig
+ Role: Renders the dashboard/visiteur/parametres/_partials Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+<div class="js-tab-content d-none contenue-des-page-des-parametres" id="cat3">
+
+    <div class="row">
+        <div class="col-12 col-md-10 mx-auto">
+
+            <h3 class="mb-0 d-none d-md-block">Langue et devise</h3>
+
+            <div
+                class="card-information-public-profile my-32 py-18 px-24 formulaire"
+                data-controller="field-save"
+                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
+            >
+
+                <div class="connexion-securite">
+
+                    {# langue préféré #}
+                    <div
+                        class="js-editable-field formulaire"
+                        data-controller="single-select-autocomplete"
+                        data-single-select-autocomplete-no-results-text-value="Aucune langue trouvée"
+                    >
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <p class="p-accent mb-0" style="color:#0b0f14">Langue préférée</p>
+
+                                <p class="mt-12 mb-0 js-field-value paragraphe" style="color:#858789" id="langue-value">
+                                    {{ app.user.langues ? app.user.langues.name : '***' }}
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input">
+                                    <div class="agency-languages agency-languages-dropdown">
+                                        {{ form_widget(form.langues, {
+                                            attr: {
+                                                class: 'd-none',
+                                                'data-name': 'langues',
+                                                'data-single-select-autocomplete-target': 'select',
+                                            },
+                                        }) }}
+
+                                        <div class="agency-languages-search">
+                                            <input
+                                                type="text"
+                                                class="form-control agency-languages-input w-75 rounded-70 pl-44 input"
+                                                placeholder="Rechercher une langue..."
+                                                autocomplete="off"
+                                                data-single-select-autocomplete-target="search"
+                                                data-action="input->single-select-autocomplete#search focus->single-select-autocomplete#show keydown->single-select-autocomplete#handleKeydown blur->single-select-autocomplete#hideLater"
+                                            >
+
+                                            <i class="icon-search agency-languages-add"></i>
+                                        </div>
+
+                                        <div class="agency-languages-results d-none" data-single-select-autocomplete-target="results"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                data-action="click->field-save#handle click->single-select-autocomplete#focusSearch"
+                                data-field-save-field-param="langues"
+                                data-field-save-input-param="#{{ form.langues.vars.id }}"
+                                data-field-save-multiple-param="false"
+                                data-field-save-output-param="#langue-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+
+                        <span class="flash-message flash-message-error js-field-error d-none"></span>
+                    </div>
+
+                    {# devise #}<div
+                        class="js-editable-field formulaire my-20"
+                        data-controller="single-select-autocomplete"
+                        data-single-select-autocomplete-no-results-text-value="Aucune devise trouvée"
+                    >
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <p class="p-accent mb-0" style="color:#0b0f14">Devise préférée</p>
+
+                                <p class="mt-12 mb-0 js-field-value paragraphe" style="color:#858789" id="devise-value">
+                                    {{ app.user.devise ? app.user.devise.nom : '***' }}
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input">
+                                    <div class="agency-languages agency-languages-dropdown">
+                                        {{ form_widget(form.devise, {
+                                            attr: {
+                                                class: 'd-none',
+                                                'data-name': 'devise',
+                                                'data-single-select-autocomplete-target': 'select',
+                                            },
+                                        }) }}
+
+                                        <div class="agency-languages-search">
+                                            <input
+                                                type="text"
+                                                class="form-control agency-languages-input w-75 rounded-70 pl-44 input"
+                                                placeholder="Rechercher une devise..."
+                                                autocomplete="off"
+                                                data-single-select-autocomplete-target="search"
+                                                data-action="input->single-select-autocomplete#search focus->single-select-autocomplete#show keydown->single-select-autocomplete#handleKeydown blur->single-select-autocomplete#hideLater"
+                                            >
+
+                                            <i class="icon-search agency-languages-add"></i>
+                                        </div>
+
+                                        <div class="agency-languages-results d-none" data-single-select-autocomplete-target="results"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                data-action="click->field-save#handle click->single-select-autocomplete#focusSearch"
+                                data-field-save-field-param="devise"
+                                data-field-save-input-param="#{{ form.devise.vars.id }}"
+                                data-field-save-multiple-param="false"
+                                data-field-save-output-param="#devise-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+
+                        <span class="flash-message flash-message-error js-field-error d-none"></span>
+                    </div>
+
+                    {# fuseau horaire #}
+                    <div class="js-editable-field formulaire my-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20">
+                            <div class="w-100">
+                                <p class="p-accent mb-0" style="color:#0b0f14">Fuseau horaire</p>
+
+                                <p class="mt-12 mb-0 js-field-value paragraphe" style="color:#858789" id="fuseau-horaire-value">
+                                    {{ app.user.fuseauHoraire ? app.user.fuseauHoraire.nom : '***' }}
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input w-75">
+                                    {{ form_widget(form.fuseauHoraire, {
+                                        attr: {
+                                            class: 'form-control js-address-input input',
+                                            'data-name': 'fuseauHoraire',
+                                        },
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="fuseauHoraire"
+                                data-field-save-multiple-param="false"
+                                data-field-save-output-param="#fuseau-horaire-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+
+                        <span class="flash-message flash-message-error js-field-error d-none"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<style>
+
+</style>

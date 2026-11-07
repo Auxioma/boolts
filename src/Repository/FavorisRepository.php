@@ -12,7 +12,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Favoris;
+use App\Entity\Property;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -37,6 +39,31 @@ class FavorisRepository extends ServiceEntityRepository
             ->getScalarResult();
 
         return array_map('intval', array_column($rows, 'propertyId'));
+    }
+
+    /**
+     * Biens publiés mis en favoris par un visiteur, du plus récent au plus ancien.
+     *
+     * @return list<Property>
+     */
+    public function findPublishedPropertiesByUser(User $user): array
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('p', 'images', 'typeBien', 'typeTransaction', 'agence')
+            ->from(Property::class, 'p')
+            ->innerJoin(Favoris::class, 'f', 'WITH', 'f.property = p')
+            ->leftJoin('p.propertyImages', 'images')
+            ->leftJoin('p.typeBien', 'typeBien')
+            ->leftJoin('p.typeTransaction', 'typeTransaction')
+            ->leftJoin('p.user', 'agence')
+            ->andWhere('f.user = :user')
+            ->andWhere('p.statut = :statut')
+            ->setParameter('user', $user)
+            ->setParameter('statut', StatutAnnonceImmobiliere::PUBLIEE)
+            ->orderBy('f.createdAt', 'DESC')
+            ->addOrderBy('f.id', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**

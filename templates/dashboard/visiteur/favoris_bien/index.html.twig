@@ -1,17 +1,15 @@
 {#
- Template: templates/dashboard/agence_immobiliere/dashboard/index.html.twig
- Role: Renders the dashboard/agence_immobiliere/dashboard Twig view.
- Context: Provided by the rendering controller, parent template, or including template.
+ Template: templates/dashboard/visiteur/favoris_bien/index.html.twig
+ Role: Renders the dashboard/visiteur/favoris_bien Twig view (Figma « Mes favoris » 4570:19785).
+ Context: Provided by FavorisBienController::index (properties).
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'agency_dashboard.title'|trans }}{% endblock %}
+{% block title %}Mes favoris{% endblock %}
 
 {% block body %}
-    {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
-
     <main id="dashboard" class="dashboard">
         <div class="container-fluid dashboard-container">
             <div class="row">
@@ -22,14 +20,108 @@
                 {# Contenu principal #}
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main">
                     <div class="col-12 col-md-10 mx-auto">
-                        
+                        <section>
+                            <h2 class="mb-32">Mes favoris</h2>
 
-                        favoris_bien content
+                            <div class="row bt-results-grid agence-properties">
 
+                                {% for bienImmobilier in properties %}
+
+                                    {% set firstImage = bienImmobilier.propertyImages|first %}
+                                    {% set uploadedImage = firstImage ? vich_uploader_asset(firstImage, 'imageFile') : null %}
+
+                                    {% set transactionName = '' %}
+                                    {% set transactionSlug = '' %}
+
+                                    {% if bienImmobilier.typeTransaction %}
+                                        {% set transactionName = bienImmobilier.typeTransaction.name|default(bienImmobilier.typeTransaction.nom|default('')) %}
+                                        {% set transactionSlug = bienImmobilier.typeTransaction.slug|default('') %}
+                                    {% endif %}
+
+                                    {% set isLocation = transactionSlug|lower in ['location', 'louer', 'rent'] or transactionName|lower in ['location', 'louer', 'rent'] %}
+
+                                    {% set propertyTitle = 'detail_agence.card.title'|trans({'%type%': bienImmobilier.typeBien.name, '%transaction%': bienImmobilier.typeTransaction.name}) %}
+                                    {% set devise = bienImmobilier.user and bienImmobilier.user.devise ? bienImmobilier.user.devise.signe|default('€') : '€' %}
+                                    {% set chargesNumber = bienImmobilier.montantDesCharges is not empty ? bienImmobilier.montantDesCharges + 0 : 0 %}
+
+                                    {% if isLocation and bienImmobilier.montantLoyerHorsCharge is not empty %}
+                                        {% set propertyPrice = (bienImmobilier.montantLoyerHorsCharge + chargesNumber)|number_format(0, ',', ' ') ~ ' ' ~ devise %}
+                                        {% set propertyPeriod = 'detail_agence.card.per_month'|trans %}
+                                        {% set propertyBadge = chargesNumber > 0 ? 'detail_agence.card.charges_included'|trans : 'detail_agence.card.charges_excluded'|trans %}
+                                    {% elseif bienImmobilier.prix is not empty %}
+                                        {% set propertyPrice = bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ devise %}
+                                        {% set propertyPeriod = '' %}
+                                        {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'detail_agence.card.sale'|trans %}
+                                    {% else %}
+                                        {% set propertyPrice = 'detail_agence.card.price_on_request'|trans %}
+                                        {% set propertyPeriod = '' %}
+                                        {% set propertyBadge = transactionName|capitalize %}
+                                    {% endif %}
+
+                                    {% set details = [] %}
+
+                                    {% if bienImmobilier.chambres is not empty %}
+                                        {% set details = details|merge([
+                                            (bienImmobilier.chambres > 1 ? 'detail_agence.card.bedrooms.other' : 'detail_agence.card.bedrooms.one')|trans({'%count%': bienImmobilier.chambres}),
+                                        ]) %}
+                                    {% endif %}
+
+                                    {% if bienImmobilier.salleDeBains is not empty and bienImmobilier.salleDeBains != '0' %}
+                                        {% set details = details|merge([
+                                            (bienImmobilier.salleDeBains > 1 ? 'detail_agence.card.bathrooms.other' : 'detail_agence.card.bathrooms.one')|trans({'%count%': bienImmobilier.salleDeBains}),
+                                        ]) %}
+                                    {% endif %}
+
+                                    {% if bienImmobilier.surfaceTotal is not empty %}
+                                        {% set details = details|merge([
+                                            bienImmobilier.surfaceTotal ~ 'm²',
+                                        ]) %}
+                                    {% endif %}
+
+                                    {% set addressParts = [] %}
+
+                                    {% if bienImmobilier.showAdresse and bienImmobilier.adresse is not empty %}
+                                        {% set addressParts = addressParts|merge([bienImmobilier.adresse]) %}
+                                    {% elseif bienImmobilier.neighborhood is not empty %}
+                                        {% set addressParts = addressParts|merge([bienImmobilier.neighborhood]) %}
+                                    {% endif %}
+
+                                    {% if bienImmobilier.codePostal is not empty or bienImmobilier.ville is not empty %}
+                                        {% set addressParts = addressParts|merge([
+                                            (bienImmobilier.codePostal ~ ' ' ~ bienImmobilier.ville)|trim,
+                                        ]) %}
+                                    {% endif %}
+
+                                    <div class="col-12 col-sm-6 col-md-4">
+                                        <twig:Property:Card
+                                            title="{{ propertyTitle }}"
+                                            price="{{ propertyPrice }}"
+                                            period="{{ propertyPeriod }}"
+                                            badge="{{ propertyBadge }}"
+                                            description="{{ bienImmobilier.descriptionLogement|default('')|striptags|u.truncate(80, '...') }}"
+                                            details="{{ details|join(' ⸱ ') }}"
+                                            address="{{ addressParts|join(', ') }}"
+                                            image="{{ uploadedImage }}"
+                                            url="{{ path('app_public_detail_bien', {slug: bienImmobilier.slug}) }}"
+                                            favoriteUrl="{{ path('app_favoris_property_toggle', {id: bienImmobilier.id}) }}"
+                                            favoriteToken="{{ csrf_token('favorite_property_' ~ bienImmobilier.id) }}"
+                                            :isFavorite="true"
+                                        />
+                                    </div>
+
+                                {% else %}
+
+                                    <div class="col-12">
+                                        <p class="paragraphe" style="color:#858789">Vous n'avez encore aucun bien en favoris.</p>
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-
 {% endblock %}

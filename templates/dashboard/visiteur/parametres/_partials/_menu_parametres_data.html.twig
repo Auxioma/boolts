@@ -1,0 +1,81 @@
+{#
+ Template: templates/dashboard/visiteur/parametres/_partials/_menu_parametres_data.html.twig
+ Role: Renders the dashboard/visiteur/parametres/_partials Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+{% set menuParametres = [
+    {
+        title: 'Gestion du compte',
+        items: [
+        {
+            wrapper: 'information-personnelles',
+            tab: 'cat1',
+            icon: 'icon-circle-user',
+            label: 'Informations personnelles',
+            active: true,
+        },
+    ],
+    },
+    {
+        title: 'Sécurité et paiement',
+        titleClass: 'mt-32',
+        items: [
+        {
+            wrapper: 'connexion-securite',
+            tab: 'cat2',
+            icon: 'icon-lock',
+            label: 'Connexion et sécurité',
+            active: false,
+        },
+        {
+            wrapper: 'langue-et-devise',
+            tab: 'cat3',
+            icon: 'icon-languages',
+            label: 'Langue et devise',
+            active: false,
+        },
+    ],
+    },
+] %}
+
+{# variant 'mobile' : menu ouvert depuis la barre du bas, liens vers la page Paramètres + onglet (#catX) #}
+{% if variant|default('') == 'mobile' %}
+    {% for section in menuParametres %}
+        <div class="dashboard-settings-menu__section">
+            <p class="dashboard-settings-menu__section-title">{{ section.title }}</p>
+
+            <div class="dashboard-settings-menu__items">
+                {% for item in section.items %}
+                    <a href="{{ path('app_dashboard_visiteur_parametres') }}#{{ item.tab }}"
+                       class="dashboard-settings-menu__item"
+                       data-action="dashboard-bottom-bar#navigate">
+                        <span class="dashboard-settings-menu__item-label p-accent">
+                            <i class="{{ item.icon }}"></i>
+                            {{ item.label }}
+                        </span>
+                        <i class="icon-chevron-right"></i>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+{% for section in menuParametres %}
+    <span class="dashboard-agence-title paragraphe d-block {{ section.titleClass|default('') }}" style="color:#858789">
+        {{ section.title }}
+    </span>
+
+    {% for item in section.items %}
+        <div class="{{ item.wrapper }} {{ loop.first ? 'mt-16' : 'mt-8' }} px-10 py-10">
+            <a href="#"
+               class="menu-btn js-tab-link{{ item.active ? ' active' : '' }} p-accent"
+               data-tab="{{ item.tab }}">
+                <i class="{{ item.icon }} mr-10"></i>
+                {{ item.label }}
+            </a>
+        </div>
+    {% endfor %}
+{% endfor %}
+{% endif %}

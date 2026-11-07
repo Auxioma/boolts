@@ -1,0 +1,180 @@
+{#
+ Template: templates/dashboard/visiteur/parametres/_partials/informations_personnelles.html.twig
+ Role: Renders the dashboard/visiteur/parametres/_partials Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+{# Onglet : informations personnelles (visiteur) — Figma 4570:17957 #}
+<div class="js-tab-content contenue-des-page-des-parametres" id="cat1">
+
+    <div class="row">
+        <div class="col-12 col-md-10 mx-auto">
+
+            <h3 class="mb-0 d-none d-md-block">Informations personnelles</h3>
+
+            <div
+                class="card-information-public-profile my-32 py-18 px-24"
+                data-controller="field-save parametre--profile-avatar"
+                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
+                data-parametre--profile-avatar-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-parametre--profile-avatar-csrf-value="{{ csrf_token('profile_edit') }}"
+            >
+
+                {# Photo de profil #}
+                <div class="position-relative d-inline-block mb-32">
+
+                    {% set avatar = app.user.imageName ? vich_uploader_asset(app.user, 'imageFile') : null %}
+                    {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
+
+                    {% if avatar %}
+                        <img src="{{ avatar }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+                    {% elseif firstLetter %}
+                        <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+                    {% endif %}
+
+                    <button class="btn-change-image btn-full-white rounded-pill position-absolute start-50 translate-middle-x w-auto" type="button" style="bottom: -12px;" id="change-image-button">
+                        Modifier
+                    </button>
+
+                    {{ form_widget(form.imageFile, {
+                        attr: {
+                            class: 'd-none js-image-input',
+                            accept: 'image/*',
+                        },
+                    }) }}
+                </div>
+
+                <div class="connexion-securite">
+
+                    {# Prénom #}
+                    <div class="js-editable-field formulaire">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <label class="p-accent mb-0" for="{{ form.prenom.vars.id }}">Prénom*</label>
+                                <p class="mt-12 mb-0 js-field-value" id="prenom-value">
+                                    {{ app.user.prenom ?? '***' }}
+                                </p>
+                                <div class="mt-12 d-none js-field-input">
+
+                                    {{ form_widget(form.prenom, {
+                                        attr: {
+                                            class: 'form-control w-75 input',
+                                        },
+                                    }) }}
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="p-accent btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="prenom"
+                                data-field-save-input-param="#{{ form.prenom.vars.id }}"
+                                data-field-save-output-param="#prenom-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+
+                    {# Nom #}
+                    <div class="js-editable-field formulaire my-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <label class="p-accent mb-0" for="{{ form.nom.vars.id }}">Nom*</label>
+                                <p class="mt-12 mb-0 js-field-value" id="nom-value">
+                                    {{ app.user.nom ?? '***' }}
+                                </p>
+                                <div class="mt-12 d-none js-field-input">
+
+                                    {{ form_widget(form.nom, {
+                                        attr: {
+                                            class: 'form-control w-75 input',
+                                        },
+                                    }) }}
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="nom"
+                                data-field-save-input-param="#{{ form.nom.vars.id }}"
+                                data-field-save-output-param="#nom-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+
+                    {# E-mail #}
+                    <div class="js-editable-field formulaire my-20">
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+                            <div class="w-100">
+                                <label class="p-accent mb-0" for="{{ form.email.vars.id }}">E-mail*</label>
+                                <p class="mt-12 mb-0 js-field-value" id="email-value">
+                                    {{ app.user.email ?? '***' }}
+                                </p>
+                                <div class="mt-12 d-none js-field-input">
+
+                                    {{ form_widget(form.email, {
+                                        attr: {
+                                            class: 'form-control w-75 input',
+                                        },
+                                    }) }}
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="email"
+                                data-field-save-input-param="#{{ form.email.vars.id }}"
+                                data-field-save-output-param="#email-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+
+                    {# Telephone #}
+                    <div
+                        class="js-editable-field formulaire my-20"
+                        data-controller="phone"
+                    >
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="w-100">
+                                <label class="p-accent mb-0" for="{{ form.telephone.vars.id }}">Numéro de téléphone</label>
+
+                                <p class="mt-12 mb-0 js-field-value" id="telephone-value">
+                                    {{ app.user.telephone ?? '***' }}
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input">
+                                    {{ form_widget(form.telephone, {
+                                        attr: {
+                                            class: 'form-control w-75 input',
+                                            'data-phone-target': 'input',
+                                        },
+                                    }) }}
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent"
+                                data-action="click->phone#sync click->field-save#handle"
+                                data-field-save-field-param="telephone"
+                                data-field-save-input-param="#{{ form.telephone.vars.id }}"
+                                data-field-save-output-param="#telephone-value"
+                            >
+                                Modifier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

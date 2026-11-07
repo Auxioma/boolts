@@ -1,0 +1,141 @@
+{#
+ Template: templates/dashboard/visiteur/parametres/_partials/connection-securise.html.twig
+ Role: Renders the dashboard/visiteur/parametres/_partials Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
+<div class="js-tab-content d-none contenue-des-page-des-parametres" id="cat2">
+
+    <div class="row">
+        <div class="col-12 col-md-10 mx-auto">
+
+            <h3 class="mb-0 d-none d-md-block">Connexion et sécurité</h3>
+
+            <div
+                class="card-information-public-profile my-32 py-18 px-24"
+                data-controller="field-save"
+                data-field-save-url-value="{{ path('api_profile_agence_immobiliere') }}"
+                data-field-save-csrf-value="{{ csrf_token('profile_edit') }}"
+            >
+                            <h3 class="mb-0" for="two-factor-switch">
+                                Connexion
+                            </h3>
+                <div class="connexion-securite">
+
+                    {# Password #}
+                    <div class="js-editable-field formulaire">
+
+                        <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
+
+                            <div class="w-100 mt-24">
+
+                                <label class="p-accent mb-0" for="{{ form.plainPassword.first.vars.id }}">
+                                    Mot de passe
+                                </label>
+
+                                <p class="mt-12 mb-0 js-field-value" id="password-value">
+                                    *****************
+                                </p>
+
+                                <div class="mt-12 d-none js-field-input">
+
+                                    {{ form_widget(form.plainPassword.first, {
+                                        attr: {
+                                            id: 'plain-password-first',
+                                            class: 'form-control mb-12 input',
+                                            'data-name': 'password',
+                                        },
+                                    }) }}
+
+                                    {{ form_widget(form.plainPassword.second, {
+                                        attr: {
+                                            id: 'plain-password-second',
+                                            class: 'form-control input',
+                                            'data-name': 'passwordConfirm',
+                                        },
+                                    }) }}
+
+                                    <span class="flash-message flash-message-error d-none js-field-error"></span>
+
+                                </div>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn btn-link p-0 text-decoration-none btn-buttom-agence js-edit-button p-accent"
+                                data-action="click->field-save#handle"
+                                data-field-save-field-param="plainPassword"
+                                data-field-save-multiple-param="true"
+                                data-field-save-output-param="#password-value"
+                            >
+                                Modifier
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    {# DoubleAuthentification #}
+                    <div
+                        class="formulaire js-2fa-wrapper"
+                        data-controller="parametre--two-factor"
+                        data-parametre--two-factor-status-url-value="{{ path('account_2fa_status') }}"
+                        data-parametre--two-factor-toggle-url-value="{{ path('account_2fa_toggle') }}"
+                    >
+
+                        <div class="d-flex justify-content-between align-items-center pt-24">
+
+                            <h3 class="mb-0" for="two-factor-switch">
+                                Authentification à deux facteurs
+                            </h3>
+
+                            <label class="contenue-des-page-des-parametres-switch">
+                                <input
+                                    type="checkbox"
+                                    id="two-factor-switch"
+                                    class="js-two-factor-switch"
+                                    autocomplete="off"
+                                >
+                                <span class="contenue-des-page-des-parametres-switch-slider"></span>
+                            </label>
+
+                        </div>
+
+                        <div class="d-none js-two-factor-content">
+
+                            {# Code secret #}
+                            <div class="d-flex justify-content-between align-items-start pt-24">
+                                <div class="w-100">
+                                    <label class="mb-0 p-accent" for="two-factor-code">
+                                        Adresse e-mail
+                                    </label>
+                                    <p class="mt-12 mb-0 js-code-secret-date">
+                                        {{ app.user.email }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {# Supprimer le compte (visiteur) — Figma 4570:18395 #}
+            <form method="post" action="{{ path('app_dashboard_visiteur_compte_supprimer') }}" class="px-10">
+                <input type="hidden" name="_token" value="{{ csrf_token('visiteur_delete_account') }}">
+                <button
+                    type="submit"
+                    class="btn btn-link p-0 text-decoration-none p-accent"
+                    style="color: var(--colors-red-red-500);"
+                    onclick="return confirm('Voulez-vous vraiment supprimer votre compte ? Cette action est définitive.');"
+                >
+                    Supprimer le compte
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+</div>

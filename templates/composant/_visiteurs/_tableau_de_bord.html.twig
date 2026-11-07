@@ -16,7 +16,7 @@
 
         <div class="px-10 py-10 mt-22 color-active">
             <a href="{{ path('app_dashboard_visiteur_favoris_bien') }}"
-               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
+               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) starts with 'app_dashboard_visiteur_favoris_bien' ? 'active' : '' }}">
                 <span>
                     <i class="icon-building-2 mr-10"></i>
                     Favoris
@@ -50,7 +50,7 @@
 
         <div class="px-10 py-10 mt-22 color-active">
             <a href="{{ path('app_dashboard_visiteur_parametres') }}"
-               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_parametres' ? 'active' : '' }}">
+               class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'app_dashboard_visiteur_parametres' ? 'active' : '' }}">
                 <span>
                     <i class="icon-settings mr-10"></i>
                     {{ 'agency_dashboard.sidebar.settings'|trans }}
@@ -92,7 +92,7 @@
 <div class="dashboard-settings-menu" id="dashboard-settings-menu" data-dashboard-bottom-bar-target="panel" hidden>
     <h2 class="dashboard-settings-menu__title">{{ 'agency_dashboard.sidebar.settings'|trans }}</h2>
 
-    {{ include('dashboard/agence_immobiliere/_partials/parametres/_menu_parametres_data.html.twig', {variant: 'mobile'}) }}
+    {{ include('dashboard/visiteur/parametres/_partials/_menu_parametres_data.html.twig', {variant: 'mobile'}) }}
 </div>
 
 {# Menu Plus — Figma « Plus » 6934:17398 #}
@@ -139,8 +139,8 @@
 </div>
 
 <nav class="dashboard-bottom-bar" aria-label="Navigation du dashboard">
-    <a href="{{ path('agence_immobiliere_mes_biens_list') }}"
-       class="dashboard-bottom-bar__item {{ current_route starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
+    <a href="{{ path('app_dashboard_visiteur_favoris_bien') }}"
+       class="dashboard-bottom-bar__item {{ current_route starts with 'app_dashboard_visiteur_favoris_bien' ? 'active' : '' }}">
         <i class="icon-building-2"></i>
         <span>Favoris</span>
     </a>
@@ -152,7 +152,7 @@
     </a>
 
     <button type="button"
-            class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_parametres' ? 'active' : '' }}"
+            class="dashboard-bottom-bar__item {{ current_route == 'app_dashboard_visiteur_parametres' ? 'active' : '' }}"
             aria-controls="dashboard-settings-menu"
             aria-expanded="false"
             data-dashboard-bottom-bar-target="settingsButton"

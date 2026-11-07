@@ -12,17 +12,27 @@
 
 namespace App\Controller\Dashboard\Visiteur;
 
+use App\Entity\User;
+use App\Repository\FavorisRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class FavorisBienController extends AbstractController
 {
     #[Route('/dashboard/visiteur/favoris/bien', name: 'app_dashboard_visiteur_favoris_bien')]
-    public function index(): Response
+    #[IsGranted('ROLE_USER')]
+    public function index(FavorisRepository $favorisRepository): Response
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException('Utilisateur non authentifié.');
+        }
+
         return $this->render('dashboard/visiteur/favoris_bien/index.html.twig', [
-            'controller_name' => 'FavorisBienController',
+            'properties' => $favorisRepository->findPublishedPropertiesByUser($user),
         ]);
     }
 

@@ -1,35 +1,59 @@
 {#
- Template: templates/dashboard/agence_immobiliere/dashboard/index.html.twig
- Role: Renders the dashboard/agence_immobiliere/dashboard Twig view.
+ Template: templates/dashboard/visiteur/parametres/index.html.twig
+ Role: Renders the dashboard/visiteur/parametres Twig view.
  Context: Provided by the rendering controller, parent template, or including template.
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'agency_dashboard.title'|trans }}{% endblock %}
+{% block title %}
+    Paramètres
+{% endblock %}
 
 {% block body %}
-    {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
-
-    <main id="dashboard" class="dashboard">
-        <div class="container-fluid dashboard-container">
+    <main id="dashboard" class="dashboard" data-controller="parametre--tabs">
+        <div class="container-fluid bg-white">
             <div class="row">
-
-                {# Sidebar existante #}
                 {{ include('composant/_visiteurs/_tableau_de_bord.html.twig') }}
 
-                {# Contenu principal #}
-                <div class="col-md-9 col-lg-10 col-12 dashboard-main">
-                    <div class="col-12 col-md-10 mx-auto">
-                        
+                {# Topbar des pages de contenu (mobile, < 768px) #}
+                <div class="col-12 d-md-none p-0">
+                    <div class="parametres-topbar">
+                        <button type="button"
+                                class="parametres-topbar__back"
+                                aria-label="Retour au menu Paramètres"
+                                data-action="parametre--tabs#back">
+                            <i class="icon-chevron-left" aria-hidden="true"></i>
+                        </button>
 
-                        parametres content
+                        <p class="parametres-topbar__title p-accent mb-0" data-parametre--tabs-target="title"></p>
+                    </div>
+                </div>
 
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main bg-white">
+                    <div class="row">
+                        <div class="col-3 border-color-right-gris d-none d-md-block">
+                            <div class="menu-parametres">
+                                {{ include('dashboard/visiteur/parametres/_partials/_menu_parametres_data.html.twig') }}
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-9">
+                            <div class="row bg-white">
+                                <div class="col-12">
+                                    {{ include('dashboard/visiteur/parametres/_partials/informations_personnelles.html.twig') }}
+                                    {{ include('dashboard/visiteur/parametres/_partials/connection-securise.html.twig') }}
+                                    {{ include('dashboard/visiteur/parametres/_partials/langue_et_devise.html.twig') }}
+
+                                    <div class="js-success-message flash-message flash-message-success message-flash-profile d-none"></div>
+                                    <div class="js-error-message flash-message flash-message-error message-flash-profile-error d-none"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-
 {% endblock %}

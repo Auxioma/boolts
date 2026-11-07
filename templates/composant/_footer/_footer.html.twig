@@ -55,37 +55,15 @@
                     </div>
 
                     <div class="boolts-footer__tab-panel" data-tab-panel="localite" data-home--property-tabs-target="panel">
+                        {# 18 plus grandes villes du pays du visiteur (IP → OpenStreetMap), par colonnes de 3 #}
                         <div class="boolts-footer__grid">
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Paris</a></li>
-                                <li><a href="#">Marseille</a></li>
-                                <li><a href="#">Lyon</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Toulouse</a></li>
-                                <li><a href="#">Nice</a></li>
-                                <li><a href="#">Nantes</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Strasbourg</a></li>
-                                <li><a href="#">Montpellier</a></li>
-                                <li><a href="#">Bordeaux</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Lille</a></li>
-                                <li><a href="#">Rennes</a></li>
-                                <li><a href="#">Reims</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Toulon</a></li>
-                                <li><a href="#">Grenoble</a></li>
-                                <li><a href="#">Dijon</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Angers</a></li>
-                                <li><a href="#">Nîmes</a></li>
-                                <li><a href="#">Le Havre</a></li>
-                            </ul>
+                            {% for column in footer_cities()|batch(3) %}
+                                <ul class="boolts-footer__links">
+                                    {% for city in column %}
+                                        <li><a href="#">{{ city }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            {% endfor %}
                         </div>
                     </div>
 
