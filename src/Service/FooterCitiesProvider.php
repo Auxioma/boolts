@@ -33,7 +33,12 @@ final class FooterCitiesProvider
 {
     public const int LIMIT = 18;
 
-    private const string OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
+    /** Instances publiques Overpass, essayées dans l'ordre (elles sont souvent surchargées). */
+    private const array OVERPASS_URLS = [
+        'https://overpass-api.de/api/interpreter',
+        'https://overpass.private.coffee/api/interpreter',
+        'https://overpass.kumi.systems/api/interpreter',
+    ];
     private const string DEFAULT_COUNTRY = 'FR';
     private const array LOCALES = ['fr', 'en'];
     private const int REFRESH_AFTER = 30 * 24 * 3600;
@@ -88,7 +93,7 @@ final class FooterCitiesProvider
             return;
         }
 
-        set_time_limit(180);
+        set_time_limit(600);
 
         foreach (array_keys($this->pendingCountries) as $countryCode) {
             $this->refreshCountry($countryCode);
@@ -111,15 +116,24 @@ final class FooterCitiesProvider
 
         $this->cacheApp->save($attempt->set(true)->expiresAfter(self::RETRY_AFTER));
 
-        try {
-            $cities = $this->fetchFromOverpass($countryCode);
-        } catch (\Throwable $exception) {
-            $this->logger->warning('Footer : impossible de récupérer les villes OpenStreetMap.', [
-                'country' => $countryCode,
-                'exception' => $exception,
-            ]);
+        $cities = [];
 
-            return false;
+        foreach (self::OVERPASS_URLS as $url) {
+            try {
+                $cities = $this->fetchFromOverpass($url, $countryCode);
+            } catch (\Throwable $exception) {
+                $this->logger->warning('Footer : impossible de récupérer les villes OpenStreetMap.', [
+                    'country' => $countryCode,
+                    'url' => $url,
+                    'exception' => $exception,
+                ]);
+
+                continue;
+            }
+
+            if ([] !== $cities) {
+                break;
+            }
         }
 
         if ([] === $cities) {
@@ -177,7 +191,7 @@ final class FooterCitiesProvider
     /**
      * @return list<array<string, string>> pour chaque ville : ['default' => nom, 'fr' => ..., 'en' => ...]
      */
-    private function fetchFromOverpass(string $countryCode): array
+    private function fetchFromOverpass(string $url, string $countryCode): array
     {
         $nameColumns = implode(',', array_map(static fn (string $locale): string => '"name:'.$locale.'"', self::LOCALES));
 
@@ -189,7 +203,7 @@ final class FooterCitiesProvider
             out tags;
             OVERPASS;
 
-        $content = $this->httpClient->request('POST', self::OVERPASS_URL, [
+        $content = $this->httpClient->request('POST', $url, [
             'body' => ['data' => $query],
             'headers' => ['User-Agent' => 'Boolts/1.0 (+https://boolts.com)'],
             'timeout' => 150,
