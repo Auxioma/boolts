@@ -1877,6 +1877,31 @@ width: 100%;
     }
 }
 
+/* Messagerie visiteur (Figma 4570:19079) */
+.messagerie-visiteur {
+    --bs-light-rgb: 235, 236, 236;
+
+    --bs-border-radius-lg: 14px;
+}
+
+.messagerie-visiteur__thread {
+    gap: 32px;
+}
+
+.messagerie-visiteur__message {
+    width: 200px;
+}
+
+.messagerie-visiteur__reply {
+    max-width: 671px;
+}
+
+@media (min-width: 992px) {
+    .messagerie-visiteur {
+        min-height: calc(100vh - var(--topbar-height, 72px));
+    }
+}
+
 .properties-performance-header {
     margin-bottom: 16px;
 }

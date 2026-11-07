@@ -1,20 +1,35 @@
+{#
+ Template: templates/dashboard/agence_immobiliere/dashboard/index.html.twig
+ Role: Renders the dashboard/agence_immobiliere/dashboard Twig view.
+ Context: Provided by the rendering controller, parent template, or including template.
+ Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
+#}
+
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello FavorisBienController!{% endblock %}
+{% block title %}{{ 'agency_dashboard.title'|trans }}{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    {% set documents_validated = is_granted(constant('App\\Security\\Voter\\AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD')) %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <main id="dashboard" class="dashboard">
+        <div class="container-fluid dashboard-container">
+            <div class="row">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/laragon/www/boolts/src/Controller/Dashboard/Visiteur/FavorisBienController.php</code></li>
-        <li>Your template at <code>C:/laragon/www/boolts/templates/dashboard/visiteur/favoris_bien/index.html.twig</code></li>
-    </ul>
-</div>
+                {# Sidebar existante #}
+                {{ include('composant/_visiteurs/_tableau_de_bord.html.twig') }}
+
+                {# Contenu principal #}
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+                    <div class="col-12 col-md-10 mx-auto">
+                        
+
+                        favoris_bien content
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
 {% endblock %}

@@ -10,12 +10,12 @@
 <aside class="col-3 col-lg-2 pt-48 pb-32 px-12 aside-dashboard-navbar d-none d-md-block">
     <div class="h-100">
 
-        <div class="mt-16">
+        <div class="mt-16"> 
             <p class="mb-0">{{ 'agency_dashboard.sidebar.activity'|trans }}</p>
         </div>
 
         <div class="px-10 py-10 mt-22 color-active">
-            <a href="{{ path('agence_immobiliere_mes_biens_list') }}"
+            <a href="{{ path('app_dashboard_visiteur_favoris_bien') }}"
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) starts with 'agence_immobiliere_mes_biens' ? 'active' : '' }}">
                 <span>
                     <i class="icon-building-2 mr-10"></i>
@@ -25,7 +25,7 @@
         </div>
 
         <div class="px-10 py-10 mt-8 color-active">
-            <a href="{{ path('agence_immobiliere_notifications') }}"
+            <a href="{{ path('app_dashboard_visiteur_notifications') }}"
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_notifications' ? 'active' : '' }}">
                 <span>
                     <i class="icon-bell mr-10"></i>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="px-10 py-10 mt-8 color-active">
-            <a href="{{ path('agence_immobiliere_messagerie') }}"
+            <a href="{{ path('app_dashboard_visiteur_messagerie') }}"
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_messagerie' ? 'active' : '' }}">
                 <span>
                     <i class="icon-message-circle-more mr-10"></i>
@@ -49,7 +49,7 @@
         </div>
 
         <div class="px-10 py-10 mt-22 color-active">
-            <a href="{{ path('agence_immobiliere_parametres') }}"
+            <a href="{{ path('app_dashboard_visiteur_parametres') }}"
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_parametres' ? 'active' : '' }}">
                 <span>
                     <i class="icon-settings mr-10"></i>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="px-10 py-10 mt-22 color-active">
-            <a href="{{ path('agence_immobiliere_aide') }}"
+            <a href="{{ path('app_dashboard_visiteur_aides') }}"  
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) == 'agence_immobiliere_aide' ? 'active' : '' }}">
                 <span>
                     <i class="icon-circle-help mr-10"></i>
