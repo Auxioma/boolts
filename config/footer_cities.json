@@ -1,0 +1,258 @@
+{
+    "AD": [
+        {
+            "default": "Andorra la Vella",
+            "fr": "Andorre-la-Vieille",
+            "en": "Andorra la Vella"
+        },
+        {
+            "default": "La Massana"
+        },
+        {
+            "default": "Sant Julià de Lòria"
+        }
+    ],
+    "AE": [
+        {
+            "default": "دبي",
+            "fr": "Doubaï",
+            "en": "Dubai"
+        },
+        {
+            "default": "الشارقة",
+            "fr": "Charjah",
+            "en": "Sharjah"
+        },
+        {
+            "default": "أبو ظبي",
+            "fr": "Abou Dabi",
+            "en": "Abu Dhabi"
+        },
+        {
+            "default": "العين",
+            "fr": "Al-Aïn",
+            "en": "Al Ain"
+        },
+        {
+            "default": "ة",
+            "fr": "Ras al-Khaïma",
+            "en": "Ras Al Khaimah"
+        },
+        {
+            "default": "ان",
+            "fr": "Ajman",
+            "en": "Ajman"
+        },
+        {
+            "default": "الفجيرة",
+            "fr": "Fujaïrah",
+            "en": "Fujairah"
+        },
+        {
+            "default": "خورفكان",
+            "fr": "Khor Fakkan",
+            "en": "Khor Fakkan"
+        },
+        {
+            "default": "القيوين",
+            "fr": "Oumm al Qaïwaïn",
+            "en": "Umm Al Quwain"
+        },
+        {
+            "default": "الذيد",
+            "fr": "Al Dhaid",
+            "en": "Al Dhaid"
+        },
+        {
+            "default": "السلع",
+            "fr": "Sila",
+            "en": "Sila"
+        }
+    ],
+    "AG": [
+        {
+            "default": "St. John's",
+            "fr": "Saint John's",
+            "en": "St. John's"
+        },
+        {
+            "default": "Osbourn"
+        },
+        {
+            "default": "All Saints"
+        },
+        {
+            "default": "Codrington"
+        }
+    ],
+    "AI": [
+        {
+            "default": "The Valley",
+            "fr": "The Valley",
+            "en": "The Valley"
+        }
+    ],
+    "DE": [
+        {
+            "default": "Berlin",
+            "fr": "Berlin",
+            "en": "Berlin"
+        },
+        {
+            "default": "Hamburg",
+            "fr": "Hambourg",
+            "en": "Hamburg"
+        },
+        {
+            "default": "München",
+            "fr": "Munich",
+            "en": "Munich"
+        },
+        {
+            "default": "Köln",
+            "fr": "Cologne",
+            "en": "Cologne"
+        },
+        {
+            "default": "Frankfurt am Main",
+            "fr": "Francfort-sur-le-Main",
+            "en": "Frankfurt"
+        },
+        {
+            "default": "Düsseldorf",
+            "fr": "Düsseldorf",
+            "en": "Dusseldorf"
+        },
+        {
+            "default": "Leipzig",
+            "fr": "Leipzig"
+        },
+        {
+            "default": "Stuttgart",
+            "fr": "Stuttgart",
+            "en": "Stuttgart"
+        },
+        {
+            "default": "Dortmund"
+        },
+        {
+            "default": "Dresden",
+            "fr": "Dresde"
+        },
+        {
+            "default": "Essen"
+        },
+        {
+            "default": "Hannover",
+            "fr": "Hanovre",
+            "en": "Hanover"
+        },
+        {
+            "default": "Bremen",
+            "fr": "Brême",
+            "en": "Bremen"
+        },
+        {
+            "default": "Nürnberg",
+            "fr": "Nuremberg",
+            "en": "Nuremberg"
+        },
+        {
+            "default": "Duisburg",
+            "fr": "Duisbourg"
+        },
+        {
+            "default": "Bochum",
+            "fr": "Bochum"
+        },
+        {
+            "default": "Wuppertal"
+        },
+        {
+            "default": "Bonn"
+        }
+    ],
+    "FR": [
+        {
+            "default": "Paris",
+            "fr": "Paris",
+            "en": "Paris"
+        },
+        {
+            "default": "Marseille",
+            "fr": "Marseille",
+            "en": "Marseille"
+        },
+        {
+            "default": "Lyon",
+            "fr": "Lyon",
+            "en": "Lyon"
+        },
+        {
+            "default": "Toulouse",
+            "fr": "Toulouse"
+        },
+        {
+            "default": "Nice",
+            "fr": "Nice",
+            "en": "Nice"
+        },
+        {
+            "default": "Nantes",
+            "fr": "Nantes"
+        },
+        {
+            "default": "Montpellier",
+            "fr": "Montpellier"
+        },
+        {
+            "default": "Strasbourg",
+            "fr": "Strasbourg"
+        },
+        {
+            "default": "Bordeaux",
+            "fr": "Bordeaux"
+        },
+        {
+            "default": "Lille",
+            "fr": "Lille"
+        },
+        {
+            "default": "Rennes",
+            "fr": "Rennes",
+            "en": "Rennes"
+        },
+        {
+            "default": "Toulon"
+        },
+        {
+            "default": "Reims",
+            "fr": "Reims"
+        },
+        {
+            "default": "Saint-Étienne",
+            "fr": "Saint-Étienne"
+        },
+        {
+            "default": "Le Havre",
+            "fr": "Le Havre"
+        },
+        {
+            "default": "Dijon",
+            "fr": "Dijon"
+        },
+        {
+            "default": "Grenoble"
+        },
+        {
+            "default": "Angers",
+            "fr": "Angers"
+        }
+    ],
+    "MC": [
+        {
+            "default": "Monaco",
+            "en": "Monaco"
+        }
+    ]
+}

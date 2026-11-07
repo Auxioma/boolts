@@ -12,154 +12,93 @@
 
 namespace App\Service;
 
-use Psr\Cache\CacheItemPoolInterface;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Les 18 plus grandes villes du pays du visiteur (pays déduit de l'adresse IP),
- * récupérées depuis OpenStreetMap (API Overpass) et traduites selon la locale.
+ * dans la langue de la page.
  *
- * Overpass met souvent 30 à 60 s à répondre : la page ne l'attend JAMAIS.
- *  - l'affichage lit uniquement le cache ;
- *  - si le pays n'est pas encore en cache (ou si les données ont plus de 30 jours),
- *    l'appel OSM est fait après l'envoi de la réponse (kernel.terminate) ;
- *  - en attendant, on affiche la France si elle est en cache, sinon la liste statique.
+ * Aucun appel extérieur à l'affichage : les villes sont lues dans config/footer_cities.json,
+ * généré par la commande app:footer-cities:generate (OpenStreetMap).
+ *
+ * Format du fichier :
+ *   { "DE": [ { "default": "München", "fr": "Munich", "en": "Munich" }, … ], … }
  */
 final class FooterCitiesProvider
 {
     public const int LIMIT = 18;
 
-    /** Instances publiques Overpass, essayées dans l'ordre (elles sont souvent surchargées). */
-    private const array OVERPASS_URLS = [
-        'https://overpass-api.de/api/interpreter',
-        'https://overpass.private.coffee/api/interpreter',
-        'https://overpass.kumi.systems/api/interpreter',
-    ];
-    private const string DEFAULT_COUNTRY = 'FR';
-    private const array LOCALES = ['fr', 'en'];
-    private const int REFRESH_AFTER = 30 * 24 * 3600;
-    private const int RETRY_AFTER = 3600;
+    /** Langues générées par défaut dans le fichier. */
+    public const array LOCALES = ['fr', 'en'];
 
-    /** Liste d'origine du footer, utilisée tant qu'OSM n'a pas répondu. */
+    private const string FILE = '/config/footer_cities.json';
+    private const string DEFAULT_COUNTRY = 'FR';
+    private const string FALLBACK_LOCALE = 'en';
+
+    /** Liste d'origine du footer, utilisée si le fichier n'existe pas encore. */
     private const array FALLBACK_CITIES = [
         'Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes',
         'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes', 'Reims',
         'Toulon', 'Grenoble', 'Dijon', 'Angers', 'Nîmes', 'Le Havre',
     ];
 
-    /** @var array<string, true> pays à (re)charger depuis OSM en fin de requête */
-    private array $pendingCountries = [];
+    /** @var array<string, list<array<string, string>>>|null */
+    private ?array $data = null;
 
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly GeoIpLocationService $geoIpLocationService,
-        private readonly HttpClientInterface $httpClient,
-        private readonly CacheItemPoolInterface $cacheApp,
-        private readonly LoggerInterface $logger,
+        #[Autowire('%kernel.project_dir%')]
+        private readonly string $projectDir,
     ) {
     }
 
     /**
-     * @return list<string> noms des villes, dans la langue de la locale courante
+     * @return list<string> noms des villes, dans la langue de la page
      */
     public function getCities(): array
     {
-        $locale = $this->requestStack->getCurrentRequest()?->getLocale() ?? 'fr';
+        $data = $this->data ??= $this->readFile();
+        // Pays sans ville connue (ex. Vatican) ou absent du fichier → France.
+        $cities = ($data[$this->resolveCountryCode()] ?? []) ?: ($data[self::DEFAULT_COUNTRY] ?? []);
 
-        $cities = $this->readCountry($this->resolveCountryCode())
-            ?? $this->readCountry(self::DEFAULT_COUNTRY);
-
-        if (null === $cities) {
+        if ([] === $cities) {
             return self::FALLBACK_CITIES;
         }
 
+        $locale = $this->requestStack->getCurrentRequest()?->getLocale() ?? self::FALLBACK_LOCALE;
+
+        // Langue de la page → anglais → nom local.
         return array_map(
-            static fn (array $names): string => $names[$locale] ?? $names['default'],
+            static fn (array $names): string => $names[$locale] ?? $names[self::FALLBACK_LOCALE] ?? $names['default'],
             $cities,
         );
     }
 
-    /**
-     * Appel OSM après l'envoi de la réponse au navigateur : le visiteur n'attend pas.
-     */
-    #[AsEventListener(event: KernelEvents::TERMINATE)]
-    public function refreshPendingCountries(): void
+    public function getFilePath(): string
     {
-        if ([] === $this->pendingCountries) {
-            return;
-        }
-
-        set_time_limit(600);
-
-        foreach (array_keys($this->pendingCountries) as $countryCode) {
-            $this->refreshCountry($countryCode);
-        }
-
-        $this->pendingCountries = [];
+        return $this->projectDir.self::FILE;
     }
 
     /**
-     * Récupère (et met en cache) les villes d'un pays. Utilisable aussi depuis une commande.
+     * @return array<string, list<array<string, string>>>
      */
-    public function refreshCountry(string $countryCode): bool
+    public function readFile(): array
     {
-        // Évite que plusieurs requêtes simultanées appellent OSM pour le même pays.
-        $attempt = $this->cacheApp->getItem($this->cacheKey($countryCode).'_attempt');
+        $filePath = $this->getFilePath();
 
-        if ($attempt->isHit()) {
-            return false;
+        if (!is_file($filePath)) {
+            return [];
         }
 
-        $this->cacheApp->save($attempt->set(true)->expiresAfter(self::RETRY_AFTER));
-
-        $cities = [];
-
-        foreach (self::OVERPASS_URLS as $url) {
-            try {
-                $cities = $this->fetchFromOverpass($url, $countryCode);
-            } catch (\Throwable $exception) {
-                $this->logger->warning('Footer : impossible de récupérer les villes OpenStreetMap.', [
-                    'country' => $countryCode,
-                    'url' => $url,
-                    'exception' => $exception,
-                ]);
-
-                continue;
-            }
-
-            if ([] !== $cities) {
-                break;
-            }
+        try {
+            $data = json_decode((string) file_get_contents($filePath), true, 512, \JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return [];
         }
 
-        if ([] === $cities) {
-            return false;
-        }
-
-        // Pas d'expiration : on garde les anciennes données si OSM ne répond plus.
-        $item = $this->cacheApp->getItem($this->cacheKey($countryCode));
-        $this->cacheApp->save($item->set(['fetchedAt' => time(), 'cities' => $cities]));
-
-        return true;
-    }
-
-    /**
-     * @return list<array<string, string>>|null null si le pays n'est pas encore en cache
-     */
-    private function readCountry(string $countryCode): ?array
-    {
-        $item = $this->cacheApp->getItem($this->cacheKey($countryCode));
-        $data = $item->isHit() ? $item->get() : null;
-
-        if (!\is_array($data) || time() - ($data['fetchedAt'] ?? 0) > self::REFRESH_AFTER) {
-            $this->pendingCountries[$countryCode] = true;
-        }
-
-        return \is_array($data) && [] !== ($data['cities'] ?? []) ? $data['cities'] : null;
+        return \is_array($data) ? $data : [];
     }
 
     /**
@@ -186,67 +125,5 @@ final class FooterCitiesProvider
         return \is_string($countryCode) && 1 === preg_match('/^[A-Z]{2}$/', $countryCode)
             ? $countryCode
             : self::DEFAULT_COUNTRY;
-    }
-
-    /**
-     * @return list<array<string, string>> pour chaque ville : ['default' => nom, 'fr' => ..., 'en' => ...]
-     */
-    private function fetchFromOverpass(string $url, string $countryCode): array
-    {
-        $nameColumns = implode(',', array_map(static fn (string $locale): string => '"name:'.$locale.'"', self::LOCALES));
-
-        // Sortie CSV limitée aux colonnes utiles (la sortie JSON complète est énorme).
-        $query = <<<OVERPASS
-            [out:csv(name,{$nameColumns},population;false;"\t")][timeout:120];
-            area["ISO3166-1"="{$countryCode}"]["admin_level"="2"]->.country;
-            node["place"="city"]["population"](area.country);
-            out tags;
-            OVERPASS;
-
-        $content = $this->httpClient->request('POST', $url, [
-            'body' => ['data' => $query],
-            'headers' => ['User-Agent' => 'Boolts/1.0 (+https://boolts.com)'],
-            'timeout' => 150,
-            'max_duration' => 150,
-        ])->getContent();
-
-        $cities = [];
-
-        foreach (preg_split('/\R/', mb_trim($content)) ?: [] as $line) {
-            $columns = explode("\t", $line);
-            $name = mb_trim($columns[0] ?? '');
-            $population = (int) preg_replace('/\D/', '', $columns[\count(self::LOCALES) + 1] ?? '');
-
-            if ('' === $name || $population <= 0) {
-                continue;
-            }
-
-            $names = ['default' => $name];
-
-            foreach (self::LOCALES as $index => $locale) {
-                $localized = mb_trim($columns[$index + 1] ?? '');
-
-                if ('' !== $localized) {
-                    $names[$locale] = $localized;
-                }
-            }
-
-            // Une même ville peut apparaître plusieurs fois : on garde la plus peuplée.
-            if (!isset($cities[$name]) || $cities[$name]['population'] < $population) {
-                $cities[$name] = ['population' => $population, 'names' => $names];
-            }
-        }
-
-        usort($cities, static fn (array $a, array $b): int => $b['population'] <=> $a['population']);
-
-        return array_map(
-            static fn (array $city): array => $city['names'],
-            \array_slice($cities, 0, self::LIMIT),
-        );
-    }
-
-    private function cacheKey(string $countryCode): string
-    {
-        return 'footer_cities_osm_v2_'.$countryCode;
     }
 }
