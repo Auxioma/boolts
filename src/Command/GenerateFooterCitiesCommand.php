@@ -207,6 +207,9 @@ final class GenerateFooterCitiesCommand extends Command
     {
         $places = [];
 
+        // Certaines réponses Overpass contiennent des octets UTF-8 invalides (json_encode échouerait).
+        $content = mb_scrub($content, 'UTF-8');
+
         foreach (preg_split('/\R/', mb_trim($content)) ?: [] as $line) {
             $columns = explode("\t", $line);
             $name = mb_trim($columns[0] ?? '');
