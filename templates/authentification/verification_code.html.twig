@@ -73,20 +73,13 @@
         .verification-code__digits {
             display: flex;
             gap: 10px;
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
 
-        .verification-code__digit {
-            width: 48px;
-            height: 44px;
-            padding: 12px 8px;
-            border: 2px solid #ebecec;
-            border-radius: 8px;
+        .verification-code__digits .verification-code__digit {
+            width: 100%;
+            height: 70px;
             color: #858789;
-            font-family: "Eudoxus Sans", sans-serif;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 20px;
             text-align: center;
         }
 
@@ -98,7 +91,7 @@
 
         .verification-code__message {
             display: block;
-            margin-bottom: 24px;
+            margin: -8px 0 32px;
             color: #dc3545;
             font-family: "Eudoxus Sans", sans-serif;
             font-size: 14px;
@@ -112,21 +105,7 @@
 
         .verification-code__submit {
             width: 100%;
-            height: 44px;
-            padding: 10px 16px;
-            border: 0;
-            border-radius: 50px;
-            background: #5d00ff;
-            color: #fff;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 20px;
-        }
-
-        .verification-code__submit:hover,
-        .verification-code__submit:focus-visible {
-            background: #4d00d2;
         }
 
         .verification-code__divider {
@@ -150,27 +129,8 @@
         }
 
         .verification-code__resend {
-            display: flex;
-            align-items: center;
-            justify-content: center;
             width: 100%;
-            height: 44px;
-            padding: 10px 16px;
-            border: 2px solid #5d00ff;
-            border-radius: 50px;
-            background: #fff;
-            color: #5d00ff;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 20px;
-            text-decoration: none;
-        }
-
-        .verification-code__resend:hover,
-        .verification-code__resend:focus-visible {
-            background: #dfcbff;
-            color: #5d00ff;
         }
 
         .verification-code__change-email {
@@ -178,9 +138,6 @@
             margin-top: 24px;
             color: #5d00ff;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            line-height: 20px;
             text-align: center;
             text-decoration: none;
         }
@@ -227,7 +184,7 @@
                 gap: 8px;
             }
 
-            .verification-code__digit {
+            .verification-code__digits .verification-code__digit {
                 flex: 1;
                 width: auto;
             }
@@ -268,7 +225,7 @@
                     <div class="verification-code__digits">
                         {% for i in 1..6 %}
                             <input
-                                class="verification-code__digit"
+                                class="verification-code__digit  input"
                                 type="text"
                                 maxlength="1"
                                 inputmode="numeric"
@@ -299,7 +256,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <button class="verification-code__submit" type="submit">
+                    <button class="verification-code__submit btn-full-blue" type="submit">
                         {{ (translationPrefix ~ '.register.verify_code.submit')|trans }}
                     </button>
                 {{ form_end(codeForm) }}
@@ -308,7 +265,7 @@
 
                 <a
                     href="{{ path(resendRoute) }}"
-                    class="verification-code__resend"
+                    class="verification-code__resend btn-full-white"
                     data-turbo="false"
                 >
                     {{ (translationPrefix ~ '.register.verify_code.resend_code')|trans }}
@@ -316,7 +273,7 @@
 
                 <a
                     href="{{ path(changeEmailRoute) }}"
-                    class="verification-code__change-email"
+                    class="verification-code__change-email p-accent"
                     data-turbo="false"
                 >
                     {{ (translationPrefix ~ '.register.verify_code.change_email')|trans }}
