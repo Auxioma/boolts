@@ -68,37 +68,19 @@
                     </div>
 
                     <div class="boolts-footer__tab-panel active" data-tab-panel="type" data-home--property-tabs-target="panel">
+                        {# Combinaisons CategoryBien × CategoryBienTransaction (noms traduits des entités), par colonnes de 3 #}
                         <div class="boolts-footer__grid">
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Appartements à louer</a></li>
-                                <li><a href="#">Appartements à vendre</a></li>
-                                <li><a href="#">Bureaux à vendre</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Fermes à louer</a></li>
-                                <li><a href="#">Fermes à vendre</a></li>
-                                <li><a href="#">Lofts à vendre</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Maisons à louer</a></li>
-                                <li><a href="#">Maisons à vendre</a></li>
-                                <li><a href="#">Parkings à vendre</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Terrains à louer</a></li>
-                                <li><a href="#">Terrains à vendre</a></li>
-                                <li><a href="#">Studios à vendre</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Duplex à vendre</a></li>
-                                <li><a href="#">Villas à vendre</a></li>
-                                <li><a href="#">Locaux commerciaux à louer</a></li>
-                            </ul>
-                            <ul class="boolts-footer__links">
-                                <li><a href="#">Immeubles à vendre</a></li>
-                                <li><a href="#">Chalets à vendre</a></li>
-                                <li><a href="#">Garages à louer</a></li>
-                            </ul>
+                            {% for column in footer_property_types()|batch(3) %}
+                                <ul class="boolts-footer__links">
+                                    {% for item in column %}
+                                        <li>
+                                            <a href="#">
+                                                {{ item.category.name }} - {{ item.transaction.name }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endfor %}
                         </div>
                     </div>
 
