@@ -47,14 +47,14 @@
         </div>
 
         <!-- Form Container -->
-        <div class="bg-white flex-grow-1" style="display: flex; flex-direction: column; gap: 48px; padding-bottom: 32px; border-radius: 24px;">
-            <h1 class="fw-bold" style="font-size: 30px; line-height: 34px; color: #0B0F14; margin: 0;">Quelques informations à propos de votre entreprise</h1>
+        <div class="bg-white flex-grow-1" style="padding-bottom: 32px; border-radius: 24px;">
+            <h2 class="mb-32">Quelques informations à propos de votre entreprise</h2>
 
             {{ form_start(form) }}
             <div class="d-flex flex-column" style="gap: 32px;">
                 <!-- Company Legal Name -->
                 <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Nom légal de votre entreprise*</label>
+                    <label class="p-accent m-0">Nom légal de votre entreprise*</label>
                     {{ form_widget(form.entreprise) }}
                     {{ form_errors(form.entreprise) }}
                 </div>
@@ -70,7 +70,7 @@
                 >
                     <!-- Company Legal Address -->
                     <div class="d-flex flex-column position-relative" style="gap: 16px;">
-                        <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Adresse légale de votre entreprise*</label>
+                        <label class="p-accent m-0">Adresse légale de votre entreprise*</label>
                         {{ form_widget(form.adresse, {
                             attr: {
                                 autocomplete: 'off',
@@ -92,7 +92,7 @@
 
                     <!-- Address 2 -->
                     <div class="d-flex flex-column" style="gap: 16px;">
-                        <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Adresse 2 (facultatif)</label>
+                        <label class="p-accent m-0">Adresse 2 (facultatif)</label>
                         {{ form_widget(form.adresseComplement) }}
                         {{ form_errors(form.adresseComplement) }}
                     </div>
@@ -100,7 +100,7 @@
                     <!-- Postal Code and City Row -->
                     <div class="d-flex" style="gap: 12px;">
                         <div class="d-flex flex-column flex-grow-1" style="gap: 16px;">
-                            <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Code postal*</label>
+                            <label class="p-accent m-0">Code postal*</label>
                             {{ form_widget(form.codePostal, {
                                 attr: {
                                     autocomplete: 'off',
@@ -110,7 +110,7 @@
                             {{ form_errors(form.codePostal) }}
                         </div>
                         <div class="d-flex flex-column flex-grow-1" style="gap: 16px;">
-                            <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Ville*</label>
+                            <label class="p-accent m-0">Ville*</label>
                             {{ form_widget(form.ville, {
                                 attr: {
                                     autocomplete: 'off',
@@ -123,7 +123,7 @@
 
                     <!-- Country -->
                     <div class="d-flex flex-column" style="gap: 16px;">
-                        <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Pays*</label>
+                        <label class="p-accent m-0">Pays*</label>
                         {{ form_widget(form.pays, {
                             attr: {
                                 autocomplete: 'off',
@@ -138,7 +138,7 @@
                 <p class="fw-semibold" style="font-size: 14px; line-height: 1.4; color: #858789; margin: 0;">*Informations telles qu'affichées sur vos documents officiels</p>
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary fw-bold" style="height: 44px; background-color: #5D00FF; border: none; border-radius: 50px; font-size: 16px; line-height: 20px; padding: 10px 16px; color: white;">Suivant</button>
+                <button type="submit" class="btn btn-full-blue">Suivant</button>
             </div>
             {{ form_end(form) }}
         </div>

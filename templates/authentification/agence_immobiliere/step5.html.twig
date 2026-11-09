@@ -49,10 +49,10 @@
         </div>
 
         <!-- Form Container -->
-        <div class="bg-white flex-grow-1" style="display: flex; flex-direction: column; gap: 48px; padding-bottom: 32px; border-radius: 24px;">
+        <div class="bg-white flex-grow-1" style="padding-bottom: 32px; border-radius: 24px;">
             <!-- Header with Title and Skip Button -->
-            <div class="d-flex align-items-end justify-content-between" style="gap: 16px;">
-                <h1 class="fw-bold mb-0" style="font-size: 30px; line-height: 34px; color: #0B0F14;">Remplissez la fiche publique de votre agence</h1>
+            <div class="d-flex align-items-end justify-content-between mb-32" style="gap: 16px;">
+                <h2 class="mb-0">Remplissez la fiche publique de votre agence</h2>
                 <a href="{{ path('app_professionnelle_step_six') }}" class="btn btn-link fw-bold" style="color: #5D00FF; text-decoration: none; font-size: 16px; line-height: 20px; padding: 10px 16px; height: 44px;">Passer</a>
             </div>
 
@@ -65,7 +65,7 @@
             <div class="d-flex flex-column" style="gap: 32px;">
                 <!-- Profile Photo Section -->
                 <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Photo de profil (facultatif)</label>
+                    <label class="p-accent m-0">Photo de profil (facultatif)</label>
                     <div style="display: flex; align-items: flex-start; gap: 16px; position: relative;">
                         <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden" style="width: 100px; height: 100px; background-color: #E8E9EB; flex-shrink: 0;">
                             <img
@@ -94,28 +94,28 @@
 
                 <!-- Description -->
                 <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Description (facultatif)</label>
+                    <label class="p-accent m-0">Description (facultatif)</label>
                     {{ form_widget(form.description) }}
                     {{ form_errors(form.description) }}
                 </div>
 
                 <!-- Phone Number -->
                 <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Numéro de téléphone de contact (facultatif)</label>
+                    <label class="p-accent m-0">Numéro de téléphone de contact (facultatif)</label>
                     {{ form_widget(form.numeroContact) }}
                     {{ form_errors(form.numeroContact) }}
                 </div>
 
                 <!-- Email -->
                 <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Adresse e-mail de contact (facultatif)</label>
+                    <label class="p-accent m-0">Adresse e-mail de contact (facultatif)</label>
                     {{ form_widget(form.emailContact) }}
                     {{ form_errors(form.emailContact) }}
                 </div>
 
                 <!-- Languages Section -->
                 <div class="d-flex flex-column" style="gap: 12px;">
-                    <label class="fw-bold" style="font-size: 16px; line-height: 20px; color: #0B0F14; margin: 0;">Langues parlées par l'agence (facultatif)</label>
+                    <label class="p-accent m-0">Langues parlées par l'agence (facultatif)</label>
 
                     <!-- Search Bar -->
                     <div class="d-flex align-items-center" style="border: 2px solid #EBECEC; border-radius: 8px; padding: 8px 8px; gap: 10px;">
@@ -130,7 +130,7 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary fw-bold" style="height: 44px; background-color: #5D00FF; border: none; border-radius: 50px; font-size: 16px; line-height: 20px; padding: 10px 16px; color: white;">Suivant</button>
+                <button type="submit" class="btn btn-full-blue">Suivant</button>
             </div>
             {{ form_end(form) }}
         </div>

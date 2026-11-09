@@ -39,28 +39,26 @@ class StepCinqType extends AbstractType
             ->add('description', TextareaType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control input',
                     'placeholder' => 'Veuillez saisir une description de votre agence',
-                    'style' => 'height: 86px; border: 2px solid #EBECEC; border-radius: 8px; font-size: 14px; padding: 14px; resize: vertical;',
+                    'style' => 'height: 86px; padding: 14px; resize: vertical;',
                 ],
             ])
             ->add('numeroContact', TelType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control input',
                     'placeholder' => 'Veuillez entrer votre numéro de téléphone',
                     'autocomplete' => 'tel',
                     'inputmode' => 'tel',
                     'data-phone-target' => 'input',
-                    'style' => 'height: 44px; border: 2px solid #EBECEC; border-radius: 8px; font-size: 14px; padding: 12px 14px;',
                 ],
             ])
             ->add('emailContact', EmailType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control input',
                     'placeholder' => 'Veuillez entrer votre adresse e-mail de contact',
-                    'style' => 'height: 44px; border: 2px solid #EBECEC; border-radius: 8px; font-size: 14px; padding: 12px 14px;',
                 ],
             ])
             ->add('langueParlers', EntityType::class, [

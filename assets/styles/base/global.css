@@ -215,6 +215,22 @@ textarea {
     background: #3f02aa;
 }
 
+.btn.btn-full-blue:hover,
+.btn.btn-full-blue:focus,
+.btn.btn-full-blue:active,
+.btn.btn-full-blue:disabled {
+    border-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.btn.btn-full-blue:active {
+    background: #3f02aa;
+}
+
+.btn.btn-full-blue:disabled {
+    background: var(--color-primary);
+}
+
 .btn-full-white {
     display: inline-flex;
 
