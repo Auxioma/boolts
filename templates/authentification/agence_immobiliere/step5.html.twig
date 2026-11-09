@@ -10,179 +10,382 @@
 {% block title %}{{ 'professionnel.forgot_password.meta.title'|trans }}{% endblock %}
 
 {% block body %}
-<div class="bg-white d-flex flex-column" style="min-height: 100vh;">
-    <div class="d-flex align-items-center justify-content-center flex-shrink-0 w-100" style="padding: 48px 132px;">
-        <!-- Sidebar -->
-        <div class="flex-shrink-0 position-relative" style="width: 359px; display: flex; flex-direction: column; gap: 74px;">
-            <!-- Decorative vertical line -->
-            <div style="position: absolute; left: 20px; top: 0; width: 3px; height: 362px; background: linear-gradient(to bottom, #5D00FF 75%, #d0d0d0 75%); z-index: 0;"></div>
+    <main class="registration d-flex">
+        <section class="registration__content">
+            <div class="registration__inner">
+                <h2 class="registration__title">Remplissez la fiche publique de votre agence</h2>
 
-            <!-- Step 1 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
-                    <i class="fas fa-check"></i>
-                </div>
-                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations générales</p>
-            </div>
+                {{ form_start(form, {
+                    attr: {
+                        class: 'registration__form',
+                        'data-controller': 'phone',
+                        'data-action': 'submit->phone#prepareSubmit',
+                    },
+                }) }}
+                    <div class="registration__field">
+                        <label for="{{ form.imageFile.file.vars.id }}" class="p-accent">Photo de profil (facultatif)</label>
+                        {% set firstLetter = user.prenom ? user.prenom|first|upper : null %}
+                        {% set avatar = user.imageName
+                            ? vich_uploader_asset(user, 'imageFile')
+                            : (firstLetter ? asset('images/svg/' ~ firstLetter ~ '.svg') : null)
+                        %}
 
-            <!-- Step 2 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
-                    <i class="fas fa-check"></i>
-                </div>
-                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations légales</p>
-            </div>
-
-            <!-- Step 3 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
-                    <i class="fas fa-check"></i>
-                </div>
-                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Détails de l'agence 1/2</p>
-            </div>
-
-            <!-- Step 4 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #d0d0d0; border-radius: 50%; font-size: 20px;">4</div>
-                <p class="mb-0 fw-bold" style="color: #858789; font-size: 16px; line-height: 20px;">Détails de l'agence 2/2</p>
-            </div>
-        </div>
-
-        <!-- Form Container -->
-        <div class="bg-white flex-grow-1" style="padding-bottom: 32px; border-radius: 24px;">
-            <!-- Header with Title and Skip Button -->
-            <div class="d-flex align-items-end justify-content-between mb-32" style="gap: 16px;">
-                <h2 class="mb-0">Remplissez la fiche publique de votre agence</h2>
-                <a href="{{ path('app_professionnelle_step_six') }}" class="btn btn-link fw-bold" style="color: #5D00FF; text-decoration: none; font-size: 16px; line-height: 20px; padding: 10px 16px; height: 44px;">Passer</a>
-            </div>
-
-            {{ form_start(form, {
-                attr: {
-                    'data-controller': 'phone',
-                    'data-action': 'submit->phone#prepareSubmit',
-                },
-            }) }}
-            <div class="d-flex flex-column" style="gap: 32px;">
-                <!-- Profile Photo Section -->
-                <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="p-accent m-0">Photo de profil (facultatif)</label>
-                    <div style="display: flex; align-items: flex-start; gap: 16px; position: relative;">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center overflow-hidden" style="width: 100px; height: 100px; background-color: #E8E9EB; flex-shrink: 0;">
+                        <div class="registration__photo position-relative">
                             <img
-                                src="{{ user.imageName is not empty ? vich_uploader_asset(user, 'imageFile') : '' }}"
-                                alt=""
-                                style="width: 100%; height: 100%; object-fit: cover; {{ user.imageName is empty ? 'display: none;' : '' }}"
+                                src="{{ avatar }}"
+                                alt="avatar"
+                                class="rounded-circle object-fit-cover"
+                                width="100"
+                                height="100"
+                                {% if not avatar %}style="display: none;"{% endif %}
                                 data-step-five-image-preview
                             >
-                            <i
-                                class="fas fa-user"
-                                style="font-size: 32px; color: #9D9FA1; {{ user.imageName is not empty ? 'display: none;' : '' }}"
-                                data-step-five-image-placeholder
-                            ></i>
+
+                            <label
+                                for="{{ form.imageFile.file.vars.id }}"
+                                class="registration__photo-add btn-change-image btn-full-white rounded-pill position-absolute start-50 translate-middle-x w-auto"
+                                style="bottom: -12px;"
+                            >
+                                Modifier
+                            </label>
+
+                            {{ form_widget(form.imageFile.file, {
+                                attr: {
+                                    class: 'd-none',
+                                    accept: 'image/*',
+                                    'data-step-five-image-input': 'true',
+                                },
+                            }) }}
                         </div>
-                        {{ form_widget(form.imageFile.file, {
-                            attr: {
-                                class: 'visually-hidden',
-                                accept: 'image/*',
-                                'data-step-five-image-input': 'true',
-                            },
-                        }) }}
-                        <label for="{{ form.imageFile.file.vars.id }}" class="btn fw-bold" style="position: absolute; bottom: 0; left: 28px; height: 44px; padding: 10px 16px; background-color: white; border: 2px solid #5D00FF; color: #5D00FF; border-radius: 50px; font-size: 16px;">Ajouter</label>
+                        {{ form_errors(form.imageFile.file) }}
                     </div>
-                    {{ form_errors(form.imageFile.file) }}
-                </div>
 
-                <!-- Description -->
-                <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="p-accent m-0">Description (facultatif)</label>
-                    {{ form_widget(form.description) }}
-                    {{ form_errors(form.description) }}
-                </div>
+                    <div class="registration__field">
+                        <label for="{{ form.description.vars.id }}" class="p-accent">Description (facultatif)</label>
+                        <div data-controller="parametre--char-count">
+                            {{ form_widget(form.description, {
+                                attr: {
+                                    'data-parametre--char-count-target': 'input',
+                                    'data-action': 'input->parametre--char-count#update',
+                                },
+                            }) }}
 
-                <!-- Phone Number -->
-                <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="p-accent m-0">Numéro de téléphone de contact (facultatif)</label>
-                    {{ form_widget(form.numeroContact) }}
-                    {{ form_errors(form.numeroContact) }}
-                </div>
-
-                <!-- Email -->
-                <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="p-accent m-0">Adresse e-mail de contact (facultatif)</label>
-                    {{ form_widget(form.emailContact) }}
-                    {{ form_errors(form.emailContact) }}
-                </div>
-
-                <!-- Languages Section -->
-                <div class="d-flex flex-column" style="gap: 12px;">
-                    <label class="p-accent m-0">Langues parlées par l'agence (facultatif)</label>
-
-                    <!-- Search Bar -->
-                    <div class="d-flex align-items-center" style="border: 2px solid #EBECEC; border-radius: 8px; padding: 8px 8px; gap: 10px;">
-                        <i class="fas fa-search" style="color: #858789; font-size: 16px;"></i>
-                        {{ form_widget(form.langueParlers, {
-                            attr: {
-                                style: 'border: none; outline: none; flex: 1; font-size: 14px; color: #858789; background: transparent; min-height: 28px;',
-                            },
-                        }) }}
+                            <p class="text-end mb-0" data-parametre--char-count-target="count">0/500</p>
+                        </div>
+                        {{ form_errors(form.description) }}
                     </div>
-                    {{ form_errors(form.langueParlers) }}
-                </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-full-blue">Suivant</button>
+                    <div class="registration__field">
+                        <label for="{{ form.numeroContact.vars.id }}" class="p-accent">Numéro de téléphone de contact (facultatif)</label>
+                        {{ form_widget(form.numeroContact) }}
+                        {{ form_errors(form.numeroContact) }}
+                    </div>
+
+                    <div class="registration__field">
+                        <label for="{{ form.emailContact.vars.id }}" class="p-accent">Adresse e-mail de contact (facultatif)</label>
+                        {{ form_widget(form.emailContact) }}
+                        {{ form_errors(form.emailContact) }}
+                    </div>
+
+                    <div class="registration__field">
+                        <label for="agency-languages-search" class="p-accent">Langues parlées par l'agence (facultatif)</label>
+                        <div class="agency-languages" data-controller="languages">
+                            {{ form_widget(form.langueParlers) }}
+
+                            <div class="agency-languages-dropdown">
+                                <div class="agency-languages-search">
+                                    <input
+                                        type="text"
+                                        id="agency-languages-search"
+                                        class="form-control agency-languages-input rounded-70 pl-44 input"
+                                        placeholder="Rechercher une langue..."
+                                        autocomplete="off"
+                                        data-languages-target="search"
+                                        data-action="input->languages#search keydown.enter->languages#addFirstResult:prevent"
+                                    >
+
+                                    <i class="icon-search agency-languages-add"></i>
+                                </div>
+
+                                <div class="agency-languages-results" data-languages-target="results"></div>
+                            </div>
+
+                            <div class="agency-languages-tags" data-languages-target="tags"></div>
+                        </div>
+                        {{ form_errors(form.langueParlers) }}
+                    </div>
+
+                    <button class="registration__submit btn-full-blue" type="submit">Suivant</button>
+                {{ form_end(form) }}
             </div>
-            {{ form_end(form) }}
-        </div>
-    </div>
-</div>
+        </section>
+
+        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+    </main>
 {% endblock %}
 
 {% block stylesheets %}
-    <link href="https://fonts.googleapis.com/css2?family=Eudoxus+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
     <style>
-        * {
-            font-family: 'Eudoxus Sans', sans-serif;
+        body.registration-page {
+            background: #fff !important;
+            overflow-x: hidden;
         }
 
-        .form-control {
-            color: #858789;
-            font-weight: 500;
+        body.registration-page .topbar-logo {
+            width: 112px;
+            height: 36px;
         }
 
-        .form-control:focus {
-            border-color: #5D00FF;
-            box-shadow: none;
-            color: #0B0F14;
+        body.registration-page .topbar-menu .nav-link {
+            font-weight: 700;
         }
 
-        .form-control::placeholder {
-            color: #858789;
-            font-weight: 500;
+        body.registration-page .topbar-menu .nav-item:nth-child(4) .nav-link {
+            color: #5d00ff;
+            background: #dfcbff;
         }
 
-        .iti {
+        .registration {
+            min-height: calc(100vh - 72px);
+            background: #fff;
+        }
+
+        .registration__content {
+            display: flex;
+            align-items: flex-start;
+            width: 50.7%;
+            min-height: calc(100vh - 72px);
+            padding: 48px clamp(32px, 9.86vw, 142px) 48px clamp(32px, 9.17vw, 132px);
+        }
+
+        .registration__inner {
             width: 100%;
         }
 
-        .btn-primary {
-            background-color: #5D00FF;
-            border-color: #5D00FF;
+        .registration__title {
+            margin: 0 0 32px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
         }
 
-        .btn-primary:hover {
-            background-color: #4a00cc;
-            border-color: #4a00cc;
+        .registration__field {
+            margin-bottom: 32px;
         }
 
-        .btn-link:hover {
-            color: #4a00cc !important;
+        .registration__field label {
+            display: block;
+            margin-bottom: 16px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
         }
 
-        textarea.form-control {
-            font-family: 'Eudoxus Sans', sans-serif;
+        .registration__field .form-control {
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+        }
+
+        .registration__field .form-control:focus {
+            border-color: #5d00ff;
+            box-shadow: none;
+        }
+
+        .registration__field .form-control::placeholder {
+            color: #858789;
+            opacity: 1;
+        }
+
+        .registration__field .iti {
+            width: 100%;
+        }
+
+        .registration__field .invalid-feedback {
+            display: block;
+            margin-top: 24px;
+            color: #dc3545;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .registration__photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #e8e9eb;
+        }
+
+        .registration__field .registration__photo-add {
+            display: inline-flex;
+            margin: 0;
+            color: var(--color-primary);
+            cursor: pointer;
+        }
+
+        .agency-languages {
+            width: 100%;
+        }
+
+        .agency-languages-search {
+            position: relative;
+        }
+
+        .agency-languages-dropdown {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .agency-languages-input::placeholder {
+            color: #8b8f98;
+        }
+
+        .agency-languages-add {
+            position: absolute;
+            top: 50%;
+            left: 16px;
+            width: 24px;
+            height: 24px;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: 50%;
+            color: #858789;
+            font-size: 2rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .agency-languages-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 20;
+            width: 75%;
+            margin-top: 8px;
+            padding: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+        }
+
+        .agency-languages-results:empty {
+            display: none;
+        }
+
+        .agency-languages-result {
+            display: block;
+            width: 100%;
+            padding: 12px 14px;
+            border: 0;
+            border-radius: 12px;
+            background: transparent;
+            text-align: left;
+            font-weight: 700;
+            color: #0b0f14;
+            cursor: pointer;
+        }
+
+        .agency-languages-result:hover {
+            background: #f8f8f8;
+        }
+
+        .agency-languages-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 26px;
+        }
+
+        .agency-languages-tags:empty {
+            display: none;
+        }
+
+        .agency-language-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 44px;
+            padding: 8px 18px;
+            border: 2px solid #5d00ff;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #5d00ff;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .agency-language-tag span {
+            display: inline-flex;
+            align-items: center;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .agency-language-tag .icon-x::before {
+            position: static;
+        }
+
+        @media (max-width: 576px) {
+            .agency-languages-input {
+                height: 58px;
+                padding-left: 22px;
+            }
+
+            .agency-languages-add {
+                width: 44px;
+                height: 44px;
+            }
+
+            .agency-language-tag {
+                font-size: 0.95rem;
+            }
+        }
+
+        .registration__submit {
+            width: 100%;
+            font-family: "Eudoxus Sans", sans-serif;
+        }
+
+        .registration__visual {
+            width: 49.3%;
+            min-height: calc(100vh - 72px);
+            background-color: #fff;
+            background-image: url("{{ asset('images/authentification/test.png') }}");
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-size: 200% auto;
+        }
+
+        @media (max-width: 1199.98px) {
+            .registration__content {
+                width: 55%;
+                padding-right: 64px;
+                padding-left: 64px;
+            }
+
+            .registration__visual {
+                width: 45%;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .registration {
+                min-height: auto;
+            }
+
+            .registration__content {
+                width: 100%;
+                min-height: calc(100vh - 72px);
+                padding: 48px 24px 56px;
+            }
+
+            .registration__visual {
+                display: none;
+            }
         }
     </style>
 {% endblock %}
@@ -199,7 +402,6 @@
                 }
 
                 const preview = document.querySelector('[data-step-five-image-preview]');
-                const placeholder = document.querySelector('[data-step-five-image-placeholder]');
 
                 if (!preview) {
                     return;
@@ -223,10 +425,6 @@
                     input.dataset.previewObjectUrl = objectUrl;
                     preview.src = objectUrl;
                     preview.style.display = 'block';
-
-                    if (placeholder) {
-                        placeholder.style.display = 'none';
-                    }
                 });
             };
 
@@ -235,3 +433,5 @@
         })();
     </script>
 {% endblock %}
+
+{% block body_class %}registration-page{% endblock %}

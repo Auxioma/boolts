@@ -1,0 +1,39 @@
+{#
+ Template: templates/authentification/agence_immobiliere/_stepper.html.twig
+ Role: Agency registration stepper, same design as the "mes biens" stepper.
+ Context: currentStep (1 to 4), the position of the step being filled in.
+#}
+
+{% set steps = [
+    "Informations générales",
+    "Informations légales",
+    "Détails de l'agence 1/2",
+    "Détails de l'agence 2/2",
+] %}
+
+{% set progressPercent = (currentStep - 1) / (steps|length - 1) * 99 %}
+
+<div class="col-3">
+    <div class="mes-bien-stepper" style="width: 100%; --stepper-progress: {{ progressPercent }}%;">
+        <div class="mes-bien-stepper-line-background"></div>
+
+        <div class="mes-bien-stepper-line" style="height: {{ progressPercent }}%;"></div>
+
+        {% for title in steps %}
+            <div class="
+                mes-bien-stepper-item
+                {% if loop.index < currentStep %}mes-bien-stepper-item-completed{% endif %}
+                {% if loop.index == currentStep %}active mes-bien-stepper-item-active{% endif %}
+                {% if loop.index > currentStep %}mes-bien-stepper-item-disabled{% endif %}
+            ">
+                <div class="mes-bien-stepper-circle"></div>
+
+                <div class="mes-bien-stepper-content">
+                    <p class="mes-bien-stepper-title p-accent">
+                        {{ title }} <i class="icon-chevron-right"></i>
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

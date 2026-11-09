@@ -212,7 +212,12 @@ export default class extends Controller {
     }
 
     syncTimeTriggers(root) {
-        root.querySelectorAll('.opening-time').forEach((wrapper) => {
+        // querySelectorAll ignore la racine : on inclut aussi le cas où root est lui-même un .opening-time.
+        const wrappers = root.matches?.('.opening-time')
+            ? [root]
+            : root.querySelectorAll('.opening-time');
+
+        wrappers.forEach((wrapper) => {
             const select = wrapper.querySelector('select');
             const trigger = wrapper.querySelector('.opening-time__trigger');
 

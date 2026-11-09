@@ -47,291 +47,265 @@
     {% endif %}
 {% endfor %}
 
+{# Sélecteur d'heure, comme dans les paramètres : de 00:00 à 23:30 par pas de 30 minutes #}
+{% set openingTimeOptions %}
+    <option value="">--:--</option>
+    {% for hour in 0..23 %}
+        {% for minute in ['00', '30'] %}
+            {% set time = '%02d'|format(hour) ~ ':' ~ minute %}
+            <option value="{{ time }}">{{ time }}</option>
+        {% endfor %}
+    {% endfor %}
+{% endset %}
+
 <div
     data-controller="registration-locale"
     data-registration-locale-url-value="{{ path('app_registration_locale') }}"
     data-registration-locale-token-value="{{ csrf_token('registration_locale') }}"
 ></div>
 
-<div class="bg-white d-flex flex-column" style="min-height: 100vh;">
-    <div class="d-flex align-items-center justify-content-between flex-shrink-0 w-100" style="padding: 48px 132px;">
-        <!-- Sidebar -->
-        <div class="flex-shrink-0 position-relative" style="width: 359px; display: flex; flex-direction: column; gap: 74px;">
-            <!-- Decorative vertical line -->
-            <div style="position: absolute; left: 20px; top: 0; width: 3px; height: 360px; background-color: #5D00FF; z-index: 0;"></div>
+    <main class="registration d-flex">
+        <section class="registration__content">
+            <div class="registration__inner">
+                <h2 class="registration__title">Remplissez les<br>derniers détails...</h2>
 
-            <!-- Step 1 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
-                    <i class="fas fa-check"></i>
-                </div>
-                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations générales</p>
-            </div>
+                {{ form_start(form, {
+                    attr: {
+                        class: 'registration__form',
+                    },
+                }) }}
+                    {{ form_errors(form) }}
 
-            <!-- Step 2 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
-                    <i class="fas fa-check"></i>
-                </div>
-                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Informations légales</p>
-            </div>
+                    <div class="registration__field">
+                        <label class="p-accent">Horaires de l'agence (facultatif)</label>
 
-            <!-- Step 3 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
-                    <i class="fas fa-check"></i>
-                </div>
-                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Détails de l'agence 1/2</p>
-            </div>
+                        <div
+                            class="opening-hours"
+                            data-controller="opening-hours"
+                            data-opening-hours-initial-value="{{ openingHoursInitial|json_encode|e('html_attr') }}"
+                        >
+                            {% for openingDay in openingDays %}
+                                {% set hourForm = openingHourFormsByDay[openingDay.key] ?? null %}
 
-            <!-- Step 4 -->
-            <div class="d-flex align-items-center position-relative" style="gap: 16px; z-index: 1;">
-                <div class="d-flex align-items-center justify-content-center flex-shrink-0 fw-bold text-white" style="width: 44px; height: 44px; background-color: #5D00FF; border-radius: 50%; font-size: 20px;">
-                    <i class="fas fa-check"></i>
-                </div>
-                <p class="mb-0 fw-bold" style="color: #0B0F14; font-size: 16px; line-height: 20px;">Détails de l'agence 2/2</p>
-            </div>
-        </div>
+                                {% if hourForm %}
+                                    <div class="opening-day is-closed" data-opening-hours-day>
+                                        {{ form_widget(hourForm.jour) }}
 
-        {{ form_start(form, {
-            attr: {
-                class: 'bg-white flex-grow-1',
-                style: 'padding-bottom: 32px; border-radius: 24px;',
-            },
-        }) }}
-            <h2 class="mb-32">Remplissez les<br>derniers détails...</h2>
+                                        <label class="opening-day__label paragraphe">{{ openingDay.label }}</label>
 
-            {{ form_errors(form) }}
+                                        <label class="contenue-des-page-des-parametres-switch">
+                                            {{ form_widget(hourForm.isOpen, {
+                                                attr: {
+                                                    class: 'js-opening-toggle',
+                                                    'data-action': 'change->opening-hours#toggle',
+                                                },
+                                            }) }}
+                                            <span class="contenue-des-page-des-parametres-switch-slider"></span>
+                                        </label>
 
-            <div class="d-flex flex-column" style="gap: 32px;">
-                <!-- Horaires Section -->
-                <div class="d-flex flex-column" style="gap: 16px;">
-                    <label class="p-accent m-0">Horaires de l'agence (facultatif)</label>
+                                        <span class="js-opening-status paragraphe">Fermé</span>
 
-                    <div
-                        class="opening-hours"
-                        data-controller="opening-hours"
-                        data-opening-hours-initial-value="{{ openingHoursInitial|json_encode|e('html_attr') }}">
-                        {% for openingDay in openingDays %}
-                            {% set hourForm = openingHourFormsByDay[openingDay.key] ?? null %}
+                                        <div class="opening-slot js-opening-first" hidden>
+                                            <select id="{{ hourForm.ouvertureMatin.vars.id }}" name="{{ hourForm.ouvertureMatin.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
+                                            <select id="{{ hourForm.fermetureMatin.vars.id }}" name="{{ hourForm.fermetureMatin.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
+                                        </div>
 
-                            {% if hourForm %}
-                                <div class="opening-day is-closed" data-opening-hours-day>
-                                    {{ form_widget(hourForm.jour) }}
+                                        <div class="opening-slot js-opening-second" hidden>
+                                            <select id="{{ hourForm.ouvertureApresMidi.vars.id }}" name="{{ hourForm.ouvertureApresMidi.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
+                                            <select id="{{ hourForm.fermetureApresMidi.vars.id }}" name="{{ hourForm.fermetureApresMidi.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
+                                        </div>
 
-                                    <label class="opening-day__label p-accent">{{ openingDay.label }}</label>
+                                        {# Champs affichés à la main : évite que form_end() les rende une seconde fois. #}
+                                        {% do hourForm.ouvertureMatin.setRendered() %}
+                                        {% do hourForm.fermetureMatin.setRendered() %}
+                                        {% do hourForm.ouvertureApresMidi.setRendered() %}
+                                        {% do hourForm.fermetureApresMidi.setRendered() %}
 
-                                    <label class="contenue-des-page-des-parametres-switch">
-                                        {{ form_widget(hourForm.isOpen, {
-                                            attr: {
-                                                class: 'js-opening-toggle',
-                                                'data-action': 'change->opening-hours#toggle',
-                                            },
-                                        }) }}
-                                        <span class="contenue-des-page-des-parametres-switch-slider"></span>
-                                    </label>
+                                        <div class="opening-day__actions" hidden>
+                                            <button type="button" class="js-opening-add p-0" data-action="opening-hours#add">
+                                                <i class="icon-plus"></i>
+                                            </button>
 
-                                    <span class="js-opening-status">Fermé</span>
+                                            <button type="button" class="js-opening-remove p-0" data-action="opening-hours#remove" hidden>
+                                                <i class="icon-minus"></i>
+                                            </button>
+                                        </div>
 
-                                    <div class="opening-slot js-opening-first" hidden>
-                                        {{ form_widget(hourForm.ouvertureMatin) }}
-                                        <span class="opening-slot__separator">à</span>
-                                        {{ form_widget(hourForm.fermetureMatin) }}
+                                        {% set dayErrors %}
+                                            {{ form_errors(hourForm.ouvertureMatin) }}
+                                            {{ form_errors(hourForm.fermetureMatin) }}
+                                            {{ form_errors(hourForm.ouvertureApresMidi) }}
+                                            {{ form_errors(hourForm.fermetureApresMidi) }}
+                                        {% endset %}
+
+                                        {% if dayErrors|trim %}
+                                            <div class="opening-day__errors">{{ dayErrors }}</div>
+                                        {% endif %}
                                     </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
 
-                                    <div class="opening-slot js-opening-second" hidden>
-                                        {{ form_widget(hourForm.ouvertureApresMidi) }}
-                                        <span class="opening-slot__separator">à</span>
-                                        {{ form_widget(hourForm.fermetureApresMidi) }}
-                                    </div>
-
-                                    <div class="opening-day__actions" hidden>
-                                        <button type="button" class="js-opening-add" data-action="opening-hours#add">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-
-                                        <button type="button" class="js-opening-remove" data-action="opening-hours#remove" hidden>
-                                            <i class="fas fa-minus"></i>
-                                        </button>
-                                    </div>
-
-                                    <div class="opening-day__errors">
-                                        {{ form_errors(hourForm.ouvertureMatin) }}
-                                        {{ form_errors(hourForm.fermetureMatin) }}
-                                        {{ form_errors(hourForm.ouvertureApresMidi) }}
-                                        {{ form_errors(hourForm.fermetureApresMidi) }}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
+                        {{ form_errors(form.horaireOuvertures) }}
                     </div>
 
-                    {{ form_errors(form.horaireOuvertures) }}
-                </div>
-
-                <!-- Checkbox Acceptation -->
-                <div>
-                    <div class="d-flex align-items-start" style="gap: 12px;">
-                        {{ form_widget(form.acceptTerms, {
-                            attr: {
-                                class: 'step6-terms-input',
-                            },
-                        }) }}
-                        <label for="{{ form.acceptTerms.vars.id }}" class="mb-0 p-accent" style="color: #858789;">J'accepte les conditions d'utilisation de Boolts.*</label>
+                    <div class="registration__field">
+                        <div class="d-flex align-items-start" style="gap: 12px;">
+                            {{ form_widget(form.acceptTerms, {
+                                attr: {
+                                    class: 'step6-terms-input',
+                                },
+                            }) }}
+                            <label for="{{ form.acceptTerms.vars.id }}" class="mb-0 p-accent" style="color: #858789;">J'accepte les conditions d'utilisation de Boolts.*</label>
+                        </div>
+                        {{ form_errors(form.acceptTerms) }}
                     </div>
-                    {{ form_errors(form.acceptTerms) }}
-                </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-full-blue">S'inscrire</button>
+                    <button class="registration__submit btn-full-blue" type="submit">S'inscrire</button>
+                {{ form_end(form) }}
             </div>
-        {{ form_end(form) }}
-    </div>
-</div>
+        </section>
+
+        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+    </main>
 {% endblock %}
 
 {% block stylesheets %}
-    <link href="https://fonts.googleapis.com/css2?family=Eudoxus+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
     <style>
-        * {
-            font-family: 'Eudoxus Sans', sans-serif;
+        body.registration-page {
+            background: #fff !important;
+            overflow-x: hidden;
         }
 
-        .fw-medium {
-            font-weight: 500;
+        body.registration-page .topbar-logo {
+            width: 112px;
+            height: 36px;
         }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="time"],
-        textarea {
-            font-family: 'Eudoxus Sans', sans-serif;
+        body.registration-page .topbar-menu .nav-link {
+            font-weight: 700;
         }
 
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="time"]:focus,
-        textarea:focus {
-            border-color: #5D00FF;
-            box-shadow: none;
-            outline: none;
+        body.registration-page .topbar-menu .nav-item:nth-child(4) .nav-link {
+            color: #5d00ff;
+            background: #dfcbff;
         }
 
-        input[type="checkbox"] {
-            accent-color: #5D00FF;
+        .registration {
+            min-height: calc(100vh - 72px);
+            background: #fff;
         }
 
-        .btn-primary {
-            background-color: #5D00FF;
-            border-color: #5D00FF;
+        .registration__content {
+            display: flex;
+            align-items: flex-start;
+            width: 50.7%;
+            min-height: calc(100vh - 72px);
+            padding: 48px clamp(32px, 9.86vw, 142px) 48px clamp(32px, 9.17vw, 132px);
         }
 
-        .btn-primary:hover {
-            background-color: #4a00cc;
-            border-color: #4a00cc;
+        .registration__inner {
+            width: 100%;
         }
 
+        .registration__title {
+            margin: 0 0 32px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+        }
+
+        .registration__field {
+            margin-bottom: 32px;
+        }
+
+        .registration__field label {
+            display: block;
+            margin-bottom: 16px;
+            color: #0b0f14;
+            font-family: "Eudoxus Sans", sans-serif;
+        }
+
+        .registration__field .invalid-feedback {
+            display: block;
+            margin-top: 24px;
+            color: #dc3545;
+            font-family: "Eudoxus Sans", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 20px;
+        }
+
+        .registration__submit {
+            width: 100%;
+            font-family: "Eudoxus Sans", sans-serif;
+        }
+
+        .registration__visual {
+            width: 49.3%;
+            min-height: calc(100vh - 72px);
+            background-color: #fff;
+            background-image: url("{{ asset('images/authentification/test.png') }}");
+            background-position: right center;
+            background-repeat: no-repeat;
+            background-size: 200% auto;
+        }
+
+        /* --- Horaires : même design que les paramètres --- */
         .opening-hours {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            border-bottom: 2px solid #EBECEC;
-            padding-bottom: 16px;
+            gap: 16px;
         }
 
         .opening-day {
             display: grid;
-            grid-template-columns: 110px 44px 58px minmax(150px, 1fr) minmax(150px, 1fr) 34px;
+            grid-template-columns: 76px 44px 50px minmax(0, 1fr) 34px;
             align-items: center;
-            gap: 12px;
-            min-height: 44px;
+            column-gap: 14px;
+            row-gap: 8px;
         }
 
-        .opening-day__label {
-            color: #0B0F14;
+        .opening-day label {
             margin: 0;
         }
 
-        .js-opening-status {
-            color: #0B0F14;
-            font-size: 14px;
-            font-weight: 500;
-            line-height: 20px;
-            margin: 0;
+        .opening-day > .opening-day__label {
+            grid-column: 1;
+            grid-row: 1;
         }
 
-        .opening-day.is-closed .opening-day__label,
-        .opening-day.is-closed .js-opening-status {
-            color: #858789;
+        .opening-day > .contenue-des-page-des-parametres-switch {
+            grid-column: 2;
+            grid-row: 1;
         }
 
-        .opening-slot {
-            display: grid;
-            grid-template-columns: 1fr 16px 1fr;
-            align-items: center;
-            gap: 6px;
-            min-height: 44px;
-            border: 2px solid #EBECEC;
-            border-radius: 8px;
-            padding: 4px 8px;
-            background-color: #FFFFFF;
+        .opening-day > .js-opening-status {
+            grid-column: 3;
+            grid-row: 1;
         }
 
-        .opening-slot__separator {
-            color: #858789;
-            font-size: 13px;
-            text-align: center;
+        .opening-day > .js-opening-first {
+            grid-column: 4;
+            grid-row: 1;
         }
 
-        .opening-slot input[type="time"] {
-            width: 100%;
-            min-width: 0;
-            height: 34px;
-            border: 0;
-            border-radius: 6px;
-            color: #0B0F14;
-            font-size: 14px;
-            background-color: transparent;
+        .opening-day > .js-opening-second {
+            grid-column: 4;
+            grid-row: 2;
         }
 
-        .opening-slot input[type="time"]:focus {
-            outline: 2px solid #5D00FF;
-            outline-offset: 1px;
+        .opening-day > .opening-day__actions {
+            grid-column: 5;
+            grid-row: 1;
         }
 
-        .opening-day__actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .opening-day:has(> .js-opening-second:not([hidden])) > .opening-day__actions {
+            grid-row: 2;
         }
 
-        .js-opening-add,
-        .js-opening-remove {
-            width: 24px;
-            height: 24px;
-            padding: 0;
-            border: 0;
-            border-radius: 50%;
-            color: #FFFFFF;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .js-opening-add {
-            background-color: #5D00FF;
-        }
-
-        .js-opening-remove {
-            background-color: #dc3545;
-        }
-
-        .opening-day__errors {
+        .opening-day > .opening-day__errors {
             grid-column: 1 / -1;
+            grid-row: 3;
             color: #dc3545;
             font-size: 13px;
         }
@@ -341,12 +315,132 @@
             padding-left: 18px;
         }
 
+        .opening-day__label {
+            color: #0b0f14 !important;
+        }
+
+        .js-opening-status {
+            color: #858789;
+        }
+
+        .opening-day:not(.is-closed) .js-opening-status {
+            color: #0b0f14;
+        }
+
+        .opening-slot {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .opening-slot[hidden] {
+            display: none;
+        }
+
+        .opening-time {
+            position: relative;
+            min-width: 0;
+        }
+
+        .opening-time select.js-opening-time {
+            display: none;
+        }
+
+        .opening-time__trigger {
+            width: 100%;
+            height: 44px;
+            padding: 0 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            color: #374151;
+            background-color: #fff;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .opening-time__trigger:focus-visible {
+            outline: 2px solid #5d00ff;
+            outline-offset: 2px;
+        }
+
+        .opening-time__results {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 8px;
+            margin: 0;
+            list-style: none;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+        }
+
+        .opening-time__results[hidden] {
+            display: none;
+        }
+
+        .opening-time__result {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            color: #0b0f14;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .opening-time__result:hover,
+        .opening-time__result.is-selected {
+            background: #f8f8f8;
+        }
+
+        .opening-day__actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .opening-day__actions[hidden] {
+            display: none;
+        }
+
+        .js-opening-add,
+        .js-opening-remove {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .js-opening-add[hidden],
+        .js-opening-remove[hidden] {
+            display: none;
+        }
+
+        .js-opening-add {
+            background-color: #5d00ff;
+        }
+
+        .js-opening-remove {
+            background-color: #e7354b;
+        }
+
         .contenue-des-page-des-parametres-switch {
             position: relative;
             display: inline-block;
             width: 44px;
             height: 24px;
-            margin-bottom: 0;
         }
 
         .contenue-des-page-des-parametres-switch input {
@@ -372,12 +466,12 @@
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background-color: #FFFFFF;
+            background-color: #fff;
             transition: 0.2s ease;
         }
 
         .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider {
-            background-color: #5D00FF;
+            background-color: #5d00ff;
         }
 
         .contenue-des-page-des-parametres-switch input:checked + .contenue-des-page-des-parametres-switch-slider::before {
@@ -385,16 +479,69 @@
         }
 
         .step6-terms-input {
+            flex-shrink: 0;
             width: 24px;
             height: 24px;
-            cursor: pointer;
-            flex-shrink: 0;
             margin-top: 2px;
+            accent-color: #5d00ff;
+            cursor: pointer;
         }
 
-        @media (max-width: 1199px) {
+        @media (max-width: 1199.98px) {
+            .registration__content {
+                width: 55%;
+                padding-right: 64px;
+                padding-left: 64px;
+            }
+
+            .registration__visual {
+                width: 45%;
+            }
+        }
+
+        /* Colonne trop étroite : les créneaux passent sous le nom du jour. */
+        @media (max-width: 991.98px) {
             .opening-day {
-                grid-template-columns: 96px 44px 58px minmax(130px, 1fr) minmax(130px, 1fr) 34px;
+                grid-template-columns: 76px 44px minmax(0, 1fr) 34px;
+            }
+
+            .opening-day > .js-opening-first {
+                grid-column: 1 / 4;
+                grid-row: 2;
+            }
+
+            .opening-day > .js-opening-second {
+                grid-column: 1 / 4;
+                grid-row: 3;
+            }
+
+            .opening-day > .opening-day__actions {
+                grid-column: 4;
+                grid-row: 2;
+            }
+
+            .opening-day:has(> .js-opening-second:not([hidden])) > .opening-day__actions {
+                grid-row: 3;
+            }
+
+            .opening-day > .opening-day__errors {
+                grid-row: 4;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .registration {
+                min-height: auto;
+            }
+
+            .registration__content {
+                width: 100%;
+                min-height: calc(100vh - 72px);
+                padding: 48px 24px 56px;
+            }
+
+            .registration__visual {
+                display: none;
             }
         }
     </style>
@@ -403,3 +550,5 @@
 {% block javascripts %}
     {{ parent() }}
 {% endblock %}
+
+{% block body_class %}registration-page{% endblock %}

@@ -22,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class StepCinqType extends AbstractType
@@ -41,7 +42,13 @@ class StepCinqType extends AbstractType
                 'attr' => [
                     'class' => 'form-control input',
                     'placeholder' => 'Veuillez saisir une description de votre agence',
-                    'style' => 'height: 86px; padding: 14px; resize: vertical;',
+                    'style' => 'height: auto; padding: 14px; resize: vertical;',
+                    'maxlength' => 500,
+                    'rows' => 3,
+                    'onkeydown' => "if (event.key === 'Enter') event.preventDefault();",
+                ],
+                'constraints' => [
+                    new Length(max: 500),
                 ],
             ])
             ->add('numeroContact', TelType::class, [
@@ -70,8 +77,8 @@ class StepCinqType extends AbstractType
                 'expanded' => false,
                 'by_reference' => false,
                 'attr' => [
-                    'class' => 'form-control',
-                    'style' => 'min-height: 44px; border: 2px solid #EBECEC; border-radius: 8px; font-size: 14px; padding: 8px 14px;',
+                    'class' => 'agency-languages-select d-none',
+                    'data-languages-target' => 'select',
                 ],
             ])
         ;

@@ -85,9 +85,9 @@
     mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center/contain;
     
     -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye.svg") no-repeat center/contain;}
-.password-toggle:has(input[type="text"]) .password-toggle-button::before {mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center/contain;
+.password-toggle:has(input[type="text"]) .password-toggle-button::before {mask: url("https://unpkg.com/lucide-static@latest/icons/eye-closed.svg") no-repeat center/contain;
     
-    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye-off.svg") no-repeat center/contain;}
+    -webkit-mask: url("https://unpkg.com/lucide-static@latest/icons/eye-closed.svg") no-repeat center/contain;}
 body.auth-page {background: url("../../images/authentification/real-estate.webp") no-repeat center center fixed;
     
     background-size: cover;
