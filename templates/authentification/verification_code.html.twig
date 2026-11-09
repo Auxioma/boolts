@@ -53,9 +53,6 @@
             margin: 0 0 32px;
             color: #0b0f14;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 30px;
-            font-weight: 700;
-            line-height: 34px;
         }
 
         .verification-code__form {
@@ -246,9 +243,9 @@
     <main class="verification-code d-flex">
         <section class="verification-code__content">
             <div class="verification-code__inner">
-                <h1 class="verification-code__title">
+                <h2 class="verification-code__title">
                     {{ (translationPrefix ~ '.register.verify_code.title')|trans }}
-                </h1>
+                </h2>
 
                 {{ form_start(codeForm, {
                     attr: stimulus_controller('otp')|merge(

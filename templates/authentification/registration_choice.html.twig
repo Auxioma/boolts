@@ -50,9 +50,6 @@
             margin: 0 0 32px;
             color: #0b0f14;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 30px;
-            font-weight: 700;
-            line-height: 34px;
         }
 
         .registration-choice__subtitle {
@@ -125,18 +122,13 @@
         }
 
         .registration-choice__login {
-            margin: 34px 0 0;
+            margin: 32px 0 0;
             color: #858789;
             font-family: "Eudoxus Sans", sans-serif;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 20px;
         }
 
         .registration-choice__login a {
             color: #5d00ff;
-            font-size: 16px;
-            font-weight: 700;
             text-decoration: none;
         }
 
@@ -152,7 +144,7 @@
             background-image: url("{{ asset('images/authentification/test.png') }}");
             background-position: right center;
             background-repeat: no-repeat;
-            background-size: 200% auto;
+            background-size: auto;
         }
 
         @media (max-width: 1199.98px) {
@@ -172,9 +164,14 @@
                 min-height: auto;
             }
 
+            .registration-choice__inner {
+                max-width: 100%;
+            }
+
             .registration-choice__content {
+                align-items: flex-start;
                 width: 100%;
-                min-height: calc(100vh - 72px);
+                min-height: auto;
                 padding: 48px 24px 56px;
             }
 
@@ -196,7 +193,7 @@
             <div class="registration-choice__inner">
                 <h2 class="registration-choice__title">Inscrivez-vous gratuitement</h2>
 
-                <p class="registration-choice__subtitle">Choisissez votre profil :</p>
+                <p class="mb-3" style="color:#858789">Choisissez votre profil :</p>
 
                 <div class="registration-choice__choices">
                     <a
@@ -208,7 +205,7 @@
                             <span class="registration-choice__icon" aria-hidden="true">
                                 <i class="icon-user"></i>
                             </span>
-                            <span class="registration-choice__label">Particulier</span>
+                            <span class="p-accent">Particulier</span>
                         </span>
                         <i class="icon-chevron-right registration-choice__arrow" aria-hidden="true"></i>
                     </a>
@@ -222,15 +219,15 @@
                             <span class="registration-choice__icon" aria-hidden="true">
                                 <i class="icon-briefcase"></i>
                             </span>
-                            <span class="registration-choice__label">Professionnel</span>
+                            <span class="p-accent">Professionnel</span>
                         </span>
                         <i class="icon-chevron-right registration-choice__arrow" aria-hidden="true"></i>
                     </a>
                 </div>
 
-                <p class="registration-choice__login">
+                <p class="registration-choice__login paragraphe">
                     Déjà inscrit sur Boolts ?
-                    <a href="{{ path('app_login') }}" data-turbo="false">Se connecter</a>
+                    <a href="{{ path('app_login') }}" class="p-accent" data-turbo="false">Se connecter</a>
                 </p>
             </div>
         </section>

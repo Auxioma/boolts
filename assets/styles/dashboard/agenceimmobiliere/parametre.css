@@ -423,8 +423,8 @@
     color: #5d00ff;
 }
 
-.icon-eye::before {
-    font-size: 16px;
+.icon-eye::before, .icon-eye-closed::before {
+    font-size: 24px;
 
     position: relative;
 
@@ -985,4 +985,12 @@
     body:has(.parametres-topbar, .dashboard-content-topbar):not(.dashboard-settings-menu-open) {
         padding-bottom: 0;
     }
+
+    .registration__inner {
+        max-width: 100%;
+    }
+}
+
+.registration-choice__choice .icon-chevron-right::before {
+    font-size: 24px;
 }
