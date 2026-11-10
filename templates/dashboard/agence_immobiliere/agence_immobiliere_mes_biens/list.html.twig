@@ -42,6 +42,16 @@
 
                                 </div> 
 
+                                {% for label in ['success', 'danger', 'error', 'warning'] %}
+                                    {% for message in app.flashes(label) %}
+                                        <div
+                                            class="flash-message {{ label == 'success' ? 'flash-message-success message-flash-profile' : 'flash-message-error message-flash-profile-error' }}"
+                                            role="{{ label == 'success' ? 'status' : 'alert' }}"
+                                            data-controller="flash-toast"
+                                        >{{ message }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+
                                 {# ===================================================
                                BARRE DE RECHERCHE / FILTRES / TRI / DÉPÔT
                                =================================================== #}

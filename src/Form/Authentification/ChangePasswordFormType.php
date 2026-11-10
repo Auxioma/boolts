@@ -35,20 +35,6 @@ class ChangePasswordFormType extends AbstractType
                 ],
 
                 'first_options' => [
-                    'toggle' => true,
-
-                    // ⚠️ DOIT être string (pas bool)
-                    'visible_label' => '',
-                    'hidden_label' => '',
-
-                    // icônes
-                    'visible_icon' => 'eye',
-                    'hidden_icon' => 'eye-slash',
-
-                    // ⚠️ DOIT être tableau
-                    'button_classes' => ['password-toggle-button'],
-                    'toggle_container_classes' => ['password-toggle'],
-
                     'label' => 'form.password.new',
                     'attr' => [
                         'class' => 'form-control password-input',
@@ -60,7 +46,7 @@ class ChangePasswordFormType extends AbstractType
                             message: 'form.password.error.blank'
                         ),
                         new Length(
-                            min: 8,
+                            min: 12,
                             max: 4096,
                             minMessage: 'form.password.error.min',
                             maxMessage: 'form.password.error.max',
@@ -69,17 +55,6 @@ class ChangePasswordFormType extends AbstractType
                 ],
 
                 'second_options' => [
-                    'toggle' => true,
-
-                    'visible_label' => '',
-                    'hidden_label' => '',
-
-                    'visible_icon' => 'eye',
-                    'hidden_icon' => 'eye-slash',
-
-                    'button_classes' => ['password-toggle-button'],
-                    'toggle_container_classes' => ['password-toggle'],
-
                     'label' => 'form.password.repeat',
                     'attr' => [
                         'placeholder' => 'Confirmez votre mot de passe',
