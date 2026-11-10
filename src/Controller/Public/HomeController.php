@@ -134,7 +134,24 @@ final class HomeController extends AbstractController
             'transactions' => $transactions,
             'mapbox_public_token' => $this->mapboxPublicToken,
             'lastSearchSession' => $lastSearchSession,
+            'countryIsoCode' => $countryIsoCode,
+            'countryFlag' => $this->countryFlag($countryIsoCode),
         ]);
+    }
+
+    /**
+     * Drapeau emoji à partir du code ISO 3166-1 alpha-2 (ex. "FR" => 🇫🇷).
+     */
+    private function countryFlag(string $countryIsoCode): string
+    {
+        $code = strtoupper($countryIsoCode);
+
+        if (1 !== preg_match('/^[A-Z]{2}$/', $code)) {
+            return '';
+        }
+
+        return mb_chr(0x1F1E6 + \ord($code[0]) - \ord('A'))
+            .mb_chr(0x1F1E6 + \ord($code[1]) - \ord('A'));
     }
 
     #[Route(

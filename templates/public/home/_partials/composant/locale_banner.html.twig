@@ -1,0 +1,116 @@
+{#
+ Template: templates/public/home/_partials/composant/locale_banner.html.twig
+ Role: Bandeau de choix de la langue sous la navbar de la homepage (Figma 7115:24652).
+#}
+
+<section class="home-locale-banner" aria-label="Choix de la langue">
+    <form
+        class="home-locale-banner__container"
+        data-controller="locale-banner"
+        data-action="submit->locale-banner#go"
+    >
+        <p class="home-locale-banner__text paragraphe">
+            Choisissez un pays ou une région spécifique à votre localisation pour voir les informations de façon pertinente.
+        </p>
+
+        <div class="home-locale-banner__actions">
+            <div class="home-locale-banner__select-wrapper">
+                <select
+                    class="home-locale-banner__select input"
+                    aria-label="Langue"
+                    data-locale-banner-target="select"
+                >
+                    <option value="" selected disabled hidden>{{ countryFlag|default('') }} {{ countryIsoCode|default('FR')|country_name(app.request.locale) }}</option>
+                    <option value="{{ path('app_home', {_locale: 'fr'}) }}">🇫🇷 Français</option>
+                    <option value="{{ path('app_home', {_locale: 'en'}) }}">🇬🇧 English</option>
+                </select>
+                <i class="icon-chevron-down home-locale-banner__chevron" aria-hidden="true"></i>
+            </div>
+
+            <button type="submit" class="btn-full-blue home-locale-banner__submit">Continuer</button>
+        </div>
+    </form>
+</section>
+
+<style>
+    .home-locale-banner {
+        display: flex;
+        justify-content: center;
+        padding: 16px 0;
+        border-top: 2px solid #ebecec;
+        border-bottom: 2px solid #ebecec;
+        background: #ebecec;
+    }
+
+    .home-locale-banner__container {
+        display: flex;
+        flex: 1 0 0;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        max-width: 1320px;
+        margin: 0;
+        padding: 0 12px;
+    }
+
+    .home-locale-banner__text {
+        max-width: 391px;
+        margin: 0;
+        color: #858789;
+    }
+
+    .home-locale-banner__actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .home-locale-banner__select-wrapper {
+        position: relative;
+        width: 361px;
+    }
+
+    .home-locale-banner__select {
+        padding-right: 48px;
+        border-color: #fff;
+        border-radius: 8px;
+        background: #fff;
+        color: #858789;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .home-locale-banner__chevron {
+        position: absolute;
+        top: 50%;
+        right: 14px;
+        color: #0b0f14;
+        font-size: 24px;
+        line-height: 1;
+        pointer-events: none;
+        transform: translateY(-50%);
+    }
+
+    @media (max-width: 767.98px) {
+        .home-locale-banner__container {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 16px;
+            padding: 0 16px;
+        }
+
+        .home-locale-banner__text {
+            max-width: none;
+        }
+
+        .home-locale-banner__actions {
+            gap: 16px;
+        }
+
+        .home-locale-banner__select-wrapper {
+            flex: 1 1 auto;
+            width: auto;
+            min-width: 0;
+        }
+    }
+</style>
