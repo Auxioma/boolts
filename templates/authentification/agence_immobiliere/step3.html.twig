@@ -15,6 +15,8 @@
             <div class="registration__inner">
                 <h2 class="registration__title">Remplissez les informations de votre compte</h2>
 
+                {{ include('authentification/agence_immobiliere/_progress.html.twig', { currentStep: 1 }) }}
+
                 {% set _pwd_locale_en = app.request.locale starts with 'en' %}
                 {{ form_start(form, {
                     attr: {

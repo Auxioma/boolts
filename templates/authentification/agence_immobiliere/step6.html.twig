@@ -69,6 +69,8 @@
             <div class="registration__inner">
                 <h2 class="registration__title">Remplissez les<br>derniers détails...</h2>
 
+                {{ include('authentification/agence_immobiliere/_progress.html.twig', { currentStep: 4 }) }}
+
                 {{ form_start(form, {
                     attr: {
                         class: 'registration__form',

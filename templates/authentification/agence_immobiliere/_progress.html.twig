@@ -1,0 +1,81 @@
+{#
+ Template: templates/authentification/agence_immobiliere/_progress.html.twig
+ Role: Barre d'avancement de l'inscription pro (steps 3 à 6), Figma 7098:30629 / 6467:22612 / 6467:22660 / 6467:22725.
+ Context: currentStep (1 à 4).
+#}
+
+{% set registrationProgressSteps = [
+    { label: 'Informations générales', width: 179 },
+    { label: 'Informations légales', width: 228 },
+    { label: 'Détails de l’agence', width: 311 },
+    { label: 'Horaires de l’agence', width: 456 },
+] %}
+
+{% set registrationProgressStep = registrationProgressSteps[currentStep - 1] %}
+
+<div
+    class="registration-progress"
+    role="progressbar"
+    aria-valuemin="1"
+    aria-valuemax="{{ registrationProgressSteps|length }}"
+    aria-valuenow="{{ currentStep }}"
+    aria-label="{{ registrationProgressStep.label }}"
+>
+    <div class="registration-progress__header">
+        <p class="registration-progress__label p-accent">{{ registrationProgressStep.label }}</p>
+        <p class="registration-progress__count">{{ currentStep }}/{{ registrationProgressSteps|length }}</p>
+    </div>
+
+    <div class="registration-progress__track">
+        <div
+            class="registration-progress__bar"
+            style="width: {{ registrationProgressStep.width / 456 * 100 }}%;"
+        ></div>
+    </div>
+</div>
+
+<style>
+    .registration-progress {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 48px;
+    }
+
+    .registration-progress__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        color: #0b0f14;
+    }
+
+    .registration-progress__label {
+        margin: 0;
+        font-family: "Eudoxus Sans", sans-serif;
+    }
+
+    .registration-progress__count {
+        margin: 0;
+        font-family: "Eudoxus Sans", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 16px;
+        white-space: nowrap;
+    }
+
+    .registration-progress__track {
+        width: 100%;
+        height: 7px;
+        border-radius: 7px;
+        background: #ebecec;
+        overflow: hidden;
+    }
+
+    .registration-progress__bar {
+        height: 100%;
+        border-radius: 7px;
+        background: #5d00ff;
+        transition: width .3s ease;
+    }
+</style>
