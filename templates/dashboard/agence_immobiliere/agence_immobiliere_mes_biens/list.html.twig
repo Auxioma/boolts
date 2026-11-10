@@ -42,6 +42,22 @@
 
                                 </div> 
 
+                                {% set bulkFlashTypes = {
+                                    mes_biens_pause: 'pause',
+                                    mes_biens_reactivate: 'reactivate',
+                                    mes_biens_delete: 'delete',
+                                    mes_biens_boost: 'boost',
+                                } %}
+                                {% for label, variant in bulkFlashTypes %}
+                                    {% for message in app.flashes(label) %}
+                                        <div
+                                            class="message-flash-profile mes-biens-toast mes-biens-toast--{{ variant }}"
+                                            role="status"
+                                            data-controller="flash-toast"
+                                        >{{ message }}</div>
+                                    {% endfor %}
+                                {% endfor %}
+
                                 {% for label in ['success', 'danger', 'error', 'warning'] %}
                                     {% for message in app.flashes(label) %}
                                         <div

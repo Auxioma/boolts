@@ -1531,3 +1531,29 @@ body.ai-service-modal-open {
 .mes-biens-price-group:focus-within > .input-group-text {
     border-color: var(--color-primary);
 }
+
+/* --- Toasts des actions groupées (Figma 2834:28110) --- */
+.message-flash-profile.mes-biens-toast {
+    border-radius: 108px;
+    white-space: nowrap;
+}
+
+.message-flash-profile.mes-biens-toast--pause {
+    background: #ffe4cc;
+    color: #f70;
+}
+
+.message-flash-profile.mes-biens-toast--reactivate {
+    background: #ccffcd;
+    color: #1a9900;
+}
+
+.message-flash-profile.mes-biens-toast--delete {
+    background: #f8d7da;
+    color: #dc3545;
+}
+
+.message-flash-profile.mes-biens-toast--boost {
+    background: #ceb2ff;
+    color: #5d00ff;
+}

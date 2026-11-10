@@ -469,8 +469,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $agencyPropertySubmissionMailer->sendPausedNotification($user, $property);
 
         $this->addFlash(
-            'success',
-            'L’annonce a été mise en pause.'
+            'mes_biens_pause',
+            'Annonce mise en pause'
         );
 
         return $this->redirectToRoute(
@@ -533,15 +533,22 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 $boost->getEndsAt()
             );
 
-            $this->addFlash(
-                'success',
-                \sprintf(
-                    $wasPaused
-                        ? 'L’annonce a été republiée et boostée jusqu’au %s.'
-                        : 'L’annonce est boostée jusqu’au %s.',
-                    $boost->getEndsAt()->format('d/m/Y')
-                )
-            );
+            if ('agence_immobiliere_mes_biens_list' === $this->boostRedirectRoute($request)) {
+                $this->addFlash(
+                    'mes_biens_boost',
+                    'Annonce boostée'
+                );
+            } else {
+                $this->addFlash(
+                    'success',
+                    \sprintf(
+                        $wasPaused
+                            ? 'L’annonce a été republiée et boostée jusqu’au %s.'
+                            : 'L’annonce est boostée jusqu’au %s.',
+                        $boost->getEndsAt()->format('d/m/Y')
+                    )
+                );
+            }
         } catch (BoostException $exception) {
             $this->addFlash(
                 'danger',
@@ -764,8 +771,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $agencyPropertySubmissionMailer->sendReactivatedNotification($user, $property);
 
         $this->addFlash(
-            'success',
-            'L’annonce a été réactivée.'
+            'mes_biens_reactivate',
+            'Annonce réactivée'
         );
 
         return $this->redirectToRoute(
@@ -809,8 +816,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $agencyPropertySubmissionMailer->sendDeletedNotification($user, $property);
 
         $this->addFlash(
-            'success',
-            'L’annonce a été supprimée.'
+            'mes_biens_delete',
+            'Annonce supprimée'
         );
 
         return $this->redirectToRoute(
@@ -926,27 +933,16 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             );
         }
 
+        $isPlural = \count($properties) > 1;
+
         $message = match ($action) {
-            'pause' => \sprintf(
-                '%d annonce(s) mise(s) en pause.',
-                \count($properties)
-            ),
-
-            'reactivate' => \sprintf(
-                '%d annonce(s) réactivée(s).',
-                \count($properties)
-            ),
-
-            'delete' => \sprintf(
-                '%d annonce(s) supprimée(s).',
-                \count($properties)
-            ),
-
-            default => 'Action effectuée.',
+            'pause' => $isPlural ? 'Annonces mises en pause' : 'Annonce mise en pause',
+            'reactivate' => $isPlural ? 'Annonces réactivées' : 'Annonce réactivée',
+            'delete' => $isPlural ? 'Annonces supprimées' : 'Annonce supprimée',
         };
 
         $this->addFlash(
-            'success',
+            'mes_biens_'.$action,
             $message
         );
 
