@@ -27,12 +27,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Intl\Countries;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 /**
  * Page de résultats « type de bien × transaction » (liens du footer).
  *
- * Exemple : /fr/biens/louer/appartement ou /properties/rent/apartment.
+ * Exemple : /fr/biens/france/louer/appartement ou /properties/germany/rent/apartment.
+ * Le pays est celui du visiteur (IP), nommé dans la langue du site.
  * Réutilise le design de la recherche publique (public/search/index.html.twig) :
  * les critères sont stockés en session sous un searchToken afin que la pagination,
  * la vue carte, le changement de vue et la modale de filtres fonctionnent comme
@@ -55,24 +58,26 @@ final class ResultFilterController extends AbstractController
 
     #[Route(
         path: [
-            'en' => '/properties/{transactionSlug}/{categorySlug}',
-            'fr' => '/fr/biens/{transactionSlug}/{categorySlug}',
+            'en' => '/properties/{countrySlug}/{transactionSlug}/{categorySlug}',
+            'fr' => '/fr/biens/{countrySlug}/{transactionSlug}/{categorySlug}',
         ],
         name: 'app_public_search_type',
         requirements: [
+            'countrySlug' => '[a-z0-9-]+',
             'transactionSlug' => '[a-z0-9-]+',
             'categorySlug' => '[a-z0-9-]+',
         ],
         methods: ['GET']
     )]
-    public function index(Request $request, string $transactionSlug, string $categorySlug): Response
+    public function index(Request $request, string $countrySlug, string $transactionSlug, string $categorySlug): Response
     {
         $locale = $request->getLocale();
 
         $transaction = $this->findTransactionBySlug($transactionSlug, $locale);
         $category = $this->findCategoryBySlug($categorySlug, $locale);
+        $countryCode = $this->findCountryCodeBySlug($countrySlug, $locale);
 
-        if (null === $transaction || null === $category) {
+        if (null === $transaction || null === $category || null === $countryCode) {
             throw $this->createNotFoundException('Ce type de bien est introuvable.');
         }
 
@@ -84,16 +89,18 @@ final class ResultFilterController extends AbstractController
 
         /*
          * Critères de recherche au même format que SearchController::buildCriteriaFromFilter(),
-         * sans localisation (recherche sur tous les pays).
+         * localisés sur le pays de l'URL.
          */
+        $countryName = Countries::getName($countryCode, $locale);
+
         $criteria = [
             'transactionTypeId' => $transaction->getId(),
             'filter' => null,
             'selectedValue' => null,
             'ville' => null,
             'cp' => null,
-            'pays' => null,
-            'selectedCountryCode' => null,
+            'pays' => $countryName,
+            'selectedCountryCode' => $countryCode,
             'selectedRegionName' => null,
             'selectedLatitude' => null,
             'selectedLongitude' => null,
@@ -102,7 +109,7 @@ final class ResultFilterController extends AbstractController
             'selectedFeatureType' => null,
             'selectedCityName' => null,
             'selectedPostalCode' => null,
-            'selectedCountryName' => null,
+            'selectedCountryName' => $countryName,
             'selectedLocale' => null,
             'selectedLocationJson' => null,
         ];
@@ -116,12 +123,18 @@ final class ResultFilterController extends AbstractController
         $request->getSession()->set('property_search_'.$searchToken, $criteria);
 
         /*
-         * Filtres de la modale correspondant au lien : transaction + type de bien.
+         * Filtres de la modale correspondant au lien : pays + transaction + type de bien.
+         * Le pays est passé en français et en anglais (noms stockés sur les annonces).
          * Ils sont propagés par les liens de pagination / changement de vue.
          */
         $modalFilter = [
             'natureDeLaPropriete' => (string) $transaction->getId(),
             'typeDePropriete' => [(string) $category->getId()],
+            'pays' => array_values(array_unique([
+                $countryName,
+                Countries::getName($countryCode, 'fr'),
+                Countries::getName($countryCode, 'en'),
+            ])),
         ];
 
         /*
@@ -187,6 +200,24 @@ final class ResultFilterController extends AbstractController
         $transaction = $translation?->getTranslatable();
 
         return $transaction instanceof CategoryBienTransaction ? $transaction : null;
+    }
+
+    /**
+     * Code ISO du pays dont le nom slugifié correspond, dans la locale courante puis en français / anglais.
+     */
+    private function findCountryCodeBySlug(string $slug, string $locale): ?string
+    {
+        $slugger = new AsciiSlugger();
+
+        foreach (array_unique([$locale, 'fr', 'en']) as $countryLocale) {
+            foreach (Countries::getNames($countryLocale) as $code => $name) {
+                if ($slugger->slug($name)->lower()->toString() === $slug) {
+                    return $code;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

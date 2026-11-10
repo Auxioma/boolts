@@ -61,7 +61,7 @@ final class FooterCitiesProvider
     {
         $data = $this->data ??= $this->readFile();
         // Pays sans ville connue (ex. Vatican) ou absent du fichier → France.
-        $cities = ($data[$this->resolveCountryCode()] ?? []) ?: ($data[self::DEFAULT_COUNTRY] ?? []);
+        $cities = ($data[$this->getCountryCode()] ?? []) ?: ($data[self::DEFAULT_COUNTRY] ?? []);
 
         if ([] === $cities) {
             return self::FALLBACK_CITIES;
@@ -104,7 +104,7 @@ final class FooterCitiesProvider
     /**
      * Pays du visiteur : en-tête Cloudflare, sinon base MaxMind, sinon France.
      */
-    private function resolveCountryCode(): string
+    public function getCountryCode(): string
     {
         $request = $this->requestStack->getCurrentRequest();
 

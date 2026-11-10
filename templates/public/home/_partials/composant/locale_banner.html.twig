@@ -19,10 +19,12 @@
                     class="home-locale-banner__select input"
                     aria-label="Langue"
                     data-locale-banner-target="select"
+                    data-action="change->locale-banner#go"
                 >
-                    <option value="" selected disabled hidden>{{ countryFlag|default('') }} {{ countryIsoCode|default('FR')|country_name(app.request.locale) }}</option>
-                    <option value="{{ path('app_home', {_locale: 'fr'}) }}">🇫🇷 Français</option>
-                    <option value="{{ path('app_home', {_locale: 'en'}) }}">🇬🇧 English</option>
+                    {# Pays détecté par IP (francophone => /fr, anglophone => /), sinon France. #}
+                    <option value="{{ path('app_home_locale_banner', {target: bannerCountryLocale|default('fr')}) }}" selected hidden>{{ bannerCountryFlag|default('') }} {{ bannerCountryIsoCode|default('FR')|country_name(app.request.locale) }}</option>
+                    <option value="{{ path('app_home_locale_banner', {target: 'fr'}) }}">🇫🇷 Français</option>
+                    <option value="{{ path('app_home_locale_banner', {target: 'en'}) }}">🇬🇧 English</option>
                 </select>
                 <i class="icon-chevron-down home-locale-banner__chevron" aria-hidden="true"></i>
             </div>

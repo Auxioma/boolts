@@ -10,7 +10,9 @@
 {% block title %}{{ 'home.meta.title'|trans }}{% endblock %}
 
 {% block body %}
-    {{ include('public/home/_partials/composant/locale_banner.html.twig') }}
+    {% if showLocaleBanner ?? true %}
+        {{ include('public/home/_partials/composant/locale_banner.html.twig') }}
+    {% endif %}
 
     <div class="home-bt-page">
         <main>

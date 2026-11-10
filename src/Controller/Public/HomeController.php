@@ -12,6 +12,7 @@
 
 namespace App\Controller\Public;
 
+use App\Data\LocaleCountryCatalog;
 use App\Entity\Search\PropertySearchSession;
 use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
@@ -43,6 +44,24 @@ final class HomeController extends AbstractController
         private readonly PropertySearchSessionRepository $propertySearchSessionRepository,
         private readonly CategoryBienTransactionRepository $categoryBienTransactionRepository,
     ) {
+    }
+
+    /**
+     * Choix de la langue dans le bandeau : la langue est mise en session
+     * (le bandeau n'est plus affiché tant qu'elle est remplie), puis redirection
+     * vers /fr ou /.
+     */
+    #[Route(
+        path: '/locale-banner/{target}',
+        name: 'app_home_locale_banner',
+        requirements: ['target' => 'fr|en'],
+        methods: ['GET']
+    )]
+    public function chooseLocaleBanner(Request $request, string $target): Response
+    {
+        $request->getSession()->set('locale_banner_choice', $target);
+
+        return $this->redirectToRoute('app_home', ['_locale' => $target]);
     }
 
     #[Route(
@@ -77,6 +96,12 @@ final class HomeController extends AbstractController
         } else {
             $countryIsoCode = $location['countryCode'] ?? 'FR';
         }
+
+        /*
+         * Pays affiché dans le sélecteur de langue : uniquement un pays
+         * francophone ou anglophone, sinon France par défaut.
+         */
+        $bannerCountryIsoCode = isset(LocaleCountryCatalog::COUNTRIES[$countryIsoCode]) ? $countryIsoCode : 'FR';
 
         $transactions = $categoryBienTransactionRepository->findBy([], [
             'id' => 'ASC',
@@ -136,6 +161,11 @@ final class HomeController extends AbstractController
             'lastSearchSession' => $lastSearchSession,
             'countryIsoCode' => $countryIsoCode,
             'countryFlag' => $this->countryFlag($countryIsoCode),
+            'bannerCountryIsoCode' => $bannerCountryIsoCode,
+            'bannerCountryFlag' => $this->countryFlag($bannerCountryIsoCode),
+            'bannerCountryLocale' => LocaleCountryCatalog::COUNTRIES[$bannerCountryIsoCode],
+            // Le bandeau ne s'affiche plus dès que la langue choisie est en session.
+            'showLocaleBanner' => !$session->has('locale_banner_choice'),
         ]);
     }
 

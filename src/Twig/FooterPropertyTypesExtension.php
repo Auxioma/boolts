@@ -16,18 +16,26 @@ use App\Entity\CategoryBien;
 use App\Entity\CategoryBienTransaction;
 use App\Repository\CategoryBienRepository;
 use App\Repository\CategoryBienTransactionRepository;
+use App\Service\FooterCitiesProvider;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Intl\Countries;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 /**
  * {{ footer_property_types() }} → toutes les combinaisons CategoryBien × CategoryBienTransaction.
  * Les libellés viennent des traductions des entités (name selon la locale courante).
+ *
+ * {{ footer_country_slug() }} → slug du pays du visiteur (IP) dans la langue du site (ex. « allemagne », « germany »).
  */
 final class FooterPropertyTypesExtension extends AbstractExtension
 {
     public function __construct(
         private readonly CategoryBienRepository $categoryBienRepository,
         private readonly CategoryBienTransactionRepository $categoryBienTransactionRepository,
+        private readonly FooterCitiesProvider $footerCitiesProvider,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -35,7 +43,22 @@ final class FooterPropertyTypesExtension extends AbstractExtension
     {
         return [
             new TwigFunction('footer_property_types', $this->getCombinations(...)),
+            new TwigFunction('footer_country_slug', $this->getCountrySlug(...)),
         ];
+    }
+
+    public function getCountrySlug(): string
+    {
+        $locale = $this->requestStack->getCurrentRequest()?->getLocale() ?? 'en';
+        $countryCode = $this->footerCitiesProvider->getCountryCode();
+
+        try {
+            $countryName = Countries::getName($countryCode, $locale);
+        } catch (\Throwable) {
+            $countryName = Countries::getName('FR', $locale);
+        }
+
+        return (new AsciiSlugger())->slug($countryName)->lower()->toString();
     }
 
     /**

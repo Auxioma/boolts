@@ -70,11 +70,12 @@
                     <div class="boolts-footer__tab-panel active" data-tab-panel="type" data-home--property-tabs-target="panel">
                         {# Combinaisons CategoryBien × CategoryBienTransaction (noms traduits des entités), par colonnes de 3 #}
                         <div class="boolts-footer__grid">
+                            {% set footer_country = footer_country_slug() %}
                             {% for column in footer_property_types()|batch(3) %}
                                 <ul class="boolts-footer__links">
                                     {% for item in column %}
                                         <li>
-                                            <a href="{{ path('app_public_search_type', {transactionSlug: item.transaction.slug, categorySlug: item.category.slug}) }}">
+                                            <a href="{{ path('app_public_search_type', {countrySlug: footer_country, transactionSlug: item.transaction.slug, categorySlug: item.category.slug}) }}">
                                                 {{ item.category.name }} - {{ item.transaction.name }}
                                             </a>
                                         </li>
