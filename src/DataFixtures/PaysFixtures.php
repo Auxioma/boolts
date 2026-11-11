@@ -29,7 +29,7 @@ class PaysFixtures extends Fixture
         'AT' => 'EUR', 'AU' => 'AUD', 'AW' => 'AWG', 'AX' => 'EUR', 'AZ' => 'AZN',
 
         'BA' => 'BAM', 'BB' => 'BBD', 'BD' => 'BDT', 'BE' => 'EUR', 'BF' => 'XOF',
-        'BG' => 'BGN', 'BH' => 'BHD', 'BI' => 'BIF', 'BJ' => 'XOF', 'BL' => 'EUR',
+        'BG' => 'EUR', 'BH' => 'BHD', 'BI' => 'BIF', 'BJ' => 'XOF', 'BL' => 'EUR',
         'BM' => 'BMD', 'BN' => 'BND', 'BO' => 'BOB', 'BQ' => 'USD', 'BR' => 'BRL',
         'BS' => 'BSD', 'BT' => 'BTN', 'BW' => 'BWP', 'BY' => 'BYN', 'BZ' => 'BZD',
 
@@ -108,7 +108,7 @@ class PaysFixtures extends Fixture
 
         'YE' => 'YER', 'YT' => 'EUR',
 
-        'ZA' => 'ZAR', 'ZM' => 'ZMW', 'ZW' => 'ZWL',
+        'ZA' => 'ZAR', 'ZM' => 'ZMW', 'ZW' => 'ZWG',
     ];
 
     public function load(ObjectManager $manager): void
@@ -122,7 +122,8 @@ class PaysFixtures extends Fixture
 
             $devise
                 ->setNom(Currencies::getName($currencyCode, 'fr').' ('.$currencyCode.')')
-                ->setSigne(Currencies::getSymbol($currencyCode, 'fr'));
+                ->setSigne(Currencies::getSymbol($currencyCode, 'fr'))
+                ->setCode($currencyCode);
 
             $manager->persist($devise);
 

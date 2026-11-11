@@ -173,12 +173,77 @@ class Property implements TranslatableInterface
     #[ORM\Column(nullable: true)]
     private ?bool $showAdresse = null;
 
+    /**
+     * Devise dans laquelle l'agence a saisi prix / loyer / dépôt / charges.
+     * Ces montants d'origine sont la référence de toutes les conversions.
+     */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'RESTRICT')]
+    private ?Devise $devise = null;
+
+    /**
+     * Montants convertis dans les autres devises (jamais la source de vérité).
+     *
+     * @var Collection<int, PropertyPrixDevise>
+     */
+    #[ORM\OneToMany(targetEntity: PropertyPrixDevise::class, mappedBy: 'property', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $prixDevises;
+
     public function __construct()
     {
         $this->caracteristique = new ArrayCollection();
         $this->propertyImages = new ArrayCollection();
         $this->favoris = new ArrayCollection();
         $this->propertyViews = new ArrayCollection();
+        $this->prixDevises = new ArrayCollection();
+    }
+
+    public function getDevise(): ?Devise
+    {
+        return $this->devise;
+    }
+
+    public function setDevise(?Devise $devise): static
+    {
+        $this->devise = $devise;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PropertyPrixDevise>
+     */
+    public function getPrixDevises(): Collection
+    {
+        return $this->prixDevises;
+    }
+
+    public function getPrixDevise(Devise $devise): ?PropertyPrixDevise
+    {
+        foreach ($this->prixDevises as $prixDevise) {
+            if ($prixDevise->getDevise() === $devise) {
+                return $prixDevise;
+            }
+        }
+
+        return null;
+    }
+
+    public function addPrixDevise(PropertyPrixDevise $prixDevise): static
+    {
+        if (!$this->prixDevises->contains($prixDevise)) {
+            $this->prixDevises->add($prixDevise);
+            $prixDevise->setProperty($this);
+        }
+
+        return $this;
+    }
+
+    public function removePrixDevise(PropertyPrixDevise $prixDevise): static
+    {
+        $this->prixDevises->removeElement($prixDevise);
+
+        return $this;
     }
 
     public function getId(): ?int
@@ -680,6 +745,11 @@ class Property implements TranslatableInterface
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
+        // Devise de référence figée à la création : celle de l'agence, dans laquelle elle saisit ses montants.
+        if (null === $this->devise && null !== $user?->getDevise()) {
+            $this->devise = $user->getDevise();
+        }
 
         return $this;
     }

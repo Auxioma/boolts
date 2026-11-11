@@ -21,10 +21,19 @@
                     data-locale-banner-target="select"
                     data-action="change->locale-banner#go"
                 >
-                    {# Pays détecté par IP (francophone => /fr, anglophone => /), sinon France. #}
-                    <option value="{{ path('app_home_locale_banner', {target: bannerCountryLocale|default('fr')}) }}" selected hidden>{{ bannerCountryFlag|default('') }} {{ bannerCountryIsoCode|default('FR')|country_name(app.request.locale) }}</option>
-                    <option value="{{ path('app_home_locale_banner', {target: 'fr'}) }}">🇫🇷 Français</option>
-                    <option value="{{ path('app_home_locale_banner', {target: 'en'}) }}">🇬🇧 English</option>
+                    {#
+                        Pays détecté par IP (francophone => fr, anglophone => en), sinon France.
+                        En dessous, uniquement les langues non couvertes par ce pays.
+                    #}
+                    {% set bannerLocale = bannerCountryLocale|default('fr') %}
+                    {% set bannerCountryLabel = bannerCountryFlag|default('') ~ ' ' ~ bannerCountryIsoCode|default('FR')|country_name(bannerLocale) %}
+                    <option value="{{ path('app_home_locale_banner', {target: bannerLocale}) }}" selected>{{ bannerCountryLabel }}</option>
+                    {% if bannerLocale != 'fr' %}
+                        <option value="{{ path('app_home_locale_banner', {target: 'fr'}) }}">🇫🇷 Français</option>
+                    {% endif %}
+                    {% if bannerLocale != 'en' %}
+                        <option value="{{ path('app_home_locale_banner', {target: 'en'}) }}">🇬🇧 English</option>
+                    {% endif %}
                 </select>
                 <i class="icon-chevron-down home-locale-banner__chevron" aria-hidden="true"></i>
             </div>

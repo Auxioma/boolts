@@ -33,6 +33,12 @@ class Devise
     private ?string $signe = null;
 
     /**
+     * Code ISO 4217 (EUR, USD, XOF…) : identifiant attendu par les API de taux de change.
+     */
+    #[ORM\Column(length: 3, unique: true, nullable: true)]
+    private ?string $code = null;
+
+    /**
      * @var Collection<int, User>
      */
     #[ORM\OneToMany(
@@ -86,6 +92,18 @@ class Devise
     public function setSigne(string $signe): static
     {
         $this->signe = mb_trim($signe);
+
+        return $this;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): static
+    {
+        $this->code = null === $code ? null : mb_strtoupper(mb_trim($code));
 
         return $this;
     }
