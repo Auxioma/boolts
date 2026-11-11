@@ -23,11 +23,9 @@
 
         {% set uploadedImage = imageUrls|first|default(null) %}
 
-        {% set devise = '€' %}
-
-        {% if bienImmobilier.user is defined and bienImmobilier.user and bienImmobilier.user.devise is defined and bienImmobilier.user.devise %}
-            {% set devise = bienImmobilier.user.devise.signe|default('€') %}
-        {% endif %}
+        {# Montants dans la devise locale du visiteur (IP). #}
+        {% set price = property_price(bienImmobilier) %}
+        {% set devise = price.signe %}
 
         {% set typeBienName = '' %}
 
@@ -59,13 +57,9 @@
             : (typeBienName is not empty ? typeBienName : 'search.card.default_title'|trans)
         %}
 
-        {% set prixVente = bienImmobilier.prix|default(null) %}
-        {% set loyerHorsCharge = bienImmobilier.montantLoyerHorsCharge|default(null) %}
-        {% set charges = bienImmobilier.montantDesCharges|default(null) %}
-
-        {% set prixVenteNumber = prixVente is not empty ? prixVente + 0 : null %}
-        {% set loyerHorsChargeNumber = loyerHorsCharge is not empty ? loyerHorsCharge + 0 : null %}
-        {% set chargesNumber = charges is not empty ? charges + 0 : 0 %}
+        {% set prixVenteNumber = price.prix %}
+        {% set loyerHorsChargeNumber = price.loyer %}
+        {% set chargesNumber = price.charges ?? 0 %}
 
         {% if isLocation and loyerHorsChargeNumber is not null %}
             {% set propertyPriceNumber = loyerHorsChargeNumber + chargesNumber %}

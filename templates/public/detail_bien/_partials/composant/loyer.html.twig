@@ -7,12 +7,12 @@
 
 <div class="d-flex align-items-center justify-content-between gap-3 my-3">
 
-    {% set prixVente = property.prix %}
-    {% set loyerHorsCharge = property.montantLoyerHorsCharge %}
-    {% set charges = property.montantDesCharges|default(0) %}
+    {% set prixVente = propertyAmounts.prix %}
+    {% set loyerHorsCharge = propertyAmounts.loyer %}
+    {% set charges = propertyAmounts.charges ?? 0 %}
 
-    {% set hasPrixVente = prixVente is not null and prixVente != '' %}
-    {% set hasLoyerAside = loyerHorsCharge is not null and loyerHorsCharge != '' %}
+    {% set hasPrixVente = prixVente is not null %}
+    {% set hasLoyerAside = loyerHorsCharge is not null %}
 
     {% if hasPrixVente or hasLoyerAside %}
         {% if hasPrixVente %}

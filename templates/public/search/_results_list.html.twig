@@ -41,8 +41,10 @@
                     : 'search.card.available_title'|trans
                 %}
 
-                {% set propertyPrice = bienImmobilier.prix is not empty
-                    ? bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ bienImmobilier.user.devise.signe
+                {# Montants dans la devise locale du visiteur (IP). #}
+                {% set price = property_price(bienImmobilier) %}
+                {% set propertyPrice = price.prix is not null
+                    ? price.prix|number_format(0, ',', ' ') ~ ' ' ~ price.signe
                     : ''
                 %}
 

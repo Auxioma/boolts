@@ -202,24 +202,17 @@
                                                             - Vente    => prix seul
                                                             - Location => prix + charges
                                                             #}
-                                                            {% set deviseSigne = bienImmobilier.user.devise.signe|default('€') %}
+                                                            {# Montants dans la devise locale du visiteur (IP). #}
+                                                            {% set price = property_price(bienImmobilier) %}
+                                                            {% set deviseSigne = price.signe %}
 
                                                             {# Vente : prix #}
-                                                            {% set prixVente = bienImmobilier.prix|default('0')|replace({
-                                                                ' ': '',
-                                                                ',': '.',
-                                                            }) + 0 %}
+                                                            {% set prixVente = price.prix ?? 0 %}
 
                                                             {# Location : loyer hors charges + charges #}
-                                                            {% set loyerHorsCharge = bienImmobilier.montantLoyerHorsCharge|default('0')|replace({
-                                                                ' ': '',
-                                                                ',': '.',
-                                                            }) + 0 %}
+                                                            {% set loyerHorsCharge = price.loyer ?? 0 %}
 
-                                                            {% set montantCharges = bienImmobilier.montantDesCharges|default('0')|replace({
-                                                                ' ': '',
-                                                                ',': '.',
-                                                            }) + 0 %}
+                                                            {% set montantCharges = price.charges ?? 0 %}
 
                                                             {% set prixTotal = isLocation
                                                                 ? loyerHorsCharge + montantCharges
