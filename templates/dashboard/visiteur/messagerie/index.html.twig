@@ -20,9 +20,44 @@
                 {{ include('composant/_visiteurs/_tableau_de_bord.html.twig') }}
 
                 {# Contenu principal #}
-                <div class="col-md-9 col-lg-10 col-12 dashboard-main p-0">
-                    {# Messagerie en direct (Live Component) — Figma « Dashboard - Messagerie » 4570:19079 #}
-                    {{ component('Messagerie:VisiteurInbox') }}
+                <div class="col-md-9 col-lg-10 col-12 dashboard-main">
+                    <div class="col-12 col-md-10 mx-auto">
+                        {# Figma « Messagerie — Contact direct » 7098:31998 #}
+                        <section class="messagerie-annonces d-flex flex-column gap-4 pb-4">
+
+                            <h2 class="mb-0">Messagerie</h2>
+
+                            {# Onglets (« Agences » ouvert d'office pour un contact direct, ex. depuis la page agence) #}
+                            {% set is_agences = (active_tab|default('annonce')) == 'agences' %}
+                            <ul class="messagerie-annonces__tabs nav nav-underline border-bottom" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button type="button" id="messagerie-tab-annonce" class="messagerie-annonces__tab nav-link{{ is_agences ? '' : ' active' }} position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-annonce" role="tab" aria-controls="messagerie-pane-annonce" aria-selected="{{ is_agences ? 'false' : 'true' }}">
+                                        <span class="messagerie-annonces__tab-dot messagerie-annonces__tab-dot--annonce position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
+                                        Annonce
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button type="button" id="messagerie-tab-agences" class="messagerie-annonces__tab nav-link{{ is_agences ? ' active' }} position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-agences" role="tab" aria-controls="messagerie-pane-agences" aria-selected="{{ is_agences ? 'true' : 'false' }}">
+                                        <span class="messagerie-annonces__tab-dot position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
+                                        Agences
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+
+                                {# Onglet Annonce — messagerie en direct (Live Component) #}
+                                <div id="messagerie-pane-annonce" class="tab-pane{{ is_agences ? '' : ' active' }}" role="tabpanel" aria-labelledby="messagerie-tab-annonce" tabindex="0">
+                                    {{ component('Messagerie:VisiteurInbox') }}
+                                </div>
+
+                                {# Onglet Agences — contact direct avec les agences (Live Component) #}
+                                <div id="messagerie-pane-agences" class="tab-pane{{ is_agences ? ' active' }}" role="tabpanel" aria-labelledby="messagerie-tab-agences" tabindex="0">
+                                    {{ component('Messagerie:VisiteurAgences') }}
+                                </div>
+                            </div>
+                        </section>
+                    </div>
                 </div>
             </div>
         </div>

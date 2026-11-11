@@ -309,7 +309,10 @@
                                                 {{ 'detail_bien.contact.call'|trans }}
                                             </a>
                                         {% endif %}
-
+<a href="{{ path('app_public_detail_agence_messagerie', {slug: user.slug}) }}" class="agence-btn agence-btn-primary p-accent">
+<i class="icon-phone"></i>
+Envoie message agence
+</a>
                                         <button
                                             type="button"
                                             class="bt-btn bt-btn--outline-primary w-100 p-accent"

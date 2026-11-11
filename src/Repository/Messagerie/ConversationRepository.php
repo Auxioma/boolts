@@ -44,6 +44,7 @@ class ConversationRepository extends ServiceEntityRepository
                 'MAX(c.lastMessageAt) AS lastMessageAt',
             )
             ->andWhere('c.agence = :agence')
+            ->andWhere('c.property IS NOT NULL')
             ->andWhere('c.lastMessageAt IS NOT NULL')
             ->setParameter('agence', $agence)
             ->groupBy('c.property')
@@ -65,6 +66,7 @@ class ConversationRepository extends ServiceEntityRepository
             ->from(Message::class, 'm')
             ->join('m.conversation', 'c')
             ->andWhere('c.agence = :agence')
+            ->andWhere('c.property IS NOT NULL')
             ->andWhere('m.sender <> :agence')
             ->andWhere('m.readAt IS NULL')
             ->setParameter('agence', $agence)
@@ -145,6 +147,44 @@ class ConversationRepository extends ServiceEntityRepository
             ->andWhere('c.visiteur = :visiteur')
             ->setParameter('visiteur', $visiteur)
             ->orderBy('sortAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Contacts directs d'un visiteur avec des agences (sans annonce), le plus récent en premier.
+     *
+     * @return list<Conversation>
+     */
+    public function findDirectForVisiteur(User $visiteur): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('a')
+            ->addSelect('COALESCE(c.lastMessageAt, c.createdAt) AS HIDDEN sortAt')
+            ->join('c.agence', 'a')
+            ->andWhere('c.visiteur = :visiteur')
+            ->andWhere('c.property IS NULL')
+            ->setParameter('visiteur', $visiteur)
+            ->orderBy('sortAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Contacts directs reçus par l'agence (sans annonce), uniquement ceux contenant un message.
+     *
+     * @return list<Conversation>
+     */
+    public function findDirectForAgence(User $agence): array
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('v')
+            ->join('c.visiteur', 'v')
+            ->andWhere('c.agence = :agence')
+            ->andWhere('c.property IS NULL')
+            ->andWhere('c.lastMessageAt IS NOT NULL')
+            ->setParameter('agence', $agence)
+            ->orderBy('c.lastMessageAt', 'DESC')
             ->getQuery()
             ->getResult();
     }

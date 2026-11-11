@@ -21,7 +21,10 @@ use Symfony\Component\HttpFoundation\File\File;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 /**
- * Message (texte et/ou image) d'une conversation.
+ * Message (texte, image et/ou document) d'une conversation.
+ *
+ * Les images sont publiques (public/messagerie) ; les documents sont privés
+ * (var/messagerie_documents) et servis uniquement aux participants.
  */
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 #[ORM\Table(name: 'messagerie_message')]
@@ -56,6 +59,19 @@ class Message
 
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
+
+    #[Vich\UploadableField(mapping: 'messagerie_documents', fileNameProperty: 'documentName', size: 'documentSize', originalName: 'documentOriginalName')]
+    private ?File $documentFile = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $documentName = null;
+
+    /** Nom du fichier tel qu'envoyé (affiché et proposé au téléchargement). */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $documentOriginalName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $documentSize = null;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $readAt = null;
@@ -129,6 +145,46 @@ class Message
     public function setImageSize(?int $imageSize): void
     {
         $this->imageSize = $imageSize;
+    }
+
+    public function getDocumentFile(): ?File
+    {
+        return $this->documentFile;
+    }
+
+    public function setDocumentFile(?File $documentFile = null): void
+    {
+        $this->documentFile = $documentFile;
+    }
+
+    public function getDocumentName(): ?string
+    {
+        return $this->documentName;
+    }
+
+    public function setDocumentName(?string $documentName): void
+    {
+        $this->documentName = $documentName;
+    }
+
+    public function getDocumentOriginalName(): ?string
+    {
+        return $this->documentOriginalName;
+    }
+
+    public function setDocumentOriginalName(?string $documentOriginalName): void
+    {
+        $this->documentOriginalName = $documentOriginalName;
+    }
+
+    public function getDocumentSize(): ?int
+    {
+        return $this->documentSize;
+    }
+
+    public function setDocumentSize(?int $documentSize): void
+    {
+        $this->documentSize = $documentSize;
     }
 
     public function getReadAt(): ?\DateTimeImmutable

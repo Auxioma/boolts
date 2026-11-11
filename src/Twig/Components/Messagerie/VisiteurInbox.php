@@ -35,6 +35,12 @@ final class VisiteurInbox
     #[LiveProp(writable: true, url: true)]
     public ?int $conversation = null;
 
+    #[LiveProp(writable: true)]
+    public string $query = '';
+
+    #[LiveProp(writable: true)]
+    public string $filter = 'all';
+
     /**
      * @var list<Conversation>|null
      */
@@ -59,11 +65,30 @@ final class VisiteurInbox
     }
 
     /**
+     * Toutes les conversations du visiteur.
+     *
+     * @return list<Conversation>
+     */
+    public function getAllConversations(): array
+    {
+        return $this->conversations ??= $this->conversationRepository->findForVisiteur($this->getVisiteur());
+    }
+
+    /**
+     * Conversations après recherche (agence ou annonce) et filtre « Non lues ».
+     *
      * @return list<Conversation>
      */
     public function getConversations(): array
     {
-        return $this->conversations ??= $this->conversationRepository->findForVisiteur($this->getVisiteur());
+        $query = mb_strtolower(mb_trim($this->query));
+        $unread = $this->getUnreadByConversation();
+
+        return array_values(array_filter(
+            $this->getAllConversations(),
+            fn (Conversation $conversation): bool => ('unread' !== $this->filter || ($unread[$conversation->getId()] ?? 0) > 0)
+                && ('' === $query || str_contains(mb_strtolower($this->searchText($conversation)), $query)),
+        ));
     }
 
     /**
@@ -72,14 +97,14 @@ final class VisiteurInbox
     public function getUnreadByConversation(): array
     {
         return $this->unreadByConversation ??= $this->messageRepository->countUnreadByConversation(
-            $this->getConversations(),
+            $this->getAllConversations(),
             $this->getVisiteur(),
         );
     }
 
     public function getSelectedConversation(): ?Conversation
     {
-        $conversations = $this->getConversations();
+        $conversations = $this->getAllConversations();
 
         foreach ($conversations as $conversation) {
             if ($conversation->getId() === $this->conversation) {
@@ -88,6 +113,19 @@ final class VisiteurInbox
         }
 
         return $conversations[0] ?? null;
+    }
+
+    private function searchText(Conversation $conversation): string
+    {
+        $agence = $conversation->getAgence();
+        $property = $conversation->getProperty();
+
+        return implode(' ', [
+            $agence?->getEntreprise(),
+            $agence?->getPrenom(),
+            $agence?->getNom(),
+            $property?->getTitreDuLogement(),
+        ]);
     }
 
     private function getVisiteur(): User

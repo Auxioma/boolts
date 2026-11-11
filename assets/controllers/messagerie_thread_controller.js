@@ -5,11 +5,11 @@ import { getComponent } from '@symfony/ux-live-component';
  * Compagnon JS du Live Component Messagerie:Thread.
  *
  * - garde le fil défilé en bas quand de nouveaux messages arrivent ;
- * - affiche l'aperçu de l'image choisie ;
- * - vide le champ image après un envoi réussi.
+ * - affiche l'aperçu de la pièce jointe choisie (image ou document) ;
+ * - vide le champ fichier après un envoi réussi.
  */
 export default class extends Controller {
-    static targets = ['messages', 'file', 'preview', 'previewImage'];
+    static targets = ['messages', 'file', 'preview', 'previewImage', 'previewDocument', 'previewName'];
 
     async connect() {
         this.scrollToBottom(true);
@@ -58,8 +58,22 @@ export default class extends Controller {
             return;
         }
 
-        this.previewUrl = URL.createObjectURL(file);
-        this.previewImageTarget.src = this.previewUrl;
+        const isImage = file.type.startsWith('image/');
+
+        // Image : miniature ; document (PDF, Word…) : icône + nom du fichier.
+        if (isImage) {
+            this.previewUrl = URL.createObjectURL(file);
+            this.previewImageTarget.src = this.previewUrl;
+        }
+
+        this.previewImageTarget.classList.toggle('d-none', !isImage);
+
+        if (this.hasPreviewDocumentTarget) {
+            this.previewDocumentTarget.classList.toggle('d-none', isImage);
+            this.previewDocumentTarget.classList.toggle('d-inline-flex', !isImage);
+            this.previewNameTarget.textContent = isImage ? '' : file.name;
+        }
+
         this.previewTarget.classList.remove('d-none');
     }
 

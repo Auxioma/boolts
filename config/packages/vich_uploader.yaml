@@ -21,6 +21,15 @@ vich_uploader:
             delete_on_update: true
             delete_on_remove: true
 
+        # Documents de la messagerie : hors du dossier public, servis par
+        # MessagerieDocumentController aux seuls participants de la conversation.
+        messagerie_documents:
+            uri_prefix: /messagerie/documents
+            upload_destination: '%kernel.project_dir%/var/messagerie_documents'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            delete_on_update: true
+            delete_on_remove: true
+
         biens:
             uri_prefix: /properties
             upload_destination: '%kernel.project_dir%/public/properties'

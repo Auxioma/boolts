@@ -92,9 +92,9 @@
                                     {{ component('Messagerie:AgenceInbox') }}
                                 </div>
 
-                                {# Onglet Contact — Figma 6987:17298 #}
+                                {# Onglet Contact — Figma 6987:17298 — contact direct des particuliers (Live Component) #}
                                 <div id="messagerie-pane-contact" class="tab-pane" role="tabpanel" aria-labelledby="messagerie-tab-contact" tabindex="0">
-                                    {{ include('dashboard/agence_immobiliere/_partials/messagerie/_conversations.html.twig') }}
+                                    {{ component('Messagerie:AgenceContacts') }}
                                 </div>
 
                                 {# Onglet Service client — Figma 6987:17827 #}

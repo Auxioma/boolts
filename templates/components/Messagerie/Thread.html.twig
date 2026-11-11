@@ -23,9 +23,14 @@
 
             <div class="messagerie-annonces__summary d-flex flex-column flex-grow-1 gap-1">
                 <span class="p-accent fw-bold text-dark">{{ m.name(interlocutor) }}</span>
-                <a href="{{ path('app_public_detail_bien', {slug: property.slug}) }}" class="messagerie-annonces__mini text-secondary text-truncate">
-                    À propos de : {{ property.titreDuLogement ?: property }}
-                </a>
+                {% if property %}
+                    <a href="{{ path('app_public_detail_bien', {slug: property.slug}) }}" class="messagerie-annonces__mini text-secondary text-truncate">
+                        À propos de : {{ property.titreDuLogement ?: property }}
+                    </a>
+                {% else %}
+                    {# Contact direct (sans annonce) #}
+                    <span class="messagerie-annonces__mini text-secondary text-truncate">{{ interlocutor is same as(this.conversation.agence) ? 'Agence immobilière' : 'Contact direct' }}</span>
+                {% endif %}
             </div>
         </div>
 
@@ -52,6 +57,18 @@
                         {% set image_url = vich_uploader_asset(message, 'imageFile') %}
                         <a href="{{ image_url }}" target="_blank" rel="noopener" class="d-block">
                             <img src="{{ image_url }}" alt="Image envoyée" loading="lazy" class="rounded-4 mw-100" style="max-height: 260px; object-fit: cover;">
+                        </a>
+                    {% endif %}
+
+                    {% if message.documentName %}
+                        {# Document : téléchargement contrôlé (participants uniquement) #}
+                        <a href="{{ path('app_messagerie_document', {id: message.id}) }}" class="d-inline-flex align-items-center gap-2 mw-100 border rounded-3 bg-white p-3 text-dark">
+                            <i class="icon-file-text text-primary" aria-hidden="true"></i>
+                            <span class="text-truncate">{{ message.documentOriginalName ?? message.documentName }}</span>
+                            {% if message.documentSize %}
+                                <span class="messagerie-annonces__mini text-secondary text-nowrap">{{ (message.documentSize / 1024)|round(0, 'ceil')|number_format(0, ',', ' ') }} Ko</span>
+                            {% endif %}
+                            <i class="icon-download" aria-hidden="true"></i>
                         </a>
                     {% endif %}
 
@@ -83,11 +100,15 @@
             </div>
         {% endif %}
 
-        {# Aperçu de l'image sélectionnée #}
+        {# Aperçu de la pièce jointe sélectionnée (miniature pour une image, nom pour un document) #}
         <div class="px-24 d-none" data-messagerie-thread-target="preview" data-live-ignore>
-            <div class="d-inline-flex align-items-center gap-2 border rounded-3 p-2">
+            <div class="d-inline-flex align-items-center gap-2 mw-100 border rounded-3 p-2">
                 <img src="" alt="" width="56" height="56" class="object-fit-cover rounded" data-messagerie-thread-target="previewImage">
-                <button type="button" class="border-0 bg-transparent p-0 text-dark" aria-label="Retirer l’image" data-action="messagerie-thread#clearImage">
+                <span class="d-none align-items-center gap-2 text-truncate" data-messagerie-thread-target="previewDocument">
+                    <i class="icon-file-text text-primary" aria-hidden="true"></i>
+                    <span class="text-truncate" data-messagerie-thread-target="previewName"></span>
+                </span>
+                <button type="button" class="border-0 bg-transparent p-0 text-dark" aria-label="Retirer la pièce jointe" data-action="messagerie-thread#clearImage">
                     <i class="icon-x" aria-hidden="true"></i>
                 </button>
             </div>
@@ -100,12 +121,12 @@
             data-live-action-param="files|send"
             enctype="multipart/form-data"
         >
-            <label data-live-ignore class="messagerie-annonces__attach messagerie-annonces__action d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle p-0 mb-0" role="button" aria-label="Joindre une image">
+            <label data-live-ignore class="messagerie-annonces__attach messagerie-annonces__action d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle p-0 mb-0" role="button" aria-label="Joindre une image ou un document" title="Joindre une image ou un document (PDF, Word, Excel…)">
                 <i class="icon-image" aria-hidden="true"></i>
                 <input
                     type="file"
-                    name="image"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    name="attachment"
+                    accept="{{ constant('App\\Service\\Messagerie\\MessagerieManager::ACCEPT') }}"
                     class="d-none"
                     data-messagerie-thread-target="file"
                     data-action="change->messagerie-thread#preview"

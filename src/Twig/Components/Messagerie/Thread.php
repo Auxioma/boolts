@@ -87,13 +87,13 @@ final class Thread
     #[LiveAction]
     public function send(Request $request): void
     {
-        $image = $request->files->get('image');
+        $attachment = $request->files->get('attachment');
 
         $this->errors = $this->messagerieManager->send(
             conversation: $this->conversation,
             sender: $this->getUser(),
             content: $this->content,
-            image: $image instanceof UploadedFile ? $image : null,
+            attachment: $attachment instanceof UploadedFile ? $attachment : null,
         );
 
         if ([] === $this->errors) {

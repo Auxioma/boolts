@@ -21,9 +21,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Fil de discussion entre un visiteur et l'agence propriétaire d'un bien.
+ * Fil de discussion entre un visiteur et une agence.
  *
- * Une seule conversation par couple (bien, visiteur).
+ * - Avec un bien : conversation au sujet d'une annonce, une seule par couple (bien, visiteur).
+ * - Sans bien : contact direct avec l'agence (page agence), une seule par couple (agence, visiteur).
  */
 #[ORM\Entity(repositoryClass: ConversationRepository::class)]
 #[ORM\Table(name: 'messagerie_conversation')]
@@ -39,8 +40,9 @@ class Conversation
     #[ORM\Column]
     private ?int $id = null;
 
+    /** Null pour un contact direct avec l'agence (sans annonce). */
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?Property $property = null;
 
     #[ORM\ManyToOne]
@@ -72,6 +74,14 @@ class Conversation
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Contact direct avec l'agence (conversation sans annonce).
+     */
+    public function isDirect(): bool
+    {
+        return null === $this->property;
     }
 
     public function getProperty(): ?Property
