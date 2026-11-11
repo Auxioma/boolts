@@ -12,13 +12,13 @@
 
 namespace App\Controller\Public;
 
-use App\Data\LocaleCountryCatalog;
 use App\Entity\Search\PropertySearchSession;
 use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\CategoryBienTransactionRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\Search\PropertySearchSessionRepository;
+use App\Service\Intl\VisitorLocaleResolver;
 use App\Service\IpLocationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -46,24 +46,6 @@ final class HomeController extends AbstractController
     ) {
     }
 
-    /**
-     * Choix de la langue dans le bandeau : la langue est mise en session
-     * (le bandeau n'est plus affiché tant qu'elle est remplie), puis redirection
-     * vers /fr ou /.
-     */
-    #[Route(
-        path: '/locale-banner/{target}',
-        name: 'app_home_locale_banner',
-        requirements: ['target' => 'fr|en'],
-        methods: ['GET']
-    )]
-    public function chooseLocaleBanner(Request $request, string $target): Response
-    {
-        $request->getSession()->set('locale_banner_choice', $target);
-
-        return $this->redirectToRoute('app_home', ['_locale' => $target]);
-    }
-
     #[Route(
         path: [
             'en' => '/',
@@ -79,6 +61,7 @@ final class HomeController extends AbstractController
         CategoryBienTransactionRepository $categoryBienTransactionRepository,
         Request $request,
         IpLocationService $ipLocationService,
+        VisitorLocaleResolver $visitorLocaleResolver,
     ): Response {
         /**
          * Je récupere l'IP de l'utilisateur pour localisé les biens.
@@ -98,10 +81,13 @@ final class HomeController extends AbstractController
         }
 
         /*
-         * Pays affiché dans le sélecteur de langue : uniquement un pays
-         * francophone ou anglophone, sinon France par défaut.
+         * Pays affiché dans le bandeau de langue : uniquement un pays
+         * francophone ou anglophone (détection mise en cache), sinon France.
          */
-        $bannerCountryIsoCode = isset(LocaleCountryCatalog::COUNTRIES[$countryIsoCode]) ? $countryIsoCode : 'FR';
+        $visitorLocale = $visitorLocaleResolver->resolve($request);
+        $bannerCountryLocale = $visitorLocale['countryLocale'];
+        $bannerCountryIsoCode = null !== $bannerCountryLocale ? (string) $visitorLocale['countryCode'] : 'FR';
+        $bannerCountryLocale ??= 'fr';
 
         $transactions = $categoryBienTransactionRepository->findBy([], [
             'id' => 'ASC',
@@ -163,9 +149,9 @@ final class HomeController extends AbstractController
             'countryFlag' => $this->countryFlag($countryIsoCode),
             'bannerCountryIsoCode' => $bannerCountryIsoCode,
             'bannerCountryFlag' => $this->countryFlag($bannerCountryIsoCode),
-            'bannerCountryLocale' => LocaleCountryCatalog::COUNTRIES[$bannerCountryIsoCode],
-            // Le bandeau ne s'affiche plus dès que la langue choisie est en session.
-            'showLocaleBanner' => !$session->has('locale_banner_choice'),
+            'bannerCountryLocale' => $bannerCountryLocale,
+            // Le bandeau ne s'affiche plus dès qu'une langue a été choisie manuellement.
+            'showLocaleBanner' => null === $visitorLocaleResolver->manualChoice($request),
         ]);
     }
 

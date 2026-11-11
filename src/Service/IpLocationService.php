@@ -12,21 +12,45 @@
 
 namespace App\Service;
 
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class IpLocationService
 {
+    /**
+     * Durée de mise en cache d'une géolocalisation (évite un appel API par page).
+     */
+    private const CACHE_TTL = 86400;
+
     public function __construct(
         private HttpClientInterface $httpClient,
+        private CacheInterface $cache,
     ) {
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function locate(?string $ip): ?array
     {
         if (!$ip || \in_array($ip, ['127.0.0.1', '::1'], true)) {
             return null;
         }
 
+        // IP hachée dans la clé : l'adresse en clair n'est pas stockée en cache.
+        return $this->cache->get('ip_location_'.hash('sha256', $ip), function (ItemInterface $item) use ($ip): ?array {
+            $item->expiresAfter(self::CACHE_TTL);
+
+            return $this->fetch($ip);
+        });
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function fetch(string $ip): ?array
+    {
         try {
             $response = $this->httpClient->request(
                 'GET',
