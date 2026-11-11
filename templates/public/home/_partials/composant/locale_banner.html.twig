@@ -27,7 +27,7 @@
                     #}
                     {% set bannerLocale = bannerCountryLocale|default('fr') %}
                     {% set bannerCountryLabel = bannerCountryFlag|default('') ~ ' ' ~ bannerCountryIsoCode|default('FR')|country_name(bannerLocale) %}
-                    <option value="{{ path('app_home_locale_banner', {target: bannerLocale}) }}" selected>{{ bannerCountryLabel }}</option>
+                    <option value="{{ path('app_home_locale_banner', {target: bannerLocale}) }}" selected hidden>{{ bannerCountryLabel }}</option>
                     {% if bannerLocale != 'fr' %}
                         <option value="{{ path('app_home_locale_banner', {target: 'fr'}) }}">🇫🇷 Français</option>
                     {% endif %}
