@@ -30,7 +30,6 @@
             </a>
 
             <div class="topbar-mobile-actions d-flex align-items-center ms-auto d-xl-none">
-                {{ include('composant/__header/_locale_switcher.html.twig', {switcherId: 'topbar-locale-mobile'}) }}
 
                 <button
                     id="mobile-menu-button"
@@ -67,10 +66,6 @@
 
                     <li class="nav-item">
                         <a class="nav-link" href="#">{{ 'navbar.exclusives'|trans }}</a>
-                    </li>
-
-                    <li class="nav-item ms-3">
-                        {{ include('composant/__header/_locale_switcher.html.twig', {switcherId: 'topbar-locale-desktop'}) }}
                     </li>
 
                     <li class="nav-item ms-3">

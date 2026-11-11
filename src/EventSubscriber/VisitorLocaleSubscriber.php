@@ -12,6 +12,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Service\Intl\LocalizedUrlGenerator;
 use App\Service\Intl\VisitorLocaleResolver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -20,7 +21,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Langue initiale du visiteur : à sa première visite (aucun cookie de langue),
@@ -40,7 +40,7 @@ final readonly class VisitorLocaleSubscriber implements EventSubscriberInterface
 
     public function __construct(
         private VisitorLocaleResolver $visitorLocaleResolver,
-        private UrlGeneratorInterface $urlGenerator,
+        private LocalizedUrlGenerator $localizedUrlGenerator,
     ) {
     }
 
@@ -69,12 +69,9 @@ final readonly class VisitorLocaleSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $params = $request->attributes->get('_route_params', []);
-        $params['_locale'] = $locale;
+        $url = $this->localizedUrlGenerator->translatedPath($request, $locale);
 
-        try {
-            $url = $this->urlGenerator->generate((string) $request->attributes->get('_canonical_route'), $params);
-        } catch (\Throwable) {
+        if (null === $url) {
             $request->attributes->set(self::PENDING_ATTRIBUTE, $locale);
 
             return;
@@ -107,7 +104,7 @@ final readonly class VisitorLocaleSubscriber implements EventSubscriberInterface
         }
 
         // Uniquement les pages déclarées dans les deux langues.
-        if (!\is_string($request->attributes->get('_canonical_route')) || !$request->attributes->has('_locale')) {
+        if (!$this->localizedUrlGenerator->isLocalized($request)) {
             return false;
         }
 

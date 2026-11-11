@@ -12,8 +12,8 @@
 
 namespace App\Twig;
 
+use App\Service\Intl\LocalizedUrlGenerator;
 use App\Service\Intl\VisitorLocaleResolver;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
@@ -28,6 +28,7 @@ final class LocaleUrlExtension extends AbstractExtension
     public function __construct(
         private readonly RequestStack $requestStack,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly LocalizedUrlGenerator $localizedUrlGenerator,
     ) {
     }
 
@@ -47,7 +48,7 @@ final class LocaleUrlExtension extends AbstractExtension
     public function pageUrl(string $locale, bool $withQuery = true): string
     {
         $request = $this->requestStack->getMainRequest();
-        $url = $request ? $this->translatedPath($request, $locale) : null;
+        $url = $request ? $this->localizedUrlGenerator->translatedPath($request, $locale) : null;
 
         if (null === $url) {
             return $this->urlGenerator->generate('app_home', ['_locale' => $locale]);
@@ -86,7 +87,7 @@ final class LocaleUrlExtension extends AbstractExtension
         $urls = [];
 
         foreach (VisitorLocaleResolver::SUPPORTED as $locale) {
-            $path = $this->translatedPath($request, $locale);
+            $path = $this->localizedUrlGenerator->translatedPath($request, $locale);
 
             if (null === $path) {
                 return [];
@@ -103,24 +104,5 @@ final class LocaleUrlExtension extends AbstractExtension
         $request = $this->requestStack->getMainRequest();
 
         return $request ? $request->getSchemeAndHttpHost().$request->getBaseUrl().$request->getPathInfo() : null;
-    }
-
-    private function translatedPath(Request $request, string $locale): ?string
-    {
-        // _canonical_route n'existe que pour les routes déclarées par langue.
-        $route = $request->attributes->get('_canonical_route');
-
-        if (!\is_string($route) || '' === $route) {
-            return null;
-        }
-
-        $params = $request->attributes->get('_route_params', []);
-        $params['_locale'] = $locale;
-
-        try {
-            return $this->urlGenerator->generate($route, $params);
-        } catch (\Throwable) {
-            return null;
-        }
     }
 }
