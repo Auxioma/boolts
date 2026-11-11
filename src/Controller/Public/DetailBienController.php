@@ -15,6 +15,7 @@ namespace App\Controller\Public;
 use App\Entity\FormContact\Contact;
 use App\Entity\Property;
 use App\Form\FormContact\ContactType;
+use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Service\ContactForm\ContactMailer;
 use App\Service\PropertyViewTracker;
@@ -50,6 +51,7 @@ final class DetailBienController extends AbstractController
         #[MapEntity(mapping: ['slug' => 'slug'])]
         Property $property,
         PropertyRepository $propertyRepository,
+        FavorisRepository $favorisRepository,
         Request $request,
     ): Response {
         /**
@@ -74,6 +76,16 @@ final class DetailBienController extends AbstractController
         );
 
         $form->handleRequest($request);
+
+        /*
+         * IDs des biens en favoris du visiteur connecté.
+         * Visiteur non connecté ou agence : tableau vide.
+         */
+        $favoritePropertyIds = [];
+
+        if ($this->getUser() && !$this->isGranted('ROLE_AGENCE')) {
+            $favoritePropertyIds = $favorisRepository->findPropertyIdsByUser($this->getUser());
+        }
 
         /*
          * Traitement du formulaire.
@@ -133,6 +145,11 @@ final class DetailBienController extends AbstractController
                  * Formulaire.
                  */
                 'form' => $form->createView(),
+
+                /*
+                 * Favoris du visiteur.
+                 */
+                'favoritePropertyIds' => $favoritePropertyIds,
             ]
         );
 

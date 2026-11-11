@@ -49,9 +49,20 @@
                     <i class="icon-chevron-left"></i>
                 </a>
 
-                <a class="bt-icon-btn bt-icon-btn--small position-absolute end-0 me-2" type="button" aria-label="{{ 'detail_bien.topbar.favorite'|trans }}">
-                    <i class="icon-heart"></i>
-                </a>
+                {% if not is_granted('ROLE_AGENCE') %}
+                    {% set isFavorite = property.id in favoritePropertyIds|default([]) %}
+                    <i
+                        class="icon-heart bt-icon-btn bt-icon-btn--small bt-mobile-topbar__favorite position-absolute end-0 me-2 {{ isFavorite ? 'is-active' : '' }}"
+                        role="button"
+                        tabindex="0"
+                        aria-label="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                        aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
+                        data-controller="favorite"
+                        data-action="click->favorite#toggle keydown.enter->favorite#toggle"
+                        data-favorite-url-value="{{ path('app_favoris_property_toggle', {id: property.id}) }}"
+                        data-favorite-token-value="{{ csrf_token('favorite_property_' ~ property.id) }}"
+                    ></i>
+                {% endif %}
             </div>
 
             <main>

@@ -501,6 +501,16 @@ body.bt-modal-open {
     line-height: 1;
 }
 
+.bt-property-head__favorite,
+.bt-mobile-topbar__favorite {
+    cursor: pointer;
+}
+
+.bt-property-head__favorite.is-active,
+.bt-mobile-topbar__favorite.is-active {
+    color: var(--bt-primary);
+}
+
 @media (max-width: 767.98px) {
     .bt-property-head__favorite {
         display: none;

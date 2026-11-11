@@ -10,7 +10,20 @@
         <h3 class="mb-0">
             {{ 'detail_bien.head.title'|trans({'%type%': property.typeBien.name, '%transaction%': property.typeTransaction.name, '%district%': property.district, '%country%': property.pays}) }}
         </h3>
-        <i class="icon-heart bt-property-head__favorite flex-shrink-0"></i>
+        {% if not is_granted('ROLE_AGENCE') %}
+            {% set isFavorite = property.id in favoritePropertyIds|default([]) %}
+            <i
+                class="icon-heart bt-property-head__favorite flex-shrink-0 {{ isFavorite ? 'is-active' : '' }}"
+                role="button"
+                tabindex="0"
+                aria-label="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
+                data-controller="favorite"
+                data-action="click->favorite#toggle keydown.enter->favorite#toggle"
+                data-favorite-url-value="{{ path('app_favoris_property_toggle', {id: property.id}) }}"
+                data-favorite-token-value="{{ csrf_token('favorite_property_' ~ property.id) }}"
+            ></i>
+        {% endif %}
     </div>
     <p class="bt-property-head__subtitle mb-0 p-accent">
         {{ (property.chambres > 1 ? 'detail_bien.head.bedrooms.other' : 'detail_bien.head.bedrooms.one')|trans({'%count%': property.chambres}) }} - {{ (property.salleDeBains > 1 ? 'detail_bien.head.bathrooms.other' : 'detail_bien.head.bathrooms.one')|trans({'%count%': property.salleDeBains}) }}
