@@ -146,15 +146,17 @@
                                         {% set isLocation = transactionSlug|lower in ['location', 'louer', 'rent'] or transactionName|lower in ['location', 'louer', 'rent'] %}
 
                                         {% set propertyTitle = 'detail_agence.card.title'|trans({'%type%': bienImmobilier.typeBien.name, '%transaction%': bienImmobilier.typeTransaction.name}) %}
-                                        {% set devise = bienImmobilier.user and bienImmobilier.user.devise ? bienImmobilier.user.devise.signe|default('€') : '€' %}
-                                        {% set chargesNumber = bienImmobilier.montantDesCharges is not empty ? bienImmobilier.montantDesCharges + 0 : 0 %}
+                                        {# Montants dans la devise locale du visiteur (IP). #}
+                                        {% set price = property_price(bienImmobilier) %}
+                                        {% set devise = price.signe %}
+                                        {% set chargesNumber = price.charges ?? 0 %}
 
-                                        {% if isLocation and bienImmobilier.montantLoyerHorsCharge is not empty %}
-                                            {% set propertyPrice = (bienImmobilier.montantLoyerHorsCharge + chargesNumber)|number_format(0, ',', ' ') ~ ' ' ~ devise %}
+                                        {% if isLocation and price.loyer is not null %}
+                                            {% set propertyPrice = (price.loyer + chargesNumber)|number_format(0, ',', ' ') ~ ' ' ~ devise %}
                                             {% set propertyPeriod = 'detail_agence.card.per_month'|trans %}
                                             {% set propertyBadge = chargesNumber > 0 ? 'detail_agence.card.charges_included'|trans : 'detail_agence.card.charges_excluded'|trans %}
-                                        {% elseif bienImmobilier.prix is not empty %}
-                                            {% set propertyPrice = bienImmobilier.prix|number_format(0, ',', ' ') ~ ' ' ~ devise %}
+                                        {% elseif price.prix is not null %}
+                                            {% set propertyPrice = price.prix|number_format(0, ',', ' ') ~ ' ' ~ devise %}
                                             {% set propertyPeriod = '' %}
                                             {% set propertyBadge = transactionName is not empty ? transactionName|capitalize : 'detail_agence.card.sale'|trans %}
                                         {% else %}
