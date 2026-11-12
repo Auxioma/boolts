@@ -21,19 +21,12 @@
                     data-locale-banner-target="select"
                     data-action="change->locale-banner#go"
                 >
-                    {#
-                        Pays détecté par IP (francophone => fr, anglophone => en), sinon France.
-                        En dessous, uniquement les langues non couvertes par ce pays.
-                    #}
+                    {# Pays détecté par IP (francophone => fr, anglophone => en), sinon France. #}
                     {% set bannerLocale = bannerCountryLocale|default('fr') %}
                     {% set bannerCountryLabel = bannerCountryFlag|default('') ~ ' ' ~ bannerCountryIsoCode|default('FR')|country_name(bannerLocale) %}
                     <option value="{{ locale_switch_url(bannerLocale) }}" selected hidden>{{ bannerCountryLabel }}</option>
-                    {% if bannerLocale != 'fr' %}
-                        <option value="{{ locale_switch_url('fr') }}">🇫🇷 Français</option>
-                    {% endif %}
-                    {% if bannerLocale != 'en' %}
-                        <option value="{{ locale_switch_url('en') }}">🇬🇧 English</option>
-                    {% endif %}
+                    <option value="/locale/fr?redirect=/fr">🇫🇷 France</option>
+                    <option value="/locale/fr?redirect=/fr">🇲🇦 Maroc</option>
                 </select>
                 <i class="icon-chevron-down home-locale-banner__chevron" aria-hidden="true"></i>
             </div>
