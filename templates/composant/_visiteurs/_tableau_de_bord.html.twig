@@ -86,7 +86,7 @@
 
 {# Barre de navigation fixe en bas de l'écran (mobile, < 768px) — Figma « SideBar - Dashboard » 6934:17418 #}
 {% set current_route = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) %}
-{% set more_routes = ['agence_immobiliere_notifications', 'agence_immobiliere_aide'] %}
+{% set more_routes = ['app_dashboard_visiteur_notifications', 'app_dashboard_visiteur_aides'] %}
 <div class="d-md-none" data-controller="dashboard-bottom-bar" data-action="dashboard-settings-menu:open@window->dashboard-bottom-bar#open dashboard-more-menu:open@window->dashboard-bottom-bar#openMore">
 {# Menu Paramètres : s'ouvre entre la topbar et la barre du bas, sans les recouvrir #}
 <div class="dashboard-settings-menu" id="dashboard-settings-menu" data-dashboard-bottom-bar-target="panel" hidden>
@@ -104,8 +104,8 @@
             <p class="dashboard-settings-menu__section-title">Mon activité</p>
 
             <div class="dashboard-settings-menu__items">
-                <a href="{{ path('agence_immobiliere_notifications') }}"
-                   class="dashboard-settings-menu__item {{ current_route == 'agence_immobiliere_notifications' ? 'active' : '' }}">
+                <a href="{{ path('app_dashboard_visiteur_notifications') }}"
+                   class="dashboard-settings-menu__item {{ current_route == 'app_dashboard_visiteur_notifications' ? 'active' : '' }}">
                     <span class="dashboard-settings-menu__item-label p-accent">
                         <i class="icon-bell"></i>
                         Notifications
@@ -119,8 +119,8 @@
             <p class="dashboard-settings-menu__section-title">Options supplémentaires</p>
 
             <div class="dashboard-settings-menu__items">
-                <a href="{{ path('agence_immobiliere_aide') }}"
-                   class="dashboard-settings-menu__item dashboard-more-menu__item--plain {{ current_route == 'agence_immobiliere_aide' ? 'active' : '' }}">
+                <a href="{{ path('app_dashboard_visiteur_aides') }}"
+                   class="dashboard-settings-menu__item dashboard-more-menu__item--plain {{ current_route == 'app_dashboard_visiteur_aides' ? 'active' : '' }}">
                     <span class="dashboard-settings-menu__item-label p-accent">
                         <i class="icon-circle-help"></i>
                         Aide
@@ -145,8 +145,8 @@
         <span>Favoris</span>
     </a>
 
-    <a href="{{ path('agence_immobiliere_messagerie') }}"
-       class="dashboard-bottom-bar__item {{ current_route == 'agence_immobiliere_messagerie' ? 'active' : '' }}">
+    <a href="{{ path('app_dashboard_visiteur_messagerie') }}"
+       class="dashboard-bottom-bar__item {{ current_route == 'app_dashboard_visiteur_messagerie' ? 'active' : '' }}">
         <i class="icon-message-circle-more"></i>
         <span>{{ 'agency_dashboard.sidebar.messaging'|trans }}</span>
     </a>

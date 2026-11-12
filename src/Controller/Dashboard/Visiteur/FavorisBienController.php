@@ -39,6 +39,11 @@ final class FavorisBienController extends AbstractController
     #[Route('/dashboard/visiteur/favoris/bien/intermediaire', name: 'app_dashboard_visiteur_favoris_bien_intermediaire')]
     public function intermediaire(): Response
     {
+        // Déjà connecté : pas besoin de la page intermédiaire, on va directement aux favoris.
+        if ($this->getUser() instanceof User) {
+            return $this->redirectToRoute('app_dashboard_visiteur_favoris_bien');
+        }
+
         return $this->render('dashboard/visiteur/favoris_bien/intermediaire.html.twig', [
             'controller_name' => 'FavorisBienController',
         ]);

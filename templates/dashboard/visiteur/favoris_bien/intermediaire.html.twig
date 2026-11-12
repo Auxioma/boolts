@@ -11,7 +11,9 @@
             Connectez vous pour consulter vos favoris.
         </p>
 
-        <a href="{{ path('app_login') }}" class="btn-full-blue w-100">
+        {# Lien vers la page favoris protégée : Symfony mémorise la cible, redirige vers le login,
+           puis renvoie sur les favoris une fois connecté. #}
+        <a href="{{ path('app_dashboard_visiteur_favoris_bien') }}" class="btn-full-blue w-100">
             Se connecter
         </a>
     </section>

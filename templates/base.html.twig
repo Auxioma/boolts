@@ -53,7 +53,17 @@
         {{ include('composant/_footer/_footer.html.twig') }}
         {# Pas de tabbar publique sur le dashboard agence : il a sa propre barre (.dashboard-bottom-bar) #}
         {% block mobile_tabbar %}
-            {% if not (app.request.attributes.get('_canonical_route', app.request.attributes.get('_route'))|default('') starts with 'agence_immobiliere') %}
+            {% set tabbarRoute = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route'))|default('') %}
+            {# Pas de tabbar publique non plus sur les pages du dashboard visiteur #}
+            {% set tabbarHiddenRoutes = [
+                'app_visiteur_dashboard',
+                'app_dashboard_visiteur_favoris_bien',
+                'app_dashboard_visiteur_notifications',
+                'app_dashboard_visiteur_messagerie',
+                'app_dashboard_visiteur_parametres',
+                'app_dashboard_visiteur_aides',
+            ] %}
+            {% if not (tabbarRoute starts with 'agence_immobiliere') and tabbarRoute not in tabbarHiddenRoutes %}
                 {{ include('composant/_footer/navbar_footer.html.twig') }}
             {% endif %}
         {% endblock %}

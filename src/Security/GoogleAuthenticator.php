@@ -27,9 +27,12 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {
+    use TargetPathTrait;
+
     private const GOOGLE_REGISTER_TYPE_SESSION_KEY = 'google_register_type';
     private const GOOGLE_PROFESSIONAL_FIRST_REGISTRATION_SESSION_KEY = 'google_professional_first_registration';
     private const AUTH_USER_ID_SESSION_KEY = 'auth_user_id';
@@ -153,6 +156,11 @@ class GoogleAuthenticator extends OAuth2Authenticator
             }
 
             return new RedirectResponse($this->urlGen->generate('agence_immobiliere_dashboard'));
+        }
+
+        // Visiteur : retour à la page protégée demandée avant la connexion (ex. favoris).
+        if ($targetPath = $this->getTargetPath($session, $firewallName)) {
+            return new RedirectResponse($targetPath);
         }
 
         return new RedirectResponse($this->urlGen->generate('app_visiteur_dashboard'));
