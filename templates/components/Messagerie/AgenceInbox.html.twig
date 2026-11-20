@@ -20,7 +20,7 @@
                 <input
                     type="search"
                     class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
-                    placeholder="Rechercher une annonce"
+                    placeholder="{{ 'messaging.search.listing'|trans }}"
                     data-model="debounce(300)|query"
                     value="{{ query }}"
                 >
@@ -36,7 +36,7 @@
                 {# Filtres #}
                 <div class="d-flex flex-wrap align-items-center gap-2 pb-12">
                     <div class="messagerie-annonces__filter d-flex align-items-center gap-2 flex-shrink-0 border rounded-pill bg-white px-2">
-                        {% for value, label in {all: 'Toutes', unread: 'Non lues'} %}
+                        {% for value, label in {all: 'messaging.filter.all'|trans, unread: 'messaging.filter.unread'|trans} %}
                             <label class="messagerie-annonces__filter-button w-50 border-0 rounded-pill {{ filter == value ? 'bg-primary text-white' : 'bg-transparent text-body-secondary' }} p-accent fw-bold p-0 text-nowrap text-center mb-0" role="button">
                                 <input type="radio" class="d-none" value="{{ value }}" data-model="filter" {{ filter == value ? 'checked' }}>
                                 {{ label }}
@@ -68,37 +68,37 @@
                                 <p class="fw-normal text-secondary mb-0">{{ property.ville }}</p>
 
                                 <div class="messagerie-annonces__volume d-flex flex-wrap align-items-center text-secondary">
-                                    <span>{{ annonce.conversations }} conversation{{ annonce.conversations > 1 ? 's' }}</span>
+                                    <span>{{ (annonce.conversations > 1 ? 'messaging.count.conversation.other' : 'messaging.count.conversation.one')|trans({'%count%': annonce.conversations}) }}</span>
 
                                     <span class="d-flex align-items-center gap-2">
                                         {% if annonce.unread > 0 %}
                                             <span class="messagerie-annonces__dot rounded-circle bg-primary" aria-hidden="true"></span>
                                         {% endif %}
-                                        <span class="bg-light rounded-pill px-10 py-1">{{ annonce.unread }} non lue{{ annonce.unread > 1 ? 's' }}</span>
+                                        <span class="bg-light rounded-pill px-10 py-1">{{ (annonce.unread > 1 ? 'messaging.count.unread.other' : 'messaging.count.unread.one')|trans({'%count%': annonce.unread}) }}</span>
                                     </span>
                                 </div>
                             </div>
 
                             <div class="messagerie-annonces__access d-flex flex-column align-items-lg-end flex-shrink-0">
                                 <span class="d-flex align-items-center gap-2 text-primary paragraphe fw-normal">
-                                    Voir les conversations
+                                    {{ 'messaging.view_conversations'|trans }}
                                     <i class="icon-chevron-right text-dark" aria-hidden="true"></i>
                                 </span>
 
                                 <span class="messagerie-annonces__mini text-secondary">
                                     {% if annonce.lastMessageAt|date('Y-m-d') == 'now'|date('Y-m-d') %}
-                                        Aujourd’hui, {{ annonce.lastMessageAt|date('H:i') }}
+                                        {{ 'messaging.date.today'|trans({'%time%': annonce.lastMessageAt|date('H:i')}) }}
                                     {% elseif annonce.lastMessageAt|date('Y-m-d') == '-1 day'|date('Y-m-d') %}
-                                        Hier, {{ annonce.lastMessageAt|date('H:i') }}
+                                        {{ 'messaging.date.yesterday'|trans({'%time%': annonce.lastMessageAt|date('H:i')}) }}
                                     {% else %}
-                                        {{ annonce.lastMessageAt|format_date(pattern: 'd MMM y', locale: 'fr') }}, {{ annonce.lastMessageAt|date('H:i') }}
+                                        {{ annonce.lastMessageAt|format_date(pattern: 'd MMM y', locale: app.request.locale|default('fr')) }}, {{ annonce.lastMessageAt|date('H:i') }}
                                     {% endif %}
                                 </span>
                             </div>
                         </a>
                     {% else %}
                         <p class="text-secondary text-center py-4 mb-0">
-                            {{ this.allAnnonces is empty ? 'Aucun message reçu sur vos annonces pour le moment.' : 'Aucune annonce ne correspond.' }}
+                            {{ (this.allAnnonces is empty ? 'messaging.empty.agency_inbox' : 'messaging.empty.no_listing_match')|trans }}
                         </p>
                     {% endfor %}
                 </div>
@@ -126,7 +126,7 @@
                         data-live-action-param="back"
                     >
                         <i class="messagerie-annonces__back-icon icon-chevron-left text-dark" aria-hidden="true"></i>
-                        Toutes les annonces
+                        {{ 'messaging.all_listings'|trans }}
                     </button>
 
                     <div class="d-flex flex-column gap-1">
@@ -138,15 +138,15 @@
                 {# Recherche et filtres #}
                 <div class="messagerie-annonces__tools d-flex flex-column flex-shrink-0 border-bottom border-1 pt-20 pb-12 px-3">
                     <div class="d-flex align-items-center justify-content-between text-nowrap">
-                        <span class="p-accent fw-bold text-dark">Conversations</span>
-                        <span class="messagerie-annonces__mini text-secondary">{{ this.allConversations|length }} au total</span>
+                        <span class="p-accent fw-bold text-dark">{{ 'messaging.conversations'|trans }}</span>
+                        <span class="messagerie-annonces__mini text-secondary">{{ 'messaging.total'|trans({'%count%': this.allConversations|length}) }}</span>
                     </div>
 
                     <div class="messagerie-annonces__search d-flex align-items-center gap-2 border rounded-70 ps-4 pe-2" role="search">
                         <input
                             type="search"
                             class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
-                            placeholder="Rechercher un contact..."
+                            placeholder="{{ 'messaging.search.contact'|trans }}"
                             data-model="debounce(300)|conversationQuery"
                             value="{{ conversationQuery }}"
                         >
@@ -158,7 +158,7 @@
 
                     <div class="d-flex flex-wrap align-items-center gap-2">
                         <div class="messagerie-annonces__filter d-flex align-items-center gap-2 flex-shrink-0 border rounded-pill bg-white px-2">
-                            {% for value, label in {all: 'Toutes', unread: 'Non lues'} %}
+                            {% for value, label in {all: 'messaging.filter.all'|trans, unread: 'messaging.filter.unread'|trans} %}
                                 <label class="messagerie-annonces__filter-button w-50 border-0 rounded-pill {{ conversationFilter == value ? 'bg-primary text-white' : 'bg-transparent text-body-secondary' }} p-accent fw-bold p-0 text-nowrap text-center mb-0" role="button">
                                     <input type="radio" class="d-none" value="{{ value }}" data-model="conversationFilter" {{ conversationFilter == value ? 'checked' }}>
                                     {{ label }}
@@ -193,13 +193,13 @@
                                     <p class="messagerie-annonces__clamp flex-grow-1 fw-normal text-secondary mb-0">{{ conversation.lastMessagePreview }}</p>
 
                                     {% if unread > 0 %}
-                                        <span class="messagerie-annonces__badge messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-primary text-white" aria-label="{{ unread }} message(s) non lu(s)">{{ unread }}</span>
+                                        <span class="messagerie-annonces__badge messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-primary text-white" aria-label="{{ 'messaging.unread_aria'|trans({'%count%': unread}) }}">{{ unread }}</span>
                                     {% endif %}
                                 </div>
                             </div>
                         </button>
                     {% else %}
-                        <p class="text-secondary text-center py-4 mb-0">Aucune conversation.</p>
+                        <p class="text-secondary text-center py-4 mb-0">{{ 'messaging.empty.none'|trans }}</p>
                     {% endfor %}
                 </div>
 

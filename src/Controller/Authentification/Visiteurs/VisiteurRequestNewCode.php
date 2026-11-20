@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Authentification / Visiteurs / VisiteurRequestNewCode.
@@ -27,6 +28,8 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class VisiteurRequestNewCode extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
         path: [
             'fr' => '/fr/request-new-code',
@@ -60,7 +63,7 @@ final class VisiteurRequestNewCode extends AbstractController
             : 'app_visiteur_verification_code';
 
         if (!$authUserId) {
-            $this->addFlash('warning', 'Votre session a expiré. Veuillez recommencer.');
+            $this->addFlash('warning', $this->t('auth.flash.session_expired_long'));
 
             return $this->redirectToRoute($verificationRoute);
         }
@@ -71,7 +74,7 @@ final class VisiteurRequestNewCode extends AbstractController
             $session->remove('auth_user_id');
             $session->remove('auth_step');
 
-            $this->addFlash('danger', 'Utilisateur introuvable.');
+            $this->addFlash('danger', $this->t('auth.flash.user_not_found'));
 
             return $this->redirectToRoute($verificationRoute);
         }
@@ -82,7 +85,7 @@ final class VisiteurRequestNewCode extends AbstractController
             $lastRequestAt instanceof \DateTimeImmutable
             && $lastRequestAt > new \DateTimeImmutable('-60 seconds')
         ) {
-            $this->addFlash('warning', 'Veuillez patienter 60 secondes avant de demander un nouveau code.');
+            $this->addFlash('warning', $this->t('auth.flash.wait_new_code'));
 
             return $this->redirectToRoute($verificationRoute);
         }
@@ -90,7 +93,7 @@ final class VisiteurRequestNewCode extends AbstractController
         $emailVerificationService->prepare($user);
         $emailVerificationService->send($user);
 
-        $this->addFlash('success', 'Un nouveau code vous a été envoyé.');
+        $this->addFlash('success', $this->t('auth.flash.new_code_sent'));
 
         return $this->redirectToRoute($verificationRoute);
     }

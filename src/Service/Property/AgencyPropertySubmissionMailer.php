@@ -15,11 +15,14 @@ namespace App\Service\Property;
 use App\Entity\Enum\StatutAnnonceImmobiliere;
 use App\Entity\Property;
 use App\Entity\User;
+use App\Service\Intl\UrlCountryResolver;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Intl\RecipientLocale;
 
 /**
  * E-mails transactionnels envoyés à l'agence propriétaire tout au long du
@@ -34,6 +37,7 @@ final readonly class AgencyPropertySubmissionMailer
         private UrlGeneratorInterface $urlGenerator,
         private string $mailerFromEmail,
         private string $mailerFromName,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -46,7 +50,7 @@ final readonly class AgencyPropertySubmissionMailer
         $this->dispatch(
             $agency,
             $property,
-            'Votre annonce a été envoyée pour validation',
+            'email.property.submission_pending.subject',
             'email/property/submission_pending.html.twig',
             'submission',
         );
@@ -60,7 +64,7 @@ final readonly class AgencyPropertySubmissionMailer
         $this->dispatch(
             $agency,
             $property,
-            'Votre annonce est publiée',
+            'email.property.published.subject',
             'email/property/published.html.twig',
             'publication',
             ['publicUrl' => $this->publicUrl($property)],
@@ -78,7 +82,7 @@ final readonly class AgencyPropertySubmissionMailer
         $this->dispatch(
             $agency,
             $property,
-            'Le boost de votre annonce est activé',
+            'email.property.boost_activated.subject',
             'email/property/boost_activated.html.twig',
             'boost activation',
             [
@@ -96,7 +100,7 @@ final readonly class AgencyPropertySubmissionMailer
         $this->dispatch(
             $agency,
             $property,
-            'Votre annonce a été mise en pause',
+            'email.property.paused.subject',
             'email/property/paused.html.twig',
             'pause',
         );
@@ -110,7 +114,7 @@ final readonly class AgencyPropertySubmissionMailer
         $this->dispatch(
             $agency,
             $property,
-            'Votre annonce a été réactivée',
+            'email.property.reactivated.subject',
             'email/property/reactivated.html.twig',
             'reactivation',
             ['publicUrl' => $this->publicUrl($property)],
@@ -125,7 +129,7 @@ final readonly class AgencyPropertySubmissionMailer
         $this->dispatch(
             $agency,
             $property,
-            'Votre annonce a été supprimée',
+            'email.property.deleted.subject',
             'email/property/deleted.html.twig',
             'deletion',
         );
@@ -175,10 +179,12 @@ final readonly class AgencyPropertySubmissionMailer
             return;
         }
 
+        $locale = RecipientLocale::for($agency);
         $email = (new TemplatedEmail())
             ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
             ->to(new Address($recipientEmail, $this->agencyName($agency)))
-            ->subject($subject)
+            ->subject($this->translator->trans($subject, [], null, $locale))
+            ->locale($locale)
             ->htmlTemplate($template)
             ->context([
                 'agency' => $agency,
@@ -215,9 +221,18 @@ final readonly class AgencyPropertySubmissionMailer
             return null;
         }
 
+        $params = ['slug' => $slug];
+
+        // Lien dans le pays du bien (/{pays}-{langue}/…) ; sinon pays du contexte du routeur.
+        $country = strtolower((string) $property->getCodeIsoPays());
+
+        if (1 === preg_match('/^[a-z]{2}$/', $country)) {
+            $params[UrlCountryResolver::ROUTE_PARAM] = $country;
+        }
+
         return $this->urlGenerator->generate(
             'app_public_detail_bien',
-            ['slug' => $slug],
+            $params,
             UrlGeneratorInterface::ABSOLUTE_URL,
         );
     }

@@ -51,6 +51,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
+use App\Controller\Traits\TranslatesMessages;
 
 #[Route(path: [
             'en' => '/pro/dashboard',
@@ -63,6 +64,8 @@ use Symfony\UX\Chartjs\Model\Chart;
  */
 final class DashboardController extends AbstractController
 {
+    use TranslatesMessages;
+
     private const PERFORMANCE_PROPERTIES_PER_PAGE = 10;
 
     #[Route('/', name: 'dashboard')]
@@ -371,7 +374,7 @@ final class DashboardController extends AbstractController
         }
 
         if (!$requiredDocument instanceof RequiredDocument || !$requiredDocument->isEnabled()) {
-            return $this->documentUploadResponse($request, false, 'Le document demandé est introuvable.', Response::HTTP_NOT_FOUND);
+            return $this->documentUploadResponse($request, false, $this->t('agency_dashboard.documents.not_found'), Response::HTTP_NOT_FOUND);
         }
 
         $form = $this->createForm(AskDocumentsType::class, $user, [
@@ -391,7 +394,7 @@ final class DashboardController extends AbstractController
             return $this->documentUploadResponse(
                 $request,
                 false,
-                [] === $errors ? 'Le fichier transmis est invalide.' : implode(' ', $errors),
+                [] === $errors ? $this->t('agency_dashboard.documents.invalid_file') : implode(' ', $errors),
                 Response::HTTP_UNPROCESSABLE_ENTITY,
             );
         }
@@ -399,18 +402,18 @@ final class DashboardController extends AbstractController
         $file = $form->get('document')->getData();
 
         if (!$file instanceof UploadedFile || !$file->isValid()) {
-            return $this->documentUploadResponse($request, false, 'Veuillez sélectionner un fichier valide.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->documentUploadResponse($request, false, $this->t('agency_dashboard.documents.select_file'), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $mimeType = $file->getMimeType() ?? $file->getClientMimeType() ?? 'application/octet-stream';
         $fileSize = $file->getSize();
 
         if ('application/pdf' !== $mimeType && !str_starts_with($mimeType, 'image/')) {
-            return $this->documentUploadResponse($request, false, 'Le format du document n’est pas pris en charge', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->documentUploadResponse($request, false, $this->t('agency_dashboard.documents.unsupported_format'), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         if ($fileSize > $requiredDocument->getMaxFileSizeMb() * 1024 * 1024) {
-            return $this->documentUploadResponse($request, false, 'Le document est trop volumineux', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->documentUploadResponse($request, false, $this->t('agency_dashboard.documents.too_large'), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $documentRequest = $userDocumentRequestRepository->findForUserAndRequiredDocument($user, $requiredDocument);
@@ -478,7 +481,7 @@ final class DashboardController extends AbstractController
         return $this->documentUploadResponse(
             $request,
             true,
-            'Votre document a été envoyé et sera vérifié.',
+            $this->t('agency_dashboard.documents.sent'),
             Response::HTTP_OK,
             $documentsComplete,
             false,
@@ -984,7 +987,7 @@ final class DashboardController extends AbstractController
             '12m' => [$period, $end->modify('-11 months')->modify('first day of this month')->setTime(0, 0), $end],
             'max' => [$period, null, $end],
             'custom' => $this->customPeriod($request),
-            default => throw new \InvalidArgumentException('Période de statistiques invalide.'),
+            default => throw new \InvalidArgumentException($this->t('agency_dashboard.statistics.invalid_period')),
         };
     }
 
@@ -994,18 +997,18 @@ final class DashboardController extends AbstractController
         $endValue = $request->query->getString('end');
 
         if ('' === $startValue || '' === $endValue) {
-            throw new \InvalidArgumentException('Les dates de début et de fin sont obligatoires.');
+            throw new \InvalidArgumentException($this->t('agency_dashboard.statistics.dates_required'));
         }
 
         try {
             $start = (new \DateTimeImmutable($startValue))->setTime(0, 0);
             $end = (new \DateTimeImmutable($endValue))->setTime(23, 59, 59);
         } catch (\Exception) {
-            throw new \InvalidArgumentException('Les dates fournies sont invalides.');
+            throw new \InvalidArgumentException($this->t('agency_dashboard.statistics.invalid_dates'));
         }
 
         if ($start > $end || $end > new \DateTimeImmutable('today 23:59:59') || $start->modify('+12 months') < $end) {
-            throw new \InvalidArgumentException('La période personnalisée doit être comprise entre aujourd’hui et les 12 derniers mois.');
+            throw new \InvalidArgumentException($this->t('agency_dashboard.statistics.custom_range'));
         }
 
         return ['custom', $start, $end];
@@ -1025,7 +1028,7 @@ private function buildChart(
             // VUES DU PROFIL
             // =====================================================
             [
-                'label' => 'Vues du profil',
+                'label' => $this->t('agency_dashboard.statistics.chart.profile_views'),
                 'data' => $statistics['series']['profileViews'],
 
                 'borderColor' => '#2563eb',
@@ -1050,7 +1053,7 @@ private function buildChart(
             // ANNONCES PUBLIÉES
             // =====================================================
             [
-                'label' => 'Annonces publiées',
+                'label' => $this->t('agency_dashboard.statistics.chart.published'),
                 'data' => $statistics['series']['published'],
 
                 'borderColor' => '#db6513',
@@ -1075,7 +1078,7 @@ private function buildChart(
             // VUES DES ANNONCES
             // =====================================================
             [
-                'label' => 'Vues des annonces',
+                'label' => $this->t('agency_dashboard.statistics.chart.views'),
                 'data' => $statistics['series']['views'],
 
                 'borderColor' => '#5d00ff',

@@ -7,54 +7,54 @@
 
 {% set menuParametres = [
     {
-        title: 'Gestion du compte',
+        title: 'settings.menu.account'|trans,
         items: [
         {
             wrapper: 'profile-public',
             tab: 'cat1',
             icon: 'icon-user-round',
-            label: 'Fiche agence',
+            label: 'settings.menu.agency_profile'|trans,
             active: true,
         },
         {
             wrapper: 'information-personnelles',
             tab: 'cat2',
             icon: 'icon-circle-user',
-            label: 'Informations personnelles',
+            label: 'settings.menu.personal_info'|trans,
             active: false,
         },
     ],
     },
     {
-        title: 'Sécurité et paiement',
+        title: 'settings.menu.security_payment'|trans,
         titleClass: 'mt-32',
         items: [
         {
             wrapper: 'connexion-securite',
             tab: 'cat3',
             icon: 'icon-lock',
-            label: 'Connexion et sécurité',
+            label: 'settings.menu.login_security'|trans,
             active: false,
         },
         {
             wrapper: 'moyen-de-paiement',
             tab: 'cat4',
             icon: 'icon-credit-card',
-            label: 'Moyen de paiement',
+            label: 'settings.menu.payment_method'|trans,
             active: false,
         },
                 {
             wrapper: 'historique-des-paiements',
             tab: 'cat5',
             icon: 'icon-history',
-            label: 'Historique des paiements',
+            label: 'settings.menu.payment_history'|trans,
             active: false,
         },
         {
             wrapper: 'langue-et-devise',
             tab: 'cat6',
             icon: 'icon-languages',
-            label: 'Langue et devise',
+            label: 'settings.menu.language_currency'|trans,
             active: false,
         },
     ],

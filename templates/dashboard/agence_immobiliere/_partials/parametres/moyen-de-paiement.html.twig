@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-12 col-md-10 mx-auto">
             <h3 class="mb-0 d-none d-md-block">
-                Moyens de paiement
+                {{ 'payment_methods.title'|trans }}
             </h3>
 
     {% set abonnement_actuel = current_subscription is defined ? current_subscription : null %}
@@ -395,12 +395,12 @@
             <div class="card-information-public-profile my-32 py-24 px-24">
                 <div class="connexion-securite">
                     <h3 class="mb-24">
-                        Cartes enregistrées
+                        {{ 'payment_methods.saved'|trans }}
                     </h3>
 
                     {% if payment_methods is empty %}
                         <p class="mb-0 text-muted">
-                            Aucun moyen de paiement n’est enregistré.
+                            {{ 'payment_methods.empty'|trans }}
                         </p>
                     {% else %}
                         <div class="saved-payment-methods">
@@ -418,7 +418,7 @@
                                     jcb: 'JCB',
                                     unionpay: 'UnionPay',
                                 }[brand]|default(
-                                    paymentMethod.brand|default('Carte bancaire')|capitalize,
+                                    paymentMethod.brand|default('checkout.card'|trans)|capitalize,
                                 ) %}
 
                                 {% set logoFile = {
@@ -465,13 +465,13 @@
 
                                                 {% if paymentMethod.isIsDefault %}
                                                     <span class="saved-payment-method__default-text paragraphe">
-                                                        — Par défaut
+                                                        {{ 'payment_methods.default_suffix'|trans }}
                                                     </span>
                                                 {% endif %}
                                             </div>
 
                                             <div class="saved-payment-method__expiration paragraphe">
-                                                Date d’expiration :
+                                                {{ 'payment_methods.expiration'|trans }}
                                                 {{ '%02d'|format(paymentMethod.expMonth) }}/{{ paymentMethod.expYear }}
                                             </div>
                                         </div>
@@ -481,7 +481,7 @@
                                         <button
                                             type="button"
                                             class="saved-payment-method__menu-button"
-                                            aria-label="Afficher les actions de la carte"
+                                            aria-label="{{ 'payment_methods.actions'|trans }}"
                                             aria-expanded="false"
                                             data-payment-menu-button
                                         >
@@ -526,7 +526,7 @@
                                                     </svg>
 
                                                     <span>
-                                                        Définir par défaut
+                                                        {{ 'payment_methods.set_default'|trans }}
                                                     </span>
                                                 </button>
                                             {% endif %}
@@ -584,7 +584,7 @@
                                                 </svg>
 
                                                 <span>
-                                                    Supprimer
+                                                    {{ 'payment_methods.delete'|trans }}
                                                 </span>
                                             </button>
                                         </div>
@@ -606,7 +606,7 @@
                             aria-hidden="true"
                         ></span>
 
-                        Ajouter un mode de paiement
+                        {{ 'checkout.add_payment_method'|trans }}
                     </button>
                 </div>
             </div>
@@ -632,7 +632,7 @@
                 type="button"
                 class="payment-modal-close"
                 data-action="click->payment-method#close"
-                aria-label="Fermer"
+                aria-label="{{ 'payment_modal.close'|trans }}"
             >
                 <i
                     class="icon-x"
@@ -645,7 +645,7 @@
                     id="payment-modal-title"
                     class="payment-modal-title"
                 >
-                    Indiquez les informations de votre carte
+                    {{ 'payment_modal.title'|trans }}
                 </h3>
             </div>
 
@@ -672,14 +672,14 @@
                         for="payment-cardholder-name-cat4"
                         class="mb-16 p-accent"
                     >
-                        Nom du titulaire
+                        {{ 'payment_modal.holder'|trans }}
                     </label>
 
                     <input
                         type="text"
                         id="payment-cardholder-name-cat4"
                         class="form-control input mb-16"
-                        placeholder="Saisissez le nom du titulaire"
+                        placeholder="{{ 'payment_modal.holder_placeholder'|trans }}"
                         autocomplete="cc-name"
                         data-payment-method-target="cardholderName"
                         data-action="
@@ -692,38 +692,38 @@
 
                 <div class="payment-form-group">
                     <label class="mb-16 p-accent">
-                        Numéro de la carte
+                        {{ 'payment_modal.number'|trans }}
                     </label>
 
                     <div
                         class="payment-stripe-element mb-16"
                         data-payment-method-target="cardNumber"
-                        aria-label="Numéro de la carte bancaire"
+                        aria-label="{{ 'payment_modal.number_aria'|trans }}"
                     ></div>
                 </div>
 
                 <div class="payment-form-row">
                     <div class="payment-form-group payment-form-group--half">
                         <label class="mb-16 p-accent">
-                            Date d’expiration
+                            {{ 'payment_modal.expiry'|trans }}
                         </label>
 
                         <div
                             class="payment-stripe-element mb-16"
                             data-payment-method-target="cardExpiry"
-                            aria-label="Date d’expiration de la carte"
+                            aria-label="{{ 'payment_modal.expiry_aria'|trans }}"
                         ></div>
                     </div>
 
                     <div class="payment-form-group payment-form-group--half">
                         <label class="mb-16 p-accent">
-                            Code de sécurité
+                            {{ 'payment_modal.cvc'|trans }}
                         </label>
 
                         <div
                             class="payment-stripe-element mb-16"
                             data-payment-method-target="cardCvc"
-                            aria-label="Code de sécurité de la carte"
+                            aria-label="{{ 'payment_modal.cvc_aria'|trans }}"
                         ></div>
                     </div>
                 </div>
@@ -733,7 +733,7 @@
                         for="payment-country-cat4"
                         class="mb-16 p-accent"
                     >
-                        Pays
+                        {{ 'payment_modal.country'|trans }}
                     </label>
 
                     <select
@@ -745,47 +745,47 @@
                         required
                     >
                         <option value="FR" selected>
-                            France
+                            {{ 'FR'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="BE">
-                            Belgique
+                            {{ 'BE'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="CH">
-                            Suisse
+                            {{ 'CH'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="LU">
-                            Luxembourg
+                            {{ 'LU'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="MC">
-                            Monaco
+                            {{ 'MC'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="DE">
-                            Allemagne
+                            {{ 'DE'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="ES">
-                            Espagne
+                            {{ 'ES'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="IT">
-                            Italie
+                            {{ 'IT'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="PT">
-                            Portugal
+                            {{ 'PT'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="NL">
-                            Pays-Bas
+                            {{ 'NL'|country_name(app.request.locale|default('fr')) }}
                         </option>
 
                         <option value="GB">
-                            Royaume-Uni
+                            {{ 'GB'|country_name(app.request.locale|default('fr')) }}
                         </option>
                     </select>
                 </div>
@@ -801,7 +801,7 @@
 
                     <span></span>
 
-                    Définir comme moyen de paiement par défaut
+                    {{ 'payment_modal.default'|trans }}
                 </label>
 
                 <div class="payment-modal-actions">
@@ -810,7 +810,7 @@
                         class="btn-full-white w-auto"
                         data-action="click->payment-method#close"
                     >
-                        Annuler
+                        {{ 'payment_modal.cancel'|trans }}
                     </button>
 
                     <button
@@ -819,7 +819,7 @@
                         data-payment-method-target="submitButton"
                         disabled
                     >
-                        Ajouter
+                        {{ 'payment_modal.submit'|trans }}
                     </button>
                 </div>
             </form>

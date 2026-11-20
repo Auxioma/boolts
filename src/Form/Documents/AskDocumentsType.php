@@ -30,7 +30,7 @@ class AskDocumentsType extends AbstractType
             $builder->add('pays', EntityType::class, [
                 'class' => Pays::class,
                 'choice_label' => 'nom',
-                'placeholder' => 'Sélectionnez votre pays',
+                'placeholder' => 'form.country.placeholder',
             ]);
         }
 

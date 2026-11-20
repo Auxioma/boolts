@@ -5,10 +5,10 @@
 #}
 
 {% set steps = [
-    "Informations générales",
-    "Informations légales",
-    "Détails de l'agence 1/2",
-    "Détails de l'agence 2/2",
+    'professionnel.register.progress.general'|trans,
+    'professionnel.register.progress.legal'|trans,
+    'professionnel.register.progress.details_1'|trans,
+    'professionnel.register.progress.details_2'|trans,
 ] %}
 
 {% set progressPercent = (currentStep - 1) / (steps|length - 1) * 99 %}

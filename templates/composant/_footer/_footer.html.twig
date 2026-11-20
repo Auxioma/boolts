@@ -28,7 +28,7 @@
                             data-action="click->home--property-tabs#select"
                             data-home--property-tabs-tab-param="localite"
                         >
-                            Par localité
+                            {{ 'footer.tab.locality'|trans }}
                         </button>
 
                         <button
@@ -39,7 +39,7 @@
                             data-action="click->home--property-tabs#select"
                             data-home--property-tabs-tab-param="type"
                         >
-                            Par type de bien
+                            {{ 'footer.tab.property_type'|trans }}
                         </button>
 
                         <button
@@ -50,7 +50,7 @@
                             data-action="click->home--property-tabs#select"
                             data-home--property-tabs-tab-param="caracteristiques"
                         >
-                            Par caractéristiques
+                            {{ 'footer.tab.features'|trans }}
                         </button>
                     </div>
 
@@ -88,34 +88,34 @@
                     <div class="boolts-footer__tab-panel" data-tab-panel="caracteristiques" data-home--property-tabs-target="panel">
                         <div class="boolts-footer__grid">
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Avec piscine</a></li>
-                                <li><a href="#">Avec jardin</a></li>
-                                <li><a href="#">Avec garage</a></li>
+                                <li><a href="#">{{ 'footer.feature.pool'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.garden'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.garage'|trans }}</a></li>
                             </ul>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Avec ascenseur</a></li>
-                                <li><a href="#">Avec balcon</a></li>
-                                <li><a href="#">Avec terrasse</a></li>
+                                <li><a href="#">{{ 'footer.feature.elevator'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.balcony'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.terrace'|trans }}</a></li>
                             </ul>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Meublé</a></li>
-                                <li><a href="#">Avec parking</a></li>
-                                <li><a href="#">Avec cave</a></li>
+                                <li><a href="#">{{ 'footer.feature.furnished'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.parking'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.cellar'|trans }}</a></li>
                             </ul>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Neuf</a></li>
-                                <li><a href="#">Avec vue mer</a></li>
-                                <li><a href="#">Avec climatisation</a></li>
+                                <li><a href="#">{{ 'footer.feature.new'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.sea_view'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.air_conditioning'|trans }}</a></li>
                             </ul>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Avec cheminée</a></li>
-                                <li><a href="#">Rénové</a></li>
-                                <li><a href="#">Avec dressing</a></li>
+                                <li><a href="#">{{ 'footer.feature.fireplace'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.renovated'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.dressing'|trans }}</a></li>
                             </ul>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Proche transports</a></li>
-                                <li><a href="#">Avec alarme</a></li>
-                                <li><a href="#">Avec vue dégagée</a></li>
+                                <li><a href="#">{{ 'footer.feature.transport'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.alarm'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.feature.open_view'|trans }}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -127,44 +127,44 @@
                 <div class="row g-4 boolts-footer__top">
                     <div class="col-md-3">
                         <div class="boolts-footer__column">
-                            <h4 class="boolts-footer__title">Entreprise</h4>
+                            <h4 class="boolts-footer__title">{{ 'footer.company.title'|trans }}</h4>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Qui sommes-nous ?</a></li>
-                                <li><a href="#">Recrutement</a></li>
-                                <li><a href="#">Espace presse</a></li>
+                                <li><a href="#">{{ 'footer.company.about'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.company.careers'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.company.press'|trans }}</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="boolts-footer__column">
-                            <h4 class="boolts-footer__title">Assistance</h4>
+                            <h4 class="boolts-footer__title">{{ 'footer.support.title'|trans }}</h4>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Besoin d’aide ?</a></li>
-                                <li><a href="#">Assistance sécurité</a></li>
-                                <li><a href="#">Options d’annulation</a></li>
+                                <li><a href="#">{{ 'footer.support.help'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.support.safety'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.support.cancellation'|trans }}</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="boolts-footer__column">
-                            <h4 class="boolts-footer__title">Découvrir</h4>
+                            <h4 class="boolts-footer__title">{{ 'footer.discover.title'|trans }}</h4>
                             <ul class="boolts-footer__links">
-                                <li><a href="#">Toutes les villes</a></li>
-                                <li><a href="#">Tous les départements</a></li>
-                                <li><a href="#">Toutes les régions</a></li>
+                                <li><a href="#">{{ 'footer.discover.cities'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.discover.departments'|trans }}</a></li>
+                                <li><a href="#">{{ 'footer.discover.regions'|trans }}</a></li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="col-md-3">
                         <div class="boolts-footer__column boolts-footer__apps">
-                            <h4 class="boolts-footer__title">App mobile</h4>
-                            <p class="boolts-footer__subtitle">Découvrez l’application</p>
+                            <h4 class="boolts-footer__title">{{ 'footer.app.title'|trans }}</h4>
+                            <p class="boolts-footer__subtitle">{{ 'footer.app.subtitle'|trans }}</p>
 
                             <div class="boolts-footer__stores">
-                                <a href="#" class="boolts-footer__store-link boolts-footer__store-link--apple" aria-label="Télécharger sur l'App Store">
+                                <a href="#" class="boolts-footer__store-link boolts-footer__store-link--apple" aria-label="{{ 'footer.app.app_store'|trans }}">
                                     <span class="boolts-footer__appstore-logo">
                                         <img src="{{ asset('images/footer/app-store-apple-logo.svg') }}" alt="" aria-hidden="true">
                                     </span>
@@ -176,7 +176,7 @@
                                     </span>
                                 </a>
 
-                                <a href="#" class="boolts-footer__store-link" aria-label="Télécharger sur Google Play">
+                                <a href="#" class="boolts-footer__store-link" aria-label="{{ 'footer.app.google_play'|trans }}">
                                     <img
                                         src="{{ asset('images/footer/google-play-badge.svg') }}"
                                         alt="Google Play"
@@ -202,7 +202,7 @@
                                 aria-expanded="true"
                                 aria-controls="footerCollapseFour"
                             >
-                                Entreprise
+                                {{ 'footer.company.title'|trans }}
                             </button>
                         </h2>
                         <div
@@ -213,9 +213,9 @@
                         >
                             <div class="accordion-body boolts-footer__accordion-body">
                                 <ul class="boolts-footer__links">
-                                    <li><a href="#">Qui sommes-nous ?</a></li>
-                                    <li><a href="#">Recrutement</a></li>
-                                    <li><a href="#">Espace presse</a></li>
+                                    <li><a href="#">{{ 'footer.company.about'|trans }}</a></li>
+                                    <li><a href="#">{{ 'footer.company.careers'|trans }}</a></li>
+                                    <li><a href="#">{{ 'footer.company.press'|trans }}</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -231,7 +231,7 @@
                                 aria-expanded="false"
                                 aria-controls="footerCollapseFive"
                             >
-                                Assistance
+                                {{ 'footer.support.title'|trans }}
                             </button>
                         </h2>
                         <div
@@ -242,9 +242,9 @@
                         >
                             <div class="accordion-body boolts-footer__accordion-body">
                                 <ul class="boolts-footer__links">
-                                    <li><a href="#">Besoin d’aide ?</a></li>
-                                    <li><a href="#">Assistance sécurité</a></li>
-                                    <li><a href="#">Options d’annulation</a></li>
+                                    <li><a href="#">{{ 'footer.support.help'|trans }}</a></li>
+                                    <li><a href="#">{{ 'footer.support.safety'|trans }}</a></li>
+                                    <li><a href="#">{{ 'footer.support.cancellation'|trans }}</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -260,7 +260,7 @@
                                 aria-expanded="false"
                                 aria-controls="footerCollapseSix"
                             >
-                                Découvrir
+                                {{ 'footer.discover.title'|trans }}
                             </button>
                         </h2>
                         <div
@@ -271,9 +271,9 @@
                         >
                             <div class="accordion-body boolts-footer__accordion-body">
                                 <ul class="boolts-footer__links">
-                                    <li><a href="#">Toutes les villes</a></li>
-                                    <li><a href="#">Tous les départements</a></li>
-                                    <li><a href="#">Toutes les régions</a></li>
+                                    <li><a href="#">{{ 'footer.discover.cities'|trans }}</a></li>
+                                    <li><a href="#">{{ 'footer.discover.departments'|trans }}</a></li>
+                                    <li><a href="#">{{ 'footer.discover.regions'|trans }}</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -281,11 +281,11 @@
                 </div>
 
                 <div class="boolts-footer__column boolts-footer__apps boolts-footer__apps-mobile">
-                    <h4 class="boolts-footer__title">App mobile</h4>
-                    <p class="boolts-footer__subtitle">Découvrez l’application</p>
+                    <h4 class="boolts-footer__title">{{ 'footer.app.title'|trans }}</h4>
+                    <p class="boolts-footer__subtitle">{{ 'footer.app.subtitle'|trans }}</p>
 
                     <div class="boolts-footer__stores">
-                        <a href="#" class="boolts-footer__store-link boolts-footer__store-link--apple" aria-label="Télécharger sur l'App Store">
+                        <a href="#" class="boolts-footer__store-link boolts-footer__store-link--apple" aria-label="{{ 'footer.app.app_store'|trans }}">
                             <span class="boolts-footer__appstore-logo">
                                 <img src="{{ asset('images/footer/app-store-apple-logo.svg') }}" alt="" aria-hidden="true">
                             </span>
@@ -297,7 +297,7 @@
                             </span>
                         </a>
 
-                        <a href="#" class="boolts-footer__store-link" aria-label="Télécharger sur Google Play">
+                        <a href="#" class="boolts-footer__store-link" aria-label="{{ 'footer.app.google_play'|trans }}">
                             <img
                                 src="{{ asset('images/footer/google-play-badge.svg') }}"
                                 alt="Google Play"
@@ -312,7 +312,7 @@
 
             <div class="boolts-footer__bottom">
                 <div class="boolts-footer__copyright">
-                    © 2026 Boolts, Inc. Confidentialité - Conditions générales - Fonctionnement du site - Infos sur l’entreprise
+                    {{ 'footer.copyright'|trans }}
                 </div>
 
                 <div class="boolts-footer__meta">
@@ -323,7 +323,7 @@
                                 <path d="M3 12H21" stroke="currentColor" stroke-width="1.7"/>
                                 <path d="M12 3C14.5 5.6 16 8.7 16 12C16 15.3 14.5 18.4 12 21C9.5 18.4 8 15.3 8 12C8 8.7 9.5 5.6 12 3Z" stroke="currentColor" stroke-width="1.7"/>
                             </svg>
-                            Français
+                            {{ 'footer.current_language'|trans }}
                         </span>
 
                         <span class="boolts-footer__meta-item">

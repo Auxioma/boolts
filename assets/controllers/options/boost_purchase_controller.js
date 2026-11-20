@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../../i18n.js';
 
 /*
  * Achat ponctuel d'un pack boost avec une carte bancaire Stripe déjà enregistrée.
@@ -180,7 +181,7 @@ export default class extends Controller {
 
         if (!Number.isInteger(paymentMethodId) || paymentMethodId < 1) {
             this.showMessage(
-                'Veuillez ajouter ou sélectionner une carte bancaire.',
+                t('js.payment.add_or_select_card'),
                 true
             );
             return;
@@ -204,11 +205,11 @@ export default class extends Controller {
 
             if (!response.ok || data.success !== true) {
                 throw new Error(
-                    data.message || 'Le paiement n’a pas pu être effectué.'
+                    data.message || t('js.payment.failed')
                 );
             }
 
-            this.showMessage(data.message || 'Votre pack boost a été acheté.');
+            this.showMessage(data.message || t('js.payment.boost_bought'));
 
             this.redirectTimeout = window.setTimeout(() => {
                 window.location.assign(this.redirectUrlValue);
@@ -218,7 +219,7 @@ export default class extends Controller {
             this.showMessage(
                 error instanceof Error
                     ? error.message
-                    : 'Le paiement n’a pas pu être effectué.',
+                    : t('js.payment.failed'),
                 true
             );
             this.setLoading(false);
@@ -232,7 +233,7 @@ export default class extends Controller {
             return JSON.parse(rawResponse);
         } catch {
             throw new Error(
-                `Le serveur a retourné une réponse non JSON (${response.status}).`
+                t('js.error.non_json', { status: response.status })
             );
         }
     }

@@ -17,9 +17,9 @@ Les endpoints API de facturation portent en plus l'attribut `IsGranted('ROLE_AGE
 
 | Module | Routes principales | Contrôleur |
 | --- | --- | --- |
-| Public | `/`, `/fr`, `/filter`, `/public/search`, `/public/search/{searchToken}` | `HomeController`, `ResultFilterController`, `SearchController` |
-| Détail | `/agency/{slug}`, `/public/detail/bien/{slug}` | `DetailAgenceController`, `DetailBienController` |
-| Géographie | `/geo/autocomplete/pays`, `/villes`, `/quartiers` | `GeoAutocompleteController` |
+| Public | `/` (redirection), `/{pays}-{langue}/`, `/{pays}-{langue}/public/search`, `/{pays}-{langue}/public/search/{searchToken}` | `HomeController`, `ResultFilterController`, `SearchController` |
+| Détail | `/{pays}-{langue}/agency/{slug}`, `/{pays}-{langue}/public/detail/bien/{slug}` | `DetailAgenceController`, `DetailBienController` |
+| Géographie | `/{pays}-{langue}/geo/autocomplete/pays`, `/villes`, `/quartiers` | `GeoAutocompleteController` |
 | Visiteur | `/login`, `/signup`, `/signup/verify`, `/signup/profile`, `/visiteur/dashboard`, `/favoris/property/{id}/toggle` | contrôleurs `Authentification/Visiteurs` et `Dashboard/Visiteur` |
 | Agence | `/pro/login`, `/pro/signup`, `/pro/signup/verify`, `/pro/signup/profile`, `/pro/dashboard` | contrôleurs `Authentification/AgenceImmobiliere` et `Dashboard/AgenceImmobiliere` |
 | Gestion de biens | `/mes/biens/`, `/mes/biens/status` | `AgenceImmobiliereMesBiensController` |
@@ -27,6 +27,17 @@ Les endpoints API de facturation portent en plus l'attribut `IsGranted('ROLE_AGE
 | Administration | `/admin`, `/admin/user`, `/admin/translation` | EasyAdmin |
 
 Les préfixes localisés produisent les variantes françaises et anglaises listées par le routeur : ne pas coder les URLs en dur dans les templates ou scripts ; utiliser les noms de routes.
+
+### URLs publiques `/{pays}-{langue}/…`
+
+Le front office public est préfixé par `App\Routing\PublicRoute::PREFIX` (`/{_country}-{_locale}`, ex. `/fr-fr/`, `/ca-en/`, `/ma-fr/`), langue et pays étant tous deux dynamiques :
+
+- `_locale` : `fr|en` ; `_country` : code ISO 3166-1 en minuscules, qui doit exister dans la table `pays` (sinon 404).
+- `path()`/`generateUrl()` n'ont pas besoin de ces paramètres : `UrlCountrySubscriber` place le pays courant (celui de l'URL, sinon celui détecté par IP, sinon `app.default_country`) dans le contexte du routeur, comme Symfony le fait pour `_locale`.
+- `/` redirige (302) vers l'accueil dans la langue et le pays détectés.
+- Le pays de l'URL fixe la devise d'affichage (`Pays::$devise`) et filtre les biens de l'accueil (`Property::$codeIsoPays`).
+
+Nouvelle route publique : `#[Route(path: PublicRoute::PREFIX.'/ma-page', name: '…', requirements: PublicRoute::REQUIREMENTS)]`.
 
 ## API JSON
 

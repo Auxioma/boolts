@@ -21,6 +21,7 @@ use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\Filter\ModalFilterType;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\PropertyRepository;
+use App\Routing\PublicRoute;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -57,12 +58,10 @@ final class ResultFilterController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/properties/{countrySlug}/{transactionSlug}/{categorySlug}',
-            'fr' => '/fr/biens/{countrySlug}/{transactionSlug}/{categorySlug}',
-        ],
+        path: PublicRoute::PREFIX.'/properties/{countrySlug}/{transactionSlug}/{categorySlug}',
         name: 'app_public_search_type',
         requirements: [
+            ...PublicRoute::REQUIREMENTS,
             'countrySlug' => '[a-z0-9-]+',
             'transactionSlug' => '[a-z0-9-]+',
             'categorySlug' => '[a-z0-9-]+',

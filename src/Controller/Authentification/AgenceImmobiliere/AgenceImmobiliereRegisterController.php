@@ -21,6 +21,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Authentification / AgenceImmobiliere / AgenceImmobiliereRegisterController.
@@ -29,6 +30,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class AgenceImmobiliereRegisterController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the registerPro controller action.
      */
@@ -77,12 +80,12 @@ final class AgenceImmobiliereRegisterController extends AbstractController
                     $session->set('auth_user_id', $user->getId());
                     $session->set('auth_step', AgencyRegistrationProgress::STEP_CODE);
 
-                    $this->addFlash('success', 'Un code de vérification vient de vous être envoyé pour reprendre votre inscription.');
+                    $this->addFlash('success', $this->t('auth.flash.resume_code_sent'));
 
                     return $this->redirectToRoute('app_professionnelle_otp');
                 }
 
-                $this->addFlash('warning', 'Un compte existe déjà avec cette adresse. Connectez-vous ici.');
+                $this->addFlash('warning', $this->t('auth.flash.account_exists'));
 
                 return $this->redirectToRoute('app_professionnelle_connexion');
             }

@@ -13,7 +13,7 @@
     <main class="registration d-flex">
         <section class="registration__content">
             <div class="registration__inner">
-                <h2 class="registration__title">Quelques informations à propos de votre entreprise</h2>
+                <h2 class="registration__title">{{ 'professionnel.register.step4.title'|trans }}</h2>
 
                 {{ include('authentification/agence_immobiliere/_progress.html.twig', { currentStep: 2 }) }}
 
@@ -23,7 +23,7 @@
                     },
                 }) }}
                     <div class="registration__field">
-                        <label for="{{ form.entreprise.vars.id }}" class="p-accent">Nom légal de votre entreprise*</label>
+                        <label for="{{ form.entreprise.vars.id }}" class="p-accent">{{ 'professionnel.register.step4.company'|trans }}</label>
                         {{ form_widget(form.entreprise) }}
                         {{ form_errors(form.entreprise) }}
                     </div>
@@ -35,7 +35,7 @@
                         data-mes-biens--adresse-autocomplete-limit-value="8"
                     >
                         <div class="registration__field position-relative">
-                            <label for="{{ form.adresse.vars.id }}" class="p-accent">Adresse légale de votre entreprise*</label>
+                            <label for="{{ form.adresse.vars.id }}" class="p-accent">{{ 'professionnel.register.step4.address'|trans }}</label>
                             {{ form_widget(form.adresse, {
                                 attr: {
                                     autocomplete: 'off',
@@ -53,14 +53,14 @@
                         </div>
 
                         <div class="registration__field">
-                            <label for="{{ form.adresseComplement.vars.id }}" class="p-accent">Adresse 2 (facultatif)</label>
+                            <label for="{{ form.adresseComplement.vars.id }}" class="p-accent">{{ 'professionnel.register.step4.address2'|trans }}</label>
                             {{ form_widget(form.adresseComplement) }}
                             {{ form_errors(form.adresseComplement) }}
                         </div>
 
                         <div class="registration__names">
                             <div class="registration__field">
-                                <label for="{{ form.codePostal.vars.id }}" class="p-accent">Code postal*</label>
+                                <label for="{{ form.codePostal.vars.id }}" class="p-accent">{{ 'professionnel.register.step4.postal_code'|trans }}</label>
                                 {{ form_widget(form.codePostal, {
                                     attr: {
                                         autocomplete: 'off',
@@ -71,7 +71,7 @@
                             </div>
 
                             <div class="registration__field">
-                                <label for="{{ form.ville.vars.id }}" class="p-accent">Ville*</label>
+                                <label for="{{ form.ville.vars.id }}" class="p-accent">{{ 'professionnel.register.step4.city'|trans }}</label>
                                 {{ form_widget(form.ville, {
                                     attr: {
                                         autocomplete: 'off',
@@ -83,7 +83,7 @@
                         </div>
 
                         <div class="registration__field">
-                            <label for="{{ form.pays.vars.id }}" class="p-accent">Pays*</label>
+                            <label for="{{ form.pays.vars.id }}" class="p-accent">{{ 'professionnel.register.step4.country'|trans }}</label>
                             {{ form_widget(form.pays, {
                                 attr: {
                                     autocomplete: 'off',
@@ -94,14 +94,14 @@
                         </div>
                     </div>
 
-                    <p class="registration__info">*Informations telles qu'affichées sur vos documents officiels</p>
+                    <p class="registration__info">{{ 'professionnel.register.step4.info'|trans }}</p>
 
-                    <button class="registration__submit btn-full-blue" type="submit">Suivant</button>
+                    <button class="registration__submit btn-full-blue" type="submit">{{ 'professionnel.register.next'|trans }}</button>
                 {{ form_end(form) }}
             </div>
         </section>
 
-        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+        <div class="registration__visual" role="img" aria-label="{{ 'auth.hero.aria_label'|trans }}"></div>
     </main>
 {% endblock %}
 

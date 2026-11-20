@@ -13,20 +13,19 @@
     <main class="registration d-flex">
         <section class="registration__content">
             <div class="registration__inner">
-                <h2 class="registration__title">Remplissez les informations de votre compte</h2>
+                <h2 class="registration__title">{{ 'professionnel.register.step3.title'|trans }}</h2>
 
                 {{ include('authentification/agence_immobiliere/_progress.html.twig', { currentStep: 1 }) }}
 
-                {% set _pwd_locale_en = app.request.locale starts with 'en' %}
                 {{ form_start(form, {
                     attr: {
                         class: 'registration__form',
                         'data-controller': 'phone password-strength',
                         'data-action': 'submit->phone#prepareSubmit submit->password-strength#validate',
                         'data-password-strength-min-value': '12',
-                        'data-password-strength-label-progress-value': _pwd_locale_en ? '{count} / {min} characters' : '{count} / {min} caractères',
-                        'data-password-strength-label-valid-value': _pwd_locale_en ? 'Minimum length reached' : 'Longueur minimale atteinte',
-                        'data-password-strength-label-mismatch-value': _pwd_locale_en ? 'Passwords do not match.' : 'Les mots de passe ne correspondent pas.',
+                        'data-password-strength-label-progress-value': 'auth.password_strength.progress'|trans,
+                        'data-password-strength-label-valid-value': 'auth.password_strength.valid'|trans,
+                        'data-password-strength-label-mismatch-value': 'auth.password_strength.mismatch'|trans,
                     },
                 }) }}
                     <div class="registration__names">
@@ -47,7 +46,7 @@
 
                     <div class="registration__field">
                         <label for="{{ form.telephone.vars.id }}" class="p-accent">
-                            Numéro de téléphone
+                            {{ 'professionnel.register.step3.phone'|trans }}
                         </label>
                         {{ form_widget(form.telephone, {attr: {class: 'form-control input'}}) }}
                         {{ form_errors(form.telephone) }}
@@ -88,7 +87,7 @@
             </div>
         </section>
 
-        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+        <div class="registration__visual" role="img" aria-label="{{ 'auth.hero.aria_label'|trans }}"></div>
     </main>
 {% endblock %}
 

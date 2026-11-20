@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -53,7 +54,7 @@ export default class extends Controller {
             form.dataset.submissionStatus = '';
             form.dataset.submittedFileName = '';
             elements.input.disabled = false;
-            elements.status.textContent = 'Téléverser';
+            elements.status.textContent = t('js.upload.action');
             elements.formats.textContent = elements.input.files[0]?.name || elements.formats.dataset.defaultFormats;
             elements.formats.hidden = false;
             elements.uploadLabel.hidden = Boolean(elements.input.files.length);
@@ -108,8 +109,8 @@ export default class extends Controller {
             const submissionStatus = form.dataset.submissionStatus || '';
 
             elements.status.textContent = submittedFileName && submissionStatus !== 'rejected'
-                ? 'Envoyé'
-                : 'Téléverser';
+                ? t('js.upload.sent')
+                : t('js.upload.action');
             elements.formats.textContent = elements.formats.dataset.defaultFormats;
             elements.formats.hidden = Boolean(submittedFileName && submissionStatus !== 'rejected');
             elements.uploadLabel.hidden = Boolean(submittedFileName && submissionStatus !== 'rejected');
@@ -160,7 +161,7 @@ export default class extends Controller {
         }
 
         this.continueButton.disabled = true;
-        this.continueButton.textContent = 'Téléversement en cours…';
+        this.continueButton.textContent = t('js.upload.in_progress');
 
         try {
             const adminNotificationDocumentIds = [...new Set(this.forms
@@ -222,7 +223,7 @@ export default class extends Controller {
         }
 
         elements.input.disabled = true;
-        elements.status.textContent = 'Téléversement en cours…';
+        elements.status.textContent = t('js.upload.in_progress');
 
         try {
             const response = await fetch(form.action, {
@@ -236,11 +237,11 @@ export default class extends Controller {
             });
             const result = await response.json().catch(() => ({
                 success: false,
-                message: 'Le serveur n’a pas pu traiter ce document. Veuillez réessayer.'
+                message: t('js.upload.server_error')
             }));
 
             if (!response.ok || !result.success) {
-                const uploadError = new Error(result.message || 'Le téléversement a échoué.');
+                const uploadError = new Error(result.message || t('js.upload.failed'));
                 uploadError.submissionLimitReached = Boolean(result.submissionLimitReached);
 
                 throw uploadError;
@@ -252,7 +253,7 @@ export default class extends Controller {
             const uploadedFileName = result.originalFileName || originalFileName;
 
             form.dataset.submittedFileName = uploadedFileName;
-            elements.status.textContent = 'Envoyé';
+            elements.status.textContent = t('js.upload.sent');
             elements.formats.hidden = true;
             elements.errorFlash.hidden = true;
             this.setSubmittedFileDisplay(elements.removeFile, uploadedFileName, true);
@@ -264,8 +265,8 @@ export default class extends Controller {
             return result;
         } catch (error) {
             elements.input.disabled = false;
-            elements.status.textContent = error.message || 'Erreur de téléversement';
-            elements.errorFlash.textContent = error.message || 'Erreur de téléversement';
+            elements.status.textContent = error.message || t('js.upload.error');
+            elements.errorFlash.textContent = error.message || t('js.upload.error');
             elements.errorFlash.hidden = false;
 
             throw error;

@@ -5,7 +5,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscrivez-vous gratuitement | Boolts{% endblock %}
+{% block title %}{{ 'auth.registration_choice.meta.title'|trans }}{% endblock %}
 
 {% block stylesheets %}
     <style>
@@ -191,9 +191,9 @@
     <main class="registration-choice d-flex">
         <section class="registration-choice__content">
             <div class="registration-choice__inner">
-                <h2 class="registration-choice__title">Inscrivez-vous gratuitement</h2>
+                <h2 class="registration-choice__title">{{ 'auth.registration_choice.title'|trans }}</h2>
 
-                <p class="mb-3" style="color:#858789">Choisissez votre profil :</p>
+                <p class="mb-3" style="color:#858789">{{ 'auth.registration_choice.subtitle'|trans }}</p>
 
                 <div class="registration-choice__choices">
                     <a
@@ -205,7 +205,7 @@
                             <span class="registration-choice__icon" aria-hidden="true">
                                 <i class="icon-user"></i>
                             </span>
-                            <span class="p-accent">Particulier</span>
+                            <span class="p-accent">{{ 'auth.registration_choice.individual'|trans }}</span>
                         </span>
                         <i class="icon-chevron-right registration-choice__arrow" aria-hidden="true"></i>
                     </a>
@@ -219,20 +219,20 @@
                             <span class="registration-choice__icon" aria-hidden="true">
                                 <i class="icon-briefcase"></i>
                             </span>
-                            <span class="p-accent">Professionnel</span>
+                            <span class="p-accent">{{ 'auth.registration_choice.professional'|trans }}</span>
                         </span>
                         <i class="icon-chevron-right registration-choice__arrow" aria-hidden="true"></i>
                     </a>
                 </div>
 
                 <p class="registration-choice__login paragraphe">
-                    Déjà inscrit sur Boolts ?
-                    <a href="{{ path('app_login') }}" class="p-accent" data-turbo="false">Se connecter</a>
+                    {{ 'auth.registration_choice.already_registered'|trans }}
+                    <a href="{{ path('app_login') }}" class="p-accent" data-turbo="false">{{ 'visiteur.login.submit'|trans }}</a>
                 </p>
             </div>
         </section>
 
-        <div class="registration-choice__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+        <div class="registration-choice__visual" role="img" aria-label="{{ 'auth.hero.aria_label'|trans }}"></div>
     </main>
 {% endblock %}
 

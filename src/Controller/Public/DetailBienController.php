@@ -17,6 +17,7 @@ use App\Entity\Property;
 use App\Form\FormContact\ContactType;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
+use App\Routing\PublicRoute;
 use App\Service\ContactForm\ContactMailer;
 use App\Service\PropertyViewTracker;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,11 +42,9 @@ final class DetailBienController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/public/detail/bien/{slug}',
-            'fr' => '/fr/public/detail/bien/{slug}',
-        ],
-        name: 'app_public_detail_bien'
+        path: PublicRoute::PREFIX.'/public/detail/bien/{slug}',
+        name: 'app_public_detail_bien',
+        requirements: PublicRoute::REQUIREMENTS
     )]
     public function index(
         #[MapEntity(mapping: ['slug' => 'slug'])]

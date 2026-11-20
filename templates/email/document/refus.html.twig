@@ -18,7 +18,7 @@
     >
 
     <title>
-        Un ou plusieurs de vos documents n’ont pas été acceptés
+        {{ 'email.document.rejected.subject'|trans }}
     </title>
 </head>
 
@@ -89,17 +89,13 @@
                         {# TITRE FIGMA 5738:13600 #}
 
                         <h1 class="mail-title">
-                            Un ou plusieurs de vos documents n’ont pas été acceptés
+                            {{ 'email.document.rejected.subject'|trans }}
                         </h1>
 
                         {# TEXTE FIGMA 5738:13602 #}
 
                         <p class="mail-text">
-                            Bonjour {{ agenceName|default('AGENCE_NAME') }},
-                            après vérification, un ou plusieurs de vos documents
-                            ne répondent pas aux critères nécessaires.
-                            Consultez votre tableau de bord pour connaître les motifs
-                            du refus et effectuer les modifications demandées.
+                            {{ 'email.document.rejected.text'|trans({'%name%': agenceName|default('')}) }}
                         </p>
 
                         {# BOUTON FIGMA 5738:13603 #}
@@ -119,7 +115,7 @@
                                         href="{{ dashboardUrl|default('#') }}"
                                         class="primary-button"
                                     >
-                                        Aller à mon tableau de bord
+                                        {{ 'email.document.go_dashboard'|trans }}
                                     </a>
 
                                 </td>
@@ -132,10 +128,10 @@
                         <div class="support-block">
 
                             <p>
-                                Vous avez des soucis pour vous connecter ?
+                                {{ 'email.common.support.text'|trans }}
                                 <br>
 
-                                Contactez notre support :
+                                {{ 'email.common.support.contact'|trans }}
                                 <a href="mailto:contact@boolts.com">
                                     contact@boolts.com
                                 </a>
@@ -242,7 +238,7 @@
                                                 href="{{ cguUrl|default('#') }}"
                                                 target="_blank"
                                             >
-                                                CGU
+                                                {{ 'email.common.cgu'|trans }}
                                             </a>
 
                                         </p>
@@ -253,7 +249,7 @@
                                                 href="{{ contactUrl|default('#') }}"
                                                 target="_blank"
                                             >
-                                                Nous contacter
+                                                {{ 'email.common.contact'|trans }}
                                             </a>
 
                                         </p>
@@ -280,23 +276,19 @@
                     <td class="footer-legal">
 
                         <p>
-                            Boolts is a registered trademark.
-                            Instagram and Facebook are trademarks of Meta Inc.,
-                            registered in the U.S. and other countries.
+                            {{ 'email.common.legal'|trans }}
 
                             <br>
 
-                            Vous avez reçu ce message parce que vous vous êtes
-                            inscrit sur notre site le
-                            {{ registrationDate|default('26/02/2026') }}.
+                            {{ 'email.common.received'|trans({'%date%': registrationDate|default('')}) }}
                         </p>
 
                         <p>
 
-                            Vous ne souhaitez plus recevoir d’e-mail de notre part ?
+                            {{ 'email.common.unsubscribe_text'|trans }}
 
                             <a href="{{ unsubscribeUrl|default('#') }}">
-                                Cliquez ici.
+                                {{ 'email.common.unsubscribe_link'|trans }}
                             </a>
 
                         </p>

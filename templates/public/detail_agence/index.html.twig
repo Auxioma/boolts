@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Axa Immobilier
+{% block title %}{{ user.entreprise }}
 {% endblock %}
 
 {% block mobile_tabbar %}{% endblock %}
@@ -313,7 +313,7 @@
                                         {% endif %}
 <a href="{{ path('app_public_detail_agence_messagerie', {slug: user.slug}) }}" class="agence-btn agence-btn-primary p-accent">
 <i class="icon-phone"></i>
-Envoie message agence
+{{ 'detail_agence.contact.message'|trans }}
 </a>
                                         <button
                                             type="button"

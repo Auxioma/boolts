@@ -862,7 +862,7 @@
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h2 id="statistics-custom-period-modal-title" class="modal-title fs-5">Période personnalisée</h2>
+                                            <h2 id="statistics-custom-period-modal-title" class="modal-title fs-5">{{ 'agency_dashboard.custom_period'|trans }}</h2>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'agency_dashboard.close'|trans }}"></button>
                                         </div>
                                         <div class="modal-body">
@@ -877,7 +877,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'agency_dashboard.cancel'|trans }}</button>
-                                            <button type="button" class="btn btn-primary" data-action="dashboard-statistics#loadCustomPeriod">Appliquer</button>
+                                            <button type="button" class="btn btn-primary" data-action="dashboard-statistics#loadCustomPeriod">{{ 'agency_dashboard.apply_short'|trans }}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -1142,7 +1142,7 @@
                     id="property-performance-custom-period-modal-title"
                     class="modal-title property-period-modal__title"
                 >
-                    Période personnalisée
+                    {{ 'agency_dashboard.custom_period'|trans }}
                 </h2>
 
                 <button

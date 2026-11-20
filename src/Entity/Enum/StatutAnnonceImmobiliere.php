@@ -86,6 +86,14 @@ enum StatutAnnonceImmobiliere: string
         };
     }
 
+    /**
+     * Clé de traduction du libellé (fixtures PropertyStatusTranslationFixtures).
+     */
+    public function translationKey(): string
+    {
+        return 'property.status.'.$this->value;
+    }
+
     public function badgeClass(): string
     {
         return match ($this) {

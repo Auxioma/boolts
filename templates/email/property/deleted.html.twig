@@ -6,43 +6,42 @@
 #}
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre annonce a été supprimée</title>
+    <title>{{ 'email.property.deleted.subject'|trans }}</title>
 </head>
 <body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
-    <h1>Votre annonce a été supprimée</h1>
+    <h1>{{ 'email.property.deleted.subject'|trans }}</h1>
 
-    <p>Bonjour {{ agencyName|default('') }},</p>
+    <p>{{ 'email.common.hello_name'|trans({'%name%': agencyName|default('')}) }}</p>
 
     <p>
-        Votre annonce « {{ propertyTitle }} » a été supprimée. Elle n’apparaît plus sur
-        Boolts et ne peut plus être consultée par les visiteurs.
+        {{ 'email.property.deleted.text'|trans({'%title%': propertyTitle}) }}
     </p>
 
     <table role="presentation" cellpadding="6" cellspacing="0" border="0">
         <tr>
-            <td><strong>Type de transaction</strong></td>
-            <td>{{ property.typeTransaction.name|default('Non renseigné') }}</td>
+            <td><strong>{{ 'email.property.label.transaction'|trans }}</strong></td>
+            <td>{{ property.typeTransaction.name|default('email.common.not_provided'|trans) }}</td>
         </tr>
         <tr>
-            <td><strong>Type de bien</strong></td>
-            <td>{{ property.typeBien.name|default('Non renseigné') }}</td>
+            <td><strong>{{ 'email.property.label.type'|trans }}</strong></td>
+            <td>{{ property.typeBien.name|default('email.common.not_provided'|trans) }}</td>
         </tr>
         <tr>
-            <td><strong>Ville</strong></td>
-            <td>{{ property.ville|default('Non renseignée') }}</td>
+            <td><strong>{{ 'email.property.label.city'|trans }}</strong></td>
+            <td>{{ property.ville|default('email.common.not_provided_f'|trans) }}</td>
         </tr>
     </table>
 
     <p>
-        Si cette suppression n’est pas volontaire, contactez l’équipe Boolts au plus vite.
-        Vous pouvez créer une nouvelle annonce depuis votre espace Mes biens :
-        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+        {{ 'email.property.deleted.not_intended'|trans }}
+        {{ 'email.property.deleted.manage'|trans }}
+        <a href="{{ mesBiensUrl }}">{{ 'email.property.view_listings'|trans }}</a>
     </p>
 
-    <p>À bientôt,<br>L’équipe Boolts</p>
+    <p>{{ 'email.common.signature'|trans|raw }}</p>
 </body>
 </html>

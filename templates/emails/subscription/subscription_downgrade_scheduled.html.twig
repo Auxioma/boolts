@@ -5,37 +5,28 @@
  Maintenance: le contenu s'adapte à l'ancien et au nouveau forfait, à la périodicité et à la date d'effet.
 #}
 
-<p>Bonjour,</p>
+<p>{{ 'email.common.hello'|trans }}</p>
 
 <p>
-    Nous avons bien enregistré votre demande de passage
     {% if previous_plan_name is defined and previous_plan_name %}
-        du forfait <strong>{{ previous_plan_name }}</strong> vers
+        {{ 'email.subscription.downgrade.intro_from'|trans({'%previous%': '<strong>' ~ previous_plan_name|e ~ '</strong>', '%plan%': '<strong>' ~ plan_name|default('Boolts')|e ~ '</strong>', '%period%': (billing_period == 'annual' ? 'email.subscription.period.annual' : 'email.subscription.period.monthly')|trans})|raw }}
     {% else %}
-        vers
+        {{ 'email.subscription.downgrade.intro'|trans({'%plan%': '<strong>' ~ plan_name|default('Boolts')|e ~ '</strong>', '%period%': (billing_period == 'annual' ? 'email.subscription.period.annual' : 'email.subscription.period.monthly')|trans})|raw }}
     {% endif %}
-    <strong>{{ plan_name|default('Boolts') }}</strong>
-    en formule
-    {% if billing_period == 'annual' %}annuelle{% else %}mensuelle{% endif %}.
 </p>
 
 <p>
-    S’agissant d’un forfait d’un montant inférieur, le changement
-    <strong>n’est pas immédiat</strong> : aucun paiement n’est effectué aujourd’hui.
-    Il prendra effet
     {% if effective_at is defined and effective_at %}
-        le <strong>{{ effective_at|date('d/m/Y') }}</strong>,
+        {{ 'email.subscription.downgrade.not_immediate_on'|trans({'%date%': '<strong>' ~ effective_at|date('d/m/Y') ~ '</strong>'})|raw }}
     {% else %}
-        à la fin de votre période en cours,
+        {{ 'email.subscription.downgrade.not_immediate'|trans|raw }}
     {% endif %}
-    au renouvellement de votre abonnement. D’ici là, vous conservez votre forfait actuel
-    et l’ensemble de ses avantages.
 </p>
 
 <table role="presentation" cellpadding="6" cellspacing="0" border="0">
     {% if previous_plan_name is defined and previous_plan_name %}
     <tr>
-        <td><strong>Forfait actuel</strong></td>
+        <td><strong>{{ 'email.subscription.label.current_plan'|trans }}</strong></td>
         <td>
             {{ previous_plan_name }}
             {% if previous_amount_minor is defined and previous_amount_minor is not null %}
@@ -45,49 +36,49 @@
     </tr>
     {% endif %}
     <tr>
-        <td><strong>Nouveau forfait</strong></td>
+        <td><strong>{{ 'email.subscription.label.new_plan'|trans }}</strong></td>
         <td>{{ plan_name|default('Boolts') }}</td>
     </tr>
     <tr>
-        <td><strong>Périodicité</strong></td>
-        <td>{% if billing_period == 'annual' %}Annuelle{% else %}Mensuelle{% endif %}</td>
+        <td><strong>{{ 'email.subscription.label.period'|trans }}</strong></td>
+        <td>{{ (billing_period == 'annual' ? 'email.subscription.period.annual_cap' : 'email.subscription.period.monthly_cap')|trans }}</td>
     </tr>
     {% if amount_minor is defined and amount_minor is not null %}
     <tr>
-        <td><strong>Nouveau montant</strong></td>
+        <td><strong>{{ 'email.subscription.label.new_amount'|trans }}</strong></td>
         <td>
             {{ amount_minor|minor_amount(currency_name|default(null)) }} {{ currency_sign|default('') }}
-            {% if billing_period == 'annual' %}/ an{% else %}/ mois{% endif %}
+            {{ (billing_period == 'annual' ? 'email.subscription.per_year' : 'email.subscription.per_month')|trans }}
         </td>
     </tr>
     {% endif %}
     <tr>
-        <td><strong>Prise d’effet</strong></td>
+        <td><strong>{{ 'email.subscription.label.effective'|trans }}</strong></td>
         <td>
             {% if effective_at is defined and effective_at %}
                 {{ effective_at|date('d/m/Y') }}
             {% else %}
-                Fin de la période en cours
+                {{ 'email.subscription.end_of_period'|trans }}
             {% endif %}
         </td>
     </tr>
     {% if property_limit is defined and property_limit is not null %}
     <tr>
-        <td><strong>Annonces incluses (à compter de la prise d’effet)</strong></td>
+        <td><strong>{{ 'email.subscription.label.property_limit_effective'|trans }}</strong></td>
         <td>{{ property_limit }}</td>
     </tr>
     {% endif %}
     {% if included_boosts is defined and included_boosts is not null %}
     <tr>
-        <td><strong>Crédits Boost inclus par période (à compter de la prise d’effet)</strong></td>
+        <td><strong>{{ 'email.subscription.label.included_boosts_effective'|trans }}</strong></td>
         <td>{{ included_boosts }}</td>
     </tr>
     {% endif %}
 </table>
 
 <p>
-    Vous pouvez annuler ce changement tant qu’il n’a pas pris effet, depuis votre espace :
-    <a href="{{ portal_url }}">Gérer mon abonnement</a>
+    {{ 'email.subscription.downgrade.cancel_intro'|trans }}
+    <a href="{{ portal_url }}">{{ 'email.subscription.manage_link'|trans }}</a>
 </p>
 
-<p>À bientôt,<br>L’équipe Boolts</p>
+<p>{{ 'email.common.signature'|trans|raw }}</p>

@@ -33,7 +33,10 @@ final readonly class LocalizedUrlGenerator
         return \is_string($request->attributes->get('_route')) && \is_array($params) && isset($params['_locale']);
     }
 
-    public function translatedPath(Request $request, string $locale): ?string
+    /**
+     * @param ?string $country pays cible (code ISO minuscules) ; null = pays de la page courante
+     */
+    public function translatedPath(Request $request, string $locale, ?string $country = null): ?string
     {
         if (!$this->isLocalized($request)) {
             return null;
@@ -41,6 +44,10 @@ final readonly class LocalizedUrlGenerator
 
         $params = $request->attributes->get('_route_params', []);
         $params['_locale'] = $locale;
+
+        if (null !== $country && isset($params[UrlCountryResolver::ROUTE_PARAM])) {
+            $params[UrlCountryResolver::ROUTE_PARAM] = strtolower($country);
+        }
 
         try {
             $path = $this->urlGenerator->generate((string) $request->attributes->get('_route'), $params);

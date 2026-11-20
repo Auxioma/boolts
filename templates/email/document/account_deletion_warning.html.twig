@@ -14,7 +14,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Votre compte Boolts sera bientôt supprimé</title>
+    <title>{{ 'email.document.deletion.subject'|trans }}</title>
 </head>
 
 <body>
@@ -67,17 +67,11 @@
                     <td class="mail-main">
 
                         <h1 class="mail-title">
-                            Votre compte sera supprimé dans
-                            {{ daysBeforeDeletion }}
-                            {{ daysBeforeDeletion == 1 ? 'jour' : 'jours' }}
+                            {{ (daysBeforeDeletion == 1 ? 'email.document.deletion.title.one' : 'email.document.deletion.title.other')|trans({'%count%': daysBeforeDeletion}) }}
                         </h1>
 
                         <p class="mail-text">
-                            Bonjour {{ agenceName|default('AGENCE_NAME') }},
-                            vos documents obligatoires n’ont pas tous été transmis
-                            ou certains doivent être remplacés. Sans action de votre
-                            part, votre compte Boolts sera supprimé le
-                            {{ deletionDate|date('d/m/Y') }}.
+                            {{ 'email.document.deletion.text'|trans({'%name%': agenceName|default(''), '%date%': deletionDate|date('d/m/Y')}) }}
                         </p>
 
                         <table
@@ -93,7 +87,7 @@
                                         href="{{ dashboardUrl|default('#') }}"
                                         class="primary-button"
                                     >
-                                        Envoyer mes documents
+                                        {{ 'email.document.deletion.cta'|trans }}
                                     </a>
                                 </td>
                             </tr>
@@ -101,9 +95,9 @@
 
                         <div class="support-block">
                             <p>
-                                Vous avez des soucis pour vous connecter ?
+                                {{ 'email.common.support.text'|trans }}
                                 <br>
-                                Contactez notre support :
+                                {{ 'email.common.support.contact'|trans }}
                                 <a href="mailto:contact@boolts.com">
                                     contact@boolts.com
                                 </a>
@@ -180,7 +174,7 @@
                                                 href="{{ cguUrl|default('#') }}"
                                                 target="_blank"
                                             >
-                                                CGU
+                                                {{ 'email.common.cgu'|trans }}
                                             </a>
                                         </p>
 
@@ -189,7 +183,7 @@
                                                 href="{{ contactUrl|default('#') }}"
                                                 target="_blank"
                                             >
-                                                Nous contacter
+                                                {{ 'email.common.contact'|trans }}
                                             </a>
                                         </p>
                                     </div>
@@ -203,19 +197,15 @@
                 <tr>
                     <td class="footer-legal">
                         <p>
-                            Boolts is a registered trademark.
-                            Instagram and Facebook are trademarks of Meta Inc.,
-                            registered in the U.S. and other countries.
+                            {{ 'email.common.legal'|trans }}
                             <br>
-                            Vous avez reçu ce message parce que vous vous êtes
-                            inscrit sur notre site le
-                            {{ registrationDate|default('26/02/2026') }}.
+                            {{ 'email.common.received'|trans({'%date%': registrationDate|default('')}) }}
                         </p>
 
                         <p>
-                            Vous ne souhaitez plus recevoir d’e-mail de notre part ?
+                            {{ 'email.common.unsubscribe_text'|trans }}
                             <a href="{{ unsubscribeUrl|default('#') }}">
-                                Cliquez ici.
+                                {{ 'email.common.unsubscribe_link'|trans }}
                             </a>
                         </p>
                     </td>

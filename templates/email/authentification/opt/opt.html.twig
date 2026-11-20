@@ -45,7 +45,7 @@
                             <p class="validity-text">
                                 {{ 'email.otp.validity'|trans({
                                     '%expiration%': 'now'|date_modify('+1 hour')|format_datetime(
-                                        pattern: "EEEE d MMMM 'à' HH:mm",
+                                        pattern: 'email.otp.date_pattern'|trans,
                                         locale: app.request.locale,
                                     ),
                                 }) }}

@@ -41,7 +41,7 @@ class StepCinqType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control input',
-                    'placeholder' => 'Veuillez saisir une description de votre agence',
+                    'placeholder' => 'form.agency_description.placeholder',
                     'style' => 'height: auto; padding: 14px; resize: vertical;',
                     'maxlength' => 500,
                     'rows' => 3,
@@ -55,7 +55,7 @@ class StepCinqType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control input',
-                    'placeholder' => 'Veuillez entrer votre numéro de téléphone',
+                    'placeholder' => 'form.phone.placeholder',
                     'autocomplete' => 'tel',
                     'inputmode' => 'tel',
                     'data-phone-target' => 'input',
@@ -65,7 +65,7 @@ class StepCinqType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control input',
-                    'placeholder' => 'Veuillez entrer votre adresse e-mail de contact',
+                    'placeholder' => 'form.contact_email.placeholder',
                 ],
             ])
             ->add('langueParlers', EntityType::class, [

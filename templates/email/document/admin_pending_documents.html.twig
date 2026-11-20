@@ -6,39 +6,39 @@
 #}
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouveaux documents en attente de validation</title>
+    <title>{{ 'email.document.admin.subject'|trans }}</title>
 </head>
 <body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
-    <h1>Nouveaux documents en attente de validation</h1>
+    <h1>{{ 'email.document.admin.subject'|trans }}</h1>
 
-    <p>Bonjour {{ admin_name|default('Admin') }},</p>
+    <p>{{ 'email.common.hello_name'|trans({'%name%': admin_name|default('Admin')}) }}</p>
 
-    <p>De nouveaux documents sont en attente de validation dans l'administration du site internet.</p>
-    <p>Les fichiers transmis sont joints à cet email.</p>
+    <p>{{ 'email.document.admin.text'|trans }}</p>
+    <p>{{ 'email.document.admin.attached'|trans }}</p>
 
     <table role="presentation" cellpadding="6" cellspacing="0" border="0">
         <tr>
-            <td><strong>Agence</strong></td>
-            <td>{{ agency.entreprise|default(agency.email|default('Agence inconnue')) }}</td>
+            <td><strong>{{ 'email.document.admin.agency'|trans }}</strong></td>
+            <td>{{ agency.entreprise|default(agency.email|default('email.document.admin.unknown_agency'|trans)) }}</td>
         </tr>
         <tr>
-            <td><strong>Email agence</strong></td>
-            <td>{{ agency.email|default('Non renseigné') }}</td>
+            <td><strong>{{ 'email.document.admin.agency_email'|trans }}</strong></td>
+            <td>{{ agency.email|default('email.common.not_provided'|trans) }}</td>
         </tr>
     </table>
 
-    <h2>Documents à valider</h2>
+    <h2>{{ 'email.document.admin.to_validate'|trans }}</h2>
 
     <table role="presentation" cellpadding="6" cellspacing="0" border="0">
         <thead>
             <tr>
-                <th align="left">Document</th>
-                <th align="left">Fichier</th>
-                <th align="left">Transmis le</th>
+                <th align="left">{{ 'email.document.admin.document'|trans }}</th>
+                <th align="left">{{ 'email.document.admin.file'|trans }}</th>
+                <th align="left">{{ 'email.document.admin.submitted_at'|trans }}</th>
             </tr>
         </thead>
         <tbody>
@@ -46,7 +46,7 @@
                 {% set documentRequest = submission.documentRequest %}
                 {% set requiredDocument = documentRequest ? documentRequest.requiredDocument : null %}
                 <tr>
-                    <td>{{ requiredDocument.name|default('Document non identifié') }}</td>
+                    <td>{{ requiredDocument.name|default('email.document.admin.unknown_document'|trans) }}</td>
                     <td>{{ submission.originalFileName }}</td>
                     <td>{{ submission.submittedAt|date('d/m/Y H:i') }}</td>
                 </tr>
@@ -54,6 +54,6 @@
         </tbody>
     </table>
 
-    <p>Vous pouvez le contrôler depuis l'administration Boolts.</p>
+    <p>{{ 'email.document.admin.check'|trans }}</p>
 </body>
 </html>

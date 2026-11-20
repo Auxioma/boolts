@@ -13,7 +13,7 @@
     <main class="registration d-flex">
         <section class="registration__content">
             <div class="registration__inner">
-                <h2 class="registration__title">Remplissez la fiche publique de votre agence</h2>
+                <h2 class="registration__title">{{ 'professionnel.register.step5.title'|trans }}</h2>
 
                 {{ include('authentification/agence_immobiliere/_progress.html.twig', { currentStep: 3 }) }}
 
@@ -25,7 +25,7 @@
                     },
                 }) }}
                     <div class="registration__field">
-                        <label for="{{ form.imageFile.file.vars.id }}" class="p-accent">Photo de profil (facultatif)</label>
+                        <label for="{{ form.imageFile.file.vars.id }}" class="p-accent">{{ 'professionnel.register.step5.photo'|trans }}</label>
                         {% set firstLetter = user.prenom ? user.prenom|first|upper : null %}
                         {% set avatar = user.imageName
                             ? vich_uploader_asset(user, 'imageFile')
@@ -48,7 +48,7 @@
                                 class="registration__photo-add btn-change-image btn-full-white rounded-pill position-absolute start-50 translate-middle-x w-auto"
                                 style="bottom: -12px;"
                             >
-                                Modifier
+                                {{ 'professionnel.register.step5.photo_edit'|trans }}
                             </label>
 
                             {{ form_widget(form.imageFile.file, {
@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="registration__field">
-                        <label for="{{ form.description.vars.id }}" class="p-accent">Description (facultatif)</label>
+                        <label for="{{ form.description.vars.id }}" class="p-accent">{{ 'professionnel.register.step5.description'|trans }}</label>
                         <div data-controller="parametre--char-count">
                             {{ form_widget(form.description, {
                                 attr: {
@@ -78,19 +78,19 @@
                     </div>
 
                     <div class="registration__field">
-                        <label for="{{ form.numeroContact.vars.id }}" class="p-accent">Numéro de téléphone de contact (facultatif)</label>
+                        <label for="{{ form.numeroContact.vars.id }}" class="p-accent">{{ 'professionnel.register.step5.phone'|trans }}</label>
                         {{ form_widget(form.numeroContact) }}
                         {{ form_errors(form.numeroContact) }}
                     </div>
 
                     <div class="registration__field">
-                        <label for="{{ form.emailContact.vars.id }}" class="p-accent">Adresse e-mail de contact (facultatif)</label>
+                        <label for="{{ form.emailContact.vars.id }}" class="p-accent">{{ 'professionnel.register.step5.email'|trans }}</label>
                         {{ form_widget(form.emailContact) }}
                         {{ form_errors(form.emailContact) }}
                     </div>
 
                     <div class="registration__field">
-                        <label for="agency-languages-search" class="p-accent">Langues parlées par l'agence (facultatif)</label>
+                        <label for="agency-languages-search" class="p-accent">{{ 'professionnel.register.step5.languages'|trans }}</label>
                         <div class="agency-languages" data-controller="languages">
                             {{ form_widget(form.langueParlers) }}
 
@@ -100,7 +100,7 @@
                                         type="text"
                                         id="agency-languages-search"
                                         class="form-control agency-languages-input rounded-70 pl-44 input"
-                                        placeholder="Rechercher une langue..."
+                                        placeholder="{{ 'professionnel.register.step5.languages_search'|trans }}"
                                         autocomplete="off"
                                         data-languages-target="search"
                                         data-action="input->languages#search keydown.enter->languages#addFirstResult:prevent"
@@ -117,12 +117,12 @@
                         {{ form_errors(form.langueParlers) }}
                     </div>
 
-                    <button class="registration__submit btn-full-blue" type="submit">Suivant</button>
+                    <button class="registration__submit btn-full-blue" type="submit">{{ 'professionnel.register.next'|trans }}</button>
                 {{ form_end(form) }}
             </div>
         </section>
 
-        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+        <div class="registration__visual" role="img" aria-label="{{ 'auth.hero.aria_label'|trans }}"></div>
     </main>
 {% endblock %}
 

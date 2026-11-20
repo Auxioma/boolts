@@ -14,7 +14,7 @@
         <div class="col-12 col-md-10 mx-auto">
 
             <h3 class="mb-0 d-none d-md-block">
-                Historique des paiements
+                {{ 'settings.menu.payment_history'|trans }}
             </h3>
 
             <div
@@ -46,8 +46,8 @@
                             jcb: 'JCB',
                             link: 'Link',
                             unionpay: 'UnionPay',
-                            card: 'Carte bancaire',
-                        }[payment_card_brand_key]|default(payment_card_brand|default('Carte bancaire')|capitalize) %}
+                            card: 'settings.payments.card'|trans,
+                        }[payment_card_brand_key]|default(payment_card_brand|default('settings.payments.card'|trans)|capitalize) %}
                         {% set payment_card_last4 = payment_method and payment_method.last4
                             ? payment_method.last4
                             : payment_method_snapshot.last4|default(null)
@@ -86,7 +86,7 @@
                                         rel="noopener"
                                     >
                                         <i class="icon-eye" aria-hidden="true"></i>
-                                        Voir
+                                        {{ 'settings.payments.view'|trans }}
                                     </a>
 
                                     <a
@@ -94,7 +94,7 @@
                                         class="invoice-action p-accent"
                                     >
                                         <i class="icon-arrow-down-to-line" aria-hidden="true"></i>
-                                        Télécharger
+                                        {{ 'settings.payments.download'|trans }}
                                     </a>
                                 </div>
                             {% endif %}
@@ -102,7 +102,7 @@
                     {% endfor %}
                 {% else %}
                     <div class="invoice-row">
-                        <p class="invoice-row__date">Aucun paiement d’abonnement. Les renouvellements Stripe apparaîtront ici après synchronisation.</p>
+                        <p class="invoice-row__date">{{ 'settings.payments.empty'|trans }}</p>
                     </div>
                 {% endif %}
                 </div>

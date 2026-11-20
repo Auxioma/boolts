@@ -12,6 +12,7 @@
 
 namespace App\Controller\Public;
 
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,10 +23,8 @@ use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route(
-    path: [
-        'en' => '/geo/autocomplete',
-        'fr' => '/fr/geo/autocomplete',
-    ]
+    path: PublicRoute::PREFIX.'/geo/autocomplete',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 /**
  * HTTP controller for module Public / GeoAutocompleteController.

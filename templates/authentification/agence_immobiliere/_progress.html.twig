@@ -5,10 +5,10 @@
 #}
 
 {% set registrationProgressSteps = [
-    { label: 'Informations générales', width: 179 },
-    { label: 'Informations légales', width: 228 },
-    { label: 'Détails de l’agence', width: 311 },
-    { label: 'Horaires de l’agence', width: 456 },
+    { label: 'professionnel.register.progress.general'|trans, width: 179 },
+    { label: 'professionnel.register.progress.legal'|trans, width: 228 },
+    { label: 'professionnel.register.progress.details'|trans, width: 311 },
+    { label: 'professionnel.register.progress.hours'|trans, width: 456 },
 ] %}
 
 {% set registrationProgressStep = registrationProgressSteps[currentStep - 1] %}

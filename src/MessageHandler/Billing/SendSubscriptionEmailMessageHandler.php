@@ -16,6 +16,7 @@ use App\Entity\Billing\Enum\SubscriptionEmailStatus;
 use App\Entity\Billing\SubscriptionEmailLog;
 use App\Message\Billing\SendSubscriptionEmailMessage;
 use App\Repository\Billing\SubscriptionEmailLogRepository;
+use App\Service\Intl\RecipientLocale;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -23,6 +24,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsMessageHandler]
 final readonly class SendSubscriptionEmailMessageHandler
@@ -33,6 +35,7 @@ final readonly class SendSubscriptionEmailMessageHandler
         private MailerInterface $mailer,
         private UrlGeneratorInterface $urlGenerator,
         private LoggerInterface $logger,
+        private TranslatorInterface $translator,
         private string $mailerFromEmail,
         private string $mailerFromName,
     ) {
@@ -62,10 +65,13 @@ final readonly class SendSubscriptionEmailMessageHandler
             ),
         ];
 
+        $locale = RecipientLocale::for($emailLog->getAgency());
+
         $email = (new TemplatedEmail())
             ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
             ->to($emailLog->getRecipientEmail())
-            ->subject($emailLog->getSubject())
+            ->subject($this->translator->trans('email.subscription.subject.'.$emailLog->getEventType()->value, [], null, $locale))
+            ->locale($locale)
             ->htmlTemplate('emails/subscription/'.$emailLog->getEventType()->value.'.html.twig')
             ->context($context);
 

@@ -38,7 +38,7 @@ class ChangePasswordFormType extends AbstractType
                     'label' => 'form.password.new',
                     'attr' => [
                         'class' => 'form-control password-input',
-                        'placeholder' => 'Veuillez entrer votre mot de passe',
+                        'placeholder' => 'form.password.placeholder',
                     ],
 
                     'constraints' => [
@@ -57,7 +57,7 @@ class ChangePasswordFormType extends AbstractType
                 'second_options' => [
                     'label' => 'form.password.repeat',
                     'attr' => [
-                        'placeholder' => 'Confirmez votre mot de passe',
+                        'placeholder' => 'form.password.confirm_placeholder',
                         'class' => 'form-control password-input mb-32',
                     ],
                 ],

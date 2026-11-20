@@ -18,6 +18,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Intl\RecipientLocale;
 
 final readonly class AdminDocumentNotificationMailer
 {
@@ -29,6 +31,7 @@ final readonly class AdminDocumentNotificationMailer
         private string $adminName,
         private string $mailerFromEmail,
         private string $mailerFromName,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -54,7 +57,8 @@ final readonly class AdminDocumentNotificationMailer
         $email = (new TemplatedEmail())
             ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
             ->to(new Address($adminEmail, $this->adminName))
-            ->subject('Nouveaux documents en attente de validation')
+            ->subject($this->translator->trans('email.document.admin.subject', [], null, RecipientLocale::DEFAULT))
+            ->locale(RecipientLocale::DEFAULT)
             ->htmlTemplate('email/document/admin_pending_documents.html.twig')
             ->context([
                 'admin_name' => $this->adminName,

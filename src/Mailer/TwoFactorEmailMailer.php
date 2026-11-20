@@ -16,6 +16,9 @@ use Scheb\TwoFactorBundle\Mailer\AuthCodeMailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Intl\RecipientLocale;
+use App\Entity\User;
 
 final class TwoFactorEmailMailer implements AuthCodeMailerInterface
 {
@@ -23,6 +26,7 @@ final class TwoFactorEmailMailer implements AuthCodeMailerInterface
         private readonly MailerInterface $mailer,
         private readonly string $fromEmail,
         private readonly string $fromName,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -48,10 +52,12 @@ final class TwoFactorEmailMailer implements AuthCodeMailerInterface
             throw new \LogicException('User has no email.');
         }
 
+        $locale = RecipientLocale::for($user instanceof User ? $user : null);
         $email = (new TemplatedEmail())
             ->from(new Address($this->fromEmail, $this->fromName))
             ->to($toEmail)
-            ->subject('Votre code de connexion sécurisé - Boolts')
+            ->subject($this->translator->trans('email.two_factor.subject', [], null, $locale))
+            ->locale($locale)
             // Ce template reçoit "authenticationCode" dans son contexte
             // conformément au provider email officiel.
             // Doc: providers/email.html -> templating

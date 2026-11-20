@@ -16,6 +16,7 @@ use App\Entity\FormContact\Contact;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class ContactMailer
 {
@@ -23,6 +24,7 @@ final class ContactMailer
         private readonly MailerInterface $mailer,
         private readonly string $mailerFromEmail,
         private readonly string $mailerFromName,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -32,7 +34,7 @@ final class ContactMailer
             ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
             ->to(new Address($agencyEmail))
             ->replyTo(new Address($contact->getEmail()))
-            ->subject('Nouvelle demande de contact')
+            ->subject($this->translator->trans('email.contact.subject'))
             ->htmlTemplate('email/contact_form/contact.html.twig')
             ->context([
                 'contact' => $contact,

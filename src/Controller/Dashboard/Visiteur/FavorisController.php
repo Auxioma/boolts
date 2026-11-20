@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 #[IsGranted('ROLE_USER')]
 /**
@@ -30,6 +31,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 class FavorisController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
         path: [
             'en' => '/favoris/property/{id}/toggle',
@@ -50,7 +53,7 @@ class FavorisController extends AbstractController
         if ($this->isGranted('ROLE_AGENCE')) {
             return $this->json([
                 'success' => false,
-                'message' => 'Une agence ne peut pas ajouter un bien en favoris.',
+                'message' => $this->t('favorites.agency_forbidden'),
             ], 403);
         }
 
@@ -59,7 +62,7 @@ class FavorisController extends AbstractController
         if (!$this->isCsrfTokenValid('favorite_property_'.$property->getId(), $token)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Token CSRF invalide.',
+                'message' => $this->t('api.error.invalid_csrf'),
             ], 400);
         }
 

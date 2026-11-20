@@ -42,6 +42,8 @@ final readonly class VisitorLocaleResolver
 
     private const REQUEST_ATTRIBUTE = '_visitor_locale';
 
+    private const COUNTRY_ATTRIBUTE = '_visitor_country';
+
     public function __construct(
         private GeoIpLocationService $geoIpLocationService,
         private IpLocationService $ipLocationService,
@@ -97,9 +99,35 @@ final readonly class VisitorLocaleResolver
     }
 
     /**
+     * Pays détecté par IP (code ISO 3166-1 en majuscules), sans tenir compte
+     * de l'utilisateur connecté : utilisable avant le pare-feu.
+     */
+    public function detectedCountryCode(Request $request): ?string
+    {
+        return $this->detectCountry($request)[0];
+    }
+
+    /**
      * @return array{0: ?string, 1: ?string} [code pays ISO 3166-1, code région]
      */
     private function detectCountry(Request $request): array
+    {
+        $cached = $request->attributes->get(self::COUNTRY_ATTRIBUTE);
+
+        if (\is_array($cached)) {
+            return $cached;
+        }
+
+        $detected = $this->lookupCountry($request);
+        $request->attributes->set(self::COUNTRY_ATTRIBUTE, $detected);
+
+        return $detected;
+    }
+
+    /**
+     * @return array{0: ?string, 1: ?string}
+     */
+    private function lookupCountry(Request $request): array
     {
         // En-têtes Cloudflare pris en compte uniquement derrière un proxy de confiance.
         if ($request->isFromTrustedProxy()) {

@@ -16,12 +16,15 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Intl\RecipientLocale;
 
 final readonly class EmailVerificationService
 {
     public function __construct(
         private MailerInterface $mailer,
         private EntityManagerInterface $em,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -50,7 +53,8 @@ final readonly class EmailVerificationService
         $email = (new TemplatedEmail())
             ->from('support@boolts.com')
             ->to((string) $user->getEmail())
-            ->subject('Votre code de connexion Boolts')
+            ->subject($this->translator->trans('email.login_code.subject', [], null, RecipientLocale::for($user)))
+            ->locale(RecipientLocale::for($user))
             ->htmlTemplate('email/authentification/opt/opt.html.twig')
             ->context([
                 'user' => $user,

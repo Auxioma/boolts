@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -28,7 +29,7 @@ export default class extends Controller {
         this.selectedPaymentMethodId = this.defaultPaymentMethodIdValue || null;
         this.subscribeButtonLabel = this.hasSubscribeButtonTarget
             ? this.subscribeButtonTarget.textContent.trim()
-            : 'S’abonner';
+            : t('js.payment.subscribe');
         this.redirectTimeout = null;
     }
 
@@ -110,7 +111,7 @@ export default class extends Controller {
 
         if (!selectedMethod) {
             this.showMessage(
-                'Veuillez sélectionner une carte bancaire.',
+                t('js.payment.select_card'),
                 true
             );
             return;
@@ -159,7 +160,7 @@ export default class extends Controller {
             || paymentMethodId < 1
         ) {
             this.showMessage(
-                'Veuillez ajouter ou sélectionner une carte bancaire.',
+                t('js.payment.add_or_select_card'),
                 true
             );
             return;
@@ -187,7 +188,7 @@ export default class extends Controller {
 
             if (!response.ok || data.success !== true) {
                 throw new Error(
-                    data.message || 'Le paiement n’a pas pu être effectué.'
+                    data.message || t('js.payment.failed')
                 );
             }
 
@@ -201,7 +202,7 @@ export default class extends Controller {
             this.showMessage(
                 error instanceof Error
                     ? error.message
-                    : 'Le paiement n’a pas pu être effectué.',
+                    : t('js.payment.failed'),
                 true
             );
             this.setLoading(false);
@@ -215,7 +216,7 @@ export default class extends Controller {
             return JSON.parse(rawResponse);
         } catch {
             throw new Error(
-                `Le serveur a retourné une réponse non JSON (${response.status}).`
+                t('js.error.non_json', { status: response.status })
             );
         }
     }

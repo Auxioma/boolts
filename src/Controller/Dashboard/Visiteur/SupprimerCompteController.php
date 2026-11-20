@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * Suppression définitive du compte visiteur (onglet « Connexion et sécurité »).
@@ -29,6 +30,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class SupprimerCompteController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route('/dashboard/visiteur/compte/supprimer', name: 'app_dashboard_visiteur_compte_supprimer', methods: ['POST'])]
     public function __invoke(
         Request $request,
@@ -42,7 +45,7 @@ final class SupprimerCompteController extends AbstractController
         }
 
         if (!$this->isCsrfTokenValid('visiteur_delete_account', (string) $request->request->get('_token'))) {
-            $this->addFlash('error', 'Un problème est survenu. Réessayez.');
+            $this->addFlash('error', $this->t('common.error.retry'));
 
             return $this->redirectToRoute('app_dashboard_visiteur_parametres', ['_fragment' => 'cat2']);
         }

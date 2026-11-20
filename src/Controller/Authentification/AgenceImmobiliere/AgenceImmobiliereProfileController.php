@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Authentification / AgenceImmobiliere / AgenceImmobiliereProfileController.
@@ -32,6 +33,8 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class AgenceImmobiliereProfileController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the __construct controller action.
      */
@@ -88,7 +91,7 @@ final class AgenceImmobiliereProfileController extends AbstractController
             $email = (new TemplatedEmail())
                 ->from('support@boolts.com')
                 ->to((string) $user->getEmail())
-                ->subject('Votre code de connexion Boolts')
+                ->subject($this->t('email.login_code.subject'))
                 ->htmlTemplate('email/authentification/confirmation_inscription/agence_immobiliere.html.twig')
                 ->context([
                     'user' => $user,

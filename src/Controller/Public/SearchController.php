@@ -19,6 +19,7 @@ use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\Filter\ModalFilterType;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\PropertyRepository;
+use App\Routing\PublicRoute;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,6 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Public / SearchController.
@@ -37,6 +39,8 @@ use Symfony\Component\Uid\Uuid;
  */
 final class SearchController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the __construct controller action.
      */
@@ -54,11 +58,9 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/public/search',
-            'fr' => '/fr/public/search',
-        ],
+        path: PublicRoute::PREFIX.'/public/search',
         name: 'app_public_search',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['POST']
     )]
     /**
@@ -90,7 +92,7 @@ final class SearchController extends AbstractController
         if (null === $transactionType || null === $pays) {
             $this->addFlash(
                 'warning',
-                'Veuillez sélectionner un type de transaction et un pays.'
+                $this->t('search.flash.select_type_country')
             );
 
             return $this->redirectToRoute('app_home');
@@ -206,12 +208,9 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/public/search/{searchToken}',
-            'fr' => '/fr/public/search/{searchToken}',
-        ],
+        path: PublicRoute::PREFIX.'/public/search/{searchToken}',
         name: 'app_public_search_results',
-        requirements: ['searchToken' => '[0-9a-f]{32}'],
+        requirements: [...PublicRoute::REQUIREMENTS, 'searchToken' => '[0-9a-f]{32}'],
         methods: ['GET']
     )]
     /**
@@ -418,11 +417,9 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/public/search/resume',
-            'fr' => '/fr/public/search/resume',
-        ],
+        path: PublicRoute::PREFIX.'/public/search/resume',
         name: 'app_public_search_resume',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     /**
@@ -521,11 +518,9 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/public/search/forget',
-            'fr' => '/fr/public/search/forget',
-        ],
+        path: PublicRoute::PREFIX.'/public/search/forget',
         name: 'app_public_search_forget',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     /**
@@ -549,12 +544,9 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/public/search/{searchToken}/map-bounds',
-            'fr' => '/fr/public/search/{searchToken}/map-bounds',
-        ],
+        path: PublicRoute::PREFIX.'/public/search/{searchToken}/map-bounds',
         name: 'app_public_search_map_bounds',
-        requirements: ['searchToken' => '[0-9a-f]{32}'],
+        requirements: [...PublicRoute::REQUIREMENTS, 'searchToken' => '[0-9a-f]{32}'],
         methods: ['GET']
     )]
     /**
@@ -573,10 +565,7 @@ final class SearchController extends AbstractController
                 [
                     'success' => false,
 
-                    'message' => \sprintf(
-                        '%s',
-                        'Cette recherche est introuvable ou expirée.'
-                    ),
+                    'message' => $this->t('search.error.not_found'),
                 ],
                 Response::HTTP_NOT_FOUND
             );
@@ -591,10 +580,7 @@ final class SearchController extends AbstractController
                 [
                     'success' => false,
 
-                    'message' => \sprintf(
-                        '%s',
-                        'Coordonnées de carte invalides.'
-                    ),
+                    'message' => $this->t('search.error.invalid_bounds'),
                 ],
                 Response::HTTP_BAD_REQUEST
             );

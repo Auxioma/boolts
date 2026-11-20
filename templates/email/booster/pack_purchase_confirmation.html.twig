@@ -6,23 +6,23 @@
 #}
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmation de votre achat — Pack boost {{ packName }}</title>
+    <title>{{ 'email.booster.subject'|trans({'%name%': packName}) }}</title>
 </head>
 <body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
-    <h1>Votre achat est confirmé</h1>
+    <h1>{{ 'email.booster.title'|trans }}</h1>
 
-    <p>Bonjour {{ agencyName|default('') }},</p>
+    <p>{{ 'email.common.hello_name'|trans({'%name%': agencyName|default('')}) }}</p>
 
     <p>
-        Nous vous confirmons l’achat du <strong>pack boost {{ packName }}</strong>.
+        {{ 'email.booster.intro'|trans({'%name%': packName|e})|raw }}
         {% if boostQuantity == 1 %}
-            <strong>1 crédit Boost</strong> vient d’être ajouté à votre compte.
+            {{ 'email.booster.added.one'|trans|raw }}
         {% else %}
-            <strong>{{ boostQuantity }} crédits Boost</strong> viennent d’être ajoutés à votre compte.
+            {{ 'email.booster.added.other'|trans({'%count%': boostQuantity})|raw }}
         {% endif %}
     </p>
 
@@ -32,52 +32,46 @@
 
     <table role="presentation" cellpadding="6" cellspacing="0" border="0">
         <tr>
-            <td><strong>Pack</strong></td>
+            <td><strong>{{ 'email.booster.label.pack'|trans }}</strong></td>
             <td>{{ packName }}</td>
         </tr>
         <tr>
-            <td><strong>Crédits Boost ajoutés</strong></td>
+            <td><strong>{{ 'email.booster.label.credits'|trans }}</strong></td>
             <td>{{ boostQuantity }}</td>
         </tr>
         <tr>
-            <td><strong>Durée de mise en avant par boost</strong></td>
-            <td>{{ boostDurationDays }} jour{{ boostDurationDays > 1 ? 's' : '' }}</td>
+            <td><strong>{{ 'email.booster.label.duration'|trans }}</strong></td>
+            <td>{{ (boostDurationDays > 1 ? 'email.booster.days.other' : 'email.booster.days.one')|trans({'%count%': boostDurationDays}) }}</td>
         </tr>
         <tr>
-            <td><strong>Montant réglé</strong></td>
+            <td><strong>{{ 'email.booster.label.amount'|trans }}</strong></td>
             <td>{{ amountMinor|minor_amount(currencyName) }} {{ currencySign }}</td>
         </tr>
         <tr>
-            <td><strong>Référence de paiement</strong></td>
+            <td><strong>{{ 'email.booster.label.reference'|trans }}</strong></td>
             <td>{{ paymentReference }}</td>
         </tr>
         <tr>
-            <td><strong>Date d’achat</strong></td>
+            <td><strong>{{ 'email.booster.label.date'|trans }}</strong></td>
             <td>{{ purchasedAt|date('d/m/Y') }}</td>
         </tr>
         {% if creditsExpireAt is not null %}
         <tr>
-            <td><strong>Crédits valables jusqu’au</strong></td>
+            <td><strong>{{ 'email.booster.label.expires'|trans }}</strong></td>
             <td>{{ creditsExpireAt|date('d/m/Y') }}</td>
         </tr>
         {% endif %}
     </table>
 
     <p>
-        {% if boostQuantity == 1 %}
-            Vous pouvez dès à présent utiliser ce crédit pour booster une annonce
-        {% else %}
-            Vous pouvez dès à présent utiliser ces crédits pour booster vos annonces
-        {% endif %}
-        depuis votre espace Mes biens :
-        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+        {{ (boostQuantity == 1 ? 'email.booster.use.one' : 'email.booster.use.other')|trans }}
+        <a href="{{ mesBiensUrl }}">{{ 'email.property.view_listings'|trans }}</a>
     </p>
 
     <p>
-        Retrouvez le détail de vos achats et de votre solde de crédits Boost dans
-        vos options : <a href="{{ optionsUrl }}">Mes options</a>
+        {{ 'email.booster.options'|trans }} <a href="{{ optionsUrl }}">{{ 'email.booster.options_link'|trans }}</a>
     </p>
 
-    <p>À bientôt,<br>L’équipe Boolts</p>
+    <p>{{ 'email.common.signature'|trans|raw }}</p>
 </body>
 </html>

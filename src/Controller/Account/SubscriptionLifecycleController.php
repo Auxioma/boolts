@@ -26,6 +26,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Controller\Traits\TranslatesMessages;
 
 #[Route(
     path: [
@@ -37,6 +38,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[IsGranted('ROLE_AGENCE')]
 final class SubscriptionLifecycleController extends AbstractController
 {
+    use TranslatesMessages;
+
     public function __construct(
         private readonly SubscriptionCancellationService $cancellationService,
         private readonly SubscriptionPlanChangeService $planChangeService,
@@ -63,7 +66,7 @@ final class SubscriptionLifecycleController extends AbstractController
         } catch (\Throwable $exception) {
             $this->logger->error('[SUBSCRIPTION] Unable to schedule cancellation from customer area.', [
                 'agency' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
-                'message' => $exception->getMessage(),
+                'message' => $this->t($exception->getMessage()),
             ]);
 
             $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.cancel_error'));
@@ -87,7 +90,7 @@ final class SubscriptionLifecycleController extends AbstractController
         } catch (\Throwable $exception) {
             $this->logger->error('[SUBSCRIPTION] Unable to reactivate subscription from customer area.', [
                 'agency' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
-                'message' => $exception->getMessage(),
+                'message' => $this->t($exception->getMessage()),
             ]);
 
             $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.reactivate_error'));
@@ -119,7 +122,7 @@ final class SubscriptionLifecycleController extends AbstractController
         } catch (\Throwable $exception) {
             $this->logger->error('[SUBSCRIPTION] Unable to cancel scheduled plan change from customer area.', [
                 'agency' => $this->getUser() instanceof User ? $this->getUser()->getId() : null,
-                'message' => $exception->getMessage(),
+                'message' => $this->t($exception->getMessage()),
             ]);
 
             $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.cancel_plan_change_error'));
@@ -150,7 +153,7 @@ final class SubscriptionLifecycleController extends AbstractController
             $this->logger->error('[SUBSCRIPTION] Unable to create Stripe Customer Portal session.', [
                 'agency' => $agency->getId(),
                 'stripe_customer' => $stripeCustomerId,
-                'message' => $exception->getMessage(),
+                'message' => $this->t($exception->getMessage()),
             ]);
 
             $this->addFlash('subscription_error', $this->translator->trans('agency_options.flash.customer_portal_error'));

@@ -20,6 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Authentification / Visiteurs / VisiteurRegisterController.
@@ -28,6 +29,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class VisiteurRegisterController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the index controller action.
      */
@@ -52,7 +55,7 @@ final class VisiteurRegisterController extends AbstractController
             $user = $userRepository->findOneBy(['email' => $email]);
 
             if ($user instanceof User) {
-                $this->addFlash('warning', 'Un compte existe déjà avec cette adresse. Connectez vous ici');
+                $this->addFlash('warning', $this->t('auth.flash.account_exists'));
 
                 return $this->redirectToRoute('app_visiteur_inscription');
             }

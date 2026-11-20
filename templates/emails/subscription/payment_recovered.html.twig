@@ -1,5 +1,11 @@
-<p>Bonjour,</p>
+<p>{{ 'email.common.hello'|trans }}</p>
 
-<p>Votre paiement a bien été régularisé.</p>
+<p>{{ 'email.subscription.payment_recovered.text'|trans }}</p>
 
-<p>Votre abonnement est de nouveau actif{% if current_period_end is defined and current_period_end %} jusqu'au {{ current_period_end|date('d/m/Y') }}{% endif %}.</p>
+<p>
+    {%- if current_period_end is defined and current_period_end -%}
+        {{ 'email.subscription.payment_recovered.active_until'|trans({'%date%': current_period_end|date('d/m/Y')}) }}
+    {%- else -%}
+        {{ 'email.subscription.payment_recovered.active'|trans }}
+    {%- endif -%}
+</p>

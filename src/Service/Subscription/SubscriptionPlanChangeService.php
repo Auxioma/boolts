@@ -51,27 +51,27 @@ final readonly class SubscriptionPlanChangeService
         $currentPlanPrice = $subscription->getPlanPrice();
 
         if (!$currentPlanPrice instanceof SubscriptionPlanPrice) {
-            throw new PlanChangeException('Le tarif de l’abonnement actuel est introuvable.');
+            throw new PlanChangeException('billing.plan_change.current_price_not_found');
         }
 
         if (!\in_array($subscription->getStatus(), [SubscriptionStatus::ACTIVE, SubscriptionStatus::CANCEL_SCHEDULED], true)) {
-            throw new PlanChangeException('L’abonnement actuel doit être actif pour programmer un changement de forfait.');
+            throw new PlanChangeException('billing.plan_change.must_be_active');
         }
 
         if ($subscription->getCancelAtPeriodEnd()) {
-            throw new PlanChangeException('Une résiliation est déjà programmée ; annulez-la avant de changer de forfait.');
+            throw new PlanChangeException('billing.plan_change.cancel_scheduled');
         }
 
         if ($targetPlanPrice->getPlan()->isIsFree() || $targetPlanPrice->getAmountMinor() <= 0) {
-            throw new PlanChangeException('Utilisez la résiliation pour repasser sur l’offre gratuite.');
+            throw new PlanChangeException('billing.plan_change.use_cancellation');
         }
 
         if ($currentPlanPrice->getCurrency() !== $targetPlanPrice->getCurrency()) {
-            throw new PlanChangeException('La devise du nouveau forfait doit être identique.');
+            throw new PlanChangeException('billing.plan_change.same_currency');
         }
 
         if ($targetPlanPrice->getAmountMinor() >= $currentPlanPrice->getAmountMinor()) {
-            throw new PlanChangeException('Le passage à un forfait de montant supérieur ou égal est immédiat, pas différé.');
+            throw new PlanChangeException('billing.plan_change.upgrade_immediate');
         }
 
         if ($subscription->getPendingPlanPrice()?->getId() === $targetPlanPrice->getId()) {
@@ -81,7 +81,7 @@ final readonly class SubscriptionPlanChangeService
         $effectiveAt = $subscription->getCurrentPeriodEnd();
 
         if (!$effectiveAt instanceof \DateTimeImmutable) {
-            throw new PlanChangeException('La date de fin de période de l’abonnement est inconnue.');
+            throw new PlanChangeException('billing.plan_change.period_end_unknown');
         }
 
         return $this->entityManager->wrapInTransaction(function () use (
@@ -142,7 +142,7 @@ final readonly class SubscriptionPlanChangeService
     public function cancelScheduledDowngrade(AgencySubscription $subscription): AgencySubscription
     {
         if (!$subscription->hasPendingPlanChange()) {
-            throw new PlanChangeException('Aucun changement de forfait n’est programmé.');
+            throw new PlanChangeException('billing.plan_change.none_scheduled');
         }
 
         return $this->entityManager->wrapInTransaction(function () use ($subscription): AgencySubscription {

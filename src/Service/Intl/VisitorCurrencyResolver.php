@@ -18,11 +18,13 @@ use App\Service\IpLocationService;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Devise locale du visiteur, déduite de son adresse IP (ip-api.com via IpLocationService,
- * mis en cache 24 h par IP). Résolue une seule fois par requête.
+ * Devise d'affichage du visiteur, résolue une seule fois par requête :
+ *  1. devise du pays de l'URL (/{pays}-{langue}/…, Pays::$devise) ;
+ *  2. sinon devise déduite de l'adresse IP (ip-api.com via IpLocationService,
+ *     mis en cache 24 h par IP).
  *
- * Retourne null si l'IP est locale/privée, si l'API ne répond pas ou si la devise
- * n'existe pas dans la table `devise` : les prix restent alors dans la devise du bien.
+ * Retourne null si aucune devise n'est trouvée (IP locale/privée, API muette,
+ * devise absente de la table `devise`) : les prix restent alors dans la devise du bien.
  */
 final class VisitorCurrencyResolver
 {
@@ -34,6 +36,7 @@ final class VisitorCurrencyResolver
         private readonly RequestStack $requestStack,
         private readonly IpLocationService $ipLocationService,
         private readonly DeviseRepository $deviseRepository,
+        private readonly UrlCountryResolver $urlCountryResolver,
     ) {
     }
 
@@ -49,6 +52,12 @@ final class VisitorCurrencyResolver
 
         if (null === $request) {
             return null;
+        }
+
+        $urlDevise = $this->urlCountryResolver->findPays($this->urlCountryResolver->fromRoute($request))?->getDevise();
+
+        if (null !== $urlDevise) {
+            return $this->devise = $urlDevise;
         }
 
         $ip = $request->headers->get('cf-connecting-ip') ?: $request->getClientIp();

@@ -8,6 +8,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.languages: ['fr', 'en']
+    # Pays des URLs publiques (/{pays}-{langue}/…) quand celui du visiteur est inconnu.
+    app.default_country: 'fr'
     app.2fa.from_email: 'noreply@boolts.com'
     app.2fa.from_name: 'Boolts'
     stripe.secret_key: '%env(STRIPE_SECRET_KEY)%'

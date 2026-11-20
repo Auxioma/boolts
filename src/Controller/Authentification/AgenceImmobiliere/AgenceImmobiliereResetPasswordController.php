@@ -30,6 +30,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
+use App\Controller\Traits\TranslatesMessages;
 
 #[Route(
     path: [
@@ -44,6 +45,8 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
  */
 class AgenceImmobiliereResetPasswordController extends AbstractController
 {
+    use TranslatesMessages;
+
     use ResetPasswordControllerTrait;
 
     /**
@@ -77,7 +80,7 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
 
             /* si le mail est pas présent, je met un message flash et reirection sur la meme page */
             if (!$verifivationMail) {
-                $this->addFlash('error', 'Aucun compte trouvé avec cette adresse e-mail.');
+                $this->addFlash('error', $this->t('auth.flash.no_account'));
 
                 return $this->redirectToRoute('app_forgot_password_request');
             }
@@ -220,7 +223,7 @@ class AgenceImmobiliereResetPasswordController extends AbstractController
         $email = (new TemplatedEmail())
             ->from(new Address('support@boolts.com', 'Boolts'))
             ->to((string) $user->getEmail())
-            ->subject('Your password reset request')
+            ->subject($translator->trans('email.password_reset.subject'))
             ->htmlTemplate('email/authentification/forgot_password/password_reset_agence_immobiliere.html.twig')
             ->context([
                 'resetToken' => $resetToken,

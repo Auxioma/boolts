@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 #[Route(
     path: [
@@ -43,6 +44,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class PaymentMethodController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the __construct controller action.
      */
@@ -70,7 +73,7 @@ final class PaymentMethodController extends AbstractController
         )) {
             return $this->json([
                 'success' => false,
-                'message' => 'Jeton CSRF invalide.',
+                'message' => $this->t('api.error.invalid_csrf'),
             ], 403);
         }
 
@@ -79,7 +82,7 @@ final class PaymentMethodController extends AbstractController
         if (!$user instanceof User) {
             return $this->json([
                 'success' => false,
-                'message' => 'Utilisateur non authentifié.',
+                'message' => $this->t('api.error.unauthenticated'),
             ], 401);
         }
 
@@ -147,7 +150,7 @@ final class PaymentMethodController extends AbstractController
         )) {
             return $this->json([
                 'success' => false,
-                'message' => 'Jeton CSRF invalide.',
+                'message' => $this->t('api.error.invalid_csrf'),
             ], 403);
         }
 
@@ -156,7 +159,7 @@ final class PaymentMethodController extends AbstractController
         if (!$user instanceof User) {
             return $this->json([
                 'success' => false,
-                'message' => 'Utilisateur non authentifié.',
+                'message' => $this->t('api.error.unauthenticated'),
             ], 401);
         }
 
@@ -165,7 +168,7 @@ final class PaymentMethodController extends AbstractController
         } catch (\Throwable) {
             return $this->json([
                 'success' => false,
-                'message' => 'Requête JSON invalide.',
+                'message' => $this->t('api.error.invalid_json'),
             ], 400);
         }
 
@@ -181,7 +184,7 @@ final class PaymentMethodController extends AbstractController
         ) {
             return $this->json([
                 'success' => false,
-                'message' => 'SetupIntent invalide.',
+                'message' => $this->t('billing.payment_method.invalid_setup_intent'),
             ], 400);
         }
 
@@ -190,7 +193,7 @@ final class PaymentMethodController extends AbstractController
         if (!$billingProfile instanceof AgencyBillingProfile) {
             return $this->json([
                 'success' => false,
-                'message' => 'Profil de facturation introuvable.',
+                'message' => $this->t('billing.payment_method.profile_not_found'),
             ], 404);
         }
 
@@ -203,10 +206,7 @@ final class PaymentMethodController extends AbstractController
             if (SetupIntent::STATUS_SUCCEEDED !== $setupIntent->status) {
                 return $this->json([
                     'success' => false,
-                    'message' => \sprintf(
-                        'La carte n’est pas validée. Statut Stripe : %s.',
-                        $setupIntent->status
-                    ),
+                    'message' => $this->t('billing.payment_method.not_validated', ['%status%' => $setupIntent->status]),
                 ], 400);
             }
 
@@ -220,7 +220,7 @@ final class PaymentMethodController extends AbstractController
             ) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Ce SetupIntent ne vous appartient pas.',
+                    'message' => $this->t('billing.payment_method.setup_intent_not_owned'),
                 ], 403);
             }
 
@@ -235,7 +235,7 @@ final class PaymentMethodController extends AbstractController
             if (!$paymentMethod instanceof PaymentMethod) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Moyen de paiement Stripe introuvable.',
+                    'message' => $this->t('billing.payment_method.stripe_not_found'),
                 ], 404);
             }
 
@@ -245,7 +245,7 @@ final class PaymentMethodController extends AbstractController
             ) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Le moyen de paiement obtenu n’est pas une carte.',
+                    'message' => $this->t('billing.payment_method.not_a_card'),
                 ], 400);
             }
 
@@ -254,7 +254,7 @@ final class PaymentMethodController extends AbstractController
             if (!\is_string($fingerprint) || '' === $fingerprint) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Stripe n’a retourné aucune empreinte.',
+                    'message' => $this->t('billing.payment_method.no_fingerprint'),
                 ], 400);
             }
 
@@ -272,7 +272,7 @@ final class PaymentMethodController extends AbstractController
                 return $this->json([
                     'success' => true,
                     'duplicate' => true,
-                    'message' => 'Cette carte est déjà enregistrée.',
+                    'message' => $this->t('billing.payment_method.already_saved'),
                     'paymentMethod' => $this->serializePaymentMethod($existing),
                 ]);
             }
@@ -286,10 +286,7 @@ final class PaymentMethodController extends AbstractController
                 return $this->json([
                     'success' => false,
                     'duplicate' => true,
-                    'message' => \sprintf(
-                        'Cette carte est déjà enregistrée et se termine par %s.',
-                        $sameCard->getLast4()
-                    ),
+                    'message' => $this->t('billing.payment_method.already_saved_last4', ['%last4%' => $sameCard->getLast4()]),
                 ], 409);
             }
 
@@ -337,7 +334,7 @@ final class PaymentMethodController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Le moyen de paiement a bien été enregistré.',
+                'message' => $this->t('billing.payment_method.saved'),
                 'paymentMethod' => $this->serializePaymentMethod(
                     $agencyPaymentMethod
                 ),
@@ -387,7 +384,7 @@ final class PaymentMethodController extends AbstractController
         )) {
             return $this->json([
                 'success' => false,
-                'message' => 'Jeton CSRF invalide.',
+                'message' => $this->t('api.error.invalid_csrf'),
             ], 403);
         }
 
@@ -396,7 +393,7 @@ final class PaymentMethodController extends AbstractController
         if (!$user instanceof User) {
             return $this->json([
                 'success' => false,
-                'message' => 'Utilisateur non authentifié.',
+                'message' => $this->t('api.error.unauthenticated'),
             ], 401);
         }
 
@@ -405,7 +402,7 @@ final class PaymentMethodController extends AbstractController
         if (!$billingProfile instanceof AgencyBillingProfile) {
             return $this->json([
                 'success' => false,
-                'message' => 'Profil de facturation introuvable.',
+                'message' => $this->t('billing.payment_method.profile_not_found'),
             ], 404);
         }
 
@@ -417,14 +414,14 @@ final class PaymentMethodController extends AbstractController
         ) {
             return $this->json([
                 'success' => false,
-                'message' => 'Moyen de paiement introuvable.',
+                'message' => $this->t('billing.payment_method.not_found'),
             ], 404);
         }
 
         if (!$paymentMethod->isActive()) {
             return $this->json([
                 'success' => true,
-                'message' => 'Cette carte est déjà supprimée.',
+                'message' => $this->t('billing.payment_method.already_deleted'),
             ]);
         }
 
@@ -466,7 +463,7 @@ final class PaymentMethodController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Le moyen de paiement a bien été supprimé.',
+                'message' => $this->t('billing.payment_method.deleted'),
             ]);
         } catch (ApiErrorException $exception) {
             $this->logger->error('Erreur Stripe pendant la suppression du moyen de paiement.', [

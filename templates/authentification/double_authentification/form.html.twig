@@ -6,10 +6,10 @@
 #}
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
     <meta charset="UTF-8">
-    <title>Two Step Verification</title>
+    <title>{{ 'auth.two_factor.meta.title'|trans }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Google Font -->
@@ -157,7 +157,7 @@
 <div class="container">
 
     <div class="image-wapper">
-        <h1>Welcome Back</h1>
+        <h1>{{ 'auth.two_factor.welcome'|trans }}</h1>
     </div>
 
     <div class="form-wapper">
@@ -166,7 +166,7 @@
             <h2>{{ 'auth_code'|trans({}, 'SchebTwoFactorBundle') }}
                     {{ twoFactorProvider }}</h2>
             <p>
-                Please confirm access to your account by entering one of your emergency recovery codes.
+                {{ 'auth.two_factor.intro'|trans }}
             </p>
             <p>
                 <p class="text-danger">{{ authenticationError|trans(authenticationErrorData|default({}), 'SchebTwoFactorBundle') }}</p>
@@ -184,7 +184,7 @@
                 {% endfor %}
 
                 <div class="input-wrapper">
-                    <label for="code">Recovery Code</label>
+                    <label for="code">{{ 'auth.two_factor.recovery_code'|trans }}</label>
                     <input id="_auth_code" name="{{ authCodeParameterName }}" type="text" inputmode="numeric" pattern="\d*" autocomplete="one-time-code" required>
                 </div>
 
@@ -205,7 +205,7 @@
 
         <div class="form-footer">
             <p>
-                <a href="./auth-2fa-code.html">Use an authentication code</a>
+                <a href="./auth-2fa-code.html">{{ 'auth.two_factor.use_auth_code'|trans }}</a>
             </p>
         </div>
 

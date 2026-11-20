@@ -24,13 +24,13 @@ final class AuthEmailType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('email', EmailType::class, [
-            'label' => 'Adresse email',
+            'label' => 'form.email.label',
             'constraints' => [
-                new NotBlank(message: 'Veuillez saisir votre adresse email.'),
-                new Email(message: 'Adresse mail incorrecte.'),
+                new NotBlank(message: 'form.email.not_blank'),
+                new Email(message: 'form.email.invalid'),
             ],
             'attr' => [
-                'placeholder' => 'Veuillez entrer votre adresse e-mail',
+                'placeholder' => 'form.email.placeholder',
             ],
         ]);
     }

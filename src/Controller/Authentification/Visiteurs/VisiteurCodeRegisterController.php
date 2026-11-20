@@ -21,6 +21,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Authentification / Visiteurs / VisiteurCodeRegisterController.
@@ -29,6 +30,8 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class VisiteurCodeRegisterController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
         path: [
             'fr' => '/fr/signup/verify',
@@ -53,7 +56,7 @@ final class VisiteurCodeRegisterController extends AbstractController
 
         if ($codeForm->isSubmitted() && $codeForm->isValid()) {
             if (!$authUserId) {
-                $this->addFlash('danger', 'Session expirée. Veuillez recommencer.');
+                $this->addFlash('danger', $this->t('auth.flash.session_expired'));
 
                 return $this->redirectToRoute('app_visiteur_verification_code');
             }
@@ -64,13 +67,13 @@ final class VisiteurCodeRegisterController extends AbstractController
                 $session->remove('auth_user_id');
                 $session->remove('auth_step');
 
-                $this->addFlash('danger', 'Utilisateur introuvable.');
+                $this->addFlash('danger', $this->t('auth.flash.user_not_found'));
 
                 return $this->redirectToRoute('app_auth');
             }
 
             if ($user->getFailedVerificationAttempts() >= 5) {
-                $this->addFlash('danger', 'Trop de tentatives. Veuillez demander un nouveau code.');
+                $this->addFlash('danger', $this->t('auth.flash.too_many_attempts'));
 
                 return $this->redirectToRoute('app_visiteur_verification_code');
             }
@@ -85,9 +88,9 @@ final class VisiteurCodeRegisterController extends AbstractController
                     null !== $user->getEmailAuthCodeExpiresAt()
                     && $user->getEmailAuthCodeExpiresAt() < new \DateTimeImmutable()
                 ) {
-                    $this->addFlash('danger', 'Le code a expiré. Demandez un nouveau code.');
+                    $this->addFlash('danger', $this->t('auth.flash.code_expired'));
                 } else {
-                    $this->addFlash('danger', 'Le code saisi est invalide.');
+                    $this->addFlash('danger', $this->t('auth.flash.code_invalid'));
                 }
 
                 return $this->redirectToRoute('app_visiteur_verification_code');

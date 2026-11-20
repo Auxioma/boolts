@@ -47,6 +47,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 #[Route(
     path: [
@@ -62,6 +63,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class SubscriptionController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the __construct controller action.
      */
@@ -86,26 +89,26 @@ final class SubscriptionController extends AbstractController
     public function create(Request $request): JsonResponse
     {
         if (!$this->isCsrfTokenValid('agency_subscription', (string) $request->headers->get('X-CSRF-TOKEN'))) {
-            return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], 403);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.invalid_csrf')], 403);
         }
 
         $agency = $this->getUser();
 
         if (!$agency instanceof User) {
-            return $this->json(['success' => false, 'message' => 'Utilisateur non authentifié.'], 401);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.unauthenticated')], 401);
         }
 
         try {
             $payload = $request->toArray();
         } catch (\Throwable) {
-            return $this->json(['success' => false, 'message' => 'Requête JSON invalide.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.invalid_json')], 400);
         }
 
         $planPriceId = filter_var($payload['planPriceId'] ?? null, \FILTER_VALIDATE_INT);
         $paymentMethodId = filter_var($payload['paymentMethodId'] ?? null, \FILTER_VALIDATE_INT);
 
         if (false === $planPriceId || null === $planPriceId || $planPriceId < 1) {
-            return $this->json(['success' => false, 'message' => 'Forfait invalide.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.invalid_plan')], 400);
         }
 
         $planPrice = $this->entityManager->getRepository(SubscriptionPlanPrice::class)->find($planPriceId);
@@ -116,17 +119,17 @@ final class SubscriptionController extends AbstractController
 
         // Le prix doit être dans la devise de l'agence (celle affichée sur la page des forfaits).
         if ($planPrice->getCurrency() !== $this->currencyResolver->resolve($agency)) {
-            return $this->json(['success' => false, 'message' => 'Ce forfait n’est pas proposé dans votre devise.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.currency_unavailable')], 400);
         }
 
         if ($planPrice->getAmountMinor() <= 0) {
-            return $this->json(['success' => false, 'message' => 'Ce forfait gratuit ne nécessite pas de paiement Stripe.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.free_plan')], 400);
         }
 
         $billingProfile = $agency->getBillingProfile();
 
         if (null === $billingProfile || !str_starts_with((string) $billingProfile->getStripeCustomerId(), 'cus_')) {
-            return $this->json(['success' => false, 'message' => 'Profil de facturation ou client Stripe introuvable.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.profile_not_found')], 409);
         }
 
         $paymentMethod = false !== $paymentMethodId && null !== $paymentMethodId && $paymentMethodId > 0
@@ -134,7 +137,7 @@ final class SubscriptionController extends AbstractController
             : $billingProfile->getDefaultPaymentMethod();
 
         if (!$paymentMethod instanceof AgencyPaymentMethod || $paymentMethod->getBillingProfile() !== $billingProfile || !$paymentMethod->isActive() || PaymentMethodSetupStatus::SUCCEEDED !== $paymentMethod->getSetupStatus()) {
-            return $this->json(['success' => false, 'message' => 'Aucune carte bancaire valide n’est disponible pour cet achat.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.no_card')], 409);
         }
 
         $existingSubscription = $this->agencySubscriptionRepository->findOneActivePaidForAgency($agency);
@@ -160,7 +163,7 @@ final class SubscriptionController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Votre abonnement est actif.',
+                'message' => $this->t('billing.subscription.active'),
                 'subscriptionId' => $stripeSubscription->id,
                 'status' => $stripeSubscription->status,
             ], 201);
@@ -180,7 +183,7 @@ final class SubscriptionController extends AbstractController
                 'subscription_plan_price_id' => $planPrice->getId(),
             ]);
 
-            return $this->json(['success' => false, 'message' => 'Impossible de créer l’abonnement.'], 500);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.create_error')], 500);
         }
     }
 
@@ -198,11 +201,11 @@ final class SubscriptionController extends AbstractController
         $currentPlanPrice = $subscription->getPlanPrice();
 
         if (!$currentPlanPrice instanceof SubscriptionPlanPrice) {
-            return $this->json(['success' => false, 'message' => 'Le prix de l’abonnement actuel est introuvable.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.current_price_not_found')], 409);
         }
 
         if ($planPrice->getId() === $currentPlanPrice->getId()) {
-            return $this->json(['success' => false, 'message' => 'C’est déjà votre forfait actuel.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.already_current')], 409);
         }
 
         if ($planPrice->getAmountMinor() < $currentPlanPrice->getAmountMinor()) {
@@ -226,7 +229,7 @@ final class SubscriptionController extends AbstractController
         try {
             $updated = $this->planChangeService->scheduleDowngrade($subscription, $planPrice, $paymentMethod);
         } catch (PlanChangeException $exception) {
-            return $this->json(['success' => false, 'message' => $exception->getMessage()], 409);
+            return $this->json(['success' => false, 'message' => $this->t($exception->getMessage())], 409);
         } catch (ApiErrorException $exception) {
             $this->logger->error('Erreur Stripe pendant la programmation du changement de forfait.', [
                 'message' => $exception->getMessage(),
@@ -243,7 +246,7 @@ final class SubscriptionController extends AbstractController
                 'subscription_plan_price_id' => $planPrice->getId(),
             ]);
 
-            return $this->json(['success' => false, 'message' => 'Impossible de programmer le changement de forfait.'], 500);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.schedule_error')], 500);
         }
 
         $effectiveAt = $updated->getPendingPlanChangeEffectiveAt();
@@ -283,11 +286,10 @@ final class SubscriptionController extends AbstractController
             'success' => true,
             'scheduled' => true,
             'effectiveAt' => $effectiveAt?->format(\DATE_ATOM),
-            'message' => \sprintf(
-                'Votre passage au forfait %s sera effectif le %s. Aucun paiement aujourd’hui : il sera prélevé à cette date lors du renouvellement.',
-                $planPrice->getPlan()->getName(),
-                $effectiveAt?->format('d/m/Y') ?? 'à la fin de votre période en cours',
-            ),
+            'message' => $this->t('billing.subscription.downgrade_scheduled', [
+                '%plan%' => $planPrice->getPlan()->getName(),
+                '%date%' => $effectiveAt?->format('d/m/Y') ?? $this->t('billing.subscription.end_of_period'),
+            ]),
         ], 200);
     }
 
@@ -638,14 +640,14 @@ final class SubscriptionController extends AbstractController
         if (!\in_array($subscription->getStatus(), [SubscriptionStatus::ACTIVE, SubscriptionStatus::CANCEL_SCHEDULED], true)) {
             return $this->json([
                 'success' => false,
-                'message' => 'L’abonnement actuel doit être actif pour changer de forfait.',
+                'message' => $this->t('billing.subscription.must_be_active'),
             ], 409);
         }
 
         $currentPlanPrice = $subscription->getPlanPrice();
 
         if (!$currentPlanPrice instanceof SubscriptionPlanPrice) {
-            return $this->json(['success' => false, 'message' => 'Le prix de l’abonnement actuel est introuvable.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.current_price_not_found')], 409);
         }
 
         // Capturé avant la synchronisation Stripe qui remplace le forfait porté
@@ -654,13 +656,13 @@ final class SubscriptionController extends AbstractController
         $previousAmountMinor = $currentPlanPrice->getAmountMinor();
 
         if ($currentPlanPrice->getCurrency() !== $planPrice->getCurrency()) {
-            return $this->json(['success' => false, 'message' => 'La devise du nouveau forfait doit être identique.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.same_currency')], 409);
         }
 
         if ($planPrice->getAmountMinor() <= $currentPlanPrice->getAmountMinor()) {
             return $this->json([
                 'success' => false,
-                'message' => 'Vous pouvez uniquement choisir un forfait d’un montant supérieur.',
+                'message' => $this->t('billing.subscription.higher_only'),
             ], 409);
         }
 
@@ -692,7 +694,7 @@ final class SubscriptionController extends AbstractController
 
                 return $this->json([
                     'success' => true,
-                    'message' => 'Votre nouveau forfait est actif.',
+                    'message' => $this->t('billing.subscription.new_plan_active'),
                     'subscriptionId' => $stripeSubscription->id,
                     'status' => $stripeSubscription->status,
                 ]);
@@ -714,7 +716,7 @@ final class SubscriptionController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Votre nouveau forfait est actif.',
+                'message' => $this->t('billing.subscription.new_plan_active'),
                 'subscriptionId' => $stripeSubscription->id,
                 'status' => $stripeSubscription->status,
             ]);
@@ -736,7 +738,7 @@ final class SubscriptionController extends AbstractController
                 'subscription_plan_price_id' => $planPrice->getId(),
             ]);
 
-            return $this->json(['success' => false, 'message' => 'Impossible de changer de forfait.'], 500);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.change_error')], 500);
         }
     }
 }

@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -99,7 +100,7 @@ export default class extends Controller {
             if (!navigator.geolocation) {
                 reject(
                     new Error(
-                        'La géolocalisation n’est pas disponible sur ce navigateur.'
+                        t('js.geo.unsupported')
                     )
                 );
 
@@ -118,7 +119,7 @@ export default class extends Controller {
                         case error.PERMISSION_DENIED:
                             reject(
                                 new Error(
-                                    'Vous avez refusé l’accès à votre position.'
+                                    t('js.geo.denied')
                                 )
                             );
                             break;
@@ -126,7 +127,7 @@ export default class extends Controller {
                         case error.POSITION_UNAVAILABLE:
                             reject(
                                 new Error(
-                                    'Votre position est actuellement indisponible.'
+                                    t('js.geo.unavailable')
                                 )
                             );
                             break;
@@ -134,7 +135,7 @@ export default class extends Controller {
                         case error.TIMEOUT:
                             reject(
                                 new Error(
-                                    'La détection de votre position a expiré.'
+                                    t('js.geo.timeout')
                                 )
                             );
                             break;
@@ -142,7 +143,7 @@ export default class extends Controller {
                         default:
                             reject(
                                 new Error(
-                                    'Impossible de détecter votre position.'
+                                    t('js.geo.error')
                                 )
                             );
                     }
@@ -175,7 +176,7 @@ export default class extends Controller {
 
         if (!response.ok) {
             throw new Error(
-                'Impossible de convertir votre position en ville.'
+                t('js.geo.no_city')
             );
         }
 

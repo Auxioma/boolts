@@ -42,6 +42,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Controller\Traits\TranslatesMessages;
 
 #[Route(
     path: [
@@ -53,6 +54,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereMesBiensController extends AbstractController
 {
+    use TranslatesMessages;
+
     public function __construct(
         private readonly TranslatorInterface $translator,
     ) {
@@ -470,7 +473,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $this->addFlash(
             'mes_biens_pause',
-            'Annonce mise en pause'
+            $this->t('mes_biens.flash.paused')
         );
 
         return $this->redirectToRoute(
@@ -536,23 +539,21 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             if ('agence_immobiliere_mes_biens_list' === $this->boostRedirectRoute($request)) {
                 $this->addFlash(
                     'mes_biens_boost',
-                    'Annonce boostée'
+                    $this->t('mes_biens.flash.boosted')
                 );
             } else {
                 $this->addFlash(
                     'success',
-                    \sprintf(
-                        $wasPaused
-                            ? 'L’annonce a été republiée et boostée jusqu’au %s.'
-                            : 'L’annonce est boostée jusqu’au %s.',
-                        $boost->getEndsAt()->format('d/m/Y')
+                    $this->t(
+                        $wasPaused ? 'mes_biens.flash.republished_boosted' : 'mes_biens.flash.boosted_until',
+                        ['%date%' => $boost->getEndsAt()->format('d/m/Y')]
                     )
                 );
             }
         } catch (BoostException $exception) {
             $this->addFlash(
                 'danger',
-                $exception->getMessage()
+                $this->t($exception->getMessage())
             );
         }
 
@@ -772,7 +773,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $this->addFlash(
             'mes_biens_reactivate',
-            'Annonce réactivée'
+            $this->t('mes_biens.flash.reactivated')
         );
 
         return $this->redirectToRoute(
@@ -817,7 +818,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
 
         $this->addFlash(
             'mes_biens_delete',
-            'Annonce supprimée'
+            $this->t('mes_biens.flash.deleted')
         );
 
         return $this->redirectToRoute(
@@ -860,7 +861,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         if ([] === $propertyIds) {
             $this->addFlash(
                 'warning',
-                'Sélectionnez au moins une annonce.'
+                $this->t('mes_biens.flash.select_one')
             );
 
             return $this->redirectToRoute(
@@ -891,7 +892,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         if ([] === $properties) {
             $this->addFlash(
                 'warning',
-                'Aucune annonce valide sélectionnée.'
+                $this->t('mes_biens.flash.none_valid')
             );
 
             return $this->redirectToRoute(
@@ -909,7 +910,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         if (null === $newStatus) {
             $this->addFlash(
                 'danger',
-                'Action inconnue.'
+                $this->t('mes_biens.flash.unknown_action')
             );
 
             return $this->redirectToRoute(
@@ -936,9 +937,9 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         $isPlural = \count($properties) > 1;
 
         $message = match ($action) {
-            'pause' => $isPlural ? 'Annonces mises en pause' : 'Annonce mise en pause',
-            'reactivate' => $isPlural ? 'Annonces réactivées' : 'Annonce réactivée',
-            'delete' => $isPlural ? 'Annonces supprimées' : 'Annonce supprimée',
+            'pause' => $this->t($isPlural ? 'mes_biens.flash.paused_plural' : 'mes_biens.flash.paused'),
+            'reactivate' => $this->t($isPlural ? 'mes_biens.flash.reactivated_plural' : 'mes_biens.flash.reactivated'),
+            'delete' => $this->t($isPlural ? 'mes_biens.flash.deleted_plural' : 'mes_biens.flash.deleted'),
         };
 
         $this->addFlash(

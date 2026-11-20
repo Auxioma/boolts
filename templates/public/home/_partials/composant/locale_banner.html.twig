@@ -3,35 +3,35 @@
  Role: Bandeau de choix de la langue sous la navbar de la homepage (Figma 7115:24652).
 #}
 
-<section class="home-locale-banner" aria-label="Choix de la langue">
+<section class="home-locale-banner" aria-label="{{ 'home.locale_banner.aria_label'|trans }}">
     <form
         class="home-locale-banner__container"
         data-controller="locale-banner"
         data-action="submit->locale-banner#go"
     >
         <p class="home-locale-banner__text paragraphe">
-            Choisissez un pays ou une région spécifique à votre localisation pour voir les informations de façon pertinente.
+            {{ 'home.locale_banner.text'|trans }}
         </p>
 
         <div class="home-locale-banner__actions">
             <div class="home-locale-banner__select-wrapper">
                 <select
                     class="home-locale-banner__select input"
-                    aria-label="Langue"
+                    aria-label="{{ 'home.locale_banner.select'|trans }}"
                     data-locale-banner-target="select"
                     data-action="change->locale-banner#go"
                 >
                     {# Pays détecté par IP (francophone => fr, anglophone => en), sinon France. #}
                     {% set bannerLocale = bannerCountryLocale|default('fr') %}
                     {% set bannerCountryLabel = bannerCountryFlag|default('') ~ ' ' ~ bannerCountryIsoCode|default('FR')|country_name(bannerLocale) %}
-                    <option value="{{ locale_switch_url(bannerLocale) }}" selected hidden>{{ bannerCountryLabel }}</option>
-                    <option value="/locale/fr?redirect=/fr">🇫🇷 France</option>
-                    <option value="/locale/fr?redirect=/fr">🇲🇦 Maroc</option>
+                    <option value="{{ locale_switch_url(bannerLocale, bannerCountryIsoCode|default('FR')) }}" selected hidden>{{ bannerCountryLabel }}</option>
+                    <option value="{{ locale_switch_url('fr', 'FR') }}">{{ 'home.locale_banner.france'|trans }}</option>
+                    <option value="{{ locale_switch_url('fr', 'MA') }}">{{ 'home.locale_banner.morocco'|trans }}</option>
                 </select>
                 <i class="icon-chevron-down home-locale-banner__chevron" aria-hidden="true"></i>
             </div>
 
-            <button type="submit" class="btn-full-blue home-locale-banner__submit">Continuer</button>
+            <button type="submit" class="btn-full-blue home-locale-banner__submit">{{ 'home.locale_banner.submit'|trans }}</button>
         </div>
     </form>
 </section>

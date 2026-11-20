@@ -6,42 +6,41 @@
 #}
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre annonce a été mise en pause</title>
+    <title>{{ 'email.property.paused.subject'|trans }}</title>
 </head>
 <body style="font-family: Arial, sans-serif; color: #202124; line-height: 1.5;">
-    <h1>Votre annonce est en pause</h1>
+    <h1>{{ 'email.property.paused.title'|trans }}</h1>
 
-    <p>Bonjour {{ agencyName|default('') }},</p>
+    <p>{{ 'email.common.hello_name'|trans({'%name%': agencyName|default('')}) }}</p>
 
     <p>
-        Votre annonce « {{ propertyTitle }} » a été mise en pause. Elle n’est plus visible
-        publiquement sur Boolts tant qu’elle n’a pas été réactivée.
+        {{ 'email.property.paused.text'|trans({'%title%': propertyTitle}) }}
     </p>
 
     <table role="presentation" cellpadding="6" cellspacing="0" border="0">
         <tr>
-            <td><strong>Statut</strong></td>
-            <td>{{ property.statut.label }}</td>
+            <td><strong>{{ 'email.property.label.status'|trans }}</strong></td>
+            <td>{{ property.statut.translationKey|trans }}</td>
         </tr>
         <tr>
-            <td><strong>Type de bien</strong></td>
-            <td>{{ property.typeBien.name|default('Non renseigné') }}</td>
+            <td><strong>{{ 'email.property.label.type'|trans }}</strong></td>
+            <td>{{ property.typeBien.name|default('email.common.not_provided'|trans) }}</td>
         </tr>
         <tr>
-            <td><strong>Ville</strong></td>
-            <td>{{ property.ville|default('Non renseignée') }}</td>
+            <td><strong>{{ 'email.property.label.city'|trans }}</strong></td>
+            <td>{{ property.ville|default('email.common.not_provided_f'|trans) }}</td>
         </tr>
     </table>
 
     <p>
-        Vous pouvez la réactiver à tout moment depuis votre espace Mes biens :
-        <a href="{{ mesBiensUrl }}">Voir mes biens</a>
+        {{ 'email.property.paused.manage'|trans }}
+        <a href="{{ mesBiensUrl }}">{{ 'email.property.view_listings'|trans }}</a>
     </p>
 
-    <p>À bientôt,<br>L’équipe Boolts</p>
+    <p>{{ 'email.common.signature'|trans|raw }}</p>
 </body>
 </html>

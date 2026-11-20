@@ -32,20 +32,20 @@ class CompleteProfileType extends AbstractType
             ->add('nom', TextType::class, [
                 'attr' => [
                     'class' => 'form-control mb-16',
-                    'placeholder' => 'Veuillez entrer votre nom',
+                    'placeholder' => 'form.last_name.placeholder',
                 ],
             ])
             ->add('prenom', TextType::class, [
                 'attr' => [
                     'class' => 'form-control mb-16',
-                    'placeholder' => 'Veuillez entrer votre prénom',
+                    'placeholder' => 'form.first_name.placeholder',
                 ],
             ])
             ->add('telephone', TelType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Veuillez entrer votre numéro de téléphone',
+                    'placeholder' => 'form.phone.placeholder',
                     'autocomplete' => 'tel',
                     'inputmode' => 'tel',
                     'data-phone-target' => 'input',
@@ -78,7 +78,7 @@ class CompleteProfileType extends AbstractType
         'label' => 'form.password.new',
         'attr' => [
             'class' => 'form-control password-input',
-            'placeholder' => 'Veuillez entrer votre mot de passe',
+            'placeholder' => 'form.password.placeholder',
             'minlength' => 12,
             'data-password-strength-target' => 'input',
             'data-action' => 'input->password-strength#check',
@@ -96,15 +96,15 @@ class CompleteProfileType extends AbstractType
             ),
             new Regex(
                 pattern: '/[A-Z]/',
-                message: 'Le mot de passe doit contenir au moins une majuscule.',
+                message: 'form.password.error.uppercase',
             ),
             new Regex(
                 pattern: '/[a-z]/',
-                message: 'Le mot de passe doit contenir au moins une minuscule.',
+                message: 'form.password.error.lowercase',
             ),
             new Regex(
                 pattern: '/\d/',
-                message: 'Le mot de passe doit contenir au moins un chiffre.',
+                message: 'form.password.error.digit',
             ),
         ],
     ],
@@ -123,7 +123,7 @@ class CompleteProfileType extends AbstractType
 
         'label' => 'form.password.repeat',
         'attr' => [
-            'placeholder' => 'Confirmez votre mot de passe',
+            'placeholder' => 'form.password.confirm_placeholder',
             'class' => 'form-control password-input mb-32',
             'data-password-strength-target' => 'confirmInput',
         ],

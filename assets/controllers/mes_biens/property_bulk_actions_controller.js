@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -48,7 +49,7 @@ export default class extends Controller {
         if (this.hasCounterTarget) {
             this.counterTarget.textContent =
                 selectedCount > 0
-                    ? `${selectedCount} sélectionnée${selectedCount > 1 ? 's' : ''}`
+                    ? t(selectedCount > 1 ? 'js.bulk.selected_other' : 'js.bulk.selected_one', { count: selectedCount })
                     : '';
         }
 

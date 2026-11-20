@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Boolts — Maintenance</title>
+    <title>{{ 'maintenance.meta.title'|trans }}</title>
 
     <!-- Bootstrap 5 -->
     <link
@@ -291,7 +291,7 @@
                             <div
                                 class="boolts-logo"
                                 role="img"
-                                aria-label="Boolts — L’immobilier. Réinventé."
+                                aria-label="{{ 'maintenance.logo_aria_label'|trans }}"
                             >
                                 <img
                                     class="boolts-logo__part-1"
@@ -337,17 +337,17 @@
 
                             <section class="maintenance-copy d-flex flex-column align-items-center">
                                 <h1 class="maintenance-title">
-                                    Le site est en cours de maintenance.
+                                    {{ 'maintenance.title'|trans }}
                                 </h1>
 
                                 <div class="maintenance-text w-100">
                                     <p>
-                                        Nous travaillons à l’améliorer afin de vous offrir une expérience toujours plus performante.
+                                        {{ 'maintenance.text'|trans }}
                                     </p>
 
                                     <div class="maintenance-text__blank-line" aria-hidden="true"></div>
 
-                                    <p>Merci de votre patience.</p>
+                                    <p>{{ 'maintenance.thanks'|trans }}</p>
                                 </div>
                             </section>
 

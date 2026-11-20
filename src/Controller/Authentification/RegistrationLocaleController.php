@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * Reçoit les indices de langue / fuseau horaire du navigateur pendant le tunnel
@@ -27,6 +28,8 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class RegistrationLocaleController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
         path: [
             'en' => '/inscription/preferences-locales',
@@ -43,23 +46,23 @@ final class RegistrationLocaleController extends AbstractController
         $authUserId = $request->getSession()->get('auth_user_id');
 
         if (null === $authUserId) {
-            return $this->json(['success' => false, 'message' => 'Aucune inscription en cours.'], 401);
+            return $this->json(['success' => false, 'message' => $this->t('auth.flash.no_registration')], 401);
         }
 
         $data = json_decode($request->getContent(), true);
 
         if (!\is_array($data)) {
-            return $this->json(['success' => false, 'message' => 'Données invalides.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.invalid_data')], 400);
         }
 
         if (!$this->isCsrfTokenValid('registration_locale', (string) ($data['_token'] ?? ''))) {
-            return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], 403);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.invalid_csrf')], 403);
         }
 
         $user = $userRepository->find($authUserId);
 
         if (!$user instanceof User) {
-            return $this->json(['success' => false, 'message' => 'Utilisateur introuvable.'], 404);
+            return $this->json(['success' => false, 'message' => $this->t('auth.flash.user_not_found')], 404);
         }
 
         $hints = array_filter(

@@ -19,7 +19,7 @@
                class="menu-dashboard-title p-accent  {{ app.request.attributes.get('_canonical_route', app.request.attributes.get('_route')) starts with 'app_dashboard_visiteur_favoris_bien' ? 'active' : '' }}">
                 <span>
                     <i class="icon-building-2 mr-10"></i>
-                    Favoris
+                    {{ 'navbar.mobile.favorites'|trans }}
                 </span>
             </a>
         </div>
@@ -97,18 +97,18 @@
 
 {# Menu Plus — Figma « Plus » 6934:17398 #}
 <div class="dashboard-settings-menu dashboard-more-menu" id="dashboard-more-menu" data-dashboard-bottom-bar-target="morePanel" hidden>
-    <h2 class="dashboard-settings-menu__title">Plus</h2>
+    <h2 class="dashboard-settings-menu__title">{{ 'dashboard.more'|trans }}</h2>
 
     <div class="dashboard-more-menu__sections">
         <div class="dashboard-settings-menu__section">
-            <p class="dashboard-settings-menu__section-title">Mon activité</p>
+            <p class="dashboard-settings-menu__section-title">{{ 'agency_dashboard.sidebar.activity'|trans }}</p>
 
             <div class="dashboard-settings-menu__items">
                 <a href="{{ path('app_dashboard_visiteur_notifications') }}"
                    class="dashboard-settings-menu__item {{ current_route == 'app_dashboard_visiteur_notifications' ? 'active' : '' }}">
                     <span class="dashboard-settings-menu__item-label p-accent">
                         <i class="icon-bell"></i>
-                        Notifications
+                        {{ 'agency_dashboard.notifications'|trans }}
                     </span>
                     <i class="icon-chevron-right"></i>
                 </a>
@@ -116,21 +116,21 @@
         </div>
 
         <div class="dashboard-settings-menu__section">
-            <p class="dashboard-settings-menu__section-title">Options supplémentaires</p>
+            <p class="dashboard-settings-menu__section-title">{{ 'agency_dashboard.sidebar.more_options'|trans }}</p>
 
             <div class="dashboard-settings-menu__items">
                 <a href="{{ path('app_dashboard_visiteur_aides') }}"
                    class="dashboard-settings-menu__item dashboard-more-menu__item--plain {{ current_route == 'app_dashboard_visiteur_aides' ? 'active' : '' }}">
                     <span class="dashboard-settings-menu__item-label p-accent">
                         <i class="icon-circle-help"></i>
-                        Aide
+                        {{ 'agency_dashboard.sidebar.help'|trans }}
                     </span>
                 </a>
 
                 <a href="{{ path('app_logout') }}" class="dashboard-settings-menu__item dashboard-more-menu__logout">
                     <span class="dashboard-settings-menu__item-label p-accent">
                         <i class="icon-log-out"></i>
-                        Déconnexion
+                        {{ 'agency_dashboard.sidebar.logout'|trans }}
                     </span>
                 </a>
             </div>
@@ -138,11 +138,11 @@
     </div>
 </div>
 
-<nav class="dashboard-bottom-bar" aria-label="Navigation du dashboard">
+<nav class="dashboard-bottom-bar" aria-label="{{ 'dashboard.bottom_bar.aria_label'|trans }}">
     <a href="{{ path('app_dashboard_visiteur_favoris_bien') }}"
        class="dashboard-bottom-bar__item {{ current_route starts with 'app_dashboard_visiteur_favoris_bien' ? 'active' : '' }}">
         <i class="icon-building-2"></i>
-        <span>Favoris</span>
+        <span>{{ 'navbar.mobile.favorites'|trans }}</span>
     </a>
 
     <a href="{{ path('app_dashboard_visiteur_messagerie') }}"
@@ -169,7 +169,7 @@
             data-dashboard-bottom-bar-target="moreButton"
             data-action="dashboard-bottom-bar#toggleMore">
         <i class="icon-grid-2x2"></i>
-        <span>Plus</span>
+        <span>{{ 'dashboard.more'|trans }}</span>
     </button>
 </nav>
 </div>

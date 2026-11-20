@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes factures{% endblock %}
+{% block title %}{{ 'agency.invoices.title'|trans }}{% endblock %}
 
 {% block mobile_tabbar %}{% endblock %}
 
@@ -19,25 +19,25 @@
                 {# Sidebar existante #}
                 {{ include('composant/__agence_immobiliere/_tableau_de_bord.html.twig') }}
                 {# Topbar mobile — Figma « TopBar » 6934:17370 #}
-                {{ include('composant/__agence_immobiliere/_topbar_contenu.html.twig', {title: 'Mes factures'}) }}
+                {{ include('composant/__agence_immobiliere/_topbar_contenu.html.twig', {title: 'agency.invoices.title'|trans}) }}
 
                 {# Contenu principal #}
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main">
 
                     <div class="col-12 col-md-10 mx-auto">
                         <section>
-                            <h2 class="mb-32 invoices-title d-none d-md-block">Mes factures</h2>
+                            <h2 class="mb-32 invoices-title d-none d-md-block">{{ 'agency.invoices.title'|trans }}</h2>
 
                             <form class="invoices-search mb-32" method="get" role="search">
                                 <input
                                     type="search"
                                     name="q"
                                     class="invoices-search__input"
-                                    placeholder="Recherchez un numéro de facture"
+                                    placeholder="{{ 'agency.invoices.search'|trans }}"
                                     value="{{ search|default('') }}"
                                 >
 
-                                <button type="submit" class="invoices-search__button" aria-label="Rechercher">
+                                <button type="submit" class="invoices-search__button" aria-label="{{ 'search.submit'|trans }}">
                                     <i class="icon-search" aria-hidden="true"></i>
                                 </button>
                             </form>
@@ -51,7 +51,7 @@
                                                 <p class="invoice-row__reference__invoice p-accent mb-0">{{ invoice.number }}</p>
 
                                                 <p class="invoice-row__date paragraphe">
-                                                    Créé le {{ issued_at|format_datetime('long', 'none', locale: 'fr') }}
+                                                    {{ 'agency.invoices.created_at'|trans({'%date%': issued_at|format_datetime('long', 'none', locale: app.request.locale|default('fr'))}) }}
                                                     
                                                 </p>
                                             </div>
@@ -64,7 +64,7 @@
                                                     rel="noopener"
                                                 >
                                                     <i class="icon-eye" aria-hidden="true"></i>
-                                                    Voir
+                                                    {{ 'settings.payments.view'|trans }}
                                                 </a>
 
                                                 <a
@@ -72,13 +72,13 @@
                                                     class="invoice-action p-accent"
                                                 >
                                                     <i class="icon-arrow-down-to-line" aria-hidden="true"></i>
-                                                    Télécharger
+                                                    {{ 'settings.payments.download'|trans }}
                                                 </a>
                                             </div>
                                         </div>
                                     {% else %}
                                         <div class="invoice-row">
-                                            <p class="invoice-row__date">Vous n'avez aucune facture pour le moment.</p>
+                                            <p class="invoice-row__date">{{ 'agency.invoices.empty'|trans }}</p>
                                         </div>
                                     {% endfor %}
                                 </div>

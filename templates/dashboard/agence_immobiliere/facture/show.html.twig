@@ -12,10 +12,10 @@
 {% set seller = invoice.sellerSnapshot %}
 {% set customer = invoice.customerSnapshot %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
     <meta charset="UTF-8">
-    <title>Facture {{ invoice.number }}</title>
+    <title>{{ 'invoice.meta.title'|trans({'%number%': invoice.number}) }}</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -99,9 +99,9 @@
 
 {% if not pdf_mode %}
     <div class="toolbar">
-        <button type="button" onclick="window.print()">Imprimer</button>
+        <button type="button" onclick="window.print()">{{ 'invoice.print'|trans }}</button>
         <a class="primary" href="{{ path('agence_immobiliere_facture_download', {id: invoice.id}) }}">
-            Télécharger le PDF
+            {{ 'invoice.download_pdf'|trans }}
         </a>
     </div>
 {% endif %}
@@ -111,19 +111,19 @@
     <table>
         <tr>
             <td>
-                <h1>Facture</h1>
-                <div class="muted">N° <strong>{{ invoice.number }}</strong></div>
+                <h1>{{ 'invoice.title'|trans }}</h1>
+                <div class="muted">{{ 'invoice.number'|trans }} <strong>{{ invoice.number }}</strong></div>
                 <div class="muted">
-                    Date d’émission :
+                    {{ 'invoice.issued_at'|trans }}
                     {{ (invoice.issuedAt ?? invoice.createdAt)|date('d/m/Y') }}
                 </div>
                 {% if invoice.paidAt %}
-                    <div class="muted">Payée le : {{ invoice.paidAt|date('d/m/Y') }}</div>
+                    <div class="muted">{{ 'invoice.paid_at'|trans({'%date%': invoice.paidAt|date('d/m/Y')}) }}</div>
                 {% endif %}
             </td>
             <td class="num">
                 {% if invoice.status.value == 'paid' %}
-                    <span class="status paid">Payée</span>
+                    <span class="status paid">{{ 'invoice.status.paid'|trans }}</span>
                 {% else %}
                     <span class="status other">{{ invoice.status.value|capitalize }}</span>
                 {% endif %}
@@ -134,7 +134,7 @@
     <table class="parties mt-24">
         <tr>
             <td>
-                <h2>Émetteur</h2>
+                <h2>{{ 'invoice.seller'|trans }}</h2>
                 <strong>{{ seller.name|default('Boolts') }}</strong><br>
                 {% if seller.legal_name is defined %}{{ seller.legal_name }}<br>{% endif %}
                 {% if seller.address_line1 is defined %}{{ seller.address_line1 }}<br>{% endif %}
@@ -143,13 +143,13 @@
                     {{ seller.postal_code|default('') }} {{ seller.city|default('') }}<br>
                 {% endif %}
                 {% if seller.country is defined %}{{ seller.country }}<br>{% endif %}
-                {% if seller.siren is defined %}SIREN : {{ seller.siren }}<br>{% endif %}
-                {% if seller.vat_number is defined %}N° TVA : {{ seller.vat_number }}<br>{% endif %}
+                {% if seller.siren is defined %}{{ 'invoice.siren'|trans({'%value%': seller.siren}) }}<br>{% endif %}
+                {% if seller.vat_number is defined %}{{ 'invoice.vat_number'|trans({'%value%': seller.vat_number}) }}<br>{% endif %}
                 {% if seller.email is defined %}{{ seller.email }}<br>{% endif %}
                 {% if seller.website is defined %}{{ seller.website }}{% endif %}
             </td>
             <td>
-                <h2>Client</h2>
+                <h2>{{ 'invoice.customer'|trans }}</h2>
                 {% if customer.legal_name is defined %}
                     <strong>{{ customer.legal_name }}</strong><br>
                 {% elseif customer.commercial_name is defined %}
@@ -171,10 +171,10 @@
     <table class="lines">
         <thead>
             <tr>
-                <th>Description</th>
-                <th class="num">Qté</th>
-                <th class="num">Prix unitaire</th>
-                <th class="num">Montant</th>
+                <th>{{ 'invoice.line.description'|trans }}</th>
+                <th class="num">{{ 'invoice.line.quantity'|trans }}</th>
+                <th class="num">{{ 'invoice.line.unit_price'|trans }}</th>
+                <th class="num">{{ 'invoice.line.amount'|trans }}</th>
             </tr>
         </thead>
         <tbody>
@@ -184,8 +184,7 @@
                         {{ line.description }}
                         {% if line.periodStart and line.periodEnd %}
                             <br><span class="muted">
-                                Période du {{ line.periodStart|date('d/m/Y') }}
-                                au {{ line.periodEnd|date('d/m/Y') }}
+                                {{ 'invoice.line.period'|trans({'%start%': line.periodStart|date('d/m/Y'), '%end%': line.periodEnd|date('d/m/Y')}) }}
                             </span>
                         {% endif %}
                     </td>
@@ -195,7 +194,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td>Abonnement Boolts</td>
+                    <td>{{ 'invoice.line.default'|trans }}</td>
                     <td class="num">1</td>
                     <td class="num">{{ fmt.money(invoice.subtotalMinor, currency_sign, invoice.currency) }}</td>
                     <td class="num">{{ fmt.money(invoice.subtotalMinor, currency_sign, invoice.currency) }}</td>
@@ -207,37 +206,37 @@
     <table class="totals">
         <tr>
             <td></td>
-            <td class="num muted">Sous-total</td>
+            <td class="num muted">{{ 'invoice.subtotal'|trans }}</td>
             <td class="num">{{ fmt.money(invoice.subtotalMinor, currency_sign, invoice.currency) }}</td>
         </tr>
         {% if invoice.discountTotalMinor > 0 %}
             <tr>
                 <td></td>
-                <td class="num muted">Remise</td>
+                <td class="num muted">{{ 'invoice.discount'|trans }}</td>
                 <td class="num">- {{ fmt.money(invoice.discountTotalMinor, currency_sign, invoice.currency) }}</td>
             </tr>
         {% endif %}
         {% if invoice.taxTotalMinor > 0 %}
             <tr>
                 <td></td>
-                <td class="num muted">TVA</td>
+                <td class="num muted">{{ 'invoice.vat'|trans }}</td>
                 <td class="num">{{ fmt.money(invoice.taxTotalMinor, currency_sign, invoice.currency) }}</td>
             </tr>
         {% endif %}
         <tr class="grand">
             <td></td>
-            <td class="num">Total</td>
+            <td class="num">{{ 'invoice.total'|trans }}</td>
             <td class="num">{{ fmt.money(invoice.totalMinor, currency_sign, invoice.currency) }}</td>
         </tr>
         <tr>
             <td></td>
-            <td class="num muted">Montant payé</td>
+            <td class="num muted">{{ 'invoice.amount_paid'|trans }}</td>
             <td class="num">{{ fmt.money(invoice.amountPaidMinor, currency_sign, invoice.currency) }}</td>
         </tr>
         {% if invoice.amountDueMinor > 0 %}
             <tr>
                 <td></td>
-                <td class="num muted">Reste dû</td>
+                <td class="num muted">{{ 'invoice.amount_due'|trans }}</td>
                 <td class="num">{{ fmt.money(invoice.amountDueMinor, currency_sign, invoice.currency) }}</td>
             </tr>
         {% endif %}
@@ -248,12 +247,11 @@
      (assujettie / franchise en base / autoliquidation…). Laissée neutre par défaut.
     #}
     {% if invoice.taxTotalMinor == 0 %}
-        <p class="legal">Montants exprimés dans la devise indiquée. TVA : voir conditions applicables à votre pays.</p>
+        <p class="legal">{{ 'invoice.legal.currency'|trans }}</p>
     {% endif %}
 
     <p class="legal">
-        Facture générée par Boolts. Pour toute question relative à cette facture,
-        contactez {{ seller.email|default('le support Boolts') }}.
+        {{ 'invoice.legal.contact'|trans({'%contact%': seller.email|default('invoice.legal.support'|trans)}) }}
     </p>
 
 </div>

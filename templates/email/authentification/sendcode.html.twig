@@ -5,6 +5,6 @@
  Maintenance: Preserve blocks, includes, macros, and data attributes used by this view.
 #}
 
-<h2>Votre code de connexion sécurisé</h2>
-<p>Il expire dans 10 minutes.</p>
-<p>Code: {{ authCode }}</p>
+<h2>{{ 'email.two_factor.title'|trans }}</h2>
+<p>{{ 'email.two_factor.expires'|trans }}</p>
+<p>{{ 'email.two_factor.code'|trans({'%code%': authCode}) }}</p>

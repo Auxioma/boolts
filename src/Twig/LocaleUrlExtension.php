@@ -13,6 +13,7 @@
 namespace App\Twig;
 
 use App\Service\Intl\LocalizedUrlGenerator;
+use App\Service\Intl\UrlCountryResolver;
 use App\Service\Intl\VisitorLocaleResolver;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -29,6 +30,7 @@ final class LocaleUrlExtension extends AbstractExtension
         private readonly RequestStack $requestStack,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly LocalizedUrlGenerator $localizedUrlGenerator,
+        private readonly UrlCountryResolver $urlCountryResolver,
     ) {
     }
 
@@ -43,15 +45,22 @@ final class LocaleUrlExtension extends AbstractExtension
     }
 
     /**
-     * Page courante traduite dans $locale (chemin relatif, query string conservée).
+     * Page courante traduite dans $locale (chemin relatif, query string conservée),
+     * éventuellement pour un autre pays ($country, code ISO ; null = pays courant).
      */
-    public function pageUrl(string $locale, bool $withQuery = true): string
+    public function pageUrl(string $locale, bool $withQuery = true, ?string $country = null): string
     {
         $request = $this->requestStack->getMainRequest();
-        $url = $request ? $this->localizedUrlGenerator->translatedPath($request, $locale) : null;
+        $url = $request ? $this->localizedUrlGenerator->translatedPath($request, $locale, $country) : null;
 
         if (null === $url) {
-            return $this->urlGenerator->generate('app_home', ['_locale' => $locale]);
+            $params = ['_locale' => $locale];
+
+            if (null !== $country) {
+                $params[UrlCountryResolver::ROUTE_PARAM] = strtolower($country);
+            }
+
+            return $this->urlGenerator->generate('app_home', $params);
         }
 
         $query = $request->getQueryString();
@@ -62,17 +71,18 @@ final class LocaleUrlExtension extends AbstractExtension
     /**
      * Lien du sélecteur : enregistre le choix manuel puis renvoie vers la page traduite.
      */
-    public function switchUrl(string $locale): string
+    public function switchUrl(string $locale, ?string $country = null): string
     {
         return $this->urlGenerator->generate('app_locale_switch', [
             'target' => $locale,
-            'redirect' => $this->pageUrl($locale),
+            'redirect' => $this->pageUrl($locale, true, $country),
         ]);
     }
 
     /**
-     * URL absolues de la page courante dans chaque langue (balises hreflang).
-     * Vide si la page n'est pas traduite dans toutes les langues.
+     * URL absolues de la page courante dans chaque langue, pour le pays courant
+     * (balises hreflang, clés au format "fr-FR"). Vide si la page n'est pas
+     * traduite dans toutes les langues.
      *
      * @return array<string, string>
      */
@@ -93,7 +103,10 @@ final class LocaleUrlExtension extends AbstractExtension
                 return [];
             }
 
-            $urls[$locale] = $request->getSchemeAndHttpHost().$path;
+            $country = $this->urlCountryResolver->fromRoute($request);
+            $hreflang = null !== $country ? $locale.'-'.strtoupper($country) : $locale;
+
+            $urls[$hreflang] = $request->getSchemeAndHttpHost().$path;
         }
 
         return $urls;

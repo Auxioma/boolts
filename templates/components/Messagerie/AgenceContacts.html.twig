@@ -19,15 +19,15 @@
             {# Recherche et filtres #}
             <div class="messagerie-annonces__tools d-flex flex-column flex-shrink-0 pt-20 pb-12 px-3">
                 <div class="d-flex align-items-center justify-content-between text-nowrap">
-                    <span class="p-accent fw-bold text-dark">Conversations</span>
-                    <span class="messagerie-annonces__mini text-secondary">{{ this.allConversations|length }} au total</span>
+                    <span class="p-accent fw-bold text-dark">{{ 'messaging.conversations'|trans }}</span>
+                    <span class="messagerie-annonces__mini text-secondary">{{ 'messaging.total'|trans({'%count%': this.allConversations|length}) }}</span>
                 </div>
 
                 <div class="messagerie-annonces__search d-flex align-items-center gap-2 border rounded-70 ps-4 pe-2" role="search">
                     <input
                         type="search"
                         class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
-                        placeholder="Rechercher un contact..."
+                        placeholder="{{ 'messaging.search.contact'|trans }}"
                         data-model="debounce(300)|query"
                         value="{{ query }}"
                     >
@@ -39,7 +39,7 @@
 
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <div class="messagerie-annonces__filter d-flex align-items-center gap-2 flex-shrink-0 border rounded-pill bg-white px-2">
-                        {% for value, label in {all: 'Toutes', unread: 'Non lues'} %}
+                        {% for value, label in {all: 'messaging.filter.all'|trans, unread: 'messaging.filter.unread'|trans} %}
                             <label class="messagerie-annonces__filter-button w-50 border-0 rounded-pill {{ filter == value ? 'bg-primary text-white' : 'bg-transparent text-body-secondary' }} p-accent fw-bold p-0 text-nowrap text-center mb-0" role="button">
                                 <input type="radio" class="d-none" value="{{ value }}" data-model="filter" {{ filter == value ? 'checked' }}>
                                 {{ label }}
@@ -74,14 +74,14 @@
                                 <p class="messagerie-annonces__clamp flex-grow-1 fw-normal text-secondary mb-0">{{ conversation.lastMessagePreview }}</p>
 
                                 {% if unread > 0 %}
-                                    <span class="messagerie-annonces__badge messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-primary text-white" aria-label="{{ unread }} message(s) non lu(s)">{{ unread }}</span>
+                                    <span class="messagerie-annonces__badge messagerie-annonces__mini d-flex align-items-center justify-content-center flex-shrink-0 rounded-circle bg-primary text-white" aria-label="{{ 'messaging.unread_aria'|trans({'%count%': unread}) }}">{{ unread }}</span>
                                 {% endif %}
                             </div>
                         </div>
                     </button>
                 {% else %}
                     <p class="text-secondary text-center py-4 mb-0">
-                        {{ this.allConversations is empty ? 'Aucun message reçu depuis votre page agence pour le moment.' : 'Aucun contact ne correspond.' }}
+                        {{ (this.allConversations is empty ? 'messaging.empty.agency_contacts' : 'messaging.empty.no_contact_match')|trans }}
                     </p>
                 {% endfor %}
             </div>

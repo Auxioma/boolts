@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -45,7 +46,7 @@ export default class extends Controller {
         this.hideSuccess();
 
         if (!this.publicKeyValue || !this.publicKeyValue.startsWith('pk_')) {
-            this.showError('La clé publique Stripe est absente ou invalide.');
+            this.showError(t('js.payment_method.stripe_key'));
             return;
         }
 
@@ -72,7 +73,7 @@ export default class extends Controller {
                 .then(() => {
                     if (typeof window.Stripe !== 'function') {
                         throw new Error(
-                            'Stripe.js n’est pas chargé dans la page.'
+                            t('js.payment_method.stripe_not_loaded')
                         );
                     }
 
@@ -124,7 +125,7 @@ export default class extends Controller {
             }
 
             const timeout = window.setTimeout(() => {
-                reject(new Error('Le chargement de Stripe.js a expiré.'));
+                reject(new Error(t('js.payment_method.stripe_timeout')));
             }, 10000);
 
             script.addEventListener('load', () => {
@@ -200,20 +201,20 @@ export default class extends Controller {
                 data = JSON.parse(rawResponse);
             } catch {
                 throw new Error(
-                    `Le serveur a retourné une réponse non JSON (${response.status}).`
+                    t('js.error.non_json', { status: response.status })
                 );
             }
 
             if (!response.ok || data.success !== true) {
                 throw new Error(
                     data.message
-                    || `Impossible d’initialiser Stripe (${response.status}).`
+                    || t('js.payment_method.stripe_init_status', { status: response.status })
                 );
             }
 
             if (!data.clientSecret || !data.setupIntentId) {
                 throw new Error(
-                    'Le serveur n’a pas retourné les informations Stripe attendues.'
+                    t('js.payment_method.stripe_missing_data')
                 );
             }
 
@@ -265,7 +266,7 @@ export default class extends Controller {
             this.showError(
                 error instanceof Error
                     ? error.message
-                    : 'Impossible d’initialiser Stripe.'
+                    : t('js.payment_method.stripe_init')
             );
         }
     }
@@ -289,7 +290,7 @@ export default class extends Controller {
             this.setLoading(false);
             this.showError(
                 event?.error?.message
-                || 'Le formulaire Stripe ne peut pas être chargé.'
+                || t('js.payment_method.stripe_form')
             );
         });
 
@@ -309,7 +310,7 @@ export default class extends Controller {
         this.hideSuccess();
 
         if (!this.stripe || !this.initialized || !this.clientSecret) {
-            this.showError('Stripe n’est pas encore prêt.');
+            this.showError(t('js.payment_method.stripe_not_ready'));
             return;
         }
 
@@ -326,7 +327,7 @@ export default class extends Controller {
             : '';
 
         if (!country) {
-            this.showError('Veuillez sélectionner le pays.');
+            this.showError(t('js.payment_method.select_country'));
 
             if (this.hasCountryTarget) {
                 this.countryTarget.focus();
@@ -358,12 +359,12 @@ export default class extends Controller {
             }
 
             if (!result.setupIntent) {
-                throw new Error('Stripe n’a retourné aucun SetupIntent.');
+                throw new Error(t('js.payment_method.no_setup_intent'));
             }
 
             if (result.setupIntent.status !== 'succeeded') {
                 throw new Error(
-                    `La carte n’est pas validée. Statut : ${result.setupIntent.status}.`
+                    t('js.payment_method.not_validated', { status: result.setupIntent.status })
                 );
             }
 
@@ -375,7 +376,7 @@ export default class extends Controller {
             this.showError(
                 error instanceof Error
                     ? error.message
-                    : 'Impossible d’enregistrer la carte.'
+                    : t('js.payment_method.card_save')
             );
         }
     }
@@ -404,14 +405,14 @@ export default class extends Controller {
             data = JSON.parse(rawResponse);
         } catch {
             throw new Error(
-                `Le serveur a retourné une réponse non JSON (${response.status}).`
+                t('js.error.non_json', { status: response.status })
             );
         }
 
         if (!response.ok || data.success !== true) {
             throw new Error(
                 data.message
-                || 'Le moyen de paiement n’a pas pu être enregistré.'
+                || t('js.payment_method.method_save')
             );
         }
 
@@ -463,7 +464,7 @@ export default class extends Controller {
             if (!response.ok || data.success !== true) {
                 throw new Error(
                     data.message
-                    || 'Le moyen de paiement n’a pas pu être supprimé.'
+                    || t('js.payment_method.method_delete')
                 );
             }
 
@@ -490,7 +491,7 @@ export default class extends Controller {
             return JSON.parse(rawResponse);
         } catch {
             throw new Error(
-                `Le serveur a retourné une réponse non JSON (${response.status}).`
+                t('js.error.non_json', { status: response.status })
             );
         }
     }

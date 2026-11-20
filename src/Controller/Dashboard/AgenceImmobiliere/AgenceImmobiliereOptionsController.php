@@ -46,6 +46,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 #[Route(
     path: [
@@ -66,6 +67,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class AgenceImmobiliereOptionsController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the __construct controller action.
      */
@@ -287,25 +290,25 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         BoosterPackPurchaseMailer $purchaseMailer,
     ): JsonResponse {
         if (!$this->isCsrfTokenValid('agency_boost_purchase', (string) $request->headers->get('X-CSRF-TOKEN'))) {
-            return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], 403);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.invalid_csrf')], 403);
         }
 
         $agency = $this->getUser();
 
         if (!$agency instanceof User) {
-            return $this->json(['success' => false, 'message' => 'Utilisateur non authentifié.'], 401);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.unauthenticated')], 401);
         }
 
         try {
             $payload = $request->toArray();
         } catch (\Throwable) {
-            return $this->json(['success' => false, 'message' => 'Requête JSON invalide.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.invalid_json')], 400);
         }
 
         $paymentMethodId = filter_var($payload['paymentMethodId'] ?? null, \FILTER_VALIDATE_INT);
 
         if (false === $paymentMethodId || null === $paymentMethodId || $paymentMethodId < 1) {
-            return $this->json(['success' => false, 'message' => 'Carte bancaire invalide.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('billing.boost.invalid_card')], 400);
         }
 
         $boostPrice = $boosterPackPriceRepository->find($id);
@@ -315,13 +318,13 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         }
 
         if ($boostPrice->getAmountMinor() <= 0) {
-            return $this->json(['success' => false, 'message' => 'Le prix du pack boost doit être supérieur à zéro.'], 400);
+            return $this->json(['success' => false, 'message' => $this->t('billing.boost.price_zero')], 400);
         }
 
         $billingProfile = $agency->getBillingProfile();
 
         if (null === $billingProfile || !str_starts_with((string) $billingProfile->getStripeCustomerId(), 'cus_')) {
-            return $this->json(['success' => false, 'message' => 'Profil de facturation ou client Stripe introuvable.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.profile_not_found')], 409);
         }
 
         $paymentMethod = $paymentMethodRepository->find($paymentMethodId);
@@ -331,7 +334,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             || !$paymentMethod->isActive()
             || PaymentMethodSetupStatus::SUCCEEDED !== $paymentMethod->getSetupStatus()
         ) {
-            return $this->json(['success' => false, 'message' => 'Aucune carte bancaire valide n’est disponible pour cet achat.'], 409);
+            return $this->json(['success' => false, 'message' => $this->t('billing.subscription.no_card')], 409);
         }
 
         try {
@@ -351,7 +354,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             ]);
 
             if ('succeeded' !== $paymentIntent->status) {
-                return $this->json(['success' => false, 'message' => 'Le paiement Stripe n’a pas été confirmé.'], 402);
+                return $this->json(['success' => false, 'message' => $this->t('billing.boost.not_confirmed')], 402);
             }
 
             $now = new \DateTimeImmutable();
@@ -439,7 +442,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message' => 'Votre pack boost a été ajouté.',
+                'message' => $this->t('billing.boost.added'),
                 'paymentIntentId' => $paymentIntent->id,
             ], 201);
         } catch (ApiErrorException $exception) {
@@ -458,7 +461,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'booster_pack_price_id' => $boostPrice->getId(),
             ]);
 
-            return $this->json(['success' => false, 'message' => 'Impossible de payer le pack boost.'], 500);
+            return $this->json(['success' => false, 'message' => $this->t('billing.boost.error')], 500);
         }
     }
 

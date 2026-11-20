@@ -44,7 +44,7 @@ class ProfileAgenceType extends AbstractType
             ->add('nom')
             ->add('email')
             ->add('telephone', TelType::class, [
-                'label' => 'Téléphone',
+                'label' => 'form.phone.label',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
@@ -80,7 +80,7 @@ class ProfileAgenceType extends AbstractType
 ])
 
             ->add('numeroContact', TelType::class, [
-                'label' => 'Téléphone',
+                'label' => 'form.phone.label',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
@@ -96,7 +96,7 @@ class ProfileAgenceType extends AbstractType
 
             ->add('imageFile', VichImageType::class, [
                 'required' => false,
-                'label' => 'Photo de profil',
+                'label' => 'form.profile_picture.label',
                 'allow_delete' => false,
                 'download_uri' => false,
                 'image_uri' => false,
@@ -104,7 +104,7 @@ class ProfileAgenceType extends AbstractType
             ])
 
         ->add('whatsApp', TelType::class, [
-            'label' => 'Téléphone',
+            'label' => 'form.phone.label',
             'required' => false,
             'attr' => [
                 'class' => 'form-control',
@@ -139,7 +139,7 @@ class ProfileAgenceType extends AbstractType
                     'label' => 'form.password.new',
                     'attr' => [
                         'class' => 'form-control password-input',
-                        'placeholder' => 'Veuillez entrer votre mot de passe',
+                        'placeholder' => 'form.password.placeholder',
                     ],
 
                     'constraints' => [
@@ -169,7 +169,7 @@ class ProfileAgenceType extends AbstractType
 
                     'label' => 'form.password.repeat',
                     'attr' => [
-                        'placeholder' => 'Confirmez votre mot de passe',
+                        'placeholder' => 'form.password.confirm_placeholder',
                         'class' => 'form-control password-input mt-8 mb-12',
                     ],
                 ],
@@ -182,7 +182,7 @@ class ProfileAgenceType extends AbstractType
                 'class' => Langues::class,
                 'choice_label' => 'name',
                 'required' => false,
-                'placeholder' => 'Sélectionner une langue',
+                'placeholder' => 'form.language.placeholder',
                 'query_builder' => static function (LanguesRepository $repository) {
                     return $repository->createQueryBuilder('langue')
                         ->orderBy('langue.name', 'ASC');
@@ -193,7 +193,7 @@ class ProfileAgenceType extends AbstractType
                 'class' => Devise::class,
                 'choice_label' => 'nom',
                 'required' => false,
-                'placeholder' => 'Sélectionner une devise',
+                'placeholder' => 'form.currency.placeholder',
                 'query_builder' => static function (DeviseRepository $repository) {
                     return $repository->createQueryBuilder('devise')
                         ->orderBy('devise.nom', 'ASC');
@@ -225,7 +225,7 @@ class ProfileAgenceType extends AbstractType
     'required' => false,
     'multiple' => true,
     'expanded' => false,
-    'placeholder' => 'Rechercher une langue...',
+    'placeholder' => 'form.language.search',
     'attr' => [
         'class' => 'agency-languages-select d-none',
         'data-languages-target' => 'select',

@@ -5,55 +5,52 @@
  Maintenance: le contenu s'adapte au forfait en cours et à la date d'effet (fin de la période déjà payée).
 #}
 
-<p>Bonjour,</p>
+<p>{{ 'email.common.hello'|trans }}</p>
 
 <p>
-    Nous avons bien enregistré votre demande de résiliation
     {% if plan_name is defined and plan_name %}
-        du forfait <strong>{{ plan_name }}</strong>
+        {{ 'email.subscription.cancel.intro_plan'|trans({'%plan%': '<strong>' ~ plan_name|e ~ '</strong>'})|raw }}
     {% elseif plan is defined and plan %}
-        du forfait <strong>{{ plan|upper }}</strong>
-    {% endif %}.
+        {{ 'email.subscription.cancel.intro_plan'|trans({'%plan%': '<strong>' ~ plan|upper|e ~ '</strong>'})|raw }}
+    {% else %}
+        {{ 'email.subscription.cancel.intro'|trans }}
+    {% endif %}
 </p>
 
 <p>
-    Votre résiliation <strong>n'est pas immédiate</strong> : votre abonnement
     {% if effective_at is defined and effective_at %}
-        prendra fin le <strong>{{ effective_at|date('d/m/Y') }}</strong>,
+        {{ 'email.subscription.cancel.not_immediate_on'|trans({'%date%': '<strong>' ~ effective_at|date('d/m/Y') ~ '</strong>'})|raw }}
     {% else %}
-        prendra fin à l'issue de la période déjà réglée,
+        {{ 'email.subscription.cancel.not_immediate'|trans|raw }}
     {% endif %}
-    au terme de la période que vous avez déjà payée. D'ici là, vous conservez
-    votre forfait actuel et l'ensemble de ses avantages. Aucun nouveau
-    renouvellement ne sera facturé après cette date.
 </p>
 
 <table role="presentation" cellpadding="6" cellspacing="0" border="0">
     <tr>
-        <td><strong>Forfait résilié</strong></td>
-        <td>{{ plan_name|default(plan|default('payant')|upper) }}</td>
+        <td><strong>{{ 'email.subscription.label.cancelled_plan'|trans }}</strong></td>
+        <td>{{ plan_name|default(plan|default('email.subscription.paid'|trans)|upper) }}</td>
     </tr>
     {% if cancel_requested_at is defined and cancel_requested_at %}
     <tr>
-        <td><strong>Demande enregistrée le</strong></td>
+        <td><strong>{{ 'email.subscription.label.requested_at'|trans }}</strong></td>
         <td>{{ cancel_requested_at|date('d/m/Y') }}</td>
     </tr>
     {% endif %}
     <tr>
-        <td><strong>Fin de l'abonnement</strong></td>
+        <td><strong>{{ 'email.subscription.label.ends_at'|trans }}</strong></td>
         <td>
             {% if effective_at is defined and effective_at %}
                 {{ effective_at|date('d/m/Y') }}
             {% else %}
-                Fin de la période en cours
+                {{ 'email.subscription.end_of_period'|trans }}
             {% endif %}
         </td>
     </tr>
 </table>
 
 <p>
-    Vous pouvez annuler cette résiliation tant qu'elle n'a pas pris effet, depuis votre espace :
-    <a href="{{ portal_url }}">Gérer mon abonnement</a>
+    {{ 'email.subscription.cancel.undo_intro'|trans }}
+    <a href="{{ portal_url }}">{{ 'email.subscription.manage_link'|trans }}</a>
 </p>
 
-<p>À bientôt,<br>L'équipe Boolts</p>
+<p>{{ 'email.common.signature'|trans|raw }}</p>

@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../../i18n.js';
 
 /**
  * Auto-suggestion de la barre de recherche libre de la liste « Mes biens ».
@@ -278,9 +279,9 @@ export default class extends Controller {
 
     typeLabel(type) {
         const labels = {
-            reference: 'Référence',
-            titre: 'Titre',
-            ville: 'Ville',
+            reference: t('js.suggestions.reference'),
+            titre: t('js.suggestions.title'),
+            ville: t('js.suggestions.city'),
             pays: 'Pays',
             adresse: 'Adresse',
         };

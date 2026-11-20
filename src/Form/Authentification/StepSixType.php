@@ -41,7 +41,7 @@ class StepSixType extends AbstractType
                 'mapped' => false,
                 'required' => true,
                 'constraints' => [
-                    new IsTrue(message: 'Veuillez accepter les conditions d’utilisation.'),
+                    new IsTrue(message: 'form.terms.required'),
                 ],
             ])
         ;

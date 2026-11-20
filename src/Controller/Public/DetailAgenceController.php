@@ -23,6 +23,7 @@ use App\Repository\AgencyProfileDailyVisitRepository;
 use App\Repository\FavorisRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\UserRepository;
+use App\Routing\PublicRoute;
 use App\Service\ContactForm\ContactMailer;
 use App\Service\Property\CountryCodeResolver;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,6 +32,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Public / DetailAgenceController.
@@ -39,6 +41,8 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class DetailAgenceController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Seules les annonces publiées sont visibles sur la page publique
      * de l'agence (liste, filtres, compteur et auto-complétion).
@@ -54,11 +58,9 @@ final class DetailAgenceController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/agency/{slug}',
-            'fr' => '/fr/agency/{slug}',
-        ],
-        name: 'app_public_detail_agence'
+        path: PublicRoute::PREFIX.'/agency/{slug}',
+        name: 'app_public_detail_agence',
+        requirements: PublicRoute::REQUIREMENTS
     )]
     /**
      * Handles the index controller action.
@@ -156,7 +158,7 @@ final class DetailAgenceController extends AbstractController
             $entityManager->persist($contactForm);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Votre message a été envoyé avec succès !');
+            $this->addFlash('success', $this->t('contact.flash.sent'));
 
             return $this->redirectToRoute('app_public_detail_agence', [
                 'slug' => $slug,
@@ -177,11 +179,9 @@ final class DetailAgenceController extends AbstractController
      * Compteur « Voir les X logements » de la modale de filtres.
      */
     #[Route(
-        path: [
-            'en' => '/agency/{slug}/filtres/count',
-            'fr' => '/fr/agency/{slug}/filtres/count',
-        ],
+        path: PublicRoute::PREFIX.'/agency/{slug}/filtres/count',
         name: 'app_public_detail_agence_filters_count',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     public function filtersCount(
@@ -219,11 +219,9 @@ final class DetailAgenceController extends AbstractController
      * Auto-complétion « Pays » : uniquement les pays des annonces publiées de l'agence.
      */
     #[Route(
-        path: [
-            'en' => '/agency/{slug}/filtres/pays',
-            'fr' => '/fr/agency/{slug}/filtres/pays',
-        ],
+        path: PublicRoute::PREFIX.'/agency/{slug}/filtres/pays',
         name: 'app_public_detail_agence_filter_countries',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     public function filterCountries(
@@ -265,11 +263,9 @@ final class DetailAgenceController extends AbstractController
      * Auto-complétion « Ville », restreinte au pays éventuellement sélectionné.
      */
     #[Route(
-        path: [
-            'en' => '/agency/{slug}/filtres/villes',
-            'fr' => '/fr/agency/{slug}/filtres/villes',
-        ],
+        path: PublicRoute::PREFIX.'/agency/{slug}/filtres/villes',
         name: 'app_public_detail_agence_filter_cities',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     public function filterCities(
@@ -309,11 +305,9 @@ final class DetailAgenceController extends AbstractController
      * Auto-complétion « Quartier », restreinte à la ville éventuellement sélectionnée.
      */
     #[Route(
-        path: [
-            'en' => '/agency/{slug}/filtres/quartiers',
-            'fr' => '/fr/agency/{slug}/filtres/quartiers',
-        ],
+        path: PublicRoute::PREFIX.'/agency/{slug}/filtres/quartiers',
         name: 'app_public_detail_agence_filter_districts',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     public function filterDistricts(

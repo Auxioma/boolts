@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-12 col-md-10 mx-auto">
 
-            <h3 class="mb-0 d-none d-md-block">Informations personnelles</h3>
+            <h3 class="mb-0 d-none d-md-block">{{ 'settings.menu.personal_info'|trans }}</h3>
 
             <div
                 class="card-information-public-profile my-32 py-18 px-24"
@@ -29,13 +29,13 @@
                     {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
 
                     {% if avatar %}
-                        <img src="{{ avatar }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+                        <img src="{{ avatar }}" alt="{{ 'settings.personal.avatar_alt'|trans }}" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
                     {% elseif firstLetter %}
-                        <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+                        <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ 'settings.personal.avatar_alt'|trans }}" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
                     {% endif %}
 
                     <button class="btn-change-image btn-full-white rounded-pill position-absolute start-50 translate-middle-x w-auto" type="button" style="bottom: -12px;" id="change-image-button">
-                        Modifier
+                        {{ 'settings.edit'|trans }}
                     </button>
 
                     {{ form_widget(form.imageFile, {
@@ -52,7 +52,7 @@
                     <div class="js-editable-field formulaire">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <label class="p-accent mb-0" for="{{ form.prenom.vars.id }}">Prénom*</label>
+                                <label class="p-accent mb-0" for="{{ form.prenom.vars.id }}">{{ 'settings.personal.firstname_required'|trans }}</label>
                                 <p class="mt-12 mb-0 js-field-value" id="prenom-value">
                                     {{ app.user.prenom ?? '***' }}
                                 </p>
@@ -73,7 +73,7 @@
                                 data-field-save-input-param="#{{ form.prenom.vars.id }}"
                                 data-field-save-output-param="#prenom-value"
                             >
-                                Modifier
+                                {{ 'settings.edit'|trans }}
                             </button>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <label class="p-accent mb-0" for="{{ form.nom.vars.id }}">Nom*</label>
+                                <label class="p-accent mb-0" for="{{ form.nom.vars.id }}">{{ 'settings.personal.lastname_required'|trans }}</label>
                                 <p class="mt-12 mb-0 js-field-value" id="nom-value">
                                     {{ app.user.nom ?? '***' }}
                                 </p>
@@ -103,7 +103,7 @@
                                 data-field-save-input-param="#{{ form.nom.vars.id }}"
                                 data-field-save-output-param="#nom-value"
                             >
-                                Modifier
+                                {{ 'settings.edit'|trans }}
                             </button>
                         </div>
                     </div>
@@ -112,7 +112,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <label class="p-accent mb-0" for="{{ form.email.vars.id }}">E-mail*</label>
+                                <label class="p-accent mb-0" for="{{ form.email.vars.id }}">{{ 'settings.personal.email_required'|trans }}</label>
                                 <p class="mt-12 mb-0 js-field-value" id="email-value">
                                     {{ app.user.email ?? '***' }}
                                 </p>
@@ -133,7 +133,7 @@
                                 data-field-save-input-param="#{{ form.email.vars.id }}"
                                 data-field-save-output-param="#email-value"
                             >
-                                Modifier
+                                {{ 'settings.edit'|trans }}
                             </button>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                     >
                         <div class="d-flex justify-content-between align-items-start">
                             <div class="w-100">
-                                <label class="p-accent mb-0" for="{{ form.telephone.vars.id }}">Numéro de téléphone</label>
+                                <label class="p-accent mb-0" for="{{ form.telephone.vars.id }}">{{ 'settings.personal.phone'|trans }}</label>
 
                                 <p class="mt-12 mb-0 js-field-value" id="telephone-value">
                                     {{ app.user.telephone ?? '***' }}
@@ -169,7 +169,7 @@
                                 data-field-save-input-param="#{{ form.telephone.vars.id }}"
                                 data-field-save-output-param="#telephone-value"
                             >
-                                Modifier
+                                {{ 'settings.edit'|trans }}
                             </button>
                         </div>
                     </div>

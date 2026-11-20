@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Mes favoris{% endblock %}
+{% block title %}{{ 'visitor.favorites.title'|trans }}{% endblock %}
 
 {% block body %}
     <main id="dashboard" class="dashboard">
@@ -21,7 +21,7 @@
                 <div class="col-md-9 col-lg-10 col-12 dashboard-main">
                     <div class="col-12 col-md-10 mx-auto">
                         <section>
-                            <h2 class="mb-32">Mes favoris</h2>
+                            <h2 class="mb-32">{{ 'visitor.favorites.title'|trans }}</h2>
 
                             <div class="row bt-results-grid agence-properties">
 
@@ -112,7 +112,7 @@
                                 {% else %}
 
                                     <div class="col-12">
-                                        <p class="paragraphe" style="color:#858789">Vous n'avez encore aucun bien en favoris.</p>
+                                        <p class="paragraphe" style="color:#858789">{{ 'visitor.favorites.empty'|trans }}</p>
                                     </div>
 
                                 {% endfor %}

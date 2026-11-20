@@ -261,7 +261,7 @@
                     </button>
                 {{ form_end(codeForm) }}
 
-                <div class="verification-code__divider"><span>OU</span></div>
+                <div class="verification-code__divider"><span>{{ 'auth.or'|trans }}</span></div>
 
                 <a
                     href="{{ path(resendRoute) }}"
@@ -281,7 +281,7 @@
             </div>
         </section>
 
-        <div class="verification-code__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+        <div class="verification-code__visual" role="img" aria-label="{{ 'auth.hero.aria_label'|trans }}"></div>
     </main>
 {% endblock %}
 

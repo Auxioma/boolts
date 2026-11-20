@@ -41,11 +41,11 @@
         {# Header de la modal #}
         <div class="modal-header boolts-filter-header px-24 pt-24">
             <h2 id="booltsFiltersModalLabel">
-                Filtres
+                {{ 'search.filters.title'|trans }}
             </h2>
 
             {# Bouton de fermeture de la modal #}
-            <button type="button" class="boolts-filter-close" data-bs-dismiss="modal" aria-label="Fermer">
+            <button type="button" class="boolts-filter-close" data-bs-dismiss="modal" aria-label="{{ 'search.filters.close'|trans }}">
                 <span aria-hidden="true">
 
                    <i class="icon-x" aria-hidden="true"></i> 
@@ -59,7 +59,7 @@
                 type="reset"
                 class="boolts-filter-reset p-accent"
             >
-                Réinitialiser les filtres
+                {{ 'search.filters.reset'|trans }}
             </button>
         </div>
 
@@ -82,7 +82,7 @@
                             aria-expanded="true"
                             aria-controls="collapseNature"
                         >
-                            Nature de la propriété*
+                            {{ 'search.filters.transaction'|trans }}
                         </button>
                     </h3>
 
@@ -134,7 +134,7 @@
                                 >
 
                                 <label class="boolts-choice" for="filter-all-transactions">
-                                    Toutes
+                                    {{ 'search.filters.all'|trans }}
                                 </label>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                             aria-expanded="true"
                             aria-controls="collapsePropertyType"
                         >
-                            Type de propriété*
+                            {{ 'search.filters.property_type'|trans }}
                         </button>
                     </h3>
 
@@ -275,7 +275,7 @@
                                     aria-expanded="false"
                                     aria-controls="propertyTypeMore"
                                 >
-                                    Voir plus
+                                    {{ 'search.filters.see_more'|trans }}
                                 </button>
                             {% endif %}
 
@@ -311,7 +311,7 @@
                             aria-expanded="true"
                             aria-controls="collapseLocation"
                         >
-                            Localisation
+                            {{ 'search.filters.location'|trans }}
                         </button>
                     </h3>
 
@@ -329,7 +329,7 @@
                             ========================== #}
                             <div class="boolts-location-group">
                                 <label class="boolts-location-label p-accent mb-12" for="country-search">
-                                    Pays
+                                    {{ 'search.filters.country'|trans }}
                                 </label>
 
                                 <div class="boolts-search-control">
@@ -341,7 +341,7 @@
                                             id: 'country-search',
                                             class: 'boolts-location-input',
                                             autocomplete: 'off',
-                                            placeholder: 'Rechercher un pays',
+                                            placeholder: 'search.filters.country_placeholder'|trans,
                                             'data-boolts-location-target': 'countryInput',
                                             'data-action': 'input->boolts-location#searchCountry keydown->boolts-location#keyboardCountry',
                                         },
@@ -369,7 +369,7 @@
                             ========================== #}
                             <div class="boolts-location-group">
                                 <label class="boolts-location-label is-muted  p-accent mb-12" for="city-search">
-                                    Ville
+                                    {{ 'search.filters.city'|trans }}
                                 </label>
 
                                 <div class="boolts-search-control">
@@ -380,7 +380,7 @@
                                             id: 'city-search',
                                             class: 'boolts-location-input',
                                             autocomplete: 'off',
-                                            placeholder: 'Rechercher une ville',
+                                            placeholder: 'search.filters.city_placeholder'|trans,
                                             'data-boolts-location-target': 'cityInput',
                                             'data-action': 'input->boolts-location#searchCity keydown->boolts-location#keyboardCity',
                                         },
@@ -406,7 +406,7 @@
                             ========================== #}
                             <div class="boolts-location-group mb-0">
                                 <label class="boolts-location-label is-muted  p-accent mb-12" for="district-search">
-                                    Quartier
+                                    {{ 'search.filters.district'|trans }}
                                 </label>
 
                                 <div class="boolts-search-control">
@@ -417,7 +417,7 @@
                                             id: 'district-search',
                                             class: 'boolts-location-input',
                                             autocomplete: 'off',
-                                            placeholder: 'Rechercher un quartier',
+                                            placeholder: 'search.filters.district_placeholder'|trans,
                                             'data-boolts-location-target': 'districtInput',
                                             'data-action': 'input->boolts-location#searchDistrict keydown->boolts-location#keyboardDistrict',
                                         },
@@ -452,35 +452,35 @@
                 {% set rangeFilters = [
                     {
                         id: 'chambres',
-                        label: 'Chambres',
+                        label: 'search.filters.range.bedrooms'|trans,
                         minField: 'minChambres',
                         maxField: 'maxChambres',
                         unit: '',
                     },
                     {
                         id: 'salles-de-bain',
-                        label: 'Salle de bain',
+                        label: 'search.filters.range.bathrooms'|trans,
                         minField: 'minSallesDeBain',
                         maxField: 'maxSallesDeBain',
                         unit: '',
                     },
                     {
                         id: 'surface',
-                        label: 'Surface',
+                        label: 'search.filters.range.surface'|trans,
                         minField: 'minSurface',
                         maxField: 'maxSurface',
                         unit: 'm²',
                     },
                     {
                         id: 'annee-construction',
-                        label: 'Année de construction',
+                        label: 'search.filters.range.construction_year'|trans,
                         minField: 'minAnneeConstruction',
                         maxField: 'maxAnneeConstruction',
                         unit: '',
                     },
                     {
                         id: 'prix',
-                        label: 'Fourchette de prix',
+                        label: 'search.filters.range.price_range'|trans,
                         minField: 'minPrix',
                         maxField: 'maxPrix',
                         unit: '€',
@@ -524,7 +524,7 @@
                                                 class="boolts-filter-label p-accent"
                                                 for="{{ formModal[filter.minField].vars.id }}"
                                             >
-                                                Minimum
+                                                {{ 'search.filters.minimum'|trans }}
                                             </label>
 
                                             <div class="boolts-field-with-suffix">
@@ -551,7 +551,7 @@
                                                 class="boolts-filter-label p-accent"
                                                 for="{{ formModal[filter.maxField].vars.id }}"
                                             >
-                                                Maximum
+                                                {{ 'search.filters.maximum'|trans }}
                                             </label>
 
                                             <div class="boolts-field-with-suffix">
@@ -597,7 +597,7 @@
                                 aria-expanded="true"
                                 aria-controls="collapseEnergy"
                             >
-                                Performance énergétique
+                                {{ 'search.filters.energy'|trans }}
                             </button>
                         </h3>
 
@@ -674,12 +674,12 @@
                 class="bt-research-primary-btn boolts-filter-submit w-100 p-accent"
                 data-boolts-filter-count-target="button"
             >
-                Afficher les &nbsp;
+                {{ 'search.filters.show'|trans }}&nbsp;
                 <span data-boolts-filter-count-target="count">
                     {{ totalResults|default(0) }}
                 </span>&nbsp;
                 <span data-boolts-filter-count-target="label">
-                    {{ totalResults|default(0) == 1 ? 'logement' : 'logements' }}
+                    {{ (totalResults|default(0) == 1 ? 'search.filters.result.one' : 'search.filters.result.other')|trans }}
                 </span>
             </button>
         </div>

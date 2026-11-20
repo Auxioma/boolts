@@ -34,32 +34,32 @@ class StepQuatreType extends AbstractType
             ->add('adresse', TextType::class, [
                 'attr' => [
                     'class' => 'form-control input',
-                    'placeholder' => 'Entrez un numéro et un nom de rue',
+                    'placeholder' => 'form.address.street.placeholder',
                 ],
             ])
             ->add('adresseComplement', TextType::class, [
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control input',
-                    'placeholder' => 'Entrez un complément d’adresse',
+                    'placeholder' => 'form.address.complement.placeholder',
                 ],
             ])
             ->add('codePostal', TextType::class, [
                 'attr' => [
                     'class' => 'form-control input',
-                    'placeholder' => 'Entrez un code postal',
+                    'placeholder' => 'form.address.postal_code.placeholder',
                 ],
             ])
             ->add('ville', TextType::class, [
                 'attr' => [
                     'class' => 'form-control input',
-                    'placeholder' => 'Choisissez une ville',
+                    'placeholder' => 'form.address.city.placeholder',
                 ],
             ])
             ->add('pays', EntityType::class, [
                 'class' => Pays::class,
                 'choice_label' => 'nom',
-                'placeholder' => 'Choisissez un pays',
+                'placeholder' => 'form.address.country.placeholder',
                 'attr' => [
                     'class' => 'form-control input',
                 ],

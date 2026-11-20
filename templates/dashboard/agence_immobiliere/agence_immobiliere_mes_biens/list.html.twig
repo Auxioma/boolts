@@ -274,7 +274,7 @@
                                             <section class="mes-biens-card mes-biens-listings">
 
                                                 <div class="d-flex align-items-center justify-content-between gap-3 mb-24">
-                                                    <h3 class="mb-0">Liste</h3>
+                                                    <h3 class="mb-0">{{ 'agency_listings.list_title'|trans }}</h3>
                                                                                     <div class="property-tools d-flex flex-nowrap justify-content-end align-items-center gap-2 ms-auto">
 
                                     <button
@@ -505,7 +505,7 @@
                                                                     {% endif %}
 
                                                                     <span class="status-badge status-badge--{{ property.statut.value }}">
-                                                                        {{ statusLabels[property.statut.value] is defined ? statusLabels[property.statut.value]|trans : property.statut.label }}
+                                                                        {{ statusLabels[property.statut.value] is defined ? statusLabels[property.statut.value]|trans : property.statut.translationKey|trans }}
                                                                     </span>
 
                                                                     {% if isBoosted %}

@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Authentification / Visiteurs / VisiteurProfileCompleteController.
@@ -32,6 +33,8 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class VisiteurProfileCompleteController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the __construct controller action.
      */
@@ -84,7 +87,7 @@ final class VisiteurProfileCompleteController extends AbstractController
             $email = (new TemplatedEmail())
                 ->from('support@boolts.com')
                 ->to((string) $user->getEmail())
-                ->subject('Votre code de connexion Boolts')
+                ->subject($this->t('email.login_code.subject'))
                 ->htmlTemplate('email/authentification/confirmation_inscription/visiteurs.html.twig')
                 ->context([
                     'user' => $user,

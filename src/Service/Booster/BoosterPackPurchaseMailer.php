@@ -20,6 +20,8 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Intl\RecipientLocale;
 
 /**
  * E-mail transactionnel de confirmation envoyé à l'agence après l'achat
@@ -37,6 +39,7 @@ final readonly class BoosterPackPurchaseMailer
         private UrlGeneratorInterface $urlGenerator,
         private string $mailerFromEmail,
         private string $mailerFromName,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -66,10 +69,12 @@ final readonly class BoosterPackPurchaseMailer
         $pack = $boostPrice->getBoosterPack();
         $quantity = $pack->getBoostQuantity();
 
+        $locale = RecipientLocale::for($agency);
         $email = (new TemplatedEmail())
             ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
             ->to(new Address($recipientEmail, $this->agencyName($agency)))
-            ->subject(\sprintf('Confirmation de votre achat — Pack boost %s', $pack->getName()))
+            ->subject($this->translator->trans('email.booster.subject', ['%name%' => $pack->getName()], null, $locale))
+            ->locale($locale)
             ->htmlTemplate('email/booster/pack_purchase_confirmation.html.twig')
             ->context([
                 'agencyName' => $this->agencyName($agency),

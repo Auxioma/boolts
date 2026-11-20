@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -140,7 +141,7 @@ export default class extends Controller {
 
             if (data.success) {
                 this.showSuccessMessage(
-                    data.message || 'Les modifications ont été effectuées avec succès !'
+                    data.message || t('profile.api.saved')
                 );
 
                 window.dispatchEvent(new CustomEvent('profile:field-saved', {
@@ -332,13 +333,13 @@ export default class extends Controller {
 
     formatOpeningHoursOutput(value) {
         const labels = {
-            lundi: 'Lundi',
-            mardi: 'Mardi',
-            mercredi: 'Mercredi',
-            jeudi: 'Jeudi',
-            vendredi: 'Vendredi',
-            samedi: 'Samedi',
-            dimanche: 'Dimanche',
+            lundi: t('common.days.monday'),
+            mardi: t('common.days.tuesday'),
+            mercredi: t('common.days.wednesday'),
+            jeudi: t('common.days.thursday'),
+            vendredi: t('common.days.friday'),
+            samedi: t('common.days.saturday'),
+            dimanche: t('common.days.sunday'),
         };
 
         const days = Object.keys(labels);
@@ -348,7 +349,7 @@ export default class extends Controller {
             const hours = value[day];
 
             if (!hours || hours.isOpen !== '1') {
-                return 'fermé';
+                return t('common.hours.closed_lower');
             }
 
             const slots = [];
@@ -361,11 +362,11 @@ export default class extends Controller {
                 slots.push(`${hours.ouvertureApresMidi || '--:--'}–${hours.fermetureApresMidi || '--:--'}`);
             }
 
-            return slots.length > 0 ? slots.join(' / ') : 'ouvert';
+            return slots.length > 0 ? slots.join(' / ') : t('common.hours.open_lower');
         });
 
-        if (dayValues.every((dayValue) => dayValue === 'fermé')) {
-            return 'Tous les jours sont fermés par défaut';
+        if (dayValues.every((dayValue) => dayValue === t('common.hours.closed_lower'))) {
+            return t('js.hours.all_closed');
         }
 
         // Regroupe les jours ayant exactement les mêmes horaires :
@@ -406,7 +407,7 @@ export default class extends Controller {
             });
 
             const dayLabel = items.length > 1
-                ? `${items.slice(0, -1).join(', ')} et ${items[items.length - 1]}`
+                ? `${items.slice(0, -1).join(', ')} ${t('common.and')} ${items[items.length - 1]}`
                 : items[0];
 
             lines.push(`${dayLabel} : ${dayValue}`);
@@ -496,12 +497,12 @@ export default class extends Controller {
 
     getClosedButtonLabel(button) {
         if (!Object.prototype.hasOwnProperty.call(button.dataset, 'fieldSaveHasValueParam')) {
-            return 'Modifier';
+            return t('settings.edit');
         }
 
         return button.dataset.fieldSaveHasValueParam === 'true'
-            ? 'Modifier'
-            : 'Définir';
+            ? t('settings.edit')
+            : t('settings.define');
     }
 
     updateButtonHasValue(button, value, fieldName) {
@@ -600,7 +601,7 @@ export default class extends Controller {
         const labels = this.getSelectedLanguagesLabels(input);
 
         if (labels.length === 0) {
-            output.textContent = 'Définissez les langues parlées par l’agence';
+            output.textContent = t('js.profile.languages_empty');
 
             return;
         }
@@ -620,7 +621,7 @@ export default class extends Controller {
 
             return labels.length > 0
                 ? labels.join(', ')
-                : 'Définissez les langues parlées par l’agence';
+                : t('js.profile.languages_empty');
         }
 
         if (this.isOpeningHoursField(fieldName)) {

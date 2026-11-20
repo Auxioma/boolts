@@ -22,12 +22,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for the first step of the registration flow.
  */
 final class RegistrationController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
         path: [
             'fr' => '/fr/signup',
@@ -95,12 +98,12 @@ final class RegistrationController extends AbstractController
                     $request->getSession()->set('auth_user_id', $user->getId());
                     $request->getSession()->set('auth_step', AgencyRegistrationProgress::STEP_CODE);
 
-                    $this->addFlash('success', 'Un code de vérification vient de vous être envoyé pour reprendre votre inscription.');
+                    $this->addFlash('success', $this->t('auth.flash.resume_code_sent'));
 
                     return $this->redirectToRoute('app_professionnelle_otp');
                 }
 
-                $this->addFlash('warning', 'Un compte existe déjà avec cette adresse. Connectez-vous ici.');
+                $this->addFlash('warning', $this->t('auth.flash.account_exists'));
 
                 return $this->redirectToRoute(
                     $isProfessional ? 'app_professionnelle_connexion' : $registrationRoute

@@ -25,6 +25,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Dashboard / Api / AgenceImmobiliere / UpdateProfileAgenceImmobiliereController.
@@ -33,6 +34,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
  */
 final class UpdateProfileAgenceImmobiliereController extends AbstractController
 {
+    use TranslatesMessages;
+
     private const PROFILE_TRANSLATION_LOCALES = ['fr', 'en'];
 
     private const TRANSLATED_PROFILE_FIELDS = [
@@ -69,7 +72,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!$user instanceof User) {
             return $this->json([
                 'success' => false,
-                'message' => 'Utilisateur non connecté.',
+                'message' => $this->t('api.error.not_logged_in'),
             ], 401);
         }
 
@@ -88,7 +91,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json(array_merge([
                 'success' => true,
-                'message' => 'Les modifications ont été effectuées avec succès !',
+                'message' => $this->t('profile.api.saved'),
                 'imageName' => $user->getImageName(),
                 'imageSize' => $user->getImageSize(),
             ], $this->getPublicProfilePayload($user)));
@@ -99,7 +102,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!\is_array($data)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Un problème est survenu avec les modifications. Réessayez.',
+                'message' => $this->t('profile.api.error'),
             ], 400);
         }
 
@@ -108,7 +111,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!$csrfTokenManager->isTokenValid($csrfToken)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Un problème est survenu avec les modifications. Réessayez.',
+                'message' => $this->t('profile.api.error'),
             ], 419);
         }
 
@@ -119,7 +122,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             if (!\is_array($value)) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Mot de passe invalide.',
+                    'message' => $this->t('profile.api.invalid_password'),
                 ], 422);
             }
 
@@ -129,21 +132,21 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             if (!$password || !$passwordConfirm) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Veuillez remplir les deux champs.',
+                    'message' => $this->t('profile.api.fill_both'),
                 ], 422);
             }
 
             if ($password !== $passwordConfirm) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Les mots de passe ne correspondent pas.',
+                    'message' => $this->t('auth.password_strength.mismatch'),
                 ], 422);
             }
 
             if (mb_strlen($password) < 12) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Le mot de passe doit contenir au moins 12 caractères.',
+                    'message' => $this->t('profile.api.password_length'),
                 ], 422);
             }
 
@@ -155,7 +158,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json(array_merge([
                 'success' => true,
-                'message' => 'Les modifications ont été effectuées avec succès !',
+                'message' => $this->t('profile.api.saved'),
                 'field' => $field,
                 'value' => '*****************',
             ], $this->getPublicProfilePayload($user)));
@@ -165,14 +168,14 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             if (!\is_array($value)) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Les horaires sont invalides.',
+                    'message' => $this->t('profile.api.invalid_hours'),
                 ], 422);
             }
 
             if (!$this->hasAtLeastOneOpeningHour($value)) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Veuillez renseigner au moins un horaire.',
+                    'message' => $this->t('profile.api.hours_required'),
                 ], 422);
             }
 
@@ -182,7 +185,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json(array_merge([
                 'success' => true,
-                'message' => 'Les horaires ont été enregistrés avec succès !',
+                'message' => $this->t('profile.api.hours_saved'),
                 'field' => $field,
                 'value' => $value,
             ], $this->getPublicProfilePayload($user)));
@@ -192,7 +195,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             if (!\is_array($value)) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Les langues sélectionnées sont invalides.',
+                    'message' => $this->t('profile.api.invalid_languages'),
                 ], 422);
             }
 
@@ -216,7 +219,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json(array_merge([
                 'success' => true,
-                'message' => 'Les langues parlées ont été enregistrées avec succès !',
+                'message' => $this->t('profile.api.languages_saved'),
                 'field' => $field,
                 'value' => $value,
             ], $this->getPublicProfilePayload($user)));
@@ -228,7 +231,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
             if (!\is_array($value)) {
                 return $this->json([
                     'success' => false,
-                    'message' => 'Adresse invalide.',
+                    'message' => $this->t('profile.api.invalid_address'),
                 ], 422);
             }
 
@@ -271,7 +274,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
             return $this->json(array_merge([
                 'success' => true,
-                'message' => 'Les modifications ont été effectuées avec succès !',
+                'message' => $this->t('profile.api.saved'),
                 'field' => $field,
                 'value' => $value,
             ], $this->getPublicProfilePayload($user)));
@@ -280,7 +283,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         if (!$field || !$form->has($field)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Un problème est survenu avec les modifications. Réessayez.',
+                'message' => $this->t('profile.api.error'),
             ], 400);
         }
 
@@ -310,7 +313,7 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
 
         return $this->json(array_merge([
             'success' => true,
-            'message' => 'Les modifications ont été effectuées avec succès !',
+            'message' => $this->t('profile.api.saved'),
             'field' => $field,
             'value' => $value,
             'whatsApp' => $data['whatsApp'] ?? null,
@@ -504,6 +507,6 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
     {
         $errors = $this->getFormErrors($form);
 
-        return $errors[0] ?? 'Formulaire invalide.';
+        return $errors[0] ?? $this->t('profile.api.invalid_form');
     }
 }

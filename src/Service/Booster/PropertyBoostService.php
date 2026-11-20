@@ -113,21 +113,21 @@ final class PropertyBoostService
         $now ??= new \DateTimeImmutable();
 
         if ($property->getUser()?->getId() !== $agency->getId()) {
-            throw new BoostException('Vous ne pouvez pas booster cette annonce.');
+            throw new BoostException('boost.error.not_owner');
         }
 
         if (!\in_array($property->getStatut(), self::ELIGIBLE_STATUSES, true)) {
-            throw new BoostException('Seules les annonces publiées ou en pause peuvent être boostées.');
+            throw new BoostException('boost.error.not_eligible');
         }
 
         if ($this->propertyBoostRepository->hasActiveBoost($property, $now)) {
-            throw new BoostException('Cette annonce est déjà boostée.');
+            throw new BoostException('boost.error.already_boosted');
         }
 
         $balance = $this->boosterTransactionRepository->countAvailableBySourceForAgency($agency, $now);
 
         if ($balance['total'] < 1) {
-            throw new BoostException('Vous n’avez plus de boost disponible. Achetez un pack boost pour en obtenir.');
+            throw new BoostException('boost.error.no_balance');
         }
 
         [$sourcePeriod, $sourcePack, $durationDays] = $this->resolveSource($agency, $balance, $now);

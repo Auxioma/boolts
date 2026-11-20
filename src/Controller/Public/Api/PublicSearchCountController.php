@@ -13,6 +13,7 @@
 namespace App\Controller\Public\Api;
 
 use App\Repository\PropertyRepository;
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,11 +27,9 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PublicSearchCountController extends AbstractController
 {
     #[Route(
-        path: [
-            'en' => '/public/search/count',
-            'fr' => '/fr/public/search/count',
-        ],
+        path: PublicRoute::PREFIX.'/public/search/count',
         name: 'app_public_search_count',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     /**

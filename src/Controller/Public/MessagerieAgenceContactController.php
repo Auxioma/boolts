@@ -13,12 +13,14 @@
 namespace App\Controller\Public;
 
 use App\Entity\User;
+use App\Routing\PublicRoute;
 use App\Service\Messagerie\MessagerieManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * Bouton « Envoie message agence » de la page agence : ouvre (ou reprend) le contact
@@ -27,12 +29,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class MessagerieAgenceContactController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
-        path: [
-            'en' => '/agency/{slug}/messagerie',
-            'fr' => '/fr/agency/{slug}/messagerie',
-        ],
+        path: PublicRoute::PREFIX.'/agency/{slug}/messagerie',
         name: 'app_public_detail_agence_messagerie',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET'],
     )]
     #[IsGranted('ROLE_USER')]
@@ -50,7 +52,7 @@ final class MessagerieAgenceContactController extends AbstractController
             || $this->isGranted('ROLE_ADMIN')
             || $agence === $user
         ) {
-            $this->addFlash('warning', 'La messagerie avec les agences est réservée aux comptes particuliers.');
+            $this->addFlash('warning', $this->t('messaging.flash.individuals_only'));
 
             return $this->redirectToRoute('app_public_detail_agence', ['slug' => $agence->getSlug()]);
         }

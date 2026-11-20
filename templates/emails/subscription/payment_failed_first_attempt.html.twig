@@ -1,9 +1,9 @@
-<p>Bonjour,</p>
+<p>{{ 'email.common.hello'|trans }}</p>
 
-<p>Nous n'avons pas pu effectuer le prélèvement correspondant au renouvellement de votre abonnement.</p>
+<p>{{ 'email.subscription.payment_failed_first_attempt.text'|trans }}</p>
 
-<p>Votre abonnement reste temporairement actif pendant la période de régularisation. Nous allons effectuer de nouvelles tentatives de paiement.</p>
+<p>{{ 'email.subscription.payment_failed_first_attempt.grace'|trans }}</p>
 
 <p>
-    <a href="{{ portal_url }}">Mettre à jour mon moyen de paiement</a>
+    <a href="{{ portal_url }}">{{ 'email.subscription.update_payment_method'|trans }}</a>
 </p>

@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Favoris{% endblock %}
+{% block title %}{{ 'navbar.mobile.favorites'|trans }}{% endblock %}
 
 {% block body %}
     {# Page intermédiaire Favoris : affichée uniquement sous 767px (d-md-none) #}
     <section class="favoris-intermediaire d-md-none px-16 pt-24">
-        <h2 class="mt-0 mb-16">Favoris</h2>
+        <h2 class="mt-0 mb-16">{{ 'navbar.mobile.favorites'|trans }}</h2>
 
         <p class="favoris-intermediaire__text text-truncate mb-16">
-            Connectez vous pour consulter vos favoris.
+            {{ 'visitor.favorites.login_required'|trans }}
         </p>
 
         {# Lien vers la page favoris protégée : Symfony mémorise la cible, redirige vers le login,
            puis renvoie sur les favoris une fois connecté. #}
         <a href="{{ path('app_dashboard_visiteur_favoris_bien') }}" class="btn-full-blue w-100">
-            Se connecter
+            {{ 'visiteur.login.submit'|trans }}
         </a>
     </section>
 

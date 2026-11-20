@@ -36,6 +36,9 @@ class DatabaseTranslator implements TranslatorInterface, TranslatorBagInterface,
     // Langue actuelle
     private $locale;
 
+    // Indique si les traductions ont déjà été chargées depuis la base
+    private bool $loaded = false;
+
     /**
      * Constructeur.
      *
@@ -55,6 +58,7 @@ class DatabaseTranslator implements TranslatorInterface, TranslatorBagInterface,
      */
     public function loadTranslations(): void
     {
+        $this->loaded = true;
         $translations = $this->translationRepository->findAll();
 
         foreach ($translations as $translation) {
@@ -75,6 +79,11 @@ class DatabaseTranslator implements TranslatorInterface, TranslatorBagInterface,
     public function trans(string $id, array $parameters = [], ?string $domain = null, ?string $locale = null): string
     {
         $locale = $locale ?? $this->getLocale();
+
+        // Chargement paresseux (CLI, workers, rendu avant le TranslationSubscriber)
+        if (!$this->loaded) {
+            $this->loadTranslations();
+        }
 
         // Si la traduction existe dans la base, on l'utilise
         if (isset($this->translations[$locale][$id])) {
@@ -111,6 +120,9 @@ class DatabaseTranslator implements TranslatorInterface, TranslatorBagInterface,
     public function getCatalogue(?string $locale = null): MessageCatalogueInterface
     {
         $locale = $locale ?? $this->getLocale();
+        if (!$this->loaded) {
+            $this->loadTranslations();
+        }
         $catalogue = new MessageCatalogue($locale);
 
         if (isset($this->translations[$locale])) {

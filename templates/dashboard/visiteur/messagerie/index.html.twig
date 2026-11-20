@@ -25,7 +25,7 @@
                         {# Figma « Messagerie — Contact direct » 7098:31998 #}
                         <section class="messagerie-annonces d-flex flex-column gap-4 pb-4">
 
-                            <h2 class="mb-0">Messagerie</h2>
+                            <h2 class="mb-0">{{ 'navbar.mobile.messaging'|trans }}</h2>
 
                             {# Onglets (« Agences » ouvert d'office pour un contact direct, ex. depuis la page agence) #}
                             {% set is_agences = (active_tab|default('annonce')) == 'agences' %}
@@ -33,13 +33,13 @@
                                 <li class="nav-item" role="presentation">
                                     <button type="button" id="messagerie-tab-annonce" class="messagerie-annonces__tab nav-link{{ is_agences ? '' : ' active' }} position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-annonce" role="tab" aria-controls="messagerie-pane-annonce" aria-selected="{{ is_agences ? 'false' : 'true' }}">
                                         <span class="messagerie-annonces__tab-dot messagerie-annonces__tab-dot--annonce position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
-                                        Annonce
+                                        {{ 'messaging.tab.listing'|trans }}
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button type="button" id="messagerie-tab-agences" class="messagerie-annonces__tab nav-link{{ is_agences ? ' active' }} position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-agences" role="tab" aria-controls="messagerie-pane-agences" aria-selected="{{ is_agences ? 'true' : 'false' }}">
                                         <span class="messagerie-annonces__tab-dot position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
-                                        Agences
+                                        {{ 'messaging.tab.agencies'|trans }}
                                     </button>
                                 </li>
                             </ul>

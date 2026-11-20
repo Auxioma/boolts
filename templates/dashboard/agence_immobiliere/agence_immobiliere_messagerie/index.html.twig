@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Messagerie{% endblock %}
+{% block title %}{{ 'agency_dashboard.sidebar.messaging'|trans }}{% endblock %}
 
 {% block body %}
     {# Contenu statique de la maquette — Figma « Messagerie — Étape 2 · Conversations » 6973:16301 #}
@@ -64,24 +64,24 @@
                     <div class="col-12 col-md-10 mx-auto">
                         <section class="messagerie-annonces d-flex flex-column gap-4 pb-4">
 
-                            <h2 class="mb-0">Messagerie</h2>
+                            <h2 class="mb-0">{{ 'agency_dashboard.sidebar.messaging'|trans }}</h2>
 
                             {# Onglets #}
                             <ul class="messagerie-annonces__tabs nav nav-underline border-bottom" role="tablist">
                                 <li class="nav-item" role="presentation">
                                     <button type="button" id="messagerie-tab-annonce" class="messagerie-annonces__tab nav-link active position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-annonce" role="tab" aria-controls="messagerie-pane-annonce" aria-selected="true">
                                         <span class="messagerie-annonces__tab-dot messagerie-annonces__tab-dot--annonce position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
-                                        Annonce
+                                        {{ 'messaging.tab.listing'|trans }}
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
                                     <button type="button" id="messagerie-tab-contact" class="messagerie-annonces__tab nav-link position-relative p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-contact" role="tab" aria-controls="messagerie-pane-contact" aria-selected="false">
                                         <span class="messagerie-annonces__tab-dot position-absolute rounded-circle bg-primary" aria-hidden="true"></span>
-                                        Contact
+                                        {{ 'messaging.tab.contact'|trans }}
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button type="button" id="messagerie-tab-service-client" class="messagerie-annonces__tab nav-link p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-service-client" role="tab" aria-controls="messagerie-pane-service-client" aria-selected="false">Service client</button>
+                                    <button type="button" id="messagerie-tab-service-client" class="messagerie-annonces__tab nav-link p-accent fw-bold pt-0" data-bs-toggle="tab" data-bs-target="#messagerie-pane-service-client" role="tab" aria-controls="messagerie-pane-service-client" aria-selected="false">{{ 'messaging.tab.customer_service'|trans }}</button>
                                 </li>
                             </ul>
 

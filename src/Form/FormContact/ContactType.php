@@ -26,33 +26,33 @@ final class ContactType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-                'label' => 'Nom',
+                'label' => 'form.last_name.label',
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Veuillez saisir votre nom',
+                    'placeholder' => 'form.last_name.not_blank_placeholder',
                     'class' => 'contact_lastname',
                 ],
             ])
             ->add('prenom', TextType::class, [
-                'label' => 'Prénom',
+                'label' => 'form.first_name.label',
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Veuillez saisir votre prénom',
+                    'placeholder' => 'form.first_name.not_blank_placeholder',
                     'class' => 'contact_firstname',
                 ],
             ])
             ->add('email', EmailType::class, [
-                'label' => 'Email',
+                'label' => 'form.email.short_label',
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Veuillez saisir votre e-mail',
+                    'placeholder' => 'form.email.short_placeholder',
                 ],
             ])
             ->add('message', TextareaType::class, [
-                'label' => 'Message',
+                'label' => 'form.message.label',
                 'required' => true,
                 'attr' => [
-                    'placeholder' => 'Veuillez saisir votre message',
+                    'placeholder' => 'form.message.placeholder',
                     'class' => 'contact_message',
                     'rows' => 6,
                 ],

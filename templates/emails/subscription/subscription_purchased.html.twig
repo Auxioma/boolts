@@ -5,79 +5,79 @@
  Maintenance: le contenu s'adapte à la périodicité et au forfait acheté.
 #}
 
-<p>Bonjour,</p>
+<p>{{ 'email.common.hello'|trans }}</p>
 
-<p>
-    Nous vous confirmons l’achat de votre abonnement
-    <strong>{{ plan_name|default('Boolts') }}</strong>
-    en formule
-    {% if billing_period == 'annual' %}annuelle{% else %}mensuelle{% endif %}.
-</p>
+<p>{{ 'email.subscription.purchased.intro'|trans({'%plan%': '<strong>' ~ plan_name|default('Boolts')|e ~ '</strong>', '%period%': (billing_period == 'annual' ? 'email.subscription.period.annual' : 'email.subscription.period.monthly')|trans})|raw }}</p>
 
-<p>Récapitulatif de votre achat :</p>
+<p>{{ 'email.subscription.purchased.summary'|trans }}</p>
 
 <table role="presentation" cellpadding="6" cellspacing="0" border="0">
     <tr>
-        <td><strong>Forfait</strong></td>
+        <td><strong>{{ 'email.subscription.label.plan'|trans }}</strong></td>
         <td>{{ plan_name|default('Boolts') }}</td>
     </tr>
     <tr>
-        <td><strong>Périodicité</strong></td>
-        <td>{% if billing_period == 'annual' %}Annuelle{% else %}Mensuelle{% endif %}</td>
+        <td><strong>{{ 'email.subscription.label.period'|trans }}</strong></td>
+        <td>{{ (billing_period == 'annual' ? 'email.subscription.period.annual_cap' : 'email.subscription.period.monthly_cap')|trans }}</td>
     </tr>
     {% if amount_minor is defined and amount_minor is not null %}
     <tr>
-        <td><strong>Montant réglé</strong></td>
+        <td><strong>{{ 'email.subscription.label.amount_paid'|trans }}</strong></td>
         <td>
             {{ amount_minor|minor_amount(currency_name|default(null)) }} {{ currency_sign|default('') }}
-            {% if billing_period == 'annual' %}/ an{% else %}/ mois{% endif %}
+            {{ (billing_period == 'annual' ? 'email.subscription.per_year' : 'email.subscription.per_month')|trans }}
         </td>
     </tr>
     {% endif %}
     {% if payment_reference is defined and payment_reference %}
     <tr>
-        <td><strong>Référence de paiement</strong></td>
+        <td><strong>{{ 'email.subscription.label.payment_reference'|trans }}</strong></td>
         <td>{{ payment_reference }}</td>
     </tr>
     {% endif %}
     {% if period_start is defined and period_start %}
     <tr>
-        <td><strong>Période en cours</strong></td>
+        <td><strong>{{ 'email.subscription.label.current_period'|trans }}</strong></td>
         <td>
-            du {{ period_start|date('d/m/Y') }}
-            {% if period_end is defined and period_end %}au {{ period_end|date('d/m/Y') }}{% endif %}
+            {% if period_end is defined and period_end %}
+                {{ 'email.subscription.period_range'|trans({'%start%': period_start|date('d/m/Y'), '%end%': period_end|date('d/m/Y')}) }}
+            {% else %}
+                {{ 'email.subscription.period_from'|trans({'%start%': period_start|date('d/m/Y')}) }}
+            {% endif %}
         </td>
     </tr>
     {% endif %}
     {% if period_end is defined and period_end %}
     <tr>
-        <td><strong>Prochain renouvellement</strong></td>
+        <td><strong>{{ 'email.subscription.label.next_renewal'|trans }}</strong></td>
         <td>{{ period_end|date('d/m/Y') }}</td>
     </tr>
     {% endif %}
     {% if property_limit is defined and property_limit is not null %}
     <tr>
-        <td><strong>Annonces incluses</strong></td>
+        <td><strong>{{ 'email.subscription.label.property_limit'|trans }}</strong></td>
         <td>{{ property_limit }}</td>
     </tr>
     {% endif %}
     {% if included_boosts is defined and included_boosts is not null and included_boosts > 0 %}
     <tr>
-        <td><strong>Crédits Boost inclus par période</strong></td>
+        <td><strong>{{ 'email.subscription.label.included_boosts'|trans }}</strong></td>
         <td>{{ included_boosts }}</td>
     </tr>
     {% endif %}
 </table>
 
 <p>
-    Votre abonnement est actif immédiatement. Il se renouvellera automatiquement
-    {% if billing_period == 'annual' %}chaque année{% else %}chaque mois{% endif %}
-    {% if period_end is defined and period_end %}, à compter du {{ period_end|date('d/m/Y') }}{% endif %}.
+    {% if period_end is defined and period_end %}
+        {{ (billing_period == 'annual' ? 'email.subscription.purchased.renewal_yearly_from' : 'email.subscription.purchased.renewal_monthly_from')|trans({'%date%': period_end|date('d/m/Y')}) }}
+    {% else %}
+        {{ (billing_period == 'annual' ? 'email.subscription.purchased.renewal_yearly' : 'email.subscription.purchased.renewal_monthly')|trans }}
+    {% endif %}
 </p>
 
 <p>
-    Vous pouvez gérer votre abonnement et votre moyen de paiement depuis votre espace :
-    <a href="{{ portal_url }}">Gérer mon abonnement</a>
+    {{ 'email.subscription.manage_intro'|trans }}
+    <a href="{{ portal_url }}">{{ 'email.subscription.manage_link'|trans }}</a>
 </p>
 
-<p>À bientôt,<br>L’équipe Boolts</p>
+<p>{{ 'email.common.signature'|trans|raw }}</p>

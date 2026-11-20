@@ -7,7 +7,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Récapitulatif de votre achat{% endblock %}
+{% block title %}{{ 'checkout.title'|trans }}{% endblock %}
 
 {% block body %}
 
@@ -34,7 +34,7 @@
                                 <div class="row achat-forfait-row">
 
                                     <h2 class="achat-forfait-main-title mb-24">
-                                        Récapitulatif de votre achat
+                                        {{ 'checkout.title'|trans }}
                                     </h2>
                                     <div class="col-12 col-xl-6 mt-0">
 
@@ -43,12 +43,12 @@
 
                                             <section class="achat-forfait-section">
                                                 <h3 class="achat-forfait-section-title">
-                                                    Article
+                                                    {{ 'checkout.article'|trans }}
                                                 </h3>
 
                                                 <div class="achat-forfait-product-description">
                                                     <p class="achat-forfait-product-name">
-                                                        1 x Pack boost {{ boost_pack.name }}
+                                                        {{ 'checkout.boost_item'|trans({'%name%': boost_pack.name}) }}
                                                     </p>
                                                 </div>
                                             </section>
@@ -58,7 +58,7 @@
                                                 data-options--boost-purchase-target="defaultCardBlock"
                                             >
                                                 <h3 class="achat-forfait-section-title">
-                                                    Moyen de paiement
+                                                    {{ 'checkout.payment_method'|trans }}
                                                 </h3>
 
                                                 {% set card_logo_files = {
@@ -102,7 +102,7 @@
                                                                 id="selected-card-name"
                                                                 data-options--boost-purchase-target="selectedCardName"
                                                             >
-                                                                {{ default_payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                                {{ default_payment_method.brand|default('checkout.card'|trans)|capitalize }}
                                                                 {{ default_payment_method.last4 }}
                                                             </p>
 
@@ -111,8 +111,7 @@
                                                                 id="selected-card-expiration"
                                                                 data-options--boost-purchase-target="selectedCardExpiration"
                                                             >
-                                                                Date d’expiration :
-                                                                {{ '%02d'|format(default_payment_method.expMonth) }}/{{ default_payment_method.expYear }}
+                                                                {{ 'checkout.expiration'|trans({'%date%': '%02d'|format(default_payment_method.expMonth) ~ '/' ~ default_payment_method.expYear}) }}
                                                             </p>
                                                         </div>
 
@@ -126,7 +125,7 @@
                                                                 data-options--boost-purchase-target="showPaymentMethodsButton"
                                                                 data-action="options--boost-purchase#showPaymentMethods"
                                                             >
-                                                                Modifier
+                                                                {{ 'checkout.edit'|trans }}
                                                             </button>
                                                         {% endif %}
                                                     </div>
@@ -138,7 +137,7 @@
                                                             data-action="payment-method#open"
                                                         >
                                                             <span class="icon-plus mr-6"></span>
-                                                            Ajouter un mode de paiement
+                                                            {{ 'checkout.add_payment_method'|trans }}
                                                         </button>
                                                     </div>
                                                 {% endif %}
@@ -152,7 +151,7 @@
                                                     data-options--boost-purchase-target="paymentBlock"
                                                 >
                                                     <h3 class="achat-forfait-section-title">
-                                                        Moyen de paiement
+                                                        {{ 'checkout.payment_method'|trans }}
                                                     </h3>
 
                                                     <div class="achat-forfait-payment-list">
@@ -175,9 +174,9 @@
                                                                     value="{{ payment_method.id }}"
                                                                     class="visually-hidden"
                                                                     {% if is_current %}checked{% endif %}
-                                                                    data-card-name="{{ payment_method.brand|default('Carte bancaire')|capitalize }} {{ payment_method.last4 }}"
-                                                                    data-card-expiration="Date d’expiration : {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}"
-                                                                    data-card-brand="{{ payment_method.brand|default('Carte bancaire')|capitalize }}"
+                                                                    data-card-name="{{ payment_method.brand|default('checkout.card'|trans)|capitalize }} {{ payment_method.last4 }}"
+                                                                    data-card-expiration="{{ 'checkout.expiration'|trans({'%date%': '%02d'|format(payment_method.expMonth) ~ '/' ~ payment_method.expYear}) }}"
+                                                                    data-card-brand="{{ payment_method.brand|default('checkout.card'|trans)|capitalize }}"
                                                                     data-card-logo="{{ option_logo }}"
                                                                     data-options--boost-purchase-target="paymentMethod"
                                                                     data-action="change->options--boost-purchase#selectPaymentMethod"
@@ -200,13 +199,12 @@
 
                                                                 <span class="achat-forfait-bank-card-content">
                                                                     <span class="achat-forfait-bank-card-name p-accent">
-                                                                        {{ payment_method.brand|default('Carte bancaire')|capitalize }}
+                                                                        {{ payment_method.brand|default('checkout.card'|trans)|capitalize }}
                                                                         {{ payment_method.last4 }}
                                                                     </span>
 
                                                                     <span class="achat-forfait-bank-card-expiration paragraphe">
-                                                                        Date d’expiration :
-                                                                        {{ '%02d'|format(payment_method.expMonth) }}/{{ payment_method.expYear }}
+                                                                        {{ 'checkout.expiration'|trans({'%date%': '%02d'|format(payment_method.expMonth) ~ '/' ~ payment_method.expYear}) }}
                                                                     </span>
                                                                 </span>
                                                             </label>
@@ -220,7 +218,7 @@
                                                             id="confirm-payment-method"
                                                             data-action="options--boost-purchase#confirmPaymentMethod"
                                                         >
-                                                            Utiliser cette méthode de paiement
+                                                            {{ 'checkout.use_payment_method'|trans }}
                                                         </button>
 
                                                         <button
@@ -229,7 +227,7 @@
                                                             data-action="payment-method#open"
                                                         >
                                                             <i class="icon-plus me-1" aria-hidden="true"></i>
-                                                            <span>Ajouter un mode de paiement</span>
+                                                            <span>{{ 'checkout.add_payment_method'|trans }}</span>
                                                         </button>
                                                     </div>
                                                 </section>
@@ -241,7 +239,7 @@
                                     <div class="col-12 col-xl-6 mt-3 mt-xl-0">
                                         <aside class="achat-forfait-card achat-forfait-summary-card">
                                             <div class="achat-forfait-total">
-                                                <strong>Montant total :</strong>
+                                                <strong>{{ 'checkout.total'|trans }}</strong>
 
                                                 <strong>
                                                     {{ boost_price.amountMinor|minor_amount(boost_price.currency) }}
@@ -257,7 +255,7 @@
                                                 data-action="options--boost-purchase#purchase"
                                                 {% if not default_payment_method %}disabled{% endif %}
                                             >
-                                                Acheter le pack boost
+                                                {{ 'checkout.buy_boost'|trans }}
                                             </button>
 
 
@@ -291,14 +289,14 @@
                     type="button"
                     class="payment-modal-close"
                     data-action="payment-method#close"
-                    aria-label="Fermer"
+                    aria-label="{{ 'payment_modal.close'|trans }}"
                 >
                     <i class="icon-x" aria-hidden="true"></i>
                 </button>
 
                 <div class="payment-modal-header">
                     <h3 id="payment-modal-title" class="payment-modal-title">
-                        Indiquez les informations de votre carte
+                        {{ 'payment_modal.title'|trans }}
                     </h3>
                 </div>
 
@@ -321,14 +319,14 @@
 
                     <div class="payment-form-group">
                         <label for="payment-cardholder-name" class="mb-16 p-accent">
-                            Nom du titulaire
+                            {{ 'payment_modal.holder'|trans }}
                         </label>
 
                         <input
                             type="text"
                             id="payment-cardholder-name"
                             class="form-control input mb-16"
-                            placeholder="Saisissez le nom du titulaire"
+                            placeholder="{{ 'payment_modal.holder_placeholder'|trans }}"
                             autocomplete="cc-name"
                             data-payment-method-target="cardholderName"
                             required
@@ -337,7 +335,7 @@
 
                     <div class="payment-form-group">
                         <label class="mb-16 p-accent">
-                            Numéro de la carte
+                            {{ 'payment_modal.number'|trans }}
                         </label>
 
                         <div
@@ -349,7 +347,7 @@
                     <div class="payment-form-row">
                         <div class="payment-form-group payment-form-group--half">
                             <label class="mb-16 p-accent">
-                                Date d’expiration
+                                {{ 'payment_modal.expiry'|trans }}
                             </label>
 
                             <div
@@ -360,7 +358,7 @@
 
                         <div class="payment-form-group payment-form-group--half">
                             <label class="mb-16 p-accent">
-                                Code de sécurité
+                                {{ 'payment_modal.cvc'|trans }}
                             </label>
 
                             <div
@@ -372,7 +370,7 @@
 
                     <div class="payment-form-group">
                         <label for="payment-country " class="mb-16 p-accent">
-                            Pays
+                            {{ 'payment_modal.country'|trans }}
                         </label>
 
                         <select
@@ -382,17 +380,17 @@
                             data-payment-method-target="country"
                             required
                         >
-                            <option value="FR" selected>France</option>
-                            <option value="BE">Belgique</option>
-                            <option value="CH">Suisse</option>
-                            <option value="LU">Luxembourg</option>
-                            <option value="MC">Monaco</option>
-                            <option value="DE">Allemagne</option>
-                            <option value="ES">Espagne</option>
-                            <option value="IT">Italie</option>
-                            <option value="PT">Portugal</option>
-                            <option value="NL">Pays-Bas</option>
-                            <option value="GB">Royaume-Uni</option>
+                            <option value="FR" selected>{{ 'FR'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="BE">{{ 'BE'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="CH">{{ 'CH'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="LU">{{ 'LU'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="MC">{{ 'MC'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="DE">{{ 'DE'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="ES">{{ 'ES'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="IT">{{ 'IT'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="PT">{{ 'PT'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="NL">{{ 'NL'|country_name(app.request.locale|default('fr')) }}</option>
+                            <option value="GB">{{ 'GB'|country_name(app.request.locale|default('fr')) }}</option>
                         </select>
                     </div>
 
@@ -406,7 +404,7 @@
                         >
 
                         <span></span>
-                        Définir comme moyen de paiement par défaut
+                        {{ 'payment_modal.default'|trans }}
                     </label>
 
                     <div class="payment-modal-actions">
@@ -415,7 +413,7 @@
                             class="btn-full-white w-auto"
                             data-action="payment-method#close"
                         >
-                            Annuler
+                            {{ 'payment_modal.cancel'|trans }}
                         </button>
 
                         <button
@@ -424,7 +422,7 @@
                             data-payment-method-target="submitButton"
                             disabled
                         >
-                            Ajouter
+                            {{ 'payment_modal.submit'|trans }}
                         </button>
                     </div>
                 </form>

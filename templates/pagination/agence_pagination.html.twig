@@ -1,7 +1,7 @@
 {# templates/pagination/agence_pagination.html.twig #}
 
 {% if pageCount > 1 %}
-    <nav class="agence-pagination" aria-label="Pagination">
+    <nav class="agence-pagination" aria-label="{{ 'common.pagination.aria_label'|trans }}">
 
         {# Flèche gauche #}
         {% if previous is defined %}

@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="fr">
+<html lang="{{ app.request.locale|default('fr') }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light only">
   <meta name="supported-color-schemes" content="light">
-  <title>Vos documents ont été validés — Boolts</title>
+  <title>{{ 'email.document.validated.meta_title'|trans }}</title>
   <style>
   :root {
   --brand: #5d00ff;
@@ -304,7 +304,7 @@ h1 a {
 </style>
 </head>
 <body>
-  <div class="email-page" role="article" aria-label="Confirmation de validation des documents">
+  <div class="email-page" role="article" aria-label="{{ 'email.document.validated.aria'|trans }}">
     <header class="email-header">
       <a class="brand brand--light" href="https://boolts.com" aria-label="Boolts">
         <span class="brand__mark" aria-hidden="true"><i></i></span>
@@ -314,23 +314,22 @@ h1 a {
 
     <main class="email-content">
       <h1>
-        Vos documents ont bien été validés,<br>
-        vous êtes bien inscrit sur <a href="https://boolts.com">boolts.com</a> !
+        {{ 'email.document.validated.title'|trans({'%link%': '<a href="https://boolts.com">boolts.com</a>'})|raw }}
       </h1>
 
       <div class="message">
-        <p>Vos documents ont été vérifiés et acceptés par nos équipes.</p>
-        <p>Votre compte est désormais actif et vous pouvez dès maintenant profiter de l’ensemble de nos fonctionnalités. Nous sommes ravis de vous accueillir parmi nous.</p>
-        <p>Pour commencer, vous pouvez vous connecter à votre espace et personnaliser votre profil afin de tirer le meilleur de l’expérience Boolts.</p>
-        <p>Si vous avez la moindre question ou besoin d’assistance, notre équipe est disponible pour vous aider.</p>
-        <p>Bienvenue à bord, et merci de votre confiance.</p>
+        <p>{{ 'email.document.validated.checked'|trans }}</p>
+        <p>{{ 'email.document.validated.active'|trans }}</p>
+        <p>{{ 'email.document.validated.start'|trans }}</p>
+        <p>{{ 'email.document.validated.help'|trans }}</p>
+        <p>{{ 'email.document.validated.welcome'|trans }}</p>
 
-        <a class="button" href="https://boolts.com/dashboard">Découvrir mon tableau de bord</a>
+        <a class="button" href="{{ dashboardUrl|default('https://boolts.com/dashboard') }}">{{ 'email.document.validated.cta'|trans }}</a>
       </div>
 
       <p class="support">
-        Vous avez des soucis pour vous connecter ?<br>
-        Contactez notre support : <a href="mailto:contact@boolts.com">contact@boolts.com</a>
+        {{ 'email.common.support.text'|trans }}<br>
+        {{ 'email.common.support.contact'|trans }} <a href="mailto:contact@boolts.com">contact@boolts.com</a>
       </p>
     </main>
 
@@ -344,19 +343,19 @@ h1 a {
         </div>
 
         <div class="footer-links">
-          <div class="socials" aria-label="Réseaux sociaux">
+          <div class="socials" aria-label="{{ 'email.common.socials'|trans }}">
             <a class="instagram" href="#" aria-label="Instagram"><span aria-hidden="true"></span></a>
             <a class="facebook" href="#" aria-label="Facebook">f</a>
           </div>
-          <a href="#">CGU</a>
-          <a href="mailto:contact@boolts.com">Nous contacter</a>
+          <a href="#">{{ 'email.common.cgu'|trans }}</a>
+          <a href="mailto:contact@boolts.com">{{ 'email.common.contact'|trans }}</a>
         </div>
       </div>
 
       <div class="legal">
-        <p>Boolts is a registered trademark. Instagram and Facebook are trademarks of Meta Inc., registered in the U.S. and other countries.<br>
-        Vous avez reçu ce message parce que vous vous êtes inscrit sur notre site le 26/02/2026.<br>
-        Vous ne souhaitez plus recevoir d’e-mail de notre part ? <a href="#">Cliquez ici.</a></p>
+        <p>{{ 'email.common.legal'|trans }}<br>
+        {{ 'email.common.received'|trans({'%date%': registrationDate|default('')}) }}<br>
+        {{ 'email.common.unsubscribe_text'|trans }} <a href="#">{{ 'email.common.unsubscribe_link'|trans }}</a></p>
       </div>
     </footer>
   </div>

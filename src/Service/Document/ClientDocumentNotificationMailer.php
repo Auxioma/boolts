@@ -18,6 +18,8 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use App\Service\Intl\RecipientLocale;
 
 final readonly class ClientDocumentNotificationMailer
 {
@@ -27,6 +29,7 @@ final readonly class ClientDocumentNotificationMailer
         private UrlGeneratorInterface $urlGenerator,
         private string $mailerFromEmail,
         private string $mailerFromName,
+        private TranslatorInterface $translator,
     ) {
     }
 
@@ -39,7 +42,7 @@ final readonly class ClientDocumentNotificationMailer
     {
         $this->sendReviewSummaryNotification(
             client: $client,
-            subject: 'Vos documents ont été validés',
+            subject: 'email.document.validated.subject',
             template: 'email/document/valider.html.twig',
             failureMessage: 'Document review approval summary could not be sent.',
             emptyEmailMessage: 'Document review approval summary skipped because client email is empty.',
@@ -55,7 +58,7 @@ final readonly class ClientDocumentNotificationMailer
     {
         $this->sendReviewSummaryNotification(
             client: $client,
-            subject: 'Un ou plusieurs de vos documents n’ont pas été acceptés',
+            subject: 'email.document.rejected.subject',
             template: 'email/document/refus.html.twig',
             failureMessage: 'Document review rejection summary could not be sent.',
             emptyEmailMessage: 'Document review rejection summary skipped because client email is empty.',
@@ -78,14 +81,17 @@ final readonly class ClientDocumentNotificationMailer
             return false;
         }
 
+        $locale = RecipientLocale::for($client);
         $email = (new TemplatedEmail())
             ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
             ->to(new Address($recipientEmail, $this->clientName($client)))
-            ->subject(\sprintf(
-                'Votre compte Boolts sera supprimé dans %d %s',
-                $daysBeforeDeletion,
-                1 === $daysBeforeDeletion ? 'jour' : 'jours',
+            ->subject($this->translator->trans(
+                1 === $daysBeforeDeletion ? 'email.document.deletion.subject_days.one' : 'email.document.deletion.subject_days.other',
+                ['%count%' => $daysBeforeDeletion],
+                null,
+                $locale,
             ))
+            ->locale($locale)
             ->htmlTemplate('email/document/account_deletion_warning.html.twig')
             ->context([
                 'user' => $client,
@@ -133,10 +139,12 @@ final readonly class ClientDocumentNotificationMailer
             return;
         }
 
+        $locale = RecipientLocale::for($client);
         $email = (new TemplatedEmail())
             ->from(new Address($this->mailerFromEmail, $this->mailerFromName))
             ->to(new Address($recipientEmail, $this->clientName($client)))
-            ->subject($subject)
+            ->subject($this->translator->trans($subject, [], null, $locale))
+            ->locale($locale)
             ->htmlTemplate($template)
             ->context([
                 'user' => $client,

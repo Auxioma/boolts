@@ -11,13 +11,13 @@
 
 {% block body %}
 {% set openingDays = [
-    {key: 'lundi', label: 'Lundi'},
-    {key: 'mardi', label: 'Mardi'},
-    {key: 'mercredi', label: 'Mercredi'},
-    {key: 'jeudi', label: 'Jeudi'},
-    {key: 'vendredi', label: 'Vendredi'},
-    {key: 'samedi', label: 'Samedi'},
-    {key: 'dimanche', label: 'Dimanche'},
+    {key: 'lundi', label: 'common.days.monday'|trans},
+    {key: 'mardi', label: 'common.days.tuesday'|trans},
+    {key: 'mercredi', label: 'common.days.wednesday'|trans},
+    {key: 'jeudi', label: 'common.days.thursday'|trans},
+    {key: 'vendredi', label: 'common.days.friday'|trans},
+    {key: 'samedi', label: 'common.days.saturday'|trans},
+    {key: 'dimanche', label: 'common.days.sunday'|trans},
 ] %}
 
 {% set openingHoursByDay = {} %}
@@ -67,7 +67,7 @@
     <main class="registration d-flex">
         <section class="registration__content">
             <div class="registration__inner">
-                <h2 class="registration__title">Remplissez les<br>derniers détails...</h2>
+                <h2 class="registration__title">{{ 'professionnel.register.step6.title'|trans|raw }}</h2>
 
                 {{ include('authentification/agence_immobiliere/_progress.html.twig', { currentStep: 4 }) }}
 
@@ -79,7 +79,7 @@
                     {{ form_errors(form) }}
 
                     <div class="registration__field">
-                        <label class="p-accent">Horaires de l'agence (facultatif)</label>
+                        <label class="p-accent">{{ 'professionnel.register.step6.hours'|trans }}</label>
 
                         <div
                             class="opening-hours"
@@ -105,7 +105,7 @@
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             <select id="{{ hourForm.ouvertureMatin.vars.id }}" name="{{ hourForm.ouvertureMatin.vars.full_name }}" class="js-opening-time">{{ openingTimeOptions }}</select>
@@ -158,17 +158,17 @@
                                     class: 'step6-terms-input',
                                 },
                             }) }}
-                            <label for="{{ form.acceptTerms.vars.id }}" class="mb-0 p-accent" style="color: #858789;">J'accepte les conditions d'utilisation de Boolts.*</label>
+                            <label for="{{ form.acceptTerms.vars.id }}" class="mb-0 p-accent" style="color: #858789;">{{ 'professionnel.register.agency.terms.label'|trans }}</label>
                         </div>
                         {{ form_errors(form.acceptTerms) }}
                     </div>
 
-                    <button class="registration__submit btn-full-blue" type="submit">S'inscrire</button>
+                    <button class="registration__submit btn-full-blue" type="submit">{{ 'professionnel.register.step6.submit'|trans }}</button>
                 {{ form_end(form) }}
             </div>
         </section>
 
-        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+        <div class="registration__visual" role="img" aria-label="{{ 'auth.hero.aria_label'|trans }}"></div>
     </main>
 {% endblock %}
 

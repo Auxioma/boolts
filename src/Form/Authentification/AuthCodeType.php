@@ -26,15 +26,15 @@ final class AuthCodeType extends AbstractType
     {
         $builder->add('code', HiddenType::class, [
             'constraints' => [
-                new NotBlank(message: 'Veuillez saisir le code reçu par email.'),
+                new NotBlank(message: 'form.code.not_blank'),
                 new Length(
                     min: 6,
                     max: 6,
-                    exactMessage: 'Le code doit contenir exactement 6 chiffres.'
+                    exactMessage: 'form.code.exact_length'
                 ),
                 new Regex(
                     pattern: '/^\d{6}$/',
-                    message: 'Le code doit contenir uniquement 6 chiffres.'
+                    message: 'form.code.digits_only'
                 ),
             ],
             'attr' => [

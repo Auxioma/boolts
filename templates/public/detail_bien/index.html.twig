@@ -56,7 +56,7 @@
                         class="icon-heart bt-icon-btn bt-icon-btn--small bt-mobile-topbar__favorite position-absolute end-0 me-2 {{ isFavorite ? 'is-active' : '' }}"
                         role="button"
                         tabindex="0"
-                        aria-label="{{ isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris' }}"
+                        aria-label="{{ (isFavorite ? 'search.card.favorite.remove' : 'search.card.favorite.add')|trans }}"
                         aria-pressed="{{ isFavorite ? 'true' : 'false' }}"
                         data-controller="favorite"
                         data-action="click->favorite#toggle keydown.enter->favorite#toggle"
@@ -192,7 +192,7 @@
 
 
 <a href="{{ path('app_public_detail_bien_messagerie', {slug: property.slug}) }}" class="agence-btn agence-btn-whatsapp p-accent" data-turbo="false">
-test messagerie
+{{ 'detail_bien.contact.message'|trans }}
 </a>
 
 

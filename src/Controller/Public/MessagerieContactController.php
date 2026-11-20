@@ -14,12 +14,14 @@ namespace App\Controller\Public;
 
 use App\Entity\Property;
 use App\Entity\User;
+use App\Routing\PublicRoute;
 use App\Service\Messagerie\MessagerieManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * Ouvre (ou reprend) la conversation entre le visiteur connecté et l'agence d'un bien,
@@ -27,12 +29,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class MessagerieContactController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
-        path: [
-            'en' => '/public/detail/bien/{slug}/messagerie',
-            'fr' => '/fr/public/detail/bien/{slug}/messagerie',
-        ],
+        path: PublicRoute::PREFIX.'/public/detail/bien/{slug}/messagerie',
         name: 'app_public_detail_bien_messagerie',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET'],
     )]
     #[IsGranted('ROLE_USER')]
@@ -50,7 +52,7 @@ final class MessagerieContactController extends AbstractController
             || null === $property->getUser()
             || $property->getUser() === $user
         ) {
-            $this->addFlash('warning', 'La messagerie avec les agences est réservée aux comptes particuliers.');
+            $this->addFlash('warning', $this->t('messaging.flash.individuals_only'));
 
             return $this->redirectToRoute('app_public_detail_bien', ['slug' => $property->getSlug()]);
         }

@@ -26,11 +26,11 @@ class ResetPasswordRequestFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'attr' => [
                     'autocomplete' => 'email',
-                    'placeholder' => 'Veuillez entrer votre adresse e-mail',
+                    'placeholder' => 'form.email.placeholder',
                 ],
                 'constraints' => [
                     new NotBlank(
-                        message: 'Please enter your email',
+                        message: 'form.email.not_blank',
                     ),
                 ],
             ])

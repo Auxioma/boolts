@@ -18,14 +18,17 @@ use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\CategoryBienTransactionRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\Search\PropertySearchSessionRepository;
+use App\Routing\PublicRoute;
+use App\Service\Intl\UrlCountryResolver;
 use App\Service\Intl\VisitorLocaleResolver;
-use App\Service\IpLocationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
+use App\Controller\Traits\TranslatesMessages;
 
 /**
  * HTTP controller for module Public / HomeController.
@@ -34,6 +37,8 @@ use Symfony\Component\Uid\Uuid;
  */
 final class HomeController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Handles the __construct controller action.
      */
@@ -46,12 +51,35 @@ final class HomeController extends AbstractController
     ) {
     }
 
+    /**
+     * Racine du site : redirection (302, la cible dépend du visiteur) vers
+     * l'accueil dans la langue et le pays détectés, ex. /fr-fr/ ou /ca-en/.
+     */
+    #[Route(path: '/', name: 'app_root', methods: ['GET'])]
+    public function root(
+        Request $request,
+        VisitorLocaleResolver $visitorLocaleResolver,
+        UrlCountryResolver $urlCountryResolver,
+    ): RedirectResponse {
+        $url = $this->generateUrl('app_home', [
+            '_locale' => $visitorLocaleResolver->resolve($request)['locale'],
+            UrlCountryResolver::ROUTE_PARAM => $urlCountryResolver->visitorCountry($request),
+        ]);
+
+        if (null !== $query = $request->getQueryString()) {
+            $url .= '?'.$query;
+        }
+
+        $response = new RedirectResponse($url, RedirectResponse::HTTP_FOUND);
+        $response->setPrivate();
+
+        return $response;
+    }
+
     #[Route(
-        path: [
-            'en' => '/',
-            'fr' => '/fr',
-        ],
+        path: PublicRoute::PREFIX.'/',
         name: 'app_home',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     /**
@@ -60,25 +88,16 @@ final class HomeController extends AbstractController
     public function index(
         CategoryBienTransactionRepository $categoryBienTransactionRepository,
         Request $request,
-        IpLocationService $ipLocationService,
         VisitorLocaleResolver $visitorLocaleResolver,
+        UrlCountryResolver $urlCountryResolver,
     ): Response {
-        /**
-         * Je récupere l'IP de l'utilisateur pour localisé les biens.
-         */
-        $ip = $request->getClientIp();
-        $location = $ipLocationService->locate($ip);
-
         /*
-         * On raisonne en code ISO 3166-1 (ex. "FR") et non plus sur le libellé
-         * du pays : les annonces sont filtrées via Property::$codeIsoPays, qui
-         * ne dépend ni de la langue de l'annonce ni de celle du visiteur.
+         * Les biens affichés sont ceux du pays de l'URL (/{pays}-{langue}/), en
+         * code ISO 3166-1 (ex. "FR") : les annonces sont filtrées via
+         * Property::$codeIsoPays, qui ne dépend ni de la langue de l'annonce ni
+         * de celle du visiteur.
          */
-        if (null === $location) {
-            $countryIsoCode = 'FR';
-        } else {
-            $countryIsoCode = $location['countryCode'] ?? 'FR';
-        }
+        $countryIsoCode = $urlCountryResolver->currentIso();
 
         /*
          * Pays affiché dans le bandeau de langue : uniquement un pays
@@ -171,11 +190,9 @@ final class HomeController extends AbstractController
     }
 
     #[Route(
-        path: [
-            'en' => '/home/properties/by-city',
-            'fr' => '/fr/accueil/biens-par-ville',
-        ],
+        path: PublicRoute::PREFIX.'/home/properties/by-city',
         name: 'app_home_properties_by_city',
+        requirements: PublicRoute::REQUIREMENTS,
         methods: ['GET']
     )]
     /**
@@ -183,7 +200,7 @@ final class HomeController extends AbstractController
      */
     public function propertiesByCity(
         Request $request,
-        IpLocationService $ipLocationService,
+        UrlCountryResolver $urlCountryResolver,
     ): Response {
         /*if (!$request->isXmlHttpRequest()) {
             throw $this->createNotFoundException(
@@ -215,7 +232,7 @@ final class HomeController extends AbstractController
          * Aucune ville transmise : l'utilisateur a désactivé / refusé la
          * géolocalisation du navigateur. On oublie la ville et les
          * coordonnées mémorisées et on revient à la requête initiale (biens
-         * localisés via l'adresse IP).
+         * du pays de l'URL).
          */
         if ('' === $city) {
             $session->remove('city');
@@ -224,8 +241,7 @@ final class HomeController extends AbstractController
             $session->remove('latitude');
             $session->remove('longitude');
 
-            $location = $ipLocationService->locate($request->getClientIp());
-            $countryIsoCode = $location['countryCode'] ?? 'FR';
+            $countryIsoCode = $urlCountryResolver->currentIso();
 
             return $this->render(
                 'public/home/_partials/_property_sections.html.twig',
@@ -234,7 +250,7 @@ final class HomeController extends AbstractController
         }
 
         if (mb_strlen($city) > 120) {
-            return new Response('Ville invalide.', Response::HTTP_UNPROCESSABLE_ENTITY);
+            return new Response($this->t('home.error.invalid_city'), Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $session->set('city', $city);

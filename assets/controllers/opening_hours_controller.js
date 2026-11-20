@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -241,7 +242,7 @@ export default class extends Controller {
         day.classList.remove('is-closed');
 
         if (status) {
-            status.textContent = 'Ouvert';
+            status.textContent = t('js.hours.open');
         }
 
         if (firstSlot) {
@@ -293,7 +294,7 @@ export default class extends Controller {
         }
 
         if (status) {
-            status.textContent = 'Fermé';
+            status.textContent = t('js.hours.closed');
         }
 
         if (firstSlot) {

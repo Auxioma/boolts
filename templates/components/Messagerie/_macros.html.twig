@@ -34,9 +34,9 @@
     {%- elseif date|date('Y-m-d') == 'now'|date('Y-m-d') -%}
         {{ date|date('H:i') }}
     {%- elseif date|date('Y-m-d') == '-1 day'|date('Y-m-d') -%}
-        Hier
+        {{ 'messaging.date.yesterday_short'|trans }}
     {%- else -%}
-        {{ date|format_date(pattern: 'd MMM', locale: 'fr') }}
+        {{ date|format_date(pattern: 'd MMM', locale: app.request.locale|default('fr')) }}
     {%- endif -%}
 {%- endmacro %}
 

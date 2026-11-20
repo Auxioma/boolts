@@ -25,11 +25,11 @@
                 <span class="p-accent fw-bold text-dark">{{ m.name(interlocutor) }}</span>
                 {% if property %}
                     <a href="{{ path('app_public_detail_bien', {slug: property.slug}) }}" class="messagerie-annonces__mini text-secondary text-truncate">
-                        À propos de : {{ property.titreDuLogement ?: property }}
+                        {{ 'messaging.thread.about'|trans({'%title%': property.titreDuLogement ?: property}) }}
                     </a>
                 {% else %}
                     {# Contact direct (sans annonce) #}
-                    <span class="messagerie-annonces__mini text-secondary text-truncate">{{ interlocutor is same as(this.conversation.agence) ? 'Agence immobilière' : 'Contact direct' }}</span>
+                    <span class="messagerie-annonces__mini text-secondary text-truncate">{{ (interlocutor is same as(this.conversation.agence) ? 'messaging.thread.agency' : 'messaging.thread.direct_contact')|trans }}</span>
                 {% endif %}
             </div>
         </div>
@@ -45,7 +45,7 @@
                 {% set day = message.createdAt|date('Y-m-d') %}
                 {% if day != previous_day %}
                     <p class="messagerie-annonces__mini w-100 fw-normal text-secondary text-center mb-0">
-                        {{ message.createdAt|format_date(pattern: 'd MMMM y', locale: 'fr') }}
+                        {{ message.createdAt|format_date(pattern: 'd MMMM y', locale: app.request.locale|default('fr')) }}
                     </p>
                     {% set previous_day = day %}
                 {% endif %}
@@ -56,7 +56,7 @@
                     {% if message.imageName %}
                         {% set image_url = vich_uploader_asset(message, 'imageFile') %}
                         <a href="{{ image_url }}" target="_blank" rel="noopener" class="d-block">
-                            <img src="{{ image_url }}" alt="Image envoyée" loading="lazy" class="rounded-4 mw-100" style="max-height: 260px; object-fit: cover;">
+                            <img src="{{ image_url }}" alt="{{ 'messaging.thread.image_alt'|trans }}" loading="lazy" class="rounded-4 mw-100" style="max-height: 260px; object-fit: cover;">
                         </a>
                     {% endif %}
 
@@ -66,7 +66,7 @@
                             <i class="icon-file-text text-primary" aria-hidden="true"></i>
                             <span class="text-truncate">{{ message.documentOriginalName ?? message.documentName }}</span>
                             {% if message.documentSize %}
-                                <span class="messagerie-annonces__mini text-secondary text-nowrap">{{ (message.documentSize / 1024)|round(0, 'ceil')|number_format(0, ',', ' ') }} Ko</span>
+                                <span class="messagerie-annonces__mini text-secondary text-nowrap">{{ 'messaging.thread.kb'|trans({'%size%': (message.documentSize / 1024)|round(0, 'ceil')|number_format(0, ',', ' ')}) }}</span>
                             {% endif %}
                             <i class="icon-download" aria-hidden="true"></i>
                         </a>
@@ -79,7 +79,7 @@
                     <span class="messagerie-annonces__mini d-flex align-items-end gap-2 text-body-secondary">
                         {{ message.createdAt|date('H:i') }}
                         {% if is_mine %}
-                            <span class="messagerie-annonces__action {{ message.readAt ? 'text-primary' : 'text-body-secondary' }}" title="{{ message.readAt ? 'Lu' : 'Envoyé' }}">
+                            <span class="messagerie-annonces__action {{ message.readAt ? 'text-primary' : 'text-body-secondary' }}" title="{{ (message.readAt ? 'messaging.thread.read' : 'messaging.thread.sent')|trans }}">
                                 <i class="{{ message.readAt ? 'icon-check-check' : 'icon-check' }}" aria-hidden="true"></i>
                             </span>
                         {% endif %}
@@ -87,7 +87,7 @@
                 </div>
             {% else %}
                 <p class="text-secondary text-center my-auto mb-0">
-                    {{ this.agenceView ? 'Aucun message pour le moment.' : 'Écrivez votre premier message à l’agence.' }}
+                    {{ (this.agenceView ? 'messaging.thread.empty_agency' : 'messaging.thread.empty_visitor')|trans }}
                 </p>
             {% endfor %}
         </div>
@@ -108,7 +108,7 @@
                     <i class="icon-file-text text-primary" aria-hidden="true"></i>
                     <span class="text-truncate" data-messagerie-thread-target="previewName"></span>
                 </span>
-                <button type="button" class="border-0 bg-transparent p-0 text-dark" aria-label="Retirer la pièce jointe" data-action="messagerie-thread#clearImage">
+                <button type="button" class="border-0 bg-transparent p-0 text-dark" aria-label="{{ 'messaging.thread.remove_attachment'|trans }}" data-action="messagerie-thread#clearImage">
                     <i class="icon-x" aria-hidden="true"></i>
                 </button>
             </div>
@@ -121,7 +121,7 @@
             data-live-action-param="files|send"
             enctype="multipart/form-data"
         >
-            <label data-live-ignore class="messagerie-annonces__attach messagerie-annonces__action d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle p-0 mb-0" role="button" aria-label="Joindre une image ou un document" title="Joindre une image ou un document (PDF, Word, Excel…)">
+            <label data-live-ignore class="messagerie-annonces__attach messagerie-annonces__action d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle p-0 mb-0" role="button" aria-label="{{ 'messaging.thread.attach'|trans }}" title="{{ 'messaging.thread.attach_title'|trans }}">
                 <i class="icon-image" aria-hidden="true"></i>
                 <input
                     type="file"
@@ -137,14 +137,14 @@
                 <input
                     type="text"
                     class="messagerie-annonces__search-input flex-grow-1 border-0 bg-transparent p-0 fw-normal text-dark"
-                    placeholder="Écrivez votre message ici..."
+                    placeholder="{{ 'messaging.thread.placeholder'|trans }}"
                     autocomplete="off"
                     maxlength="{{ constant('App\\Service\\Messagerie\\MessagerieManager::MAX_CONTENT_LENGTH') }}"
                     data-model="norender|content"
                     value="{{ content }}"
                 >
 
-                <button type="submit" class="messagerie-annonces__send d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-label="Envoyer" data-loading="action(send)|addAttribute(disabled)">
+                <button type="submit" class="messagerie-annonces__send d-flex align-items-center justify-content-center flex-shrink-0 border-0 rounded-circle bg-primary text-white p-0" aria-label="{{ 'messaging.thread.send'|trans }}" data-loading="action(send)|addAttribute(disabled)">
                     <i class="icon-send" aria-hidden="true"></i>
                 </button>
             </div>

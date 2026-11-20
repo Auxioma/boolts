@@ -25,6 +25,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 #[IsGranted('IS_AUTHENTICATED_FULLY')]
 /**
@@ -34,6 +35,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class UserBrowserPreferencesController extends AbstractController
 {
+    use TranslatesMessages;
+
     #[Route(
         path: [
             'en' => '/api/user/browser-preferences',
@@ -60,7 +63,7 @@ final class UserBrowserPreferencesController extends AbstractController
         if (!\is_array($data)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Données invalides.',
+                'message' => $this->t('api.error.invalid_data'),
             ], 400);
         }
 
@@ -69,7 +72,7 @@ final class UserBrowserPreferencesController extends AbstractController
         if (!$this->isCsrfTokenValid('browser_preferences', $csrfToken)) {
             return $this->json([
                 'success' => false,
-                'message' => 'Token CSRF invalide.',
+                'message' => $this->t('api.error.invalid_csrf'),
             ], 403);
         }
 

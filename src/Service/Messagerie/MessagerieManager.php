@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\File as FileConstraint;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Création des conversations et envoi des messages de la messagerie instantanée.
@@ -51,6 +52,7 @@ final class MessagerieManager
         private readonly EntityManagerInterface $entityManager,
         private readonly ConversationRepository $conversationRepository,
         private readonly ValidatorInterface $validator,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -128,11 +130,11 @@ final class MessagerieManager
         $content = '' === $content ? null : $content;
 
         if (null === $content && null === $attachment) {
-            return ['Le message est vide.'];
+            return [$this->translator->trans('messaging.error.empty')];
         }
 
         if (null !== $content && mb_strlen($content) > self::MAX_CONTENT_LENGTH) {
-            return [\sprintf('Le message ne doit pas dépasser %d caractères.', self::MAX_CONTENT_LENGTH)];
+            return [$this->translator->trans('messaging.error.too_long', ['%max%' => self::MAX_CONTENT_LENGTH])];
         }
 
         $isImage = null !== $attachment && \in_array($attachment->getMimeType(), self::IMAGE_MIME_TYPES, true);
@@ -142,12 +144,12 @@ final class MessagerieManager
                 ? new Image(
                     maxSize: '5M',
                     mimeTypes: self::IMAGE_MIME_TYPES,
-                    mimeTypesMessage: 'Formats acceptés : JPG, PNG, WEBP ou GIF.',
+                    mimeTypesMessage: 'messaging.error.image_formats',
                 )
                 : new FileConstraint(
                     maxSize: '10M',
                     mimeTypes: self::DOCUMENT_MIME_TYPES,
-                    mimeTypesMessage: 'Formats acceptés : images (JPG, PNG, WEBP, GIF), PDF, Word, Excel, OpenDocument ou texte.',
+                    mimeTypesMessage: 'messaging.error.document_formats',
                 ));
 
             if (\count($violations) > 0) {

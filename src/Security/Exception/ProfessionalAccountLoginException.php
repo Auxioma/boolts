@@ -22,6 +22,6 @@ final class ProfessionalAccountLoginException extends AuthenticationException
 {
     public function getMessageKey(): string
     {
-        return 'Ce compte est un compte professionnel. Merci de vous connecter depuis votre espace pro.';
+        return 'auth.error.professional_account';
     }
 }

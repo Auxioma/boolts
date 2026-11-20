@@ -7,33 +7,33 @@
 
 {% set menuParametres = [
     {
-        title: 'Gestion du compte',
+        title: 'settings.menu.account'|trans,
         items: [
         {
             wrapper: 'information-personnelles',
             tab: 'cat1',
             icon: 'icon-circle-user',
-            label: 'Informations personnelles',
+            label: 'settings.menu.personal_info'|trans,
             active: true,
         },
     ],
     },
     {
-        title: 'Sécurité et paiement',
+        title: 'settings.menu.security_payment'|trans,
         titleClass: 'mt-32',
         items: [
         {
             wrapper: 'connexion-securite',
             tab: 'cat2',
             icon: 'icon-lock',
-            label: 'Connexion et sécurité',
+            label: 'settings.menu.login_security'|trans,
             active: false,
         },
         {
             wrapper: 'langue-et-devise',
             tab: 'cat3',
             icon: 'icon-languages',
-            label: 'Langue et devise',
+            label: 'settings.menu.language_currency'|trans,
             active: false,
         },
     ],

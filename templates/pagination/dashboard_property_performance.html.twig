@@ -1,12 +1,12 @@
 {% if pageCount > 1 %}
     {% set performanceQuery = query|filter((value, key) => key not in ['sort', 'direction']) %}
 
-    <nav class="dashboard-pagination" aria-label="Pagination des annonces">
+    <nav class="dashboard-pagination" aria-label="{{ 'common.pagination.listings_aria_label'|trans }}">
         {% if previous is defined %}
             <a
                 href="{{ path(route, performanceQuery|merge({(pageParameterName): previous})) }}"
                 class="pagination-arrow"
-                aria-label="Page précédente"
+                aria-label="{{ 'common.pagination.previous_page'|trans }}"
                 data-turbo-frame="dashboard-property-performance"
             ><i class="icon-chevron-left"></i></a>
         {% endif %}
@@ -27,7 +27,7 @@
             <a
                 href="{{ path(route, performanceQuery|merge({(pageParameterName): next})) }}"
                 class="pagination-arrow"
-                aria-label="Page suivante"
+                aria-label="{{ 'common.pagination.next_page'|trans }}"
                 data-turbo-frame="dashboard-property-performance"
             >
             <i class="icon-chevron-right"></i>

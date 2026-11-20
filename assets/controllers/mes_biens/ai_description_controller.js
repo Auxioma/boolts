@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
+import { t } from '../../i18n.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -33,7 +34,7 @@ export default class extends Controller {
 
         const oldButtonText = this.hasButtonTarget
             ? this.buttonTarget.innerHTML
-            : 'Générer avec IA';
+            : t('js.ai.generate');
 
         this.setLoading(true);
 
@@ -58,7 +59,7 @@ export default class extends Controller {
             const data = await response.json();
 
             if (!response.ok || data.success !== true) {
-                throw new Error(data.message || 'Impossible de générer la description.');
+                throw new Error(data.message || t('js.ai.error'));
             }
 
             this.descriptionTarget.value = data.description;

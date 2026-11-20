@@ -19,40 +19,40 @@
                 {
                     field: 'imageName',
                     aliases: 'imageFile',
-                    label: 'Ajouter une photo de profil',
+                    label: 'agency_profile.todo.photo'|trans,
                     done: app.user.imageName is not empty,
                     optional: false,
                 },
                 {
                     field: 'description',
-                    label: 'Ajouter une description',
+                    label: 'agency_profile.todo.description'|trans,
                     done: app.user.description is not empty,
                     selector: '#' ~ form.description.vars.id,
                     optional: false,
                 },
                 {
                     field: 'emailContact',
-                    label: 'Ajouter une adresse mail de contact',
+                    label: 'agency_profile.todo.email'|trans,
                     done: app.user.emailContact is not empty,
                     selector: '#' ~ form.emailContact.vars.id,
                     optional: false,
                 },
                 {
                     field: 'openingHours',
-                    label: 'Ajouter vos horaires',
+                    label: 'agency_profile.todo.hours'|trans,
                     done: hasOpeningHours,
                     optional: false,
                 },
                 {
                     field: 'numeroContact',
-                    label: 'Ajouter un numéro de contact',
+                    label: 'agency_profile.todo.phone'|trans,
                     done: app.user.numeroContact is not empty,
                     selector: '#telephone-input',
                     optional: false,
                 },
                 {
                     field: 'langueParlers',
-                    label: 'Ajouter vos langues parlées',
+                    label: 'agency_profile.todo.languages'|trans,
                     done: app.user.langueParlers is not empty,
                     selector: '#' ~ form.langueParlers.vars.id,
                     optional: false,
@@ -75,7 +75,7 @@
             {% set hasSpokenLanguages = app.user and app.user.langueParlers is not empty %}
 
             <div class="d-flex justify-content-between align-items-center">
-                <h3 class="mb-0 d-none d-md-block">Fiche agence</h3>
+                <h3 class="mb-0 d-none d-md-block">{{ 'settings.menu.agency_profile'|trans }}</h3>
 
                 <div class="fiche-public">
                     <a
@@ -91,13 +91,13 @@
                         data-enabled-href="{{ publicProfileUrl }}"
                     >
                         <i class="icon-eye mr-10"></i>
-                        Voir la fiche publique
+                        {{ 'agency_profile.view_public'|trans }}
                     </a>
                 </div>
             </div>
 
             <div class="complete-profile py-24 px-24 mt-32" data-controller="profile-progress"{% if profileComplete %} hidden{% endif %}>
-                <h3 class="mn-0">Complétez votre profil pour pouvoir publier des annonces</h3>
+                <h3 class="mn-0">{{ 'agency_profile.complete'|trans }}</h3>
 
                 <div class="progress my-12" style="height: 10px;">
                     <div class="progress-bar" data-profile-progress-target="bar" role="progressbar" style="width: {{ progress }}%;" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
@@ -114,7 +114,7 @@
                         {{ item.label }}
 
                         {% if item.optional %}
-                            <span>(optionnel)</span>
+                            <span>{{ 'agency_profile.optional'|trans }}</span>
                         {% endif %}
                     </p>
                 {% endfor %}
@@ -128,13 +128,13 @@
                         {% set firstLetter = app.user.prenom ? app.user.prenom|first|upper : null %}
 
                         {% if avatar %}
-                            <img src="{{ avatar }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+                            <img src="{{ avatar }}" alt="{{ 'settings.personal.avatar_alt'|trans }}" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
                         {% elseif firstLetter %}
-                            <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="avatar" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
+                            <img src="{{ asset('images/svg/' ~ firstLetter ~ '.svg') }}" alt="{{ 'settings.personal.avatar_alt'|trans }}" class="rounded-circle object-fit-cover js-avatar-preview" width="100" height="100">
                         {% endif %}
 
                         <button class="btn-change-image btn-full-white rounded-pill position-absolute start-50 translate-middle-x w-auto" type="button" style="bottom: -12px;" id="change-image-button">
-                            Modifier
+                            {{ 'settings.edit'|trans }}
                         </button>
 
                         {{ form_widget(form.imageFile, {
@@ -152,7 +152,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="js-field-value">
                                         <h3 class="profile-public-name mb-0" id="entreprise-public-value">
-                                            {{ app.user.entreprise ?? 'Définissez le nom de votre agence' }}
+                                            {{ app.user.entreprise ?? 'agency_profile.name_placeholder'|trans }}
                                         </h3>
                                     </div>
 
@@ -185,7 +185,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="js-field-value" id="description-public-value">
                                         <p class="profile-public-description mb-0">
-                                            {{ (app.user.description ?? 'Rédigez une courte description ici.')|u.truncate(255, '...') }}
+                                            {{ (app.user.description ?? 'agency_profile.description_placeholder'|trans)|u.truncate(255, '...') }}
                                         </p>
                                     </div>
 
@@ -229,7 +229,7 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-12 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">Adresse de l’agence</h3>
+                                <h3 class="p-accent mb-0">{{ 'agency_profile.address'|trans }}</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="adresse-contact-value">
                                     {% if app.user and app.user.adresseContact %}
@@ -246,7 +246,7 @@
                                             {{ app.user.paysContact }}
                                         {% endif %}
                                     {% else %}
-                                        Saisissez votre adresse postale
+                                        {{ 'agency_profile.address_placeholder'|trans }}
                                     {% endif %}
                                 </p>
 
@@ -261,7 +261,7 @@
                                         {{ form_widget(form.adresseContact, {
                                             attr: {
                                                 class: 'form-control js-address-input input',
-                                                placeholder: 'Entrez un numéro et un nom de rue',
+                                                placeholder: 'settings.address.street_placeholder'|trans,
                                                 autocomplete: 'off',
                                                 'data-name': 'adresseContact',
                                                 'data-mes-biens--adresse-autocomplete-target': 'adresse',
@@ -275,12 +275,12 @@
                                     <div class="row">
                                         <div class="col-6">
                                             <div class="mb-16">
-                                                <label class="form-label mb-16 p-accent">Code postal</label>
+                                                <label class="form-label mb-16 p-accent">{{ 'settings.personal.postal_code'|trans }}</label>
 
                                                 {{ form_widget(form.codePostalContact, {
                                                     attr: {
                                                         class: 'form-control js-address-input input',
-                                                        placeholder: 'Entrez un code postal',
+                                                        placeholder: 'settings.address.postal_code_placeholder'|trans,
                                                         autocomplete: 'off',
                                                         'data-name': 'codePostalContact',
                                                         'data-mes-biens--adresse-autocomplete-target': 'codePostal',
@@ -290,12 +290,12 @@
                                         </div>
 
                                         <div class="col-6">
-                                            <label class="form-label mb-16 p-accent">Ville</label>
+                                            <label class="form-label mb-16 p-accent">{{ 'settings.personal.city'|trans }}</label>
 
                                             {{ form_widget(form.villeContact, {
                                                 attr: {
                                                     class: 'form-control js-address-input input',
-                                                    placeholder: 'Choisissez une ville',
+                                                    placeholder: 'settings.address.city_placeholder'|trans,
                                                     autocomplete: 'off',
                                                     'data-name': 'villeContact',
                                                     'data-mes-biens--adresse-autocomplete-target': 'ville',
@@ -305,12 +305,12 @@
                                     </div>
 
                                     <div>
-                                        <label class="form-label mb-16 p-accent">Pays</label>
+                                        <label class="form-label mb-16 p-accent">{{ 'payment_modal.country'|trans }}</label>
 
                                         {{ form_widget(form.paysContact, {
                                             attr: {
                                                 class: 'form-control js-address-input input',
-                                                placeholder: 'France',
+                                                placeholder: 'settings.address.country_placeholder'|trans,
                                                 autocomplete: 'off',
                                                 'data-name': 'paysContact',
                                                 'data-mes-biens--adresse-autocomplete-target': 'pays',
@@ -321,7 +321,7 @@
                             </div>
 
                             <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent p-accent" data-action="click->field-save#handle" data-field-save-field-param="adresseContact" data-field-save-multiple-param="true" data-field-save-output-param="#adresse-contact-value" data-field-save-has-value-param="{{ hasContactAddress ? 'true' : 'false' }}">
-                                {{ hasContactAddress ? 'Modifier' : 'Définir' }}
+                                {{ (hasContactAddress ? 'settings.edit' : 'settings.define')|trans }}
                             </button>
                         </div>
                     </div>
@@ -333,15 +333,15 @@
 
                                 <div class="d-flex justify-content-between align-items-start w-100">
                                     <div>
-                                        <h3 class="p-accent mb-0">Numéro de téléphone</h3>
+                                        <h3 class="p-accent mb-0">{{ 'settings.personal.phone'|trans }}</h3>
 
                                         <p class="mt-12 mb-0 js-field-value" id="numero-contact-value">
-                                            {{ app.user.numeroContact ?? 'Définissez un numéro de contact' }}
+                                            {{ app.user.numeroContact ?? 'agency_profile.phone_placeholder'|trans }}
                                         </p>
                                     </div>
 
                                     <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="numeroContact" data-field-save-input-param="#telephone-input" data-field-save-output-param="#numero-contact-value" data-field-save-whatsapp-switch-param="#whatsapp-switch" data-field-save-same-number-param="#same-number-checkbox" data-field-save-whatsapp-input-param="#whatsapp-phone" data-field-save-has-value-param="{{ hasContactNumber ? 'true' : 'false' }}">
-                                        {{ hasContactNumber ? 'Modifier' : 'Définir' }}
+                                        {{ (hasContactNumber ? 'settings.edit' : 'settings.define')|trans }}
                                     </button>
                                 </div>
 
@@ -359,7 +359,7 @@
 
                                     <div class="mt-12">
                                         <div class="d-flex justify-content-between align-items-center w-100">
-                                            <span class="fw-semibold">Whatsapp</span>
+                                            <span class="fw-semibold">{{ 'agency_profile.whatsapp'|trans }}</span>
 
                                             <label class="contenue-des-page-des-parametres-switch">
                                                 <input type="checkbox" id="whatsapp-switch">
@@ -374,7 +374,7 @@
                                                 <span class="contenue-des-page-des-parametres-checkbox-custom"></span>
 
                                                 <span class="contenue-des-page-des-parametres-checkbox-label paragraphe">
-                                                    Utiliser le même numéro
+                                                    {{ 'agency_profile.same_number'|trans }}
                                                 </span>
                                             </label>
                                         </div>
@@ -403,10 +403,10 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">Adresse e-mail</h3>
+                                <h3 class="p-accent mb-0">{{ 'settings.security.email'|trans }}</h3>
 
                                 <p class="mt-12 mb-0 js-field-value" id="email-contact-value">
-                                    {{ app.user.emailContact ?? 'Définissez une adresse e-mail de contact' }}
+                                    {{ app.user.emailContact ?? 'agency_profile.email_placeholder'|trans }}
                                 </p>
 
                                 <div class="mt-12 d-none js-field-input">
@@ -419,7 +419,7 @@
                             </div>
 
                             <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="emailContact" data-field-save-input-param="#{{ form.emailContact.vars.id }}" data-field-save-output-param="#email-contact-value" data-field-save-has-value-param="{{ hasContactEmail ? 'true' : 'false' }}">
-                                {{ hasContactEmail ? 'Modifier' : 'Définir' }}
+                                {{ (hasContactEmail ? 'settings.edit' : 'settings.define')|trans }}
                             </button>
                         </div>
                     </div>
@@ -428,7 +428,7 @@
                     <div class="js-editable-field formulaire mt-20">
                         <div class="d-flex justify-content-between align-items-start pb-20 ligne-border-bottom">
                             <div class="w-100">
-                                <h3 class="p-accent mb-0">Langues parlées par l’agence</h3>
+                                <h3 class="p-accent mb-0">{{ 'agency_profile.languages'|trans }}</h3>
 
                                 <p class="mt-12 mb-0 js-field-value agency-languages-value" id="langues-parlees-value">
                                     {% if app.user.langueParlers is not empty %}
@@ -436,7 +436,7 @@
                                             <span>{{ langue.labelWithFlag }}{{ not loop.last ? ',' }}</span>
                                         {% endfor %}
                                     {% else %}
-                                        Définissez les langues parlées par l’agence
+                                        {{ 'agency_profile.languages_placeholder'|trans }}
                                     {% endif %}
                                 </p>
 
@@ -451,7 +451,7 @@
 
                                         <div class="agency-languages-dropdown">
                                             <div class="agency-languages-search">
-                                                <input type="text" class="form-control agency-languages-input w-75 rounded-70 pl-44 input" placeholder="Rechercher une langue..." autocomplete="off" data-languages-target="search" data-action="input->languages#search">
+                                                <input type="text" class="form-control agency-languages-input w-75 rounded-70 pl-44 input" placeholder="{{ 'settings.locale.language_search'|trans }}" autocomplete="off" data-languages-target="search" data-action="input->languages#search">
 
                                                 <i class="icon-search agency-languages-add"></i>
                                             </div>
@@ -465,7 +465,7 @@
                             </div>
 
                             <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence mt-15 js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="langueParlers" data-field-save-input-param="#{{ form.langueParlers.vars.id }}" data-field-save-output-param="#langues-parlees-value" data-field-save-multiple-param="true" data-field-save-has-value-param="{{ hasSpokenLanguages ? 'true' : 'false' }}">
-                                {{ hasSpokenLanguages ? 'Modifier' : 'Définir' }}
+                                {{ (hasSpokenLanguages ? 'settings.edit' : 'settings.define')|trans }}
                             </button>
                         </div>
 
@@ -619,16 +619,16 @@
                     <div class="js-editable-field formulaire my-20">
                         <div class="d-flex justify-content-between align-items-start pb-20">
                             <div class="w-100">
-                                <h3 class="p-accent mb-12">Horaires</h3>
+                                <h3 class="p-accent mb-12">{{ 'agency_profile.hours'|trans }}</h3>
 
                                 {% set openingDays = [
-                                    {key: 'lundi', label: 'Lundi'},
-                                    {key: 'mardi', label: 'Mardi'},
-                                    {key: 'mercredi', label: 'Mercredi'},
-                                    {key: 'jeudi', label: 'Jeudi'},
-                                    {key: 'vendredi', label: 'Vendredi'},
-                                    {key: 'samedi', label: 'Samedi'},
-                                    {key: 'dimanche', label: 'Dimanche'},
+                                    {key: 'lundi', label: 'common.days.monday'|trans},
+                                    {key: 'mardi', label: 'common.days.tuesday'|trans},
+                                    {key: 'mercredi', label: 'common.days.wednesday'|trans},
+                                    {key: 'jeudi', label: 'common.days.thursday'|trans},
+                                    {key: 'vendredi', label: 'common.days.friday'|trans},
+                                    {key: 'samedi', label: 'common.days.saturday'|trans},
+                                    {key: 'dimanche', label: 'common.days.sunday'|trans},
                                 ] %}
 
                                 {% set openingHoursByDay = {} %}
@@ -652,7 +652,7 @@
                                     } %}
                                     {% set openingHoursInitial = openingHoursInitial|merge({(openingDay.key): dayHours}) %}
 
-                                    {% set dayValue = 'fermé' %}
+                                    {% set dayValue = 'common.hours.closed_lower'|trans %}
                                     {% if dayHours.isOpen %}
                                         {% set slots = [] %}
                                         {% if dayHours.ouvertureMatin or dayHours.fermetureMatin %}
@@ -661,11 +661,11 @@
                                         {% if dayHours.ouvertureApresMidi or dayHours.fermetureApresMidi %}
                                             {% set slots = slots|merge([(dayHours.ouvertureApresMidi ?: '--:--') ~ '–' ~ (dayHours.fermetureApresMidi ?: '--:--')]) %}
                                         {% endif %}
-                                        {% set dayValue = slots is not empty ? slots|join(' / ') : 'ouvert' %}
+                                        {% set dayValue = slots is not empty ? slots|join(' / ') : 'common.hours.open_lower'|trans %}
                                     {% endif %}
                                     {% set openingDayValues = openingDayValues|merge([dayValue]) %}
                                 {% endfor %}
-                                {% set hasOpeningHours = openingDayValues|filter(v => v != 'fermé') is not empty %}
+                                {% set hasOpeningHours = openingDayValues|filter(v => v != 'common.hours.closed_lower'|trans) is not empty %}
 
                                 {# Regroupe les jours ayant exactement les mêmes horaires : plages consécutives (3 jours ou plus) en « Lundi–Samedi », sinon listés #}
                                 {% set seenValues = [] %}
@@ -691,7 +691,7 @@
                                                 {% endif %}
                                             {% endif %}
                                         {% endfor %}
-                                        {% set openingHoursSummary = openingHoursSummary|merge([dayItems|join(', ', ' et ') ~ ' : ' ~ dayValue]) %}
+                                        {% set openingHoursSummary = openingHoursSummary|merge([dayItems|join(', ', ' ' ~ 'common.and'|trans ~ ' ') ~ ' : ' ~ dayValue]) %}
                                     {% endif %}
                                 {% endfor %}
 
@@ -701,7 +701,7 @@
                                             {{- line -}}{%- if not loop.last -%}<br>{%- endif -%}
                                         {%- endfor -%}
                                     {%- else -%}
-                                        Tous les jours sont fermés par défaut
+                                        {{ 'agency_profile.hours_default'|trans }}
                                     {%- endif -%}
                                 </p>
 
@@ -751,14 +751,14 @@
 
                                     {# Lundi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label paragraphe">Lundi</label>
+                                        <label class="opening-day__label paragraphe">{{ 'common.days.monday'|trans }}</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '0'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden> 
                                             {{ protoOuvertureMatin|replace({__name__: '0'})|raw }}
@@ -783,14 +783,14 @@
 
                                     {# Mardi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label  paragraphe">Mardi</label>
+                                        <label class="opening-day__label  paragraphe">{{ 'common.days.tuesday'|trans }}</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '1'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '1'})|raw }}
@@ -815,14 +815,14 @@
 
                                     {# Mercredi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label paragraphe">Mercredi</label>
+                                        <label class="opening-day__label paragraphe">{{ 'common.days.wednesday'|trans }}</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '2'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '2'})|raw }}
@@ -847,14 +847,14 @@
 
                                     {# Jeudi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label  paragraphe">Jeudi</label>
+                                        <label class="opening-day__label  paragraphe">{{ 'common.days.thursday'|trans }}</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '3'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '3'})|raw }}
@@ -879,14 +879,14 @@
 
                                     {# Vendredi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label paragraphe">Vendredi</label>
+                                        <label class="opening-day__label paragraphe">{{ 'common.days.friday'|trans }}</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '4'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '4'})|raw }}
@@ -911,14 +911,14 @@
 
                                     {# Samedi #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label paragraphe">Samedi</label>
+                                        <label class="opening-day__label paragraphe">{{ 'common.days.saturday'|trans }}</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '5'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '5'})|raw }}
@@ -943,14 +943,14 @@
 
                                     {# Dimanche #}
                                     <div class="opening-day is-closed mb-12" data-opening-hours-day>
-                                        <label class="opening-day__label paragraphe">Dimanche</label>
+                                        <label class="opening-day__label paragraphe">{{ 'common.days.sunday'|trans }}</label>
 
                                         <label class="contenue-des-page-des-parametres-switch">
                                             {{ protoIsOpen|replace({__name__: '6'})|raw }}
                                             <span class="contenue-des-page-des-parametres-switch-slider"></span>
                                         </label>
 
-                                        <span class="js-opening-status paragraphe">Fermé</span>
+                                        <span class="js-opening-status paragraphe">{{ 'detail_bien.hours.closed'|trans }}</span>
 
                                         <div class="opening-slot js-opening-first" hidden>
                                             {{ protoOuvertureMatin|replace({__name__: '6'})|raw }}
@@ -977,7 +977,7 @@
                             </div>
 
                             <button type="button" class="btn btn-link p-0 text-decoration-none btn-buttom-agence js-edit-button p-accent" data-action="click->field-save#handle" data-field-save-field-param="openingHours" data-field-save-input-param=".opening-hours" data-field-save-output-param="#opening-hours-value" data-field-save-has-value-param="{{ hasOpeningHours ? 'true' : 'false' }}">
-                                {{ hasOpeningHours ? 'Modifier' : 'Définir' }}
+                                {{ (hasOpeningHours ? 'settings.edit' : 'settings.define')|trans }}
                             </button>
                         </div>
                     </div>

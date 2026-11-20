@@ -5,7 +5,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription | Boolts{% endblock %}
+{% block title %}{{ 'auth.registration.meta.title'|trans }}{% endblock %}
 
 {% block stylesheets %}
     <style>
@@ -230,7 +230,7 @@
     <main class="registration d-flex">
         <section class="registration__content">
             <div class="registration__inner">
-                <h2 class="registration__title">{{ registrationType == 'professionnel' ? 'Créer un compte professionnel' : 'Créer un compte particulier' }}</h2>
+                <h2 class="registration__title">{{ (registrationType == 'professionnel' ? 'auth.registration.title.professional' : 'auth.registration.title.individual')|trans }}</h2>
 
                 <div class="registration__socials">
                     <a href="#" class="registration__social registration__social--apple" data-turbo="false">
@@ -244,7 +244,7 @@
                                 </clipPath>
                             </defs>
                         </svg>
-                        <span>Apple</span>
+                        <span>{{ 'auth.social.apple'|trans }}</span>
                     </a>
 
                     <a
@@ -258,11 +258,11 @@
                             <path d="M5.84 14.0903C5.62 13.4303 5.49 12.7303 5.49 12.0003C5.49 11.2703 5.62 10.5703 5.84 9.91031V7.07031H2.18C1.43 8.55031 1 10.2203 1 12.0003C1 13.7803 1.43 15.4503 2.18 16.9303L5.03 14.7103L5.84 14.0903Z" fill="#FBBC05"/>
                             <path d="M12.0002 5.38C13.6202 5.38 15.0602 5.94 16.2102 7.02L19.3602 3.87C17.4502 2.09 14.9702 1 12.0002 1C7.70018 1 3.99018 3.47 2.18018 7.07L5.84018 9.91C6.71018 7.31 9.14018 5.38 12.0002 5.38Z" fill="#EA4335"/>
                         </svg>
-                        <span>Google</span>
+                        <span>{{ 'auth.social.google'|trans }}</span>
                     </a>
                 </div>
 
-                <div class="registration__divider"><span>OU</span></div>
+                <div class="registration__divider"><span>{{ 'auth.or'|trans }}</span></div>
 
                 {{ form_start(emailForm, {
                     attr: {
@@ -271,11 +271,11 @@
                     },
                 }) }}
                     <div class="registration__field">
-                        {{ form_label(emailForm.email, 'Inscription via adresse e-mail*', {label_attr: {class: 'p-accent'}}) }}
+                        {{ form_label(emailForm.email, 'auth.registration.email.label'|trans, {label_attr: {class: 'p-accent'}}) }}
                         {{ form_widget(emailForm.email, {
                             attr: {
                                 class: 'form-control input' ~ (emailForm.email.vars.errors|length > 0 ? ' is-invalid' : ''),
-                                placeholder: 'Veuillez entrer votre adresse e-mail',
+                                placeholder: 'visiteur.login.email.placeholder'|trans,
                             },
                         }) }}
 
@@ -290,12 +290,12 @@
                         {% endfor %}
                     </div>
 
-                    <button class="registration__submit btn-full-blue" type="submit">Continuer</button>
+                    <button class="registration__submit btn-full-blue" type="submit">{{ 'visiteur.register.email.submit'|trans }}</button>
                 {{ form_end(emailForm) }}
             </div>
         </section>
 
-        <div class="registration__visual" role="img" aria-label="Vue d'une propriété au bord de la mer"></div>
+        <div class="registration__visual" role="img" aria-label="{{ 'auth.hero.aria_label'|trans }}"></div>
     </main>
 {% endblock %}
 

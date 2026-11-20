@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Controller\Traits\TranslatesMessages;
 
 // La messagerie et les autres pages du dashboard restent conditionnées à la
 // validation des documents (AgencyDocumentVoter), mais les notifications sont
@@ -42,6 +43,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class AgenceImmobiliereNotificationsController extends AbstractController
 {
+    use TranslatesMessages;
+
     /**
      * Nombre maximum de notifications affichées sur la page.
      */
@@ -84,7 +87,7 @@ final class AgenceImmobiliereNotificationsController extends AbstractController
         }
 
         if (!$this->isCsrfTokenValid('agency_notification_read', (string) $request->headers->get('X-CSRF-TOKEN'))) {
-            return $this->json(['success' => false, 'message' => 'Jeton CSRF invalide.'], 403);
+            return $this->json(['success' => false, 'message' => $this->t('api.error.invalid_csrf')], 403);
         }
 
         if (!$notification->isRead()) {
