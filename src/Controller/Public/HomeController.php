@@ -20,6 +20,7 @@ use App\Repository\PropertyRepository;
 use App\Repository\Search\PropertySearchSessionRepository;
 use App\Routing\PublicRoute;
 use App\Service\Intl\UrlCountryResolver;
+use App\Service\Intl\VisitorCurrencyResolver;
 use App\Service\Intl\VisitorLocaleResolver;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -90,6 +91,7 @@ final class HomeController extends AbstractController
         Request $request,
         VisitorLocaleResolver $visitorLocaleResolver,
         UrlCountryResolver $urlCountryResolver,
+        VisitorCurrencyResolver $visitorCurrencyResolver,
     ): Response {
         /*
          * Les biens affichés sont ceux du pays de l'URL (/{pays}-{langue}/), en
@@ -169,6 +171,8 @@ final class HomeController extends AbstractController
             'bannerCountryIsoCode' => $bannerCountryIsoCode,
             'bannerCountryFlag' => $this->countryFlag($bannerCountryIsoCode),
             'bannerCountryLocale' => $bannerCountryLocale,
+            // Devise affichée dans le bandeau (pays de l'URL, sinon IP), EUR par défaut.
+            'bannerCurrencyCode' => $visitorCurrencyResolver->resolve()?->getCode() ?? 'EUR',
             // Le bandeau ne s'affiche plus dès qu'une langue a été choisie manuellement.
             'showLocaleBanner' => null === $visitorLocaleResolver->manualChoice($request),
         ]);

@@ -1,39 +1,85 @@
 {#
  Template: templates/public/home/_partials/composant/locale_banner.html.twig
- Role: Bandeau de choix de la langue sous la navbar de la homepage (Figma 7115:24652).
+ Role: Bandeau de choix du pays / de la langue / de la devise sous la navbar de la homepage (Figma 7260:25781).
 #}
 
-<section class="home-locale-banner" aria-label="{{ 'home.locale_banner.aria_label'|trans }}">
-    <form
-        class="home-locale-banner__container"
-        data-controller="locale-banner"
-        data-action="submit->locale-banner#go"
-    >
-        <p class="home-locale-banner__text paragraphe">
-            {{ 'home.locale_banner.text'|trans }}
-        </p>
+{% set currentLocale = app.request.locale %}
+{% set siteIsoCode = countryIsoCode|default('FR')|upper %}
+{% set detectedIsoCode = bannerCountryIsoCode|default('FR')|upper %}
+
+{# Pays proposés : France, Maroc, plus le pays détecté par IP s'il n'en fait pas partie. #}
+{% set bannerCountries = ['FR', 'MA'] %}
+{% if detectedIsoCode not in bannerCountries %}
+    {% set bannerCountries = bannerCountries|merge([detectedIsoCode]) %}
+{% endif %}
+{% if siteIsoCode not in bannerCountries %}
+    {% set bannerCountries = bannerCountries|merge([siteIsoCode]) %}
+{% endif %}
+
+{% set titleKey = siteIsoCode in ['FR', 'MA'] ? 'home.locale_banner.title_' ~ siteIsoCode|lower : 'home.locale_banner.title' %}
+
+<section class="home-locale-banner" aria-label="{{ 'home.locale_banner.aria_label'|trans }}" data-controller="locale-banner">
+    <div class="home-locale-banner__container">
+        <div class="home-locale-banner__message">
+            <button
+                type="button"
+                class="home-locale-banner__close"
+                aria-label="{{ 'home.locale_banner.close'|trans }}"
+                data-action="locale-banner#close"
+            >
+                <i class="icon-x" aria-hidden="true"></i>
+            </button>
+
+            <div class="home-locale-banner__text">
+                <p class="home-locale-banner__title">{{ titleKey|trans({'%country%': siteIsoCode|country_name(currentLocale)}) }}</p>
+                <p class="home-locale-banner__subtitle">{{ 'home.locale_banner.text'|trans }}</p>
+            </div>
+        </div>
 
         <div class="home-locale-banner__actions">
-            <div class="home-locale-banner__select-wrapper">
+            {# Pays #}
+            <div class="home-locale-banner__pill">
+                <i class="icon-globe home-locale-banner__pill-icon" aria-hidden="true"></i>
                 <select
-                    class="home-locale-banner__select input"
-                    aria-label="{{ 'home.locale_banner.select'|trans }}"
-                    data-locale-banner-target="select"
+                    class="home-locale-banner__select"
+                    aria-label="{{ 'home.locale_banner.country'|trans }}"
                     data-action="change->locale-banner#go"
                 >
-                    {# Pays détecté par IP (francophone => fr, anglophone => en), sinon France. #}
-                    {% set bannerLocale = bannerCountryLocale|default('fr') %}
-                    {% set bannerCountryLabel = bannerCountryFlag|default('') ~ ' ' ~ bannerCountryIsoCode|default('FR')|country_name(bannerLocale) %}
-                    <option value="{{ locale_switch_url(bannerLocale, bannerCountryIsoCode|default('FR')) }}" selected hidden>{{ bannerCountryLabel }}</option>
-                    <option value="{{ locale_switch_url('fr', 'FR') }}">{{ 'home.locale_banner.france'|trans }}</option>
-                    <option value="{{ locale_switch_url('fr', 'MA') }}">{{ 'home.locale_banner.morocco'|trans }}</option>
+                    {% for iso in bannerCountries %}
+                        <option value="{{ locale_switch_url(currentLocale, iso) }}" {{ iso == siteIsoCode ? 'selected' }}>{{ iso|country_name(currentLocale) }}</option>
+                    {% endfor %}
                 </select>
-                <i class="icon-chevron-down home-locale-banner__chevron" aria-hidden="true"></i>
+                <i class="icon-chevron-down home-locale-banner__pill-chevron" aria-hidden="true"></i>
             </div>
 
-            <button type="submit" class="btn-full-blue home-locale-banner__submit">{{ 'home.locale_banner.submit'|trans }}</button>
+            {# Langue #}
+            <div class="home-locale-banner__pill">
+                <i class="icon-languages home-locale-banner__pill-icon" aria-hidden="true"></i>
+                <select
+                    class="home-locale-banner__select"
+                    aria-label="{{ 'home.locale_banner.language'|trans }}"
+                    data-action="change->locale-banner#go"
+                >
+                    {% for locale in ['fr', 'en'] %}
+                        <option value="{{ locale_switch_url(locale) }}" lang="{{ locale }}" {{ locale == currentLocale ? 'selected' }}>{{ locale|language_name(locale)|capitalize }}</option>
+                    {% endfor %}
+                </select>
+                <i class="icon-chevron-down home-locale-banner__pill-chevron" aria-hidden="true"></i>
+            </div>
+
+            {# Devise (résolue par pays / IP, pas encore de changement manuel) #}
+            <div class="home-locale-banner__pill">
+                <i class="icon-euro home-locale-banner__pill-icon" aria-hidden="true"></i>
+                <select
+                    class="home-locale-banner__select"
+                    aria-label="{{ 'home.locale_banner.currency'|trans }}"
+                >
+                    <option value="{{ bannerCurrencyCode|default('EUR') }}" selected>{{ bannerCurrencyCode|default('EUR') }}</option>
+                </select>
+                <i class="icon-chevron-down home-locale-banner__pill-chevron" aria-hidden="true"></i>
+            </div>
         </div>
-    </form>
+    </div>
 </section>
 
 <style>
@@ -52,47 +98,105 @@
         align-items: center;
         justify-content: space-between;
         gap: 24px;
+        min-width: 0;
         max-width: 1320px;
-        margin: 0;
         padding: 0 12px;
     }
 
+    .home-locale-banner__message {
+        display: flex;
+        flex: 1 0 0;
+        align-items: center;
+        gap: 24px;
+        min-width: 0;
+    }
+
+    .home-locale-banner__close {
+        display: inline-flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #0b0f14;
+        cursor: pointer;
+    }
+
+    .home-locale-banner__close .icon-x::before {
+        font-size: 24px;
+    }
+
     .home-locale-banner__text {
-        max-width: 391px;
+        flex: 1 0 0;
+        min-width: 0;
+        color: #000;
+    }
+
+    .home-locale-banner__title,
+    .home-locale-banner__subtitle {
         margin: 0;
-        color: #858789;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .home-locale-banner__title {
+        font-weight: 700;
+    }
+
+    .home-locale-banner__subtitle {
+        font-weight: 400;
     }
 
     .home-locale-banner__actions {
         display: flex;
+        flex-shrink: 0;
         align-items: center;
-        gap: 24px;
+        justify-content: flex-end;
+        gap: 8px;
     }
 
-    .home-locale-banner__select-wrapper {
+    .home-locale-banner__pill {
         position: relative;
-        width: 361px;
+        display: inline-flex;
+        align-items: center;
+        border-radius: 3px;
+        background: #fff;
+        color: #0b0f14;
     }
 
     .home-locale-banner__select {
-        padding-right: 48px;
-        border-color: #fff;
-        border-radius: 8px;
-        background: #fff;
-        color: #858789;
+        height: 32px;
+        padding: 6px 27px;
+        border: 0;
+        border-radius: 3px;
+        background: transparent;
+        color: #0b0f14;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 20px;
         appearance: none;
         cursor: pointer;
     }
 
-    .home-locale-banner__chevron {
+    .home-locale-banner__pill-icon,
+    .home-locale-banner__pill-chevron {
         position: absolute;
         top: 50%;
-        right: 14px;
-        color: #0b0f14;
-        font-size: 24px;
+        font-size: 16px;
         line-height: 1;
         pointer-events: none;
         transform: translateY(-50%);
+    }
+
+    .home-locale-banner__pill-icon {
+        left: 7px;
+    }
+
+    .home-locale-banner__pill-chevron {
+        right: 7px;
     }
 
     @media (max-width: 767.98px) {
@@ -103,18 +207,13 @@
             padding: 0 16px;
         }
 
-        .home-locale-banner__text {
-            max-width: none;
-        }
-
-        .home-locale-banner__actions {
+        .home-locale-banner__message {
             gap: 16px;
         }
 
-        .home-locale-banner__select-wrapper {
-            flex: 1 1 auto;
-            width: auto;
-            min-width: 0;
+        .home-locale-banner__actions {
+            flex-wrap: wrap;
+            justify-content: flex-start;
         }
     }
 </style>
