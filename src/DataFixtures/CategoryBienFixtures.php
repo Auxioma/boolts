@@ -35,6 +35,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Maison',
                     'en' => 'House',
+                    'es' => 'Casa',
+                    'de' => 'Haus',
+                    'pt' => 'Moradia',
+                    'it' => 'Casa',
+                    'nl' => 'Huis',
+                    'hu' => 'Ház',
                 ],
             ],
             [
@@ -42,6 +48,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Appartement',
                     'en' => 'Apartment',
+                    'es' => 'Piso',
+                    'de' => 'Wohnung',
+                    'pt' => 'Apartamento',
+                    'it' => 'Appartamento',
+                    'nl' => 'Appartement',
+                    'hu' => 'Lakás',
                 ],
             ],
             [
@@ -49,6 +61,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Villa',
                     'en' => 'Villa',
+                    'es' => 'Villa',
+                    'de' => 'Villa',
+                    'pt' => 'Vivenda',
+                    'it' => 'Villa',
+                    'nl' => 'Villa',
+                    'hu' => 'Villa',
                 ],
             ],
             [
@@ -56,6 +74,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Fond de commerce',
                     'en' => 'Business assets',
+                    'es' => 'Traspaso de negocio',
+                    'de' => 'Gewerbebetrieb',
+                    'pt' => 'Trespasse',
+                    'it' => 'Attività commerciale',
+                    'nl' => 'Handelszaak',
+                    'hu' => 'Üzletátruházás',
                 ],
             ],
             [
@@ -63,6 +87,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Bureaux',
                     'en' => 'Offices',
+                    'es' => 'Oficinas',
+                    'de' => 'Büros',
+                    'pt' => 'Escritórios',
+                    'it' => 'Uffici',
+                    'nl' => 'Kantoren',
+                    'hu' => 'Irodák',
                 ],
             ],
             [
@@ -70,6 +100,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Local commercial',
                     'en' => 'Commercial premises',
+                    'es' => 'Local comercial',
+                    'de' => 'Gewerbefläche',
+                    'pt' => 'Loja comercial',
+                    'it' => 'Locale commerciale',
+                    'nl' => 'Winkelruimte',
+                    'hu' => 'Üzlethelyiség',
                 ],
             ],
             [
@@ -77,6 +113,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Terrain',
                     'en' => 'Land',
+                    'es' => 'Terreno',
+                    'de' => 'Grundstück',
+                    'pt' => 'Terreno',
+                    'it' => 'Terreno',
+                    'nl' => 'Grond',
+                    'hu' => 'Telek',
                 ],
             ],
             [
@@ -84,6 +126,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Ferme',
                     'en' => 'Farm',
+                    'es' => 'Granja',
+                    'de' => 'Bauernhof',
+                    'pt' => 'Quinta',
+                    'it' => 'Fattoria',
+                    'nl' => 'Boerderij',
+                    'hu' => 'Tanya',
                 ],
             ],
             [
@@ -91,6 +139,12 @@ class CategoryBienFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Parking/Garage/Box',
                     'en' => 'Parking/Garage/Box',
+                    'es' => 'Parking/Garaje/Trastero',
+                    'de' => 'Parkplatz/Garage/Box',
+                    'pt' => 'Estacionamento/Garagem/Box',
+                    'it' => 'Parcheggio/Garage/Box',
+                    'nl' => 'Parkeerplaats/Garage/Box',
+                    'hu' => 'Parkoló/Garázs/Box',
                 ],
             ],
         ];

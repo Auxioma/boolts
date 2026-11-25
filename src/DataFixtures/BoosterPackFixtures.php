@@ -26,7 +26,7 @@ final class BoosterPackFixtures extends Fixture
             $pack = FixtureEntityHelper::findOrCreate($manager, BoosterPack::class, [
                 'code' => $data['code'],
             ]);
-            foreach (['fr', 'en'] as $locale) {
+            foreach (array_keys($data['name']) as $locale) {
                 $pack->translate($locale, false)
                     ->setName($data['name'][$locale])
                     ->setDescription($data['description'][$locale]);

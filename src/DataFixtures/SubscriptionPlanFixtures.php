@@ -29,7 +29,7 @@ final class SubscriptionPlanFixtures extends Fixture
             $plan = FixtureEntityHelper::findOrCreate($manager, SubscriptionPlan::class, [
                 'code' => $data['code'],
             ]);
-            foreach (['fr', 'en'] as $locale) {
+            foreach (array_keys($data['name']) as $locale) {
                 $plan->translate($locale, false)
                     ->setName($data['name'][$locale])
                     ->setDescription($data['description'][$locale]);

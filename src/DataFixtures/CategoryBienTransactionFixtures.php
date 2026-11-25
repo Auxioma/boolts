@@ -35,6 +35,12 @@ class CategoryBienTransactionFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Acheter',
                     'en' => 'sale',
+                    'es' => 'Comprar',
+                    'de' => 'Kaufen',
+                    'pt' => 'Comprar',
+                    'it' => 'Acquistare',
+                    'nl' => 'Kopen',
+                    'hu' => 'Vásárlás',
                 ],
             ],
             [
@@ -42,6 +48,12 @@ class CategoryBienTransactionFixtures extends Fixture
                 'translations' => [
                     'fr' => 'Louer',
                     'en' => 'Rent',
+                    'es' => 'Alquilar',
+                    'de' => 'Mieten',
+                    'pt' => 'Arrendar',
+                    'it' => 'Affittare',
+                    'nl' => 'Huren',
+                    'hu' => 'Bérlés',
                 ],
             ],
         ];

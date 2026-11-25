@@ -28,6 +28,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Stationnement',
                 'en' => 'Parking',
+                'es' => 'Aparcamiento',
+                'de' => 'Parkplatz',
+                'pt' => 'Estacionamento',
+                'it' => 'Parcheggio',
+                'nl' => 'Parkeerplaats',
+                'hu' => 'Parkoló',
             ],
         ],
         [
@@ -36,6 +42,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Terrasse',
                 'en' => 'Terrace',
+                'es' => 'Terraza',
+                'de' => 'Terrasse',
+                'pt' => 'Terraço',
+                'it' => 'Terrazza',
+                'nl' => 'Terras',
+                'hu' => 'Terasz',
             ],
         ],
         [
@@ -44,6 +56,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Balcon',
                 'en' => 'Balcony',
+                'es' => 'Balcón',
+                'de' => 'Balkon',
+                'pt' => 'Varanda',
+                'it' => 'Balcone',
+                'nl' => 'Balkon',
+                'hu' => 'Erkély',
             ],
         ],
         [
@@ -52,6 +70,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Jardin',
                 'en' => 'Garden',
+                'es' => 'Jardín',
+                'de' => 'Garten',
+                'pt' => 'Jardim',
+                'it' => 'Giardino',
+                'nl' => 'Tuin',
+                'hu' => 'Kert',
             ],
         ],
         [
@@ -60,6 +84,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Piscine',
                 'en' => 'Swimming pool',
+                'es' => 'Piscina',
+                'de' => 'Schwimmbad',
+                'pt' => 'Piscina',
+                'it' => 'Piscina',
+                'nl' => 'Zwembad',
+                'hu' => 'Medence',
             ],
         ],
         [
@@ -68,6 +98,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Cave/débarras',
                 'en' => 'Cellar/storage room',
+                'es' => 'Bodega/trastero',
+                'de' => 'Keller/Abstellraum',
+                'pt' => 'Cave/arrecadação',
+                'it' => 'Cantina/ripostiglio',
+                'nl' => 'Kelder/berging',
+                'hu' => 'Pince/tároló',
             ],
         ],
         [
@@ -76,6 +112,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Climatisation',
                 'en' => 'Air conditioning',
+                'es' => 'Aire acondicionado',
+                'de' => 'Klimaanlage',
+                'pt' => 'Ar condicionado',
+                'it' => 'Aria condizionata',
+                'nl' => 'Airconditioning',
+                'hu' => 'Légkondicionáló',
             ],
         ],
         [
@@ -84,6 +126,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Chauffage',
                 'en' => 'Heating',
+                'es' => 'Calefacción',
+                'de' => 'Heizung',
+                'pt' => 'Aquecimento',
+                'it' => 'Riscaldamento',
+                'nl' => 'Verwarming',
+                'hu' => 'Fűtés',
             ],
         ],
         [
@@ -92,6 +140,12 @@ class CaracteristiqueFixtures extends Fixture
             'translations' => [
                 'fr' => 'Ascenseur',
                 'en' => 'Elevator',
+                'es' => 'Ascensor',
+                'de' => 'Aufzug',
+                'pt' => 'Elevador',
+                'it' => 'Ascensore',
+                'nl' => 'Lift',
+                'hu' => 'Lift',
             ],
         ],
     ];

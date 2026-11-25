@@ -37,6 +37,48 @@ final class ForgotPasswordTranslationFixtures extends Fixture
                 'visiteur.forgot_password.email.placeholder' => 'Enter your email address',
                 'visiteur.forgot_password.submit' => 'Send reset link',
             ],
+            'es' => [
+                'visiteur.forgot_password.meta.title' => 'Contraseña olvidada',
+                'visiteur.forgot_password.title' => 'Introduce tu dirección de correo electrónico',
+                'visiteur.forgot_password.email.label' => 'Correo electrónico',
+                'visiteur.forgot_password.email.placeholder' => 'Introduce tu dirección de correo electrónico',
+                'visiteur.forgot_password.submit' => 'Enviar el enlace de restablecimiento',
+            ],
+            'de' => [
+                'visiteur.forgot_password.meta.title' => 'Passwort vergessen',
+                'visiteur.forgot_password.title' => 'Geben Sie Ihre E-Mail-Adresse ein',
+                'visiteur.forgot_password.email.label' => 'E-Mail-Adresse',
+                'visiteur.forgot_password.email.placeholder' => 'Bitte geben Sie Ihre E-Mail-Adresse ein',
+                'visiteur.forgot_password.submit' => 'Link zum Zurücksetzen senden',
+            ],
+            'pt' => [
+                'visiteur.forgot_password.meta.title' => 'Palavra-passe esquecida',
+                'visiteur.forgot_password.title' => 'Introduza o seu endereço de e-mail',
+                'visiteur.forgot_password.email.label' => 'Endereço de e-mail',
+                'visiteur.forgot_password.email.placeholder' => 'Introduza o seu endereço de e-mail',
+                'visiteur.forgot_password.submit' => 'Enviar link de redefinição',
+            ],
+            'it' => [
+                'visiteur.forgot_password.meta.title' => 'Password dimenticata',
+                'visiteur.forgot_password.title' => 'Inserisci il tuo indirizzo e-mail',
+                'visiteur.forgot_password.email.label' => 'Indirizzo e-mail',
+                'visiteur.forgot_password.email.placeholder' => 'Inserisci il tuo indirizzo e-mail',
+                'visiteur.forgot_password.submit' => 'Invia il link di reimpostazione',
+            ],
+            'nl' => [
+                'visiteur.forgot_password.meta.title' => 'Wachtwoord vergeten',
+                'visiteur.forgot_password.title' => 'Voer je e-mailadres in',
+                'visiteur.forgot_password.email.label' => 'E-mailadres',
+                'visiteur.forgot_password.email.placeholder' => 'Voer je e-mailadres in',
+                'visiteur.forgot_password.submit' => 'Resetlink verzenden',
+            ],
+            'hu' => [
+                'visiteur.forgot_password.meta.title' => 'Elfelejtett jelszó',
+                'visiteur.forgot_password.title' => 'Adja meg e-mail-címét',
+                'visiteur.forgot_password.email.label' => 'E-mail-cím',
+                'visiteur.forgot_password.email.placeholder' => 'Adja meg e-mail-címét',
+                'visiteur.forgot_password.submit' => 'Visszaállítási link küldése',
+            ],
         ];
 
         foreach ($translations as $locale => $items) {

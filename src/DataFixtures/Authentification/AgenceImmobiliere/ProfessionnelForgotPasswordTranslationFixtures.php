@@ -35,6 +35,42 @@ final class ProfessionnelForgotPasswordTranslationFixtures extends Fixture
                 'professionnel.forgot_password.email.label' => 'Email address',
                 'professionnel.forgot_password.submit' => 'Send reset link',
             ],
+            'es' => [
+                'professionnel.forgot_password.meta.title' => 'Contraseña olvidada',
+                'professionnel.forgot_password.title' => 'Introduce tu dirección de correo electrónico',
+                'professionnel.forgot_password.email.label' => 'Correo electrónico',
+                'professionnel.forgot_password.submit' => 'Enviar el enlace de restablecimiento',
+            ],
+            'de' => [
+                'professionnel.forgot_password.meta.title' => 'Passwort vergessen',
+                'professionnel.forgot_password.title' => 'Geben Sie Ihre E-Mail-Adresse ein',
+                'professionnel.forgot_password.email.label' => 'E-Mail-Adresse',
+                'professionnel.forgot_password.submit' => 'Link zum Zurücksetzen senden',
+            ],
+            'pt' => [
+                'professionnel.forgot_password.meta.title' => 'Palavra-passe esquecida',
+                'professionnel.forgot_password.title' => 'Introduza o seu endereço de e-mail',
+                'professionnel.forgot_password.email.label' => 'Endereço de e-mail',
+                'professionnel.forgot_password.submit' => 'Enviar link de redefinição',
+            ],
+            'it' => [
+                'professionnel.forgot_password.meta.title' => 'Password dimenticata',
+                'professionnel.forgot_password.title' => 'Inserisci il tuo indirizzo e-mail',
+                'professionnel.forgot_password.email.label' => 'Indirizzo e-mail',
+                'professionnel.forgot_password.submit' => 'Invia il link di reimpostazione',
+            ],
+            'nl' => [
+                'professionnel.forgot_password.meta.title' => 'Wachtwoord vergeten',
+                'professionnel.forgot_password.title' => 'Voer je e-mailadres in',
+                'professionnel.forgot_password.email.label' => 'E-mailadres',
+                'professionnel.forgot_password.submit' => 'Resetlink verzenden',
+            ],
+            'hu' => [
+                'professionnel.forgot_password.meta.title' => 'Elfelejtett jelszó',
+                'professionnel.forgot_password.title' => 'Adja meg e-mail-címét',
+                'professionnel.forgot_password.email.label' => 'E-mail-cím',
+                'professionnel.forgot_password.submit' => 'Visszaállítási link küldése',
+            ],
         ];
 
         foreach ($translations as $locale => $items) {
