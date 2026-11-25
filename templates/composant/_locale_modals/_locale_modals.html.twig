@@ -1,0 +1,239 @@
+{#
+ Template: templates/composant/_locale_modals/_locale_modals.html.twig
+ Role: Modales de choix du pays (Figma 7264:6432), de la langue et de la devise.
+ Incluses une seule fois par page (footer) ; ouvertes par les pastilles du footer
+ et du bandeau de la homepage via data-bs-target (#localeCountryModal,
+ #localeLanguageModal, #localeCurrencyModal).
+#}
+
+{% set localeModal = locale_modal_data() %}
+{% set currentLocale = app.request.locale %}
+{% set siteIsoCode = visitor_country_iso() %}
+{% set currentCurrencyCode = visitor_currency_code() %}
+{% set suggestedCountryIsoCode = localeModal.suggestedCountry %}
+{% set suggestedLocale = localeModal.suggestedLocale %}
+{% set suggestedCurrencyCode = localeModal.suggestedCurrency %}
+
+{# Modal de choix du pays (Figma 7264:6432) : pays suggéré + tous les pays en base. #}
+<div class="modal fade locale-modal" id="localeCountryModal" tabindex="-1" aria-labelledby="localeCountryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable locale-modal__dialog">
+        <div class="modal-content locale-modal__content">
+            <div class="modal-header locale-modal__header">
+                <h2 id="localeCountryModalLabel" class="visually-hidden">{{ 'home.locale_banner.modal.title'|trans }}</h2>
+                <button type="button" class="locale-modal__close" data-bs-dismiss="modal" aria-label="{{ 'home.locale_banner.close'|trans }}">
+                    <i class="icon-x" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="modal-body locale-modal__body">
+                <section class="locale-modal__section">
+                    <h3 class="locale-modal__heading">{{ 'home.locale_banner.modal.suggested'|trans }}</h3>
+                    <a class="locale-modal__link locale-modal__link--suggested p-accent" href="{{ locale_switch_url(currentLocale, suggestedCountryIsoCode) }}">
+                        {{ suggestedCountryIsoCode|country_name(currentLocale) }}
+                    </a>
+                </section>
+
+                <section class="locale-modal__section">
+                    <h3 class="locale-modal__heading">{{ 'home.locale_banner.modal.choose'|trans }}</h3>
+                    <ul class="locale-modal__list">
+                        {% for country in localeModal.countries %}
+                            <li>
+                                <a
+                                    class="locale-modal__link p-accent{{ country.iso == siteIsoCode ? ' is-current' }}"
+                                    href="{{ locale_switch_url(currentLocale, country.iso) }}"
+                                    {{ country.iso == siteIsoCode ? 'aria-current="true"' }}
+                                >{{ country.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{# Modal de choix de la langue : même maquette que celle des pays, langues en base supportées par le site. #}
+<div class="modal fade locale-modal" id="localeLanguageModal" tabindex="-1" aria-labelledby="localeLanguageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable locale-modal__dialog">
+        <div class="modal-content locale-modal__content">
+            <div class="modal-header locale-modal__header">
+                <h2 id="localeLanguageModalLabel" class="visually-hidden">{{ 'home.locale_banner.modal.language_title'|trans }}</h2>
+                <button type="button" class="locale-modal__close" data-bs-dismiss="modal" aria-label="{{ 'home.locale_banner.close'|trans }}">
+                    <i class="icon-x" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="modal-body locale-modal__body">
+                <section class="locale-modal__section">
+                    <h3 class="locale-modal__heading">{{ 'home.locale_banner.modal.language_suggested'|trans }}</h3>
+                    <a class="locale-modal__link locale-modal__link--suggested p-accent" href="{{ locale_switch_url(suggestedLocale) }}" lang="{{ suggestedLocale }}">
+                        {{ suggestedLocale|language_name(suggestedLocale)|capitalize }}
+                    </a>
+                </section>
+
+                <section class="locale-modal__section">
+                    <h3 class="locale-modal__heading">{{ 'home.locale_banner.modal.language_choose'|trans }}</h3>
+                    <ul class="locale-modal__list">
+                        {% for language in localeModal.languages %}
+                            <li>
+                                <a
+                                    class="locale-modal__link p-accent{{ language.iso == currentLocale ? ' is-current' }}"
+                                    href="{{ locale_switch_url(language.iso) }}"
+                                    lang="{{ language.iso }}"
+                                    {{ language.iso == currentLocale ? 'aria-current="true"' }}
+                                >{{ language.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{# Modal de choix de la devise : même maquette que celle des pays, devises en base. #}
+<div class="modal fade locale-modal" id="localeCurrencyModal" tabindex="-1" aria-labelledby="localeCurrencyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable locale-modal__dialog">
+        <div class="modal-content locale-modal__content">
+            <div class="modal-header locale-modal__header">
+                <h2 id="localeCurrencyModalLabel" class="visually-hidden">{{ 'home.locale_banner.modal.currency_title'|trans }}</h2>
+                <button type="button" class="locale-modal__close" data-bs-dismiss="modal" aria-label="{{ 'home.locale_banner.close'|trans }}">
+                    <i class="icon-x" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div class="modal-body locale-modal__body">
+                <section class="locale-modal__section">
+                    <h3 class="locale-modal__heading">{{ 'home.locale_banner.modal.currency_suggested'|trans }}</h3>
+                    <a class="locale-modal__link locale-modal__link--suggested p-accent" href="{{ path('app_currency_switch', {code: suggestedCurrencyCode, redirect: app.request.requestUri}) }}">
+                        {{ suggestedCurrencyCode|currency_name(currentLocale)|capitalize }} ({{ suggestedCurrencyCode }})
+                    </a>
+                </section>
+
+                <section class="locale-modal__section">
+                    <h3 class="locale-modal__heading">{{ 'home.locale_banner.modal.currency_choose'|trans }}</h3>
+                    <ul class="locale-modal__list">
+                        {% for currency in localeModal.currencies %}
+                            <li>
+                                <a
+                                    class="locale-modal__link p-accent{{ currency.code == currentCurrencyCode ? ' is-current' }}"
+                                    href="{{ path('app_currency_switch', {code: currency.code, redirect: app.request.requestUri}) }}"
+                                    {{ currency.code == currentCurrencyCode ? 'aria-current="true"' }}
+                                >{{ currency.name }} ({{ currency.code }})</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modales de choix du pays (Figma 7264:6432), de la langue et de la devise */
+    .locale-modal__dialog {
+        max-width: 899px;
+    }
+
+    .locale-modal__content {
+        max-height: 602px;
+        overflow: hidden;
+        border: 0;
+        border-radius: 32px;
+        background: #fff;
+    }
+
+    .locale-modal__header {
+        justify-content: flex-end;
+        padding: 24px 32px 14px 24px;
+        border-bottom: 1px solid #ebecec;
+    }
+
+    .locale-modal__close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: #0b0f14;
+        cursor: pointer;
+    }
+
+    .locale-modal__close .icon-x::before {
+        font-size: 24px;
+    }
+
+    .locale-modal__body {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        padding: 32px;
+    }
+
+    .locale-modal__section {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+
+    .locale-modal__heading {
+        margin: 0;
+        color: #0b0f14;
+    }
+
+    .locale-modal__list {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        column-count: 5;
+        column-gap: 24px;
+    }
+
+    .locale-modal__list li {
+        margin-bottom: 24px;
+        break-inside: avoid;
+    }
+
+    .locale-modal__link {
+        display: inline-block;
+        font-weight: 700;
+        line-height: 20px;
+        color: #858789;
+        text-decoration: none;
+    }
+
+    .locale-modal__link:hover,
+    .locale-modal__link:focus-visible,
+    .locale-modal__link.is-current,
+    .locale-modal__link--suggested {
+        color: #0b0f14;
+    }
+
+    @media (max-width: 991.98px) {
+        .locale-modal__list {
+            column-count: 3;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .locale-modal__content {
+            max-height: none;
+            border-radius: 24px;
+        }
+
+        .locale-modal__body {
+            padding: 24px;
+        }
+
+        .locale-modal__list {
+            column-count: 2;
+        }
+    }
+</style>

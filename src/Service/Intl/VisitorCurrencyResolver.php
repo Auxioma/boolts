@@ -19,8 +19,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Devise d'affichage du visiteur, résolue une seule fois par requête :
- *  1. devise du pays de l'URL (/{pays}-{langue}/…, Pays::$devise) ;
- *  2. sinon devise déduite de l'adresse IP (ip-api.com via IpLocationService,
+ *  1. devise choisie manuellement (cookie posé par CurrencySwitchController) ;
+ *  2. sinon devise du pays de l'URL (/{pays}-{langue}/…, Pays::$devise) ;
+ *  3. sinon devise déduite de l'adresse IP (ip-api.com via IpLocationService,
  *     mis en cache 24 h par IP).
  *
  * Retourne null si aucune devise n'est trouvée (IP locale/privée, API muette,
@@ -28,6 +29,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 final class VisitorCurrencyResolver
 {
+    /** Cookie du choix manuel de devise (code ISO 4217, ex. "EUR"). */
+    public const MANUAL_COOKIE = 'boolts_currency';
+
     private bool $resolved = false;
 
     private ?Devise $devise = null;
@@ -54,10 +58,35 @@ final class VisitorCurrencyResolver
             return null;
         }
 
+        $manualCode = $request->cookies->get(self::MANUAL_COOKIE);
+
+        if (\is_string($manualCode) && 1 === preg_match('/^[A-Za-z]{3}$/', $manualCode)) {
+            $manualDevise = $this->deviseRepository->findOneBy(['code' => mb_strtoupper($manualCode)]);
+
+            if (null !== $manualDevise) {
+                return $this->devise = $manualDevise;
+            }
+        }
+
+        return $this->devise = $this->automatic();
+    }
+
+    /**
+     * Devise déduite du pays de l'URL, sinon de l'IP, sans tenir compte du choix
+     * manuel (devise "suggérée" du bandeau de la homepage).
+     */
+    public function automatic(): ?Devise
+    {
+        $request = $this->requestStack->getMainRequest();
+
+        if (null === $request) {
+            return null;
+        }
+
         $urlDevise = $this->urlCountryResolver->findPays($this->urlCountryResolver->fromRoute($request))?->getDevise();
 
         if (null !== $urlDevise) {
-            return $this->devise = $urlDevise;
+            return $urlDevise;
         }
 
         $ip = $request->headers->get('cf-connecting-ip') ?: $request->getClientIp();
@@ -67,6 +96,6 @@ final class VisitorCurrencyResolver
             return null;
         }
 
-        return $this->devise = $this->deviseRepository->findOneBy(['code' => mb_strtoupper($code)]);
+        return $this->deviseRepository->findOneBy(['code' => mb_strtoupper($code)]);
     }
 }

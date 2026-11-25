@@ -5,16 +5,6 @@
 
 {% set currentLocale = app.request.locale %}
 {% set siteIsoCode = countryIsoCode|default('FR')|upper %}
-{% set detectedIsoCode = bannerCountryIsoCode|default('FR')|upper %}
-
-{# Pays proposés : France, Maroc, plus le pays détecté par IP s'il n'en fait pas partie. #}
-{% set bannerCountries = ['FR', 'MA'] %}
-{% if detectedIsoCode not in bannerCountries %}
-    {% set bannerCountries = bannerCountries|merge([detectedIsoCode]) %}
-{% endif %}
-{% if siteIsoCode not in bannerCountries %}
-    {% set bannerCountries = bannerCountries|merge([siteIsoCode]) %}
-{% endif %}
 
 {% set titleKey = siteIsoCode in ['FR', 'MA'] ? 'home.locale_banner.title_' ~ siteIsoCode|lower : 'home.locale_banner.title' %}
 
@@ -37,45 +27,54 @@
         </div>
 
         <div class="home-locale-banner__actions">
-            {# Pays #}
+            {# Pays : ouvre la modal de choix du pays (Figma 7264:6432) #}
             <div class="home-locale-banner__pill">
                 <i class="icon-globe home-locale-banner__pill-icon" aria-hidden="true"></i>
-                <select
+                <button
+                    type="button"
                     class="home-locale-banner__select"
                     aria-label="{{ 'home.locale_banner.country'|trans }}"
-                    data-action="change->locale-banner#go"
+                    aria-haspopup="dialog"
+                    aria-controls="localeCountryModal"
+                    data-bs-toggle="modal"
+                    data-bs-target="#localeCountryModal"
                 >
-                    {% for iso in bannerCountries %}
-                        <option value="{{ locale_switch_url(currentLocale, iso) }}" {{ iso == siteIsoCode ? 'selected' }}>{{ iso|country_name(currentLocale) }}</option>
-                    {% endfor %}
-                </select>
+                    {{ siteIsoCode|country_name(currentLocale) }}
+                </button>
                 <i class="icon-chevron-down home-locale-banner__pill-chevron" aria-hidden="true"></i>
             </div>
 
-            {# Langue #}
+            {# Langue : ouvre la modal de choix de la langue #}
             <div class="home-locale-banner__pill">
                 <i class="icon-languages home-locale-banner__pill-icon" aria-hidden="true"></i>
-                <select
+                <button
+                    type="button"
                     class="home-locale-banner__select"
                     aria-label="{{ 'home.locale_banner.language'|trans }}"
-                    data-action="change->locale-banner#go"
+                    aria-haspopup="dialog"
+                    aria-controls="localeLanguageModal"
+                    data-bs-toggle="modal"
+                    data-bs-target="#localeLanguageModal"
                 >
-                    {% for locale in ['fr', 'en'] %}
-                        <option value="{{ locale_switch_url(locale) }}" lang="{{ locale }}" {{ locale == currentLocale ? 'selected' }}>{{ locale|language_name(locale)|capitalize }}</option>
-                    {% endfor %}
-                </select>
+                    {{ currentLocale|language_name(currentLocale)|capitalize }}
+                </button>
                 <i class="icon-chevron-down home-locale-banner__pill-chevron" aria-hidden="true"></i>
             </div>
 
-            {# Devise (résolue par pays / IP, pas encore de changement manuel) #}
+            {# Devise : ouvre la modal de choix de la devise #}
             <div class="home-locale-banner__pill">
                 <i class="icon-euro home-locale-banner__pill-icon" aria-hidden="true"></i>
-                <select
+                <button
+                    type="button"
                     class="home-locale-banner__select"
                     aria-label="{{ 'home.locale_banner.currency'|trans }}"
+                    aria-haspopup="dialog"
+                    aria-controls="localeCurrencyModal"
+                    data-bs-toggle="modal"
+                    data-bs-target="#localeCurrencyModal"
                 >
-                    <option value="{{ bannerCurrencyCode|default('EUR') }}" selected>{{ bannerCurrencyCode|default('EUR') }}</option>
-                </select>
+                    {{ bannerCurrencyCode|default('EUR') }}
+                </button>
                 <i class="icon-chevron-down home-locale-banner__pill-chevron" aria-hidden="true"></i>
             </div>
         </div>

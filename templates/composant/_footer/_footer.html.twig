@@ -316,23 +316,49 @@
                 </div>
 
                 <div class="boolts-footer__meta">
+                    {# Pays / langue / devise courants (Figma 7260:26407) : ouvrent les modales de choix #}
                     <div class="boolts-footer__locale">
-                        <span class="boolts-footer__meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/>
-                                <path d="M3 12H21" stroke="currentColor" stroke-width="1.7"/>
-                                <path d="M12 3C14.5 5.6 16 8.7 16 12C16 15.3 14.5 18.4 12 21C9.5 18.4 8 15.3 8 12C8 8.7 9.5 5.6 12 3Z" stroke="currentColor" stroke-width="1.7"/>
-                            </svg>
-                            {{ 'footer.current_language'|trans }}
-                        </span>
+                        <button
+                            type="button"
+                            class="boolts-footer__meta-item"
+                            aria-label="{{ 'home.locale_banner.country'|trans }}"
+                            aria-haspopup="dialog"
+                            aria-controls="localeCountryModal"
+                            data-bs-toggle="modal"
+                            data-bs-target="#localeCountryModal"
+                        >
+                            <i class="icon-globe" aria-hidden="true"></i>
+                            {{ visitor_country_iso()|country_name(app.request.locale) }}
+                            <i class="icon-chevron-down" aria-hidden="true"></i>
+                        </button>
 
-                        <span class="boolts-footer__meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M12 3V21" stroke="currentColor" stroke-width="1.7"/>
-                                <path d="M17 7.5C17 6.1 14.8 5 12 5C9.2 5 7 6.1 7 7.5C7 8.9 9.2 10 12 10C14.8 10 17 11.1 17 12.5C17 13.9 14.8 15 12 15C9.2 15 7 13.9 7 12.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                            </svg>
-                            EUR
-                        </span>
+                        <button
+                            type="button"
+                            class="boolts-footer__meta-item"
+                            aria-label="{{ 'home.locale_banner.language'|trans }}"
+                            aria-haspopup="dialog"
+                            aria-controls="localeLanguageModal"
+                            data-bs-toggle="modal"
+                            data-bs-target="#localeLanguageModal"
+                        >
+                            <i class="icon-languages" aria-hidden="true"></i>
+                            {{ app.request.locale|language_name(app.request.locale)|capitalize }}
+                            <i class="icon-chevron-down" aria-hidden="true"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="boolts-footer__meta-item"
+                            aria-label="{{ 'home.locale_banner.currency'|trans }}"
+                            aria-haspopup="dialog"
+                            aria-controls="localeCurrencyModal"
+                            data-bs-toggle="modal"
+                            data-bs-target="#localeCurrencyModal"
+                        >
+                            <i class="icon-euro" aria-hidden="true"></i>
+                            {{ visitor_currency_code() }}
+                            <i class="icon-chevron-down" aria-hidden="true"></i>
+                        </button>
                     </div>
 
                     <div class="boolts-footer__socials">
@@ -355,6 +381,9 @@
         </div>
     </div>
 </footer>
+
+{# Modales pays / langue / devise (aussi ouvertes depuis le bandeau de la homepage) #}
+{{ include('composant/_locale_modals/_locale_modals.html.twig') }}
 
 <style>
     .boolts-footer {
@@ -559,7 +588,7 @@
 
     .boolts-footer__bottom {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         gap: 24px;
     }
@@ -574,33 +603,39 @@
 
     .boolts-footer__meta {
         display: flex;
-        align-items: center;
-        gap: 24px;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 12px;
         flex-shrink: 0;
     }
 
     .boolts-footer__locale {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 8px;
     }
 
     .boolts-footer__meta-item {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        color: #858789;
-        font-size: 10px;
+        padding: 6px 7px;
+        border-radius: 3px;
+        background: #fff;
+        color: #0b0f14;
+        font-size: 12px;
         font-weight: 500;
         line-height: 20px;
         font-family: "Eudoxus Sans", sans-serif;
         white-space: nowrap;
+        border: 0;
+        cursor: pointer;
     }
 
-    .boolts-footer__meta-item svg {
-        width: 16px;
-        height: 16px;
+    .boolts-footer__meta-item i::before {
         display: block;
+        font-size: 16px;
+        line-height: 1;
     }
 
     .boolts-footer__socials {
@@ -691,7 +726,9 @@
         }
 
         .boolts-footer__meta {
+            flex-direction: row;
             flex-wrap: wrap;
+            align-items: center;
             gap: 18px;
         }
 
@@ -796,16 +833,11 @@
         }
 
         .boolts-footer__meta {
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
             justify-content: space-between;
             gap: 16px;
-        }
-
-        .boolts-footer__locale {
-            gap: 16px;
-        }
-
-        .boolts-footer__meta-item {
-            font-size: 12px;
         }
     }
 
