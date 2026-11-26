@@ -34,6 +34,7 @@ use App\Repository\PaysRepository;
 use App\Repository\PropertyImageRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\PropertyViewRepository;
+use App\Routing\PublicRoute;
 use App\Security\Voter\AgencyDocumentVoter;
 use App\Service\Booster\PropertyBoostService;
 use App\Service\Document\AdminDocumentNotificationMailer;
@@ -53,16 +54,7 @@ use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 use App\Controller\Traits\TranslatesMessages;
 
-#[Route(path: [
-            'en' => '/pro/dashboard',
-            'fr' => '/fr/pro/dashboard',
-            'es' => '/es/pro/dashboard',
-            'de' => '/de/pro/dashboard',
-            'pt' => '/pt/pro/dashboard',
-            'it' => '/it/pro/dashboard',
-            'nl' => '/nl/pro/dashboard',
-            'hu' => '/hu/pro/dashboard',
-        ], name: 'agence_immobiliere_')] 
+#[Route(path: PublicRoute::PREFIX.'/dashboard/pro', name: 'agence_immobiliere_', requirements: PublicRoute::REQUIREMENTS)] 
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / DashboardController.
  *

@@ -15,6 +15,7 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 use App\Entity\AgencyNotification;
 use App\Entity\User;
 use App\Repository\AgencyNotificationRepository;
+use App\Routing\PublicRoute;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,17 +30,9 @@ use App\Controller\Traits\TranslatesMessages;
 // toujours accessibles : l'agence doit pouvoir y lire l'issue de la revue de
 // ses documents (acceptation / refus) avant même que le compte soit validé.
 #[Route(
-    path: [
-        'en' => '/immobiliere/notifications',
-        'fr' => '/fr/immobiliere/notifications',
-        'es' => '/es/immobiliere/notifications',
-        'de' => '/de/immobiliere/notifications',
-        'pt' => '/pt/immobiliere/notifications',
-        'it' => '/it/immobiliere/notifications',
-        'nl' => '/nl/immobiliere/notifications',
-        'hu' => '/hu/immobiliere/notifications',
-    ],
-    name: 'agence_immobiliere_'
+    path: PublicRoute::PREFIX.'/dashboard/pro/notifications',
+    name: 'agence_immobiliere_',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 #[IsGranted('ROLE_AGENCE')]
 /**
@@ -56,7 +49,7 @@ final class AgenceImmobiliereNotificationsController extends AbstractController
      */
     private const FEED_LIMIT = 100;
 
-    #[Route('/dashboard/agence/immobiliere/agence/immobiliere/notifications', name: 'notifications', methods: ['GET'])]
+    #[Route('', name: 'notifications', methods: ['GET'])]
     /**
      * Handles the index controller action.
      */

@@ -15,6 +15,7 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 use App\Entity\Billing\Invoice;
 use App\Entity\User;
 use App\Repository\Billing\InvoiceRepository;
+use App\Routing\PublicRoute;
 use App\Service\Billing\InvoicePdfGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -23,17 +24,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(
-    path: [
-        'en' => '/immobiliere/factures',
-        'fr' => '/fr/immobiliere/factures',
-        'es' => '/es/immobiliere/factures',
-        'de' => '/de/immobiliere/factures',
-        'pt' => '/pt/immobiliere/factures',
-        'it' => '/it/immobiliere/factures',
-        'nl' => '/nl/immobiliere/factures',
-        'hu' => '/hu/immobiliere/factures',
-    ],
-    name: 'agence_immobiliere_facture_'
+    path: PublicRoute::PREFIX.'/dashboard/pro/billing',
+    name: 'agence_immobiliere_facture_',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 #[IsGranted('ROLE_AGENCE')]
 /**
@@ -59,7 +52,7 @@ final class AgenceImmobiliereFactureController extends AbstractController
         );
     }
 
-    #[Route('/{id}/telecharger', name: 'download', methods: ['GET'], requirements: ['id' => '\d+'])]
+    #[Route('/{id}/download', name: 'download', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function download(int $id): Response
     {
         $invoice = $this->invoice($id);

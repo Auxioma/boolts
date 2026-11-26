@@ -61,7 +61,7 @@
 
             {% if not plan.isFree %}
                 <a
-                    href="{{ path('agence_immobiliere_achat', {id: plan.id, period: period}) }}"
+                    href="{{ path('agence_immobiliere_achat', {planId: plan.id, period: period}) }}"
                     class="btn-full-blue w-100 {{ canSubscribe ? '' : 'd-none' }}"
                 >
                     {{ 'agency_options.plan.subscribe'|trans }}
@@ -792,7 +792,7 @@ display: inline-flex;
                                             </p>
 
                                             <a
-                                                href="{{ path('agence_immobiliere_boost', {id: boostPrice.id}) }}"
+                                                href="{{ path('agence_immobiliere_boost', {productId: boostPrice.id}) }}"
                                                 class="btn-full-white w-100"
                                             >
                                                 {{ 'agency_options.boosts.buy'|trans }}

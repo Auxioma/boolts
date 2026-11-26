@@ -22,6 +22,7 @@ use App\Form\Dashboard\AgenceImmobiliere\MesBiensType;
 use App\Form\Filter\ModalFilterType;
 use App\Repository\Booster\BoosterTransactionRepository;
 use App\Repository\PropertyRepository;
+use App\Routing\PublicRoute;
 use App\Service\Billing\AgencyPropertyQuotaCalculator;
 use App\Service\Booster\BoostException;
 use App\Service\Booster\PropertyBoostService;
@@ -45,17 +46,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Controller\Traits\TranslatesMessages;
 
 #[Route(
-    path: [
-        'en' => '/mes/biens',
-        'fr' => '/fr/mes/biens',
-        'es' => '/es/mes/biens',
-        'de' => '/de/mes/biens',
-        'pt' => '/pt/mes/biens',
-        'it' => '/it/mes/biens',
-        'nl' => '/nl/mes/biens',
-        'hu' => '/hu/mes/biens',
-    ],
-    name: 'agence_immobiliere_'
+    path: PublicRoute::PREFIX.'/dashboard/pro/listings',
+    name: 'agence_immobiliere_',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 #[IsGranted('ROLE_AGENCE')]
 final class AgenceImmobiliereMesBiensController extends AbstractController
@@ -67,7 +60,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
     ) {
     }
 
-    #[Route('/liste', name: 'mes_biens_list', methods: ['GET'])]
+    #[Route('', name: 'mes_biens_list', methods: ['GET'])]
     public function list(
         PropertyRepository $propertyRepository,
         PaginatorInterface $paginator,
@@ -668,7 +661,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         }
 
         return $this->redirectToRoute(
-            'agence_immobiliere_mes_biens',
+            'agence_immobiliere_mes_biens_step',
             $parameters
         );
     }
@@ -958,7 +951,8 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
         );
     }
 
-    #[Route('/', name: 'mes_biens')]
+    #[Route('/new', name: 'mes_biens')]
+    #[Route('/edit', name: 'mes_biens_step')]
     public function index(
         Request $request,
         PropertyRepository $propertyRepository,
@@ -1220,7 +1214,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
             }
 
             return $this->redirectToRoute(
-                'agence_immobiliere_mes_biens',
+                'agence_immobiliere_mes_biens_step',
                 $this->buildStepParameters(
                     step: $backToStep,
                     property: $mesBiens,
@@ -1361,7 +1355,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 }
 
                 return $this->redirectToRoute(
-                    'agence_immobiliere_mes_biens',
+                    'agence_immobiliere_mes_biens_step',
                     $parameters
                 );
             }
@@ -1386,7 +1380,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     );
 
                     return $this->redirectToRoute(
-                        'agence_immobiliere_mes_biens',
+                        'agence_immobiliere_mes_biens_step',
                         [
                             'step' => 2,
                         ]
@@ -1472,7 +1466,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                  * /mes/biens/?step=3&typeTransaction=4
                  */
                 return $this->redirectToRoute(
-                    'agence_immobiliere_mes_biens',
+                    'agence_immobiliere_mes_biens_step',
                     [
                         'step' => 3,
                         'typeTransaction' => $typeTransactionId,
@@ -1504,7 +1498,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 );
 
                 return $this->redirectToRoute(
-                    'agence_immobiliere_mes_biens',
+                    'agence_immobiliere_mes_biens_step',
                     $this->buildStepParameters(
                         step: 4,
                         property: $mesBiens,
@@ -1537,7 +1531,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     );
 
                     return $this->redirectToRoute(
-                        'agence_immobiliere_mes_biens',
+                        'agence_immobiliere_mes_biens_step',
                         $this->buildStepParameters(
                             step: 6,
                             property: $mesBiens,
@@ -1552,7 +1546,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 );
 
                 return $this->redirectToRoute(
-                    'agence_immobiliere_mes_biens',
+                    'agence_immobiliere_mes_biens_step',
                     $this->buildStepParameters(
                         step: 5,
                         property: $mesBiens,
@@ -1580,7 +1574,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 );
 
                 return $this->redirectToRoute(
-                    'agence_immobiliere_mes_biens',
+                    'agence_immobiliere_mes_biens_step',
                     $this->buildStepParameters(
                         step: 6,
                         property: $mesBiens,
@@ -1613,7 +1607,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 );
 
                 return $this->redirectToRoute(
-                    'agence_immobiliere_mes_biens',
+                    'agence_immobiliere_mes_biens_step',
                     $this->buildStepParameters(
                         step: 7,
                         property: $mesBiens,
@@ -1657,7 +1651,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                     || null === $typeTransactionId
                 ) {
                     return $this->redirectToRoute(
-                        'agence_immobiliere_mes_biens',
+                        'agence_immobiliere_mes_biens_step',
                         [
                             'step' => 2,
                         ]
@@ -1670,7 +1664,7 @@ final class AgenceImmobiliereMesBiensController extends AbstractController
                 );
 
                 return $this->redirectToRoute(
-                    'agence_immobiliere_mes_biens',
+                    'agence_immobiliere_mes_biens_step',
                     [
                         'step' => 8,
                         'typeTransaction' => $typeTransactionId,

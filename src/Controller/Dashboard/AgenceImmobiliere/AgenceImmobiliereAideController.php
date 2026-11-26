@@ -12,22 +12,15 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(
-    path: [
-        'en' => '/agence/aide',
-        'fr' => '/fr/agence/aide',
-        'es' => '/es/agence/aide',
-        'de' => '/de/agence/aide',
-        'pt' => '/pt/agence/aide',
-        'it' => '/it/agence/aide',
-        'nl' => '/nl/agence/aide',
-        'hu' => '/hu/agence/aide',
-    ],
-    name: 'agence_immobiliere_'
+    path: PublicRoute::PREFIX.'/dashboard/pro/help',
+    name: 'agence_immobiliere_',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / AgenceImmobiliereAideController.
@@ -36,7 +29,7 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 final class AgenceImmobiliereAideController extends AbstractController
 {
-    #[Route('/', name: 'aide')]
+    #[Route('', name: 'aide')]
     /**
      * Handles the index controller action.
      */

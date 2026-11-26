@@ -18,6 +18,7 @@ use App\Repository\Billing\AgencyPaymentMethodRepository;
 use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Billing\InvoiceRepository;
 use App\Repository\Billing\PaymentRepository;
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,17 +26,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(
-    path: [
-        'en' => '/immobiliere/parametres',
-        'fr' => '/fr/immobiliere/parametres',
-        'es' => '/es/immobiliere/parametres',
-        'de' => '/de/immobiliere/parametres',
-        'pt' => '/pt/immobiliere/parametres',
-        'it' => '/it/immobiliere/parametres',
-        'nl' => '/nl/immobiliere/parametres',
-        'hu' => '/hu/immobiliere/parametres',
-    ],
-    name: 'agence_immobiliere_'
+    path: PublicRoute::PREFIX.'/dashboard/pro/settings',
+    name: 'agence_immobiliere_',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 #[IsGranted('ROLE_AGENCE')]
 /**
@@ -45,7 +38,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class AgenceImmobiliereParametresController extends AbstractController
 {
-    #[Route('/', name: 'parametres', methods: ['GET', 'POST'])]
+    #[Route('', name: 'parametres', methods: ['GET', 'POST'])]
     /**
      * Handles the index controller action.
      */

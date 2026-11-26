@@ -14,6 +14,7 @@ namespace App\Controller\Dashboard\AgenceImmobiliere;
 
 use App\Entity\User;
 use App\Repository\Billing\InvoiceRepository;
+use App\Routing\PublicRoute;
 use App\Security\Voter\AgencyDocumentVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,17 +23,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(
-    path: [
-        'en' => '/mes/factures',
-        'fr' => '/fr/mes/factures',
-        'es' => '/es/mes/factures',
-        'de' => '/de/mes/factures',
-        'pt' => '/pt/mes/factures',
-        'it' => '/it/mes/factures',
-        'nl' => '/nl/mes/factures',
-        'hu' => '/hu/mes/factures',
-    ],
-    name: 'agence_immobiliere_'
+    path: PublicRoute::PREFIX.'/dashboard/pro/billing',
+    name: 'agence_immobiliere_',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 #[IsGranted('ROLE_AGENCE')]
 #[IsGranted(
@@ -46,7 +39,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class AgenceImmobiliereMesFacturesController extends AbstractController
 {
-    #[Route('/', name: 'mes_factures')]
+    #[Route('', name: 'mes_factures')]
     /**
      * Handles the index controller action.
      */

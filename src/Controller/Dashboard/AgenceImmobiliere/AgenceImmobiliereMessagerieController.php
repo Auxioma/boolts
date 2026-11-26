@@ -12,6 +12,7 @@
 
 namespace App\Controller\Dashboard\AgenceImmobiliere;
 
+use App\Routing\PublicRoute;
 use App\Security\Voter\AgencyDocumentVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,17 +20,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(
-    path: [
-        'en' => '/immobiliere/messagerie',
-        'fr' => '/fr/immobiliere/messagerie',
-        'es' => '/es/immobiliere/messagerie',
-        'de' => '/de/immobiliere/messagerie',
-        'pt' => '/pt/immobiliere/messagerie',
-        'it' => '/it/immobiliere/messagerie',
-        'nl' => '/nl/immobiliere/messagerie',
-        'hu' => '/hu/immobiliere/messagerie',
-    ],
-    name: 'agence_immobiliere_'
+    path: PublicRoute::PREFIX.'/dashboard/pro/inbox',
+    name: 'agence_immobiliere_',
+    requirements: PublicRoute::REQUIREMENTS
 )]
 #[IsGranted('ROLE_AGENCE')]
 #[IsGranted(
@@ -43,7 +36,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 final class AgenceImmobiliereMessagerieController extends AbstractController
 {
-    #[Route('/', name: 'messagerie')]
+    #[Route('', name: 'messagerie')]
     /**
      * Handles the index controller action.
      */

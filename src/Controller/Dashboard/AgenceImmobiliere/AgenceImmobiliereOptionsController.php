@@ -31,6 +31,7 @@ use App\Repository\Billing\AgencySubscriptionRepository;
 use App\Repository\Billing\PaymentRepository;
 use App\Repository\Billing\SubscriptionPlanPriceRepository;
 use App\Repository\Booster\BoosterPackPriceRepository;
+use App\Routing\PublicRoute;
 use App\Security\Voter\AgencyDocumentVoter;
 use App\Service\Billing\InvoiceIssuer;
 use App\Service\Billing\SubscriptionCurrencyResolver;
@@ -48,19 +49,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Controller\Traits\TranslatesMessages;
 
-#[Route(
-    path: [
-        'en' => '/immobiliere/options',
-        'fr' => '/fr/immobiliere/options',
-        'es' => '/es/immobiliere/options',
-        'de' => '/de/immobiliere/options',
-        'pt' => '/pt/immobiliere/options',
-        'it' => '/it/immobiliere/options',
-        'nl' => '/nl/immobiliere/options',
-        'hu' => '/hu/immobiliere/options',
-    ],
-    name: 'agence_immobiliere_'
-)]
+#[Route(name: 'agence_immobiliere_')]
 #[IsGranted('ROLE_AGENCE')]
 #[IsGranted(
     AgencyDocumentVoter::ACCESS_RESTRICTED_DASHBOARD,
@@ -82,7 +71,19 @@ final class AgenceImmobiliereOptionsController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'options')]
+    #[Route(
+        path: [
+            'en' => '/immobiliere/options/',
+            'fr' => '/fr/immobiliere/options/',
+            'es' => '/es/immobiliere/options/',
+            'de' => '/de/immobiliere/options/',
+            'pt' => '/pt/immobiliere/options/',
+            'it' => '/it/immobiliere/options/',
+            'nl' => '/nl/immobiliere/options/',
+            'hu' => '/hu/immobiliere/options/',
+        ],
+        name: 'options'
+    )]
     /**
      * Handles the index controller action.
      */
@@ -146,12 +147,16 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         );
     }
 
-    #[Route('/achat/{id}', name: 'achat')]
+    #[Route(
+        path: PublicRoute::PREFIX.'/dashboard/pro/plans/checkout/',
+        name: 'achat',
+        requirements: PublicRoute::REQUIREMENTS,
+        condition: "request.query.has('planId')"
+    )]
     /**
      * Handles the achat controller action.
      */
     public function achat(
-        int $id,
         Request $request,
         SubscriptionPlanPriceRepository $subscriptionPlanPriceRepository,
         AgencyPaymentMethodRepository $paymentMethodRepository,
@@ -173,7 +178,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         }
 
         $planPrice = $subscriptionPlanPriceRepository->findActiveForPlanAndPeriod(
-            $id,
+            $request->query->getInt('planId'),
             SubscriptionBillingPeriod::from($period),
             $subscriptionCurrencyResolver->resolve($agency),
         );
@@ -226,18 +231,23 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         );
     }
 
-    #[Route('/boost/{id}', name: 'boost')]
+    #[Route(
+        path: PublicRoute::PREFIX.'/dashboard/pro/plans/checkout/',
+        name: 'boost',
+        requirements: PublicRoute::REQUIREMENTS,
+        condition: "request.query.has('productId')"
+    )]
     /**
      * Handles the boost controller action.
      */
     public function boost(
-        int $id,
+        Request $request,
         BoosterPackPriceRepository $boosterPackPriceRepository,
         AgencyPaymentMethodRepository $paymentMethodRepository,
         #[Autowire('%stripe.public_key%')]
         string $stripePublicKey,
     ): Response {
-        $boostPrice = $boosterPackPriceRepository->find($id);
+        $boostPrice = $boosterPackPriceRepository->find($request->query->getInt('productId'));
 
         if (null === $boostPrice || !$boostPrice->isIsActive() || !$boostPrice->getBoosterPack()->isIsActive()) {
             throw $this->createNotFoundException('Pack boost indisponible.');
@@ -280,7 +290,20 @@ final class AgenceImmobiliereOptionsController extends AbstractController
         );
     }
 
-    #[Route('/boost/{id}/payment', name: 'boost_payment', methods: ['POST'])]
+    #[Route(
+        path: [
+            'en' => '/immobiliere/options/boost/{id}/payment',
+            'fr' => '/fr/immobiliere/options/boost/{id}/payment',
+            'es' => '/es/immobiliere/options/boost/{id}/payment',
+            'de' => '/de/immobiliere/options/boost/{id}/payment',
+            'pt' => '/pt/immobiliere/options/boost/{id}/payment',
+            'it' => '/it/immobiliere/options/boost/{id}/payment',
+            'nl' => '/nl/immobiliere/options/boost/{id}/payment',
+            'hu' => '/hu/immobiliere/options/boost/{id}/payment',
+        ],
+        name: 'boost_payment',
+        methods: ['POST']
+    )]
     /**
      * Charges an already saved Stripe card for a one-time booster pack purchase.
      */
