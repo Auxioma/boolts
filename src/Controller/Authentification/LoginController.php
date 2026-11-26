@@ -27,6 +27,12 @@ final class LoginController extends AbstractController
         path: [
             'fr' => '/fr/login',
             'en' => '/login',
+            'es' => '/es/login',
+            'de' => '/de/login',
+            'pt' => '/pt/login',
+            'it' => '/it/login',
+            'nl' => '/nl/login',
+            'hu' => '/hu/login',
         ],
         name: 'app_login',
         defaults: ['loginType' => 'particulier']
@@ -35,6 +41,12 @@ final class LoginController extends AbstractController
         path: [
             'fr' => '/fr/pro/login',
             'en' => '/pro/login',
+            'es' => '/es/pro/login',
+            'de' => '/de/pro/login',
+            'pt' => '/pt/pro/login',
+            'it' => '/it/pro/login',
+            'nl' => '/nl/pro/login',
+            'hu' => '/hu/pro/login',
         ],
         name: 'app_professionnelle_connexion',
         defaults: ['loginType' => 'professionnel']

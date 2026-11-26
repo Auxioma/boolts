@@ -47,6 +47,12 @@ final class VisiteurProfileCompleteController extends AbstractController
         path: [
             'fr' => '/fr/signup/profile',
             'en' => '/signup/profile',
+            'es' => '/es/signup/profile',
+            'de' => '/de/signup/profile',
+            'pt' => '/pt/signup/profile',
+            'it' => '/it/signup/profile',
+            'nl' => '/nl/signup/profile',
+            'hu' => '/hu/signup/profile',
         ],
         name: 'app_visiteur_profile_complete'
     )]

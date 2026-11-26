@@ -34,6 +34,12 @@ final class VisiteurRequestNewCode extends AbstractController
         path: [
             'fr' => '/fr/request-new-code',
             'en' => '/request-new-code',
+            'es' => '/es/request-new-code',
+            'de' => '/de/request-new-code',
+            'pt' => '/pt/request-new-code',
+            'it' => '/it/request-new-code',
+            'nl' => '/nl/request-new-code',
+            'hu' => '/hu/request-new-code',
         ],
         name: 'app_auth_resend_code',
         defaults: ['registrationType' => 'particulier']
@@ -42,6 +48,12 @@ final class VisiteurRequestNewCode extends AbstractController
         path: [
             'fr' => '/fr/pro/request-new-code',
             'en' => '/pro/request-new-code',
+            'es' => '/es/pro/request-new-code',
+            'de' => '/de/pro/request-new-code',
+            'pt' => '/pt/pro/request-new-code',
+            'it' => '/it/pro/request-new-code',
+            'nl' => '/nl/pro/request-new-code',
+            'hu' => '/hu/pro/request-new-code',
         ],
         name: 'app_professionnelle_resend_code',
         defaults: ['registrationType' => 'professionnel']

@@ -36,6 +36,12 @@ final class VisiteurCodeRegisterController extends AbstractController
         path: [
             'fr' => '/fr/signup/verify',
             'en' => '/signup/verify',
+            'es' => '/es/signup/verify',
+            'de' => '/de/signup/verify',
+            'pt' => '/pt/signup/verify',
+            'it' => '/it/signup/verify',
+            'nl' => '/nl/signup/verify',
+            'hu' => '/hu/signup/verify',
         ],
         name: 'app_visiteur_verification_code'
     )]

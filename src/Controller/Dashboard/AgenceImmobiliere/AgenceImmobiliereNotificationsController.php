@@ -32,6 +32,12 @@ use App\Controller\Traits\TranslatesMessages;
     path: [
         'en' => '/immobiliere/notifications',
         'fr' => '/fr/immobiliere/notifications',
+        'es' => '/es/immobiliere/notifications',
+        'de' => '/de/immobiliere/notifications',
+        'pt' => '/pt/immobiliere/notifications',
+        'it' => '/it/immobiliere/notifications',
+        'nl' => '/nl/immobiliere/notifications',
+        'hu' => '/hu/immobiliere/notifications',
     ],
     name: 'agence_immobiliere_'
 )]

@@ -36,6 +36,12 @@ use App\Controller\Traits\TranslatesMessages;
     path: [
         'fr' => '/fr/pro/reset-password',
         'en' => '/pro/reset-password',
+        'es' => '/es/pro/reset-password',
+        'de' => '/de/pro/reset-password',
+        'pt' => '/pt/pro/reset-password',
+        'it' => '/it/pro/reset-password',
+        'nl' => '/nl/pro/reset-password',
+        'hu' => '/hu/pro/reset-password',
     ],
 )]
 /**

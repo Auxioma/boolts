@@ -48,6 +48,12 @@ use App\Controller\Traits\TranslatesMessages;
     path: [
         'en' => '/mes/biens',
         'fr' => '/fr/mes/biens',
+        'es' => '/es/mes/biens',
+        'de' => '/de/mes/biens',
+        'pt' => '/pt/mes/biens',
+        'it' => '/it/mes/biens',
+        'nl' => '/nl/mes/biens',
+        'hu' => '/hu/mes/biens',
     ],
     name: 'agence_immobiliere_'
 )]

@@ -56,6 +56,12 @@ use App\Controller\Traits\TranslatesMessages;
 #[Route(path: [
             'en' => '/pro/dashboard',
             'fr' => '/fr/pro/dashboard',
+            'es' => '/es/pro/dashboard',
+            'de' => '/de/pro/dashboard',
+            'pt' => '/pt/pro/dashboard',
+            'it' => '/it/pro/dashboard',
+            'nl' => '/nl/pro/dashboard',
+            'hu' => '/hu/pro/dashboard',
         ], name: 'agence_immobiliere_')] 
 /**
  * HTTP controller for module Dashboard / AgenceImmobiliere / DashboardController.

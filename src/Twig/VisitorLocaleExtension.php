@@ -132,7 +132,7 @@ final class VisitorLocaleExtension extends AbstractExtension
     }
 
     /**
-     * Langues en base supportées par le site (fr, en), chacune nommée dans sa propre langue.
+     * Langues en base supportées par le site (VisitorLocaleResolver::SUPPORTED), chacune nommée dans sa propre langue.
      *
      * @return list<array{iso: string, name: string}>
      */

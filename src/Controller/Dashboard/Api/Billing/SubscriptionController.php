@@ -53,6 +53,12 @@ use App\Controller\Traits\TranslatesMessages;
     path: [
         'en' => '/api/agence/billing',
         'fr' => '/fr/api/agence/billing',
+        'es' => '/es/api/agence/billing',
+        'de' => '/de/api/agence/billing',
+        'pt' => '/pt/api/agence/billing',
+        'it' => '/it/api/agence/billing',
+        'nl' => '/nl/api/agence/billing',
+        'hu' => '/hu/api/agence/billing',
     ]
 )]
 #[IsGranted('ROLE_AGENCE')]

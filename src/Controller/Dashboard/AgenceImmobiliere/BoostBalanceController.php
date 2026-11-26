@@ -27,6 +27,12 @@ final class BoostBalanceController extends AbstractController
         path: [
             'en' => '/pro/boost-balance',
             'fr' => '/fr/pro/boost-balance',
+            'es' => '/es/pro/boost-balance',
+            'de' => '/de/pro/boost-balance',
+            'pt' => '/pt/pro/boost-balance',
+            'it' => '/it/pro/boost-balance',
+            'nl' => '/nl/pro/boost-balance',
+            'hu' => '/hu/pro/boost-balance',
         ],
         name: 'agence_immobiliere_boost_balance',
         methods: ['GET']
@@ -55,6 +61,12 @@ final class BoostBalanceController extends AbstractController
         path: [
             'en' => '/pro/boost-balance/annonce',
             'fr' => '/fr/pro/boost-balance/annonce',
+            'es' => '/es/pro/boost-balance/annonce',
+            'de' => '/de/pro/boost-balance/annonce',
+            'pt' => '/pt/pro/boost-balance/annonce',
+            'it' => '/it/pro/boost-balance/annonce',
+            'nl' => '/nl/pro/boost-balance/annonce',
+            'hu' => '/hu/pro/boost-balance/annonce',
         ],
         name: 'agence_immobiliere_boost_balance_annonce',
         methods: ['GET']

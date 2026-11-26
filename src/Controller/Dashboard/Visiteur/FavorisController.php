@@ -37,6 +37,12 @@ class FavorisController extends AbstractController
         path: [
             'en' => '/favoris/property/{id}/toggle',
             'fr' => '/fr/favoris/property/{id}/toggle',
+            'es' => '/es/favoris/property/{id}/toggle',
+            'de' => '/de/favoris/property/{id}/toggle',
+            'pt' => '/pt/favoris/property/{id}/toggle',
+            'it' => '/it/favoris/property/{id}/toggle',
+            'nl' => '/nl/favoris/property/{id}/toggle',
+            'hu' => '/hu/favoris/property/{id}/toggle',
         ],
         name: 'app_favoris_property_toggle',
         methods: ['POST']

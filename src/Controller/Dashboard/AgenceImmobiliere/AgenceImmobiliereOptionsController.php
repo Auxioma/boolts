@@ -52,6 +52,12 @@ use App\Controller\Traits\TranslatesMessages;
     path: [
         'en' => '/immobiliere/options',
         'fr' => '/fr/immobiliere/options',
+        'es' => '/es/immobiliere/options',
+        'de' => '/de/immobiliere/options',
+        'pt' => '/pt/immobiliere/options',
+        'it' => '/it/immobiliere/options',
+        'nl' => '/nl/immobiliere/options',
+        'hu' => '/hu/immobiliere/options',
     ],
     name: 'agence_immobiliere_'
 )]

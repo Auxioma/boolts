@@ -42,6 +42,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
     path: [
         'en' => '/mes/biens/photos',
         'fr' => '/fr/mes/biens/photos',
+        'es' => '/es/mes/biens/photos',
+        'de' => '/de/mes/biens/photos',
+        'pt' => '/pt/mes/biens/photos',
+        'it' => '/it/mes/biens/photos',
+        'nl' => '/nl/mes/biens/photos',
+        'hu' => '/hu/mes/biens/photos',
     ],
     name: 'agence_immobiliere_mes_biens_photo_'
 )]

@@ -47,6 +47,12 @@ final class AgenceImmobiliereProfileController extends AbstractController
         path: [
             'fr' => '/fr/pro/signup/profile',
             'en' => '/pro/signup/profile',
+            'es' => '/es/pro/signup/profile',
+            'de' => '/de/pro/signup/profile',
+            'pt' => '/pt/pro/signup/profile',
+            'it' => '/it/pro/signup/profile',
+            'nl' => '/nl/pro/signup/profile',
+            'hu' => '/hu/pro/signup/profile',
         ],
         name: 'app_professionnelle_profile'
     )]

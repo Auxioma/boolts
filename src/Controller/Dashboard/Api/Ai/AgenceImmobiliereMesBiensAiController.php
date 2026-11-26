@@ -52,6 +52,12 @@ final class AgenceImmobiliereMesBiensAiController extends AbstractController
         path: [
             'en' => '/generate-description-ai',
             'fr' => '/fr/generate-description-ai',
+            'es' => '/es/generate-description-ai',
+            'de' => '/de/generate-description-ai',
+            'pt' => '/pt/generate-description-ai',
+            'it' => '/it/generate-description-ai',
+            'nl' => '/nl/generate-description-ai',
+            'hu' => '/hu/generate-description-ai',
         ],
         name: 'agence_immobiliere_mes_biens_generate_description_ai',
         methods: ['POST']

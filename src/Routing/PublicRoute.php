@@ -28,7 +28,7 @@ final class PublicRoute
     public const PREFIX = '/{'.UrlCountryResolver::ROUTE_PARAM.'}-{_locale}';
 
     /** Langues du site (cf. VisitorLocaleResolver::SUPPORTED). */
-    public const LOCALE_REQUIREMENT = 'fr|en';
+    public const LOCALE_REQUIREMENT = 'fr|en|es|de|pt|it|nl|hu';
 
     public const REQUIREMENTS = [
         '_locale' => self::LOCALE_REQUIREMENT,

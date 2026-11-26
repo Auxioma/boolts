@@ -14,6 +14,7 @@ namespace App\Controller\Public;
 
 use App\Entity\User;
 use App\Repository\LanguesRepository;
+use App\Routing\PublicRoute;
 use App\Service\Intl\VisitorLocaleResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +36,7 @@ final class LocaleSwitchController extends AbstractController
     #[Route(
         path: '/locale/{target}',
         name: 'app_locale_switch',
-        requirements: ['target' => 'fr|en'],
+        requirements: ['target' => PublicRoute::LOCALE_REQUIREMENT],
         methods: ['GET']
     )]
     public function switch(

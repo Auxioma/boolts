@@ -27,6 +27,12 @@ use Symfony\Component\Routing\Attribute\Route;
     path: [
         'en' => '/account/2fa',
         'fr' => '/fr/account/2fa',
+        'es' => '/es/account/2fa',
+        'de' => '/de/account/2fa',
+        'pt' => '/pt/account/2fa',
+        'it' => '/it/account/2fa',
+        'nl' => '/nl/account/2fa',
+        'hu' => '/hu/account/2fa',
     ]
 )]
 /**

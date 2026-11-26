@@ -27,6 +27,12 @@ final class VisiteurDashboardController extends AbstractController
         path: [
             'en' => '/visiteur/dashboard',
             'fr' => '/fr/visiteur/dashboard',
+            'es' => '/es/visiteur/dashboard',
+            'de' => '/de/visiteur/dashboard',
+            'pt' => '/pt/visiteur/dashboard',
+            'it' => '/it/visiteur/dashboard',
+            'nl' => '/nl/visiteur/dashboard',
+            'hu' => '/hu/visiteur/dashboard',
         ],
         name: 'app_visiteur_dashboard'
     )]

@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final readonly class VisitorLocaleResolver
 {
-    public const SUPPORTED = ['fr', 'en'];
+    public const SUPPORTED = ['fr', 'en', 'es', 'de', 'pt', 'it', 'nl', 'hu'];
 
     /** Choix manuel du visiteur (via le sélecteur de langue). */
     public const MANUAL_COOKIE = 'boolts_locale';

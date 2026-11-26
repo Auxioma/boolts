@@ -53,6 +53,12 @@ final class UpdateProfileAgenceImmobiliereController extends AbstractController
         path: [
             'en' => '/dashboard/api/profile',
             'fr' => '/fr/dashboard/api/profile',
+            'es' => '/es/dashboard/api/profile',
+            'de' => '/de/dashboard/api/profile',
+            'pt' => '/pt/dashboard/api/profile',
+            'it' => '/it/dashboard/api/profile',
+            'nl' => '/nl/dashboard/api/profile',
+            'hu' => '/hu/dashboard/api/profile',
         ],
         name: 'api_profile_agence_immobiliere',
         methods: ['POST']

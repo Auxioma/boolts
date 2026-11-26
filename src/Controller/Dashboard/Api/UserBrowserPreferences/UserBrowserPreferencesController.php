@@ -41,6 +41,12 @@ final class UserBrowserPreferencesController extends AbstractController
         path: [
             'en' => '/api/user/browser-preferences',
             'fr' => '/fr/api/user/browser-preferences',
+            'es' => '/es/api/user/browser-preferences',
+            'de' => '/de/api/user/browser-preferences',
+            'pt' => '/pt/api/user/browser-preferences',
+            'it' => '/it/api/user/browser-preferences',
+            'nl' => '/nl/api/user/browser-preferences',
+            'hu' => '/hu/api/user/browser-preferences',
         ],
         name: 'app_user_browser_preferences',
         methods: ['POST']

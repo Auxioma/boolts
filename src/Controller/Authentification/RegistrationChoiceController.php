@@ -25,6 +25,12 @@ final class RegistrationChoiceController extends AbstractController
         path: [
             'fr' => '/fr/inscription',
             'en' => '/registration',
+            'es' => '/es/registration',
+            'de' => '/de/registration',
+            'pt' => '/pt/registration',
+            'it' => '/it/registration',
+            'nl' => '/nl/registration',
+            'hu' => '/hu/registration',
         ],
         name: 'app_registration_choice'
     )]

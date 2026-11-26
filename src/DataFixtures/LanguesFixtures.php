@@ -28,6 +28,7 @@ class LanguesFixtures extends Fixture
         'it' => 'Italien',
         'pt' => 'Portugais',
         'nl' => 'Néerlandais',
+        'hu' => 'Hongrois',
         'pl' => 'Polonais',
         'ru' => 'Russe',
         'be' => 'Biélorusse',

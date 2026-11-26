@@ -28,6 +28,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
     path: [
         'en' => '/immobiliere/parametres',
         'fr' => '/fr/immobiliere/parametres',
+        'es' => '/es/immobiliere/parametres',
+        'de' => '/de/immobiliere/parametres',
+        'pt' => '/pt/immobiliere/parametres',
+        'it' => '/it/immobiliere/parametres',
+        'nl' => '/nl/immobiliere/parametres',
+        'hu' => '/hu/immobiliere/parametres',
     ],
     name: 'agence_immobiliere_'
 )]

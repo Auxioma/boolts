@@ -34,6 +34,12 @@ final class RegistrationLocaleController extends AbstractController
         path: [
             'en' => '/inscription/preferences-locales',
             'fr' => '/fr/inscription/preferences-locales',
+            'es' => '/es/inscription/preferences-locales',
+            'de' => '/de/inscription/preferences-locales',
+            'pt' => '/pt/inscription/preferences-locales',
+            'it' => '/it/inscription/preferences-locales',
+            'nl' => '/nl/inscription/preferences-locales',
+            'hu' => '/hu/inscription/preferences-locales',
         ],
         name: 'app_registration_locale',
         methods: ['POST']

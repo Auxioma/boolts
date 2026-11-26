@@ -20,6 +20,12 @@ use Symfony\Component\Routing\Attribute\Route;
     path: [
         'en' => '/agence/aide',
         'fr' => '/fr/agence/aide',
+        'es' => '/es/agence/aide',
+        'de' => '/de/agence/aide',
+        'pt' => '/pt/agence/aide',
+        'it' => '/it/agence/aide',
+        'nl' => '/nl/agence/aide',
+        'hu' => '/hu/agence/aide',
     ],
     name: 'agence_immobiliere_'
 )]

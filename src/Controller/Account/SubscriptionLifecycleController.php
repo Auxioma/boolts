@@ -32,6 +32,12 @@ use App\Controller\Traits\TranslatesMessages;
     path: [
         'en' => '/account/subscription',
         'fr' => '/fr/account/subscription',
+        'es' => '/es/account/subscription',
+        'de' => '/de/account/subscription',
+        'pt' => '/pt/account/subscription',
+        'it' => '/it/account/subscription',
+        'nl' => '/nl/account/subscription',
+        'hu' => '/hu/account/subscription',
     ],
     name: 'account_subscription_'
 )]

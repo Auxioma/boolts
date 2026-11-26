@@ -37,6 +37,12 @@ final class AgenceImmobiliereOptController extends AbstractController
         path: [
             'fr' => '/fr/pro/signup/verify',
             'en' => '/pro/signup/verify',
+            'es' => '/es/pro/signup/verify',
+            'de' => '/de/pro/signup/verify',
+            'pt' => '/pt/pro/signup/verify',
+            'it' => '/it/pro/signup/verify',
+            'nl' => '/nl/pro/signup/verify',
+            'hu' => '/hu/pro/signup/verify',
         ],
         name: 'app_professionnelle_otp'
     )]

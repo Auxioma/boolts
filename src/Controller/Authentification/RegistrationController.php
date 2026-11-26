@@ -35,6 +35,12 @@ final class RegistrationController extends AbstractController
         path: [
             'fr' => '/fr/signup',
             'en' => '/signup',
+            'es' => '/es/signup',
+            'de' => '/de/signup',
+            'pt' => '/pt/signup',
+            'it' => '/it/signup',
+            'nl' => '/nl/signup',
+            'hu' => '/hu/signup',
         ],
         name: 'app_visiteur_inscription',
         defaults: ['registrationType' => 'particulier']
@@ -43,6 +49,12 @@ final class RegistrationController extends AbstractController
         path: [
             'fr' => '/fr/pro/signup',
             'en' => '/pro/signup',
+            'es' => '/es/pro/signup',
+            'de' => '/de/pro/signup',
+            'pt' => '/pt/pro/signup',
+            'it' => '/it/pro/signup',
+            'nl' => '/nl/pro/signup',
+            'hu' => '/hu/pro/signup',
         ],
         name: 'app_professionnelle_register',
         defaults: ['registrationType' => 'professionnel']
