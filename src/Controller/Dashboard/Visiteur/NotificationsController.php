@@ -12,13 +12,16 @@
 
 namespace App\Controller\Dashboard\Visiteur;
 
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class NotificationsController extends AbstractController
 {
-    #[Route('/dashboard/visiteur/notifications', name: 'app_dashboard_visiteur_notifications')]
+    #[Route(PublicRoute::PREFIX.'/dashboard/user/notifications', name: 'app_dashboard_visiteur_notifications', requirements: PublicRoute::REQUIREMENTS)]
+    #[IsGranted('ROLE_USER')]
     public function index(): Response
     {
         return $this->render('dashboard/visiteur/notifications/index.html.twig', [

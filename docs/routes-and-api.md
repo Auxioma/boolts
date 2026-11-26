@@ -17,8 +17,8 @@ Les endpoints API de facturation portent en plus l'attribut `IsGranted('ROLE_AGE
 
 | Module | Routes principales | Contrôleur |
 | --- | --- | --- |
-| Public | `/` (redirection), `/{pays}-{langue}/`, `/{pays}-{langue}/public/search`, `/{pays}-{langue}/public/search/{searchToken}` | `HomeController`, `ResultFilterController`, `SearchController` |
-| Détail | `/{pays}-{langue}/agency/{slug}`, `/{pays}-{langue}/public/detail/bien/{slug}` | `DetailAgenceController`, `DetailBienController` |
+| Public | `/` (redirection), `/{pays}-{langue}/`, `/{pays}-{langue}/public/search`, `/{pays}-{langue}/search/{searchToken}` | `HomeController`, `ResultFilterController`, `SearchController` |
+| Détail | `/{pays}-{langue}/agency/{slug}`, `/{pays}-{langue}/listings/{slug}` | `DetailAgenceController`, `DetailBienController` |
 | Géographie | `/{pays}-{langue}/geo/autocomplete/pays`, `/villes`, `/quartiers` | `GeoAutocompleteController` |
 | Visiteur | `/login`, `/signup`, `/signup/verify`, `/signup/profile`, `/visiteur/dashboard`, `/favoris/property/{id}/toggle` | contrôleurs `Authentification/Visiteurs` et `Dashboard/Visiteur` |
 | Agence | `/pro/login`, `/pro/signup`, `/pro/signup/verify`, `/pro/signup/profile`, `/pro/dashboard` | contrôleurs `Authentification/AgenceImmobiliere` et `Dashboard/AgenceImmobiliere` |

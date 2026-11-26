@@ -12,9 +12,11 @@
 
 namespace App\Controller\Dashboard\Visiteur;
 
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * HTTP controller for module Dashboard / Visiteur / VisiteurDashboardController.
@@ -24,18 +26,11 @@ use Symfony\Component\Routing\Attribute\Route;
 final class VisiteurDashboardController extends AbstractController
 {
     #[Route(
-        path: [
-            'en' => '/visiteur/dashboard',
-            'fr' => '/fr/visiteur/dashboard',
-            'es' => '/es/visiteur/dashboard',
-            'de' => '/de/visiteur/dashboard',
-            'pt' => '/pt/visiteur/dashboard',
-            'it' => '/it/visiteur/dashboard',
-            'nl' => '/nl/visiteur/dashboard',
-            'hu' => '/hu/visiteur/dashboard',
-        ],
-        name: 'app_visiteur_dashboard'
+        path: PublicRoute::PREFIX.'/dashboard/user',
+        name: 'app_visiteur_dashboard',
+        requirements: PublicRoute::REQUIREMENTS
     )]
+    #[IsGranted('ROLE_USER')]
     /**
      * Handles the index controller action.
      */

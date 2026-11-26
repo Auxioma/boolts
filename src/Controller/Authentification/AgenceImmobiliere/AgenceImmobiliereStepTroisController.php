@@ -51,14 +51,14 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
 
     #[Route(
         path: [
-            'fr' => '/fr/pro/step3',
-            'en' => '/pro/step3',
-            'es' => '/es/pro/step3',
-            'de' => '/de/pro/step3',
-            'pt' => '/pt/pro/step3',
-            'it' => '/it/pro/step3',
-            'nl' => '/nl/pro/step3',
-            'hu' => '/hu/pro/step3',
+            'fr' => '/fr/signup/pro/step-2',
+            'en' => '/signup/pro/step-2',
+            'es' => '/es/signup/pro/step-2',
+            'de' => '/de/signup/pro/step-2',
+            'pt' => '/pt/signup/pro/step-2',
+            'it' => '/it/signup/pro/step-2',
+            'nl' => '/nl/signup/pro/step-2',
+            'hu' => '/hu/signup/pro/step-2',
         ],
         name: 'app_professionnelle_step_trois'
     )]
@@ -109,14 +109,14 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
 
     #[Route(
         path: [
-            'fr' => '/fr/pro/step4',
-            'en' => '/pro/step4',
-            'es' => '/es/pro/step4',
-            'de' => '/de/pro/step4',
-            'pt' => '/pt/pro/step4',
-            'it' => '/it/pro/step4',
-            'nl' => '/nl/pro/step4',
-            'hu' => '/hu/pro/step4',
+            'fr' => '/fr/signup/pro/step-3',
+            'en' => '/signup/pro/step-3',
+            'es' => '/es/signup/pro/step-3',
+            'de' => '/de/signup/pro/step-3',
+            'pt' => '/pt/signup/pro/step-3',
+            'it' => '/it/signup/pro/step-3',
+            'nl' => '/nl/signup/pro/step-3',
+            'hu' => '/hu/signup/pro/step-3',
         ],
         name: 'app_professionnelle_step_quatre'
     )]
@@ -176,14 +176,14 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
 
     #[Route(
         path: [
-            'fr' => '/fr/pro/step5',
-            'en' => '/pro/step5',
-            'es' => '/es/pro/step5',
-            'de' => '/de/pro/step5',
-            'pt' => '/pt/pro/step5',
-            'it' => '/it/pro/step5',
-            'nl' => '/nl/pro/step5',
-            'hu' => '/hu/pro/step5',
+            'fr' => '/fr/signup/pro/step-4',
+            'en' => '/signup/pro/step-4',
+            'es' => '/es/signup/pro/step-4',
+            'de' => '/de/signup/pro/step-4',
+            'pt' => '/pt/signup/pro/step-4',
+            'it' => '/it/signup/pro/step-4',
+            'nl' => '/nl/signup/pro/step-4',
+            'hu' => '/hu/signup/pro/step-4',
         ],
         name: 'app_professionnelle_step_cinq'
     )]
@@ -229,14 +229,14 @@ final class AgenceImmobiliereStepTroisController extends AbstractController
 
     #[Route(
         path: [
-            'fr' => '/fr/pro/step6',
-            'en' => '/pro/step6',
-            'es' => '/es/pro/step6',
-            'de' => '/de/pro/step6',
-            'pt' => '/pt/pro/step6',
-            'it' => '/it/pro/step6',
-            'nl' => '/nl/pro/step6',
-            'hu' => '/hu/pro/step6',
+            'fr' => '/fr/signup/pro/step-5',
+            'en' => '/signup/pro/step-5',
+            'es' => '/es/signup/pro/step-5',
+            'de' => '/de/signup/pro/step-5',
+            'pt' => '/pt/signup/pro/step-5',
+            'it' => '/it/signup/pro/step-5',
+            'nl' => '/nl/signup/pro/step-5',
+            'hu' => '/hu/signup/pro/step-5',
         ],
         name: 'app_professionnelle_step_six'
     )]

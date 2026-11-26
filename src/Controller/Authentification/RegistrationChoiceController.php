@@ -23,14 +23,14 @@ final class RegistrationChoiceController extends AbstractController
 {
     #[Route(
         path: [
-            'fr' => '/fr/inscription',
-            'en' => '/registration',
-            'es' => '/es/registration',
-            'de' => '/de/registration',
-            'pt' => '/pt/registration',
-            'it' => '/it/registration',
-            'nl' => '/nl/registration',
-            'hu' => '/hu/registration',
+            'fr' => '/fr/signup-type',
+            'en' => '/signup-type',
+            'es' => '/es/signup-type',
+            'de' => '/de/signup-type',
+            'pt' => '/pt/signup-type',
+            'it' => '/it/signup-type',
+            'nl' => '/nl/signup-type',
+            'hu' => '/hu/signup-type',
         ],
         name: 'app_registration_choice'
     )]

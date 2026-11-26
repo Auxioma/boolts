@@ -364,7 +364,7 @@
 
             <p class="shared-login__register paragraphe">
                 {{ 'auth.login.not_registered'|trans }}
-                <a href="{{ path('app_registration_choice') }}" class="shared-login__register-link p-accent" data-turbo="false">{{ 'auth.login.register'|trans }}</a>
+                <a href="{{ path('professionnel' == loginType ? 'app_professionnelle_register' : 'app_visiteur_inscription') }}" class="shared-login__register-link p-accent" data-turbo="false">{{ 'auth.login.register'|trans }}</a>
             </p>
         </div> </div>
     </main>

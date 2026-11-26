@@ -14,6 +14,7 @@ namespace App\Controller\Dashboard\Visiteur;
 
 use App\Entity\User;
 use App\Form\Dashboard\AgenceImmobiliere\ProfileAgenceType;
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -22,7 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class ParametresController extends AbstractController
 {
-    #[Route('/dashboard/visiteur/parametres', name: 'app_dashboard_visiteur_parametres')]
+    #[Route(PublicRoute::PREFIX.'/dashboard/user/settings', name: 'app_dashboard_visiteur_parametres', requirements: PublicRoute::REQUIREMENTS)]
     public function index(): Response
     {
         $user = $this->getUser();

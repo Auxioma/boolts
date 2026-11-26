@@ -12,6 +12,7 @@
 
 namespace App\Controller\Dashboard\Visiteur;
 
+use App\Routing\PublicRoute;
 use App\Entity\User;
 use App\Repository\FavorisRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class FavorisBienController extends AbstractController
 {
-    #[Route('/dashboard/visiteur/favoris/bien', name: 'app_dashboard_visiteur_favoris_bien')]
+    #[Route(PublicRoute::PREFIX.'/dashboard/user/favorites', name: 'app_dashboard_visiteur_favoris_bien', requirements: PublicRoute::REQUIREMENTS)]
     #[IsGranted('ROLE_USER')]
     public function index(FavorisRepository $favorisRepository): Response
     {

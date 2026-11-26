@@ -13,6 +13,7 @@
 namespace App\Controller\Dashboard\Visiteur;
 
 use App\Repository\Messagerie\ConversationRepository;
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 final class MessagerieController extends AbstractController
 {
-    #[Route('/dashboard/visiteur/messagerie', name: 'app_dashboard_visiteur_messagerie')]
+    #[Route(PublicRoute::PREFIX.'/dashboard/user/inbox', name: 'app_dashboard_visiteur_messagerie', requirements: PublicRoute::REQUIREMENTS)]
     public function index(Request $request, ConversationRepository $conversationRepository): Response
     {
         // Les agences ont leur propre messagerie.

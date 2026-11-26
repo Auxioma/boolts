@@ -12,13 +12,16 @@
 
 namespace App\Controller\Dashboard\Visiteur;
 
+use App\Routing\PublicRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class AidesController extends AbstractController
 {
-    #[Route('/dashboard/visiteur/aides', name: 'app_dashboard_visiteur_aides')]
+    #[Route(PublicRoute::PREFIX.'/dashboard/user/help', name: 'app_dashboard_visiteur_aides', requirements: PublicRoute::REQUIREMENTS)]
+    #[IsGranted('ROLE_USER')]
     public function index(): Response
     {
         return $this->render('dashboard/visiteur/aides/index.html.twig', [

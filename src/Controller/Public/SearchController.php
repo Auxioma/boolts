@@ -208,7 +208,7 @@ final class SearchController extends AbstractController
     }
 
     #[Route(
-        path: PublicRoute::PREFIX.'/public/search/{searchToken}',
+        path: PublicRoute::PREFIX.'/search/{searchToken}',
         name: 'app_public_search_results',
         requirements: [...PublicRoute::REQUIREMENTS, 'searchToken' => '[0-9a-f]{32}'],
         methods: ['GET']

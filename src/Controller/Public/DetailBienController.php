@@ -42,7 +42,7 @@ final class DetailBienController extends AbstractController
     }
 
     #[Route(
-        path: PublicRoute::PREFIX.'/public/detail/bien/{slug}',
+        path: PublicRoute::PREFIX.'/listings/{slug}',
         name: 'app_public_detail_bien',
         requirements: PublicRoute::REQUIREMENTS
     )]
