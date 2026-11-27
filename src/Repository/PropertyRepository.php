@@ -928,6 +928,8 @@ class PropertyRepository extends ServiceEntityRepository
         ?string $pays,
         ?string $locale,
         ?string $paysIsoCode = null,
+        string $sort = 'p.createdAt',
+        string $direction = 'DESC',
     ): QueryBuilder {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.translations', 'pt')
@@ -970,7 +972,36 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('cp', mb_trim($cp));
         }
 
-        return $qb->orderBy('p.createdAt', 'DESC');
+        return $this->applyPublicSearchSort($qb, $sort, $direction);
+    }
+
+    /**
+     * Tri des résultats de recherche publique (mêmes options que la page agence).
+     *
+     * Les compteurs passent par des sous-requêtes corrélées pour rester
+     * compatibles avec les requêtes en DISTINCT / jointures de traductions.
+     */
+    private function applyPublicSearchSort(QueryBuilder $qb, string $sort, string $direction): QueryBuilder
+    {
+        $direction = 'ASC' === mb_strtoupper($direction) ? 'ASC' : 'DESC';
+
+        if ('p.views' === $sort) {
+            return $qb
+                ->addSelect('(SELECT COUNT(sortPv.id) FROM '.PropertyView::class.' sortPv WHERE sortPv.property = p) AS HIDDEN viewsCount')
+                ->orderBy('viewsCount', $direction)
+                ->addOrderBy('p.id', $direction);
+        }
+
+        if ('favorisCount' === $sort) {
+            return $qb
+                ->addSelect('(SELECT COUNT(sortF.id) FROM '.Favoris::class.' sortF WHERE sortF.property = p) AS HIDDEN favorisCount')
+                ->orderBy('favorisCount', $direction)
+                ->addOrderBy('p.id', $direction);
+        }
+
+        return $qb
+            ->orderBy('p.createdAt', $direction)
+            ->addOrderBy('p.id', $direction);
     }
 
     /**
@@ -1234,6 +1265,8 @@ class PropertyRepository extends ServiceEntityRepository
         float $east,
         float $west,
         ?string $paysIsoCode = null,
+        string $sort = 'p.createdAt',
+        string $direction = 'DESC',
     ): QueryBuilder {
         $queryBuilder = $this->findBySearchQueryBuilder(
             $transactionTypeId,
@@ -1241,7 +1274,9 @@ class PropertyRepository extends ServiceEntityRepository
             $cp,
             $pays,
             $locale,
-            $paysIsoCode
+            $paysIsoCode,
+            $sort,
+            $direction
         );
 
         $queryBuilder
@@ -1829,7 +1864,7 @@ class PropertyRepository extends ServiceEntityRepository
      *
      * @return array<int, Property>
      */
-    public function findForPublicSearch(array $filters, ?string $locale = null): array
+    public function findForPublicSearch(array $filters, ?string $locale = null, string $sort = 'p.createdAt', string $direction = 'DESC'): array
     {
         if (isset($filters['modal_filter']) && \is_array($filters['modal_filter'])) {
             $filters = $filters['modal_filter'];
@@ -1997,8 +2032,7 @@ class PropertyRepository extends ServiceEntityRepository
                 ->setParameter('dpe', array_map('strtoupper', $dpe));
         }
 
-        return $qb
-            ->orderBy('p.createdAt', 'DESC')
+        return $this->applyPublicSearchSort($qb, $sort, $direction)
             ->getQuery()
             ->getResult();
     }

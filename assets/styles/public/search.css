@@ -255,6 +255,10 @@ width: 44px;
     margin-inline: auto;
 }
 
+.bt-results-header {
+    margin-bottom: 44px;
+}
+
 .bt-results-title {
     margin: 0 0 44px;
 

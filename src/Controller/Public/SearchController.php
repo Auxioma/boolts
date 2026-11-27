@@ -243,6 +243,20 @@ final class SearchController extends AbstractController
             throw $this->createNotFoundException('Cette recherche est introuvable ou expirée.');
         }
 
+        /*
+         * Tri (mêmes options que la page agence) : liste blanche.
+         */
+        $sort = (string) $request->query->get('sort', 'p.createdAt');
+        $direction = mb_strtolower((string) $request->query->get('direction', 'desc'));
+
+        if (!\in_array($sort, ['p.createdAt', 'p.views', 'favorisCount'], true)) {
+            $sort = 'p.createdAt';
+        }
+
+        if (!\in_array($direction, ['asc', 'desc'], true)) {
+            $direction = 'desc';
+        }
+
         $filter = $this->buildFilterFromCriteria($criteria);
 
         $form = $this->createForm(
@@ -315,7 +329,9 @@ final class SearchController extends AbstractController
                 ->propertyRepository
                 ->findForPublicSearch(
                     $filters,
-                    $locale
+                    $locale,
+                    $sort,
+                    mb_strtoupper($direction)
                 );
 
             /*
@@ -349,7 +365,9 @@ final class SearchController extends AbstractController
                         $mapBounds['south'],
                         $mapBounds['east'],
                         $mapBounds['west'],
-                        $criteria['selectedCountryCode'] ?? null
+                        $criteria['selectedCountryCode'] ?? null,
+                        $sort,
+                        mb_strtoupper($direction)
                     );
             } else {
                 /*
@@ -363,7 +381,9 @@ final class SearchController extends AbstractController
                         $criteria['cp'],
                         $criteria['pays'],
                         $locale,
-                        $criteria['selectedCountryCode'] ?? null
+                        $criteria['selectedCountryCode'] ?? null,
+                        $sort,
+                        mb_strtoupper($direction)
                     );
             }
         }
@@ -377,7 +397,12 @@ final class SearchController extends AbstractController
                 1,
                 $request->query->getInt('page', 1)
             ),
-            9
+            9,
+            [
+                /* Le tri est géré par le repository : Knp ne doit pas lire sort/direction */
+                'sortFieldParameterName' => '_sort',
+                'sortDirectionParameterName' => '_direction',
+            ]
         );
 
         return $this->render(

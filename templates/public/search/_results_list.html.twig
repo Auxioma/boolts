@@ -8,9 +8,14 @@
 <section class="bt-results-section">
     <div class="container-md">
 
-        <h1 class="bt-results-title">
-            {{ (totalResults > 1 ? 'search.results.count.other' : 'search.results.count.one')|trans({'%count%': totalResults}) }}
-        </h1>
+        {# Nombre de résultats à gauche, tri (même composant que la page agence) à droite #}
+        <div class="d-flex align-items-center justify-content-between gap-3 bt-results-header">
+            <h1 class="bt-results-title mb-0">
+                {{ (totalResults > 1 ? 'search.results.count.other' : 'search.results.count.one')|trans({'%count%': totalResults}) }}
+            </h1>
+
+            {{ include('public/detail_agence/_partials/tri.html.twig') }}
+        </div>
 
         <div class="row bt-results-grid agence-properties">
 
