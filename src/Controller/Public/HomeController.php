@@ -16,7 +16,6 @@ use App\Entity\Search\PropertySearchSession;
 use App\Entity\SearchBar\FilterCityCountry;
 use App\Form\SearchBar\FilterCityCountryType;
 use App\Repository\CategoryBienTransactionRepository;
-use App\Repository\HomeVideoRepository;
 use App\Repository\PropertyRepository;
 use App\Repository\Search\PropertySearchSessionRepository;
 use App\Routing\PublicRoute;
@@ -93,7 +92,6 @@ final class HomeController extends AbstractController
         VisitorLocaleResolver $visitorLocaleResolver,
         UrlCountryResolver $urlCountryResolver,
         VisitorCurrencyResolver $visitorCurrencyResolver,
-        HomeVideoRepository $homeVideoRepository,
     ): Response {
         /*
          * Les biens affichés sont ceux du pays de l'URL (/{pays}-{langue}/), en
@@ -177,8 +175,6 @@ final class HomeController extends AbstractController
             'bannerCurrencyCode' => $visitorCurrencyResolver->resolve()?->getCode() ?? 'EUR',
             // Le bandeau ne s'affiche plus dès qu'une langue a été choisie manuellement.
             'showLocaleBanner' => null === $visitorLocaleResolver->manualChoice($request),
-            // Vidéo de fond administrable : une des 2 vidéos de la langue, au hasard (null = ancien tirage)
-            'homeVideo' => $homeVideoRepository->findRandomForLocale($request->getLocale()),
         ]);
     }
 
