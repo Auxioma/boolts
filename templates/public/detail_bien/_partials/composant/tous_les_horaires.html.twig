@@ -47,7 +47,7 @@
         {% for horaire in horairesOrdonnes %}
             <div class="agence-availability__row{{ loop.last ? '' : ' ' }}">
                 <p class="agence-availability__day my-auto agence-color">
-                    {{ horaire.jour }}
+                    {{ horaire.jour|day_name }}
                 </p>
 
                 <div class="agence-availability__hours my-auto">

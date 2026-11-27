@@ -16,23 +16,23 @@
                             <button
                                 type="button"
                                 class="home-bt-main-tab active"
-                                data-tab-button="location"
-                                data-home--property-tabs-target="button"
-                                data-action="click->home--property-tabs#select"
-                                data-home--property-tabs-tab-param="location"
-                            >
-                                {{ 'home.listings.rent'|trans }}
-                            </button>
-
-                            <button
-                                type="button"
-                                class="home-bt-main-tab"
                                 data-tab-button="vente"
                                 data-home--property-tabs-target="button"
                                 data-action="click->home--property-tabs#select"
                                 data-home--property-tabs-tab-param="vente"
                             >
                                 {{ 'home.listings.sale'|trans }}
+                            </button>
+
+                            <button
+                                type="button"
+                                class="home-bt-main-tab"
+                                data-tab-button="location"
+                                data-home--property-tabs-target="button"
+                                data-action="click->home--property-tabs#select"
+                                data-home--property-tabs-tab-param="location"
+                            >
+                                {{ 'home.listings.rent'|trans }}
                             </button>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                     {% set panels = [
                         {
                             key: 'location',
-                            active: true,
+                            active: false,
                             sections: [
                             {
                                 title: 'home.listings.featured.title',
@@ -69,7 +69,7 @@
                         },
                         {
                             key: 'vente',
-                            active: false,
+                            active: true,
                             sections: [
                             {
                                 title: 'home.listings.featured.title',

@@ -62,7 +62,7 @@
         {% for horaire in horairesOrdonnes %}
             <div class="d-flex w-100 mb-12">
                 <div class="agence-availability__day my-auto ml-10">
-                    <b>{{ horaire.jour }}</b>
+                    <b>{{ horaire.jour|day_name }}</b>
                 </div>
 
                 <div class="agence-availability__hours ms-3">

@@ -23,7 +23,7 @@
         data-horaire-open="{{ horairesPanelId }}"
     >
         <p class="agence-availability__day agence-color my-auto">
-            {{ horaireDuJour.jour }}
+            {{ horaireDuJour.jour|day_name }}
         </p>
 
         <div class="agence-availability__hours">
