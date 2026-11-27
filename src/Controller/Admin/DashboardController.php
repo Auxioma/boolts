@@ -111,6 +111,11 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(BoosterPurchaseCrudController::class, 'Boosts achetés', 'fas fa-rocket')
             ->setAction(Action::INDEX);
 
+        yield MenuItem::section('Home', 'fas fa-film');
+
+        yield MenuItem::linkTo(HomeVideoCrudController::class, 'Vidéos de la home', 'fas fa-video')
+            ->setAction(Action::INDEX);
+
         yield MenuItem::section('Traductions', 'fas fa-language');
 
         yield MenuItem::linkTo(TranslationCrudController::class, 'Traductions', 'fas fa-language')
