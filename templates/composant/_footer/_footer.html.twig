@@ -19,6 +19,9 @@
                 >
             </a> </h3>
 
+                    {# Onglets Localité / Type de bien / Caractéristiques masqués sur le dashboard pro agence #}
+                    {% set footerRoute = app.request.attributes.get('_canonical_route', app.request.attributes.get('_route'))|default('') %}
+                    {% if not (footerRoute starts with 'agence_immobiliere') %}
                     <div class="boolts-footer__tabs">
                         <button
                             type="button"
@@ -119,6 +122,7 @@
                             </ul>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </div>
 

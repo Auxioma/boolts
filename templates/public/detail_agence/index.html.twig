@@ -311,10 +311,13 @@
                                                 {{ 'detail_bien.contact.call'|trans }}
                                             </a>
                                         {% endif %}
+                                        {# Connecté : "Envoyer un message" ; non connecté : "Contacter par email" #}
+                                        {% if app.user %}
 <a href="{{ path('app_public_detail_agence_messagerie', {slug: user.slug}) }}" class="agence-btn agence-btn-primary p-accent">
 <i class="icon-phone"></i>
 {{ 'detail_agence.contact.message'|trans }}
 </a>
+                                        {% else %}
                                         <button
                                             type="button"
                                             class="bt-btn bt-btn--outline-primary w-100 p-accent"
@@ -326,6 +329,7 @@
                                             <i class="bi bi-envelope"></i>
                                             {{ 'detail_bien.contact.email'|trans }}
                                         </button>
+                                        {% endif %}
                                     </div>
                                     {{ include('public/detail_bien/_partials/composant/formulaire.html.twig') }}
                                 </div>

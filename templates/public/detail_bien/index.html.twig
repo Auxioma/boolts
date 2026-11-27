@@ -191,9 +191,12 @@
 
 
 
+                                            {# Connecté : "Envoyer un message" ; non connecté : "Contacter par email" (plus bas) #}
+                                            {% if app.user %}
 <a href="{{ path('app_public_detail_bien_messagerie', {slug: property.slug}) }}" class="agence-btn agence-btn-whatsapp p-accent" data-turbo="false">
 {{ 'detail_bien.contact.message'|trans }}
 </a>
+                                            {% endif %}
 
 
 
@@ -208,6 +211,7 @@
                                                 </a>
                                             {% endif %}
 
+                                            {% if not app.user %}
                                             <button
                                                 type="button"
                                                 class="bt-btn bt-btn--outline-primary w-100 p-accent"
@@ -221,6 +225,7 @@
                                                 <i class="bi bi-envelope"></i>
                                                 {{ 'detail_bien.contact.email'|trans }}
                                             </button>
+                                            {% endif %}
                                         </div>
                                         {{ include('public/detail_bien/_partials/composant/formulaire.html.twig') }}
                                     </div>

@@ -31,7 +31,7 @@
         class="nav nav-tabs home-bt-search-tabs"
         role="tablist"
         aria-label="{{ 'search.tabs.label'|trans }}"
-        style="--home-bt-tabs-count: 3;"
+        style="--home-bt-tabs-count: {{ transactions|length }};"
     >
 {% for transaction in transactions %}
     <li class="nav-item" role="presentation">
@@ -60,24 +60,6 @@
         </button>
     </li>
 {% endfor %}
-
-{# Onglet statique #}
-<li class="nav-item" role="presentation">
-    <button
-        type="button"
-        class="nav-link home-bt-search-tab"
-        data-home-bt-transaction-id="vendre"
-        data-home-bt-transaction-name="Vendre"
-        data-home-bt-transaction-icone="icon-pencil-line"
-        role="tab"
-        data-home--search-tabs-target="tab"
-        data-action="click->home--search-tabs#select"
-        aria-selected="false"
-    >
-        <i class="icon-pencil-line" aria-hidden="true"></i>
-        <span>{{ 'home.search.sell'|trans }}</span>
-    </button>
-</li>
     </ul>
 
     {{ form_start(form, {
