@@ -34,7 +34,7 @@
                             <div class="col-12 col-md-10 mx-auto">
                                 <div class="row achat-forfait-row">
 
-                                    {% if is_downgrade %}
+                                    {% if is_downgrade or is_upgrade %}
                                         <div class="col-12">
                                             <h2 class="achat-forfait-main-title mb-24">
                                                 {{ 'checkout.downgrade.title'|trans }}
@@ -82,7 +82,7 @@
                                                             {{ plan_price.currency.signe }}
                                                         </h3>
                                                         <span class="p-accent" style="color:#858789">
-                                                            /{{ (current_plan_price.billingPeriod.value == 'annual' ? 'checkout.period.year' : 'checkout.period.month')|trans }}
+                                                            /{{ ((is_upgrade ? period : current_plan_price.billingPeriod.value) == 'annual' ? 'checkout.period.year' : 'checkout.period.month')|trans }}
                                                         </span>
                                                     </div>
 
@@ -95,6 +95,22 @@
                                                 </h3>
 
                                                 <ul class="achat-forfait-explain-list paragraphe">
+                                                    {% if is_upgrade %}
+                                                    <li>
+                                                        {{ 'checkout.upgrade.now'|trans }}
+                                                        <strong>« {{ plan.name }} »</strong>
+                                                        {{ 'checkout.upgrade.billed'|trans }}
+                                                        <strong>
+                                                            {{ plan_price.amountMinor|minor_amount(plan_price.currency) }}
+                                                            {{ plan_price.currency.signe }}/{{ (period == 'annual' ? 'checkout.period.year' : 'checkout.period.month')|trans }}
+                                                        </strong>.
+                                                    </li>
+
+                                                    <li>
+                                                        {{ 'checkout.upgrade.replaces'|trans }}
+                                                        <strong>« {{ current_plan.name }} »</strong>.
+                                                    </li>
+                                                    {% else %}
                                                     <li>
                                                         {% if downgrade_effective_at %}
                                                             {{ 'checkout.downgrade.on_date'|trans({'%date%': '<strong>' ~ downgrade_effective_at|date('d/m/Y') ~ '</strong>'})|raw }}
@@ -114,6 +130,7 @@
                                                         {{ 'checkout.downgrade.until'|trans }}
                                                         <strong>« {{ current_plan.name }} »</strong>.
                                                     </li>
+                                                    {% endif %}
                                                 </ul>
                                             </div>
                                         </div>
@@ -126,8 +143,8 @@
                        
                                         <section class="achat-forfait-card achat-forfait-purchase-card">
 
-                                            {% if not is_downgrade %}
-                                         
+                                            {% if not is_downgrade and not is_upgrade %}
+
 
                                                 <section class="achat-forfait-section">
                                                     <h3 class="achat-forfait-section-title">
@@ -327,7 +344,7 @@
 
                                     <div class="col-12 col-xl-6 mt-3 mt-xl-0">
                                         <aside class="achat-forfait-card achat-forfait-summary-card">
-                                            {% if is_downgrade %}
+                                            {% if is_downgrade or is_upgrade %}
                                                 <p class="achat-forfait-legal-text paragraphe">
                                                     {{ 'checkout.downgrade.legal'|trans }}
                                                 </p>
@@ -337,11 +354,15 @@
                                                         <strong class="h-03">{{ 'checkout.amount'|trans }}</strong>
 
                                                         <p class="achat-forfait-legal-text achat-forfait-total-note paragraphe" style="color:#0b0f14">
+                                                            {% if is_upgrade %}
+                                                                {{ 'checkout.upgrade.charged_now'|trans }}
+                                                            {% else %}
                                                             {{ 'checkout.downgrade.charged'|trans }}
                                                             {% if downgrade_effective_at %}
                                                                 {{ 'checkout.downgrade.charged_on'|trans({'%date%': '<strong>' ~ downgrade_effective_at|date('d/m/Y') ~ '</strong>'})|raw }}
                                                             {% else %}
                                                                 {{ 'checkout.downgrade.charged_end'|trans }}
+                                                            {% endif %}
                                                             {% endif %}
                                                         </p>
                                                     </div>
@@ -373,7 +394,7 @@
                                                 data-action="options--purchase#subscribe"
                                                 {% if not default_payment_method %}disabled{% endif %}
                                             >
-                                                {{ (is_downgrade ? 'checkout.change_plan' : 'checkout.subscribe')|trans }}
+                                                {{ (is_downgrade or is_upgrade ? 'checkout.change_plan' : 'checkout.subscribe')|trans }}
                                             </button>
 
 

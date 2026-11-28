@@ -214,6 +214,13 @@ final class AgenceImmobiliereOptionsController extends AbstractController
             && $planPrice->getAmountMinor() < $currentPlanPrice->getAmountMinor()
             && !$currentSubscription->getCancelAtPeriodEnd();
 
+        // Upgrade : montant strictement supérieur dans la même devise.
+        // Le changement est immédiat côté API (SubscriptionController::upgrade).
+        $isUpgrade = $currentPlanPrice instanceof SubscriptionPlanPrice
+            && $currentPlanPrice->getId() !== $planPrice->getId()
+            && $currentPlanPrice->getCurrency() === $planPrice->getCurrency()
+            && $planPrice->getAmountMinor() > $currentPlanPrice->getAmountMinor();
+
         return $this->render(
             'dashboard/agence_immobiliere/agence_immobiliere_options/achat.html.twig',
             [
@@ -224,6 +231,7 @@ final class AgenceImmobiliereOptionsController extends AbstractController
                 'payment_methods' => $paymentMethods,
                 'stripe_public_key' => $stripePublicKey,
                 'is_downgrade' => $isDowngrade,
+                'is_upgrade' => $isUpgrade,
                 'current_plan' => $currentPlanPrice?->getPlan(),
                 'current_plan_price' => $currentPlanPrice,
                 'downgrade_effective_at' => $isDowngrade ? $currentSubscription->getCurrentPeriodEnd() : null,
