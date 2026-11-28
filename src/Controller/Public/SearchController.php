@@ -273,6 +273,15 @@ final class SearchController extends AbstractController
         $filtreModal = new ModalFilter();
 
         /*
+         * Transaction choisie sur la home (Acheter / Louer) pré-cochée
+         * dans la modale. Si modal_filter est présent dans l'URL,
+         * handleRequest() écrase cette valeur par celle soumise.
+         */
+        $filtreModal->setNatureDeLaPropriete(
+            $filter->getTransactionType()
+        );
+
+        /*
          * Préremplissage de la localisation de la modale
          * avec les données de la recherche principale.
          *

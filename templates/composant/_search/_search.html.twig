@@ -123,19 +123,23 @@
                                 {#
                                     Option "Toutes".
                                     Valeur vide = aucun filtre spécifique sur la nature.
+                                    Masquée sur la page de résultats de recherche : la transaction
+                                    choisie sur la home (Acheter / Louer) y est pré-cochée.
                                 #}
-                                <input
-                                    type="radio"
-                                    class="btn-check"
-                                    name="{{ formModal.natureDeLaPropriete.vars.full_name }}"
-                                    id="filter-all-transactions"
-                                    value=""
-                                    {% if formModal.natureDeLaPropriete.vars.value is empty %}checked{% endif %}
-                                >
+                                {% if showAllTransactionsChoice ?? true %}
+                                    <input
+                                        type="radio"
+                                        class="btn-check"
+                                        name="{{ formModal.natureDeLaPropriete.vars.full_name }}"
+                                        id="filter-all-transactions"
+                                        value=""
+                                        {% if formModal.natureDeLaPropriete.vars.value is empty %}checked{% endif %}
+                                    >
 
-                                <label class="boolts-choice" for="filter-all-transactions">
-                                    {{ 'search.filters.all'|trans }}
-                                </label>
+                                    <label class="boolts-choice" for="filter-all-transactions">
+                                        {{ 'search.filters.all'|trans }}
+                                    </label>
+                                {% endif %}
                             </div>
                         </div>
                         {#

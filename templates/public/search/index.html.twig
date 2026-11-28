@@ -12,7 +12,9 @@
 {% block body_class %}{{ view|default('list') == 'map' ? 'search-card-map-view' : 'search-card-map-view' }}{% endblock %}
 
 {% block body %}
-{{ include('composant/_search/_search.html.twig') }}
+{{ include('composant/_search/_search.html.twig', {
+    showAllTransactionsChoice: false,
+}) }}
 
     {% set currentView = view|default('list') %}
     {% set totalResults = search is defined and search is not null ? search.getTotalItemCount : 0 %}
